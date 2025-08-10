@@ -137,11 +137,11 @@ export default function Auth() {
               </Button>
             </div>
             <div className="flex justify-center mb-2">
-              <div className="scale-150">
+              <div className="scale-125">
                 <Logo variant="landing" />
               </div>
             </div>
-            <CardTitle className="text-2xl font-bold text-gray-900 dark:text-white">
+            <CardTitle className="text-xl font-bold text-gray-900 dark:text-white">
               {isLogin ? "Welcome Back" : "Join Nearby Traveler"}
             </CardTitle>
             {!isLogin && (
