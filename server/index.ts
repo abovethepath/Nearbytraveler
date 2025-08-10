@@ -102,6 +102,9 @@ app.use(session({
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: false, limit: '10mb' }));
 
+// Serve static files from public directory FIRST (for logo)
+app.use(express.static(path.join(process.cwd(), 'public')));
+
 // Serve attached assets with aggressive no-cache headers
 app.use('/assets', (req, res, next) => {
   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0');
