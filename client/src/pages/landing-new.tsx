@@ -82,16 +82,6 @@ export default function Landing() {
                     <p className="mt-6 sm:mt-8 text-lg sm:text-xl md:text-2xl lg:text-3xl text-white px-2 leading-relaxed max-w-4xl mx-auto">
                       Nearby Traveler - Connecting you to Nearby Locals and Nearby Travelers based on your interests, activities, events and demographics.
                     </p>
-                    
-                    {/* Action Buttons */}
-                    <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center items-center">
-                      <Link href="/auth" className="w-full sm:w-auto bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white px-8 py-4 sm:px-6 sm:py-3 rounded-lg text-xl sm:text-lg font-medium transition duration-150 ease-in-out shadow-lg text-center">
-                        Join Beta Now
-                      </Link>
-                      <Link href="/about" className="w-full sm:w-auto bg-white/20 hover:bg-white/30 text-white border border-white/50 px-8 py-4 sm:px-6 sm:py-3 rounded-lg text-xl sm:text-lg font-medium transition duration-150 ease-in-out backdrop-blur-sm text-center">
-                        Learn More
-                      </Link>
-                    </div>
 
                   </div>
                 </main>
