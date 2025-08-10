@@ -2,7 +2,7 @@
 import React from "react";
 import LandingNavbar from "@/components/landing-navbar";
 import Footer from "@/components/footer";
-// import eventHeaderImage from "@/assets/../attached_assets/attached_assets/event page bbq party_1753299541268.png";
+const eventHeaderImage = "/event page bbq party_1753299541268.png";
 
 export default function EventsLanding() {
   return (
@@ -13,7 +13,7 @@ export default function EventsLanding() {
       <div className="relative">
         <div className="relative h-[70vh] overflow-hidden">
           <img 
-            src="/attached_assets/attached_assets/event page bbq party_1753299541268.png" 
+            src={eventHeaderImage} 
             alt="Beach BBQ Party with Friends" 
             className="w-full h-full object-cover"
           />

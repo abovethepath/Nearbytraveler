@@ -1,8 +1,7 @@
 import React from "react";
 import LandingNavbar from "@/components/landing-navbar";
 import Footer from "@/components/footer";
-// import localsHeaderImage from "@assets/ChatGPT Image Jul 23, 2025, 01_18_34 PM_1753301968074.png";
-const localsHeaderImage = "/attached_assets/attached_assets/ChatGPT Image Jul 23, 2025, 01_18_34 PM_1753301968074.png";
+const localsHeaderImage = "/ChatGPT Image Jul 23, 2025, 01_18_34 PM_1753301968074.png";
 
 export default function LocalsLanding() {
   return (

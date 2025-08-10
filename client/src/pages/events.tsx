@@ -20,7 +20,8 @@ import CreateEvent from "@/pages/create-event";
 import { ParticipantAvatars } from "@/components/ParticipantAvatars";
 import { formatDateForDisplay } from "@/lib/dateUtils";
 import { PublicationSchedule } from "@/components/PublicationSchedule";
-// import eventsBgImage from "@assets/event page bbq party_1753299541268.png";
+// const eventsBgImage = "/event page bbq party_1753299541268.png";
+const eventsBgImage = "/event page bbq party_1753299541268.png";
 // MobileNav removed - using global mobile navigation
 
 export default function Events() {
@@ -441,7 +442,7 @@ export default function Events() {
         {/* Background Image */}
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: `url(/attached_assets/attached_assets/event page bbq party_1753299541268.png)` }}
+          style={{ backgroundImage: `url(${eventsBgImage})` }}
         ></div>
         {/* Subtle overlay to maintain text readability without heavy color tint */}
         <div className="absolute inset-0 bg-black/30"></div>
@@ -1695,9 +1696,9 @@ export default function Events() {
 
             {true && (
               <>
-                {false ? (
+                {(curatedEvents as any)?.events && (curatedEvents as any).events.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {[].map((event: any) => (
+                    {(curatedEvents as any).events.map((event: any) => (
                       <Card key={event.id} className="hover:shadow-lg transition-all duration-200 hover:scale-[1.02] border border-gray-200">
                         <CardContent className="p-6">
                           <div className="flex items-start justify-between mb-3">
