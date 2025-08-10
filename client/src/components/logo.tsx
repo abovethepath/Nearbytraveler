@@ -34,7 +34,7 @@ export default function Logo({ className, variant = "default" }: LogoProps) {
       case "landing":
         return "h-108 w-auto scale-x-110"; // 25% smaller - Optimal size for welcome back page with less horizontal stretch
       case "navbar":
-        return "h-72 sm:h-63 md:h-72 lg:h-90 xl:h-144 w-auto"; // 25% smaller - Responsive: larger on mobile, scaling up on desktop
+        return "h-10 sm:h-12 md:h-14 lg:h-16 xl:h-18 w-auto"; // Fixed mobile logo size to prevent overflow
       case "black-navbar":
         return "h-144 w-auto"; // 25% smaller - Large logo for brand prominence
       case "footer":

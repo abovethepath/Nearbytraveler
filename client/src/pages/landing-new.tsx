@@ -83,6 +83,15 @@ export default function Landing() {
                       Nearby Traveler- Connecting you to Nearby Locals and Nearby Travelers based on your interests, activities, events and demographics.
                     </p>
                     
+                    {/* Mobile Preview Button */}
+                    <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center items-center">
+                      <Link href="/auth" className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white px-6 py-3 rounded-lg text-lg font-medium transition duration-150 ease-in-out shadow-lg">
+                        Join Beta Now
+                      </Link>
+                      <Link href="/mobile-preview" className="bg-white/20 hover:bg-white/30 text-white border border-white/50 px-6 py-3 rounded-lg text-lg font-medium transition duration-150 ease-in-out backdrop-blur-sm">
+                        📱 See Mobile Experience
+                      </Link>
+                    </div>
 
                   </div>
                 </main>

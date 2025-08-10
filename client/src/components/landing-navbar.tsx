@@ -8,12 +8,12 @@ export default function LandingNavbar() {
   return (
     <nav className="bg-white dark:bg-gray-800 shadow-sm relative z-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
+        <div className="flex justify-between h-14 sm:h-16">
           <div className="flex">
-            <div className="flex-shrink-0 flex items-center">
+            <div className="flex-shrink-0 flex items-center py-1">
               <Link href="/" className="flex items-center">
                 <Logo variant="navbar" />
-                <span className="ml-2 text-red-600 dark:text-red-400 text-sm font-bold uppercase tracking-wide bg-red-100 dark:bg-red-900/50 px-2 py-1 rounded">BETA</span>
+                <span className="ml-1 sm:ml-2 text-red-600 dark:text-red-400 text-xs sm:text-sm font-bold uppercase tracking-wide bg-red-100 dark:bg-red-900/50 px-1 sm:px-2 py-0.5 sm:py-1 rounded">BETA</span>
               </Link>
             </div>
             <div className="hidden sm:ml-6 sm:flex sm:space-x-8">

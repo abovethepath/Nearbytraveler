@@ -91,6 +91,7 @@ import WelcomeTravelAgent from "@/pages/welcome-travel-agent";
 import QuickLogin from "@/pages/quick-login";
 import MatchInCity from "@/pages/match-in-city";
 import ActivitySearch from "@/pages/activity-search";
+import MobilePreviewLanding from "@/pages/mobile-preview-landing";
 
 import Navbar from "@/components/navbar";
 // Removed conflicting MobileNav - using MobileTopNav and MobileBottomNav instead
@@ -139,7 +140,7 @@ function Router() {
     '/', '/landing', '/landing-new', '/auth', '/join', '/signup', '/signup/local', '/signup/traveler', '/signup/business',
     '/events-landing', '/business-landing', '/locals-landing', '/travelers-landing', '/privacy', '/terms', '/cookies', '/about', '/getting-started',
     '/forgot-password', '/reset-password', '/welcome', '/welcome-business', '/welcome-travel-agent', '/quick-login', '/preview-landing', '/preview-first-landing',
-    '/travel-quiz', '/TravelIntentQuiz', '/signup/travel-agent'
+    '/travel-quiz', '/TravelIntentQuiz', '/signup/travel-agent', '/mobile-preview'
   ];
   const isLandingPage = landingPageRoutes.includes(location);
 
@@ -467,6 +468,12 @@ function Router() {
       if (location === '/travelers-landing') {
         console.log('Showing TravelersLanding for unauthenticated user');
         return <TravelersLanding />;
+      }
+
+      // Allow access to mobile preview without authentication
+      if (location === '/mobile-preview') {
+        console.log('Showing MobilePreviewLanding for unauthenticated user');
+        return <MobilePreviewLanding />;
       }
 
       // Travel Intent Quiz - accessible without authentication
