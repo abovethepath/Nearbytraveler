@@ -1472,172 +1472,288 @@ export default function Home() {
 
                 {/* Collapsible Advanced Filters */}
                 <div className="space-y-3 mb-4">
-                  {/* Gender Filter Section */}
-                  <Collapsible open={expandedSections.gender} onOpenChange={() => toggleSection('gender')}>
-                    <CollapsibleTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className="w-full justify-between h-10 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
-                      >
-                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Gender Filter</span>
-                        <div className="flex items-center gap-2">
-                          {filters.gender.length > 0 && (
-                            <Badge variant="secondary" className="bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300">
-                              {filters.gender.length}
-                            </Badge>
-                          )}
-                          {expandedSections.gender ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-                        </div>
-                      </Button>
-                    </CollapsibleTrigger>
-                    <CollapsibleContent className="pt-3">
-                      <div className="flex flex-wrap gap-2">
-                        {GENDER_OPTIONS.map((gender) => (
-                          <button
-                            key={gender}
-                            onClick={() => {
-                              if (filters.gender.includes(gender)) {
-                                setFilters({...filters, gender: filters.gender.filter(g => g !== gender)});
-                              } else {
-                                setFilters({...filters, gender: [...filters.gender, gender]});
-                              }
-                            }}
-                            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                              filters.gender.includes(gender)
-                                ? 'bg-blue-500 text-white'
-                                : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                            }`}
+                  {/* Gender Filter Section - Mobile Optimized */}
+                  <div className="space-y-3">
+                    {/* Desktop View - Collapsible */}
+                    <div className="hidden md:block">
+                      <Collapsible open={expandedSections.gender} onOpenChange={() => toggleSection('gender')}>
+                        <CollapsibleTrigger asChild>
+                          <Button
+                            variant="outline"
+                            className="w-full justify-between h-10 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
                           >
-                            {gender}
-                          </button>
-                        ))}
-                      </div>
-                    </CollapsibleContent>
-                  </Collapsible>
+                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Gender Filter</span>
+                            <div className="flex items-center gap-2">
+                              {filters.gender.length > 0 && (
+                                <Badge variant="secondary" className="bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300">
+                                  {filters.gender.length}
+                                </Badge>
+                              )}
+                              {expandedSections.gender ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                            </div>
+                          </Button>
+                        </CollapsibleTrigger>
+                        <CollapsibleContent className="pt-3">
+                          <div className="flex flex-wrap gap-2">
+                            {GENDER_OPTIONS.map((gender) => (
+                              <button
+                                key={gender}
+                                onClick={() => {
+                                  if (filters.gender.includes(gender)) {
+                                    setFilters({...filters, gender: filters.gender.filter(g => g !== gender)});
+                                  } else {
+                                    setFilters({...filters, gender: [...filters.gender, gender]});
+                                  }
+                                }}
+                                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                                  filters.gender.includes(gender)
+                                    ? 'bg-blue-500 text-white'
+                                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                                }`}
+                              >
+                                {gender}
+                              </button>
+                            ))}
+                          </div>
+                        </CollapsibleContent>
+                      </Collapsible>
+                    </div>
 
-                  {/* Sexual Preference Filter Section */}
-                  <Collapsible open={expandedSections.sexualPreference} onOpenChange={() => toggleSection('sexualPreference')}>
-                    <CollapsibleTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className="w-full justify-between h-10 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
+                    {/* Mobile View - Dropdown */}
+                    <div className="md:hidden space-y-2">
+                      <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Gender Filter</label>
+                      <Select
+                        value={filters.gender[0] || ""}
+                        onValueChange={(value) => {
+                          if (value === "") {
+                            setFilters({...filters, gender: []});
+                          } else {
+                            setFilters({...filters, gender: [value]});
+                          }
+                        }}
                       >
-                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Sexual Preference Filter</span>
-                        <div className="flex items-center gap-2">
-                          {filters.sexualPreference.length > 0 && (
-                            <Badge variant="secondary" className="bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300">
-                              {filters.sexualPreference.length}
-                            </Badge>
-                          )}
-                          {expandedSections.sexualPreference ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-                        </div>
-                      </Button>
-                    </CollapsibleTrigger>
-                    <CollapsibleContent className="pt-3">
-                      <div className="flex flex-wrap gap-2">
-                        {SEXUAL_PREFERENCE_OPTIONS.map((preference) => (
-                          <button
-                            key={preference}
-                            onClick={() => {
-                              if (filters.sexualPreference.includes(preference)) {
-                                setFilters({...filters, sexualPreference: filters.sexualPreference.filter(p => p !== preference)});
-                              } else {
-                                setFilters({...filters, sexualPreference: [...filters.sexualPreference, preference]});
-                              }
-                            }}
-                            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                              filters.sexualPreference.includes(preference)
-                                ? 'bg-purple-500 text-white'
-                                : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                            }`}
+                        <SelectTrigger className="w-full h-12 text-base">
+                          <SelectValue placeholder="Select gender" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="">Any Gender</SelectItem>
+                          {GENDER_OPTIONS.map((gender) => (
+                            <SelectItem key={gender} value={gender}>{gender}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  {/* Sexual Preference Filter Section - Mobile Optimized */}
+                  <div className="space-y-3">
+                    {/* Desktop View - Collapsible */}
+                    <div className="hidden md:block">
+                      <Collapsible open={expandedSections.sexualPreference} onOpenChange={() => toggleSection('sexualPreference')}>
+                        <CollapsibleTrigger asChild>
+                          <Button
+                            variant="outline"
+                            className="w-full justify-between h-10 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
                           >
-                            {preference}
-                          </button>
-                        ))}
-                      </div>
-                    </CollapsibleContent>
-                  </Collapsible>
+                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Sexual Preference Filter</span>
+                            <div className="flex items-center gap-2">
+                              {filters.sexualPreference.length > 0 && (
+                                <Badge variant="secondary" className="bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300">
+                                  {filters.sexualPreference.length}
+                                </Badge>
+                              )}
+                              {expandedSections.sexualPreference ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                            </div>
+                          </Button>
+                        </CollapsibleTrigger>
+                        <CollapsibleContent className="pt-3">
+                          <div className="flex flex-wrap gap-2">
+                            {SEXUAL_PREFERENCE_OPTIONS.map((preference) => (
+                              <button
+                                key={preference}
+                                onClick={() => {
+                                  if (filters.sexualPreference.includes(preference)) {
+                                    setFilters({...filters, sexualPreference: filters.sexualPreference.filter(p => p !== preference)});
+                                  } else {
+                                    setFilters({...filters, sexualPreference: [...filters.sexualPreference, preference]});
+                                  }
+                                }}
+                                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                                  filters.sexualPreference.includes(preference)
+                                    ? 'bg-purple-500 text-white'
+                                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                                }`}
+                              >
+                                {preference}
+                              </button>
+                            ))}
+                          </div>
+                        </CollapsibleContent>
+                      </Collapsible>
+                    </div>
 
-                  {/* User Type Filter Section */}
-                  <Collapsible open={expandedSections.userType} onOpenChange={() => toggleSection('userType')}>
-                    <CollapsibleTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className="w-full justify-between h-10 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
+                    {/* Mobile View - Dropdown */}
+                    <div className="md:hidden space-y-2">
+                      <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Sexual Preference Filter</label>
+                      <Select
+                        value={filters.sexualPreference[0] || ""}
+                        onValueChange={(value) => {
+                          if (value === "") {
+                            setFilters({...filters, sexualPreference: []});
+                          } else {
+                            setFilters({...filters, sexualPreference: [value]});
+                          }
+                        }}
                       >
-                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">User Type Filter</span>
-                        <div className="flex items-center gap-2">
-                          {filters.userType.length > 0 && (
-                            <Badge variant="secondary" className="bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300">
-                              {filters.userType.length}
-                            </Badge>
-                          )}
-                          {expandedSections.userType ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-                        </div>
-                      </Button>
-                    </CollapsibleTrigger>
-                    <CollapsibleContent className="pt-3">
-                      <div className="flex flex-wrap gap-2">
-                        {USER_TYPE_OPTIONS.map((type) => (
-                          <button
-                            key={type}
-                            onClick={() => {
-                              if (filters.userType.includes(type)) {
-                                setFilters({...filters, userType: filters.userType.filter(t => t !== type)});
-                              } else {
-                                setFilters({...filters, userType: [...filters.userType, type]});
-                              }
-                            }}
-                            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors capitalize ${
-                              filters.userType.includes(type)
-                                ? 'bg-green-500 text-white'
-                                : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                            }`}
+                        <SelectTrigger className="w-full h-12 text-base">
+                          <SelectValue placeholder="Select preference" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="">Any Preference</SelectItem>
+                          {SEXUAL_PREFERENCE_OPTIONS.map((preference) => (
+                            <SelectItem key={preference} value={preference}>{preference}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  {/* User Type Filter Section - Mobile Optimized */}
+                  <div className="space-y-3">
+                    {/* Desktop View - Collapsible */}
+                    <div className="hidden md:block">
+                      <Collapsible open={expandedSections.userType} onOpenChange={() => toggleSection('userType')}>
+                        <CollapsibleTrigger asChild>
+                          <Button
+                            variant="outline"
+                            className="w-full justify-between h-10 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
                           >
-                            {type}
-                          </button>
-                        ))}
-                      </div>
-                    </CollapsibleContent>
-                  </Collapsible>
+                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">User Type Filter</span>
+                            <div className="flex items-center gap-2">
+                              {filters.userType.length > 0 && (
+                                <Badge variant="secondary" className="bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300">
+                                  {filters.userType.length}
+                                </Badge>
+                              )}
+                              {expandedSections.userType ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                            </div>
+                          </Button>
+                        </CollapsibleTrigger>
+                        <CollapsibleContent className="pt-3">
+                          <div className="flex flex-wrap gap-2">
+                            {USER_TYPE_OPTIONS.map((type) => (
+                              <button
+                                key={type}
+                                onClick={() => {
+                                  if (filters.userType.includes(type)) {
+                                    setFilters({...filters, userType: filters.userType.filter(t => t !== type)});
+                                  } else {
+                                    setFilters({...filters, userType: [...filters.userType, type]});
+                                  }
+                                }}
+                                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors capitalize ${
+                                  filters.userType.includes(type)
+                                    ? 'bg-green-500 text-white'
+                                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                                }`}
+                              >
+                                {type}
+                              </button>
+                            ))}
+                          </div>
+                        </CollapsibleContent>
+                      </Collapsible>
+                    </div>
 
-                  {/* Age Range Filter Section */}
-                  <Collapsible open={expandedSections.ageRange} onOpenChange={() => toggleSection('ageRange')}>
-                    <CollapsibleTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className="w-full justify-between h-10 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
+                    {/* Mobile View - Dropdown */}
+                    <div className="md:hidden space-y-2">
+                      <label className="text-sm font-medium text-gray-700 dark:text-gray-300">User Type Filter</label>
+                      <Select
+                        value={filters.userType[0] || ""}
+                        onValueChange={(value) => {
+                          if (value === "") {
+                            setFilters({...filters, userType: []});
+                          } else {
+                            setFilters({...filters, userType: [value]});
+                          }
+                        }}
                       >
-                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Age Range Filter</span>
-                        <div className="flex items-center gap-2">
-                          {(filters.minAge || filters.maxAge) && (
-                            <Badge variant="secondary" className="bg-gray-100 text-gray-700 dark:bg-gray-900 dark:text-gray-300">
-                              {filters.minAge || '?'}-{filters.maxAge || '?'}
-                            </Badge>
-                          )}
-                          {expandedSections.ageRange ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-                        </div>
-                      </Button>
-                    </CollapsibleTrigger>
-                    <CollapsibleContent className="pt-3">
-                      <div className="grid grid-cols-2 gap-2">
+                        <SelectTrigger className="w-full h-12 text-base">
+                          <SelectValue placeholder="Select user type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="">Any User Type</SelectItem>
+                          <SelectItem value="traveler">Traveler</SelectItem>
+                          <SelectItem value="local">Local</SelectItem>
+                          <SelectItem value="business">Business</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  {/* Age Range Filter Section - Mobile Optimized */}
+                  <div className="space-y-3">
+                    {/* Desktop View - Collapsible */}
+                    <div className="hidden md:block">
+                      <Collapsible open={expandedSections.ageRange} onOpenChange={() => toggleSection('ageRange')}>
+                        <CollapsibleTrigger asChild>
+                          <Button
+                            variant="outline"
+                            className="w-full justify-between h-10 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
+                          >
+                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Age Range Filter</span>
+                            <div className="flex items-center gap-2">
+                              {(filters.minAge || filters.maxAge) && (
+                                <Badge variant="secondary" className="bg-gray-100 text-gray-700 dark:bg-gray-900 dark:text-gray-300">
+                                  {filters.minAge || '?'}-{filters.maxAge || '?'}
+                                </Badge>
+                              )}
+                              {expandedSections.ageRange ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                            </div>
+                          </Button>
+                        </CollapsibleTrigger>
+                        <CollapsibleContent className="pt-3">
+                          <div className="grid grid-cols-2 gap-2">
+                            <Input 
+                              type="number" 
+                              placeholder="Min Age"
+                              value={filters.minAge}
+                              onChange={(e) => setFilters({...filters, minAge: e.target.value})}
+                              className="w-full text-sm px-3 py-2 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400"
+                            />
+                            <Input 
+                              type="number" 
+                              placeholder="Max Age"
+                              value={filters.maxAge}
+                              onChange={(e) => setFilters({...filters, maxAge: e.target.value})}
+                              className="w-full text-sm px-3 py-2 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400"
+                            />
+                          </div>
+                        </CollapsibleContent>
+                      </Collapsible>
+                    </div>
+
+                    {/* Mobile View - Age Range Inputs */}
+                    <div className="md:hidden space-y-2">
+                      <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Age Range Filter</label>
+                      <div className="grid grid-cols-2 gap-3">
                         <Input 
                           type="number" 
                           placeholder="Min Age"
                           value={filters.minAge}
                           onChange={(e) => setFilters({...filters, minAge: e.target.value})}
-                          className="w-full text-sm px-3 py-2 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400"
+                          className="w-full h-12 text-base px-4 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400"
                         />
                         <Input 
                           type="number" 
                           placeholder="Max Age"
                           value={filters.maxAge}
                           onChange={(e) => setFilters({...filters, maxAge: e.target.value})}
-                          className="w-full text-sm px-3 py-2 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400"
+                          className="w-full h-12 text-base px-4 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400"
                         />
                       </div>
-                    </CollapsibleContent>
-                  </Collapsible>
+                    </div>
+                  </div>
 
                   {/* Traveler Type Filter Section */}
                   <Collapsible open={expandedSections.travelerType} onOpenChange={() => toggleSection('travelerType')}>
