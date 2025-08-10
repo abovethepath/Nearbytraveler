@@ -46,7 +46,7 @@ export function TripPlanningLoader() {
       </div>
       
       <motion.p
-        className="text-lg font-medium text-gray-700 dark:text-gray-300"
+        className="text-lg font-medium text-gray-700 
         animate={{ opacity: [0.7, 1, 0.7] }}
         transition={{ duration: 1.5, repeat: Infinity }}
       >
@@ -117,7 +117,7 @@ export function ConnectionsLoader() {
       </div>
       
       <motion.p
-        className="text-lg font-medium text-gray-700 dark:text-gray-300"
+        className="text-lg font-medium text-gray-700 
         animate={{ opacity: [0.7, 1, 0.7] }}
         transition={{ duration: 1.5, repeat: Infinity }}
       >
@@ -172,7 +172,7 @@ export function EventsLoader() {
       </div>
       
       <motion.p
-        className="text-lg font-medium text-gray-700 dark:text-gray-300"
+        className="text-lg font-medium text-gray-700 
         animate={{ opacity: [0.7, 1, 0.7] }}
         transition={{ duration: 1.5, repeat: Infinity }}
       >
@@ -203,7 +203,7 @@ export function MessagesLoader() {
             >
               <div className={`px-4 py-2 rounded-lg max-w-xs ${
                 i % 2 === 0 
-                  ? 'bg-gray-200 dark:bg-gray-700' 
+                  ? 'bg-gray-200  
                   : 'bg-blue-500 text-white'
               }`}>
                 <div className="flex space-x-1">
@@ -246,7 +246,7 @@ export function MessagesLoader() {
       </div>
       
       <motion.p
-        className="text-lg font-medium text-gray-700 dark:text-gray-300"
+        className="text-lg font-medium text-gray-700 
         animate={{ opacity: [0.7, 1, 0.7] }}
         transition={{ duration: 1.5, repeat: Infinity }}
       >
@@ -312,7 +312,7 @@ export function PhotoGalleryLoader() {
       </div>
       
       <motion.p
-        className="text-lg font-medium text-gray-700 dark:text-gray-300"
+        className="text-lg font-medium text-gray-700 
         animate={{ opacity: [0.7, 1, 0.7] }}
         transition={{ duration: 1.5, repeat: Infinity }}
       >
@@ -389,7 +389,7 @@ export function BusinessOffersLoader() {
       </div>
       
       <motion.p
-        className="text-lg font-medium text-gray-700 dark:text-gray-300"
+        className="text-lg font-medium text-gray-700 
         animate={{ opacity: [0.7, 1, 0.7] }}
         transition={{ duration: 1.5, repeat: Infinity }}
       >
