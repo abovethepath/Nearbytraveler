@@ -1,7 +1,6 @@
 import { useLocation } from "wouter";
 import { useState, useEffect } from "react";
-// import newLogo from "@assets/new-logo_1753994063802.png";
-const newLogo = "/attached_assets/attached_assets/new-logo_1753994063802.png";
+const newLogo = "/new-logo_1753994063802.png";
 
 interface LogoProps {
   className?: string;
