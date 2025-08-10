@@ -226,11 +226,11 @@ export default function Landing() {
                 <div className="w-28 h-28 rounded-lg border-2 border-amber-400 flex items-center justify-center bg-white shadow-md mx-auto">
                   <div className="w-full h-full flex items-center justify-center">
                     <img 
-                      src="/assets/step1-icon.png" 
+                      src="/step1-icon_1753297128966.png" 
                       alt="Join Nearby Traveler" 
                       className="w-20 h-20 object-contain"
                       onError={(e) => {
-                        console.log('Step 1 icon failed to load');
+                        console.log('Step 1 icon failed to load, using fallback');
                         (e.target as HTMLImageElement).style.display = 'none';
                         (e.target as HTMLImageElement).parentElement!.innerHTML = '<div class="w-20 h-20 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full flex items-center justify-center text-white text-2xl font-bold">1</div>';
                       }}
@@ -250,11 +250,11 @@ export default function Landing() {
                 <div className="w-28 h-28 rounded-lg border-2 border-amber-400 flex items-center justify-center bg-white shadow-md mx-auto">
                   <div className="w-full h-full flex items-center justify-center">
                     <img 
-                      src="/assets/step2-icon.png" 
+                      src="/step2-icon_1753297145395.png" 
                       alt="Connect with People" 
                       className="w-20 h-20 object-contain"
                       onError={(e) => {
-                        console.log('Step 2 icon failed to load');
+                        console.log('Step 2 icon failed to load, using fallback');
                         (e.target as HTMLImageElement).style.display = 'none';
                         (e.target as HTMLImageElement).parentElement!.innerHTML = '<div class="w-20 h-20 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full flex items-center justify-center text-white text-2xl font-bold">2</div>';
                       }}
@@ -274,11 +274,11 @@ export default function Landing() {
                 <div className="w-28 h-28 rounded-lg border-2 border-amber-400 flex items-center justify-center bg-white shadow-md mx-auto">
                   <div className="w-full h-full flex items-center justify-center">
                     <img 
-                      src="/assets/step3-icon.png" 
+                      src="/step3-icon_1753297157985.png" 
                       alt="Explore and Discover" 
                       className="w-20 h-20 object-contain"
                       onError={(e) => {
-                        console.log('Step 3 icon failed to load');
+                        console.log('Step 3 icon failed to load, using fallback');
                         (e.target as HTMLImageElement).style.display = 'none';
                         (e.target as HTMLImageElement).parentElement!.innerHTML = '<div class="w-20 h-20 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full flex items-center justify-center text-white text-2xl font-bold">3</div>';
                       }}
