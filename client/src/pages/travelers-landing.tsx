@@ -13,7 +13,7 @@ export default function TravelersLanding() {
       <div className="relative">
         <div className="relative h-[70vh] overflow-hidden">
           <img 
-            src="/placeholder-travelers.svg" 
+            src="/travelers-map.webp" 
             alt="Travelers making connections and sharing experiences" 
             className="w-full h-full object-cover"
           />
