@@ -13,9 +13,9 @@ export default function Logo({ className, variant = "default" }: LogoProps) {
       case "landing":
         return "h-12 w-auto"; // Fixed size for landing
       case "navbar":
-        return "h-8 w-auto"; // Fixed size for navbar
+        return "h-24 w-auto"; // Fixed size for navbar - 3x bigger
       case "black-navbar":
-        return "h-8 w-auto"; // Fixed size for black navbar
+        return "h-24 w-auto"; // Fixed size for black navbar - 3x bigger
       case "footer":
         return "h-8 w-auto"; // Fixed size for footer
       default:
