@@ -430,31 +430,8 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    try {
-      // Use raw SQL to query existing database structure
-      const result = await db.execute(sql`
-        SELECT id, username, email, first_name, last_name, user_type 
-        FROM users 
-        WHERE LOWER(username) = ${username.toLowerCase()}
-        LIMIT 1
-      `);
-      
-      if (result.rows.length === 0) {
-        return undefined;
-      }
-      
-      const row = result.rows[0];
-      return {
-        id: Number(row.id),
-        username: row.username as string,
-        email: row.email as string,
-        name: `${row.first_name} ${row.last_name}`.trim(),
-        userType: row.user_type as string
-      } as User;
-    } catch (error) {
-      console.error('Error checking username:', error);
-      return undefined;
-    }
+    const [user] = await db.select().from(users).where(eq(sql`LOWER(${users.username})`, username.toLowerCase()));
+    return user || undefined;
   }
 
   async getUserByEmail(email: string): Promise<User | undefined> {
