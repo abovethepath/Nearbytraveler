@@ -33,13 +33,14 @@ export default function Logo({ className, variant = "default" }: LogoProps) {
 
   return (
     <img
-      src={newLogo}
+      src="/new-logo_1753994063802.png"
       alt="The Nearby Traveler - Where local experiences meet worldwide connections"
       className={`${finalClassName} cursor-pointer hover:opacity-80 transition-opacity object-contain`}
       onClick={handleClick}
       onError={(e) => {
-        console.error('Logo failed to load:', e);
-        (e.target as HTMLImageElement).src = newLogo;
+        console.error('Logo failed to load from:', e.target.src);
+        // Try backup path
+        (e.target as HTMLImageElement).src = "/images/logo.png";
       }}
     />
   );
