@@ -33,7 +33,7 @@ export default function Header() {
               onClick={() => window.location.href = '/api/login'}
               data-testid="button-signup-local"
             >
-              Sign Up as Local
+              Join as Beta Tester as Local
             </Button>
             <Button 
               variant="ghost"

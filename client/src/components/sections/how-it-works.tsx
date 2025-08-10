@@ -2,7 +2,7 @@ export default function HowItWorks() {
   const steps = [
     {
       number: 1,
-      title: "Sign Up as Local",
+      title: "Join as Beta Tester as Local",
       description: "Establish your hometown knowledge and become part of the local community. Share your city's hidden gems and favorite spots.",
       image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300",
       alt: "Person using location-based app",

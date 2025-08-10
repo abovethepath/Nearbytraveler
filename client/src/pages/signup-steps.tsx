@@ -354,7 +354,7 @@ export default function SignupSteps() {
         <Card className="shadow-lg border-teal-200">
           <CardHeader>
             <CardTitle className="text-2xl text-center text-teal-700">
-              {currentStep === 1 && "Sign Up"}
+              {currentStep === 1 && "Join as Beta Tester"}
               {currentStep === 2 && "Personal Details"}
               {currentStep === 3 && "Location Information"}
               {currentStep === 4 && "Your Preferences"}

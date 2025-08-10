@@ -274,7 +274,7 @@ export function SubscriptionStatus() {
             >
               {createSubscriptionMutation.isPending 
                 ? "Starting Subscription..." 
-                : "Start Subscription ($50/month + $100 Sign Up Fee)"
+                : "Start Subscription ($50/month + $100 Join as Beta Tester Fee)"
               }
             </Button>
           ) : (
@@ -292,7 +292,7 @@ export function SubscriptionStatus() {
                 >
                   {createSubscriptionMutation.isPending 
                     ? "Upgrading..." 
-                    : "Upgrade to Paid Plan ($50/month + $100 Sign Up Fee)"
+                    : "Upgrade to Paid Plan ($50/month + $100 Join as Beta Tester Fee)"
                   }
                 </Button>
               )}
