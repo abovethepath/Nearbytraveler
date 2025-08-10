@@ -115,7 +115,7 @@ export default function LocalsLanding() {
                 href="/join"
                 className="px-10 py-4 bg-white text-blue-600 font-bold rounded-xl shadow-xl hover:scale-105 hover:shadow-2xl transition transform text-lg"
               >
-                Join as Beta Tester as A Local
+                Sign Up as A Local
               </a>
               <a
                 href="/auth"
