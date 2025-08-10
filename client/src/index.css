@@ -27,11 +27,6 @@ body {
 *, *::before, *::after {
   box-sizing: border-box;
   max-width: 100%;
-  /* DISABLE ALL TRANSITIONS TO PREVENT BLINKING */
-  transition: none !important;
-  animation: none !important;
-  transition-duration: 0s !important;
-  animation-duration: 0s !important;
 }
 
 /* ROOT CONTAINER FIXES */

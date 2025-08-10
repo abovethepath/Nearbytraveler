@@ -35,9 +35,20 @@ export default function Logo({ className, variant = "default" }: LogoProps) {
     <img
       src={newLogo}
       alt="Nearby Traveler"
-      className={`${finalClassName} cursor-pointer object-contain`}
+      className={`${finalClassName} cursor-pointer hover:opacity-80 transition-opacity object-contain`}
       onClick={handleClick}
-      style={{ display: 'block' }}
+      onLoad={() => console.log('Logo loaded successfully')}
+      onError={(e) => {
+        console.error('Logo failed to load:', newLogo);
+        // Show a fallback text logo
+        const target = e.target as HTMLImageElement;
+        target.style.display = 'none';
+        const textLogo = document.createElement('div');
+        textLogo.className = finalClassName.replace('h-8', 'h-8') + ' cursor-pointer font-bold text-teal-600';
+        textLogo.textContent = 'Nearby Traveler';
+        textLogo.onclick = handleClick;
+        target.parentElement?.appendChild(textLogo);
+      }}
     />
   );
 }
