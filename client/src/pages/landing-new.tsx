@@ -74,22 +74,22 @@ export default function Landing() {
             <div className="relative">
               <div className="sm:pb-16 md:pb-20 lg:pb-28 xl:pb-32">
                 <main className="mt-4 mx-auto max-w-full sm:mt-6 md:mt-8 lg:mt-10 xl:mt-12">
-                  <div className="text-center px-4">
-                    <h1 className="text-2xl tracking-tight sm:text-4xl md:text-5xl lg:text-6xl">
-                      <span className="block text-white leading-tight mb-2" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700'}}>Where Local Experiences</span>
+                  <div className="text-center px-4 sm:px-6">
+                    <h1 className="text-3xl tracking-tight sm:text-4xl md:text-5xl lg:text-6xl">
+                      <span className="block text-white leading-tight mb-2 sm:mb-3" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700'}}>Where Local Experiences</span>
                       <span className="block text-orange-400 leading-tight" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700'}}>Meet WorldWide Connections</span>
                     </h1>
-                    <p className="mt-6 text-base text-white sm:text-xl md:text-2xl lg:text-3xl px-2 leading-relaxed">
-                      Nearby Traveler- Connecting you to Nearby Locals and Nearby Travelers based on your interests, activities, events and demographics.
+                    <p className="mt-6 sm:mt-8 text-lg sm:text-xl md:text-2xl lg:text-3xl text-white px-2 leading-relaxed max-w-4xl mx-auto">
+                      Nearby Traveler - Connecting you to Nearby Locals and Nearby Travelers based on your interests, activities, events and demographics.
                     </p>
                     
-                    {/* Mobile Preview Button */}
+                    {/* Action Buttons */}
                     <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center items-center">
-                      <Link href="/auth" className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white px-6 py-3 rounded-lg text-lg font-medium transition duration-150 ease-in-out shadow-lg">
+                      <Link href="/auth" className="w-full sm:w-auto bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white px-8 py-4 sm:px-6 sm:py-3 rounded-lg text-xl sm:text-lg font-medium transition duration-150 ease-in-out shadow-lg text-center">
                         Join Beta Now
                       </Link>
-                      <Link href="/mobile-preview" className="bg-white/20 hover:bg-white/30 text-white border border-white/50 px-6 py-3 rounded-lg text-lg font-medium transition duration-150 ease-in-out backdrop-blur-sm">
-                        📱 See Mobile Experience
+                      <Link href="/about" className="w-full sm:w-auto bg-white/20 hover:bg-white/30 text-white border border-white/50 px-8 py-4 sm:px-6 sm:py-3 rounded-lg text-xl sm:text-lg font-medium transition duration-150 ease-in-out backdrop-blur-sm text-center">
+                        Learn More
                       </Link>
                     </div>
 
@@ -228,23 +228,12 @@ export default function Landing() {
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 px-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 px-4">
             {/* Step 1: Join */}
-            <div className="text-center">
+            <div className="text-center bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
               <div className="relative mb-4 sm:mb-6">
-                <div className="w-20 h-20 sm:w-28 sm:h-28 rounded-lg border-2 border-amber-400 flex items-center justify-center bg-white shadow-md mx-auto">
-                  <div className="w-full h-full flex items-center justify-center">
-                    <img 
-                      src="/step1-icon.png" 
-                      alt="Join Nearby Traveler" 
-                      className="w-14 h-14 sm:w-20 sm:h-20 object-contain"
-                      onError={(e) => {
-                        console.log('Step 1 icon failed to load');
-                        (e.target as HTMLImageElement).style.display = 'none';
-                        (e.target as HTMLImageElement).parentElement!.innerHTML = '<div class="w-20 h-20 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full flex items-center justify-center text-white text-2xl font-bold">1</div>';
-                      }}
-                    />
-                  </div>
+                <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-r from-blue-500 to-orange-500 flex items-center justify-center text-white text-2xl sm:text-3xl font-bold mx-auto shadow-lg">
+                  1
                 </div>
               </div>
               <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-2 sm:mb-3">Join as a Beta Tester</h3>
@@ -254,21 +243,10 @@ export default function Landing() {
             </div>
 
             {/* Step 2: Connect */}
-            <div className="text-center">
+            <div className="text-center bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
               <div className="relative mb-4 sm:mb-6">
-                <div className="w-20 h-20 sm:w-28 sm:h-28 rounded-lg border-2 border-amber-400 flex items-center justify-center bg-white shadow-md mx-auto">
-                  <div className="w-full h-full flex items-center justify-center">
-                    <img 
-                      src="/step2-icon.png" 
-                      alt="Connect with People" 
-                      className="w-14 h-14 sm:w-20 sm:h-20 object-contain"
-                      onError={(e) => {
-                        console.log('Step 2 icon failed to load');
-                        (e.target as HTMLImageElement).style.display = 'none';
-                        (e.target as HTMLImageElement).parentElement!.innerHTML = '<div class="w-20 h-20 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full flex items-center justify-center text-white text-2xl font-bold">2</div>';
-                      }}
-                    />
-                  </div>
+                <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-r from-blue-500 to-orange-500 flex items-center justify-center text-white text-2xl sm:text-3xl font-bold mx-auto shadow-lg">
+                  2
                 </div>
               </div>
               <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-2 sm:mb-3">Connect</h3>
@@ -278,21 +256,10 @@ export default function Landing() {
             </div>
 
             {/* Step 3: Explore */}
-            <div className="text-center">
+            <div className="text-center bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
               <div className="relative mb-4 sm:mb-6">
-                <div className="w-20 h-20 sm:w-28 sm:h-28 rounded-lg border-2 border-amber-400 flex items-center justify-center bg-white shadow-md mx-auto">
-                  <div className="w-full h-full flex items-center justify-center">
-                    <img 
-                      src="/step3-icon.png" 
-                      alt="Explore and Discover" 
-                      className="w-14 h-14 sm:w-20 sm:h-20 object-contain"
-                      onError={(e) => {
-                        console.log('Step 3 icon failed to load');
-                        (e.target as HTMLImageElement).style.display = 'none';
-                        (e.target as HTMLImageElement).parentElement!.innerHTML = '<div class="w-14 h-14 sm:w-20 sm:h-20 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full flex items-center justify-center text-white text-lg sm:text-2xl font-bold">3</div>';
-                      }}
-                    />
-                  </div>
+                <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-r from-blue-500 to-orange-500 flex items-center justify-center text-white text-2xl sm:text-3xl font-bold mx-auto shadow-lg">
+                  3
                 </div>
               </div>
               <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-2 sm:mb-3">Explore</h3>
@@ -305,14 +272,14 @@ export default function Landing() {
       </div>
 
       {/* FOR LOCALS SECTION */}
-      <div id="locals" className="py-16 bg-white dark:sm:bg-gray-800 dark:bg-gray-400">
+      <div id="locals" className="py-12 sm:py-16 bg-white dark:sm:bg-gray-800 dark:bg-gray-400">
         <div className="max-w-full mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center px-4 sm:px-6">
             <div>
-              <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-white mb-6 dark:drop-shadow-[0_0_8px_rgba(0,0,0,0.8)]" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700'}}>
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-gray-900 dark:text-white mb-4 sm:mb-6 dark:drop-shadow-[0_0_8px_rgba(0,0,0,0.8)]" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700'}}>
                 🏠 Locals: Your City, Through Your Eyes
               </h2>
-              <p className="text-lg text-gray-100 sm:text-gray-600 sm:dark:text-gray-300 mb-6">
+              <p className="text-base sm:text-lg text-gray-100 sm:text-gray-600 sm:dark:text-gray-300 mb-4 sm:mb-6">
                 You know your city best. You create the experiences that make travelers fall in love 
                 with your hometown. You're not just participating - you're leading.
               </p>
