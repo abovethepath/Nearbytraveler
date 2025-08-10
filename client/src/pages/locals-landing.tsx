@@ -12,7 +12,7 @@ export default function LocalsLanding() {
       <div className="relative">
         <div className="relative h-[70vh] overflow-hidden">
           <img 
-            src="/placeholder-locals.svg" 
+            src="/locals-hero.png" 
             alt="Locals sharing experiences and knowledge" 
             className="w-full h-full object-cover"
           />
