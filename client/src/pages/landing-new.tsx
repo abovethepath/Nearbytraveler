@@ -74,12 +74,12 @@ export default function Landing() {
             <div className="relative">
               <div className="sm:pb-16 md:pb-20 lg:pb-28 xl:pb-32">
                 <main className="mt-4 mx-auto max-w-full sm:mt-6 md:mt-8 lg:mt-10 xl:mt-12">
-                  <div className="text-center">
-                    <h1 className="text-3xl tracking-tight sm:text-4xl md:text-5xl lg:text-6xl">
-                      <span className="block text-white" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700'}}>Where Local Experiences</span>
-                      <span className="block text-orange-400" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700'}}>Meet WorldWide Connections</span>
+                  <div className="text-center px-4">
+                    <h1 className="text-2xl tracking-tight sm:text-4xl md:text-5xl lg:text-6xl">
+                      <span className="block text-white leading-tight mb-2" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700'}}>Where Local Experiences</span>
+                      <span className="block text-orange-400 leading-tight" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700'}}>Meet WorldWide Connections</span>
                     </h1>
-                    <p className="mt-4 text-lg text-white sm:text-xl md:text-2xl lg:text-3xl px-4">
+                    <p className="mt-6 text-base text-white sm:text-xl md:text-2xl lg:text-3xl px-2 leading-relaxed">
                       Nearby Traveler- Connecting you to Nearby Locals and Nearby Travelers based on your interests, activities, events and demographics.
                     </p>
                     
@@ -93,15 +93,15 @@ export default function Landing() {
       </div>
 
       {/* Beta Disclaimer Section */}
-      <div className="py-8 bg-gradient-to-r from-red-100 to-orange-100 dark:from-red-900/30 dark:to-orange-900/30">
+      <div className="py-6 px-4 bg-gradient-to-r from-red-100 to-orange-100 dark:from-red-900/30 dark:to-orange-900/30">
         <div className="max-w-4xl mx-auto">
-          <div className="p-6 bg-red-600 dark:bg-red-700 rounded-lg border-4 border-red-500 dark:border-red-400 shadow-xl ring-4 ring-red-200 dark:ring-red-800/50">
-            <div className="flex items-center justify-center mb-2">
+          <div className="p-4 sm:p-6 bg-red-600 dark:bg-red-700 rounded-lg border-4 border-red-500 dark:border-red-400 shadow-xl ring-4 ring-red-200 dark:ring-red-800/50">
+            <div className="flex items-center justify-center mb-3">
               <span className="inline-block w-3 h-3 bg-red-500 rounded-full mr-2"></span>
-              <span className="text-white font-bold text-xs uppercase tracking-wide">Beta Notice</span>
+              <span className="text-white font-bold text-xs sm:text-sm uppercase tracking-wide">Beta Notice</span>
               <span className="inline-block w-3 h-3 bg-red-500 rounded-full ml-2"></span>
             </div>
-            <p className="text-sm text-white text-center leading-relaxed">
+            <p className="text-xs sm:text-sm text-white text-center leading-relaxed">
               <span className="font-semibold text-white">Although we are a GLOBAL COMMUNITY of Travelers, Nearby Traveler Beta Version is for Los Angeles Based Events and Businesses.</span> <span className="text-white">While you can join and connect worldwide, we are focusing our beta launch on Los Angeles, feel free to spread the word Worldwide however.</span>
             </p>
           </div>
@@ -119,23 +119,23 @@ export default function Landing() {
             </h2>
           </div>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 px-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 px-4">
             {/* Box 1 - Find Travel Companions */}
-            <div className="text-center p-6 bg-gray-50 dark:bg-gray-300 rounded-lg hover:shadow-lg transition-shadow duration-300">
-              <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full flex items-center justify-center text-white text-2xl font-bold">
+            <div className="text-center p-4 sm:p-6 bg-gray-50 dark:bg-gray-300 rounded-lg hover:shadow-lg transition-shadow duration-300">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-3 sm:mb-4 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full flex items-center justify-center text-white text-lg sm:text-2xl font-bold">
                 1
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-black mb-2">Find Travel and Local Companions</h3>
-              <p className="text-gray-100 sm:text-gray-600 sm:dark:text-gray-300 text-sm">Connect with like-minded travelers and nearby locals who share your interests, activites, demographics and desired events.</p>
+              <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-black mb-2">Find Travel and Local Companions</h3>
+              <p className="text-gray-600 dark:text-gray-700 text-xs sm:text-sm">Connect with like-minded travelers and nearby locals who share your interests, activites, demographics and desired events.</p>
             </div>
 
             {/* Box 2 - Discover Local Events */}
-            <div className="text-center p-6 bg-gray-50 dark:bg-gray-300 rounded-lg hover:shadow-lg transition-shadow duration-300">
-              <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full flex items-center justify-center text-white text-2xl font-bold">
+            <div className="text-center p-4 sm:p-6 bg-gray-50 dark:bg-gray-300 rounded-lg hover:shadow-lg transition-shadow duration-300">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-3 sm:mb-4 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full flex items-center justify-center text-white text-lg sm:text-2xl font-bold">
                 2
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-black mb-2">Discover Local Experiences</h3>
-              <p className="text-gray-100 sm:text-gray-600 sm:dark:text-gray-300 text-sm mb-3">Join exciting events and activities hosted by locals and travelers to get an authentic taste of the city and make new friends.</p>
+              <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-black mb-2">Discover Local Experiences</h3>
+              <p className="text-gray-600 dark:text-gray-700 text-xs sm:text-sm mb-3">Join exciting events and activities hosted by locals and travelers to get an authentic taste of the city and make new friends.</p>
               <Link href="/events-landing">
                 <button className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-xs font-medium underline">
                   Learn More About Events →
@@ -144,21 +144,21 @@ export default function Landing() {
             </div>
 
             {/* Box 3 - Connect with Locals */}
-            <div className="text-center p-6 bg-gray-50 dark:bg-gray-300 rounded-lg hover:shadow-lg transition-shadow duration-300">
-              <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full flex items-center justify-center text-white text-2xl font-bold">
+            <div className="text-center p-4 sm:p-6 bg-gray-50 dark:bg-gray-300 rounded-lg hover:shadow-lg transition-shadow duration-300">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-3 sm:mb-4 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full flex items-center justify-center text-white text-lg sm:text-2xl font-bold">
                 3
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-black mb-2">Get Insider Knowledge</h3>
-              <p className="text-gray-100 sm:text-gray-600 sm:dark:text-gray-300 text-sm">Meet locals who can show you hidden gems and provide tips on everything from food to sites that aren't in the guidebooks.</p>
+              <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-black mb-2">Get Insider Knowledge</h3>
+              <p className="text-gray-600 dark:text-gray-700 text-xs sm:text-sm">Meet locals who can show you hidden gems and provide tips on everything from food to sites that aren't in the guidebooks.</p>
             </div>
 
             {/* Box 4 - Plan Together */}
-            <div className="text-center p-6 bg-gray-50 dark:bg-gray-300 rounded-lg hover:shadow-lg transition-shadow duration-300">
-              <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full flex items-center justify-center text-white text-2xl font-bold">
+            <div className="text-center p-4 sm:p-6 bg-gray-50 dark:bg-gray-300 rounded-lg hover:shadow-lg transition-shadow duration-300">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-3 sm:mb-4 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full flex items-center justify-center text-white text-lg sm:text-2xl font-bold">
                 4
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-black mb-2">Plan Your Adventure</h3>
-              <p className="text-gray-100 sm:text-gray-600 sm:dark:text-gray-300 text-sm">Collaborate on travel plans with your new connections and build personalized itineraries together.</p>
+              <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-black mb-2">Plan Your Adventure</h3>
+              <p className="text-gray-600 dark:text-gray-700 text-xs sm:text-sm">Collaborate on travel plans with your new connections and build personalized itineraries together.</p>
             </div>
           </div>
         </div>
@@ -219,16 +219,16 @@ export default function Landing() {
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 px-4">
             {/* Step 1: Join */}
             <div className="text-center">
-              <div className="relative mb-6">
-                <div className="w-28 h-28 rounded-lg border-2 border-amber-400 flex items-center justify-center bg-white shadow-md mx-auto">
+              <div className="relative mb-4 sm:mb-6">
+                <div className="w-20 h-20 sm:w-28 sm:h-28 rounded-lg border-2 border-amber-400 flex items-center justify-center bg-white shadow-md mx-auto">
                   <div className="w-full h-full flex items-center justify-center">
                     <img 
                       src="/step1-icon.png" 
                       alt="Join Nearby Traveler" 
-                      className="w-20 h-20 object-contain"
+                      className="w-14 h-14 sm:w-20 sm:h-20 object-contain"
                       onError={(e) => {
                         console.log('Step 1 icon failed to load');
                         (e.target as HTMLImageElement).style.display = 'none';
@@ -238,21 +238,21 @@ export default function Landing() {
                   </div>
                 </div>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">Join as a Beta Tester</h3>
-              <p className="text-white sm:text-gray-600 sm:dark:text-gray-300">
+              <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-2 sm:mb-3">Join as a Beta Tester</h3>
+              <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300">
                 Join as a beta tester to help shape the future of travel connections, sharing your interests and travel style for personalized matches.
               </p>
             </div>
 
             {/* Step 2: Connect */}
             <div className="text-center">
-              <div className="relative mb-6">
-                <div className="w-28 h-28 rounded-lg border-2 border-amber-400 flex items-center justify-center bg-white shadow-md mx-auto">
+              <div className="relative mb-4 sm:mb-6">
+                <div className="w-20 h-20 sm:w-28 sm:h-28 rounded-lg border-2 border-amber-400 flex items-center justify-center bg-white shadow-md mx-auto">
                   <div className="w-full h-full flex items-center justify-center">
                     <img 
                       src="/step2-icon.png" 
                       alt="Connect with People" 
-                      className="w-20 h-20 object-contain"
+                      className="w-14 h-14 sm:w-20 sm:h-20 object-contain"
                       onError={(e) => {
                         console.log('Step 2 icon failed to load');
                         (e.target as HTMLImageElement).style.display = 'none';
@@ -262,32 +262,32 @@ export default function Landing() {
                   </div>
                 </div>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">Connect</h3>
-              <p className="text-white sm:text-gray-600 sm:dark:text-gray-300">
+              <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-2 sm:mb-3">Connect</h3>
+              <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300">
                 Connect with Nearby Travelers and Locals who share your interests and travel dates.
               </p>
             </div>
 
             {/* Step 3: Explore */}
             <div className="text-center">
-              <div className="relative mb-6">
-                <div className="w-28 h-28 rounded-lg border-2 border-amber-400 flex items-center justify-center bg-white shadow-md mx-auto">
+              <div className="relative mb-4 sm:mb-6">
+                <div className="w-20 h-20 sm:w-28 sm:h-28 rounded-lg border-2 border-amber-400 flex items-center justify-center bg-white shadow-md mx-auto">
                   <div className="w-full h-full flex items-center justify-center">
                     <img 
                       src="/step3-icon.png" 
                       alt="Explore and Discover" 
-                      className="w-20 h-20 object-contain"
+                      className="w-14 h-14 sm:w-20 sm:h-20 object-contain"
                       onError={(e) => {
                         console.log('Step 3 icon failed to load');
                         (e.target as HTMLImageElement).style.display = 'none';
-                        (e.target as HTMLImageElement).parentElement!.innerHTML = '<div class="w-20 h-20 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full flex items-center justify-center text-white text-2xl font-bold">3</div>';
+                        (e.target as HTMLImageElement).parentElement!.innerHTML = '<div class="w-14 h-14 sm:w-20 sm:h-20 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full flex items-center justify-center text-white text-lg sm:text-2xl font-bold">3</div>';
                       }}
                     />
                   </div>
                 </div>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">Explore</h3>
-              <p className="text-gray-100 sm:text-gray-600 sm:dark:text-gray-300">
+              <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-2 sm:mb-3">Explore</h3>
+              <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300">
                 Explore your destination with your new connections.
               </p>
             </div>
