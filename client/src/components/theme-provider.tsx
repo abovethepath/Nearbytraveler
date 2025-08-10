@@ -35,8 +35,9 @@ export function ThemeProvider({
   }, [])
 
   const setTheme = (theme: Theme) => {
-    localStorage.setItem(storageKey, theme)
-    setThemeState(theme)
+    // Always force light theme to prevent blinking
+    localStorage.setItem(storageKey, "light")
+    setThemeState("light")
   }
 
   const value = {

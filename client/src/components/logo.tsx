@@ -34,7 +34,7 @@ export default function Logo({ className, variant = "default" }: LogoProps) {
   return (
     <img
       src={newLogo}
-      alt="The Nearby Traveler"
+      alt="Nearby Traveler"
       className={`${finalClassName} cursor-pointer object-contain`}
       onClick={handleClick}
       style={{ display: 'block' }}
