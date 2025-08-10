@@ -337,7 +337,7 @@ export default function Landing() {
                 size="lg"
                 className="bg-blue-600 hover:bg-blue-700 px-8 py-4 text-lg rounded-lg shadow-lg hover:shadow-xl text-black"
               >
-                Join as a Nearby Traveler
+                Join as a Nearby Local
               </Button>
             </div>
           </div>
