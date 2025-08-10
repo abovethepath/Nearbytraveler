@@ -13,10 +13,9 @@ export default function TravelersLanding() {
       <div className="relative">
         <div className="relative h-[70vh] overflow-hidden">
           <img 
-            src={travelersHeaderImage} 
+            src="/placeholder-travelers.svg" 
             alt="Travelers making connections and sharing experiences" 
             className="w-full h-full object-cover"
-
           />
           <div className="absolute inset-0 bg-black/40" />
           <div className="absolute inset-0 flex items-center justify-center">

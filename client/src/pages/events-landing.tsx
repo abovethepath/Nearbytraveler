@@ -13,7 +13,7 @@ export default function EventsLanding() {
       <div className="relative">
         <div className="relative h-[70vh] overflow-hidden">
           <img 
-            src={eventHeaderImage} 
+            src="/placeholder-events.svg" 
             alt="Beach BBQ Party with Friends" 
             className="w-full h-full object-cover"
           />

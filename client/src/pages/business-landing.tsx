@@ -15,7 +15,7 @@ export default function BusinessLanding() {
       <section 
         className="relative overflow-hidden text-white py-20 lg:py-32"
         style={{
-          backgroundImage: `url(${businessHeaderPhoto})`,
+          backgroundImage: `url(/placeholder-business.svg)`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',

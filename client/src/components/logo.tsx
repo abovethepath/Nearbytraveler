@@ -32,15 +32,15 @@ export default function Logo({ className, variant = "default" }: LogoProps) {
   const getVariantSize = () => {
     switch (variant) {
       case "landing":
-        return "h-144 w-auto scale-x-110"; // 3x larger - Optimal size for welcome back page with less horizontal stretch
+        return "h-108 w-auto scale-x-110"; // 25% smaller - Optimal size for welcome back page with less horizontal stretch
       case "navbar":
-        return "h-96 sm:h-84 md:h-96 lg:h-120 xl:h-192 w-auto"; // 3x larger - Responsive: larger on mobile (h-96), scaling up on desktop
+        return "h-72 sm:h-63 md:h-72 lg:h-90 xl:h-144 w-auto"; // 25% smaller - Responsive: larger on mobile, scaling up on desktop
       case "black-navbar":
-        return "h-192 w-auto"; // 3x larger - Massive logo for maximum brand prominence
+        return "h-144 w-auto"; // 25% smaller - Large logo for brand prominence
       case "footer":
-        return "h-219 w-auto md:h-219 sm:h-189"; // 3x larger - Footer size exactly matching navbar
+        return "h-164 w-auto md:h-164 sm:h-142"; // 25% smaller - Footer size matching navbar
       default:
-        return "h-36 w-auto scale-x-125"; // 3x larger - Increased default size
+        return "h-27 w-auto scale-x-125"; // 25% smaller - Reduced default size
     }
   };
 

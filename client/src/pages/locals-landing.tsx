@@ -12,8 +12,8 @@ export default function LocalsLanding() {
       <div className="relative">
         <div className="relative h-[70vh] overflow-hidden">
           <img 
-            src={localsHeaderImage} 
-            alt="Locals sharing food and laughs together" 
+            src="/placeholder-locals.svg" 
+            alt="Locals sharing experiences and knowledge" 
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-black/40" />
