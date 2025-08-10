@@ -147,6 +147,23 @@ function Router() {
   useEffect(() => {
     console.log('Starting authentication check');
 
+    // CRITICAL FIX: Clear cached authentication on landing pages
+    // This prevents auto-login when user wants to register new accounts
+    const currentPath = window.location.pathname;
+    
+    if (landingPageRoutes.includes(currentPath)) {
+      console.log('❌ ON LANDING PAGE - CLEARING CACHE AND STAYING LOGGED OUT');
+      // Clear all cached authentication data
+      localStorage.removeItem('user');
+      localStorage.removeItem('travelconnect_user');
+      localStorage.removeItem('currentUser');
+      localStorage.removeItem('authUser');
+      localStorage.removeItem('auth_token');
+      setUser(null);
+      setIsLoading(false);
+      return;
+    }
+
     // Try multiple localStorage keys to find user data
     const possibleKeys = ['user', 'travelconnect_user', 'currentUser', 'authUser'];
     let foundUser = null;
@@ -186,7 +203,7 @@ function Router() {
     setTimeout(() => {
       setIsLoading(false);
     }, 100);
-  }, []);
+  }, [location]);
 
   // Initialize WebSocket connection for authenticated users
   useEffect(() => {
