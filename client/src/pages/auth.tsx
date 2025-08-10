@@ -137,7 +137,7 @@ export default function Auth() {
               </Button>
             </div>
             <div className="flex justify-center mb-2">
-              <div className="scale-[7] transform-gpu">
+              <div className="scale-[6.3] transform-gpu">
                 <Logo variant="landing" />
               </div>
             </div>
