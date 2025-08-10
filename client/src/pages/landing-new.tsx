@@ -337,7 +337,7 @@ export default function Landing() {
                 size="lg"
                 className="bg-blue-600 hover:bg-blue-700 px-8 py-4 text-lg rounded-lg shadow-lg hover:shadow-xl text-black"
               >
-                Join as a Beta Tester
+                Join as a Nearby Traveler
               </Button>
             </div>
           </div>
@@ -359,7 +359,7 @@ export default function Landing() {
                 size="lg"
                 className="bg-orange-600 hover:bg-orange-700 px-8 py-4 text-lg rounded-lg shadow-lg hover:shadow-xl text-black"
               >
-                Join as a Beta Tester
+                Join as a Nearby Traveler
               </Button>
             </div>
             <div>
@@ -405,20 +405,13 @@ export default function Landing() {
             Whether you're a local ready to share your city or a traveler seeking authentic experiences, 
             your journey starts here.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex justify-center">
             <Button 
               onClick={() => setLocation('/join')}
               size="lg"
-              className="bg-blue-600 hover:bg-blue-700 text-lg px-8 py-4 rounded-lg shadow-lg hover:shadow-xl text-black"
+              className="bg-white hover:bg-gray-100 text-blue-600 text-lg px-8 py-4 rounded-lg shadow-lg hover:shadow-xl font-bold"
             >
-              Join as a Beta Tester
-            </Button>
-            <Button 
-              onClick={() => setLocation('/join')}
-              size="lg"
-              className="bg-orange-600 hover:bg-orange-700 text-lg px-8 py-4 rounded-lg shadow-lg hover:shadow-xl text-black"
-            >
-              Join as a Beta Tester
+              Join Nearby Traveler Today
             </Button>
           </div>
         </div>
