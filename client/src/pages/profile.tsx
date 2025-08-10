@@ -3268,6 +3268,22 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </div>
                 )}
 
+                {/* Join Chatroom CTA Button */}
+                {user && (user.hometownCity || user.location) && (
+                  <div className="mb-4">
+                    <Button
+                      onClick={() => {
+                        const chatCity = user.hometownCity || user.location?.split(',')[0] || 'General';
+                        setLocation(`/city-chatrooms?city=${encodeURIComponent(chatCity)}`);
+                      }}
+                      className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white border-0 shadow-lg"
+                    >
+                      <MessageCircleMore className="w-4 h-4 mr-2" />
+                      Join {user.hometownCity || user.location?.split(',')[0] || 'City'} Chatroom
+                    </Button>
+                  </div>
+                )}
+
                 {/* CRITICAL: What You Have in Common - MOVED TO TOP FOR VISIBILITY */}
                 {!isOwnProfile && currentUser && user?.id && (
                   <div className="mb-6">
