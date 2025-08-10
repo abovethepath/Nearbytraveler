@@ -238,9 +238,9 @@ export default function Landing() {
                   </div>
                 </div>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">Join as a Beta Tester</h3>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">Join Nearby Traveler</h3>
               <p className="text-white sm:text-gray-600 sm:dark:text-gray-300">
-                Join as a beta tester to help shape the future of travel connections, sharing your interests and travel style for personalized matches.
+                Join Nearby Traveler to help shape the future of travel connections, sharing your interests and travel style for personalized matches.
               </p>
             </div>
 
@@ -337,7 +337,7 @@ export default function Landing() {
                 size="lg"
                 className="bg-blue-600 hover:bg-blue-700 px-8 py-4 text-lg rounded-lg shadow-lg hover:shadow-xl text-black"
               >
-                Join as a Beta Tester
+                Join as a Nearby Local
               </Button>
             </div>
           </div>
@@ -359,7 +359,7 @@ export default function Landing() {
                 size="lg"
                 className="bg-orange-600 hover:bg-orange-700 px-8 py-4 text-lg rounded-lg shadow-lg hover:shadow-xl text-black"
               >
-                Join as a Beta Tester
+                Join as a Nearby Traveler
               </Button>
             </div>
             <div>
@@ -405,20 +405,13 @@ export default function Landing() {
             Whether you're a local ready to share your city or a traveler seeking authentic experiences, 
             your journey starts here.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex justify-center">
             <Button 
               onClick={() => setLocation('/join')}
               size="lg"
-              className="bg-blue-600 hover:bg-blue-700 text-lg px-8 py-4 rounded-lg shadow-lg hover:shadow-xl text-black"
+              className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-lg px-8 py-4 rounded-lg shadow-lg hover:shadow-xl text-white"
             >
-              Join as a Beta Tester
-            </Button>
-            <Button 
-              onClick={() => setLocation('/join')}
-              size="lg"
-              className="bg-orange-600 hover:bg-orange-700 text-lg px-8 py-4 rounded-lg shadow-lg hover:shadow-xl text-black"
-            >
-              Join as a Beta Tester
+              Join Nearby Traveler
             </Button>
           </div>
         </div>

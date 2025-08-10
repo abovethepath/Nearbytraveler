@@ -39,7 +39,7 @@ export default function LandingNavbar() {
               Sign In
             </Link>
             <Link href="/join" className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white px-4 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out">
-              Join as Beta Tester
+              Join Nearby Traveler
             </Link>
           </div>
           <div className="-mr-2 flex items-center sm:hidden">
@@ -111,7 +111,7 @@ export default function LandingNavbar() {
                 className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white text-center px-6 py-4 rounded-xl text-lg font-medium transition-all duration-200 active:scale-95 shadow-lg touch-manipulation"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Join as Beta Tester
+                Join Nearby Traveler
               </Link>
             </div>
           </div>

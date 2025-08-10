@@ -3,6 +3,8 @@ Nearby Traveler is a social networking platform designed to connect travelers, l
 
 ## Recent Critical Fixes (August 2025)
 - **COMPLETE MOBILE APP RESTORATION COMPLETED** (August 10): CRITICAL SUCCESS - Successfully restored complete mobile app from production tar.gz backup. Completely replaced all files (client, server, shared) with working 8/8 version from attached_assets/new_extract. Fixed all asset imports using authentic production photos, resolved database schema issues, removed all fake users, and restored clean state with only authentic Los Angeles events from production backup. Logo properly restored and mobile app fully functional with proper authentication flow.
+- **DATABASE SCHEMA RESTORATION** (August 10): Successfully restored clean database schema using Drizzle ORM push after complete schema rebuild. Database now properly stores data in correct places with working authentication system.
+- **CTA BUTTON TEXT UPDATES** (August 10): Updated all call-to-action buttons across landing page and navbar per user requirements: navbar "Join Nearby Traveler", locals section "Join as a Nearby Local", travelers section "Join as a Nearby Traveler", final CTA single button "Join Nearby Traveler".
 
 ## User Preferences
 
