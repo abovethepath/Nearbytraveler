@@ -1,7 +1,7 @@
 import React from "react";
 import LandingNavbar from "@/components/landing-navbar";
 import Footer from "@/components/footer";
-import travelersHeaderImage from "@assets/travel photo group map_1750993025212.jpeg";
+import travelersHeaderImage from "@assets/server/static/logo.png";
 
 export default function TravelersLanding() {
 

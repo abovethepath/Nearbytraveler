@@ -2,7 +2,7 @@
 import React from "react";
 import LandingNavbar from "@/components/landing-navbar";
 import Footer from "@/components/footer";
-import eventHeaderImage from "@assets/event page bbq party_1753299541268.png";
+import eventHeaderImage from "@assets/server/static/logo.png";
 
 export default function EventsLanding() {
   return (

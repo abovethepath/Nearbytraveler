@@ -1,7 +1,7 @@
 import React from "react";
 import LandingNavbar from "@/components/landing-navbar";
 import Footer from "@/components/footer";
-import localsHeaderImage from "@assets/ChatGPT Image Jul 23, 2025, 01_18_34 PM_1753301968074.png";
+import localsHeaderImage from "@assets/server/static/logo.png";
 
 export default function LocalsLanding() {
   return (

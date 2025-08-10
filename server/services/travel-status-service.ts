@@ -120,8 +120,8 @@ export class TravelStatusService {
   static async checkUserTravelStatus(userId: number, checkDate: Date = new Date()): Promise<{
     shouldBeTravel: boolean;
     destination?: string;
-    startDate?: string;
-    endDate?: string;
+    startDate?: string | undefined;
+    endDate?: string | undefined;
   }> {
     try {
       checkDate.setHours(0, 0, 0, 0);
@@ -143,8 +143,8 @@ export class TravelStatusService {
         return {
           shouldBeTravel: true,
           destination: plan.destination,
-          startDate: plan.startDate,
-          endDate: plan.endDate,
+          startDate: plan.startDate?.toISOString(),
+          endDate: plan.endDate?.toISOString(),
         };
       }
 

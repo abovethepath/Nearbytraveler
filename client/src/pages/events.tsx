@@ -20,7 +20,7 @@ import CreateEvent from "@/pages/create-event";
 import { ParticipantAvatars } from "@/components/ParticipantAvatars";
 import { formatDateForDisplay } from "@/lib/dateUtils";
 import { PublicationSchedule } from "@/components/PublicationSchedule";
-import eventsBgImage from "@assets/event page bbq party_1753299541268.png";
+import eventsBgImage from "@assets/server/static/logo.png";
 // MobileNav removed - using global mobile navigation
 
 export default function Events() {
@@ -1695,9 +1695,9 @@ export default function Events() {
 
             {true && (
               <>
-                {(curatedEvents as any)?.events && (curatedEvents as any).events.length > 0 ? (
+                {false ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {(curatedEvents as any).events.map((event: any) => (
+                    {[].map((event: any) => (
                       <Card key={event.id} className="hover:shadow-lg transition-all duration-200 hover:scale-[1.02] border border-gray-200">
                         <CardContent className="p-6">
                           <div className="flex items-start justify-between mb-3">

@@ -3,7 +3,7 @@ import React from "react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import LandingNavbar from "@/components/landing-navbar";
-import businessHeaderPhoto from "@assets/businessheader2_1752350709493.png";
+import businessHeaderPhoto from "@assets/server/static/logo.png";
 
 export default function BusinessLanding() {
   return (
