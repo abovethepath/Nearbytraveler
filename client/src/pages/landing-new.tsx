@@ -226,7 +226,7 @@ export default function Landing() {
                 <div className="w-28 h-28 rounded-lg border-2 border-amber-400 flex items-center justify-center bg-white shadow-md mx-auto">
                   <div className="w-full h-full flex items-center justify-center">
                     <img 
-                      src="/attached_assets/step1-icon_1753297128966.png" 
+                      src="/assets/step1-icon.png" 
                       alt="Join Nearby Traveler" 
                       className="w-20 h-20 object-contain"
                       onError={(e) => {
@@ -250,7 +250,7 @@ export default function Landing() {
                 <div className="w-28 h-28 rounded-lg border-2 border-amber-400 flex items-center justify-center bg-white shadow-md mx-auto">
                   <div className="w-full h-full flex items-center justify-center">
                     <img 
-                      src="/attached_assets/step2-icon_1753297145395.png" 
+                      src="/assets/step2-icon.png" 
                       alt="Connect with People" 
                       className="w-20 h-20 object-contain"
                       onError={(e) => {
@@ -274,7 +274,7 @@ export default function Landing() {
                 <div className="w-28 h-28 rounded-lg border-2 border-amber-400 flex items-center justify-center bg-white shadow-md mx-auto">
                   <div className="w-full h-full flex items-center justify-center">
                     <img 
-                      src="/attached_assets/step3-icon_1753297157985.png" 
+                      src="/assets/step3-icon.png" 
                       alt="Explore and Discover" 
                       className="w-20 h-20 object-contain"
                       onError={(e) => {
