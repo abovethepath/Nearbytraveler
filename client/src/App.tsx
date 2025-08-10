@@ -91,7 +91,6 @@ import WelcomeTravelAgent from "@/pages/welcome-travel-agent";
 import QuickLogin from "@/pages/quick-login";
 import MatchInCity from "@/pages/match-in-city";
 import ActivitySearch from "@/pages/activity-search";
-import MobilePreviewLanding from "@/pages/mobile-preview-landing";
 
 import Navbar from "@/components/navbar";
 // Removed conflicting MobileNav - using MobileTopNav and MobileBottomNav instead
@@ -140,29 +139,12 @@ function Router() {
     '/', '/landing', '/landing-new', '/auth', '/join', '/signup', '/signup/local', '/signup/traveler', '/signup/business',
     '/events-landing', '/business-landing', '/locals-landing', '/travelers-landing', '/privacy', '/terms', '/cookies', '/about', '/getting-started',
     '/forgot-password', '/reset-password', '/welcome', '/welcome-business', '/welcome-travel-agent', '/quick-login', '/preview-landing', '/preview-first-landing',
-    '/travel-quiz', '/TravelIntentQuiz', '/signup/travel-agent', '/mobile-preview'
+    '/travel-quiz', '/TravelIntentQuiz', '/signup/travel-agent'
   ];
   const isLandingPage = landingPageRoutes.includes(location);
 
   useEffect(() => {
     console.log('Starting authentication check');
-
-    // CRITICAL FIX: Clear cached authentication on landing pages
-    // This prevents auto-login when user wants to register new accounts
-    const currentPath = window.location.pathname;
-    
-    if (landingPageRoutes.includes(currentPath)) {
-      console.log('❌ ON LANDING PAGE - CLEARING CACHE AND STAYING LOGGED OUT');
-      // Clear all cached authentication data
-      localStorage.removeItem('user');
-      localStorage.removeItem('travelconnect_user');
-      localStorage.removeItem('currentUser');
-      localStorage.removeItem('authUser');
-      localStorage.removeItem('auth_token');
-      setUser(null);
-      setIsLoading(false);
-      return;
-    }
 
     // Try multiple localStorage keys to find user data
     const possibleKeys = ['user', 'travelconnect_user', 'currentUser', 'authUser'];
@@ -203,7 +185,7 @@ function Router() {
     setTimeout(() => {
       setIsLoading(false);
     }, 100);
-  }, [location]);
+  }, []);
 
   // Initialize WebSocket connection for authenticated users
   useEffect(() => {
@@ -485,12 +467,6 @@ function Router() {
       if (location === '/travelers-landing') {
         console.log('Showing TravelersLanding for unauthenticated user');
         return <TravelersLanding />;
-      }
-
-      // Allow access to mobile preview without authentication
-      if (location === '/mobile-preview') {
-        console.log('Showing MobilePreviewLanding for unauthenticated user');
-        return <MobilePreviewLanding />;
       }
 
       // Travel Intent Quiz - accessible without authentication

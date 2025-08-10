@@ -1,7 +1,8 @@
 import React from "react";
 import LandingNavbar from "@/components/landing-navbar";
 import Footer from "@/components/footer";
-import travelersHeaderImage from "@assets/server/static/logo.png";
+// import travelersHeaderImage from "@assets/travel photo group map_1750993025212.jpeg";
+const travelersHeaderImage = "/attached_assets/attached_assets/map photo looking different directions_1750993571996.png";
 
 export default function TravelersLanding() {
 
@@ -11,19 +12,20 @@ export default function TravelersLanding() {
       
       {/* Hero Section */}
       <div className="relative">
-        <div className="relative h-[60vh] sm:h-[70vh] overflow-hidden">
+        <div className="relative h-[70vh] overflow-hidden">
           <img 
-            src="/travelers-map-hq.png" 
+            src={travelersHeaderImage} 
             alt="Travelers making connections and sharing experiences" 
             className="w-full h-full object-cover"
+
           />
           <div className="absolute inset-0 bg-black/40" />
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center text-white px-4 max-w-4xl">
-              <h1 className="text-2xl sm:text-4xl lg:text-6xl font-extrabold mb-4 sm:mb-6 text-white leading-tight" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700'}}>
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold mb-6 text-white" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700'}}>
                 Nearby Traveler For Travelers
               </h1>
-              <p className="text-base sm:text-lg lg:text-2xl mb-6 sm:mb-8 max-w-3xl mx-auto text-white leading-relaxed">
+              <p className="text-lg sm:text-xl lg:text-2xl mb-8 max-w-3xl mx-auto text-white">
                 Discover hidden gems, connect with locals who share your interests, and experience authentic culture. Skip the tourist traps and explore like a local.
               </p>
             </div>

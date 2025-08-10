@@ -2119,32 +2119,8 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         }
       }
 
-      // Check if user already exists by email with retry logic
-      let existingUserByEmail;
-      let retryCount = 0;
-      const maxRetries = 3;
-      
-      while (retryCount < maxRetries) {
-        try {
-          existingUserByEmail = await storage.getUserByEmail(userData.email);
-          break;
-        } catch (error: any) {
-          retryCount++;
-          if (process.env.NODE_ENV === 'development') console.log(`Database connection retry ${retryCount}/${maxRetries} for email check:`, error.message);
-          
-          if (retryCount === maxRetries) {
-            if (process.env.NODE_ENV === 'development') console.error("Database connection failed after retries:", error);
-            return res.status(503).json({ 
-              message: "Service temporarily unavailable. Please try again in a moment.",
-              field: "database"
-            });
-          }
-          
-          // Wait before retry
-          await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
-        }
-      }
-      
+      // Check if user already exists by email
+      const existingUserByEmail = await storage.getUserByEmail(userData.email);
       if (existingUserByEmail) {
         if (process.env.NODE_ENV === 'development') console.log("Registration failed: Email already exists", userData.email);
         return res.status(409).json({ 
@@ -2153,31 +2129,8 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         });
       }
 
-      // Check if username already exists with retry logic
-      let existingUserByUsername;
-      retryCount = 0;
-      
-      while (retryCount < maxRetries) {
-        try {
-          existingUserByUsername = await storage.getUserByUsername(userData.username);
-          break;
-        } catch (error: any) {
-          retryCount++;
-          if (process.env.NODE_ENV === 'development') console.log(`Database connection retry ${retryCount}/${maxRetries} for username check:`, error.message);
-          
-          if (retryCount === maxRetries) {
-            if (process.env.NODE_ENV === 'development') console.error("Database connection failed after retries:", error);
-            return res.status(503).json({ 
-              message: "Service temporarily unavailable. Please try again in a moment.",
-              field: "database"
-            });
-          }
-          
-          // Wait before retry
-          await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
-        }
-      }
-      
+      // Check if username already exists
+      const existingUserByUsername = await storage.getUserByUsername(userData.username);
       if (existingUserByUsername) {
         if (process.env.NODE_ENV === 'development') console.log("Registration failed: Username already exists", userData.username);
         return res.status(409).json({ 
@@ -2202,31 +2155,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       });
 
       if (process.env.NODE_ENV === 'development') console.log("Creating new user:", userData.email);
-      
-      // Create user with retry logic
-      let user;
-      retryCount = 0;
-      
-      while (retryCount < maxRetries) {
-        try {
-          user = await storage.createUser(userData);
-          break;
-        } catch (error: any) {
-          retryCount++;
-          if (process.env.NODE_ENV === 'development') console.log(`Database connection retry ${retryCount}/${maxRetries} for user creation:`, error.message);
-          
-          if (retryCount === maxRetries) {
-            if (process.env.NODE_ENV === 'development') console.error("User creation failed after retries:", error);
-            return res.status(503).json({ 
-              message: "Service temporarily unavailable. Please try again in a moment.",
-              field: "database"
-            });
-          }
-          
-          // Wait before retry
-          await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
-        }
-      }
+      const user = await storage.createUser(userData);
       const { password, ...userWithoutPassword } = user;
 
       if (process.env.NODE_ENV === 'development') console.log("💾 USER CREATED IN DATABASE - Location data stored:", {

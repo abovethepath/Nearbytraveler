@@ -1,0 +1,2847 @@
+import type { Express } from "express";
+import { createServer, type Server } from "http";
+import { WebSocketServer, WebSocket } from "ws";
+import express from "express";
+import path from "path";
+import { storage } from "./storage";
+import { db, withRetry } from "./db";
+import { eventReminderService } from "./services/eventReminderService";
+import { TravelMatchingService } from "./services/matching";
+import { 
+  secretLocalExperienceLikes, 
+  connections, 
+  users, 
+  messages, 
+  travelPlans, 
+  eventParticipants, 
+  quickMeetupParticipants, 
+  instagramPosts, 
+  events, 
+  quickMeetups, 
+  cityPhotos,
+  locationWidgets,
+  locationWidgetContributions,
+  citychatrooms,
+  chatroomMembers,
+  businessOffers,
+  cityPages,
+  cityActivities,
+  activityMatches
+} from "../shared/schema";
+import { sql, eq, or, count, and, ne, desc, gte, lte, lt, isNotNull, inArray, asc, ilike, like, isNull, gt } from "drizzle-orm";
+import locationWidgetsRouter from "./routes/locationWidgets";
+
+// Instagram posting helper functions
+async function handleInstagramPost(event: any, organizerId: number) {
+  try {
+    // Get user information
+    const user = await storage.getUser(organizerId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    // Create single Instagram post record for dual posting (user + @nearbytraveler)
+    const instagramPost = await storage.createInstagramPost({
+      eventId: event.id,
+      userId: organizerId,
+      postContent: generateEventCaption(event),
+      imageUrl: event.imageUrl || null,
+      userPostStatus: 'pending',
+      nearbytravelerPostStatus: 'pending'
+    });
+
+    console.log('Instagram post created for dual posting event:', event.id);
+    return instagramPost;
+  } catch (error) {
+    console.error('Failed to handle Instagram posting:', error);
+    throw error;
+  }
+}
+
+function generateEventCaption(event: any): string {
+  return `🎉 ${event.title}\n\n📍 ${event.city}, ${event.state}\n📅 ${new Date(event.date).toLocaleDateString()}\n\n${event.description || 'Join us for an amazing event!'}\n\n#NearbyTraveler #${event.city.replace(/\s+/g, '')} #${event.category.replace(/\s+/g, '')}`;
+}
+
+function generateNearbytravelerCaption(event: any, user: any): string {
+  return `🌟 Exciting event happening in ${event.city}!\n\n🎉 ${event.title}\n📍 ${event.city}, ${event.state}\n📅 ${new Date(event.date).toLocaleDateString()}\n👤 Organized by @${user.username}\n\n${event.description || 'Don\'t miss out on this amazing local experience!'}\n\n#NearbyTraveler #${event.city.replace(/\s+/g, '')} #TravelCommunity #LocalEvents`;
+}
+
+function generateEventHashtags(event: any): string[] {
+  const baseHashtags = ['NearbyTraveler', 'TravelCommunity', 'LocalEvents'];
+  const locationHashtags = [
+    event.city.replace(/\s+/g, ''),
+    event.state.replace(/\s+/g, ''),
+    `${event.city.replace(/\s+/g, '')}${event.state.replace(/\s+/g, '')}`
+  ];
+  const categoryHashtags = [event.category.replace(/\s+/g, '')];
+
+  return [...baseHashtags, ...locationHashtags, ...categoryHashtags];
+}
+
+// Get timezone for user's hometown city
+function getUserTimezone(userCity?: string, userState?: string): string {
+  if (!userCity) return 'America/Los_Angeles';
+
+  const city = userCity.toUpperCase();
+  const state = userState?.toUpperCase();
+
+  // US timezone mapping by city and state
+  const timezoneMap: Record<string, string> = {
+    'LOS ANGELES': 'America/Los_Angeles',
+    'SAN FRANCISCO': 'America/Los_Angeles', 
+    'SEATTLE': 'America/Los_Angeles',
+    'PORTLAND': 'America/Los_Angeles',
+    'LAS VEGAS': 'America/Los_Angeles',
+    'PHOENIX': 'America/Phoenix',
+    'DENVER': 'America/Denver',
+    'CHICAGO': 'America/Chicago',
+    'AUSTIN': 'America/Chicago',
+    'DALLAS': 'America/Chicago',
+    'HOUSTON': 'America/Chicago',
+    'NASHVILLE': 'America/Chicago',
+    'NEW YORK': 'America/New_York',
+    'BOSTON': 'America/New_York',
+    'PHILADELPHIA': 'America/New_York',
+    'MIAMI': 'America/New_York',
+    'ATLANTA': 'America/New_York',
+    'LONDON': 'Europe/London',
+    'PARIS': 'Europe/Paris',
+    'ROME': 'Europe/Rome',
+    'BERLIN': 'Europe/Berlin',
+    'MADRID': 'Europe/Madrid',
+    'TOKYO': 'Asia/Tokyo',
+    'SYDNEY': 'Australia/Sydney',
+    'TORONTO': 'America/Toronto',
+    'VANCOUVER': 'America/Vancouver'
+  };
+
+  // Check state-based defaults for US cities
+  if (state) {
+    const stateTimezones: Record<string, string> = {
+      'CALIFORNIA': 'America/Los_Angeles',
+      'WASHINGTON': 'America/Los_Angeles', 
+      'OREGON': 'America/Los_Angeles',
+      'NEVADA': 'America/Los_Angeles',
+      'ARIZONA': 'America/Phoenix',
+      'COLORADO': 'America/Denver',
+      'ILLINOIS': 'America/Chicago',
+      'TEXAS': 'America/Chicago',
+      'TENNESSEE': 'America/Chicago',
+      'NEW YORK': 'America/New_York',
+      'MASSACHUSETTS': 'America/New_York',
+      'PENNSYLVANIA': 'America/New_York',
+      'FLORIDA': 'America/New_York',
+      'GEORGIA': 'America/New_York'
+    };
+    return stateTimezones[state] || timezoneMap[city] || 'America/Los_Angeles';
+  }
+
+  return timezoneMap[city] || 'America/Los_Angeles';
+}
+
+// Get tomorrow end-of-day in user's hometown timezone
+function getTomorrowInUserTimezone(userCity?: string, userState?: string): Date {
+  const timezone = getUserTimezone(userCity, userState);
+
+  // Get current time in user's timezone
+  const nowInUserTz = new Date(new Date().toLocaleString("en-US", { timeZone: timezone }));
+
+  // Add one day and set to end of day (23:59:59.999)
+  const tomorrow = new Date(nowInUserTz);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  tomorrow.setHours(23, 59, 59, 999);
+
+  return tomorrow;
+}
+
+import { insertUserSchema, insertConnectionSchema, insertMessageSchema, insertEventSchema, insertUserPhotoSchema, insertTravelPlanSchema, insertEventParticipantSchema, insertAiRecommendationSchema, insertCityLandmarkSchema, insertLandmarkRatingSchema, insertUserTravelPreferencesSchema } from "@shared/schema";
+import { recommendationService } from "./services/recommendations";
+import { matchingService } from "./services/matching";
+import { aiTravelCompanion } from "./services/aiTravelCompanion";
+import { AiRecommendationService } from "./services/aiRecommendationService";
+import { UserTransitionService } from "./services/user-transition";
+import { TravelStatusService } from "./services/travel-status-service";
+import { aiEventGenerator } from "./aiEventGenerator";
+import { aiBusinessGenerator } from "./aiBusinessGenerator";
+import { z } from "zod";
+import OpenAI from "openai";
+import { normalizeLocation } from "./locationNormalizer";
+
+const loginSchema = z.object({
+  email: z.string().min(1, "Email or username is required"),
+  password: z.string().min(1, "Password is required"),
+});
+
+// AI content generation function using OpenAI API
+async function generateCityContent(location: string, topic: string): Promise<string> {
+  if (!process.env.OPENAI_API_KEY) {
+    return `Information about ${topic} in ${location} will be added by community members.`;
+  }
+
+  try {
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o', // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+        messages: [
+          {
+            role: 'system',
+            content: 'You are a travel guide expert. Provide accurate, helpful, and current information about destinations. Write in a friendly but informative tone suitable for travelers. Include specific names, locations, and practical details.'
+          },
+          {
+            role: 'user',
+            content: `Write a comprehensive guide about ${topic} in ${location}. Include specific recommendations with names and locations. Keep it informative but engaging, around 200-300 words. Focus on current, accurate information.`
+          }
+        ],
+        max_tokens: 400,
+        temperature: 0.3,
+        stream: false
+      })
+    });
+
+    if (!response.ok) {
+      const errorData = await response.text();
+      throw new Error(`OpenAI API error: ${response.status} - ${errorData}`);
+    }
+
+    const data = await response.json();
+    return data.choices[0]?.message?.content || `Information about ${topic} in ${location} will be added by community members.`;
+  } catch (error) {
+    console.error('Error generating AI content:', error);
+    return `Information about ${topic} in ${location} will be added by community members.`;
+  }
+}
+
+export async function registerRoutes(app: Express): Promise<Express> {
+  console.log("Starting routes registration...");
+
+  // CRITICAL: Register location widgets routes
+  app.use(locationWidgetsRouter);
+  console.log("Location widgets routes registered");
+
+  // Serve static files from attached_assets directory
+  app.use('/attached_assets', express.static(path.join(process.cwd(), 'attached_assets')));
+  console.log("Static file serving configured for attached_assets");
+
+  // Weather API endpoint
+  app.get("/api/weather", async (req, res) => {
+    try {
+      const { city, state, country } = req.query;
+
+      if (!city || !country) {
+        return res.status(400).json({ message: "City and country parameters are required" });
+      }
+
+      console.log(`🌤️ WEATHER: Getting weather for ${city}, ${state}, ${country}`);
+
+      // Mock weather data for demonstration (replace with real weather API like OpenWeatherMap)
+      const weatherData = {
+        location: {
+          name: city,
+          region: state || '',
+          country: country
+        },
+        current: {
+          temp_f: 72,
+          temp_c: 22,
+          condition: {
+            text: "Partly Cloudy",
+            icon: "//cdn.weatherapi.com/weather/64x64/day/116.png"
+          },
+          feelslike_f: 75,
+          feelslike_c: 24
+        }
+      };
+
+      res.json(weatherData);
+    } catch (error) {
+      console.error("Error fetching weather:", error);
+      res.status(500).json({ message: "Failed to fetch weather data" });
+    }
+  });
+
+  // RESTORED: Original working city stats endpoint with photos, chatrooms, and secret activities
+  app.get("/api/city-stats", async (req, res) => {
+    try {
+      console.log("🏙️ RESTORED CITY SYSTEM: Loading cities with full functionality");
+
+      // Get all cities from city_pages table (these have photos, chat rooms, secret activities)
+      const cityPagesResult = await db.select().from(cityPages);
+
+      const citiesWithStats = await Promise.all(
+        cityPagesResult.map(async (cityPage: any) => {
+          try {
+            // Count ALL locals EVER from this city (hometowns)
+            const localUsersResult = await db
+              .select({ count: count() })
+              .from(users)
+              .where(
+                and(
+                  eq(users.hometownCity, cityPage.city),
+                  eq(users.userType, 'local')
+                )
+              );
+
+            // Count ALL businesses EVER from this city 
+            const businessUsersResult = await db
+              .select({ count: count() })
+              .from(users)
+              .where(
+                and(
+                  eq(users.hometownCity, cityPage.city),
+                  eq(users.userType, 'business')
+                )
+              );
+
+            // Count ALL travelers EVER to this city (travel_plans + current travel)
+            const travelPlansResult = await db
+              .select({ count: count() })
+              .from(travelPlans)
+              .where(ilike(travelPlans.destination, `%${cityPage.city}%`));
+
+            const currentTravelersResult = await db
+              .select({ count: count() })
+              .from(users)
+              .where(
+                and(
+                  ilike(users.travelDestination, `%${cityPage.city}%`),
+                  eq(users.isCurrentlyTraveling, true)
+                )
+              );
+
+            // Count ALL events EVER in this city
+            const eventsResult = await db
+              .select({ count: count() })
+              .from(events)
+              .where(ilike(events.city, `%${cityPage.city}%`));
+
+            const localCount = localUsersResult[0]?.count || 0;
+            const businessCount = businessUsersResult[0]?.count || 0;
+            const travelerCount = (travelPlansResult[0]?.count || 0) + (currentTravelersResult[0]?.count || 0);
+            const eventCount = eventsResult[0]?.count || 0;
+
+            return {
+              city: cityPage.city,
+              state: cityPage.state,
+              country: cityPage.country,
+              localCount,
+              travelerCount,
+              businessCount,
+              eventCount,
+              description: cityPage.description || `Discover ${cityPage.city}`,
+              highlights: [`${localCount} locals`, `${travelerCount} travelers`, `${businessCount} businesses`, `${eventCount} events`],
+              // Include city page features
+              coverImage: cityPage.coverImage,
+              featuredImages: cityPage.featuredImages || [],
+              hasSecretExperiences: true,
+              hasChatRooms: true,
+              hasPhotos: true,
+              cityPageId: cityPage.id
+            };
+          } catch (error) {
+            console.error(`Error processing city ${cityPage.city}:`, error);
+            return {
+              city: cityPage.city,
+              state: cityPage.state,
+              country: cityPage.country,
+              localCount: 0,
+              travelerCount: 0,
+              businessCount: 0,
+              eventCount: 0,
+              description: cityPage.description || `Discover ${cityPage.city}`,
+              highlights: ['0 locals', '0 travelers', '0 events'],
+              coverImage: cityPage.coverImage,
+              featuredImages: cityPage.featuredImages || [],
+              hasSecretExperiences: true,
+              hasChatRooms: true,
+              hasPhotos: true,
+              cityPageId: cityPage.id
+            };
+          }
+        })
+      );
+
+      // Sort by total activity
+      citiesWithStats.sort((a, b) => 
+        (b.localCount + b.travelerCount + b.eventCount) - (a.localCount + a.travelerCount + a.eventCount)
+      );
+
+      console.log(`🏙️ RESTORED: Returning ${citiesWithStats.length} cities with full functionality (photos, chat, secret activities)`);
+      res.json(citiesWithStats);
+    } catch (error) {
+      console.error("Error fetching working city stats:", error);
+      res.status(500).json({ message: "Failed to fetch city statistics", error: error.message });
+    }
+  });
+
+  // City-specific stats endpoint for individual city pages  
+  app.get("/api/city-stats/:city", async (req, res) => {
+    try {
+      const { city } = req.params;
+      const { state, country } = req.query;
+
+      console.log(`🏙️ CITY STATS SPECIFIC: Getting stats for ${city}, ${state}, ${country}`);
+
+      // Count ALL locals EVER from this city (hometowns)
+      const localUsersResult = await db
+        .select({ count: count() })
+        .from(users)
+        .where(
+          and(
+            ilike(users.hometownCity, `%${city}%`),
+            eq(users.userType, 'local')
+          )
+        );
+
+      // Count ALL businesses EVER from this city 
+      const businessUsersResult = await db
+        .select({ count: count() })
+        .from(users)
+        .where(
+          and(
+            ilike(users.hometownCity, `%${city}%`),
+            eq(users.userType, 'business')
+          )
+        );
+
+      // Count ALL travelers EVER to this city (travel_plans + current travel)
+      const travelPlansResult = await db
+        .select({ count: count() })
+        .from(travelPlans)
+        .where(ilike(travelPlans.destination, `%${city}%`));
+
+      const currentTravelersResult = await db
+        .select({ count: count() })
+        .from(users)
+        .where(
+          and(
+            ilike(users.travelDestination, `%${city}%`),
+            eq(users.isCurrentlyTraveling, true)
+          )
+        );
+
+      // Count ALL events EVER in this city
+      const eventsResult = await db
+        .select({ count: count() })
+        .from(events)
+        .where(ilike(events.city, `%${city}%`));
+
+      const localCount = localUsersResult[0]?.count || 0;
+      const businessCount = businessUsersResult[0]?.count || 0;
+      const travelerCount = (travelPlansResult[0]?.count || 0) + (currentTravelersResult[0]?.count || 0);
+      const eventCount = eventsResult[0]?.count || 0;
+
+      const cityStats = {
+        city: city,
+        state: state || '',
+        country: country || '',
+        localCount,
+        travelerCount,
+        businessCount,
+        eventCount
+      };
+
+      console.log(`🏙️ CITY STATS SPECIFIC: Found stats for ${city}:`, cityStats);
+      res.json(cityStats);
+    } catch (error) {
+      console.error("Error fetching city stats:", error);
+      res.status(500).json({ message: "Failed to fetch city stats" });
+    }
+  });
+
+  // RESTORED: Secret experiences endpoint that was working when locals signed up
+  app.get("/api/secret-experiences/:city/", async (req, res) => {
+    try {
+      const { city } = req.params;
+      const { state, country } = req.query;
+
+      console.log(`🔍 SECRET EXPERIENCES: Loading for ${city}, ${state}, ${country}`);
+
+      const experiences = await storage.getSecretLocalExperiencesByCity(
+        city as string, 
+        state as string || null, 
+        country as string || null
+      );
+
+      console.log(`🔍 SECRET EXPERIENCES: Found ${experiences.length} secret activities for ${city}`);
+      res.json(experiences);
+    } catch (error) {
+      console.error("Error fetching secret experiences:", error);
+      res.status(500).json({ message: "Failed to fetch secret experiences", error: error.message });
+    }
+  });
+
+  // RESTORED: Secret experience like endpoint
+  app.post("/api/secret-experiences/:experienceId/like", async (req, res) => {
+    try {
+      const { experienceId } = req.params;
+      const { userId } = req.body;
+
+      if (!userId) {
+        return res.status(400).json({ message: "User ID is required" });
+      }
+
+      const updatedExperience = await storage.likeSecretLocalExperience(
+        parseInt(experienceId), 
+        parseInt(userId)
+      );
+
+      if (!updatedExperience) {
+        return res.status(404).json({ message: "Experience not found or already liked" });
+      }
+
+      res.json(updatedExperience);
+    } catch (error) {
+      console.error("Error liking secret experience:", error);
+      res.status(500).json({ message: "Failed to like experience", error: error.message });
+    }
+  });
+
+  // Statistics endpoint - returns real data from database
+  app.get("/api/stats/platform", async (req, res) => {
+    try {
+      // Count successful connections (accepted status)
+      const [successfulMatches] = await db
+        .select({ count: count() })
+        .from(connections)
+        .where(eq(connections.status, 'accepted'));
+
+      // Count all users who have joined the platform
+      const [activeTravelers] = await db
+        .select({ count: count() })
+        .from(users);
+
+      // Count unique destinations from travel plans
+      const destinationsResult = await db
+        .select({ destination: travelPlans.destination })
+        .from(travelPlans)
+        .groupBy(travelPlans.destination);
+
+      // Count total event participations on the platform
+      const [eventsShared] = await db
+        .select({ count: count() })
+        .from(eventParticipants);
+
+      res.json({
+        successfulMatches: successfulMatches.count,
+        activeTravelers: activeTravelers.count,
+        destinationsCovered: destinationsResult.length,
+        eventsShared: eventsShared.count
+      });
+    } catch (error) {
+      console.error("Error fetching platform stats:", error);
+      res.status(500).json({ message: "Failed to fetch platform statistics" });
+    }
+  });
+
+  // Initialize chatrooms asynchronously (non-blocking)
+  console.log("Starting routes registration...");
+  storage.ensureMeetLocalsChatrooms()
+    .then(() => console.log("Chatrooms initialization completed"))
+    .catch(err => console.error("Chatrooms initialization failed:", err));
+
+  // Search users by location endpoint - must come before parameterized routes
+  app.get("/api/users/search-by-location", async (req, res) => {
+    try {
+      console.log("Search by location endpoint hit with query:", req.query);
+      const { location, userType } = req.query;
+
+      if (!location) {
+        return res.status(400).json({ message: "Location is required" });
+      }
+
+      // Use the working direct search method
+      const users = await storage.searchUsersByLocationDirect(location as string, userType as string);
+      console.log(`CONNECTIONS FIXED: Found ${users.length} users for location: ${location}, type: ${userType}`);
+
+      res.json(users);
+    } catch (error) {
+      console.error("Failed to search users by location:", error);
+      res.status(500).json({ message: "Failed to search users by location", error });
+    }
+  });
+
+  // NOTE: This route moved below to avoid conflict with /api/users/search
+
+  // Initialize sample data route (for restoring lost data)
+  app.post("/api/admin/init-data", async (req, res) => {
+    try {
+      // await storage.initializeSampleData(); // Method not available
+      res.json({ message: "Sample data initialized successfully" });
+    } catch (error) {
+      console.error("Error initializing sample data:", error);
+      res.status(500).json({ message: "Failed to initialize sample data", error });
+    }
+  });
+
+  // Consolidate NYC locations route
+  app.post("/api/admin/consolidate-nyc", async (req, res) => {
+    try {
+      console.log("🗽 Starting NYC location consolidation...");
+
+      // NYC variations to consolidate
+      const nycVariations = [
+        'Manhattan',
+        'Brooklyn', 
+        'Queens',
+        'Bronx',
+        'Staten Island',
+        'NYC',
+        'New York'
+      ];
+
+      let totalUpdated = 0;
+
+      // Update users hometown cities
+      for (const variation of nycVariations) {
+        const usersToUpdate = await db
+          .select()
+          .from(users)
+          .where(
+            or(
+              eq(users.hometownCity, variation),
+              ilike(users.hometownCity, `%${variation}%`)
+            )
+          );
+
+        if (usersToUpdate.length > 0) {
+          await db
+            .update(users)
+            .set({ 
+              hometownCity: 'New York City',
+              location: 'New York City, New York',
+              hometown: 'New York City, New York, United States'
+            })
+            .where(
+              or(
+                eq(users.hometownCity, variation),
+                ilike(users.hometownCity, `%${variation}%`)
+              )
+            );
+
+          console.log(`Updated ${usersToUpdate.length} users from ${variation} to New York City`);
+          totalUpdated += usersToUpdate.length;
+        }
+      }
+
+      console.log("🎉 NYC location consolidation completed!");
+      res.json({ 
+        message: "NYC locations consolidated successfully", 
+        totalUsersUpdated: totalUpdated 
+      });
+    } catch (error) {
+      console.error("Error consolidating NYC locations:", error);
+      res.status(500).json({ message: "Failed to consolidate NYC locations", error: error.message });
+    }
+  });
+
+  // Login endpoint
+  app.post("/api/login", async (req, res) => {
+    try {
+      const { email, password } = loginSchema.parse(req.body);
+      console.log("Login attempt for:", email);
+
+      // Try to find user by email or username
+      let user = await storage.getUserByEmail(email);
+      if (!user) {
+        user = await storage.getUserByUsername(email);
+      }
+
+      if (!user) {
+        return res.status(401).json({ message: "Invalid email/username or password" });
+      }
+
+      // For demo purposes, check password directly
+      if (user.password !== password) {
+        return res.status(401).json({ message: "Invalid email/username or password" });
+      }
+
+      // Remove password from response
+      const { password: _, ...userWithoutPassword } = user;
+
+      return res.json({
+        user: userWithoutPassword,
+        token: 'auth_token_' + user.id
+      });
+    } catch (error: any) {
+      console.error("Login error:", error);
+      return res.status(400).json({ message: "Login failed. Please check your credentials." });
+    }
+  });
+
+  // Email validation endpoint
+  app.post("/api/auth/check-email", async (req, res) => {
+    try {
+      const { email } = req.body;
+
+      if (!email) {
+        return res.status(400).json({ message: "Email is required" });
+      }
+
+      const existingUser = await storage.getUserByEmail(email);
+      if (existingUser) {
+        return res.status(409).json({ 
+          message: "An account with this email already exists. Please use a different email or try logging in.",
+          exists: true
+        });
+      }
+
+      res.json({ exists: false });
+    } catch (error) {
+      console.error("Email check error:", error);
+      res.status(500).json({ message: "Failed to check email availability" });
+    }
+  });
+
+  // Quick login endpoint for development
+  app.post("/api/quick-login/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const user = await storage.getUser(userId);
+
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      res.json(user);
+    } catch (error) {
+      console.error("Quick login error:", error);
+      res.status(500).json({ message: "Login failed" });
+    }
+  });
+
+  // Add city-specific interest to user profile
+  app.post("/api/user/add-interest", async (req, res) => {
+    try {
+      const { userId, type, item } = req.body;
+
+      if (!userId || !type || !item) {
+        return res.status(400).json({ message: "Missing required fields" });
+      }
+
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Get current user data
+      let currentItems = user[type] || [];
+
+      // Add item if not already present
+      if (!currentItems.includes(item)) {
+        currentItems = [...currentItems, item];
+
+        // Update user in database
+        const updateData = { [type]: currentItems };
+        await storage.updateUser(userId, updateData);
+
+        res.json({ 
+          success: true, 
+          message: `Added "${item}" to your ${type}`,
+          updatedItems: currentItems 
+        });
+      } else {
+        res.json({ 
+          success: true, 
+          message: `"${item}" is already in your ${type}`,
+          updatedItems: currentItems 
+        });
+      }
+    } catch (error) {
+      console.error("Error adding interest to user:", error);
+      res.status(500).json({ message: "Failed to add interest" });
+    }
+  });
+
+  // Username validation endpoint (GET version for URL params)
+  app.get("/api/check-username/:username", async (req, res) => {
+    try {
+      const { username } = req.params;
+
+      if (!username) {
+        return res.status(400).json({ message: "Username is required" });
+      }
+
+      // Check for username case-insensitively  
+      const existingUser = await storage.getUserByUsername(username);
+      if (existingUser) {
+        return res.status(409).json({ 
+          message: "This username is already taken. Please choose a different one.",
+          exists: true,
+          available: false
+        });
+      }
+
+      res.json({ exists: false, available: true });
+    } catch (error) {
+      console.error("Username check error:", error);
+      res.status(500).json({ message: "Failed to check username availability" });
+    }
+  });
+
+  // Username validation endpoint (POST version for body params)
+  app.post("/api/auth/check-username", async (req, res) => {
+    try {
+      const { username } = req.body;
+
+      if (!username) {
+        return res.status(400).json({ message: "Username is required" });
+      }
+
+      // Check for username case-insensitively  
+      const existingUser = await storage.getUserByUsername(username);
+      if (existingUser) {
+        return res.status(409).json({ 
+          message: "This username is already taken. Please choose a different username.",
+          exists: true,
+          available: false
+        });
+      }
+
+      res.json({ exists: false, available: true });
+    } catch (error) {
+      console.error("Username check error:", error);
+      res.status(500).json({ message: "Failed to check username availability" });
+    }
+  });
+
+  // Shared registration handler
+  const handleRegistration = async (req: any, res: any) => {
+    try {
+      console.log("🚀 REGISTRATION ATTEMPT:", { email: req.body.email, username: req.body.username, userType: req.body.userType });
+      console.log("🏠 ORIGINAL LOCATION DATA RECEIVED:", {
+        hometownCity: req.body.hometownCity,
+        hometownState: req.body.hometownState,
+        hometownCountry: req.body.hometownCountry
+      });
+      console.log("✈️ ORIGINAL TRAVEL DATA RECEIVED:", {
+        isCurrentlyTraveling: req.body.isCurrentlyTraveling,
+        travelDestination: req.body.travelDestination,
+        travelDestinationCity: req.body.travelDestinationCity,
+        travelDestinationState: req.body.travelDestinationState,
+        travelDestinationCountry: req.body.travelDestinationCountry,
+        travelStartDate: req.body.travelStartDate,
+        travelEndDate: req.body.travelEndDate
+      });
+
+      // Convert date strings to Date objects and map form data to correct schema fields
+      const processedData = { ...req.body };
+      if (processedData.dateOfBirth && typeof processedData.dateOfBirth === 'string') {
+        processedData.dateOfBirth = new Date(processedData.dateOfBirth);
+      }
+      if (processedData.travelStartDate && typeof processedData.travelStartDate === 'string') {
+        processedData.travelStartDate = new Date(processedData.travelStartDate);
+      }
+      if (processedData.travelEndDate && typeof processedData.travelEndDate === 'string') {
+        processedData.travelEndDate = new Date(processedData.travelEndDate);
+      }
+
+      // Apply location normalization to prevent community splitting
+      if (processedData.hometownCity) {
+        const normalizedLocation = normalizeLocation(
+          processedData.hometownCity, 
+          processedData.hometownState, 
+          processedData.hometownCountry
+        );
+
+        processedData.hometownCity = normalizedLocation.city;
+        processedData.hometownState = normalizedLocation.state;
+        processedData.hometownCountry = normalizedLocation.country;
+
+        console.log("🗺️ LOCATION NORMALIZED:", {
+          original: { 
+            city: req.body.hometownCity, 
+            state: req.body.hometownState, 
+            country: req.body.hometownCountry 
+          },
+          normalized: normalizedLocation
+        });
+      }
+
+      // Map signup form fields to correct database fields for all user types
+      if (processedData.userType === 'local') {
+        console.log("📍 PROCESSING LOCAL USER - Location mapping:");
+        console.log("  Input hometown data:", {
+          hometownCity: processedData.hometownCity,
+          hometownState: processedData.hometownState,
+          hometownCountry: processedData.hometownCountry
+        });
+
+        // Always populate location field for locals
+        if (processedData.hometownCity && processedData.hometownState) {
+          processedData.location = `${processedData.hometownCity}, ${processedData.hometownState}`;
+          console.log("  ✓ Set location field:", processedData.location);
+        }
+
+        // Always populate hometown field for locals
+        if (processedData.hometownCity && processedData.hometownState && processedData.hometownCountry) {
+          processedData.hometown = `${processedData.hometownCity}, ${processedData.hometownState}, ${processedData.hometownCountry}`;
+          console.log("  ✓ Set hometown field:", processedData.hometown);
+        }
+
+        console.log("  Final processed location data:", {
+          hometownCity: processedData.hometownCity,
+          hometownState: processedData.hometownState,
+          hometownCountry: processedData.hometownCountry,
+          location: processedData.location,
+          hometown: processedData.hometown
+        });
+      }
+
+      // Map business signup fields - CRITICAL for auto-fill and credit card processing
+      if (processedData.userType === 'business') {
+        console.log("Mapping business fields. Input data:", processedData);
+
+        // Map business location fields from multiple possible sources
+        // Check businessCity/businessState/businessCountry from signup-business form
+        if (processedData.businessCity) {
+          processedData.hometownCity = processedData.businessCity;
+        }
+        if (processedData.businessState) {
+          processedData.hometownState = processedData.businessState;  
+        }
+        if (processedData.businessCountry) {
+          processedData.hometownCountry = processedData.businessCountry;
+        }
+
+        // Also check generic city/state/country fields
+        if (processedData.city && !processedData.hometownCity) {
+          processedData.hometownCity = processedData.city;
+        }
+        if (processedData.state && !processedData.hometownState) {
+          processedData.hometownState = processedData.state;  
+        }
+        if (processedData.country && !processedData.hometownCountry) {
+          processedData.hometownCountry = processedData.country;
+        }
+
+        // Map business address fields to user schema fields
+        if (processedData.businessAddress) {
+          processedData.streetAddress = processedData.businessAddress;
+        }
+        if (processedData.businessPhone) {
+          processedData.phoneNumber = processedData.businessPhone;
+        }
+
+        // Populate location and hometown fields for businesses
+        if (processedData.hometownCity && processedData.hometownState) {
+          processedData.location = `${processedData.hometownCity}, ${processedData.hometownState}`;
+        }
+
+        if (processedData.hometownCity && processedData.hometownState && processedData.hometownCountry) {
+          processedData.hometown = `${processedData.hometownCity}, ${processedData.hometownState}, ${processedData.hometownCountry}`;
+        }
+
+        console.log("Mapped business data:", {
+          hometownCity: processedData.hometownCity,
+          hometownState: processedData.hometownState,
+          hometownCountry: processedData.hometownCountry,
+          streetAddress: processedData.streetAddress,
+          phoneNumber: processedData.phoneNumber,
+          zipCode: processedData.zipCode,
+          location: processedData.location,
+          hometown: processedData.hometown
+        });
+      }
+
+      // Map traveler signup fields
+      if (processedData.userType === 'current_traveler') {
+        // Map localActivities and localEvents to main fields
+        if (processedData.localActivities) {
+          processedData.activities = processedData.localActivities;
+        }
+        if (processedData.localEvents) {
+          processedData.events = processedData.localEvents;
+        }
+      }
+
+      // Convert date strings to Date objects before schema validation
+      if (processedData.dateOfBirth && typeof processedData.dateOfBirth === 'string') {
+        processedData.dateOfBirth = new Date(processedData.dateOfBirth);
+      }
+      if (processedData.travelStartDate && typeof processedData.travelStartDate === 'string') {
+        processedData.travelStartDate = new Date(processedData.travelStartDate);
+      }
+      if (processedData.travelEndDate && typeof processedData.travelEndDate === 'string') {
+        processedData.travelEndDate = new Date(processedData.travelEndDate);
+      }
+
+      // For businesses, dateOfBirth is not required, so we'll add a default if missing
+      if (processedData.userType === 'business' && !processedData.dateOfBirth) {
+        processedData.dateOfBirth = new Date('1990-01-01'); // Default date for businesses
+      }
+
+      // Handle business referral tracking
+      let referrerUser = null;
+      if (processedData.userType === 'business' && processedData.referredByUser) {
+        try {
+          // Find referring user by username or email
+          referrerUser = await storage.getUserByUsernameOrEmail(processedData.referredByUser.trim());
+          if (!referrerUser) {
+            console.log(`Referrer not found: ${processedData.referredByUser}`);
+          }
+        } catch (error) {
+          console.error("Error finding referrer:", error);
+        }
+      }
+
+      // CRITICAL: Convert string fields to arrays where schema expects arrays
+      if (processedData.sexualPreference && typeof processedData.sexualPreference === 'string') {
+        processedData.sexualPreference = [processedData.sexualPreference];
+      }
+      if (processedData.localActivities && typeof processedData.localActivities === 'string') {
+        processedData.localActivities = [processedData.localActivities];
+      }
+
+      // CRITICAL: Preserve secret activities from original data before schema parsing
+      const preservedSecretActivities = processedData.secretActivities || processedData.secretLocalQuestion;
+
+      console.log("🔍 BEFORE SCHEMA PARSING - processedData location fields:", {
+        hometownCity: processedData.hometownCity,
+        hometownState: processedData.hometownState,
+        hometownCountry: processedData.hometownCountry,
+        location: processedData.location,
+        hometown: processedData.hometown
+      });
+      console.log("🔍 BEFORE SCHEMA PARSING - processedData travel fields:", {
+        isCurrentlyTraveling: processedData.isCurrentlyTraveling,
+        travelDestination: processedData.travelDestination,
+        travelStartDate: processedData.travelStartDate,
+        travelEndDate: processedData.travelEndDate
+      });
+
+      const userData = insertUserSchema.parse(processedData);
+
+      console.log("⚡ AFTER SCHEMA PARSING - userData location fields:", {
+        hometownCity: userData.hometownCity,
+        hometownState: userData.hometownState,
+        hometownCountry: userData.hometownCountry,
+        location: userData.location,
+        hometown: userData.hometown
+      });
+      console.log("⚡ AFTER SCHEMA PARSING - userData travel fields:", {
+        isCurrentlyTraveling: userData.isCurrentlyTraveling,
+        travelDestination: userData.travelDestination,
+        travelStartDate: userData.travelStartDate,
+        travelEndDate: userData.travelEndDate
+      });
+
+      // CRITICAL: Restore secret activities after schema parsing
+      if (preservedSecretActivities) {
+        userData.secretActivities = preservedSecretActivities;
+      }
+
+      // Save signup preferences as default travel preferences for ALL user types
+      // This must happen AFTER schema parsing to ensure fields exist
+      if (userData.interests) {
+        userData.defaultTravelInterests = userData.interests;
+      }
+      if (userData.activities) {
+        userData.defaultTravelActivities = userData.activities;
+      }
+      if (userData.events) {
+        userData.defaultTravelEvents = userData.events;
+      }
+
+      // Validate business address requirements for business users
+      if (userData.userType === 'business') {
+        if (!userData.streetAddress || !userData.zipCode || !userData.phoneNumber) {
+          return res.status(400).json({ 
+            message: "Business address, zip code, and phone number are required for verification.",
+            field: "businessAddress"
+          });
+        }
+      }
+
+      // CRITICAL: Validate minimum 10 total selections for traveler and local users (flexible distribution)
+      // Business users have no minimum requirements - they might only offer 1 service
+      if (userData.userType !== 'business') {
+        const interestCount = (userData.interests && Array.isArray(userData.interests)) ? userData.interests.length : 0;
+        const activityCount = (userData.activities && Array.isArray(userData.activities)) ? userData.activities.length : 0;
+        const eventCount = (userData.events && Array.isArray(userData.events)) ? userData.events.length : 0;
+        const totalSelections = interestCount + activityCount + eventCount;
+
+        if (totalSelections < 10) {
+          return res.status(400).json({ 
+            message: `Please select at least 10 items total from interests, activities, and events. You have selected ${totalSelections}.`,
+            field: "totalSelections"
+          });
+        }
+      }
+
+      // Check if user already exists by email
+      const existingUserByEmail = await storage.getUserByEmail(userData.email);
+      if (existingUserByEmail) {
+        console.log("Registration failed: Email already exists", userData.email);
+        return res.status(409).json({ 
+          message: "An account with this email already exists. Please use a different email or try logging in.",
+          field: "email"
+        });
+      }
+
+      // Check if username already exists
+      const existingUserByUsername = await storage.getUserByUsername(userData.username);
+      if (existingUserByUsername) {
+        console.log("Registration failed: Username already exists", userData.username);
+        return res.status(409).json({ 
+          message: "This username is already taken. Please choose a different username.",
+          field: "username"
+        });
+      }
+
+      console.log("🔥 FINAL LOCATION DATA BEING SENT TO DATABASE:", {
+        hometownCity: userData.hometownCity,
+        hometownState: userData.hometownState,
+        hometownCountry: userData.hometownCountry,
+        location: userData.location,
+        hometown: userData.hometown,
+        userType: userData.userType
+      });
+      console.log("🔥 FINAL TRAVEL DATA BEING SENT TO DATABASE:", {
+        isCurrentlyTraveling: userData.isCurrentlyTraveling,
+        travelDestination: userData.travelDestination,
+        travelStartDate: userData.travelStartDate,
+        travelEndDate: userData.travelEndDate
+      });
+
+      console.log("Creating new user:", userData.email);
+      const user = await storage.createUser(userData);
+      const { password, ...userWithoutPassword } = user;
+
+      console.log("💾 USER CREATED IN DATABASE - Location data stored:", {
+        id: user.id,
+        username: user.username,
+        hometownCity: user.hometownCity,
+        hometownState: user.hometownState,
+        hometownCountry: user.hometownCountry,
+        location: user.location,
+        hometown: user.hometown
+      });
+      console.log("💾 USER CREATED IN DATABASE - Travel data stored:", {
+        id: user.id,
+        username: user.username,
+        isCurrentlyTraveling: user.isCurrentlyTraveling,
+        travelDestination: user.travelDestination,
+        travelStartDate: user.travelStartDate,
+        travelEndDate: user.travelEndDate
+      });
+
+      // IMPORTANT: Award 1 aura point to all new users for signing up
+      try {
+        await storage.updateUser(user.id, { aura: 1 });
+        console.log(`✓ Awarded 1 signup aura point to new user ${user.id} (${user.username})`);
+      } catch (auraError) {
+        console.error('Error awarding signup aura point:', auraError);
+        // Don't fail registration if aura update fails
+      }
+
+      // CRITICAL: Set proper travel status for new user based on their travel plans
+      await TravelStatusService.setNewUserTravelStatus(user.id);
+
+      // After creating a user, ensure "Meet Locals" chatrooms exist for both hometown and travel destinations
+      await storage.ensureMeetLocalsChatrooms();
+
+      // CRITICAL: Create chatrooms for user's hometown (all users have hometowns)
+      if (userData.hometownCity && userData.hometownCountry) {
+        try {
+          await storage.ensureMeetLocalsChatrooms(userData.hometownCity, userData.hometownState, userData.hometownCountry);
+          console.log(`✓ Created/verified hometown chatroom for ${userData.hometownCity}, ${userData.hometownCountry}`);
+        } catch (error) {
+          console.error('Error creating hometown chatroom:', error);
+        }
+      }
+
+      // CRITICAL: Create chatrooms for travel destination if user is currently traveling
+      if (userData.isCurrentlyTraveling && userData.travelDestination) {
+        try {
+          // Parse travel destination to get city, state, country
+          const destinationParts = userData.travelDestination.split(', ');
+          const travelCity = destinationParts[0];
+          const travelState = destinationParts[1];
+          const travelCountry = destinationParts[2] || destinationParts[1]; // Handle cases where state might be country
+
+          await storage.ensureMeetLocalsChatrooms(travelCity, travelState, travelCountry);
+          console.log(`✓ Created/verified travel destination chatroom for ${userData.travelDestination}`);
+        } catch (error) {
+          console.error('Error creating travel destination chatroom:', error);
+        }
+      }
+
+      // For travelers, automatically create a trip plan from signup data
+      // Use original request data since insertUserSchema filters out non-user fields
+      const originalData = req.body;
+
+      // Auto-create city for ALL user types (locals, travelers, businesses) to ensure discover page completeness
+      if (userData.hometownCity && userData.hometownCountry) {
+        try {
+          console.log(`Creating city for new user: ${userData.hometownCity}, ${userData.hometownState}, ${userData.hometownCountry}`);
+
+          // Ensure city exists in discover page
+          await storage.ensureCityExists(
+            userData.hometownCity,
+            userData.hometownState || '',
+            userData.hometownCountry
+          );
+
+          // For locals only, also create city page with secret activities
+          if (userData.userType === 'local') {
+            const cityPage = await storage.ensureCityPageExists(
+              userData.hometownCity,
+              userData.hometownState || null,
+              userData.hometownCountry,
+              user.id
+            );
+
+            // Add their secret activities to the city page if they exist
+            const secretActivities = userData.secretActivities || originalData.secretLocalQuestion;
+            if (cityPage && secretActivities && secretActivities.trim()) {
+              await storage.addSecretLocalExperience(
+                cityPage.id,
+                user.id,
+                secretActivities,
+                'activity'
+              );
+              console.log(`✓ Added secret experience for ${userData.hometownCity}: ${secretActivities}`);
+            }
+          }
+
+          console.log(`✓ Ensured city exists in discover page: ${userData.hometownCity}, ${userData.hometownCountry}`);
+        } catch (error) {
+          console.error('Error creating city or adding secret experience:', error);
+          // Don't fail registration if city creation fails
+        }
+      }
+
+      // CRITICAL: Create chatrooms for user's hometown for ALL user types
+      if (userData.hometownCity && userData.hometownCountry) {
+        try {
+          await storage.ensureMeetLocalsChatrooms(userData.hometownCity, userData.hometownState, userData.hometownCountry);
+          console.log(`✓ Created/verified hometown chatrooms for ${userData.hometownCity}, ${userData.hometownCountry}`);
+
+          // Note: Users manually join chatrooms - no auto-joining
+        } catch (error) {
+          console.error('Error creating hometown chatrooms:', error);
+        }
+      }
+
+      console.log("CHECKING TRAVEL PLAN CREATION:", {
+        userType: originalData.userType,
+        currentTravelCity: originalData.currentTravelCity,
+        travelDestination: originalData.travelDestination,
+        currentTravelCountry: originalData.currentTravelCountry,
+        travelStartDate: originalData.travelStartDate,
+        travelEndDate: originalData.travelEndDate,
+        isCurrentlyTraveling: originalData.isCurrentlyTraveling
+      });
+
+      // Check ALL possible field variations from different signup forms
+      const hasCurrentTravel = originalData.currentTravelCity && originalData.currentTravelCountry;
+      const hasTravelDestination = originalData.travelDestination || (originalData.travelDestinationCity && originalData.travelDestinationCountry);
+      const hasTravelDates = originalData.travelStartDate && originalData.travelEndDate;
+      const isTraveingUser = originalData.userType === 'current_traveler' || originalData.isCurrentlyTraveling;
+
+      if ((hasCurrentTravel || hasTravelDestination) && hasTravelDates && isTraveingUser) {
+
+        // CRITICAL: Date validation ONLY applies during signup for current travelers
+        // Regular trip planning from Plan Trip page should allow future dates
+        // This validation is ONLY for signup forms where users claim to be "currently traveling"
+
+        const startDate = new Date(originalData.travelStartDate);
+        const endDate = new Date(originalData.travelEndDate);
+        const tomorrow = getTomorrowInUserTimezone(user.hometownCity, user.hometownState);
+
+        // Only validate dates for signup - not for trip planning
+        // Users signing up as "current travelers" must have current/past trips
+        if (startDate > tomorrow) {
+          console.log("BLOCKED: Future travel START date during SIGNUP detected", { 
+            startDate: originalData.travelStartDate, 
+            endDate: originalData.travelEndDate,
+            userHometown: `${user.hometownCity}, ${user.hometownState}`,
+            userTimezone: getUserTimezone(user.hometownCity, user.hometownState),
+            maxAllowed: tomorrow.toLocaleDateString(),
+            context: "signup_validation"
+          });
+          return res.status(400).json({ 
+            message: "For signup as current traveler, your travel start date must be today or in the past (you're already traveling). For future trips, sign up as a local first, then plan trips later.",
+            field: "travelDates"
+          });
+        }
+
+        try {
+          // Build destination from all possible field variations
+          const tripLocation = originalData.travelDestination || [
+            originalData.currentTravelCity || originalData.travelDestinationCity,
+            originalData.currentTravelState || originalData.travelDestinationState,
+            originalData.currentTravelCountry || originalData.travelDestinationCountry
+          ].filter(Boolean).join(", ");
+
+          console.log("CREATING TRAVEL PLAN:", { tripLocation, userId: user.id });
+
+          const tripPlanData = {
+            userId: user.id,
+            destination: tripLocation,
+            destinationCity: originalData.currentTravelCity || originalData.travelDestinationCity,
+            destinationState: originalData.currentTravelState || originalData.travelDestinationState,
+            destinationCountry: originalData.currentTravelCountry || originalData.travelDestinationCountry,
+            startDate: new Date(originalData.travelStartDate),
+            endDate: new Date(originalData.travelEndDate),
+            interests: userData.interests || [],
+            activities: userData.activities || [],
+            events: userData.events || [],
+            travelStyle: userData.selectedTravelerTypes || userData.travelStyle || [],
+            status: 'planned'
+          };
+
+          const createdTripPlan = await storage.createTravelPlan(tripPlanData);
+          console.log("TRAVEL PLAN CREATED SUCCESSFULLY:", createdTripPlan?.id);
+
+          // CRITICAL: Update user travel status immediately after creating travel plan
+          await TravelStatusService.updateUserTravelStatus(user.id);
+
+          // Note: Travel destination chatrooms are available for users to manually join
+
+          // Check for business interest matches for travelers
+          await storage.checkBusinessInterestMatches(
+            user.id,
+            userData.interests || [],
+            userData.activities || [],
+            tripLocation,
+            'travel_plan',
+            {
+              startDate: new Date(originalData.travelStartDate),
+              endDate: new Date(originalData.travelEndDate)
+            }
+          );
+        } catch (tripError) {
+          console.error("Failed to create initial trip plan:", tripError);
+          // Don't fail registration if trip creation fails
+        }
+      }
+
+      // Check for business interest matches for all user types
+      try {
+        const userLocation = userData.userType === 'current_traveler' && originalData.currentTravelCity
+          ? [originalData.currentTravelCity, originalData.currentTravelState, originalData.currentTravelCountry].filter(Boolean).join(", ")
+          : [userData.hometownCity, userData.hometownState, userData.hometownCountry].filter(Boolean).join(", ");
+
+        const matchType = userData.userType === 'current_traveler' ? 'traveler_interest' : 'local_interest';
+
+        if (userLocation && ((userData.interests?.length || 0) > 0 || (userData.activities?.length || 0) > 0)) {
+          await storage.checkBusinessInterestMatches(
+            user.id,
+            userData.interests || [],
+            userData.activities || [],
+            userLocation,
+            matchType
+          );
+        }
+      } catch (matchError) {
+        console.error("Failed to check business interest matches:", matchError);
+        // Don't fail registration if matching fails
+      }
+
+      // Create business referral record if referrer exists
+      if (referrerUser && processedData.userType === 'business') {
+        try {
+          await storage.createBusinessReferral({
+            referrerId: referrerUser.id,
+            referredBusinessId: user.id,
+            businessName: userData.businessName || 'Unnamed Business',
+            businessEmail: userData.email,
+            status: 'business_signed_up',
+            potentialReward: 10000, // $100 in cents
+            notes: `Business referral: ${userData.businessName} referred by ${referrerUser.username}`
+          });
+          console.log(`Created business referral: ${referrerUser.username} -> ${userData.businessName}`);
+        } catch (referralError) {
+          console.error("Failed to create business referral:", referralError);
+        }
+      }
+
+      // Award 1 aura point for signing up
+      try {
+        await storage.updateUser(user.id, { aura: 1 });
+        console.log(`Awarded 1 signup aura to new user: ${user.username} (ID: ${user.id})`);
+      } catch (auraError) {
+        console.error("Failed to award signup aura:", auraError);
+        // Don't fail registration if aura award fails
+      }
+
+      // AUTOMATICALLY CONNECT ALL NEW USERS TO NEARBYTRAVELER
+      try {
+        const nearbytravelerUser = await storage.getUserByUsername('nearbytraveler');
+        if (nearbytravelerUser && user.username !== 'nearbytraveler') {
+          // Create automatic connection between new user and nearbytraveler
+          const connectionData = {
+            requesterId: nearbytravelerUser.id,
+            receiverId: user.id
+          };
+
+          // Create the connection record directly without using schema validation
+          const [newConnection] = await db
+            .insert(connections)
+            .values({
+              requesterId: parseInt(nearbytravelerUser.id.toString()),
+              receiverId: parseInt(user.id.toString()),
+              status: 'accepted'
+            })
+            .returning();
+
+          // Create welcome message from nearbytraveler to the new user
+          await storage.createMessage({
+            senderId: nearbytravelerUser.id,
+            receiverId: user.id,
+            content: `Hey @${user.username}, Welcome to Nearbytraveler, make sure you reach out and connect with as many locals and travelers as you can. Enjoy`
+          });
+
+          console.log(`✓ Auto-connected new user ${user.username} (ID: ${user.id}) to nearbytraveler with welcome message`);
+        }
+      } catch (autoConnectError) {
+        console.error("Failed to auto-connect new user to nearbytraveler:", autoConnectError);
+        // Don't fail registration if auto-connection fails
+      }
+
+      res.status(201).json({
+        user: userWithoutPassword,
+        token: 'auth_token_' + userWithoutPassword.id
+      });
+    } catch (error: any) {
+      console.error("Registration error:", error);
+      if (error.code === '23505') { // PostgreSQL unique constraint violation
+        const field = error.constraint?.includes('email') ? 'email' : 'username';
+        return res.status(409).json({ 
+          message: field === 'email' 
+            ? "An account with this email already exists." 
+            : "This username is already taken.",
+          field
+        });
+      }
+      res.status(400).json({ message: "Registration failed. Please check your information and try again.", error: error.message });
+    }
+  };
+
+  // Registration endpoints - both for backward compatibility
+  app.post("/api/register", handleRegistration);
+  app.post("/api/auth/register", handleRegistration);
+
+  // CRITICAL: Get user by ID endpoint
+  app.get("/api/users/:id", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.id);
+      const user = await storage.getUser(userId);
+
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Remove password from response
+      const { password: _, ...userWithoutPassword } = user;
+      return res.json(userWithoutPassword);
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      return res.status(500).json({ message: "Failed to fetch user" });
+    }
+  });
+
+  // CRITICAL: Update user profile (including avatar upload)
+  app.put("/api/users/:id", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.id);
+      const updates = req.body;
+
+      console.log(`Updating user ${userId} with:`, Object.keys(updates));
+
+      // Update user in database
+      const updatedUser = await storage.updateUser(userId, updates);
+
+      if (!updatedUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Remove password from response
+      const { password: _, ...userWithoutPassword } = updatedUser;
+
+      console.log(`✓ User ${userId} updated successfully`);
+      return res.json(userWithoutPassword);
+    } catch (error) {
+      console.error("Error updating user:", error);
+      return res.status(500).json({ message: "Failed to update user" });
+    }
+  });
+
+  // Clear profile photo endpoint (for large image cleanup)
+  app.delete("/api/users/profile-photo", async (req, res) => {
+    try {
+      const userId = req.headers['x-user-id'];
+      if (!userId) {
+        return res.status(401).json({ message: "User ID required" });
+      }
+
+      const updatedUser = await storage.updateUser(parseInt(userId as string), { profileImage: null });
+
+      if (!updatedUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      console.log(`✓ Cleared profile photo for user ${userId}`);
+      return res.json({ message: "Profile photo cleared" });
+    } catch (error) {
+      console.error("Error clearing profile photo:", error);
+      return res.status(500).json({ message: "Failed to clear profile photo" });
+    }
+  });
+
+  // CRITICAL: Cover photo upload endpoint
+  app.post("/api/users/:id/cover-photo", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.id);
+      const { imageData } = req.body;
+
+      if (!imageData) {
+        return res.status(400).json({ message: "Image data is required" });
+      }
+
+      console.log(`Updating cover photo for user ${userId}, image size: ${imageData.length}`);
+
+      // Update user with new cover photo
+      const updatedUser = await storage.updateUser(userId, { coverPhoto: imageData });
+
+      if (!updatedUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Remove password from response
+      const { password: _, ...userWithoutPassword } = updatedUser;
+
+      console.log(`✓ Cover photo updated for user ${userId}`);
+      return res.json({ 
+        message: "Cover photo updated successfully",
+        coverPhoto: updatedUser.coverPhoto,
+        user: userWithoutPassword
+      });
+    } catch (error) {
+      console.error("Error updating cover photo:", error);
+      return res.status(500).json({ message: "Failed to update cover photo" });
+    }
+  });
+
+  // CRITICAL: Get all users endpoint
+  app.get("/api/users", async (req, res) => {
+    try {
+      // Use direct database query since getUsers doesn't exist
+      const users = await db.select().from(users);
+      if (!users || users.length === 0) {
+        return res.json([]);
+      }
+      // Remove passwords from all users
+      const usersWithoutPasswords = users.map(user => {
+        if (!user) return null;
+        const { password: _, ...userWithoutPassword } = user;
+        return userWithoutPassword;
+      }).filter(Boolean);
+      return res.json(usersWithoutPasswords);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      return res.json([]);
+    }
+  });
+
+  // CRITICAL: Get travel plans for user
+  app.get("/api/travel-plans/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const travelPlans = await storage.getTravelPlansByUserId(userId);
+      return res.json(travelPlans);
+    } catch (error) {
+      console.error("Error fetching travel plans:", error);
+      return res.status(500).json({ message: "Failed to fetch travel plans" });
+    }
+  });
+
+  // Enhanced: Get conversation data with IM notification support
+  app.get("/api/conversations/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+
+      // Get all users who have messaged this user, with IM indicators
+      const conversations = await db
+        .select({
+          userId: users.id,
+          username: users.username,
+          profileImage: users.profileImage,
+          location: users.hometownCity,
+          userType: users.userType
+        })
+        .from(users)
+        .innerJoin(messages, or(
+          and(eq(messages.senderId, users.id), eq(messages.receiverId, userId)),
+          and(eq(messages.receiverId, users.id), eq(messages.senderId, userId))
+        ))
+        .where(ne(users.id, userId))
+        .groupBy(users.id, users.username, users.profileImage, users.hometownCity, users.userType);
+
+      // Add IM and message data for each conversation
+      const enhancedConversations = await Promise.all(
+        conversations.map(async (conv) => {
+          // Get last message
+          const lastMessage = await db
+            .select()
+            .from(messages)
+            .where(
+              or(
+                and(eq(messages.senderId, conv.userId), eq(messages.receiverId, userId)),
+                and(eq(messages.senderId, userId), eq(messages.receiverId, conv.userId))
+              )
+            )
+            .orderBy(desc(messages.createdAt))
+            .limit(1);
+
+          // Check for unread instant messages
+          const unreadIMs = await db
+            .select()
+            .from(messages)
+            .where(
+              and(
+                eq(messages.receiverId, userId),
+                eq(messages.senderId, conv.userId),
+                eq(messages.isRead, false),
+                eq(messages.messageType, 'instant')
+              )
+            );
+
+          return {
+            userId: conv.userId,
+            username: conv.username,
+            avatar: conv.profileImage,
+            location: conv.location || 'Location not set',
+            userType: conv.userType || 'traveler',
+            lastMessage: lastMessage[0]?.content || 'No messages yet',
+            lastMessageTime: lastMessage[0]?.createdAt,
+            hasUnreadIM: unreadIMs.length > 0,
+            unreadCount: unreadIMs.length
+          };
+        })
+      );
+
+      return res.json(enhancedConversations);
+    } catch (error) {
+      console.error("Error fetching conversations:", error);
+      return res.status(500).json({ message: "Failed to fetch conversations" });
+    }
+  });
+
+  // CRITICAL: Get connections for user  
+  app.get("/api/connections/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const connections = await storage.getUserConnections(userId);
+      return res.json(connections);
+    } catch (error) {
+      console.error("Error fetching connections:", error);
+      return res.status(500).json({ message: "Failed to fetch connections" });
+    }
+  });
+
+  // CRITICAL: Get connection requests for user
+  app.get("/api/connections/:userId/requests", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const requests = await storage.getConnectionRequests(userId);
+      return res.json(requests);
+    } catch (error) {
+      console.error("Error fetching connection requests:", error);
+      return res.status(5```text
+0).json({ message: "Failed to fetch connection requests" });
+    }
+  });
+
+  // CRITICAL: Create new connection (send connection request)
+  app.post("/api/connections", async (req, res) => {
+    try {
+      console.log(`CONNECTION REQUEST: Received body:`, req.body);
+      const { requesterId, targetUserId } = req.body;
+
+      if (!requesterId || !targetUserId) {
+        console.log(`CONNECTION: Missing data - requesterId: ${requesterId}, targetUserId: ${targetUserId}`);
+        return res.status(400).json({ message: "requesterId and targetUserId are required" });
+      }
+
+      console.log(`CONNECTION: Checking for existing connection between ${requesterId} and ${targetUserId}`);
+
+      // Skip duplicate check for now and proceed directly to creation
+      const reqId = parseInt(requesterId);
+      const targId = parseInt(targetUserId);
+      console.log(`CONNECTION: Proceeding to create connection from ${reqId} to ${targId}`);
+
+      console.log(`CONNECTION: Creating new connection request...`);
+
+      // Create new connection request
+      const newConnection = await storage.createConnection({
+        requesterId: parseInt(requesterId),
+        receiverId: parseInt(targetUserId),
+        status: 'pending',
+        createdAt: new Date()
+      });
+
+      console.log(`CONNECTION: Successfully created connection request from ${requesterId} to ${targetUserId}:`, newConnection);
+      return res.json({ success: true, connection: newConnection });
+    } catch (error) {
+      console.error("CONNECTION ERROR:", error);
+      return res.status(500).json({ message: "Failed to create connection", error: error.message });
+    }
+  });
+
+  // CRITICAL: Get messages for user
+  app.get("/api/messages/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      // Use direct database query
+      const userMessages = await db
+        .select()
+        .from(messages)
+        .where(
+          or(
+            eq(messages.senderId, userId),
+            eq(messages.receiverId, userId)
+          )
+        )
+        .orderBy(desc(messages.createdAt));
+      return res.json(userMessages || []);
+    } catch (error) {
+      console.error("Error fetching messages:", error);
+      return res.status(500).json({ message: "Failed to fetch messages" });
+    }
+  });
+
+  // CRITICAL: Send message for IM system (handles offline message delivery)
+  app.post("/api/messages", async (req, res) => {
+    try {
+      const { senderId, receiverId, content, isInstantMessage } = req.body;
+
+      if (!senderId || !receiverId || !content) {
+        return res.status(400).json({ message: "senderId, receiverId, and content are required" });
+      }
+
+      console.log(`💬 ${isInstantMessage ? 'IM' : 'REGULAR'} MESSAGE: Storing message from ${senderId} to ${receiverId} for offline delivery`);
+
+      // Store message in database for offline delivery
+      const newMessage = await db
+        .insert(messages)
+        .values({
+          senderId: parseInt(senderId),
+          receiverId: parseInt(receiverId),
+          content: content.trim(),
+          messageType: isInstantMessage ? 'instant' : 'text',
+          isRead: false,
+          createdAt: new Date()
+        })
+        .returning();
+
+      console.log(`💬 IM MESSAGE: Message stored with ID ${newMessage[0]?.id}`);
+
+      // Notify online users via WebSocket (if receiver is online)
+      // This will be handled by the WebSocket service
+
+      return res.json({ 
+        success: true, 
+        message: newMessage[0],
+        messageId: newMessage[0]?.id 
+      });
+    } catch (error) {
+      console.error("Error sending message:", error);
+      return res.status(500).json({ message: "Failed to send message" });
+    }
+  });
+
+  // CRITICAL: Get chatrooms for user
+  app.get("/api/chatrooms/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      // Use direct database query - get all chatrooms for now since chatroom participants table may not exist
+      const allChatrooms = await db.select().from(citychatrooms);
+      return res.json(allChatrooms);
+    } catch (error) {
+      console.error("Error fetching chatrooms:", error);
+      return res.status(500).json({ message: "Failed to fetch chatrooms" });
+    }
+  });
+
+  // Get user's chatroom participation for profile display
+  app.get("/api/users/:userId/chatroom-participation", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      console.log(`🏠 CHATROOM PARTICIPATION: Getting chatroom participation for user ${userId}`);
+
+      // Get chatrooms where user is a member using pool connection for reliability
+      const result = await db.execute(sql`
+        SELECT 
+          cc.id,
+          cc.name,
+          cc.description,
+          cc.city,
+          cc.state,
+          cc.country,
+          cc.created_at,
+          cc.is_active
+        FROM city_chatrooms cc
+        INNER JOIN chatroom_members cm ON cc.id = cm.chatroom_id
+        WHERE cm.user_id = ${userId}
+        AND cc.is_active = true
+        ORDER BY cc.created_at DESC
+      `);
+
+      const userChatrooms = result.rows || [];
+
+      console.log(`🏠 CHATROOM PARTICIPATION: Found ${userChatrooms.length} chatrooms for user ${userId}`);
+      return res.json(userChatrooms);
+    } catch (error) {
+      console.error("Error fetching user chatroom participation:", error);
+      return res.status(500).json({ message: "Failed to fetch chatroom participation" });
+    }
+  });
+
+  // ORIGINAL WORKING SYSTEM: Get chatrooms with automatic city filtering
+  app.get("/api/chatrooms", async (req, res) => {
+    try {
+      const { city, state, country, userId } = req.query;
+
+      if (city) {
+        // ORIGINAL SYSTEM: Filter chatrooms by city automatically
+        console.log(`🏙️ ORIGINAL: Getting chatrooms for ${city}, ${state}, ${country}`);
+        const chatrooms = await storage.getCityChatrooms(
+          city as string, 
+          state as string || null, 
+          country as string || null
+        );
+        console.log(`🏙️ ORIGINAL: Found ${chatrooms.length} chatrooms for ${city}`);
+        return res.json(chatrooms);
+      } else if (userId) {
+        const userChatrooms = await storage.getCityChatrooms(undefined, undefined, undefined, parseInt(userId as string));
+        return res.json(userChatrooms);
+      } else {
+        // Return all chatrooms if no parameters (for global views)
+        const allChatrooms = await db.select().from(citychatrooms);
+        return res.json(allChatrooms);
+      }
+    } catch (error) {
+      console.error("Error fetching chatrooms:", error);
+      return res.status(500).json({ message: "Failed to fetch chatrooms" });
+    }
+  });
+
+  // RESTORED: Get events filtered by city (CRITICAL FIX)  
+  app.get("/api/events", async (req, res) => {
+    try {
+      const { city } = req.query;
+
+      if (city) {
+        // Filter events by city
+        console.log(`🎪 EVENTS: Getting events for city: ${city}`);
+        const cityEvents = await db.select().from(events)
+          .where(eq(events.city, city as string));
+        console.log(`🎪 EVENTS: Found ${cityEvents.length} events for ${city}`);
+        return res.json(cityEvents);
+      } else {
+        // Return all events if no city specified
+        const allEvents = await db.select().from(events);
+        console.log(`🎪 EVENTS: Returning all ${allEvents.length} events`);
+        return res.json(allEvents);
+      }
+    } catch (error) {
+      console.error("Error fetching events:", error);
+      return res.status(500).json({ message: "Failed to fetch events" });
+    }
+  });
+
+  // CRITICAL: Get business offers
+  app.get("/api/business-offers", async (req, res) => {
+    try {
+      // Use direct database query
+      const offers = await db.select().from(businessOffers);
+      return res.json(offers || []);
+    } catch (error) {
+      console.error("Error fetching business offers:", error);
+      return res.json([]);
+    }
+  });
+
+  // CRITICAL: Get quick meetups - ONLY REAL EVENTS TODAY
+  app.get("/api/quick-meetups", async (req, res) => {
+    try {
+      const { city } = req.query;
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const tomorrow = new Date(today);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+
+      console.log(`QUICK MEETUPS: Filtering for TODAY ONLY (${today.toISOString().split('T')[0]})`);
+
+      // Only show meetups created TODAY and still active
+      let query = db
+        .select()
+        .from(quickMeetups)
+        .where(
+          and(
+            eq(quickMeetups.isActive, true),
+            gte(quickMeetups.createdAt, today),
+            lt(quickMeetups.createdAt, tomorrow),
+            gt(quickMeetups.expiresAt, new Date()) // Still active
+          )
+        )
+        .orderBy(desc(quickMeetups.createdAt));
+
+      // Add city filtering if specified
+      if (city) {
+        const cityName = city.toString().split(',')[0].trim();
+        console.log(`QUICK MEETUPS: Filtering by city: ${cityName}`);
+        query = db
+          .select()
+          .from(quickMeetups)
+          .where(
+            and(
+              eq(quickMeetups.isActive, true),
+              gte(quickMeetups.createdAt, today),
+              lt(quickMeetups.createdAt, tomorrow),
+              gt(quickMeetups.expiresAt, new Date()),
+              or(
+                ilike(quickMeetups.location, `%${cityName}%`),
+                ilike(quickMeetups.city, `%${cityName}%`)
+              )
+            )
+          )
+          .orderBy(desc(quickMeetups.createdAt));
+      }
+
+      const meetups = await query;
+      console.log(`QUICK MEETUPS: Found ${meetups.length} REAL meetups created today`);
+
+      if (meetups.length === 0) {
+        console.log(`QUICK MEETUPS: No real meetups today - returning empty array`);
+        return res.json([]);
+      }
+
+      return res.json(meetups);
+    } catch (error) {
+      console.error("Error fetching quick meetups:", error);
+      return res.json([]);
+    }
+  });
+
+  // RESTORED: City photos API endpoint with AUTHENTIC user-uploaded photos
+  app.get("/api/city-photos/all", async (req, res) => {
+    try {
+      const cityPhotos = await storage.getAllCityPhotos();
+      res.json(cityPhotos);
+    } catch (error) {
+      console.error("Error fetching city photos:", error);
+      res.status(500).json({ message: "Failed to fetch city photos" });
+    }
+  });
+
+  // RESTORED: Upload city photo endpoint
+  app.post("/api/city-photos", async (req, res) => {
+    try {
+      const { cityName, imageData, photographerUsername } = req.body;
+      const photo = await storage.createCityPhoto({ cityName, imageData, photographerUsername });
+      res.json(photo);
+    } catch (error) {
+      console.error("Error uploading city photo:", error);
+      res.status(500).json({ message: "Failed to upload city photo" });
+    }
+  });
+
+  // NEW: City photo upload with aura rewards endpoint
+  app.post("/api/city-photos/upload", async (req, res) => {
+    try {
+      const { city, state, country, photographerId, imageData, caption } = req.body;
+
+      if (!city || !country || !photographerId || !imageData) {
+        return res.status(400).json({ message: "Missing required fields" });
+      }
+
+      // Get photographer username
+      const photographer = await storage.getUserById(photographerId);
+      if (!photographer) {
+        return res.status(404).json({ message: "Photographer not found" });
+      }
+
+      // Create city photo entry
+      const photoData = {
+        cityName: city,
+        state: state || '',
+        country,
+        imageData,
+        photographerUsername: photographer.username,
+        photographerId,
+        caption: caption || `Beautiful view of ${city}`,
+        createdAt: new Date()
+      };
+
+      const photo = await storage.createCityPhoto(photoData);
+
+      // Award aura points (15 points for photo upload)
+      const auraAwarded = 15;
+      const currentAura = photographer.aura || 0;
+      await storage.updateUser(photographerId, { 
+        aura: currentAura + auraAwarded 
+      });
+
+      console.log(`📸 PHOTO UPLOADED: ${photographer.username} uploaded photo of ${city}, awarded ${auraAwarded} aura`);
+
+      res.json({ 
+        success: true,
+        photo,
+        auraAwarded,
+        message: `Photo uploaded successfully! You earned ${auraAwarded} aura points.`
+      });
+    } catch (error) {
+      console.error("Error uploading city photo with aura:", error);
+      res.status(500).json({ message: "Failed to upload city photo" });
+    }
+  });
+
+  // Get city-specific photos endpoint
+  app.get("/api/city-photos/:city", async (req, res) => {
+    try {
+      const city = decodeURIComponent(req.params.city);
+      const cityPhotos = await storage.getCityPhotosByCity(city);
+      res.json(cityPhotos);
+    } catch (error) {
+      console.error("Error fetching city-specific photos:", error);
+      res.status(500).json({ message: "Failed to fetch city photos" });
+    }
+  });
+
+  // RESTORED: City-specific chatrooms endpoint (CRITICAL FIX)
+  app.get("/api/city-chatrooms", async (req, res) => {
+    try {
+      const { city, state, country } = req.query;
+      console.log(`🏙️ CHATROOMS: Getting chatrooms for ${city}, ${state}, ${country}`);
+
+      const chatrooms = await storage.getCityChatrooms(
+        city as string, 
+        state as string || null, 
+        country as string || null
+      );
+
+      console.log(`🏙️ CHATROOMS: Found ${chatrooms.length} chatrooms for ${city}`);
+      res.json(chatrooms);
+    } catch (error) {
+      console.error("Error fetching city chatrooms:", error);
+      res.status(500).json({ message: "Failed to fetch city chatrooms" });
+    }
+  });
+
+  // CRITICAL: Get user photos endpoint (MISSING - RESTORED)
+  app.get("/api/users/:id/photos", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.id);
+      console.log(`📸 PHOTOS: Getting photos for user ${userId}`);
+
+      if (isNaN(userId)) {
+        return res.status(400).json({ message: "Invalid user ID" });
+      }
+
+      const photos = await storage.getUserPhotos(userId);
+      console.log(`📸 PHOTOS: Found ${photos.length} photos for user ${userId}`);
+
+      return res.json(photos);
+    } catch (error) {
+      console.error("Error fetching user photos:", error);
+      return res.status(500).json({ message: "Failed to fetch user photos" });
+    }
+  });
+
+  // CRITICAL: Get user travel memories endpoint (MISSING - RESTORED)
+  app.get("/api/users/:id/travel-memories", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.id);
+      console.log(`🗺️ MEMORIES: Getting travel memories for user ${userId}`);
+
+      if (isNaN(userId)) {
+        return res.status(400).json({ message: "Invalid user ID" });
+      }
+
+      const memories = await storage.getUserTravelMemories(userId);
+      console.log(`🗺️ MEMORIES: Found ${memories.length} travel memories for user ${userId}`);
+
+      return res.json(memories);
+    } catch (error) {
+      console.error("Error fetching user travel memories:", error);
+      return res.status(500).json({ message: "Failed to fetch user travel memories" });
+    }
+  });
+
+  // CRITICAL: Get ALL public travel memories endpoint (MISSING - RESTORED)
+  app.get("/api/travel-memories/public", async (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 50;
+      console.log(`🌍 PUBLIC MEMORIES: Getting all public travel memories (limit: ${limit})`);
+
+      const memories = await storage.getPublicTravelMemories(limit);
+      console.log(`🌍 PUBLIC MEMORIES: Found ${memories.length} public travel memories`);
+
+      return res.json(memories);
+    } catch (error) {
+      console.error("Error fetching public travel memories:", error);
+      return res.status(500).json({ message: "Failed to fetch public travel memories" });
+    }
+  });
+
+  // CRITICAL: Get ALL travel memories endpoint (MISSING - RESTORED)
+  app.get("/api/travel-memories", async (req, res) => {
+    try {
+      const userId = req.query.userId ? parseInt(req.query.userId as string) : undefined;
+
+      if (userId) {
+        console.log(`🗺️ MEMORIES: Getting travel memories for user ${userId}`);
+        const memories = await storage.getUserTravelMemories(userId);
+        console.log(`🗺️ MEMORIES: Found ${memories.length} travel memories for user ${userId}`);
+        return res.json(memories);
+      } else {
+        console.log(`🌍 ALL MEMORIES: Getting all public travel memories`);
+        const memories = await storage.getPublicTravelMemories(50);
+        console.log(`🌍 ALL MEMORIES: Found ${memories.length} public travel memories`);
+        return res.json(memories);
+      }
+    } catch (error) {
+      console.error("Error fetching travel memories:", error);
+      return res.status(500).json({ message: "Failed to fetch travel memories" });
+    }
+  });
+
+  // CRITICAL: Get user matches and compatibility data 
+  app.get("/api/users/:userId/matches", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      console.log(`MATCHES: Getting compatibility matches for user ${userId}`);
+
+      const matches = await matchingService.findMatches(userId);
+      console.log(`MATCHES: Found ${matches.length} compatibility matches`);
+
+      return res.json(matches);
+    } catch (error) {
+      console.error("Error fetching user matches:", error);
+      return res.status(500).json({ message: "Failed to fetch matches" });
+    }
+  });
+
+  // RESTORED: City map data endpoint
+  app.get("/api/city-map-data", (req, res) => {
+    // Static map data for demo purposes
+    res.json([
+      { id: 1, name: "Central Park", lat: 40.7829, lng: -73.9654, type: "park" },
+      { id: 2, name: "Times Square", lat: 40.7580, lng: -73.9855, type: "landmark" },
+      { id: 3, name: "Brooklyn Bridge", lat: 40.7061, lng: -73.9969, type: "bridge" }
+    ]);
+  });
+
+  // GET /api/auth/user - Emergency auth recovery endpoint
+  app.get("/api/auth/user", async (req, res) => {
+    try {
+      // This endpoint is used by the frontend for emergency auth recovery
+      // For now, return empty response since we don't have session-based auth
+      res.status(401).json({ message: "No authenticated session found" });
+    } catch (error) {
+      console.error("Auth user endpoint error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // Group Chat Rooms API endpoints for instant messaging modals
+
+  // Get user's joined rooms
+  app.get("/api/chatrooms/my-rooms", async (req, res) => {
+    try {
+      const userId = req.session?.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      const allChatrooms = await db.select().from(citychatrooms);
+      // Return user's joined rooms (can be enhanced with membership tracking)
+      const joinedRooms = allChatrooms.slice(0, 5).map(room => ({
+        ...room,
+        isMember: true,
+        type: room.tags?.includes('meetup') ? 'meetup' : 'general'
+      }));
+
+      res.json(joinedRooms);
+    } catch (error) {
+      console.error("Error fetching user rooms:", error);
+      res.status(500).json({ message: "Failed to fetch user rooms" });
+    }
+  });
+
+  // Get public chatrooms
+  app.get("/api/chatrooms/public", async (req, res) => {
+    try {
+      const allChatrooms = await db.select().from(citychatrooms);
+      const publicRooms = allChatrooms
+        .filter(room => room.isPublic)
+        .map(room => ({
+          ...room,
+          isMember: false,
+          type: room.tags?.includes('meetup') ? 'meetup' : 'general'
+        }));
+
+      res.json(publicRooms);
+    } catch (error) {
+      console.error("Error fetching public rooms:", error);
+      res.status(500).json({ message: "Failed to fetch public rooms" });
+    }
+  });
+
+  // Get event-based chatrooms
+  app.get("/api/chatrooms/events", async (req, res) => {
+    try {
+      const allChatrooms = await db.select().from(citychatrooms);
+      const eventRooms = allChatrooms
+        .filter(room => room.tags?.includes('meetup') || room.tags?.includes('event'))
+        .map(room => ({
+          ...room,
+          isMember: false,
+          type: 'event'
+        }));
+
+      res.json(eventRooms);
+    } catch (error) {
+      console.error("Error fetching event rooms:", error);
+      res.status(500).json({ message: "Failed to fetch event rooms" });
+    }
+  });
+
+  // Get city-based chatrooms
+  app.get("/api/chatrooms/cities", async (req, res) => {
+    try {
+      const allChatrooms = await db.select().from(citychatrooms);
+      const cityRooms = allChatrooms
+        .filter(room => room.city && room.city !== '')
+        .map(room => ({
+          ...room,
+          isMember: false,
+          type: 'city'
+        }));
+
+      res.json(cityRooms);
+    } catch (error) {
+      console.error("Error fetching city rooms:", error);
+      res.status(500).json({ message: "Failed to fetch city rooms" });
+    }
+  });
+
+  // Join a chatroom
+  app.post("/api/chatrooms/:roomId/join", async (req, res) => {
+    try {
+      const userId = req.session?.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      const roomId = parseInt(req.params.roomId);
+      // For now, return success (can be enhanced with actual membership tracking)
+      res.json({ success: true, message: "Successfully joined room" });
+    } catch (error) {
+      console.error("Error joining room:", error);
+      res.status(500).json({ message: "Failed to join room" });
+    }
+  });
+
+  // Leave a chatroom
+  app.post("/api/chatrooms/:roomId/leave", async (req, res) => {
+    try {
+      const userId = req.session?.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      const roomId = parseInt(req.params.roomId);
+      // For now, return success (can be enhanced with actual membership tracking)
+      res.json({ success: true, message: "Successfully left room" });
+    } catch (error) {
+      console.error("Error leaving room:", error);
+      res.status(500).json({ message: "Failed to leave room" });
+    }
+  });
+
+  // User status and notification settings endpoints
+  app.put("/api/users/notification-settings", async (req, res) => {
+    try {
+      const userId = req.session?.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      // For now, just return success (can be enhanced with actual settings storage)
+      res.json({ success: true, message: "Notification settings updated" });
+    } catch (error) {
+      console.error("Error updating notification settings:", error);
+      res.status(500).json({ message: "Failed to update notification settings" });
+    }
+  });
+
+  app.put("/api/users/status", async (req, res) => {
+    try {
+      const userId = req.session?.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      // For now, just return success (can be enhanced with actual status storage)
+      res.json({ success: true, message: "Status updated" });
+    } catch (error) {
+      console.error("Error updating status:", error);
+      res.status(500).json({ message: "Failed to update status" });
+    }
+  });
+
+  // Retroactive aura award system - award missing aura for existing users
+  // TODO: Implement retroactive aura award system
+
+  // Set up WebSocket server for instant messaging on a different path
+  const server = createServer(app);
+  const wss = new WebSocketServer({ server, path: '/ws' });
+
+  interface AuthenticatedWebSocket extends WebSocket {
+    userId?: number;
+    username?: string;
+    isAuthenticated?: boolean;
+  }
+
+  const connectedUsers = new Map<number, AuthenticatedWebSocket>();
+
+  wss.on('connection', (ws: AuthenticatedWebSocket) => {
+    console.log('New WebSocket connection');
+
+    ws.on('message', async (message) => {
+      try {
+        const data = JSON.parse(message.toString());
+        console.log('📥 WebSocket message received:', data);
+
+        switch (data.type) {
+          case 'auth':
+            ws.userId = data.userId;
+            ws.username = data.username;
+            ws.isAuthenticated = true;
+            connectedUsers.set(data.userId, ws);
+            console.log(`✅ User ${data.username} (${data.userId}) authenticated via WebSocket`);
+
+            // Send any pending offline messages when user comes online
+            await deliverOfflineMessages(data.userId);
+            break;
+
+          case 'instant_message':
+            if (!ws.isAuthenticated || !ws.userId) {
+              console.log('❌ Unauthenticated user trying to send message');
+              return;
+            }
+
+            const { receiverId, content } = data;
+            console.log(`💬 Instant message from ${ws.userId} to ${receiverId}: ${content}`);
+
+            // Store IM in database for offline delivery
+            try {
+              const newMessage = await db.insert(messages).values({
+                senderId: ws.userId,
+                receiverId,
+                content,
+                messageType: 'instant',
+                isRead: false,
+                createdAt: new Date()
+              }).returning();
+
+              console.log(`💾 IM stored in database with ID: ${newMessage[0].id}`);
+            } catch (error) {
+              console.error('❌ Error storing IM in database:', error);
+            }
+
+            // Check if receiver is online for instant delivery
+            const receiverWs = connectedUsers.get(receiverId);
+            if (receiverWs && receiverWs.readyState === WebSocket.OPEN) {
+              // Send instantly to online user
+              receiverWs.send(JSON.stringify({
+                type: 'instant_message_received',
+                message: {
+                  senderId: ws.userId,
+                  senderUsername: ws.username,
+                  content,
+                  timestamp: new Date().toISOString()
+                }
+              }));
+              console.log(`✅ Instant message delivered to online user ${receiverId}`);
+            } else {
+              console.log(`📪 User ${receiverId} is offline - will receive message when they come online`);
+            }
+            break;
+
+          case 'typing':
+            if (!ws.isAuthenticated) return;
+            const typingReceiverWs = connectedUsers.get(data.receiverId);
+            if (typingReceiverWs && typingReceiverWs.readyState === WebSocket.OPEN) {
+              typingReceiverWs.send(JSON.stringify({
+                type: 'user_typing',
+                senderId: ws.userId,
+                senderUsername: ws.username,
+                isTyping: data.isTyping
+              }));
+            }
+            break;
+        }
+      } catch (error) {
+        console.error('❌ WebSocket message parsing error:', error);
+      }
+    });
+
+    ws.on('close', () => {
+      if (ws.userId && ws.isAuthenticated) {
+        connectedUsers.delete(ws.userId);
+        console.log(`🔴 User ${ws.username} (${ws.userId}) disconnected`);
+      }
+    });
+
+    ws.on('error', (error) => {
+      console.error('🔴 WebSocket error:', error);
+    });
+  });
+
+  // Deliver offline messages when user comes online
+  async function deliverOfflineMessages(userId: number) {
+    try {
+      // Get unread messages for this user
+      const unreadMessages = await db
+        .select()
+        .from(messages)
+        .where(
+          and(
+            eq(messages.receiverId, userId),
+            eq(messages.isRead, false)
+          )
+        )
+        .orderBy(asc(messages.createdAt));
+
+      const userWs = connectedUsers.get(userId);
+      if (userWs && userWs.readyState === WebSocket.OPEN && unreadMessages.length > 0) {
+        console.log(`📬 Delivering ${unreadMessages.length} offline messages to user ${userId}`);
+
+        for (const message of unreadMessages) {
+          // Get sender username
+          const sender = await db
+            .select({ username: users.username })
+            .from(users)
+            .where(eq(users.id, message.senderId))
+            .limit(1);
+
+          userWs.send(JSON.stringify({
+            type: 'instant_message_received',
+            message: {
+              id: message.id,
+              senderId: message.senderId,
+              senderUsername: sender[0]?.username || 'Unknown',
+              content: message.content,
+              timestamp: message.createdAt.toISOString(),
+              isOfflineDelivery: true
+            }
+          }));
+        }
+
+        // Mark messages as read
+        await db
+          .update(messages)
+          .set({ isRead: true })
+          .where(
+            and(
+              eq(messages.receiverId, userId),
+              eq(messages.isRead, false)
+            )
+          );
+
+        console.log(`✅ Marked ${unreadMessages.length} messages as read for user ${userId}`);
+      }
+    } catch (error) {
+      console.error('❌ Error delivering offline messages:', error);
+    }
+  }
+
+  // CRITICAL: Cities API endpoint for city-specific matching
+  app.get('/api/cities/all', async (req, res) => {
+    try {
+      console.log('🏙️ CITIES API: Fetching all cities...');
+
+      // Get actual counts for each city
+      const citiesFromPages = await db
+        .select({
+          city: cityPages.city,
+          state: cityPages.state,
+          country: cityPages.country,
+          localCount: sql<number>`(SELECT COUNT(*) FROM users WHERE hometown_city = ${cityPages.city})`.as('localCount'),
+          travelerCount: sql<number>`(SELECT COUNT(*) FROM users WHERE is_currently_traveling = true AND travel_destination LIKE '%' || ${cityPages.city} || '%')`.as('travelerCount'),
+          eventCount: sql<number>`(SELECT COUNT(*) FROM ${events} WHERE ${events.location} LIKE '%' || ${cityPages.city} || '%')`.as('eventCount')
+        })
+        .from(cityPages)
+        .orderBy(sql<number>`(SELECT COUNT(*) FROM users WHERE hometown_city = ${cityPages.city}) + (SELECT COUNT(*) FROM users WHERE is_currently_traveling = true AND travel_destination LIKE '%' || ${cityPages.city} || '%') DESC`)
+        .limit(50);
+
+      console.log(`🏙️ CITIES API: Found ${citiesFromPages.length} cities`);
+      console.log('🏙️ CITIES API: First 3 cities:', citiesFromPages.slice(0, 3));
+
+      res.json(citiesFromPages);
+    } catch (error) {
+      console.error('❌ CITIES API ERROR:', error);
+      res.status(500).json({ error: 'Failed to fetch cities' });
+    }```text
+    }
+  });
+
+  // City Activity Matching routes
+  app.get('/api/city-activities/:city', async (req, res) => {
+    try {
+      const { city } = req.params;
+      const { state, country } = req.query;
+
+      const activities = await storage.getCityActivities(
+        city,
+        state as string | undefined,
+        country as string | undefined
+      );
+
+      res.json(activities);
+    } catch (error) {
+      console.error('Error fetching city activities:', error);
+      res.status(500).json({ error: 'Failed to fetch city activities' });
+    }
+  });
+
+  app.post('/api/city-activities', async (req, res) => {
+    try {
+      const { city, state, country, activityName, category, description, createdByUserId } = req.body;
+      // Get user ID from session or header
+      const userId = req.session?.user?.id || createdByUserId || parseInt(req.headers['x-user-id'] as string);
+
+      if (!userId) {
+        return res.status(401).json({ error: 'User not authenticated' });
+      }
+
+      const newActivity = await storage.createCityActivity({
+        city,
+        state,
+        country,
+        activityName,
+        category,
+        description,
+        createdByUserId: userId
+      });
+
+      res.json(newActivity);
+    } catch (error) {
+      console.error('Error creating city activity:', error);
+      res.status(500).json({ error: 'Failed to create city activity' });
+    }
+  });
+
+  // Update city activity
+  app.put('/api/city-activities/:id', async (req, res) => {
+    try {
+      const activityId = parseInt(req.params.id);
+      const { activityName } = req.body;
+
+      if (!activityName) {
+        return res.status(400).json({ error: 'Activity name is required' });
+      }
+
+      const updatedActivity = await storage.updateCityActivity(activityId, { activityName });
+
+      if (!updatedActivity) {
+        return res.status(404).json({ error: 'Activity not found' });
+      }
+
+      res.json(updatedActivity);
+    } catch (error) {
+      console.error('Error updating city activity:', error);
+      res.status(500).json({ error: 'Failed to update city activity' });
+    }
+  });
+
+  // Delete city activity
+  app.delete('/api/city-activities/:id', async (req, res) => {
+    try {
+      const activityId = parseInt(req.params.id);
+
+      const deleted = await storage.deleteCityActivity(activityId);
+
+      if (!deleted) {
+        return res.status(404).json({ error: 'Activity not found' });
+      }
+
+      res.json({ success: true, message: 'Activity deleted successfully' });
+    } catch (error) {
+      console.error('Error deleting city activity:', error);
+      res.status(500).json({ error: 'Failed to delete city activity' });
+    }
+  });
+
+  // Detect similar activities for admin cleanup
+  app.get('/api/city-activities/:city/duplicates', async (req, res) => {
+    try {
+      const { city } = req.params;
+      console.log(`🔍 DUPLICATES: Checking for similar activities in ${city}`);
+
+      const activities = await storage.getCityActivities(city);
+      const duplicateGroups = [];
+
+      // Similarity detection function (matching frontend logic)
+      const calculateSimilarity = (str1: string, str2: string): number => {
+        const s1 = str1.toLowerCase().trim();
+        const s2 = str2.toLowerCase().trim();
+
+        if (s1 === s2) return 1.0;
+
+        const locationKeywords = ['museum', 'gallery', 'center', 'villa', 'park', 'beach', 'restaurant', 'cafe', 'bar', 'club', 'theater', 'theatre', 'studio', 'market', 'mall', 'shop'];
+        const commonWords = ['and', 'the', 'of', 'in', 'at', 'for', 'to', 'with', 'a', 'an'];
+
+        const getKeyWords = (str: string) => 
+          str.split(/\s+/).filter(word => 
+            word.length > 2 && !commonWords.includes(word.toLowerCase())
+          );
+
+        const words1 = getKeyWords(s1);
+        const words2 = getKeyWords(s2);
+
+        const sharedWords = words1.filter(word => 
+          words2.some(w2 => w2.includes(word) || word.includes(w2))
+        );
+
+        if (sharedWords.length > 0) {
+          const hasLocationWord1 = words1.some(word => locationKeywords.includes(word));
+          const hasLocationWord2 = words2.some(word => locationKeywords.includes(word));
+
+          if (hasLocationWord1 && hasLocationWord2) {
+            return 0.8;
+          }
+        }
+
+        return 0.0;
+      };
+
+      // Group similar activities
+      const processed = new Set();
+      for (let i = 0; i < activities.length; i++) {
+        if (processed.has(i)) continue;
+
+        const group = [activities[i]];
+        processed.add(i);
+
+        for (let j = i + 1; j < activities.length; j++) {
+          if (processed.has(j)) continue;
+
+          const similarity = calculateSimilarity(activities[i].activityName, activities[j].activityName);
+          if (similarity > 0.7) {
+            group.push(activities[j]);
+            processed.add(j);
+          }
+        }
+
+        if (group.length > 1) {
+          duplicateGroups.push(group);
+        }
+      }
+
+      console.log(`🔍 DUPLICATES: Found ${duplicateGroups.length} potential duplicate groups`);
+      res.json(duplicateGroups);
+    } catch (error) {
+      console.error('Error detecting duplicates:', error);
+      res.status(500).json({ error: 'Failed to detect duplicates' });
+    }
+  });
+
+  // Global keyword search for users who have matched specific activities
+  app.get('/api/users/search-by-keyword', async (req, res) => {
+    try {
+      const { keyword } = req.query;
+
+      if (!keyword || typeof keyword !== 'string') {
+        return res.status(400).json({ error: 'Keyword parameter is required' });
+      }
+
+      console.log(`🔍 KEYWORD SEARCH: Searching for users who matched activities containing: "${keyword}"`);
+
+      // Search for activities that match the keyword
+      const matchingActivities = await db
+        .select({
+          id: cityActivities.id,
+          activityName: cityActivities.activityName,
+          city: cityActivities.city,
+          state: cityActivities.state,
+          country: cityActivities.country,
+          category: cityActivities.category,
+          description: cityActivities.description
+        })
+        .from(cityActivities)
+        .where(
+          and(
+            or(
+              ilike(cityActivities.activityName, `%${keyword}%`),
+              ilike(cityActivities.description, `%${keyword}%`),
+              ilike(cityActivities.category, `%${keyword}%`)
+            ),
+            eq(cityActivities.isActive, true)
+          )
+        );
+
+      console.log(`🔍 KEYWORD SEARCH: Found ${matchingActivities.length} activities matching "${keyword}"`);
+
+      if (matchingActivities.length === 0) {
+        return res.json([]);
+      }
+
+      // Get all activity IDs that match the keyword
+      const activityIds = matchingActivities.map(activity => activity.id);
+
+      // Find all users who have matched any of these activities
+      const usersWithMatches = await db
+        .select({
+          id: users.id,
+          username: users.username,  
+          name: users.name,
+          email: users.email,
+          userType: users.userType,
+          bio: users.bio,
+          location: users.location,
+          hometownCity: users.hometownCity,
+          hometownState: users.hometownState,
+          hometownCountry: users.hometownCountry,
+          profileImage: users.profileImage,
+          matchedActivityId: activityMatches.activityId,
+          matchedAt: activityMatches.createdAt,
+          activityName: cityActivities.activityName,
+          activityCity: cityActivities.city,
+          activityState: cityActivities.state,
+          activityCountry: cityActivities.country
+        })
+        .from(users)
+        .innerJoin(activityMatches, eq(users.id, activityMatches.userId))
+        .innerJoin(cityActivities, eq(activityMatches.activityId, cityActivities.id))
+        .where(inArray(activityMatches.activityId, activityIds))
+        .orderBy(desc(activityMatches.createdAt));
+
+      console.log(`🔍 KEYWORD SEARCH: Found ${usersWithMatches.length} user-activity matches for "${keyword}"`);
+
+      // Group results by user to avoid duplicates and include all their matching activities
+      const userResults = new Map();
+
+      usersWithMatches.forEach(userMatch => {
+        const userId = userMatch.id;
+
+        if (!userResults.has(userId)) {
+          userResults.set(userId, {
+            id: userMatch.id,
+            username: userMatch.username,
+            name: userMatch.name,
+            email: userMatch.email,
+            userType: userMatch.userType,
+            bio: userMatch.bio,
+            location: userMatch.location,
+            hometownCity: userMatch.hometownCity,
+            hometownState: userMatch.hometownState,
+            hometownCountry: userMatch.hometownCountry,
+            profileImage: userMatch.profileImage,
+            matchedActivities: []
+          });
+        }
+
+        userResults.get(userId).matchedActivities.push({
+          activityId: userMatch.matchedActivityId,
+          activityName: userMatch.activityName,
+          city: userMatch.city,
+          state: userMatch.state,
+          country: userMatch.country,
+          matchedAt: userMatch.matchedAt
+        });
+      });
+
+      const finalResults = Array.from(userResults.values());
+
+      console.log(`🔍 KEYWORD SEARCH: Returning ${finalResults.length} unique users for keyword "${keyword}"`);
+
+      res.json(finalResults);
+    } catch (error) {
+      console.error('Error searching users by keyword:', error);
+      res.status(500).json({ error: 'Failed to search users by keyword' });
+    }
+  });
+
+  app.post('/api/activity-matches', async (req, res) => {
+    try {
+      const { activity_id } = req.body;
+      // Get user ID from session or header
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string);
+
+      if (!userId) {
+        return res.status(401).json({ error: 'User not authenticated' });
+      }
+
+      const newMatch = await storage.createActivityMatch({
+        activityId: activity_id,
+        userId
+      });
+
+      res.json(newMatch);
+    } catch (error) {
+      console.error('Error creating activity match:', error);
+      res.status(500).json({ error: 'Failed to create activity match' });
+    }
+  });
+
+  app.get('/api/activity-matches/:activityId', async (req, res) => {
+    try {
+      const { activityId } = req.params;
+
+      const matches = await storage.getActivityMatches(parseInt(activityId));
+
+      res.json(matches);
+    } catch (error) {
+      console.error('Error fetching activity matches:', error);
+      res.status(500).json({ error: 'Failed to fetch activity matches' });
+    }
+  });
+
+  // Get user's activity matches (things they want to do in cities)
+  app.get('/api/users/:userId/activity-matches', async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+
+      const matches = await storage.getUserActivityMatches(userId);
+
+      res.json(matches);
+    } catch (error) {
+      console.error('Error fetching user activity matches:', error);
+      res.status(500).json({ error: 'Failed to fetch user activity matches' });
+    }
+  });
+
+  // Delete activity match (unmatch)
+  app.delete('/api/activity-matches/:activityId', async (req, res) => {
+    try {
+      const activityId = parseInt(req.params.activityId);
+      // Get user ID from session or header
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string);
+
+      if (!userId) {
+        return res.status(401).json({ error: 'User not authenticated' });
+      }
+
+      const result = await storage.deleteActivityMatch(userId, activityId);
+
+      res.json({ success: true, message: 'Activity match removed' });
+    } catch (error) {
+      console.error('Error deleting activity match:', error);
+      res.status(500).json({ error: 'Failed to delete activity match' });
+    }
+  });
+
+  console.log("All routes registered successfully");
+  return server;
+}

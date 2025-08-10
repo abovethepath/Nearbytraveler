@@ -1,7 +1,7 @@
 import { useLocation } from "wouter";
 import { useState, useEffect } from "react";
-// Use server static file instead of asset import
-const newLogo = "/attached_assets/new-logo_1753994063802.png";
+// import newLogo from "@assets/new-logo_1753994063802.png";
+const newLogo = "/attached_assets/attached_assets/new-logo_1753994063802.png";
 
 interface LogoProps {
   className?: string;
@@ -33,15 +33,15 @@ export default function Logo({ className, variant = "default" }: LogoProps) {
   const getVariantSize = () => {
     switch (variant) {
       case "landing":
-        return "h-108 w-auto scale-x-110"; // 25% smaller - Optimal size for welcome back page with less horizontal stretch
+        return "h-144 w-auto scale-x-110"; // 3x larger - Optimal size for welcome back page with less horizontal stretch
       case "navbar":
-        return "h-10 sm:h-12 md:h-14 lg:h-16 xl:h-18 w-auto"; // Fixed mobile logo size to prevent overflow
+        return "h-96 sm:h-84 md:h-96 lg:h-120 xl:h-192 w-auto"; // 3x larger - Responsive: larger on mobile (h-96), scaling up on desktop
       case "black-navbar":
-        return "h-144 w-auto"; // 25% smaller - Large logo for brand prominence
+        return "h-192 w-auto"; // 3x larger - Massive logo for maximum brand prominence
       case "footer":
-        return "h-164 w-auto md:h-164 sm:h-142"; // 25% smaller - Footer size matching navbar
+        return "h-219 w-auto md:h-219 sm:h-189"; // 3x larger - Footer size exactly matching navbar
       default:
-        return "h-27 w-auto scale-x-125"; // 25% smaller - Reduced default size
+        return "h-36 w-auto scale-x-125"; // 3x larger - Increased default size
     }
   };
 

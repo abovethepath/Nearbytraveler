@@ -1,7 +1,8 @@
 import React from "react";
 import LandingNavbar from "@/components/landing-navbar";
 import Footer from "@/components/footer";
-import localsHeaderImage from "@assets/server/static/logo.png";
+// import localsHeaderImage from "@assets/ChatGPT Image Jul 23, 2025, 01_18_34 PM_1753301968074.png";
+const localsHeaderImage = "/attached_assets/attached_assets/ChatGPT Image Jul 23, 2025, 01_18_34 PM_1753301968074.png";
 
 export default function LocalsLanding() {
   return (
@@ -12,8 +13,8 @@ export default function LocalsLanding() {
       <div className="relative">
         <div className="relative h-[70vh] overflow-hidden">
           <img 
-            src="/locals-hero.png" 
-            alt="Locals sharing experiences and knowledge" 
+            src={localsHeaderImage} 
+            alt="Locals sharing food and laughs together" 
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-black/40" />

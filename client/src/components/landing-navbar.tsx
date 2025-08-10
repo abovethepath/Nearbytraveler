@@ -8,12 +8,12 @@ export default function LandingNavbar() {
   return (
     <nav className="bg-white dark:bg-gray-800 shadow-sm relative z-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-14 sm:h-16">
+        <div className="flex justify-between h-16">
           <div className="flex">
-            <div className="flex-shrink-0 flex items-center py-1">
+            <div className="flex-shrink-0 flex items-center">
               <Link href="/" className="flex items-center">
                 <Logo variant="navbar" />
-                <span className="ml-1 sm:ml-2 text-red-600 dark:text-red-400 text-xs sm:text-sm font-bold uppercase tracking-wide bg-red-100 dark:bg-red-900/50 px-1 sm:px-2 py-0.5 sm:py-1 rounded">BETA</span>
+                <span className="ml-2 text-red-600 dark:text-red-400 text-sm font-bold uppercase tracking-wide bg-red-100 dark:bg-red-900/50 px-2 py-1 rounded">BETA</span>
               </Link>
             </div>
             <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
@@ -34,11 +34,11 @@ export default function LandingNavbar() {
               </Link>
             </div>
           </div>
-          <div className="hidden sm:ml-6 sm:flex sm:items-center sm:space-x-3">
-            <Link href="/auth" className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out whitespace-nowrap">
+          <div className="hidden sm:ml-6 sm:flex sm:items-center">
+            <Link href="/auth" className="mr-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out">
               Sign In
             </Link>
-            <Link href="/join" className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white px-3 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out whitespace-nowrap">
+            <Link href="/join" className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white px-4 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out">
               Sign Up
             </Link>
           </div>
