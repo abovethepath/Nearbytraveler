@@ -3153,7 +3153,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
             
             {/* About Section */}
-            <Card>
+            <Card className="mt-6">
               <CardHeader>
                 <CardTitle>About {user?.userType === 'business' ? (user?.businessName || user?.name || user?.username) : (user?.username || 'User')}</CardTitle>
               </CardHeader>
@@ -4773,7 +4773,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           <div className="lg:col-span-1 space-y-2">
             {/* Quick Meetup Widget - Only show for own profile */}
             {isOwnProfile && user?.userType !== 'business' && (
-              <div className="mt-4">
+              <div className="mt-6">
                 <QuickMeetupWidget city={user?.hometownCity ?? ''} />
               </div>
             )}

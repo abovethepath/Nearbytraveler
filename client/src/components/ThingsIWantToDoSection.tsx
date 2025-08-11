@@ -50,11 +50,15 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
 
   // Initialize local state with fresh data
   useEffect(() => {
-    setLocalActivities(activities);
+    if (activities && activities !== localActivities) {
+      setLocalActivities(activities);
+    }
   }, [activities]);
 
   useEffect(() => {
-    setLocalEvents(events);
+    if (events && events !== localEvents) {
+      setLocalEvents(events);
+    }
   }, [events]);
 
   // Delete activity
