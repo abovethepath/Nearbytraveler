@@ -135,22 +135,52 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
     }
   };
 
-  // Group by city
+  // Metro consolidation helper
+  const consolidateCity = (cityName: string): string => {
+    const laMetroCities = [
+      'Los Angeles', 'Santa Monica', 'Venice', 'Venice Beach', 'El Segundo',
+      'Manhattan Beach', 'Beverly Hills', 'West Hollywood', 'Pasadena',
+      'Burbank', 'Glendale', 'Long Beach', 'Torrance', 'Inglewood',
+      'Compton', 'Downey', 'Pomona', 'Playa del Rey', 'Redondo Beach',
+      'Culver City', 'Marina del Rey', 'Hermosa Beach', 'Hawthorne',
+      'Gardena', 'Carson', 'Lakewood', 'Norwalk', 'Whittier', 'Montebello',
+      'East Los Angeles', 'Monterey Park', 'Alhambra', 'South Pasadena',
+      'San Fernando', 'North Hollywood', 'Hollywood', 'Studio City',
+      'Sherman Oaks', 'Encino', 'Reseda', 'Van Nuys', 'Northridge',
+      'Malibu', 'Pacific Palisades', 'Brentwood', 'Westwood', 'Century City',
+      'West LA', 'Koreatown', 'Mid-City', 'Miracle Mile', 'Los Feliz',
+      'Silver Lake', 'Echo Park', 'Downtown LA', 'Arts District',
+      'Little Tokyo', 'Chinatown', 'Boyle Heights', 'East LA',
+      'Highland Park', 'Eagle Rock', 'Atwater Village', 'Glassell Park',
+      'Mount Washington', 'Cypress Park', 'Sun Valley', 'Pacoima',
+      'Sylmar', 'Granada Hills', 'Porter Ranch', 'Chatsworth',
+      'Canoga Park', 'Woodland Hills', 'Tarzana', 'Panorama City',
+      'Mission Hills', 'Sepulveda', 'Arleta', 'San Pedro', 'Wilmington',
+      'Harbor City', 'Harbor Gateway', 'Watts', 'South LA', 'Crenshaw',
+      'Leimert Park', 'View Park', 'Baldwin Hills', 'Ladera Heights'
+    ];
+    
+    return laMetroCities.includes(cityName) ? 'Los Angeles Metro' : cityName;
+  };
+
+  // Group by city with metro consolidation
   const citiesByName: Record<string, { activities: UserActivity[], events: UserEvent[] }> = {};
 
   localActivities.forEach(activity => {
-    if (!citiesByName[activity.cityName]) {
-      citiesByName[activity.cityName] = { activities: [], events: [] };
+    const consolidatedCity = consolidateCity(activity.cityName);
+    if (!citiesByName[consolidatedCity]) {
+      citiesByName[consolidatedCity] = { activities: [], events: [] };
     }
-    citiesByName[activity.cityName].activities.push(activity);
+    citiesByName[consolidatedCity].activities.push(activity);
   });
 
   localEvents.forEach(event => {
     const cityName = event.cityName || 'Other';
-    if (!citiesByName[cityName]) {
-      citiesByName[cityName] = { activities: [], events: [] };
+    const consolidatedCity = consolidateCity(cityName);
+    if (!citiesByName[consolidatedCity]) {
+      citiesByName[consolidatedCity] = { activities: [], events: [] };
     }
-    citiesByName[cityName].events.push(event);
+    citiesByName[consolidatedCity].events.push(event);
   });
 
   const cities = Object.keys(citiesByName);
