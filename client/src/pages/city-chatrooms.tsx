@@ -143,6 +143,10 @@ export default function CityChatroomsPage() {
               <Card 
                 key={chatroom.id} 
                 className="group cursor-pointer transform hover:scale-105 transition-all duration-300 overflow-hidden relative bg-white dark:bg-gray-800 shadow-lg hover:shadow-xl border-gray-200 dark:border-gray-700"
+                onClick={() => {
+                  console.log('🔥 CHATROOM CARD CLICK: ID', chatroom.id, 'Name:', chatroom.name);
+                  window.location.href = `/simple-chatroom/${chatroom.id}`;
+                }}
               >
                 {/* Header with gradient background */}
                 <div className="relative h-24 bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">

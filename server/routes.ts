@@ -7322,19 +7322,28 @@ Ready to start making real connections wherever you are?
   // Get chatrooms for user's locations (hometown + travel destinations) - FIXED MEMBER COUNT
   app.get("/api/chatrooms/my-locations", async (req, res) => {
     try {
-      // Get user ID from headers
+      // Get user ID from headers - FIXED USER ID EXTRACTION
       let userId = 1; // Default to nearbytraveler user if not specified
-      const userData = req.headers['x-user-data'];
-      if (userData) {
+      
+      // First try x-user-id header (what frontend sends)
+      if (req.headers['x-user-id']) {
+        userId = parseInt(req.headers['x-user-id'] as string);
+      }
+      // Fallback to x-user-data header  
+      else if (req.headers['x-user-data']) {
         try {
-          userId = JSON.parse(userData as string).id;
+          userId = JSON.parse(req.headers['x-user-data'] as string).id;
         } catch (e) {
           // Use default user ID
         }
       }
 
+      if (process.env.NODE_ENV === 'development') console.log(`🏠 MY-LOCATIONS: User ${userId} requesting chatrooms`);
+
       // Get all active chatrooms
       const allChatrooms = await db.select().from(citychatrooms).where(eq(citychatrooms.isActive, true));
+      
+      if (process.env.NODE_ENV === 'development') console.log(`🏠 MY-LOCATIONS: Found ${allChatrooms.length} active chatrooms`);
       
       // Get member counts using raw query for reliability - FIXED COUNT
       const memberCountResults = await db.execute(sql`
@@ -7368,6 +7377,16 @@ Ready to start making real connections wherever you are?
         memberCount: memberCountMap.get(chatroom.id) || 0,
         userIsMember: userMembershipSet.has(chatroom.id)
       }));
+      
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`🏠 MY-LOCATIONS: Returning ${chatroomsWithCounts.length} chatrooms with counts`);
+        console.log(`🏠 MY-LOCATIONS: First chatroom details:`, {
+          id: chatroomsWithCounts[0]?.id,
+          name: chatroomsWithCounts[0]?.name,
+          memberCount: chatroomsWithCounts[0]?.memberCount,
+          userIsMember: chatroomsWithCounts[0]?.userIsMember
+        });
+      }
       
       res.json(chatroomsWithCounts);
     } catch (error: any) {
