@@ -217,8 +217,12 @@ export default function CityChatroomsPage({ cityFilter }: CityChatroomsPageProps
         title: "Success",
         description: "Successfully joined the chatroom!"
       });
+      
+      // Force immediate refetch to update UI state
       queryClient.invalidateQueries({ queryKey: ['/api/chatrooms'] });
       queryClient.invalidateQueries({ queryKey: ['/api/chatrooms/my-locations'] });
+      queryClient.refetchQueries({ queryKey: ['/api/chatrooms/my-locations'] });
+      queryClient.refetchQueries({ queryKey: ['/api/chatrooms/cities'] });
     },
     onError: () => {
       toast({

@@ -7277,15 +7277,32 @@ Ready to start making real connections wherever you are?
       
       console.log(`🔥 MEMBER COUNT MAP SIZE: ${memberCountMap.size} entries 🔥`);
       
-      // Apply correct member counts to each chatroom - FORCE member count to 3 for all chatrooms
+      // Check user membership for each chatroom
+      const membershipQuery = await db
+        .select({
+          chatroomId: chatroomMembers.chatroomId,
+        })
+        .from(chatroomMembers)
+        .where(and(
+          eq(chatroomMembers.userId, userId),
+          eq(chatroomMembers.isActive, true)
+        ));
+      
+      const userMembershipSet = new Set(membershipQuery.map(m => m.chatroomId));
+      console.log(`🔥 USER ${userId} IS MEMBER OF CHATROOMS:`, Array.from(userMembershipSet));
+      
+      // Apply correct member counts and membership status to each chatroom
       const chatroomsWithFixedMemberCount = chatrooms.map(chatroom => {
         const dbCount = memberCountMap.get(chatroom.id);
         const finalCount = dbCount || 3; // Force 3 members as we know from SQL that all have 3
-        console.log(`🔥 Chatroom ${chatroom.id} (${chatroom.name}): DB count = ${dbCount}, Final = ${finalCount} 🔥`);
+        const userIsMember = userMembershipSet.has(chatroom.id);
+        
+        console.log(`🔥 Chatroom ${chatroom.id} (${chatroom.name}): DB count = ${dbCount}, Final = ${finalCount}, UserIsMember = ${userIsMember} 🔥`);
         
         return {
           ...chatroom,
-          memberCount: finalCount
+          memberCount: finalCount,
+          userIsMember: userIsMember
         };
       });
       
