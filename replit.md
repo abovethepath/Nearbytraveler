@@ -55,6 +55,7 @@ Preferred communication style: Simple, everyday language.
 - **City Content**: Integration of authentic city photos and AI-generated tourist attractions.
 - **User Cards**: Enhanced with larger photos, Load More/Load Less functionality, and improved compatibility display.
 - **Event Management**: Removed separate "My Events" tab per user request - all user events now appear prominently at top of Community Events section with special styling and management buttons.
+- **Metro Area Consolidation**: LA metro cities (Venice, Santa Monica, Culver City, etc.) automatically consolidate into "Los Angeles Metro" chatrooms to reduce fragmentation and increase user connections.
 
 ## External Dependencies
 

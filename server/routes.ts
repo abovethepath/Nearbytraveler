@@ -7395,19 +7395,93 @@ Ready to start making real connections wherever you are?
         userId = parseInt(req.headers['x-user-id'] as string || '0');
       }
 
-      const { name, description, city, country, isPublic = true } = req.body;
+      const { name, description, city, country, state, isPublic = true } = req.body;
 
       if (!name || !city || !country) {
         return res.status(400).json({ message: "Name, city, and country are required" });
       }
 
-      if (process.env.NODE_ENV === 'development') console.log(`🏠 CREATING CHATROOM: "${name}" by user ${userId} in ${city}, ${country}`);
+      // METRO AREA CONSOLIDATION: Recommend broader metro areas for small cities
+      const shouldConsolidateToMetro = (cityName: string, stateName: string = '', countryName: string = '') => {
+        const cityLower = cityName.toLowerCase().trim();
+        const stateLower = stateName.toLowerCase().trim();
+        
+        // LA Metro Area - consolidate small cities to "Los Angeles Metro"
+        const laMetroCities = [
+          'santa monica', 'venice', 'beverly hills', 'hollywood', 'culver city',
+          'manhattan beach', 'redondo beach', 'el segundo', 'inglewood', 'torrance',
+          'marina del rey', 'hermosa beach', 'west hollywood', 'westwood', 'malibu',
+          'playa del rey', 'hawthorne', 'gardena', 'carson', 'lakewood'
+        ];
+        
+        if (stateLower.includes('california') && laMetroCities.includes(cityLower)) {
+          return { 
+            consolidatedCity: 'Los Angeles Metro',
+            consolidatedState: 'California',
+            originalCity: cityName,
+            message: 'Your chatroom has been created for the broader Los Angeles Metro area to help connect more people across the region.'
+          };
+        }
+        
+        // NYC Metro Area - consolidate boroughs and small cities  
+        const nycMetroCities = [
+          'brooklyn', 'queens', 'bronx', 'staten island', 'manhattan', 'jersey city',
+          'hoboken', 'long island city', 'astoria', 'williamsburg', 'flushing'
+        ];
+        
+        if ((stateLower.includes('new york') || stateLower.includes('new jersey')) && 
+            nycMetroCities.includes(cityLower)) {
+          return {
+            consolidatedCity: 'New York Metro',
+            consolidatedState: 'New York',
+            originalCity: cityName,
+            message: 'Your chatroom has been created for the broader New York Metro area to help connect more people across the region.'
+          };
+        }
+        
+        // Bay Area - consolidate smaller cities
+        const bayAreaCities = [
+          'san jose', 'oakland', 'berkeley', 'fremont', 'hayward', 'sunnyvale',
+          'santa clara', 'mountain view', 'palo alto', 'redwood city', 'vallejo'
+        ];
+        
+        if (stateLower.includes('california') && bayAreaCities.includes(cityLower)) {
+          return {
+            consolidatedCity: 'San Francisco Bay Area',
+            consolidatedState: 'California', 
+            originalCity: cityName,
+            message: 'Your chatroom has been created for the broader San Francisco Bay Area to help connect more people across the region.'
+          };
+        }
+        
+        return null;
+      };
+
+      // Check if this city should be consolidated to a metro area
+      const consolidation = shouldConsolidateToMetro(city, state, country);
+      
+      let finalCity = city;
+      let finalState = state;
+      let consolidationMessage = '';
+      
+      if (consolidation) {
+        finalCity = consolidation.consolidatedCity;
+        finalState = consolidation.consolidatedState;
+        consolidationMessage = consolidation.message;
+        
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`🌍 METRO CONSOLIDATION: ${consolidation.originalCity} → ${finalCity}`);
+        }
+      }
+
+      if (process.env.NODE_ENV === 'development') console.log(`🏠 CREATING CHATROOM: "${name}" by user ${userId} in ${finalCity}, ${country}`);
 
       // Use the storage method that automatically adds creator as member
       const newChatroom = await storage.createCityChatroom({
         name,
         description,
-        city,
+        city: finalCity,
+        state: finalState,
         country,
         createdById: userId,
         isPublic,
@@ -7418,7 +7492,13 @@ Ready to start making real connections wherever you are?
 
       if (process.env.NODE_ENV === 'development') console.log(`🏠 CHATROOM CREATED: ID ${newChatroom.id} with creator as automatic member`);
       
-      res.status(201).json(newChatroom);
+      // Include consolidation message in response if applicable
+      const response: any = { ...newChatroom };
+      if (consolidationMessage) {
+        response.consolidationMessage = consolidationMessage;
+      }
+      
+      res.status(201).json(response);
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error creating chatroom:", error);
       res.status(500).json({ message: "Failed to create chatroom" });
