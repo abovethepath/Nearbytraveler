@@ -86,17 +86,8 @@ export function SimpleAvatar({ user, size = 'md', className = '' }: SimpleAvatar
 
     // Force immediate image refresh - check for profile image
     if (user.profileImage && user.profileImage.trim() !== '') {
-      console.log('SimpleAvatar: Using profile image with cache bypass');
-      // For base64 images, don't add cache bust parameters as they break the data URL
-      if (user.profileImage.startsWith('data:')) {
-        setCurrentImage(user.profileImage);
-      } else {
-        // For regular URLs, add timestamp to bypass browser cache
-        const imageWithCacheBust = user.profileImage.includes('?') 
-          ? `${user.profileImage}&t=${Date.now()}` 
-          : `${user.profileImage}?t=${Date.now()}`;
-        setCurrentImage(imageWithCacheBust);
-      }
+      console.log('SimpleAvatar: Using profile image');
+      setCurrentImage(user.profileImage);
     } else {
       console.log('SimpleAvatar: No profile image found, generating avatar for:', user.username);
       const generatedAvatar = generateAvatar(user.username, user.avatarColor);
@@ -105,32 +96,43 @@ export function SimpleAvatar({ user, size = 'md', className = '' }: SimpleAvatar
     }
   }, [user?.id, user?.username, user?.profileImage, forceRefresh]);
 
-  // Listen for avatar refresh events with multiple event types
+  // Listen for avatar refresh events with throttling to prevent excessive reloads
   useEffect(() => {
+    let refreshTimeout: NodeJS.Timeout | null = null;
+    
     const handleRefresh = (event: any) => {
-      console.log('🎯 SimpleAvatar: Refresh event received:', event.type, 'Force refresh:', forceRefresh);
-      setForceRefresh(prev => {
-        const newValue = prev + 1;
-        console.log('🎯 SimpleAvatar: Force refresh updated from', prev, 'to', newValue);
-        return newValue;
-      });
+      console.log('🎯 SimpleAvatar: Refresh event received:', event.type);
+      
+      // Only refresh for critical profile-related events, throttle others
+      if (event.type === 'profilePhotoUpdated' || event.type === 'avatarRefresh') {
+        console.log('🎯 SimpleAvatar: Critical refresh event - updating immediately');
+        setForceRefresh(prev => prev + 1);
+      } else {
+        // Throttle other refresh events to prevent excessive reloading
+        if (refreshTimeout) {
+          clearTimeout(refreshTimeout);
+        }
+        
+        refreshTimeout = setTimeout(() => {
+          console.log('🎯 SimpleAvatar: Throttled refresh event processed');
+          setForceRefresh(prev => prev + 1);
+          refreshTimeout = null;
+        }, 2000); // 2 second throttle
+      }
     };
 
-    // Listen to multiple refresh events
+    // Only listen to essential refresh events 
     window.addEventListener('avatarRefresh', handleRefresh);
-    window.addEventListener('userDataUpdated', handleRefresh);
     window.addEventListener('profilePhotoUpdated', handleRefresh);
-    window.addEventListener('refreshNavbar', handleRefresh);
-    window.addEventListener('forceNavbarRefresh', handleRefresh);
     
     return () => {
+      if (refreshTimeout) {
+        clearTimeout(refreshTimeout);
+      }
       window.removeEventListener('avatarRefresh', handleRefresh);
-      window.removeEventListener('userDataUpdated', handleRefresh);
       window.removeEventListener('profilePhotoUpdated', handleRefresh);
-      window.removeEventListener('refreshNavbar', handleRefresh);
-      window.removeEventListener('forceNavbarRefresh', handleRefresh);
     };
-  }, [forceRefresh]);
+  }, []);
 
   if (!user || !currentImage) {
     return (

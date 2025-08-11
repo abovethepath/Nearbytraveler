@@ -51,7 +51,11 @@ export function PeopleDiscoveryWidget({
     // Fetch travel plans for this person to show travel destination
     const { data: travelPlans } = useQuery({
       queryKey: [`/api/travel-plans/${person.id}`],
-      enabled: !!person.id
+      enabled: !!person.id,
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      gcTime: 10 * 60 * 1000, // 10 minutes
+      refetchOnMount: false,
+      refetchOnWindowFocus: false
     });
 
     // Don't show commonalities for the current user themselves
@@ -120,7 +124,11 @@ export function PeopleDiscoveryWidget({
     // Use the correct compatibility API endpoint
     const { data: compatibilityData } = useQuery({
       queryKey: [`/api/compatibility/${currentUserId}/${person.id}`],
-      enabled: !!currentUserId && !!person.id && currentUserId !== person.id
+      enabled: !!currentUserId && !!person.id && currentUserId !== person.id,
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      gcTime: 10 * 60 * 1000, // 10 minutes
+      refetchOnMount: false,
+      refetchOnWindowFocus: false
     });
 
     // Debug logging
