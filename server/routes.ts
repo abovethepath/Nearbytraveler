@@ -6366,7 +6366,7 @@ Aaron`
       if (process.env.NODE_ENV === 'development') console.log('POST /api/photo-albums - Creating travel memory');
       if (process.env.NODE_ENV === 'development') console.log('Request body:', req.body);
 
-      const { userId, title, description, date, location, photoIds, isPublic } = req.body;
+      const { userId, title, description, date, startDate, endDate, location, photoIds, isPublic } = req.body;
 
       // Validate required fields
       if (!userId || !title || !photoIds || photoIds.length === 0) {
@@ -6404,6 +6404,8 @@ Aaron`
         title: title.trim(),
         description: description?.trim() || '',
         date: date || new Date().toISOString().split('T')[0],
+        startDate: startDate ? new Date(startDate) : null,
+        endDate: endDate ? new Date(endDate) : null,
         location: location?.trim() || '',
         photos: photoUrls,
         coverPhoto: photoUrls[0], // First photo as cover
@@ -6437,10 +6439,10 @@ Aaron`
         return res.status(400).json({ message: "Invalid album ID" });
       }
 
-      const { title, description, location, date, isPublic } = req.body;
+      const { title, description, location, date, startDate, endDate, isPublic } = req.body;
 
       // Validate at least one field is provided
-      if (!title && !description && !location && !date && isPublic === undefined) {
+      if (!title && !description && !location && !date && !startDate && !endDate && isPublic === undefined) {
         return res.status(400).json({ 
           message: "At least one field must be provided for update" 
         });
@@ -6451,6 +6453,8 @@ Aaron`
       if (description !== undefined) updateData.description = description.trim();
       if (location !== undefined) updateData.location = location.trim();
       if (date) updateData.date = date;
+      if (startDate !== undefined) updateData.startDate = startDate ? new Date(startDate) : null;
+      if (endDate !== undefined) updateData.endDate = endDate ? new Date(endDate) : null;
       if (isPublic !== undefined) updateData.isPublic = isPublic;
 
       if (process.env.NODE_ENV === 'development') console.log('📸 ALBUM UPDATE: Updating travel memory with data:', updateData);

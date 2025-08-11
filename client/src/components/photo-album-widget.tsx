@@ -63,6 +63,8 @@ export function PhotoAlbumWidget({ userId, isOwnProfile = false }: TravelMemoryW
     title: '',
     description: '',
     date: new Date().toISOString().split('T')[0],
+    startDate: '', // Optional start date for trips/albums
+    endDate: '', // Optional end date for trips/albums
     location: '',
     photos: [] as File[],
     isPublic: true
@@ -191,6 +193,8 @@ export function PhotoAlbumWidget({ userId, isOwnProfile = false }: TravelMemoryW
         title: '',
         description: '',
         date: new Date().toISOString().split('T')[0],
+        startDate: '',
+        endDate: '',
         location: '',
         photos: [],
         isPublic: true
@@ -578,6 +582,38 @@ export function PhotoAlbumWidget({ userId, isOwnProfile = false }: TravelMemoryW
                 onChange={(e) => setNewMemory(prev => ({ ...prev, location: e.target.value }))}
                 placeholder="Paris, France"
                 className="border-gray-300 dark:border-gray-600"
+              />
+            </div>
+          </div>
+
+          {/* Optional Trip Duration */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                Trip Start Date (Optional)
+              </label>
+              <Input
+                type="date"
+                value={newMemory.startDate}
+                onChange={(e) => setNewMemory(prev => ({ ...prev, startDate: e.target.value }))}
+                className="border-gray-300 dark:border-gray-600"
+                min="1900-01-01"
+                max="2099-12-31"
+                placeholder="When did this trip start?"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                Trip End Date (Optional)
+              </label>
+              <Input
+                type="date"
+                value={newMemory.endDate}
+                onChange={(e) => setNewMemory(prev => ({ ...prev, endDate: e.target.value }))}
+                className="border-gray-300 dark:border-gray-600"
+                min="1900-01-01"
+                max="2099-12-31"
+                placeholder="When did this trip end?"
               />
             </div>
           </div>
@@ -1272,6 +1308,30 @@ export function PhotoAlbumWidget({ userId, isOwnProfile = false }: TravelMemoryW
                 />
               </div>
 
+              {/* Optional Trip Duration */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-2">Trip Start Date (Optional)</label>
+                  <Input
+                    type="date"
+                    value={editingAlbum.startDate || ''}
+                    onChange={(e) => setEditingAlbum({...editingAlbum, startDate: e.target.value})}
+                    min="1900-01-01"
+                    max="2099-12-31"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">Trip End Date (Optional)</label>
+                  <Input
+                    type="date"
+                    value={editingAlbum.endDate || ''}
+                    onChange={(e) => setEditingAlbum({...editingAlbum, endDate: e.target.value})}
+                    min="1900-01-01"
+                    max="2099-12-31"
+                  />
+                </div>
+              </div>
+
               <div className="flex items-center space-x-2">
                 <input
                   type="checkbox"
@@ -1305,6 +1365,8 @@ export function PhotoAlbumWidget({ userId, isOwnProfile = false }: TravelMemoryW
                           description: editingAlbum.description,
                           location: editingAlbum.location,
                           date: editingAlbum.date,
+                          startDate: editingAlbum.startDate || null,
+                          endDate: editingAlbum.endDate || null,
                           isPublic: editingAlbum.isPublic
                         });
 
