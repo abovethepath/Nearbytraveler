@@ -3760,6 +3760,22 @@ Ready to start making real connections wherever you are?
       // Award 2 aura points for creating an event
       await awardAuraPoints(newEvent.organizerId, 2, 'creating an event');
       
+      // AUTOMATICALLY ADD CREATOR TO "THINGS I WANT TO DO IN" - Auto-interest in their own event
+      try {
+        const eventInterestData = {
+          eventId: newEvent.id,
+          eventTitle: newEvent.title,
+          eventSource: 'internal' as const,
+          cityName: newEvent.city || 'Unknown'
+        };
+        
+        await storage.addEventInterest(newEvent.organizerId, eventInterestData);
+        if (process.env.NODE_ENV === 'development') console.log(`✅ AUTO-INTEREST: Added creator ${newEvent.organizerId} to event ${newEvent.id} interests`);
+      } catch (autoInterestError: any) {
+        // Don't fail event creation if auto-interest fails - log but continue
+        if (process.env.NODE_ENV === 'development') console.error(`⚠️ AUTO-INTEREST: Failed to add creator interest:`, autoInterestError.message);
+      }
+      
       return res.json(newEvent);
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("🚨 EVENT CREATE ERROR:", error);
@@ -3781,6 +3797,22 @@ Ready to start making real connections wherever you are?
           
           // Award aura points
           await awardAuraPoints(newEvent.organizerId, 2, 'creating an event');
+          
+          // AUTOMATICALLY ADD CREATOR TO "THINGS I WANT TO DO IN" - Auto-interest in their own event (retry scenario)
+          try {
+            const eventInterestData = {
+              eventId: newEvent.id,
+              eventTitle: newEvent.title,
+              eventSource: 'internal' as const,
+              cityName: newEvent.city || 'Unknown'
+            };
+            
+            await storage.addEventInterest(newEvent.organizerId, eventInterestData);
+            if (process.env.NODE_ENV === 'development') console.log(`✅ AUTO-INTEREST (RETRY): Added creator ${newEvent.organizerId} to event ${newEvent.id} interests`);
+          } catch (autoInterestError: any) {
+            // Don't fail event creation if auto-interest fails - log but continue
+            if (process.env.NODE_ENV === 'development') console.error(`⚠️ AUTO-INTEREST (RETRY): Failed to add creator interest:`, autoInterestError.message);
+          }
           
           return res.json({
             ...newEvent,
