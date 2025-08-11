@@ -112,7 +112,7 @@ export function PeopleDiscoveryWidget({
 
     // Use the EXACT same compatibility API that profile pages use
     const { data: compatibilityData } = useQuery({
-      queryKey: [`/api/compatibility/${currentUserId}/${person.id}`],
+      queryKey: [`/api/users/${currentUserId}/compatibility/${person.id}`],
       enabled: !!currentUserId && !!person.id && currentUserId !== person.id
     });
 
@@ -222,11 +222,11 @@ export function PeopleDiscoveryWidget({
             <div className="mb-2">
               {compatibilityData && (compatibilityData as any).totalCommonalities !== undefined ? (
                 <p className="text-green-600 dark:text-green-400 text-xs font-medium">
-                  {(compatibilityData as any).totalCommonalities} things in common
+                  What you have in common: {(compatibilityData as any).totalCommonalities}
                 </p>
               ) : (
                 <p className="text-purple-600 dark:text-purple-400 text-xs">
-                  Discovering compatibility...
+                  What you have in common
                 </p>
               )}
             </div>
