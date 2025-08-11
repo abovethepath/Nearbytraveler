@@ -67,9 +67,9 @@ export default function Landing() {
       {/* HERO SECTION */}
       <div className="relative">
         <div className="bg-gray-800 dark:bg-gray-900 border border-white/30 dark:border-gray-300/20">
-          <div className="relative bg-gray-800 dark:bg-gray-900 pb-32 overflow-hidden">
-            <div className="absolute inset-0">
-              <ScrollingHeroGallery />
+          <div className="relative bg-gray-800 dark:bg-gray-900 pb-32 overflow-hidden min-h-[600px]">
+            <div className="absolute inset-0 h-full min-h-[600px]">
+              <ScrollingHeroGallery className="w-full h-full" />
               <div className="absolute inset-0 bg-gray-800/70 dark:bg-gray-800/40 mix-blend-multiply" aria-hidden="true" />
             </div>
             <div className="relative">

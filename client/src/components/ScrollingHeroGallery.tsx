@@ -33,8 +33,12 @@ export default function ScrollingHeroGallery({ className = "" }: ScrollingHeroGa
     return null;
   }
 
+  console.log('📸 ScrollingHeroGallery: Rendering component with', heroImages.length, 'images');
+  console.log('📸 ScrollingHeroGallery: Current index:', currentIndex);
+  console.log('📸 ScrollingHeroGallery: className received:', className);
+
   return (
-    <div className={`relative w-full h-full ${className}`}>
+    <div className={`relative w-full h-full ${className}`} style={{ minHeight: '600px' }}>
       {heroImages.map((image, index) => (
         <div
           key={image}
