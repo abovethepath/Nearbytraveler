@@ -7545,24 +7545,36 @@ Ready to start making real connections wherever you are?
   // Join a chatroom
   app.post("/api/chatrooms/:roomId/join", async (req, res) => {
     try {
-      // Get user ID from headers - all users viewing chatrooms are already authenticated
-      let userId = 1; // Default to nearbytraveler user if not specified
-      const userData = req.headers['x-user-data'];
-      if (userData) {
+      // FIXED: Get user ID from multiple sources with proper parsing
+      let userId = null;
+      
+      // First try: x-user-id header
+      if (req.headers['x-user-id']) {
+        userId = parseInt(req.headers['x-user-id'] as string || '0');
+      }
+      
+      // Second try: x-user-data header
+      if (!userId && req.headers['x-user-data']) {
         try {
-          userId = JSON.parse(userData as string).id;
+          const userData = JSON.parse(req.headers['x-user-data'] as string);
+          userId = userData.id;
         } catch (e) {
-          // Use default user ID
+          if (process.env.NODE_ENV === 'development') console.error("Failed to parse user data:", e);
         }
       }
-
-      // Try other auth methods as fallback
+      
+      // Third try: request body
+      if (!userId && req.body.userId) {
+        userId = parseInt(req.body.userId);
+      }
+      
+      // Fourth try: session
       if (!userId && req.session?.user?.id) {
         userId = req.session.user.id;
       }
 
-      if (!userId && req.headers['x-user-id']) {
-        userId = parseInt(req.headers['x-user-id'] as string || '0');
+      if (!userId) {
+        return res.status(401).json({ message: "User ID required - please log in" });
       }
 
       const roomId = parseInt(req.params.roomId || '0');
@@ -7586,7 +7598,7 @@ Ready to start making real connections wherever you are?
 
       if (existingMembership.length > 0) {
         if (process.env.NODE_ENV === 'development') console.log(`🏠 CHATROOM JOIN: User ${userId} already member of chatroom ${roomId}`);
-        return res.json({ success: true, message: "Already a member" });
+        return res.json({ success: true, message: "Already a member", alreadyMember: true });
       }
 
       // Add user to chatroom
@@ -7600,34 +7612,46 @@ Ready to start making real connections wherever you are?
       });
 
       if (process.env.NODE_ENV === 'development') console.log(`🏠 CHATROOM JOIN: User ${userId} successfully joined chatroom ${roomId}`);
-      res.json({ success: true, message: "Successfully joined room" });
+      res.json({ success: true, message: "Successfully joined chatroom!", newMember: true });
     } catch (error: any) {
-      if (process.env.NODE_ENV === 'development') console.error("Error joining room:", error);
-      res.status(500).json({ message: "Failed to join room" });
+      if (process.env.NODE_ENV === 'development') console.error("🔥 Error joining room:", error);
+      res.status(500).json({ message: "Failed to join chatroom", error: error.message });
     }
   });
 
   // Leave a chatroom
   app.post("/api/chatrooms/:roomId/leave", async (req, res) => {
     try {
-      // Get user ID from headers - all users viewing chatrooms are already authenticated
-      let userId = 1; // Default to nearbytraveler user if not specified
-      const userData = req.headers['x-user-data'];
-      if (userData) {
+      // FIXED: Get user ID from multiple sources with proper parsing
+      let userId = null;
+      
+      // First try: x-user-id header
+      if (req.headers['x-user-id']) {
+        userId = parseInt(req.headers['x-user-id'] as string || '0');
+      }
+      
+      // Second try: x-user-data header
+      if (!userId && req.headers['x-user-data']) {
         try {
-          userId = JSON.parse(userData as string).id;
+          const userData = JSON.parse(req.headers['x-user-data'] as string);
+          userId = userData.id;
         } catch (e) {
-          // Use default user ID
+          if (process.env.NODE_ENV === 'development') console.error("Failed to parse user data:", e);
         }
       }
-
-      // Try other auth methods as fallback
+      
+      // Third try: request body
+      if (!userId && req.body.userId) {
+        userId = parseInt(req.body.userId);
+      }
+      
+      // Fourth try: session
       if (!userId && req.session?.user?.id) {
         userId = req.session.user.id;
       }
 
-      if (!userId && req.headers['x-user-id']) {
-        userId = parseInt(req.headers['x-user-id'] as string || '0');
+      if (!userId) {
+        return res.status(401).json({ message: "User ID required - please log in" });
       }
 
       const roomId = parseInt(req.params.roomId || '0');
