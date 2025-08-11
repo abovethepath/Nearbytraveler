@@ -67,7 +67,17 @@ export default function ChatroomPage() {
   const { data: messages = [], isLoading } = useQuery<ChatMessage[]>({
     queryKey: [`/api/chatrooms/${chatroomId}/messages`],
     refetchInterval: 2000, // Refresh every 2 seconds
-    enabled: !!chatroomId
+    enabled: !!chatroomId,
+    onSuccess: (data) => {
+      console.log('🔥 CHATROOM DEBUG: Messages loaded:', data);
+      console.log('🔥 CHATROOM DEBUG: Messages count:', data?.length || 0);
+      if (data && data.length > 0) {
+        console.log('🔥 CHATROOM DEBUG: First message:', data[0]);
+      }
+    },
+    onError: (error) => {
+      console.error('🔥 CHATROOM ERROR: Failed to load messages:', error);
+    }
   });
 
   // Send message mutation
@@ -163,6 +173,11 @@ export default function ChatroomPage() {
         <Card className="mb-4">
           <CardContent className="p-4">
             <div className="h-96 overflow-y-auto space-y-3 mb-4" data-testid="messages-container">
+              {/* Debug messages state */}
+              <div className="text-xs bg-yellow-100 p-2 mb-2 rounded">
+                DEBUG: Loading={isLoading.toString()}, Messages Count={messages?.length || 0}, Messages={JSON.stringify(messages).slice(0, 100)}...
+              </div>
+              
               {isLoading ? (
                 <div className="flex items-center justify-center h-full">
                   <Loader2 className="w-6 h-6 animate-spin" />
