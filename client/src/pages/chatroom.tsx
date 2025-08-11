@@ -49,14 +49,17 @@ export default function ChatroomPage() {
   const currentUser = getCurrentUser();
 
   // Fetch chatroom details
-  const { data: chatroom } = useQuery<ChatroomDetails>({
-    queryKey: ['/api/chatrooms', chatroomId],
+  const { data: chatroomArray } = useQuery<ChatroomDetails[]>({
+    queryKey: [`/api/chatrooms/${chatroomId}`],
     enabled: !!chatroomId
   });
+  
+  // Extract the first chatroom from array (API returns array)
+  const chatroom = chatroomArray?.[0];
 
   // Fetch messages
   const { data: messages = [], isLoading } = useQuery<ChatMessage[]>({
-    queryKey: ['/api/chatrooms', chatroomId, 'messages'],
+    queryKey: [`/api/chatrooms/${chatroomId}/messages`],
     refetchInterval: 2000, // Refresh every 2 seconds
     enabled: !!chatroomId
   });
@@ -80,7 +83,7 @@ export default function ChatroomPage() {
     },
     onSuccess: () => {
       setMessageText("");
-      queryClient.invalidateQueries({ queryKey: ['/api/chatrooms', chatroomId, 'messages'] });
+      queryClient.invalidateQueries({ queryKey: [`/api/chatrooms/${chatroomId}/messages`] });
     },
     onError: (error: any) => {
       toast({
