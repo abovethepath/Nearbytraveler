@@ -456,10 +456,8 @@ function Navbar() {
                         <span>Quick Meetups</span>
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => {
-                        toast({
-                          title: "Not in Beta",
-                          description: "City Chatrooms feature is not available in beta version",
-                        });
+                        setLocation('/city-chatrooms');
+                        setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
                       }}>
                         <Users className="mr-2 h-4 w-4" />
                         <span>City Chatrooms</span>
