@@ -288,7 +288,53 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
               {(() => {
                 const today = new Date();
                 
-                // Check if currently traveling first using user's travel fields
+                // First, check if user has active travel plans using travel plans data
+                const activeTravelPlan = userTravelPlans?.find((plan: TravelPlan) => {
+                  const startDate = parseLocalDate(plan.startDate);
+                  const endDate = parseLocalDate(plan.endDate);
+                  return startDate && endDate && today >= startDate && today <= endDate;
+                });
+                
+                if (activeTravelPlan) {
+                  const city = activeTravelPlan.destinationCity || activeTravelPlan.destination.split(',')[0];
+                  return (
+                    <>
+                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
+                        <span className="w-2 h-2 bg-green-500 rounded-full mr-1"></span>
+                        Traveling
+                      </span>
+                      <span className="text-green-700 dark:text-green-300 font-medium">
+                        📍 {city}
+                      </span>
+                    </>
+                  );
+                }
+                
+                // Check for future travel plans
+                const futureTravelPlan = userTravelPlans?.find((plan: TravelPlan) => {
+                  const startDate = parseLocalDate(plan.startDate);
+                  return startDate && startDate > today;
+                });
+                
+                if (futureTravelPlan) {
+                  const startDate = parseLocalDate(futureTravelPlan.startDate);
+                  const options: Intl.DateTimeFormatOptions = { month: 'short', year: 'numeric' };
+                  const startMonth = startDate ? startDate.toLocaleDateString('en-US', options) : '';
+                  const city = futureTravelPlan.destinationCity || futureTravelPlan.destination.split(',')[0];
+                  return (
+                    <>
+                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">
+                        <span className="w-2 h-2 bg-blue-500 rounded-full mr-1"></span>
+                        Planning Trip
+                      </span>
+                      <span className="text-blue-700 dark:text-blue-300 font-medium">
+                        ✈️ {city} in {startMonth}
+                      </span>
+                    </>
+                  );
+                }
+                
+                // Fallback to checking user's direct travel fields
                 if (user.isCurrentlyTraveling && user.travelDestination) {
                   const startDate = user.travelStartDate ? parseLocalDate(user.travelStartDate) : null;
                   const endDate = user.travelEndDate ? parseLocalDate(user.travelEndDate) : null;
@@ -299,7 +345,7 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
                       <>
                         <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
                           <span className="w-2 h-2 bg-green-500 rounded-full mr-1"></span>
-                          Currently Visiting
+                          Traveling
                         </span>
                         <span className="text-green-700 dark:text-green-300 font-medium">
                           📍 {user.travelDestination}
@@ -307,26 +353,9 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
                       </>
                     );
                   }
-                  
-                  // Future travel (travel set but not started yet)
-                  if (startDate && startDate > today) {
-                    const options: Intl.DateTimeFormatOptions = { month: 'short', year: 'numeric' };
-                    const startMonth = startDate.toLocaleDateString('en-US', options);
-                    return (
-                      <>
-                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">
-                          <span className="w-2 h-2 bg-blue-500 rounded-full mr-1"></span>
-                          Planning Trip
-                        </span>
-                        <span className="text-blue-700 dark:text-blue-300 font-medium">
-                          ✈️ {user.travelDestination} in {startMonth}
-                        </span>
-                      </>
-                    );
-                  }
                 }
                 
-                // Show location based on user type (locals and businesses)
+                // Show location based on user type and hometown
                 if (user.userType === 'business') {
                   return (
                     <>
@@ -340,11 +369,12 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
                     </>
                   );
                 } else {
+                  // For locals and travelers not currently traveling, show their hometown
                   return (
                     <>
                       <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300">
                         <span className="w-2 h-2 bg-gray-500 rounded-full mr-1"></span>
-                        Local
+                        From
                       </span>
                       <span className="text-gray-700 dark:text-gray-300 font-medium">
                         🏠 {(user.hometownCity || user.hometown || user.location || '').split(',')[0]}
