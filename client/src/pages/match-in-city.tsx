@@ -1096,8 +1096,8 @@ export default function MatchInCity() {
                       <TooltipTrigger asChild>
                         <button
                           onClick={() => toggleActivity(activity)}
-                          className="px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 flex items-center gap-1 bg-blue-500 hover:bg-blue-600"
-                          style={{ color: '#000000 !important' }}
+                          className="px-3 py-1 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 shadow-sm hover:shadow-md border border-blue-400/20"
+                          style={{ color: '#ffffff !important' }}
                         >
                           {activity.activityName}
                           {activity.description && (
@@ -1242,12 +1242,12 @@ export default function MatchInCity() {
                           <div className="flex items-center gap-2">
                             <button
                               onClick={() => handleEventClick(event)}
-                              className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 flex items-center gap-1 cursor-pointer hover:shadow-lg ${
+                              className={`px-3 py-1 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-1 cursor-pointer hover:shadow-md ${
                                 isActive 
-                                  ? 'bg-green-500 shadow-lg' 
-                                  : 'bg-blue-500 hover:bg-blue-600'
+                                  ? 'bg-gradient-to-r from-green-500 to-green-600 shadow-lg border border-green-400/20' 
+                                  : 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 shadow-sm border border-red-400/20'
                               }`}
-                              style={{ color: 'black' }}
+                              style={{ color: '#ffffff' }}
                             >
                               <span className="text-xs opacity-75">
                                 {event.date ? new Date(event.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'TBD'}
@@ -1316,7 +1316,7 @@ export default function MatchInCity() {
                   return (
                     <div
                       key={`activity-${userActivity.id}`}
-                      className="relative group px-3 py-1.5 rounded-full text-sm font-medium bg-green-500 text-white border border-green-400"
+                      className="relative group px-3 py-1 rounded-lg text-sm font-medium bg-gradient-to-r from-green-500 to-green-600 text-white border border-green-400/20 shadow-sm"
                     >
                       <span>{globalActivity.activityName}</span>
                       <button
