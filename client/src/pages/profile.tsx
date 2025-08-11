@@ -3093,13 +3093,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             ) : (
               <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto mt-4 sm:mt-0">
                 <Button
-                  className="bg-purple-600 hover:bg-purple-700 text-white border-0 w-full sm:w-auto"
-                  onClick={() => setLocation('/upload-photos')}
-                >
-                  <Camera className="w-4 h-4 mr-2" />
-                  Add Photos
-                </Button>
-                <Button
                   className="bg-orange-600 hover:bg-orange-700 text-white border-0 w-full sm:w-auto"
                   onClick={() => setLocation(`/?filters=open&return=${encodeURIComponent(window.location.pathname)}`)}
                 >
