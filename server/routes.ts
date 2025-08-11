@@ -7372,6 +7372,59 @@ Ready to start making real connections wherever you are?
     }
   });
 
+  // CRITICAL: Create new chatroom with automatic membership for creator
+  app.post("/api/chatrooms", async (req, res) => {
+    try {
+      // Get user ID from headers - all users viewing chatrooms are already authenticated
+      let userId = 1; // Default to nearbytraveler user if not specified
+      const userData = req.headers['x-user-data'];
+      if (userData) {
+        try {
+          userId = JSON.parse(userData as string).id;
+        } catch (e) {
+          // Use default user ID
+        }
+      }
+
+      // Try other auth methods as fallback
+      if (!userId && req.session?.user?.id) {
+        userId = req.session.user.id;
+      }
+
+      if (!userId && req.headers['x-user-id']) {
+        userId = parseInt(req.headers['x-user-id'] as string || '0');
+      }
+
+      const { name, description, city, country, isPublic = true } = req.body;
+
+      if (!name || !city || !country) {
+        return res.status(400).json({ message: "Name, city, and country are required" });
+      }
+
+      if (process.env.NODE_ENV === 'development') console.log(`🏠 CREATING CHATROOM: "${name}" by user ${userId} in ${city}, ${country}`);
+
+      // Use the storage method that automatically adds creator as member
+      const newChatroom = await storage.createCityChatroom({
+        name,
+        description,
+        city,
+        country,
+        createdById: userId,
+        isPublic,
+        maxMembers: 500,
+        tags: [],
+        rules: null
+      });
+
+      if (process.env.NODE_ENV === 'development') console.log(`🏠 CHATROOM CREATED: ID ${newChatroom.id} with creator as automatic member`);
+      
+      res.status(201).json(newChatroom);
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error creating chatroom:", error);
+      res.status(500).json({ message: "Failed to create chatroom" });
+    }
+  });
+
   // User status and notification settings endpoints
   app.put("/api/users/notification-settings", async (req, res) => {
     try {
