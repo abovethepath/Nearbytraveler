@@ -84,6 +84,25 @@ interface CityChatroomsPageProps {
 export default function CityChatroomsPage({ cityFilter }: CityChatroomsPageProps = {}) {
   const { user } = useContext(AuthContext);
   
+  // Get user from multiple sources for reliability
+  const getCurrentUser = () => {
+    if (user) return user;
+    
+    // Try localStorage as fallback
+    try {
+      const storedUser = localStorage.getItem('travelconnect_user') || localStorage.getItem('user');
+      if (storedUser) {
+        return JSON.parse(storedUser);
+      }
+    } catch (e) {
+      console.error('Error parsing stored user:', e);
+    }
+    return null;
+  };
+  
+  const currentUser = getCurrentUser();
+  console.log('🏠 CHATROOMS: user from context:', user?.username, 'currentUser:', currentUser?.username);
+  
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
       <div className="max-w-4xl mx-auto">
@@ -104,10 +123,10 @@ export default function CityChatroomsPage({ cityFilter }: CityChatroomsPageProps
               Connect with locals and travelers in your city. Chat about events, recommendations, and make new friends.
             </p>
             
-            {user ? (
+            {currentUser ? (
               <div className="space-y-4">
                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Hello {user.name || user.username}! City chatrooms are coming soon.
+                  Hello {currentUser.name || currentUser.username}! City chatrooms are coming soon.
                 </p>
                 <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-4">
                   <h4 className="font-medium text-blue-900 dark:text-blue-200 mb-2">
