@@ -695,11 +695,14 @@ export default function Events() {
                     >
                       <CardHeader className="pb-3">
                         {event.imageUrl && (
-                          <img
-                            src={event.imageUrl}
-                            alt={event.title}
-                            className="w-full h-40 object-cover rounded-lg mb-3"
-                          />
+                          <div className="relative h-40 bg-gray-100 dark:bg-gray-700 rounded-lg mb-3 overflow-hidden">
+                            <img
+                              src={event.imageUrl}
+                              alt={event.title}
+                              className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                              loading="lazy"
+                            />
+                          </div>
                         )}
                         <div className="flex items-start justify-between">
                           <CardTitle className="text-lg line-clamp-2 dark:text-white">{event.title}</CardTitle>

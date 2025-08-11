@@ -52,10 +52,12 @@ export function PeopleDiscoveryWidget({
     const { data: travelPlans } = useQuery({
       queryKey: [`/api/travel-plans/${person.id}`],
       enabled: !!person.id,
-      staleTime: 5 * 60 * 1000, // 5 minutes
-      gcTime: 10 * 60 * 1000, // 10 minutes
+      staleTime: 15 * 60 * 1000, // 15 minutes - longer to prevent blinking
+      gcTime: 30 * 60 * 1000, // 30 minutes
       refetchOnMount: false,
-      refetchOnWindowFocus: false
+      refetchOnWindowFocus: false,
+      refetchInterval: false, // Disable automatic refetching
+      refetchIntervalInBackground: false
     });
 
     // Don't show commonalities for the current user themselves
@@ -126,10 +128,12 @@ export function PeopleDiscoveryWidget({
     const { data: compatibilityData } = useQuery({
       queryKey: [`/api/compatibility/${currentUserId}/${person.id}`],
       enabled: !!currentUserId && !!person.id && currentUserId !== person.id,
-      staleTime: 5 * 60 * 1000, // 5 minutes
-      gcTime: 10 * 60 * 1000, // 10 minutes
+      staleTime: 15 * 60 * 1000, // 15 minutes - longer to prevent blinking
+      gcTime: 30 * 60 * 1000, // 30 minutes
       refetchOnMount: false,
-      refetchOnWindowFocus: false
+      refetchOnWindowFocus: false,
+      refetchInterval: false, // Disable automatic refetching
+      refetchIntervalInBackground: false
     });
 
     // Debug logging
@@ -239,7 +243,7 @@ export function PeopleDiscoveryWidget({
             </div>
             
             {/* Line 4: Things in Common */}
-            <div className="mb-2">
+            <div className="mb-3">
               {compatibilityData && (compatibilityData as any).totalCommonalities !== undefined ? (
                 <p className="text-green-600 dark:text-green-400 text-xs font-medium">
                   {(compatibilityData as any).totalCommonalities} things in common
@@ -249,6 +253,20 @@ export function PeopleDiscoveryWidget({
                   Calculating compatibility...
                 </p>
               )}
+            </div>
+            
+            {/* Interested Button */}
+            <div className="mb-2">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setLocation(`/profile/${person.id}`);
+                }}
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white text-xs px-3 py-1.5 rounded-lg font-medium transition-colors"
+                data-testid={`button-interested-${person.id}`}
+              >
+                Interested
+              </button>
             </div>
           </div>
         </div>
