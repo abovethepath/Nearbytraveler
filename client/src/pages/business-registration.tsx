@@ -103,7 +103,7 @@ export default function BusinessRegistration() {
       
       // Store user data and redirect
       localStorage.setItem("travelconnect_user", JSON.stringify(response));
-      window.location.href = "/business-dashboard";
+      window.location.href = "/profile";
     },
     onError: (error: any) => {
       toast({

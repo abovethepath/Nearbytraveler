@@ -231,7 +231,7 @@ export default function SignupBusiness() {
       sessionStorage.removeItem('accountData');
       
       // Force page reload to ensure authentication state is recognized
-      window.location.href = '/welcome-business';
+      window.location.href = '/profile';
     },
     onError: (error: Error) => {
       toast({

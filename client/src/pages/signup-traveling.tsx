@@ -226,7 +226,7 @@ export default function SignupTraveling() {
         });
 
         // Force a page refresh to ensure authentication state is fully loaded
-        window.location.href = '/home';
+        window.location.href = '/profile';
       } else {
         window.alert(`REGISTRATION FAILED: ${data.message || 'Unknown error'}`);
         

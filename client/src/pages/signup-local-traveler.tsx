@@ -385,7 +385,7 @@ export default function SignupLocalTraveler() {
 
         // Force a page refresh to ensure authentication state is fully loaded
         setTimeout(() => {
-          window.location.href = '/home';
+          window.location.href = '/profile';
         }, 1000);
       } else {
         console.error('❌ Registration failed:', data.message);
