@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="200" height="200" fill="#fef7e0"/>
+  
+  <!-- Face -->
+  <ellipse cx="100" cy="92" rx="44" ry="54" fill="#f4d1ae"/>
+  
+  <!-- Hair -->
+  <path d="M56 68 Q100 45 144 68 Q144 58 140 51 Q130 41 120 36 Q110 31 100 31 Q90 31 80 36 Q70 41 60 51 Q56 58 56 68 Z" fill="#8b4513"/>
+  <path d="M56 68 Q60 78 70 83 Q80 78 90 83 Q100 78 110 83 Q120 78 130 83 Q140 78 144 68 Q144 73 140 78 Q130 83 120 85 Q110 86 100 86 Q90 86 80 85 Q70 83 60 78 Q56 73 56 68 Z" fill="#8b4513"/>
+  
+  <!-- Curly hair details -->
+  <circle cx="75" cy="72" r="4" fill="#8b4513"/>
+  <circle cx="125" cy="72" r="4" fill="#8b4513"/>
+  <circle cx="85" cy="78" r="3" fill="#8b4513"/>
+  <circle cx="115" cy="78" r="3" fill="#8b4513"/>
+  
+  <!-- Eyes -->
+  <ellipse cx="86" cy="87" rx="9" ry="7" fill="white"/>
+  <ellipse cx="114" cy="87" rx="9" ry="7" fill="white"/>
+  <circle cx="86" cy="87" r="5" fill="#2d4a22"/>
+  <circle cx="114" cy="87" r="5" fill="#2d4a22"/>
+  <circle cx="87" cy="86" r="1.5" fill="white"/>
+  <circle cx="115" cy="86" r="1.5" fill="white"/>
+  
+  <!-- Eyebrows -->
+  <path d="M78 80 Q86 78 94 80" stroke="#8b4513" stroke-width="2" fill="none"/>
+  <path d="M106 80 Q114 78 122 80" stroke="#8b4513" stroke-width="2" fill="none"/>
+  
+  <!-- Nose -->
+  <path d="M100 97 L98 107 Q100 109 102 107 Z" fill="#e6c2a6"/>
+  
+  <!-- Mouth -->
+  <path d="M91 117 Q100 124 109 117" stroke="#b85450" stroke-width="3" fill="none"/>
+  
+  <!-- Earrings -->
+  <circle cx="56" cy="95" r="3" fill="#ffd700"/>
+  <circle cx="144" cy="95" r="3" fill="#ffd700"/>
+  
+  <!-- Neck -->
+  <rect x="84" y="146" width="32" height="24" fill="#f4d1ae"/>
+  
+  <!-- Shoulders -->
+  <path d="M68 170 Q100 165 132 170 L142 200 L58 200 Z" fill="#c0392b"/>
+</svg>

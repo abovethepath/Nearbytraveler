@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="200" height="200" fill="#f0f8ff"/>
+  
+  <!-- Face -->
+  <ellipse cx="100" cy="90" rx="45" ry="55" fill="#f4c2a1"/>
+  
+  <!-- Hair -->
+  <path d="M55 65 Q100 45 145 65 Q145 55 140 50 Q130 40 120 35 Q110 30 100 30 Q90 30 80 35 Q70 40 60 50 Q55 55 55 65 Z" fill="#2c1810"/>
+  <path d="M55 65 Q60 75 70 80 Q80 75 90 80 Q100 75 110 80 Q120 75 130 80 Q140 75 145 65 Q145 70 140 75 Q130 80 120 82 Q110 83 100 83 Q90 83 80 82 Q70 80 60 75 Q55 70 55 65 Z" fill="#2c1810"/>
+  
+  <!-- Eyes -->
+  <ellipse cx="85" cy="85" rx="8" ry="6" fill="white"/>
+  <ellipse cx="115" cy="85" rx="8" ry="6" fill="white"/>
+  <circle cx="85" cy="85" r="4" fill="#4a3c28"/>
+  <circle cx="115" cy="85" r="4" fill="#4a3c28"/>
+  <circle cx="86" cy="84" r="1.5" fill="white"/>
+  <circle cx="116" cy="84" r="1.5" fill="white"/>
+  
+  <!-- Eyebrows -->
+  <path d="M78 78 Q85 76 92 78" stroke="#2c1810" stroke-width="2" fill="none"/>
+  <path d="M108 78 Q115 76 122 78" stroke="#2c1810" stroke-width="2" fill="none"/>
+  
+  <!-- Nose -->
+  <path d="M100 95 L98 105 Q100 107 102 105 Z" fill="#e6a573"/>
+  
+  <!-- Mouth -->
+  <path d="M92 115 Q100 122 108 115" stroke="#c86b5a" stroke-width="3" fill="none"/>
+  
+  <!-- Neck -->
+  <rect x="85" y="145" width="30" height="25" fill="#f4c2a1"/>
+  
+  <!-- Shoulders -->
+  <path d="M70 170 Q100 165 130 170 L140 200 L60 200 Z" fill="#4a90e2"/>
+</svg>
