@@ -1925,23 +1925,37 @@ export default function Home() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => setFilters({
-                      gender: [],
-                      sexualPreference: [],
-                      minAge: "",
-                      maxAge: "",
-                      interests: [],
-                      activities: [],
-                      location: "",
-                      search: "",
-                      userType: [],
-                      events: [],
-                      travelerTypes: [],
-                      militaryStatus: [],
-                      startDate: "",
-                      endDate: ""
-                    })}
+                    onClick={() => {
+                      // Reset all filters
+                      setFilters({
+                        gender: [],
+                        sexualPreference: [],
+                        minAge: "",
+                        maxAge: "",
+                        interests: [],
+                        activities: [],
+                        location: "",
+                        search: "",
+                        userType: [],
+                        events: [],
+                        travelerTypes: [],
+                        militaryStatus: [],
+                        startDate: "",
+                        endDate: ""
+                      });
+                      // Reset active filter to show all users
+                      setActiveFilter("all");
+                      // Reset location filter
+                      setActiveLocationFilter("");
+                      // Reset location filter state
+                      setLocationFilter({
+                        country: "",
+                        state: "",
+                        city: ""
+                      });
+                    }}
                     className="w-full sm:w-auto"
+                    data-testid="button-clear-all-filters"
                   >
                     <X className="w-4 h-4 mr-2" />
                     Clear All Filters
@@ -1995,12 +2009,65 @@ export default function Home() {
           {/* Discover Feed - Full width on mobile, 2 columns on desktop */}
           <div className="col-span-1 lg:col-span-2 space-y-4 sm:space-y-8 min-w-0">
             <div className="flex items-center justify-between" data-testid="discover-people-section">
-              <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white">
-                {activeFilter === "travel-dates" 
-                  ? `Travel Connections to ${user?.travelDestination}` 
-                  : "Discover People"
-                }
-              </h2>
+              <div className="flex items-center gap-4">
+                <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white">
+                  {activeFilter === "travel-dates" 
+                    ? `Travel Connections to ${user?.travelDestination}` 
+                    : "Discover People"
+                  }
+                </h2>
+                
+                {/* Quick Clear All Button - Show when any filters are active */}
+                {(activeFilter !== "all" || 
+                  filters.location || 
+                  filters.search || 
+                  filters.gender.length > 0 || 
+                  filters.sexualPreference.length > 0 || 
+                  filters.interests.length > 0 || 
+                  filters.activities.length > 0 || 
+                  filters.userType.length > 0 ||
+                  filters.minAge ||
+                  filters.maxAge) && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      // Reset all filters
+                      setFilters({
+                        gender: [],
+                        sexualPreference: [],
+                        minAge: "",
+                        maxAge: "",
+                        interests: [],
+                        activities: [],
+                        location: "",
+                        search: "",
+                        userType: [],
+                        events: [],
+                        travelerTypes: [],
+                        militaryStatus: [],
+                        startDate: "",
+                        endDate: ""
+                      });
+                      // Reset active filter to show all users
+                      setActiveFilter("all");
+                      // Reset location filter
+                      setActiveLocationFilter("");
+                      // Reset location filter state
+                      setLocationFilter({
+                        country: "",
+                        state: "",
+                        city: ""
+                      });
+                    }}
+                    className="bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 hover:bg-red-100 dark:hover:bg-red-900/30"
+                    data-testid="button-quick-clear-filters"
+                  >
+                    <X className="w-4 h-4 mr-2" />
+                    Clear Search
+                  </Button>
+                )}
+              </div>
 
               {/* Sort By Dropdown */}
               <DropdownMenu>
