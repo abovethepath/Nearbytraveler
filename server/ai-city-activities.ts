@@ -115,7 +115,7 @@ Return the response as JSON in this exact format:
 }`;
 
     const response = await openai.chat.completions.create({
-      model: DEFAULT_MODEL_STR, // Updated to ChatGPT 5.0 for enhanced location-specific activity generation
+      model: DEFAULT_MODEL_STR,
       messages: [
         {
           role: "system",
@@ -126,8 +126,8 @@ Return the response as JSON in this exact format:
           content: prompt
         }
       ],
-      max_tokens: 3000,
-      temperature: 0.7,
+      max_tokens: 2000, // Reduced to use less quota
+      temperature: 0.6, // Slightly more focused responses
       response_format: { type: "json_object" }
     });
 
@@ -144,8 +144,16 @@ Return the response as JSON in this exact format:
     console.log(`🔄 DEDUPLICATION: Removed ${allActivities.length - uniqueActivities.length} duplicate/similar activities`);
     
     return uniqueActivities;
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error generating city activities:', error);
+    
+    // If it's a quota error, provide helpful feedback but still return generic activities
+    if (error?.status === 429) {
+      console.log('🔄 AI QUOTA: OpenAI quota exceeded, falling back to generic activities. Consider upgrading OpenAI plan for unlimited city-specific generation.');
+    } else if (error?.status === 401) {
+      console.log('🔑 AI AUTH: OpenAI API key invalid or expired. Please check your API key.');
+    }
+    
     // Return at least the generic activities if AI fails
     return [...GENERIC_CITY_ACTIVITIES];
   }
