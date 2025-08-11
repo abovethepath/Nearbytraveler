@@ -92,10 +92,10 @@ export function PeopleDiscoveryWidget({
                 )}
               </div>
               
-              {/* Line 3: Countries and references stats */}
+              {/* Line 3: Countries and references + ALWAYS hometown */}
               <div className="mb-2">
                 <p className="text-gray-500 dark:text-gray-500 text-xs truncate">
-                  0 countries ⭐ 0 references
+                  0 countries ⭐ 0 references • Nearby Local in {person.location?.split(',')[0] || 'Hometown'}
                 </p>
               </div>
               
@@ -195,10 +195,10 @@ export function PeopleDiscoveryWidget({
               )}
             </div>
             
-            {/* Line 3: Countries and references stats */}
+            {/* Line 3: Countries and references + ALWAYS hometown */}
             <div className="mb-2">
               <p className="text-gray-500 dark:text-gray-500 text-xs truncate">
-                0 countries ⭐ 0 references
+                0 countries ⭐ 0 references • Nearby Local in {person.location?.split(',')[0] || 'Hometown'}
               </p>
             </div>
             
