@@ -411,7 +411,7 @@ export default function CityChatroomsPage({ cityFilter }: CityChatroomsPageProps
                 </span>
                 <Badge variant="secondary">
                   <Users className="w-3 h-3 mr-1" />
-                  {membersData?.length || selectedChatroom.memberCount || 0} members
+                  {selectedChatroom.memberCount || 0} members
                 </Badge>
                 <div className="ml-auto flex gap-2">
                   {!selectedChatroom.userIsMember ? (

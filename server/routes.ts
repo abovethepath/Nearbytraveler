@@ -7297,7 +7297,7 @@ Ready to start making real connections wherever you are?
         }
       }
 
-      if (process.env.NODE_ENV === 'development') console.log(`🔥 CITIES ENDPOINT CALLED: User ${userId} requesting cities 🔥`);
+      console.log(`🚨 CITIES ENDPOINT ABSOLUTELY CALLED: User ${userId} requesting cities 🚨`);
 
       const allChatrooms = await db.select().from(citychatrooms);
       
@@ -7316,10 +7316,8 @@ Ready to start making real connections wherever you are?
         memberCountMap.set(mc.chatroomId, parseInt(mc.count || '0'));
       });
       
-      if (process.env.NODE_ENV === 'development') {
-        console.log(`🔥 CITIES ENDPOINT: Member count map:`, Array.from(memberCountMap.entries()));
-        console.log(`🔥 CITIES ENDPOINT: All chatrooms count:`, allChatrooms.length);
-      }
+      console.log(`🚨 CITIES ENDPOINT: Member count map:`, Array.from(memberCountMap.entries()));
+      console.log(`🚨 CITIES ENDPOINT: All chatrooms count:`, allChatrooms.length);
 
       // Check user membership status for all chatrooms
       const userMemberships = await db
@@ -7342,10 +7340,8 @@ Ready to start making real connections wherever you are?
           type: 'city'
         }));
 
-      if (process.env.NODE_ENV === 'development') {
-        console.log(`🔥 CITIES ENDPOINT: Found ${cityRooms.length} chatrooms for user ${userId}`);
-        console.log(`🔥 CITIES ENDPOINT: First room member count:`, cityRooms[0]?.memberCount);
-      }
+      console.log(`🚨 CITIES ENDPOINT: Found ${cityRooms.length} chatrooms for user ${userId}`);
+      console.log(`🚨 CITIES ENDPOINT: First room member count:`, cityRooms[0]?.memberCount);
       res.json(cityRooms);
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error fetching city rooms:", error);
