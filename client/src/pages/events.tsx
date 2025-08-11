@@ -134,7 +134,7 @@ export default function Events() {
     staleTime: 30000, // Cache for 30 seconds to improve performance
   });
 
-  // Fetch all events for My Events tab only when needed
+  // Fetch all events to identify user's events
   const { data: allEvents = [], isLoading: allEventsLoading } = useQuery<Event[]>({
     queryKey: ["/api/events", "all"],
     queryFn: async () => {
@@ -144,7 +144,7 @@ export default function Events() {
       }
       return response.json();
     },
-    enabled: selectedTab === 'my-events', // Only fetch when My Events tab is active
+    enabled: selectedTab === 'explore', // Only fetch when Community Events tab is active
     staleTime: 30000,
   });
 
@@ -391,7 +391,7 @@ export default function Events() {
   // Handle loading and error states in render without early returns to fix hooks ordering
 
   // Handle loading state
-  if (isLoading || allEventsLoading) {
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50">
         <div className="bg-white border-b">
@@ -469,7 +469,7 @@ export default function Events() {
       
       <div className="container mx-auto px-2 sm:px-6">
 
-        {/* Three Button Navigation */}
+        {/* Navigation Tabs - Removed "My Events" */}
         <div className="flex flex-wrap justify-center gap-2 mb-6">
           <Button 
             onClick={() => setSelectedTab('explore')}
@@ -533,16 +533,7 @@ export default function Events() {
             Local LA
           </Button>
 
-          <Button 
-            onClick={() => setSelectedTab('my-events')}
-            className={`px-3 sm:px-4 py-2 rounded-xl transition-all duration-300 text-xs sm:text-sm ${
-              selectedTab === 'my-events' 
-                ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg' 
-                : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
-            }`}
-          >
-            My Events
-          </Button>
+
 
           <Button 
             onClick={() => setShowCreateEvent(true)}
@@ -671,9 +662,194 @@ export default function Events() {
 
           {/* Events Sections */}
           <div className="space-y-6 sm:space-y-8">
-            {/* Upcoming Events Section */}
+            {/* User's Events Section - Show first */}
+            {currentUser && (() => {
+              // Filter events created by the user
+              const createdEvents = allEvents.filter(event => {
+                const userIdNum = parseInt(String(currentUser.id));
+                const organizerIdNum = parseInt(String(event.organizerId));
+                return userIdNum === organizerIdNum;
+              });
+
+              // Filter events the user has joined
+              const joinedEventIds = participants
+                .filter(p => p.userId === currentUser.id)
+                .map(p => p.eventId);
+              const joinedEvents = allEvents.filter(event => 
+                joinedEventIds.includes(event.id) && event.organizerId !== currentUser.id
+              );
+
+              const allUserEvents = [...createdEvents, ...joinedEvents];
+
+              if (allUserEvents.length > 0) {
+                return (
+                  <div>
+                    <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">
+                      My Events ({allUserEvents.length})
+                    </h2>
+                    <div className="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                      {allUserEvents.map((event) => (
+                        <Card 
+                          key={event.id} 
+                          className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-[1.02] border-2 border-blue-200 bg-blue-50/30 dark:border-blue-700 dark:bg-blue-900/20"
+                          onClick={() => setLocation(`/events/${event.id}`)}
+                        >
+                          <CardHeader className="pb-3">
+                            {event.imageUrl && (
+                              <div className="relative h-40 bg-gray-100 dark:bg-gray-700 rounded-lg mb-3 overflow-hidden">
+                                <img
+                                  src={event.imageUrl}
+                                  alt={event.title}
+                                  className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                                  loading="lazy"
+                                />
+                              </div>
+                            )}
+                            <div className="flex items-start justify-between">
+                              <CardTitle className="text-lg line-clamp-2 dark:text-white">{event.title}</CardTitle>
+                              <div className="flex flex-col gap-1 ml-2">
+                                <Badge variant="secondary" className={`shrink-0 ${
+                                  createdEvents.some(e => e.id === event.id) 
+                                    ? 'bg-green-100 text-green-800' 
+                                    : 'bg-blue-100 text-blue-800'
+                                }`}>
+                                  {createdEvents.some(e => e.id === event.id) ? 'Organizer' : 'Joined'}
+                                </Badge>
+                                <Badge variant="outline" className="shrink-0 text-xs">
+                                  {event.category}
+                                </Badge>
+                                {/* Recurring event indicator */}
+                                {event.isRecurring && (
+                                  <Badge variant="outline" className="shrink-0 text-xs bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-300 dark:border-green-700">
+                                    🔄 {event.recurrenceType === 'weekly' ? 'Weekly' : 
+                                         event.recurrenceType === 'daily' ? 'Daily' :
+                                         event.recurrenceType === 'monthly' ? 'Monthly' :
+                                         event.recurrenceType === 'biweekly' ? 'Bi-weekly' :
+                                         'Recurring'}
+                                  </Badge>
+                                )}
+                              </div>
+                            </div>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="space-y-3">
+                              <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-white">
+                                <Calendar className="w-4 h-4 text-gray-600 dark:text-white" />
+                                {formatDateForDisplay(event.date)} at{" "}
+                                {new Date(event.date).toLocaleTimeString([], { 
+                                  hour: '2-digit', 
+                                  minute: '2-digit' 
+                                })}
+                              </div>
+
+                              <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-white">
+                                <MapPin className="w-4 h-4 text-gray-600 dark:text-white" />
+                                {event.location}
+                              </div>
+
+                              {event.description && (
+                                <p className="text-sm text-gray-600 dark:text-white line-clamp-2">
+                                  {event.description}
+                                </p>
+                              )}
+
+                              {/* Attendance count */}
+                              <div className="text-sm text-gray-500 dark:text-gray-400">
+                                <Users className="w-4 h-4 inline mr-1" />
+                                {(() => {
+                                  const count = (event as any).participantCount ?? participants.filter(p => p.eventId === event.id).length;
+                                  return count === 1 ? "1 attending" : `${count} attending`;
+                                })()}
+                              </div>
+
+                              {/* Management buttons for created events */}
+                              {createdEvents.some(e => e.id === event.id) ? (
+                                <div className="flex gap-2">
+                                  <Button 
+                                    variant="outline" 
+                                    size="sm" 
+                                    className="flex-1 bg-gradient-to-r from-orange-500 to-blue-600 text-white border-0 hover:from-orange-600 hover:to-blue-700"
+                                    style={{ transition: 'none' }}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setLocation(`/events/${event.id}`);
+                                    }}
+                                  >
+                                    View
+                                  </Button>
+                                  <Button 
+                                    variant="outline" 
+                                    size="sm" 
+                                    className="flex-1 border-blue-200 text-blue-700 hover:bg-blue-50 dark:border-blue-700 dark:text-blue-300 dark:hover:bg-blue-900/20"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setLocation(`/events/${event.id}/edit`);
+                                    }}
+                                  >
+                                    Edit
+                                  </Button>
+                                  <Button 
+                                    variant="outline" 
+                                    size="sm" 
+                                    className="flex-1 border-green-200 text-green-700 hover:bg-green-50 dark:border-green-700 dark:text-green-300 dark:hover:bg-green-900/20"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      console.log('Copy event:', event.id);
+                                    }}
+                                  >
+                                    Copy
+                                  </Button>
+                                </div>
+                              ) : (
+                                <div className="flex items-center gap-2 pt-2">
+                                  <Button 
+                                    size="sm" 
+                                    variant="outline"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setLocation(`/events/${event.id}`);
+                                    }}
+                                    className="flex-1 bg-gradient-to-r from-blue-600 to-orange-500 text-white border-0 hover:from-blue-700 hover:to-orange-600"
+                                    style={{ 
+                                      background: 'linear-gradient(to right, #2563eb, #ea580c)',
+                                      border: 'none',
+                                      transition: 'none' 
+                                    }}
+                                  >
+                                    View Event
+                                  </Button>
+                                  <Button 
+                                    size="sm" 
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleJoinEvent(event);
+                                    }}
+                                    disabled={joinEventMutation.isPending || leaveEventMutation.isPending}
+                                    variant={isUserJoined(event.id) ? "outline" : "default"}
+                                    className={isUserJoined(event.id) ? "flex-1" : "flex-1 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white border-0"}
+                                    style={!isUserJoined(event.id) ? { 
+                                      background: 'linear-gradient(to right, #2563eb, #ea580c)',
+                                      border: 'none'
+                                    } : {}}
+                                  >
+                                    {isUserJoined(event.id) ? "Leave" : "Join Event"}
+                                  </Button>
+                                </div>
+                              )}
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  </div>
+                );
+              }
+              return null;
+            })()}
+
+            {/* All Community Events Section */}
             <div>
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">Upcoming Events</h2>
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">All Community Events</h2>
               {filteredUpcomingEvents.length === 0 ? (
                 <div className="text-center py-6 sm:py-8">
                   <Calendar className="w-10 sm:w-12 h-10 sm:h-12 text-gray-300 dark:text-white mx-auto mb-3" />
@@ -919,293 +1095,6 @@ export default function Events() {
         </div>
         )}
 
-        {selectedTab === 'my-events' && (
-        <div className="space-y-6">
-          {(() => {
-            if (!currentUser) return null;
-
-            // Filter events created by the user (fix ID matching)
-            const createdEvents = allEvents.filter(event => {
-              // Convert both to numbers for proper comparison
-              const userIdNum = parseInt(String(currentUser.id));
-              const organizerIdNum = parseInt(String(event.organizerId));
-              return userIdNum === organizerIdNum;
-            });
-
-            // Filter events the user has joined
-            const joinedEventIds = participants
-              .filter(p => p.userId === currentUser.id)
-              .map(p => p.eventId);
-            const joinedEvents = allEvents.filter(event => 
-              joinedEventIds.includes(event.id) && event.organizerId !== currentUser.id
-            );
-
-            const allUserEvents = [...createdEvents, ...joinedEvents];
-
-            if (allUserEvents.length === 0) {
-              return (
-                <div className="text-center py-12">
-                  <Calendar className="w-16 h-16 text-gray-300 dark:text-white mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold text-gray-600 dark:text-white mb-2">No Events Yet</h3>
-                  <p className="text-gray-500 dark:text-white mb-4">
-                    Events you've created and events you've joined will appear here.
-                  </p>
-                  <Button 
-                    onClick={() => setShowCreateEvent(true)}
-                    className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white"
-                  >
-                    <Plus className="w-4 h-4 mr-2" />
-                    Create Event
-                  </Button>
-                </div>
-              );
-            }
-
-            return (
-              <div className="space-y-6">
-                {/* Created Events */}
-                {createdEvents.length > 0 && (
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Events I Created ({createdEvents.length})</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                      {createdEvents.map((event) => (
-                        <Card 
-                          key={event.id} 
-                          className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-[1.02] border border-gray-200"
-                          onClick={() => setLocation(`/events/${event.id}`)}
-                        >
-                          {/* Event Photo Header */}
-                          {event.imageUrl && (
-                            <div className="relative h-40 bg-cover bg-center rounded-t-lg overflow-hidden">
-                              <img
-                                src={event.imageUrl}
-                                alt={event.title}
-                                className="w-full h-full object-cover"
-                              />
-                              <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
-                            </div>
-                          )}
-                          
-                          <CardContent className="p-6">
-                            <div className="flex items-start justify-between mb-3">
-                              <Badge variant="secondary" className="bg-green-100 text-green-800">
-                                Organizer
-                              </Badge>
-                              <div className="flex flex-col gap-1">
-                                <Badge variant="outline">
-                                  {event.category}
-                                </Badge>
-                                {/* Recurring event indicator */}
-                                {event.isRecurring && (
-                                  <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-300 dark:border-green-700">
-                                    🔄 {event.recurrenceType === 'weekly' ? 'Weekly' : 
-                                         event.recurrenceType === 'daily' ? 'Daily' :
-                                         event.recurrenceType === 'monthly' ? 'Monthly' :
-                                         event.recurrenceType === 'biweekly' ? 'Bi-weekly' :
-                                         'Recurring'}
-                                  </Badge>
-                                )}
-                              </div>
-                            </div>
-
-                            <h3 className="font-semibold text-lg text-gray-900 dark:text-white mb-2 line-clamp-2">
-                              {event.title}
-                            </h3>
-
-                            {event.description && (
-                              <p className="text-gray-600 dark:text-gray-300 text-sm mb-3 line-clamp-2">
-                                {event.description}
-                              </p>
-                            )}
-
-                            <div className="space-y-2 mb-4">
-                              <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                                <Calendar className="w-4 h-4" />
-                                <span>
-                                  {formatDateForDisplay(event.date)} at{" "}
-                                  {new Date(event.date).toLocaleTimeString([], { 
-                                    hour: '2-digit', 
-                                    minute: '2-digit' 
-                                  })}
-                                  {event.endDate && (
-                                    <>
-                                      {" - "}
-                                      {new Date(event.endDate).toLocaleTimeString([], { 
-                                        hour: '2-digit', 
-                                        minute: '2-digit' 
-                                      })}
-                                    </>
-                                  )}
-                                </span>
-                              </div>
-                              <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                                <MapPin className="w-4 h-4" />
-                                <span className="line-clamp-1">{event.location}</span>
-                              </div>
-                              <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                                <Users className="w-4 h-4" />
-                                <span>
-                                  {participants.filter(p => p.eventId === event.id).length} joined
-                                  {event.maxParticipants && ` / ${event.maxParticipants} max`}
-                                </span>
-                              </div>
-                            </div>
-
-                            <div className="flex gap-2">
-                              <Button 
-                                variant="outline" 
-                                size="sm" 
-                                className="flex-1 bg-gradient-to-r from-orange-500 to-blue-600 text-white border-0 hover:from-orange-600 hover:to-blue-700"
-                                style={{ transition: 'none' }}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setLocation(`/events/${event.id}`);
-                                }}
-                              >
-                                View
-                              </Button>
-                              <Button 
-                                variant="outline" 
-                                size="sm" 
-                                className="flex-1 border-blue-200 text-blue-700 hover:bg-blue-50 dark:border-blue-700 dark:text-blue-300 dark:hover:bg-blue-900/20"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  // Navigate to edit event page (to be implemented)
-                                  setLocation(`/events/${event.id}/edit`);
-                                }}
-                              >
-                                Edit
-                              </Button>
-                              <Button 
-                                variant="outline" 
-                                size="sm" 
-                                className="flex-1 border-green-200 text-green-700 hover:bg-green-50 dark:border-green-700 dark:text-green-300 dark:hover:bg-green-900/20"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  // Copy event functionality (to be implemented)
-                                  console.log('Copy event:', event.id);
-                                }}
-                              >
-                                Copy
-                              </Button>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Joined Events */}
-                {joinedEvents.length > 0 && (
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Events I Joined ({joinedEvents.length})</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                      {joinedEvents.map((event) => (
-                        <Card 
-                          key={event.id} 
-                          className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-[1.02] border border-gray-200"
-                          onClick={() => setLocation(`/events/${event.id}`)}
-                        >
-                          {/* Event Photo Header */}
-                          {event.imageUrl && (
-                            <div className="relative h-40 bg-cover bg-center rounded-t-lg overflow-hidden">
-                              <img
-                                src={event.imageUrl}
-                                alt={event.title}
-                                className="w-full h-full object-cover"
-                              />
-                              <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
-                            </div>
-                          )}
-                          
-                          <CardContent className="p-6">
-                            <div className="flex items-start justify-between mb-3">
-                              <Badge variant="secondary" className="bg-blue-100 text-blue-800">
-                                Participant
-                              </Badge>
-                              <Badge variant="outline">
-                                {event.category}
-                              </Badge>
-                            </div>
-
-                            <h3 className="font-semibold text-lg text-gray-900 dark:text-white mb-2 line-clamp-2">
-                              {event.title}
-                            </h3>
-
-                            {event.description && (
-                              <p className="text-gray-600 dark:text-gray-300 text-sm mb-3 line-clamp-2">
-                                {event.description}
-                              </p>
-                            )}
-
-                            <div className="space-y-2 mb-4">
-                              <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                                <Calendar className="w-4 h-4" />
-                                <span>
-                                  {formatDateForDisplay(event.date)} at{" "}
-                                  {new Date(event.date).toLocaleTimeString([], { 
-                                    hour: '2-digit', 
-                                    minute: '2-digit' 
-                                  })}
-                                  {event.endDate && (
-                                    <>
-                                      {" - "}
-                                      {new Date(event.endDate).toLocaleTimeString([], { 
-                                        hour: '2-digit', 
-                                        minute: '2-digit' 
-                                      })}
-                                    </>
-                                  )}
-                                </span>
-                              </div>
-                              <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                                <MapPin className="w-4 h-4" />
-                                <span className="line-clamp-1">{event.location}</span>
-                              </div>
-                              <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                                <Users className="w-4 h-4" />
-                                <span>
-                                  {participants.filter(p => p.eventId === event.id).length} joined
-                                  {event.maxParticipants && ` / ${event.maxParticipants} max`}
-                                </span>
-                              </div>
-                            </div>
-
-                            <div className="flex gap-2">
-                              <Button 
-                                variant="outline" 
-                                size="sm" 
-                                className="flex-1 bg-blue-500 hover:bg-blue-600 text-white border-0"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setLocation(`/events/${event.id}`);
-                                }}
-                              >
-                                View Details
-                              </Button>
-                              <Button 
-                                variant="destructive" 
-                                size="sm"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleJoinEvent(event);
-                                }}
-                              >
-                                Leave Event
-                              </Button>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            );
-          })()}
-        </div>
-        )}
 
         {/* Create Event Dialog */}
         {showCreateEvent && (

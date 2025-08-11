@@ -54,6 +54,7 @@ Preferred communication style: Simple, everyday language.
 - **Event Display**: Recurring event information is shown, and new events appear first in listings.
 - **City Content**: Integration of authentic city photos and AI-generated tourist attractions.
 - **User Cards**: Enhanced with larger photos, Load More/Load Less functionality, and improved compatibility display.
+- **Event Management**: Removed separate "My Events" tab per user request - all user events now appear prominently at top of Community Events section with special styling and management buttons.
 
 ## External Dependencies
 
