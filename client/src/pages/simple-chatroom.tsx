@@ -31,6 +31,8 @@ export default function SimpleChatroomPage() {
   const params = useParams();
   const chatroomId = parseInt(params.id || '1');
   const { toast } = useToast();
+  
+  console.log('🚀 SIMPLE CHATROOM: Component loaded with chatroom ID:', chatroomId);
   const queryClient = useQueryClient();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [messageText, setMessageText] = useState("");
@@ -73,7 +75,9 @@ export default function SimpleChatroomPage() {
   // Fetch chatroom details
   const { data: chatroom } = useQuery<Chatroom>({
     queryKey: [`/api/simple-chatrooms/${chatroomId}`],
-    enabled: !!chatroomId
+    enabled: !!chatroomId,
+    staleTime: 0, // No caching
+    cacheTime: 0  // Clear cache immediately
   });
 
   // Fetch messages  
@@ -81,14 +85,18 @@ export default function SimpleChatroomPage() {
     queryKey: [`/api/simple-chatrooms/${chatroomId}/messages`],
     refetchInterval: 2500,
     refetchOnWindowFocus: false,
-    enabled: !!chatroomId
+    enabled: !!chatroomId,
+    staleTime: 0, // No caching
+    cacheTime: 0  // Clear cache immediately
   });
 
   // Fetch member count
   const { data: memberCountResp } = useQuery<{memberCount: number}>({
     queryKey: [`/api/simple-chatrooms/${chatroomId}/members/count`],
     refetchInterval: 5000,
-    enabled: !!chatroomId
+    enabled: !!chatroomId,
+    staleTime: 0, // No caching
+    cacheTime: 0  // Clear cache immediately
   });
   const memberCount = memberCountResp?.memberCount ?? 0;
 

@@ -198,7 +198,12 @@ export default function CityChatroomsPage() {
                       <div className="flex gap-2">
                         <Button 
                           className="flex-1 bg-green-600 hover:bg-green-700 text-white"
-                          onClick={() => window.open(`/simple-chatroom/${chatroom.id}`, '_blank')}
+                          onClick={() => {
+                            console.log(`🚀 CHATROOM FIX: Opening simple chatroom ${chatroom.id}`);
+                            const url = `/simple-chatroom/${chatroom.id}?cacheBust=${Date.now()}`;
+                            console.log('🌐 Opening URL:', url);
+                            window.location.href = url;
+                          }}
                           data-testid={`button-open-chat-${chatroom.id}`}
                         >
                           <MessageCircle className="w-4 h-4 mr-2" />
