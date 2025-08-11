@@ -28,6 +28,55 @@ import {
 import { CityPhotoUploadWidget } from "@/components/CityPhotoUploadWidget";
 // Removed MobileNav - using global mobile navigation
 
+// City images from assets
+const getCityImage = (cityName: string) => {
+  const cityImages: Record<string, string> = {
+    'Los Angeles Metro': '/attached_assets/Los_Angeles_1753819372180.jpg',
+    'Los Angeles': '/attached_assets/Los_Angeles_1753819372180.jpg',
+    'Boston': '/attached_assets/thaniel hall_1750699608804.jpeg',
+    'Budapest': '/attached_assets/budapest-at-night-chain-bridge-and-buda-castle-matthias-hauser_1750699409380.jpg',
+    'New York': '/attached_assets/image_1754862373277.png',
+    'Manhattan': '/attached_assets/image_1754862373277.png',
+    'Chicago': '/attached_assets/image_1754862408395.png',
+    'San Francisco': '/attached_assets/image_1754862445361.png',
+    'Philadelphia': '/attached_assets/image_1754862486988.png',
+    'Seattle': '/attached_assets/image_1754862527032.png',
+    'Miami': '/attached_assets/beach travel_1750958707105.jpg',
+    'Austin': '/attached_assets/image_1754862534387.png',
+    'Denver': '/attached_assets/image_1754862567976.png',
+    'Nashville': '/attached_assets/image_1754862636529.png',
+    'New Orleans': '/attached_assets/image_1754862647564.png',
+    'Portland': '/attached_assets/image_1754862686951.png',
+    'London': '/attached_assets/image_1754862905677.png',
+    'Paris': '/attached_assets/image_1754862913594.png',
+    'Rome': '/attached_assets/image_1754862952628.png',
+    'Milan': '/attached_assets/image_1754870879393.png',
+    'Barcelona': '/attached_assets/image_1754871157632.png',
+    'Madrid': '/attached_assets/image_1754871267113.png',
+    'Amsterdam': '/attached_assets/image_1754871749891.png',
+    'Berlin': '/attached_assets/image_1754872606823.png',
+    'Prague': '/attached_assets/image_1754873168134.png',
+    'Vienna': '/attached_assets/image_1754873550449.png',
+    'Lisbon': '/attached_assets/image_1754873719290.png',
+    'Dublin': '/attached_assets/image_1754875823668.png',
+    'Stockholm': '/attached_assets/image_1754878207849.png',
+    'Default': '/attached_assets/travel photo group map_1750993025212.jpeg'
+  };
+  return cityImages[cityName] || cityImages['Default'];
+};
+
+// City photo gallery for match page
+const getMatchCityGallery = (cityName: string) => {
+  const travelPhotos = [
+    '/attached_assets/Travelers Sharing a Beer_1749576612655.png',
+    '/attached_assets/travelers coffee_1750995178947.png',
+    '/attached_assets/4 travelers around map in town_1750995541992.webp',
+    '/attached_assets/travel photo group map_1750993025212.jpeg'
+  ];
+  
+  return travelPhotos;
+};
+
 // Metro consolidation function - matches the backend logic
 const consolidateToMetroArea = (city: string, state?: string): string => {
   if (!city) return city;
@@ -883,22 +932,15 @@ export default function MatchInCity() {
                       }}
                     >
                       <div className="relative h-56 overflow-hidden">
-                        {(() => {
-                          const photoUrl = getCityPhotoUrl(city.city);
-                          return photoUrl ? (
-                            <img
-                              src={photoUrl}
-                              alt={city.city}
-                              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                              onError={(e) => {
-                                const target = e.target as HTMLImageElement;
-                                target.style.display = 'none';
-                              }}
-                            />
-                          ) : (
-                            <div className={`w-full h-full bg-gradient-to-br ${city.gradient}`}></div>
-                          );
-                        })()}
+                        <img
+                          src={getCityImage(city.city)}
+                          alt={city.city}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.src = getCityImage('Default');
+                          }}
+                        />
                         <div className="absolute inset-0 bg-black/20" />
                         <div className="absolute top-3 right-3">
                           <Badge className="bg-gradient-to-r from-orange-500 to-red-500 text-white text-sm px-3 py-1 animate-pulse">
@@ -1038,6 +1080,44 @@ export default function MatchInCity() {
             </div>
           </div>
         </div>
+
+        {/* City Photo Gallery */}
+        {(() => {
+          const galleryPhotos = getMatchCityGallery(selectedCity);
+          if (galleryPhotos.length > 0) {
+            return (
+              <Card className="mb-4 bg-white/5 backdrop-blur-sm border-white/10">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-white flex items-center gap-2 text-sm">
+                    <Camera className="w-4 h-4" />
+                    Travel Photos
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    {galleryPhotos.slice(0, 4).map((photo, index) => (
+                      <div key={index} className="relative group overflow-hidden rounded-lg bg-gray-700 aspect-square">
+                        <img
+                          src={photo}
+                          alt={`Travel photo ${index + 1}`}
+                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src = '/attached_assets/travel photo group map_1750993025212.jpeg';
+                          }}
+                        />
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors duration-300" />
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-white/70 text-xs mt-2 text-center">
+                    Connect with fellow travelers
+                  </p>
+                </CardContent>
+              </Card>
+            );
+          }
+          return null;
+        })()}
 
         {/* HOW MATCHING WORKS - Compact explanation */}
         <Card className="mb-4 bg-white/5 backdrop-blur-sm border-white/10">

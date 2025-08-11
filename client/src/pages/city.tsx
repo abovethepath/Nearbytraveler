@@ -21,53 +21,65 @@ import { CityPhotoUploadWidget } from "@/components/CityPhotoUploadWidget";
 import { useAuth } from "@/App";
 import type { User, Event } from "@shared/schema";
 
-// Default city images
+// Authentic city images from assets
 const getCityImage = (cityName: string) => {
   const cityImages: Record<string, string> = {
-    'Los Angeles Metro': '/attached_assets/LA PHOTO_1750698856553.jpg',
+    'Los Angeles Metro': '/attached_assets/Los_Angeles_1753819372180.jpg',
+    'Los Angeles': '/attached_assets/Los_Angeles_1753819372180.jpg',
     'Boston': '/attached_assets/thaniel hall_1750699608804.jpeg',
     'Budapest': '/attached_assets/budapest-at-night-chain-bridge-and-buda-castle-matthias-hauser_1750699409380.jpg',
-    'New York': 'https://images.unsplash.com/photo-1496588152823-86ff7695e68f?w=400&h=250&fit=crop&auto=format',
-    'Manhattan': 'https://images.unsplash.com/photo-1496588152823-86ff7695e68f?w=400&h=250&fit=crop&auto=format',
-    'Chicago': 'https://images.unsplash.com/photo-1477414348463-c0eb7f1359b6?w=400&h=250&fit=crop&auto=format',
-    'San Francisco': 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=400&h=250&fit=crop&auto=format',
-    'Philadelphia': 'https://images.unsplash.com/photo-1486299267070-83823f5448dd?w=400&h=250&fit=crop&auto=format',
-    'Seattle': 'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=400&h=250&fit=crop&auto=format',
-    'Miami': 'https://images.unsplash.com/photo-1506197603052-3cc9c3a201bd?w=400&h=250&fit=crop&auto=format',
-    'Austin': 'https://images.unsplash.com/photo-1531218150217-54595bc2b934?w=400&h=250&fit=crop&auto=format',
-    'Denver': 'https://images.unsplash.com/photo-1619856699906-09e1f58c98b1?w=400&h=250&fit=crop&auto=format',
-    'Nashville': 'https://images.unsplash.com/photo-1549213783-8284d0336c4f?w=400&h=250&fit=crop&auto=format',
-    'New Orleans': 'https://images.unsplash.com/photo-1569982175971-d92b01cf8694?w=400&h=250&fit=crop&auto=format',
-    'Portland': 'https://images.unsplash.com/photo-1544547606-5f134e64d0df?w=400&h=250&fit=crop&auto=format',
-    'London': 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=400&h=250&fit=crop&auto=format',
-    'Paris': 'https://images.unsplash.com/photo-1499856871958-5b9627545d1a?w=400&h=250&fit=crop&auto=format',
-    'Rome': 'https://images.unsplash.com/photo-1515542622106-78bda8ba0e5b?w=400&h=250&fit=crop&auto=format',
-    'Milan': 'https://images.unsplash.com/photo-1543832923-44667a44c804?w=400&h=250&fit=crop&auto=format',
-    'Barcelona': 'https://images.unsplash.com/photo-1539037116277-4db20889f2d4?w=400&h=250&fit=crop&auto=format',
-    'Madrid': 'https://images.unsplash.com/photo-1543785734-4b6e564642f8?w=400&h=250&fit=crop&auto=format',
-    'Amsterdam': 'https://images.unsplash.com/photo-1534351590666-13e3e96b5017?w=400&h=250&fit=crop&auto=format',
-    'Berlin': 'https://images.unsplash.com/photo-1587330979470-3day839981a7?w=400&h=250&fit=crop&auto=format',
-    'Prague': 'https://images.unsplash.com/photo-1541849546-216549ae216d?w=400&h=250&fit=crop&auto=format',
-    'Vienna': 'https://images.unsplash.com/photo-1516550893923-42d28e5677af?w=400&h=250&fit=crop&auto=format',
-    'Lisbon': 'https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=400&h=250&fit=crop&auto=format',
-    'Dublin': 'https://images.unsplash.com/photo-1549918864-48ac978761a4?w=400&h=250&fit=crop&auto=format',
-    'Stockholm': 'https://images.unsplash.com/photo-1509356843151-3e7d96241e11?w=400&h=250&fit=crop&auto=format',
-    'Munich': 'https://images.unsplash.com/photo-1595867818082-083862f3d630?w=400&h=250&fit=crop&auto=format',
-    'Tokyo': 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?w=400&h=250&fit=crop&auto=format',
-    'Singapore': 'https://images.unsplash.com/photo-1525625293386-3f8f99389edd?w=400&h=250&fit=crop&auto=format',
-    'Hong Kong': 'https://images.unsplash.com/photo-1536599018102-9f803c140fc1?w=400&h=250&fit=crop&auto=format',
-    'Seoul': 'https://images.unsplash.com/photo-1549693578-d683be217e58?w=400&h=250&fit=crop&auto=format',
-    'Bangkok': 'https://images.unsplash.com/photo-1508009603885-50cf7c579365?w=400&h=250&fit=crop&auto=format',
-    'Sydney': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=250&fit=crop&auto=format',
-    'Melbourne': 'https://images.unsplash.com/photo-1545044846-351ba102b6d5?w=400&h=250&fit=crop&auto=format',
-    'Toronto': 'https://images.unsplash.com/photo-1517935706615-2717063c2225?w=400&h=250&fit=crop&auto=format',
-    'Vancouver': 'https://images.unsplash.com/photo-1549224026-fca8d92ca2d2?w=400&h=250&fit=crop&auto=format',
-    'Mexico City': 'https://images.unsplash.com/photo-1585464231875-d9ef1707a874?w=400&h=250&fit=crop&auto=format',
-    'Cape Town': 'https://images.unsplash.com/photo-1580060839134-75a5edca2e99?w=400&h=250&fit=crop&auto=format',
-    'Dubai': 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=400&h=250&fit=crop&auto=format',
-    'Mumbai': 'https://images.unsplash.com/photo-1570168007204-dfb528c6958f?w=400&h=250&fit=crop&auto=format'
+    'New York': '/attached_assets/image_1754862373277.png',
+    'Manhattan': '/attached_assets/image_1754862373277.png',
+    'Chicago': '/attached_assets/image_1754862408395.png',
+    'San Francisco': '/attached_assets/image_1754862445361.png',
+    'Philadelphia': '/attached_assets/image_1754862486988.png',
+    'Seattle': '/attached_assets/image_1754862527032.png',
+    'Miami': '/attached_assets/beach travel_1750958707105.jpg',
+    'Austin': '/attached_assets/image_1754862534387.png',
+    'Denver': '/attached_assets/image_1754862567976.png',
+    'Nashville': '/attached_assets/image_1754862636529.png',
+    'New Orleans': '/attached_assets/image_1754862647564.png',
+    'Portland': '/attached_assets/image_1754862686951.png',
+    'London': '/attached_assets/image_1754862905677.png',
+    'Paris': '/attached_assets/image_1754862913594.png',
+    'Rome': '/attached_assets/image_1754862952628.png',
+    'Milan': '/attached_assets/image_1754870879393.png',
+    'Barcelona': '/attached_assets/image_1754871157632.png',
+    'Madrid': '/attached_assets/image_1754871267113.png',
+    'Amsterdam': '/attached_assets/image_1754871749891.png',
+    'Berlin': '/attached_assets/image_1754872606823.png',
+    'Prague': '/attached_assets/image_1754873168134.png',
+    'Vienna': '/attached_assets/image_1754873550449.png',
+    'Lisbon': '/attached_assets/image_1754873719290.png',
+    'Dublin': '/attached_assets/image_1754875823668.png',
+    'Stockholm': '/attached_assets/image_1754878207849.png',
+    // Fallback to travel-themed assets for other cities
+    'Default': '/attached_assets/travel photo group map_1750993025212.jpeg'
   };
-  return cityImages[cityName] || 'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=400&h=250&fit=crop&auto=format';
+  return cityImages[cityName] || cityImages['Default'] || '/attached_assets/travel photo group map_1750993025212.jpeg';
+};
+
+// City photo gallery data from assets
+const getCityPhotoGallery = (cityName: string) => {
+  const galleryPhotos: Record<string, string[]> = {
+    'Los Angeles': [
+      '/attached_assets/Los_Angeles_1753819372180.jpg',
+      '/attached_assets/beach travel_1750958707105.jpg',
+      '/attached_assets/beach night_1749678644498.jpeg',
+      '/attached_assets/friends at the beach night_1749679112617.webp'
+    ],
+    'Travel': [
+      '/attached_assets/travel photo group map_1750993025212.jpeg',
+      '/attached_assets/people-planning-vacation-trip-map-85261359_1750857749346.webp',
+      '/attached_assets/trip planning_1750857535371.webp',
+      '/attached_assets/Travelers Sharing a Beer_1749576612655.png',
+      '/attached_assets/travelers coffee_1750995178947.png',
+      '/attached_assets/4 travelers around map in town_1750995541992.webp'
+    ]
+  };
+  
+  // Return city-specific photos or default travel photos
+  return galleryPhotos[cityName] || galleryPhotos['Travel'] || [];
 };
 
 interface CityPageProps {
@@ -409,8 +421,48 @@ export default function CityPage({ cityName }: CityPageProps) {
         </div>
       </div>
 
-      {/* Upload Photo Section - Always show for all users to contribute */}
+      {/* City Photo Gallery */}
       <div className="mx-4 mb-6">
+        {(() => {
+          const galleryPhotos = getCityPhotoGallery(parsedCityName);
+          if (galleryPhotos.length > 0) {
+            return (
+              <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 shadow-lg mb-4">
+                <CardHeader className="pb-3">
+                  <CardTitle className="flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-white">
+                    <Camera className="w-5 h-5 text-blue-500" />
+                    City Photos
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                    {galleryPhotos.slice(0, 8).map((photo, index) => (
+                      <div key={index} className="relative group overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-700 aspect-square">
+                        <img
+                          src={photo}
+                          alt={`${parsedCityName} photo ${index + 1}`}
+                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src = '/attached_assets/travel photo group map_1750993025212.jpeg';
+                          }}
+                        />
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors duration-300" />
+                      </div>
+                    ))}
+                  </div>
+                  {galleryPhotos.length > 8 && (
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-3 text-center">
+                      +{galleryPhotos.length - 8} more photos from the community
+                    </p>
+                  )}
+                </CardContent>
+              </Card>
+            );
+          }
+          return null;
+        })()}
+
+        {/* Upload Photo Section */}
         {(() => {
           // Check if we have an uploaded photo to show attribution
           const hasUploadedPhoto = cityPhotos && Array.isArray(cityPhotos) && 
