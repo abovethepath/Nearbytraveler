@@ -7,24 +7,16 @@
 export function applyCacheBusting(imageUrl: string): string {
   if (!imageUrl) return imageUrl;
   
-  // Only apply cache busting to uploaded assets and base64 images
-  if (imageUrl.startsWith('/attached_assets/') || imageUrl.startsWith('data:image/')) {
-    // For file paths, add AGGRESSIVE cache busting parameters
-    if (imageUrl.startsWith('/attached_assets/')) {
-      // Strip existing parameters first
-      const cleanUrl = imageUrl.split('?')[0];
-      // Add multiple cache busting parameters for maximum effectiveness
-      const timestamp = Date.now();
-      const random = Math.random().toString(36).substring(7);
-      const hash = Math.floor(Math.random() * 1000000);
-      const sessionId = Math.random().toString(36).substring(2, 15);
-      return `${cleanUrl}?v=${timestamp}&cb=${hash}&r=${random}&nocache=${Date.now()}&sid=${sessionId}`;
-    }
-    // Base64 images don't need cache busting as they contain the full data
-    return imageUrl;
+  // Only apply cache busting to uploaded assets when necessary
+  if (imageUrl.startsWith('/attached_assets/')) {
+    // Strip existing parameters first
+    const cleanUrl = imageUrl.split('?')[0];
+    // Add minimal cache busting - just version parameter for better performance
+    const timestamp = Math.floor(Date.now() / (1000 * 60 * 5)); // 5-minute cache intervals
+    return `${cleanUrl}?v=${timestamp}`;
   }
   
-  // Return unchanged for external URLs or other formats
+  // Base64 images and external URLs don't need cache busting
   return imageUrl;
 }
 

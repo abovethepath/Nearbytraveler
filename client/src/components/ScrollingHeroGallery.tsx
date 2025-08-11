@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { preloadImages } from "@/utils/imageOptimizer";
 
 interface ScrollingHeroGalleryProps {
   className?: string;
@@ -6,6 +7,7 @@ interface ScrollingHeroGalleryProps {
 
 export default function ScrollingHeroGallery({ className = "" }: ScrollingHeroGalleryProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [loadedImages, setLoadedImages] = useState<Set<number>>(new Set());
 
   // Production hero images from the working backup (verified available in public folder)
   const heroImages = [
@@ -14,6 +16,32 @@ export default function ScrollingHeroGallery({ className = "" }: ScrollingHeroGa
     "/travelers coffee_1750995178947.png",
     "/pexels-olly-2672979_1750959255667.jpg"
   ];
+
+  // Preload all images to prevent loading delays
+  useEffect(() => {
+    console.log('📸 ScrollingHeroGallery: Preloading images...');
+    preloadImages(heroImages)
+      .then(() => {
+        console.log('✅ All hero images preloaded successfully');
+        // Mark all images as loaded
+        setLoadedImages(new Set(heroImages.map((_, index) => index)));
+      })
+      .catch((error) => {
+        console.error('❌ Some hero images failed to preload:', error);
+        // Try individual loading as fallback
+        heroImages.forEach((src, index) => {
+          const img = new Image();
+          img.onload = () => {
+            setLoadedImages(prev => new Set(prev).add(index));
+            console.log(`✅ Fallback loaded hero image ${index}: ${src}`);
+          };
+          img.onerror = () => {
+            console.error(`❌ Failed to load hero image ${index}: ${src}`);
+          };
+          img.src = src;
+        });
+      });
+  }, []);
 
   // Auto-rotate every 5 seconds for testing, then 60 seconds
   useEffect(() => {
@@ -50,9 +78,15 @@ export default function ScrollingHeroGallery({ className = "" }: ScrollingHeroGa
             src={image}
             alt={`Travel experience ${index + 1}`}
             className="w-full h-full object-cover"
-            style={{ objectPosition: 'center 70%' }}
+            style={{ 
+              objectPosition: 'center 70%',
+              opacity: loadedImages.has(index) ? 1 : 0,
+              transition: 'opacity 0.3s ease-in-out'
+            }}
+            loading="eager"
             onLoad={() => {
               console.log(`✅ Successfully loaded hero image: ${image}`);
+              setLoadedImages(prev => new Set(prev).add(index));
             }}
             onError={(e) => {
               console.error(`❌ Failed to load hero image: ${image}`);

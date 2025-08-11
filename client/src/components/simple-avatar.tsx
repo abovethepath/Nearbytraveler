@@ -147,6 +147,7 @@ export function SimpleAvatar({ user, size = 'md', className = '' }: SimpleAvatar
       src={currentImage}
       alt={`${user.username} avatar`}
       className={`${sizeClasses[size]} ${className} rounded-full object-cover`}
+      loading="lazy"
       onError={() => {
         // Fallback to generated avatar if image fails
         setCurrentImage(generateAvatar(user.username, user.avatarColor));

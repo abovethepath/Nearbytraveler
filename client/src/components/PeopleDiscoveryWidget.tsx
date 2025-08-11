@@ -73,6 +73,7 @@ export function PeopleDiscoveryWidget({
                 <img 
                   src={person.profileImage} 
                   alt={person.name}
+                  loading="lazy"
                   className="w-32 h-32 object-cover rounded-lg"
                 />
               ) : (

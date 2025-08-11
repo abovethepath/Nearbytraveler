@@ -9,6 +9,7 @@ import { useConnectionCelebration } from "@/hooks/useConnectionCelebration";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import ImageLoader from "./ImageLoader";
 
 interface EventCardProps {
   event: Event;
@@ -116,10 +117,11 @@ export default function EventCard({ event, compact = false, featured = false }: 
             </div>
           </div>
           {event.imageUrl && (
-            <img
+            <ImageLoader
               src={event.imageUrl}
               alt={event.title}
               className="w-12 h-12 rounded-lg object-cover ml-3"
+              loading="lazy"
             />
           )}
         </div>
@@ -134,11 +136,12 @@ export default function EventCard({ event, compact = false, featured = false }: 
         onClick={() => setLocation(`/events/${event.id}`)}
       >
       {event.imageUrl && (
-        <div className="relative h-48 overflow-hidden">
-          <img
+        <div className="relative h-48 overflow-hidden bg-gray-100 dark:bg-gray-700">
+          <ImageLoader
             src={event.imageUrl}
             alt={event.title}
             className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+            loading="lazy"
           />
           {featured && (
             <Badge className="absolute top-3 left-3 bg-travel-blue text-white">
