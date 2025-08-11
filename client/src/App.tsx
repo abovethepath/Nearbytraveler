@@ -612,6 +612,11 @@ function Router() {
       return <QuickMeetupChat />;
     }
 
+    if (location.startsWith('/event-chat/')) {
+      const eventId = location.split('/')[2];
+      return <EventChat />;
+    }
+
 
 
 

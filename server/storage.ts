@@ -210,6 +210,13 @@ export interface IStorage {
   deleteQuickMeetup(id: number): Promise<boolean>;
   expireOldQuickMeetups(): Promise<void>;
   
+  // Event chatroom methods  
+  getEventChatroom(eventId: number): Promise<any | undefined>;
+  createEventChatroom(eventId: number): Promise<any>;
+  getEventChatroomMessages(chatroomId: number): Promise<any[]>;
+  createEventChatroomMessage(chatroomId: number, senderId: number, content: string): Promise<any>;
+  joinEventChatroom(chatroomId: number, userId: number): Promise<any>;
+
   // Quick Meetup Chatroom methods
   getQuickMeetupChatroom(meetupId: number): Promise<any | undefined>;
   createQuickMeetupChatroom(meetupId: number): Promise<any>;
@@ -7908,6 +7915,117 @@ export class DatabaseStorage implements IStorage {
       console.log(`Expired ${oldMeetups.length} old quick meetups and their chatrooms`);
     } catch (error) {
       console.error('Error expiring old quick meetups:', error);
+    }
+  }
+
+  // Event Chatroom methods (using meetup_chatrooms table for events)
+  async getEventChatroom(eventId: number): Promise<any | undefined> {
+    try {
+      const [chatroom] = await db
+        .select()
+        .from(meetupChatrooms)
+        .where(and(
+          eq(meetupChatrooms.eventId, eventId),
+          eq(meetupChatrooms.isActive, true)
+        ));
+      
+      return chatroom;
+    } catch (error) {
+      console.error('Error fetching event chatroom:', error);
+      return undefined;
+    }
+  }
+
+  async createEventChatroom(eventId: number): Promise<any> {
+    try {
+      // Get event details for chatroom name and location
+      const event = await this.getEvent(eventId);
+      if (!event) {
+        throw new Error('Event not found');
+      }
+
+      const [chatroom] = await db.insert(meetupChatrooms).values({
+        eventId: eventId,
+        chatroomName: `${event.title} - Event Chat`,
+        description: `Chat room for the ${event.title} event`,
+        city: event.city,
+        state: event.state,
+        country: event.country,
+        isActive: true,
+        expiresAt: new Date(event.date),
+        participantCount: 0
+      }).returning();
+
+      console.log(`Created event chatroom: ${chatroom.chatroomName} for event ${eventId}`);
+      return chatroom;
+    } catch (error) {
+      console.error('Error creating event chatroom:', error);
+      throw error;
+    }
+  }
+
+  async getEventChatroomMessages(chatroomId: number): Promise<any[]> {
+    try {
+      const messages = await db
+        .select({
+          id: meetupChatroomMessages.id,
+          message: meetupChatroomMessages.message,
+          userId: meetupChatroomMessages.userId,
+          username: meetupChatroomMessages.username,
+          sentAt: meetupChatroomMessages.sentAt,
+          messageType: meetupChatroomMessages.messageType,
+          sender: {
+            id: users.id,
+            username: users.username,
+            name: users.name,
+            profileImage: users.profileImage
+          }
+        })
+        .from(meetupChatroomMessages)
+        .leftJoin(users, eq(meetupChatroomMessages.userId, users.id))
+        .where(eq(meetupChatroomMessages.meetupChatroomId, chatroomId))
+        .orderBy(asc(meetupChatroomMessages.sentAt));
+
+      return messages;
+    } catch (error) {
+      console.error('Error fetching event chatroom messages:', error);
+      return [];
+    }
+  }
+
+  async createEventChatroomMessage(chatroomId: number, senderId: number, content: string): Promise<any> {
+    try {
+      // Get sender info
+      const sender = await this.getUser(senderId);
+      if (!sender) {
+        throw new Error('Sender not found');
+      }
+
+      const [message] = await db.insert(meetupChatroomMessages).values({
+        meetupChatroomId: chatroomId,
+        userId: senderId,
+        username: sender.username,
+        message: content,
+        messageType: 'text',
+        sentAt: new Date()
+      }).returning();
+
+      console.log(`Event chatroom message created by ${sender.username}: ${content.substring(0, 50)}...`);
+      return message;
+    } catch (error) {
+      console.error('Error creating event chatroom message:', error);
+      throw error;
+    }
+  }
+
+  async joinEventChatroom(chatroomId: number, userId: number): Promise<any> {
+    try {
+      // Auto-join functionality - for events, users automatically join when they participate
+      console.log(`User ${userId} auto-joined event chatroom ${chatroomId}`);
+      return { success: true, chatroomId, userId };
+    } catch (error) {
+      console.error('Error joining event chatroom:', error);
+      throw error;
     }
   }
 

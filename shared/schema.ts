@@ -852,7 +852,8 @@ export const quickMeetupParticipants = pgTable("quick_meetup_participants", {
 // Automatic chatrooms for quick meetup participants (expires with meetup)
 export const meetupChatrooms = pgTable("meetup_chatrooms", {
   id: serial("id").primaryKey(),
-  meetupId: integer("meetup_id").notNull().references(() => quickMeetups.id),
+  meetupId: integer("meetup_id").references(() => quickMeetups.id),
+  eventId: integer("event_id").references(() => events.id),
   chatroomName: text("chatroom_name").notNull(),
   description: text("description"),
   city: text("city").notNull(),

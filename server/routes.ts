@@ -5578,6 +5578,93 @@ Aaron`
     }
   });
 
+  // GET event chatroom by event ID
+  app.get("/api/event-chatrooms/:eventId", async (req, res) => {
+    try {
+      const eventId = parseInt(req.params.eventId || '0');
+      
+      if (!eventId) {
+        return res.status(400).json({ message: "Invalid event ID" });
+      }
+
+      const chatroom = await storage.getEventChatroom(eventId);
+      if (!chatroom) {
+        // Create chatroom if it doesn't exist
+        const newChatroom = await storage.createEventChatroom(eventId);
+        return res.json(newChatroom);
+      }
+
+      return res.json(chatroom);
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error fetching event chatroom:", error);
+      return res.status(500).json({ message: "Failed to fetch chatroom" });
+    }
+  });
+
+  // GET event chatroom messages
+  app.get("/api/event-chatrooms/:chatroomId/messages", async (req, res) => {
+    try {
+      const chatroomId = parseInt(req.params.chatroomId || '0');
+      const userId = req.headers['x-user-id'];
+      
+      if (!userId) {
+        return res.status(401).json({ message: "User ID required" });
+      }
+
+      const messages = await storage.getEventChatroomMessages(chatroomId);
+      return res.json(messages);
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error fetching event chatroom messages:", error);
+      return res.status(500).json({ message: "Failed to fetch messages" });
+    }
+  });
+
+  // POST event chatroom message
+  app.post("/api/event-chatrooms/:chatroomId/messages", async (req, res) => {
+    try {
+      const chatroomId = parseInt(req.params.chatroomId || '0');
+      const userId = req.headers['x-user-id'];
+      const { content } = req.body;
+      
+      if (!userId) {
+        return res.status(401).json({ message: "User ID required" });
+      }
+
+      if (!content?.trim()) {
+        return res.status(400).json({ message: "Message content required" });
+      }
+
+      const message = await storage.createEventChatroomMessage(
+        chatroomId,
+        parseInt(userId as string || '0'),
+        content.trim()
+      );
+
+      return res.json(message);
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error creating event chatroom message:", error);
+      return res.status(500).json({ message: "Failed to send message" });
+    }
+  });
+
+  // JOIN event chatroom
+  app.post("/api/event-chatrooms/:chatroomId/join", async (req, res) => {
+    try {
+      const chatroomId = parseInt(req.params.chatroomId || '0');
+      const userId = req.headers['x-user-id'];
+      
+      if (!userId) {
+        return res.status(401).json({ message: "User ID required" });
+      }
+
+      const result = await storage.joinEventChatroom(chatroomId, parseInt(userId as string || '0'));
+      return res.json(result);
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error joining event chatroom:", error);
+      return res.status(500).json({ message: "Failed to join chatroom" });
+    }
+  });
+
   // GET quick meetup chatroom
   app.get("/api/quick-meetup-chatrooms/:meetupId", async (req, res) => {
     try {
