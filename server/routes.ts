@@ -3447,8 +3447,17 @@ Ready to start making real connections wherever you are?
           return true;
         });
         
-        // Sort by date (earliest first) - all events are member-created
+        // PRIORITY SORTING: User-created events first, then by date
         eventsQuery.sort((a, b) => {
+          // Check if events are user-created (have organizerId) vs AI-generated (no organizerId or organizerId 0)
+          const aIsUserCreated = a.organizerId && a.organizerId > 0;
+          const bIsUserCreated = b.organizerId && b.organizerId > 0;
+          
+          // User-created events always come first
+          if (aIsUserCreated && !bIsUserCreated) return -1;
+          if (!aIsUserCreated && bIsUserCreated) return 1;
+          
+          // If both are the same type, sort by date (earliest first)
           return new Date(a.date).getTime() - new Date(b.date).getTime();
         });
         
@@ -3465,8 +3474,17 @@ Ready to start making real connections wherever you are?
             lte(events.date, twoWeeksFromNow)
           ));
         
-        // Sort by date (earliest first) - all events are member-created
+        // PRIORITY SORTING: User-created events first, then by date
         eventsQuery.sort((a, b) => {
+          // Check if events are user-created (have organizerId) vs AI-generated (no organizerId or organizerId 0)
+          const aIsUserCreated = a.organizerId && a.organizerId > 0;
+          const bIsUserCreated = b.organizerId && b.organizerId > 0;
+          
+          // User-created events always come first
+          if (aIsUserCreated && !bIsUserCreated) return -1;
+          if (!aIsUserCreated && bIsUserCreated) return 1;
+          
+          // If both are the same type, sort by date (earliest first)
           return new Date(a.date).getTime() - new Date(b.date).getTime();
         });
         if (process.env.NODE_ENV === 'development') console.log(`🎪 EVENTS: Returning ${eventsQuery.length} events in next 2 weeks`);

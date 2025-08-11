@@ -855,7 +855,7 @@ export class DatabaseStorage implements IStorage {
           eq(events.isActive, true),
           gte(events.date, today) // Only future events
         ))
-        .orderBy(desc(events.id)); // Newest events first
+        .orderBy(desc(events.id)); // Get all events first, sorting will happen later
       
       console.log(`Found ${locationEvents.length} upcoming events for ${cityName}`);
 
@@ -878,6 +878,20 @@ export class DatabaseStorage implements IStorage {
         ...event,
         participantCount: participantCountMap.get(event.id) || 0
       }));
+
+      // PRIORITY SORTING: User-created events first, then by date
+      eventsWithCounts.sort((a, b) => {
+        // Check if events are user-created (have organizerId) vs AI-generated (no organizerId or organizerId 0)
+        const aIsUserCreated = a.organizerId && a.organizerId > 0;
+        const bIsUserCreated = b.organizerId && b.organizerId > 0;
+        
+        // User-created events always come first
+        if (aIsUserCreated && !bIsUserCreated) return -1;
+        if (!aIsUserCreated && bIsUserCreated) return 1;
+        
+        // If both are the same type, sort by date (earliest first)
+        return new Date(a.date).getTime() - new Date(b.date).getTime();
+      });
 
       return eventsWithCounts;
     } catch (error) {
