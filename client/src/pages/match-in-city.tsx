@@ -25,7 +25,7 @@ import {
   Info,
   X
 } from "lucide-react";
-import { CityPhotoUploadWidget } from "@/components/CityPhotoUploadWidget";
+// Removed CityPhotoUploadWidget to improve performance
 // Removed MobileNav - using global mobile navigation
 
 // Removed problematic city images and photo gallery functions
@@ -130,15 +130,12 @@ export default function MatchInCity() {
   const [allCities, setAllCities] = useState<any[]>([]);
   const [filteredCities, setFilteredCities] = useState<any[]>([]);
   const [citySearchTerm, setCitySearchTerm] = useState('');
-  const [cityPhotos, setCityPhotos] = useState<any>({});
   const [selectedEvent, setSelectedEvent] = useState<any>(null);
   const [showEventModal, setShowEventModal] = useState(false);
 
-
-  // Fetch all cities and photos on component mount
+  // Fetch all cities on component mount
   useEffect(() => {
     fetchAllCities();
-    fetchCityPhotos();
   }, []);
 
   // Fetch city activities and events when a city is selected
@@ -215,51 +212,7 @@ export default function MatchInCity() {
     setFilteredCities(sorted);
   }, [citySearchTerm, allCities]);
 
-  const fetchCityPhotos = async () => {
-    try {
-      const response = await fetch('/api/city-photos/all');
-      if (response.ok) {
-        const photos = await response.json();
-        console.log('📸 CITY PHOTOS: Fetched all photos:', photos);
-        setCityPhotos(photos);
-      }
-    } catch (error) {
-      console.error('Error fetching city photos:', error);
-    }
-  };
-
-  // Get photo URL for a city
-  const getCityPhotoUrl = (cityName: string) => {
-    if (!cityPhotos || !Array.isArray(cityPhotos)) return null;
-
-    console.log(`🔍 Looking for photo for: ${cityName}`);
-    console.log(`📷 Available photos:`, cityPhotos.length);
-
-    // Find photos for this city (exact match first)
-    let matchingPhotos = cityPhotos.filter((photo: any) => 
-      photo.city && photo.city.toLowerCase() === cityName.toLowerCase()
-    );
-
-    // If no exact match, try partial matches
-    if (matchingPhotos.length === 0) {
-      matchingPhotos = cityPhotos.filter((photo: any) => 
-        photo.city && (
-          photo.city.toLowerCase().includes(cityName.toLowerCase()) ||
-          cityName.toLowerCase().includes(photo.city.toLowerCase())
-        )
-      );
-    }
-
-    if (matchingPhotos.length > 0) {
-      // Use the most recent photo (highest ID)
-      const photo = matchingPhotos.sort((a: any, b: any) => b.id - a.id)[0];
-      console.log(`✅ Found photo for ${cityName}:`, photo.city);
-      return photo.imageUrl || photo.imageData;
-    }
-
-    console.log(`❌ No photo found for ${cityName}`);
-    return null;
-  };
+  // Removed city photos functionality to improve performance
 
   const fetchAllCities = async () => {
     try {
@@ -1018,22 +971,9 @@ export default function MatchInCity() {
                     }}
                   >
                     <div className="relative h-24 overflow-hidden">
-                      {(() => {
-                        const photoUrl = getCityPhotoUrl(city.city);
-                        return photoUrl ? (
-                          <img
-                            src={photoUrl}
-                            alt={city.city}
-                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                            onError={(e) => {
-                              const target = e.target as HTMLImageElement;
-                              target.style.display = 'none';
-                            }}
-                          />
-                        ) : (
-                          <div className={`w-full h-full bg-gradient-to-br ${city.gradient}`}></div>
-                        );
-                      })()}
+                      <div className="w-full h-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                        <MapPin className="w-8 h-8 text-white/60" />
+                      </div>
                       <div className="absolute inset-0 bg-black/20" />
                     </div>
                     <CardContent className="p-3">
@@ -1093,9 +1033,11 @@ export default function MatchInCity() {
               </div>
             </div>
 
-            {/* City Photo Upload in Header */}
+            {/* Simplified city display - no photo upload */}
             <div className="flex items-center gap-2">
-              <CityPhotoUploadWidget cityName={selectedCity} />
+              <div className="text-white/60 text-sm">
+                Activity matching for {selectedCity}
+              </div>
             </div>
           </div>
         </div>
