@@ -565,6 +565,13 @@ export default function PlanTrip() {
     console.log('=== FORM SUBMIT DEBUG ===');
     console.log('Current tripPlan state:', tripPlan);
     console.log('User ID:', user?.id);
+    console.log('Destination validation:', { city: tripPlan.destinationCity?.trim(), country: tripPlan.destinationCountry?.trim() });
+    console.log('Selection counts:', { 
+      interests: tripPlan.interests.length, 
+      activities: tripPlan.activities.length, 
+      events: tripPlan.events.length,
+      total: tripPlan.interests.length + tripPlan.activities.length + tripPlan.events.length 
+    });
     
     if (!tripPlan.destinationCity.trim()) {
       toast({
@@ -583,12 +590,12 @@ export default function PlanTrip() {
       return;
     }
 
-    // Validate minimum selections (flexible 10 total like signup forms)
+    // Validate minimum selections (reduced to 1 total for easier trip planning)
     const totalSelections = tripPlan.interests.length + tripPlan.activities.length + tripPlan.events.length;
-    if (totalSelections < 10) {
+    if (totalSelections < 1) {
       toast({
         title: "Selection Required",
-        description: `Please select at least 10 items total across interests, activities, and events. Currently selected: ${totalSelections}/10`,
+        description: `Please select at least 1 item total across interests, activities, and events. Currently selected: ${totalSelections}/1`,
         variant: "destructive",
       });
       return;
