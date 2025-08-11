@@ -828,21 +828,97 @@ export default function MatchInCity() {
             </p>
           </div>
 
-          {/* How it Works Section */}
-          <Card className="mb-4 bg-white/10 backdrop-blur-sm border-white/20">
-            <CardContent className="text-white p-3">
-              <div className="grid md:grid-cols-2 gap-3">
-                <div className="bg-green-500/20 p-2 rounded">
-                  <h3 className="font-bold text-sm mb-1">1. Add Activities</h3>
-                  <div className="text-xs">
+          {/* Comprehensive How it Works Section */}
+          <Card className="mb-6 bg-white/10 backdrop-blur-sm border-white/20">
+            <CardContent className="text-white p-4">
+              <div className="text-center mb-4">
+                <h2 className="text-xl font-bold text-white mb-2">🎯 How City-Specific Matching Works</h2>
+                <p className="text-white/80 text-sm">Revolutionary way to find travel companions and local friends</p>
+              </div>
+              
+              <div className="grid md:grid-cols-2 gap-4 mb-4">
+                <div className="bg-green-500/20 p-3 rounded-lg">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="bg-green-500 rounded-full w-6 h-6 flex items-center justify-center text-white text-sm font-bold">1</div>
+                    <h3 className="font-bold text-sm">Add Your Activities</h3>
+                  </div>
+                  <div className="text-xs mb-2 font-mono bg-black/20 p-2 rounded">
                     + "Comic-Con" + "Auto Show" + "Ted Talk" + "Coachella" + "South by Southwest" + "Lollapalooza" + "New York Fashion Week" + "Mardi Gras"
                   </div>
+                  <ul className="text-xs space-y-1 text-green-100">
+                    <li>• Add specific events, activities, or interests</li>
+                    <li>• Create your unique activity profile</li>
+                    <li>• Show what you're passionate about</li>
+                  </ul>
                 </div>
-                <div className="bg-blue-500/20 p-2 rounded">
-                  <h3 className="font-bold text-sm mb-1">2. Click What Others Added</h3>
-                  <p className="text-xs">
-                    Click buttons to add activities to your profile and match with others.
+                
+                <div className="bg-blue-500/20 p-3 rounded-lg">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="bg-blue-500 rounded-full w-6 h-6 flex items-center justify-center text-white text-sm font-bold">2</div>
+                    <h3 className="font-bold text-sm">Click What Others Added</h3>
+                  </div>
+                  <p className="text-xs mb-2">
+                    Browse activities others have added and click to add them to your profile.
                   </p>
+                  <ul className="text-xs space-y-1 text-blue-100">
+                    <li>• Discover new activities from locals</li>
+                    <li>• Find hidden gems and insider experiences</li>
+                    <li>• Build connections through shared interests</li>
+                  </ul>
+                </div>
+              </div>
+              
+              <div className="grid md:grid-cols-3 gap-3 mb-4">
+                <div className="bg-purple-500/20 p-3 rounded-lg">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Target className="w-4 h-4 text-purple-300" />
+                    <h4 className="font-bold text-xs">Smart Matching</h4>
+                  </div>
+                  <p className="text-xs text-purple-100">
+                    Our AI finds people with overlapping interests and activities in your chosen city.
+                  </p>
+                </div>
+                
+                <div className="bg-orange-500/20 p-3 rounded-lg">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Users className="w-4 h-4 text-orange-300" />
+                    <h4 className="font-bold text-xs">Connect Instantly</h4>
+                  </div>
+                  <p className="text-xs text-orange-100">
+                    Message matches directly or join group activities with multiple people.
+                  </p>
+                </div>
+                
+                <div className="bg-pink-500/20 p-3 rounded-lg">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Heart className="w-4 h-4 text-pink-300" />
+                    <h4 className="font-bold text-xs">Real Experiences</h4>
+                  </div>
+                  <p className="text-xs text-pink-100">
+                    Turn shared interests into real meetups, events, and lasting friendships.
+                  </p>
+                </div>
+              </div>
+              
+              <div className="bg-gradient-to-r from-indigo-500/20 to-purple-500/20 p-3 rounded-lg">
+                <h4 className="font-bold text-sm mb-2 text-center">💡 Why This Works Better Than Traditional Apps</h4>
+                <div className="grid md:grid-cols-2 gap-3 text-xs">
+                  <div>
+                    <p className="font-semibold text-indigo-200">Activity-Based Matching:</p>
+                    <p className="text-indigo-100">Connect over what you actually want to do, not just photos</p>
+                  </div>
+                  <div>
+                    <p className="font-semibold text-purple-200">Local Insider Knowledge:</p>
+                    <p className="text-purple-100">Discover authentic experiences from people who know the city</p>
+                  </div>
+                  <div>
+                    <p className="font-semibold text-indigo-200">Group Dynamics:</p>
+                    <p className="text-indigo-100">Join activities with multiple people for safer, more fun experiences</p>
+                  </div>
+                  <div>
+                    <p className="font-semibold text-purple-200">Travel & Local Balance:</p>
+                    <p className="text-purple-100">Perfect mix of travelers seeking experiences and locals sharing knowledge</p>
+                  </div>
                 </div>
               </div>
             </CardContent>
