@@ -20,7 +20,7 @@ import CreateEvent from "@/pages/create-event";
 import { ParticipantAvatars } from "@/components/ParticipantAvatars";
 import { formatDateForDisplay } from "@/lib/dateUtils";
 import { PublicationSchedule } from "@/components/PublicationSchedule";
-const eventsBgImage = "/event page bbq party_1753299541268.png";
+const eventsBgImage = "/event%20page%20bbq%20party_1753299541268.png";
 // MobileNav removed - using global mobile navigation
 
 export default function Events() {
