@@ -2620,46 +2620,56 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
             content: user.userType === 'business' 
               ? `Welcome to Nearby Traveler Business, @${user.username}! 🏢
 
-Key features for your business:
+Transform your business with location-based customer connections:
 
-**📊 Business Dashboard**: Track offer analytics, views, and customer redemptions
+• **📊 Business Dashboard**: Track offer analytics, customer views, and redemption rates with detailed insights
 
-**🎯 Smart Offers**: Create deals with multiple discount types (%, fixed, BOGO, free items with purchase, combos)
+• **🎯 Smart Offers**: Create powerful deals with multiple discount types (percentage, fixed amount, BOGO, free items with purchase, combo deals)
 
-**⚡ Instant Deals**: Flash sales that expire in 1-24 hours for immediate foot traffic
+• **⚡ Flash Sales**: Launch 1-24 hour instant deals to drive immediate foot traffic and boost sales
 
-**🔔 Customer Matching**: Get notified when travelers/locals with interests matching your business are nearby
+• **🔔 Smart Customer Matching**: Get automatic notifications when travelers and locals with interests matching your business are nearby
 
-**🗺️ Map Presence**: Appear on our interactive map for location-based discovery
+• **🗺️ Interactive Map Presence**: Appear prominently on our location-based discovery map for maximum visibility
 
-**🎪 Event Hosting**: Create business events to showcase your offerings
+• **🎪 Business Event Hosting**: Create and promote business events to showcase your products and services
 
-**🔍 Target Marketing**: Search specifically for locals and nearby travelers coming to or already in your location to market your offers and deals directly to them
+• **🔍 Targeted Marketing**: Search and connect directly with locals and travelers in your area based on their interests and planned activities
 
-Start by creating your first offer and setting up location notifications!
+• **📱 Mobile-First Platform**: Reach customers where they are with our responsive mobile platform
 
-Aaron`
-              : `Hey @${user.username}! Welcome to Nearby Traveler! 🌍
+• **💬 Direct Customer Communication**: Build relationships through real-time messaging with potential customers
 
-Here are the key features to explore:
+• **🌟 Vouching System**: Build trust and credibility through customer vouches and reviews
 
-**🏙️ City Match**: Visit your city page for location-specific activities, interests, and local recommendations
+Ready to start? Create your first offer and set up location notifications to begin connecting with customers!`
+              : `Welcome to Nearby Traveler, @${user.username}! 🌍
 
-**📸 Travel Memories**: Create photo albums of your adventures with tags and privacy settings
+Your gateway to authentic local experiences and meaningful travel connections:
 
-**🔍 Advanced Search**: Filter people by everything from sexual preferences to specific events you are in town for to family-friendly activities to just about anything you want based on YOUR interests, activities and planned events - find exactly who you're looking for
+• **🏙️ City Discovery**: Explore comprehensive city pages with local activities, hidden gems, and authentic recommendations from real locals
 
-**💬 Instant Messaging**: Real-time chat with typing indicators, read receipts, and instant notifications
+• **📸 Travel Memory Albums**: Create stunning photo collections of your adventures with optional trip dates, tags, and customizable privacy settings
 
-**🗺️ Interactive Map**: Discover users, events, and businesses around you
+• **🔍 Smart People Search**: Find exactly who you're looking for with advanced filters including interests, sexual preferences, specific events, family-friendly activities, and much more
 
-**⚡ Quick Meetups**: Join or create spontaneous hangouts happening right now
+• **💬 Real-Time Messaging**: Connect instantly through live chat with typing indicators, read receipts, and push notifications
 
-**✈️ Travel Planning**: Build detailed itineraries and connect with people at your destinations
+• **🗺️ Interactive Discovery Map**: Explore users, events, and businesses around you on our dynamic location-based map
 
-Start by completing your profile and exploring your city page!
+• **⚡ Quick Meetups**: Join or create spontaneous hangouts happening right now in your area
 
-Aaron`
+• **✈️ Comprehensive Travel Planning**: Build detailed itineraries and connect with people at your destinations before you arrive
+
+• **🎪 Local Events**: Discover and join authentic events from concerts to meetups to cultural experiences
+
+• **🌟 Vouching Network**: Build trust through our community vouching system and verified local connections
+
+• **🏪 Business Discovery**: Find local deals, offers, and unique business experiences in any city
+
+• **📱 Mobile-Optimized**: Seamless experience across all devices with offline capabilities
+
+Ready to explore? Complete your profile and visit your city page to start discovering your local community!`
           });
 
           if (process.env.NODE_ENV === 'development') console.log(`✓ Auto-connected new user ${user.username} (ID: ${user.id}) to nearbytraveler with welcome message`);
