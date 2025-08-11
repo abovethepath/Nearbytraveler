@@ -215,6 +215,12 @@ export default function Home() {
   }, []);
 
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
+  
+  // Force reload of hero images to clear cache
+  useEffect(() => {
+    console.log('🔄 FORCE CLEARING photo cache and resetting index');
+    setCurrentPhotoIndex(0);
+  }, []);
 
   // Rotate photos every 3 seconds for better visibility
   useEffect(() => {
