@@ -43,7 +43,7 @@ export function PeopleDiscoveryWidget({
   const PersonWithCommonalities = ({ person }: { person: PersonCard }) => {
     // Fetch travel plans for this person to show travel destination
     const { data: travelPlans } = useQuery({
-      queryKey: [`/api/users/${person.id}/travel-plans`],
+      queryKey: [`/api/travel-plans/${person.id}`],
       enabled: !!person.id
     });
 

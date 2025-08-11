@@ -53,8 +53,19 @@ export default function ScrollingHeroGallery({ className = "" }: ScrollingHeroGa
             onError={(e) => {
               console.error(`❌ Failed to load hero image: ${image}`);
               console.error('Image error details:', e);
-              // Hide the broken image
-              (e.target as HTMLImageElement).style.display = 'none';
+              console.error('Current working directory:', window.location.origin);
+              console.error('Full image URL:', window.location.origin + image);
+              // Try to reload the image once more
+              const img = e.target as HTMLImageElement;
+              if (!img.dataset.retried) {
+                img.dataset.retried = 'true';
+                setTimeout(() => {
+                  img.src = img.src + '?retry=' + Date.now();
+                }, 1000);
+              } else {
+                // Hide the broken image after retry
+                img.style.display = 'none';
+              }
             }}
           />
         </div>

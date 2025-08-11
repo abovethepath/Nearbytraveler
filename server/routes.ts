@@ -2870,6 +2870,20 @@ Aaron`
     }
   });
 
+  // ALTERNATIVE ROUTE: Get travel plans for user via /api/users/{id}/travel-plans
+  app.get("/api/users/:userId/travel-plans", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId || '0');
+      if (process.env.NODE_ENV === 'development') console.log(`🧭 TRAVEL PLANS API: Getting travel plans for user ${userId}`);
+      const travelPlans = await storage.getTravelPlansByUserId(userId);
+      if (process.env.NODE_ENV === 'development') console.log(`🧭 TRAVEL PLANS API: Found ${travelPlans?.length || 0} travel plans:`, travelPlans);
+      return res.json(travelPlans);
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error fetching travel plans:", error);
+      return res.status(500).json({ message: "Failed to fetch travel plans" });
+    }
+  });
+
   // Enhanced API to get travel plans with itinerary data
   app.get("/api/travel-plans-with-itineraries/:userId", async (req, res) => {
     try {
