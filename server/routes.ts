@@ -3940,10 +3940,17 @@ Ready to start making real connections wherever you are?
       `);
 
       if (existingInterest.rows && existingInterest.rows.length > 0) {
+        // Get event details for event_title
+        const eventDetails = await db.execute(sql`
+          SELECT title FROM events WHERE id = ${eventId}
+        `);
+        
+        const eventTitle = eventDetails.rows?.[0]?.title || 'Unknown Event';
+
         // Reactivate existing interest
         await db.execute(sql`
           UPDATE user_event_interests 
-          SET is_active = true, created_at = NOW()
+          SET is_active = true, created_at = NOW(), event_title = ${eventTitle}, event_source = 'internal'
           WHERE user_id = ${userId} 
           AND event_id = ${eventId} 
           AND city_name = ${cityName}
@@ -3954,15 +3961,23 @@ Ready to start making real connections wherever you are?
           userId,
           eventId,
           cityName,
+          eventTitle,
           isActive: true,
           createdAt: new Date()
         });
       } else {
+        // Get event details for event_title
+        const eventDetails = await db.execute(sql`
+          SELECT title FROM events WHERE id = ${eventId}
+        `);
+        
+        const eventTitle = eventDetails.rows?.[0]?.title || 'Unknown Event';
+
         // Create new interest
         const newInterest = await db.execute(sql`
-          INSERT INTO user_event_interests (user_id, event_id, city_name, is_active, created_at)
-          VALUES (${userId}, ${eventId}, ${cityName}, true, NOW())
-          RETURNING id, user_id as userId, event_id as eventId, city_name as cityName, is_active as isActive, created_at as createdAt
+          INSERT INTO user_event_interests (user_id, event_id, city_name, event_title, event_source, is_active, created_at)
+          VALUES (${userId}, ${eventId}, ${cityName}, ${eventTitle}, 'internal', true, NOW())
+          RETURNING id, user_id as userId, event_id as eventId, city_name as cityName, event_title as eventTitle, is_active as isActive, created_at as createdAt
         `);
 
         return res.json(newInterest.rows[0]);
