@@ -84,26 +84,29 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
       let endDateFormatted = "";
       
       if (event.date) {
-        // Parse the database date string directly to avoid timezone conversion
-        const dateStr = String(event.date);
-        if (dateStr.includes('T')) {
-          // Already ISO format: 2025-08-03T17:00:00
-          startDateFormatted = dateStr.slice(0, 16); // Remove seconds/timezone
-        } else {
-          // Database format: 2025-08-03 17:00:00
-          const cleanedDate = dateStr.replace(' ', 'T').slice(0, 16);
-          startDateFormatted = cleanedDate;
-        }
+        // Convert to local timezone to prevent time shifting in form
+        const eventDate = new Date(event.date);
+        
+        // Use the local date/time values directly to avoid timezone conversion
+        const year = eventDate.getFullYear();
+        const month = String(eventDate.getMonth() + 1).padStart(2, '0');
+        const day = String(eventDate.getDate()).padStart(2, '0');
+        const hours = String(eventDate.getHours()).padStart(2, '0');
+        const minutes = String(eventDate.getMinutes()).padStart(2, '0');
+        
+        startDateFormatted = `${year}-${month}-${day}T${hours}:${minutes}`;
       }
       
       if (event.endDate) {
-        const dateStr = String(event.endDate);
-        if (dateStr.includes('T')) {
-          endDateFormatted = dateStr.slice(0, 16);
-        } else {
-          const cleanedDate = dateStr.replace(' ', 'T').slice(0, 16);
-          endDateFormatted = cleanedDate;
-        }
+        const eventEndDate = new Date(event.endDate);
+        
+        const year = eventEndDate.getFullYear();
+        const month = String(eventEndDate.getMonth() + 1).padStart(2, '0');
+        const day = String(eventEndDate.getDate()).padStart(2, '0');
+        const hours = String(eventEndDate.getHours()).padStart(2, '0');
+        const minutes = String(eventEndDate.getMinutes()).padStart(2, '0');
+        
+        endDateFormatted = `${year}-${month}-${day}T${hours}:${minutes}`;
       }
       
       console.log('🔄 MANAGE EVENT: Formatted dates:', { startDateFormatted, endDateFormatted });
