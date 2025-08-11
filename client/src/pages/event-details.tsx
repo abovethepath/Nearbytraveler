@@ -355,6 +355,22 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
                     </p>
                   </div>
                 </div>
+
+                {/* Recurring Event Info */}
+                {event.isRecurring && (
+                  <div className="flex items-center gap-3">
+                    <Calendar className="w-5 h-5 text-travel-blue" />
+                    <div>
+                      <p className="font-medium">Recurring Event</p>
+                      <p className="text-sm text-gray-500">
+                        Repeats {event.recurrenceType}
+                        {event.recurrenceEnd && (
+                          <span> until {new Date(event.recurrenceEnd).toLocaleDateString()}</span>
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <Separator />
