@@ -22,9 +22,12 @@ interface UserActivity {
 interface UserEvent {
   id: number;
   userId: number;
-  eventId: number;
-  title: string;
-  city: string;
+  eventId?: number;
+  externalEventId?: string;
+  eventSource?: string;
+  eventTitle: string;
+  cityName: string;
+  eventData?: any;
 }
 
 export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDoSectionProps) {
@@ -43,20 +46,20 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
 
   // Fetch events  
   const { data: events = [], isLoading: loadingEvents } = useQuery({
-    queryKey: [`/api/users/${userId}/all-events`],
+    queryKey: [`/api/users/${userId}/event-interests`],
     staleTime: 1000 * 60 * 5, // 5 minutes
     gcTime: 1000 * 60 * 10, // 10 minutes
   });
 
   // Initialize local state with fresh data
   useEffect(() => {
-    if (activities && activities !== localActivities) {
+    if (activities && Array.isArray(activities)) {
       setLocalActivities(activities);
     }
   }, [activities]);
 
   useEffect(() => {
-    if (events && events !== localEvents) {
+    if (events && Array.isArray(events)) {
       setLocalEvents(events);
     }
   }, [events]);
@@ -83,15 +86,15 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
   // Delete event
   const deleteEvent = useMutation({
     mutationFn: async (eventId: number) => {
-      const response = await apiRequest('DELETE', `/api/user-event-interests/${eventId}`);
+      const response = await apiRequest('DELETE', `/api/event-interests/${eventId}`);
       if (!response.ok) throw new Error('Failed to delete');
     },
     onSuccess: (_, eventId) => {
       // Immediately update local state  
-      setLocalEvents(prev => prev.filter(e => (e.id || e.eventId) !== eventId));
+      setLocalEvents(prev => prev.filter(e => e.id !== eventId));
       // Invalidate cache
-      queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/all-events`] });
-      queryClient.refetchQueries({ queryKey: [`/api/users/${userId}/all-events`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/event-interests`] });
+      queryClient.refetchQueries({ queryKey: [`/api/users/${userId}/event-interests`] });
       toast({ title: "Removed", description: "Event deleted successfully." });
     },
     onError: () => {
@@ -113,7 +116,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
       await Promise.all(cityActivities.map(a => apiRequest('DELETE', `/api/user-city-interests/${a.id}`)));
 
       // Delete all events for this city
-      await Promise.all(cityEvents.map(e => apiRequest('DELETE', `/api/user-event-interests/${e.id || e.eventId}`)));
+      await Promise.all(cityEvents.map(e => apiRequest('DELETE', `/api/event-interests/${e.id}`)));
 
       // Update local state
       setLocalActivities(prev => prev.filter(a => a.cityName !== cityName));
@@ -121,7 +124,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
 
       // Refresh cache
       queryClient.refetchQueries({ queryKey: [`/api/user-city-interests/${userId}`] });
-      queryClient.refetchQueries({ queryKey: [`/api/users/${userId}/all-events`] });
+      queryClient.refetchQueries({ queryKey: [`/api/users/${userId}/event-interests`] });
 
       toast({ 
         title: "City Removed", 
@@ -143,7 +146,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
   });
 
   localEvents.forEach(event => {
-    const cityName = event.city || 'Other';
+    const cityName = event.cityName || 'Other';
     if (!citiesByName[cityName]) {
       citiesByName[cityName] = { activities: [], events: [] };
     }
@@ -237,10 +240,10 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
                           : 'px-3 py-2 text-sm'
                       }`}
                     >
-                      <span>📅 {event.title}</span>
+                      <span>📅 {event.eventTitle}</span>
                       {isOwnProfile && (
                         <button
-                          onClick={() => deleteEvent.mutate(event.eventId)}
+                          onClick={() => deleteEvent.mutate(event.id)}
                           className={`absolute bg-gray-400 hover:bg-gray-500 text-white rounded-full flex items-center justify-center transition-opacity ${
                             isMobile 
                               ? '-top-1 -right-1 w-6 h-6 opacity-100' 
