@@ -7235,7 +7235,7 @@ Ready to start making real connections wherever you are?
     res.set('Pragma', 'no-cache');
     res.set('Expires', '0');
     try {
-      if (process.env.NODE_ENV === 'development') console.log("🔥 MY-LOCATIONS ROUTE CALLED! 🔥");
+      console.log("🔥 MY-LOCATIONS ROUTE CALLED! 🔥");
       
       // Get user ID from headers - all users viewing chatrooms are already authenticated
       let userId = 1; // Default to nearbytraveler user if not specified
@@ -7248,10 +7248,10 @@ Ready to start making real connections wherever you are?
         }
       }
 
-      if (process.env.NODE_ENV === 'development') console.log(`🔥 USER ID DETERMINED: ${userId} 🔥`);
+      console.log(`🔥 USER ID DETERMINED: ${userId} 🔥`);
 
       const chatrooms = await storage.getCityChatrooms(undefined, undefined, undefined, userId);
-      if (process.env.NODE_ENV === 'development') console.log(`🔥 STORAGE RETURNED: ${chatrooms.length} chatrooms 🔥`);
+      console.log(`🔥 STORAGE RETURNED: ${chatrooms.length} chatrooms 🔥`);
       
       // DIRECT FIX: Query member counts from database and merge with chatroom data
       const memberCountQuery = await db
@@ -7274,7 +7274,9 @@ Ready to start making real connections wherever you are?
         memberCount: memberCountMap.get(chatroom.id) || 1 // Use database count or default to 1
       }));
       
-      if (process.env.NODE_ENV === 'development') console.log(`🔥 FIXED MEMBER COUNT: First chatroom now has memberCount=${chatroomsWithFixedMemberCount[0]?.memberCount} 🔥`);
+      console.log(`🔥 FIXED MEMBER COUNT: First chatroom now has memberCount=${chatroomsWithFixedMemberCount[0]?.memberCount} 🔥`);
+      console.log(`🔥 MEMBER COUNT MAP:`, Array.from(memberCountMap.entries()));
+      console.log(`🔥 MEMBER COUNT QUERY RESULT:`, memberCountQuery);
       
       res.json(chatroomsWithFixedMemberCount);
     } catch (error: any) {
