@@ -933,12 +933,15 @@ export const userEventInterests = pgTable("user_event_interests", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   cityName: text("city_name").notNull(),
-  eventId: integer("event_id").notNull().references(() => events.id, { onDelete: "cascade" }),
+  eventId: integer("event_id").references(() => events.id, { onDelete: "cascade" }), // Internal events
+  externalEventId: text("external_event_id"), // External events (ticketmaster-xyz, meetup-abc, etc.)
   eventTitle: text("event_title").notNull(), // Denormalized for quick access
+  eventSource: text("event_source").notNull().default("internal"), // 'internal', 'ticketmaster', 'meetup', 'stubhub', 'local-la', 'allevents'
+  eventData: jsonb("event_data"), // Store full event data for external events
   isActive: boolean("is_active").notNull().default(true),
   createdAt: timestamp("created_at").defaultNow(),
 }, (table) => [
-  unique().on(table.userId, table.eventId), // One interest per user per event
+  unique().on(table.userId, table.eventId, table.externalEventId), // One interest per user per event (internal or external)
 ]);
 
 export const insertCityActivitySchema = createInsertSchema(cityActivities).omit({ id: true });

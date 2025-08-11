@@ -20,6 +20,7 @@ import CreateEvent from "@/pages/create-event";
 import { ParticipantAvatars } from "@/components/ParticipantAvatars";
 import { formatDateForDisplay } from "@/lib/dateUtils";
 import { PublicationSchedule } from "@/components/PublicationSchedule";
+import { InterestButton } from "@/components/InterestButton";
 const eventsBgImage = "/event%20page%20bbq%20party_1753299541268.png";
 // MobileNav removed - using global mobile navigation
 
@@ -766,6 +767,11 @@ export default function Events() {
                                 })()}
                               </div>
 
+                              {/* Interest Button */}
+                              <div className="flex justify-center mb-3" onClick={(e) => e.stopPropagation()}>
+                                <InterestButton event={event} userId={user?.id} />
+                              </div>
+
                               {/* Management buttons for created events */}
                               {createdEvents.some(e => e.id === event.id) ? (
                                 <div className="flex gap-2">
@@ -1213,6 +1219,15 @@ export default function Events() {
                             </div>
                           </div>
 
+                          {/* Interest Button */}
+                          <div className="flex justify-center mb-3">
+                            <InterestButton 
+                              event={{...event, source: 'meetup'}} 
+                              userId={user?.id} 
+                              variant="minimal" 
+                            />
+                          </div>
+
                           <Button 
                             variant="outline" 
                             size="sm" 
@@ -1351,6 +1366,15 @@ export default function Events() {
                             )}
                           </div>
 
+                          {/* Interest Button */}
+                          <div className="flex justify-center mb-3">
+                            <InterestButton 
+                              event={{...event, source: 'allevents'}} 
+                              userId={user?.id} 
+                              variant="minimal" 
+                            />
+                          </div>
+
                           <Button 
                             variant="outline" 
                             size="sm" 
@@ -1476,6 +1500,15 @@ export default function Events() {
                             )}
                           </div>
 
+                          {/* Interest Button */}
+                          <div className="flex justify-center mb-3">
+                            <InterestButton 
+                              event={{...event, source: 'ticketmaster'}} 
+                              userId={user?.id} 
+                              variant="minimal" 
+                            />
+                          </div>
+
                           <Button 
                             variant="outline" 
                             size="sm" 
@@ -1587,6 +1620,15 @@ export default function Events() {
                             </div>
                           </div>
 
+                          {/* Interest Button */}
+                          <div className="flex justify-center mb-3">
+                            <InterestButton 
+                              event={{...event, source: 'local-la'}} 
+                              userId={user?.id} 
+                              variant="minimal" 
+                            />
+                          </div>
+
                           <Button 
                             variant="outline" 
                             size="sm" 
@@ -1692,6 +1734,15 @@ export default function Events() {
                             <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
                               <span className="font-medium">{event.category}</span>
                             </div>
+                          </div>
+
+                          {/* Interest Button */}
+                          <div className="flex justify-center mb-3">
+                            <InterestButton 
+                              event={{...event, source: 'curated'}} 
+                              userId={user?.id} 
+                              variant="minimal" 
+                            />
                           </div>
 
                           <Button 

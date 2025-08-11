@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { users, connections, messages, events, eventParticipants, travelPlans, tripItineraries, itineraryItems, sharedItineraries, notifications, blockedUsers, travelMemories, travelMemoryLikes, travelMemoryComments, userPhotos, userReferences, referrals, proximityNotifications, customLocationActivities, cityActivities, userCustomActivities, userCityInterests, cityLandmarks, landmarkRatings, secretLocalExperiences, secretLocalExperienceLikes, secretExperienceLikes, cityPages, citychatrooms, chatroomMembers, chatroomMessages, chatroomAccessRequests, chatroomInvitations, meetupChatrooms, meetupChatroomMessages, businessOffers, businessOfferRedemptions, businessReferrals, businessLocations, businessInterestNotifications, businessCustomerPhotos, cityPhotos, travelBlogPosts, travelBlogLikes, travelBlogComments, instagramPosts, quickMeetups, quickMeetupParticipants, quickMeetupTemplates, userNotificationSettings, businessSubscriptions, photoAlbums, externalEventInterests, vouches, vouchCredits, type User, type InsertUser, type Connection, type InsertConnection, type Message, type InsertMessage, type Event, type InsertEvent, type EventParticipant, type EventParticipantWithUser, type TravelPlan, type InsertTravelPlan, type TripItinerary, type InsertTripItinerary, type ItineraryItem, type InsertItineraryItem, type SharedItinerary, type InsertSharedItinerary, type Notification, type InsertNotification, type UserReference, type Referral, type InsertReferral, type ProximityNotification, type InsertProximityNotification, type CityLandmark, type InsertCityLandmark, type LandmarkRating, type InsertLandmarkRating, type SecretLocalExperience, type InsertSecretLocalExperience, type ChatroomInvitation, type InsertChatroomInvitation, type BusinessOffer, type InsertBusinessOffer, type BusinessOfferRedemption, type InsertBusinessOfferRedemption, type BusinessLocation, type InsertBusinessLocation, type BusinessInterestNotification, type InsertBusinessInterestNotification, type BusinessCustomerPhoto, type InsertBusinessCustomerPhoto, type CityPhoto, type InsertCityPhoto, type TravelBlogPost, type InsertTravelBlogPost, type TravelBlogLike, type InsertTravelBlogLike, type TravelBlogComment, type InsertTravelBlogComment, type InstagramPost, type InsertInstagramPost, type QuickMeetupTemplate, type InsertQuickMeetupTemplate, type UserNotificationSettings, type InsertUserNotificationSettings, type BusinessSubscription, type InsertBusinessSubscription, type PhotoAlbum, type InsertPhotoAlbum, type ExternalEventInterest, type InsertExternalEventInterest, type Vouch, type VouchCredits, type VouchWithUsers } from "@shared/schema";
+import { users, connections, messages, events, eventParticipants, travelPlans, tripItineraries, itineraryItems, sharedItineraries, notifications, blockedUsers, travelMemories, travelMemoryLikes, travelMemoryComments, userPhotos, userReferences, referrals, proximityNotifications, customLocationActivities, cityActivities, userCustomActivities, userCityInterests, userEventInterests, cityLandmarks, landmarkRatings, secretLocalExperiences, secretLocalExperienceLikes, secretExperienceLikes, cityPages, citychatrooms, chatroomMembers, chatroomMessages, chatroomAccessRequests, chatroomInvitations, meetupChatrooms, meetupChatroomMessages, businessOffers, businessOfferRedemptions, businessReferrals, businessLocations, businessInterestNotifications, businessCustomerPhotos, cityPhotos, travelBlogPosts, travelBlogLikes, travelBlogComments, instagramPosts, quickMeetups, quickMeetupParticipants, quickMeetupTemplates, userNotificationSettings, businessSubscriptions, photoAlbums, externalEventInterests, vouches, vouchCredits, type User, type InsertUser, type Connection, type InsertConnection, type Message, type InsertMessage, type Event, type InsertEvent, type EventParticipant, type EventParticipantWithUser, type TravelPlan, type InsertTravelPlan, type TripItinerary, type InsertTripItinerary, type ItineraryItem, type InsertItineraryItem, type SharedItinerary, type InsertSharedItinerary, type Notification, type InsertNotification, type UserReference, type Referral, type InsertReferral, type ProximityNotification, type InsertProximityNotification, type CityLandmark, type InsertCityLandmark, type LandmarkRating, type InsertLandmarkRating, type SecretLocalExperience, type InsertSecretLocalExperience, type ChatroomInvitation, type InsertChatroomInvitation, type BusinessOffer, type InsertBusinessOffer, type BusinessOfferRedemption, type InsertBusinessOfferRedemption, type BusinessLocation, type InsertBusinessLocation, type BusinessInterestNotification, type InsertBusinessInterestNotification, type BusinessCustomerPhoto, type InsertBusinessCustomerPhoto, type CityPhoto, type InsertCityPhoto, type TravelBlogPost, type InsertTravelBlogPost, type TravelBlogLike, type InsertTravelBlogLike, type TravelBlogComment, type InsertTravelBlogComment, type InstagramPost, type InsertInstagramPost, type QuickMeetupTemplate, type InsertQuickMeetupTemplate, type UserNotificationSettings, type InsertUserNotificationSettings, type BusinessSubscription, type InsertBusinessSubscription, type PhotoAlbum, type InsertPhotoAlbum, type ExternalEventInterest, type InsertExternalEventInterest, type Vouch, type VouchCredits, type VouchWithUsers } from "@shared/schema";
 import { eq, and, or, ilike, gte, desc, avg, count, sql, isNotNull, ne, lte, lt, gt, asc, like, inArray, getTableColumns, isNull } from "drizzle-orm";
 import { promises as fs } from 'fs';
 import path from 'path';
@@ -164,6 +164,13 @@ export interface IStorage {
   getExternalEventInterests(eventId: string, eventSource: string): Promise<any[]>;
   getUserExternalEventInterests(userId: number): Promise<any[]>;
   removeExternalEventInterest(userId: number, eventId: string, eventSource: string): Promise<boolean>;
+  
+  // Universal event interest methods (works with both internal and external events)
+  addEventInterest(userId: number, eventData: any): Promise<any>;
+  removeEventInterest(userId: number, eventId?: number, externalEventId?: string, eventSource?: string): Promise<boolean>;
+  getUserEventInterests(userId: number, cityName?: string): Promise<any[]>;
+  getEventInterestedUsers(eventId?: number, externalEventId?: string, eventSource?: string): Promise<any[]>;
+  isUserInterestedInEvent(userId: number, eventId?: number, externalEventId?: string, eventSource?: string): Promise<boolean>;
   
   // Landmark methods
   createLandmark(landmark: any): Promise<any>;
@@ -9409,6 +9416,225 @@ export class DatabaseStorage implements IStorage {
       return result.length > 0;
     } catch (error) {
       console.error("Error removing external event interest:", error);
+      return false;
+    }
+  }
+
+  // Universal Event Interest Methods - Works with both internal and external events
+  async addEventInterest(userId: number, eventData: any): Promise<any> {
+    try {
+      console.log('📋 Adding event interest:', eventData);
+      
+      // Determine if this is internal or external event
+      const isInternal = eventData.eventId && typeof eventData.eventId === 'number';
+      const isExternal = eventData.externalEventId || eventData.eventSource;
+      
+      if (isInternal) {
+        // Handle internal event interest
+        const [existingInterest] = await db
+          .select()
+          .from(userEventInterests)
+          .where(
+            and(
+              eq(userEventInterests.userId, userId),
+              eq(userEventInterests.eventId, eventData.eventId)
+            )
+          );
+
+        if (existingInterest) {
+          console.log(`📋 Event interest already exists for internal event ${eventData.eventId}`);
+          return existingInterest;
+        }
+
+        const [newInterest] = await db
+          .insert(userEventInterests)
+          .values({
+            userId,
+            eventId: eventData.eventId,
+            cityName: eventData.cityName || 'Unknown',
+            eventTitle: eventData.eventTitle,
+            eventSource: 'internal'
+          })
+          .returning();
+
+        console.log(`✅ Added internal event interest: ${newInterest.id}`);
+        return newInterest;
+        
+      } else if (isExternal) {
+        // Handle external event interest
+        const [existingInterest] = await db
+          .select()
+          .from(userEventInterests)
+          .where(
+            and(
+              eq(userEventInterests.userId, userId),
+              eq(userEventInterests.externalEventId, eventData.externalEventId || eventData.id),
+              eq(userEventInterests.eventSource, eventData.eventSource)
+            )
+          );
+
+        if (existingInterest) {
+          console.log(`📋 Event interest already exists for external event ${eventData.externalEventId || eventData.id}`);
+          return existingInterest;
+        }
+
+        const [newInterest] = await db
+          .insert(userEventInterests)
+          .values({
+            userId,
+            externalEventId: eventData.externalEventId || eventData.id,
+            cityName: eventData.cityName || eventData.city || 'Unknown',
+            eventTitle: eventData.eventTitle || eventData.title,
+            eventSource: eventData.eventSource,
+            eventData: eventData // Store full event data for external events
+          })
+          .returning();
+
+        console.log(`✅ Added external event interest: ${newInterest.id}`);
+        return newInterest;
+      } else {
+        throw new Error('Invalid event data - must have either eventId (internal) or externalEventId+eventSource (external)');
+      }
+    } catch (error) {
+      console.error("Error adding event interest:", error);
+      throw error;
+    }
+  }
+
+  async removeEventInterest(userId: number, eventId?: number, externalEventId?: string, eventSource?: string): Promise<boolean> {
+    try {
+      let whereCondition;
+      
+      if (eventId) {
+        // Remove internal event interest
+        whereCondition = and(
+          eq(userEventInterests.userId, userId),
+          eq(userEventInterests.eventId, eventId)
+        );
+      } else if (externalEventId && eventSource) {
+        // Remove external event interest
+        whereCondition = and(
+          eq(userEventInterests.userId, userId),
+          eq(userEventInterests.externalEventId, externalEventId),
+          eq(userEventInterests.eventSource, eventSource)
+        );
+      } else {
+        throw new Error('Must provide either eventId or externalEventId+eventSource');
+      }
+
+      const result = await db
+        .delete(userEventInterests)
+        .where(whereCondition)
+        .returning();
+      
+      console.log(`✅ Removed event interest for user ${userId}`);
+      return result.length > 0;
+    } catch (error) {
+      console.error("Error removing event interest:", error);
+      return false;
+    }
+  }
+
+  async getUserEventInterests(userId: number, cityName?: string): Promise<any[]> {
+    try {
+      let query = db
+        .select({
+          id: userEventInterests.id,
+          eventId: userEventInterests.eventId,
+          externalEventId: userEventInterests.externalEventId,
+          eventTitle: userEventInterests.eventTitle,
+          eventSource: userEventInterests.eventSource,
+          cityName: userEventInterests.cityName,
+          eventData: userEventInterests.eventData,
+          createdAt: userEventInterests.createdAt
+        })
+        .from(userEventInterests)
+        .where(eq(userEventInterests.userId, userId));
+
+      if (cityName) {
+        query = query.where(
+          and(
+            eq(userEventInterests.userId, userId),
+            eq(userEventInterests.cityName, cityName)
+          )
+        );
+      }
+
+      const interests = await query.orderBy(desc(userEventInterests.createdAt));
+      console.log(`📋 Found ${interests.length} event interests for user ${userId}`);
+      return interests;
+    } catch (error) {
+      console.error("Error getting user event interests:", error);
+      return [];
+    }
+  }
+
+  async getEventInterestedUsers(eventId?: number, externalEventId?: string, eventSource?: string): Promise<any[]> {
+    try {
+      let whereCondition;
+      
+      if (eventId) {
+        whereCondition = eq(userEventInterests.eventId, eventId);
+      } else if (externalEventId && eventSource) {
+        whereCondition = and(
+          eq(userEventInterests.externalEventId, externalEventId),
+          eq(userEventInterests.eventSource, eventSource)
+        );
+      } else {
+        throw new Error('Must provide either eventId or externalEventId+eventSource');
+      }
+
+      const interestedUsers = await db
+        .select({
+          id: userEventInterests.id,
+          userId: userEventInterests.userId,
+          username: users.username,
+          name: users.name,
+          profileImage: users.profileImage,
+          userType: users.userType,
+          location: users.location,
+          createdAt: userEventInterests.createdAt
+        })
+        .from(userEventInterests)
+        .leftJoin(users, eq(userEventInterests.userId, users.id))
+        .where(whereCondition)
+        .orderBy(desc(userEventInterests.createdAt));
+
+      return interestedUsers;
+    } catch (error) {
+      console.error("Error getting interested users:", error);
+      return [];
+    }
+  }
+
+  async isUserInterestedInEvent(userId: number, eventId?: number, externalEventId?: string, eventSource?: string): Promise<boolean> {
+    try {
+      let whereCondition;
+      
+      if (eventId) {
+        whereCondition = and(
+          eq(userEventInterests.userId, userId),
+          eq(userEventInterests.eventId, eventId)
+        );
+      } else if (externalEventId && eventSource) {
+        whereCondition = and(
+          eq(userEventInterests.userId, userId),
+          eq(userEventInterests.externalEventId, externalEventId),
+          eq(userEventInterests.eventSource, eventSource)
+        );
+      } else {
+        return false;
+      }
+
+      const [interest] = await db
+        .select()
+        .from(userEventInterests)
+        .where(whereCondition)
+        .limit(1);
+
+      return !!interest;
+    } catch (error) {
+      console.error("Error checking user interest:", error);
       return false;
     }
   }

@@ -3973,30 +3973,126 @@ Ready to start making real connections wherever you are?
     }
   });
 
-  // Remove user event interest
+  // Universal Event Interest Routes - Works with both internal and external events
+
+  // Add event interest
+  app.post("/api/event-interests", async (req, res) => {
+    try {
+      const userId = parseInt(req.headers['x-user-id'] as string || '0');
+      if (!userId) {
+        return res.status(401).json({ error: 'User not authenticated' });
+      }
+
+      const eventData = req.body;
+      if (process.env.NODE_ENV === 'development') console.log(`📋 ADD EVENT INTEREST: User ${userId}`, eventData);
+
+      const result = await storage.addEventInterest(userId, eventData);
+      return res.json({ success: true, interest: result });
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error adding event interest:", error);
+      return res.status(500).json({ error: "Failed to add event interest" });
+    }
+  });
+
+  // Remove event interest
+  app.delete("/api/event-interests", async (req, res) => {
+    try {
+      const userId = parseInt(req.headers['x-user-id'] as string || '0');
+      if (!userId) {
+        return res.status(401).json({ error: 'User not authenticated' });
+      }
+
+      const { eventId, externalEventId, eventSource } = req.query;
+      if (process.env.NODE_ENV === 'development') console.log(`📋 REMOVE EVENT INTEREST: User ${userId}`, { eventId, externalEventId, eventSource });
+
+      const result = await storage.removeEventInterest(
+        userId,
+        eventId ? parseInt(eventId as string) : undefined,
+        externalEventId as string,
+        eventSource as string
+      );
+
+      return res.json({ success: result });
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error removing event interest:", error);
+      return res.status(500).json({ error: "Failed to remove event interest" });
+    }
+  });
+
+  // Get user's event interests
+  app.get("/api/users/:userId/event-interests", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId || '0');
+      const cityName = req.query.city as string;
+
+      if (process.env.NODE_ENV === 'development') console.log(`📋 GET USER EVENT INTERESTS: User ${userId}, City: ${cityName}`);
+
+      const interests = await storage.getUserEventInterests(userId, cityName);
+      return res.json(interests);
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error getting user event interests:", error);
+      return res.status(500).json({ error: "Failed to get event interests" });
+    }
+  });
+
+  // Get interested users for an event
+  app.get("/api/events/interested-users", async (req, res) => {
+    try {
+      const { eventId, externalEventId, eventSource } = req.query;
+
+      if (process.env.NODE_ENV === 'development') console.log(`📋 GET INTERESTED USERS:`, { eventId, externalEventId, eventSource });
+
+      const users = await storage.getEventInterestedUsers(
+        eventId ? parseInt(eventId as string) : undefined,
+        externalEventId as string,
+        eventSource as string
+      );
+
+      return res.json(users);
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error getting interested users:", error);
+      return res.status(500).json({ error: "Failed to get interested users" });
+    }
+  });
+
+  // Check if user is interested in event
+  app.get("/api/event-interests/check", async (req, res) => {
+    try {
+      const userId = parseInt(req.headers['x-user-id'] as string || '0');
+      if (!userId) {
+        return res.status(401).json({ error: 'User not authenticated' });
+      }
+
+      const { eventId, externalEventId, eventSource } = req.query;
+
+      const isInterested = await storage.isUserInterestedInEvent(
+        userId,
+        eventId ? parseInt(eventId as string) : undefined,
+        externalEventId as string,
+        eventSource as string
+      );
+
+      return res.json({ isInterested });
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error checking event interest:", error);
+      return res.status(500).json({ error: "Failed to check event interest" });
+    }
+  });
+
+  // Remove user event interest (Legacy route - keep for compatibility)
   app.delete("/api/user-event-interests/:eventId", async (req, res) => {
     try {
       const userId = parseInt(req.headers['x-user-id'] as string || '0');
       const eventId = parseInt(req.params.eventId || '0');
       
-      console.log('DELETE event interest - User ID from header:', userId);
-      console.log('DELETE event interest - Event ID:', eventId);
-
       if (!userId) {
-        console.log('DELETE event interest failed - No user ID in header');
         return res.status(401).json({ error: 'User not authenticated' });
       }
 
-      if (process.env.NODE_ENV === 'development') console.log(`🎪 REMOVE EVENT INTEREST: User ${userId} removing interest in event ${eventId}`);
+      if (process.env.NODE_ENV === 'development') console.log(`🎪 REMOVE EVENT INTEREST (Legacy): User ${userId} removing interest in event ${eventId}`);
 
-      await db.execute(sql`
-        UPDATE user_event_interests 
-        SET is_active = false
-        WHERE user_id = ${userId} 
-        AND event_id = ${eventId}
-      `);
-
-      return res.json({ success: true });
+      const result = await storage.removeEventInterest(userId, eventId);
+      return res.json({ success: result });
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error removing user event interest:", error);
       return res.status(500).json({ error: "Failed to remove event interest" });
