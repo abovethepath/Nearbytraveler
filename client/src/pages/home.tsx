@@ -2430,13 +2430,32 @@ export default function Home() {
             <MessagesWidget userId={currentUserId} />
 
             {/* City Map Widget - Interactive map showing users, events, and businesses */}
-            {effectiveUser?.hometownCity && effectiveUser?.hometownCountry && (
-              <CityMap 
-                city={effectiveUser.hometownCity} 
-                state={effectiveUser.hometownState}
-                country={effectiveUser.hometownCountry} 
-              />
-            )}
+            {(() => {
+              // Priority 1: If user has active travel plans, show current travel destination
+              const activeTravelPlan = travelPlans?.find(plan => plan.status === 'active');
+              if (activeTravelPlan?.destinationCity) {
+                return (
+                  <CityMap 
+                    city={activeTravelPlan.destinationCity} 
+                    state={activeTravelPlan.destinationState}
+                    country={activeTravelPlan.destinationCountry} 
+                  />
+                );
+              }
+              
+              // Priority 2: Fallback to hometown if no active travel
+              if (effectiveUser?.hometownCity && effectiveUser?.hometownCountry) {
+                return (
+                  <CityMap 
+                    city={effectiveUser.hometownCity} 
+                    state={effectiveUser.hometownState}
+                    country={effectiveUser.hometownCountry} 
+                  />
+                );
+              }
+              
+              return null;
+            })()}
 
           </div>
         </div>

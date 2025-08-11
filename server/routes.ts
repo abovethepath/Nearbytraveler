@@ -49,6 +49,57 @@ import {
 } from "../shared/schema";
 import { sql, eq, or, count, and, ne, desc, gte, lte, lt, isNotNull, inArray, asc, ilike, like, isNull, gt } from "drizzle-orm";
 
+// City coordinates helper function
+const getCityCoordinates = (city: string): [number, number] => {
+  const cityCoords: Record<string, [number, number]> = {
+    'Los Angeles': [34.0522, -118.2437],
+    'LA': [34.0522, -118.2437],
+    'Playa del Rey': [33.9425, -118.4081],
+    'Santa Monica': [34.0195, -118.4912],
+    'Venice': [33.9850, -118.4695],
+    'Beverly Hills': [34.0736, -118.4004],
+    'Hollywood': [34.0928, -118.3287],
+    'New Orleans': [29.9511, -90.0715],
+    'Las Vegas': [36.1699, -115.1398],
+    'New York': [40.7128, -74.0060],
+    'Chicago': [41.8781, -87.6298],
+    'Miami': [25.7617, -80.1918],
+    'Boston': [42.3601, -71.0589],
+    'Seattle': [47.6062, -122.3321],
+    'Denver': [39.7392, -104.9903]
+  };
+  
+  // Debug logging
+  if (process.env.NODE_ENV === 'development') {
+    console.log(`🗺️ LOOKUP: Searching for "${city}" in coordinates table`);
+  }
+  
+  // First try exact match
+  if (cityCoords[city]) {
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`🗺️ FOUND: Exact match for "${city}": [${cityCoords[city][0]}, ${cityCoords[city][1]}]`);
+    }
+    return cityCoords[city];
+  }
+  
+  // Try case-insensitive match
+  const cityLower = city.toLowerCase();
+  for (const [key, coords] of Object.entries(cityCoords)) {
+    if (key.toLowerCase() === cityLower) {
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`🗺️ FOUND: Case-insensitive match for "${city}" -> "${key}": [${coords[0]}, ${coords[1]}]`);
+      }
+      return coords;
+    }
+  }
+  
+  // Default to LA if not found
+  if (process.env.NODE_ENV === 'development') {
+    console.log(`🗺️ NOT FOUND: No match for "${city}", using default LA coordinates`);
+  }
+  return [34.0522, -118.2437];
+};
+
 // Aura Points Helper Function - Production Optimized
 async function awardAuraPoints(userId: number, points: number, action: string) {
   try {
@@ -6585,6 +6636,38 @@ Aaron`
           ilike(users.travelDestination, `%${searchCity}%`)
         );
         
+        // Find users with active travel plans to this city
+        const activeTravelersSubquery = db.select({
+          userId: travelPlans.userId
+        })
+        .from(travelPlans)
+        .where(
+          and(
+            eq(travelPlans.status, 'active'),
+            or(...userCitiesToSearch.map(searchCity => 
+              ilike(travelPlans.destinationCity, `%${searchCity}%`)
+            ))
+          )
+        );
+        
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`🗺️ TRAVEL PLANS: Searching for active travelers to cities: ${userCitiesToSearch.join(', ')}`);
+        }
+        
+        // Also include users who are physically in this city (based on coordinates)
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`🗺️ COORDS DEBUG: Looking up city "${city}" (type: ${typeof city})`);
+        }
+        
+        const cityCoords = getCityCoordinates(city as string);
+        const cityLatRange = [cityCoords[0] - 0.5, cityCoords[0] + 0.5]; // ~35 mile radius
+        const cityLngRange = [cityCoords[1] - 0.5, cityCoords[1] + 0.5];
+        
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`🗺️ COORDINATES: ${city} coords: [${cityCoords[0]}, ${cityCoords[1]}]`);
+          console.log(`🗺️ COORDINATE RANGES: Lat: ${cityLatRange[0]} to ${cityLatRange[1]}, Lng: ${cityLngRange[0]} to ${cityLngRange[1]}`);
+        }
+        
         mapUsers = await db.select({
           id: users.id,
           username: users.username,
@@ -6605,7 +6688,9 @@ Aaron`
             isNotNull(users.currentLongitude),
             or(
               ...userHometownConditions,
-              ...userTravelConditions
+              ...userTravelConditions,
+              // Include users currently traveling to this city
+              inArray(users.id, activeTravelersSubquery)
             )
           )
         );
