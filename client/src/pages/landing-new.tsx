@@ -2,7 +2,7 @@ import { useLocation, Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import Footer from "@/components/footer";
 import LandingNavbar from "@/components/landing-navbar";
-import ScrollingHeroGallery from "@/components/ScrollingHeroGallery";
+
 
 
 // Helper function for custom icons
@@ -69,7 +69,12 @@ export default function Landing() {
         <div className="bg-gray-800 dark:bg-gray-900 border border-white/30 dark:border-gray-300/20">
           <div className="relative bg-gray-800 dark:bg-gray-900 pb-32 overflow-hidden min-h-[600px]">
             <div className="absolute inset-0 h-full min-h-[600px]">
-              <ScrollingHeroGallery className="w-full h-full" />
+              <img
+                src="/beach travel_1750958707105.jpg"
+                alt="Travel experience"
+                className="w-full h-full object-cover"
+                style={{ objectPosition: 'center 70%' }}
+              />
               <div className="absolute inset-0 bg-gray-800/70 dark:bg-gray-800/40 mix-blend-multiply" aria-hidden="true" />
             </div>
             <div className="relative">
