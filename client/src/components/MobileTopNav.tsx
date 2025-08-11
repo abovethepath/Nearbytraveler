@@ -98,7 +98,7 @@ export function MobileTopNav() {
 
         {/* Center - Logo */}
         <div className="flex-1 flex justify-center">
-          <Logo className="h-16 w-auto" />
+          <Logo variant="navbar" />
         </div>
 
         {/* Right side - Profile + Notifications */}
