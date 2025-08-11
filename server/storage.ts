@@ -641,15 +641,11 @@ export class DatabaseStorage implements IStorage {
     // Automatically add the event creator as a participant
     if (newEvent.organizerId) {
       try {
-        console.log(`🎯 AUTO-JOINING: Adding creator ${newEvent.organizerId} to event ${newEvent.id}`);
-        const participant = await this.joinEvent(newEvent.id, newEvent.organizerId);
-        console.log(`✅ AUTO-JOIN SUCCESS: Creator ${newEvent.organizerId} added as participant:`, participant.id);
+        await this.joinEvent(newEvent.id, newEvent.organizerId);
       } catch (error) {
-        console.error('🔴 FAILED to add event creator as participant:', error);
+        console.error('Failed to add event creator as participant:', error);
         // Don't fail event creation if participant addition fails
       }
-    } else {
-      console.error('🔴 NO ORGANIZER ID: Cannot auto-join creator to event');
     }
     
     return newEvent;
@@ -662,7 +658,7 @@ export class DatabaseStorage implements IStorage {
 
   async getAllEvents(): Promise<Event[]> {
     try {
-      const allEvents = await db.select().from(events).orderBy(desc(events.date));
+      const allEvents = await db.select().from(events).orderBy(desc(events.id));
       
       // Get participant counts for all events
       const participantCounts = await Promise.all(
@@ -700,7 +696,7 @@ export class DatabaseStorage implements IStorage {
         ),
         gte(events.date, new Date())
       )
-    );
+    ).orderBy(desc(events.id));
   }
 
   async getEventsByMetropolitanArea(searchLocation: string): Promise<Event[]> {
@@ -815,15 +811,19 @@ export class DatabaseStorage implements IStorage {
     });
 
     console.log(`Events search for ${searchLocation} found ${filteredEvents.length} events`);
-    return filteredEvents;
+    
+    // Sort by newest events first (by ID descending)
+    const sortedEvents = filteredEvents.sort((a, b) => b.id - a.id);
+    
+    return sortedEvents;
   }
 
   async getUserEvents(userId: number): Promise<Event[]> {
-    return await db.select().from(events).where(eq(events.organizerId, userId));
+    return await db.select().from(events).where(eq(events.organizerId, userId)).orderBy(desc(events.id));
   }
 
   async getEventsByOrganizer(organizerId: number): Promise<Event[]> {
-    return await db.select().from(events).where(eq(events.organizerId, organizerId));
+    return await db.select().from(events).where(eq(events.organizerId, organizerId)).orderBy(desc(events.id));
   }
 
   async getEventsByLocation(city: string, state: string = '', country: string = ''): Promise<Event[]> {
@@ -848,7 +848,7 @@ export class DatabaseStorage implements IStorage {
           eq(events.isActive, true),
           gte(events.date, today) // Only future events
         ))
-        .orderBy(asc(events.date)); // Upcoming events first
+        .orderBy(desc(events.id)); // Newest events first
       
       console.log(`Found ${locationEvents.length} upcoming events for ${cityName}`);
 
@@ -895,8 +895,6 @@ export class DatabaseStorage implements IStorage {
 
   // Event participation methods
   async joinEvent(eventId: number, userId: number, notes?: string): Promise<EventParticipant> {
-    console.log(`🎯 JOIN EVENT: User ${userId} joining event ${eventId}`);
-    
     // Check if user is already a participant
     const [existingParticipant] = await db
       .select()
@@ -909,11 +907,9 @@ export class DatabaseStorage implements IStorage {
       );
 
     if (existingParticipant) {
-      console.log(`✅ ALREADY JOINED: User ${userId} already participant in event ${eventId}`);
       return existingParticipant;
     }
 
-    console.log(`📝 CREATING PARTICIPANT: Adding user ${userId} to event ${eventId}`);
     const [participant] = await db
       .insert(eventParticipants)
       .values({
@@ -923,8 +919,6 @@ export class DatabaseStorage implements IStorage {
         status: "confirmed"
       })
       .returning();
-    
-    console.log(`✅ PARTICIPANT CREATED: User ${userId} successfully joined event ${eventId} as participant ${participant.id}`);
     return participant;
   }
 
