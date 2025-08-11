@@ -36,6 +36,7 @@ export function PeopleDiscoveryWidget({
 }: PeopleDiscoveryWidgetProps) {
   const [, setLocation] = useLocation();
   const currentUserId = 16; // Current user for compatibility testing
+  const [displayCount, setDisplayCount] = React.useState(6); // Show 6 people initially (3x2 grid)
 
   const PersonWithCommonalities = ({ person }: { person: PersonCard }) => {
     // Fetch travel plans for this person to show travel destination
@@ -78,7 +79,7 @@ export function PeopleDiscoveryWidget({
               <div className="mb-2 space-y-1">
                 {/* Hometown - Always show */}
                 <p className="text-gray-600 dark:text-gray-400 text-xs truncate">
-                  🏠 {person.location.split(',')[0]}
+                  🏠 {person.location?.split(',')[0] || person.location || 'Unknown location'}
                 </p>
                 
                 {/* Current Travel Location - Show if traveling */}
@@ -137,7 +138,7 @@ export function PeopleDiscoveryWidget({
 
     return (
       <div
-        className="bg-gray-100 dark:bg-gray-800 rounded-xl p-4 hover:shadow-lg transition-all duration-200 cursor-pointer text-gray-900 dark:text-white relative h-64"
+        className="bg-gray-50 dark:bg-gray-700 rounded-lg p-2 hover:shadow-lg transition-all duration-200 cursor-pointer text-gray-900 dark:text-white relative h-72"
         onClick={handlePersonClick}
       >
         {/* Online Status - Top Right */}
@@ -150,15 +151,15 @@ export function PeopleDiscoveryWidget({
         {/* Main Content */}
         <div className="flex flex-col h-full">
           {/* Large Profile Photo */}
-          <div className="flex-1 flex items-center justify-center mt-3">
+          <div className="flex-1 flex items-center justify-center mt-1">
             {person.profileImage ? (
               <img 
                 src={person.profileImage} 
                 alt={person.name}
-                className="w-32 h-32 object-cover rounded-lg"
+                className="w-36 h-36 object-cover rounded-lg border-2 border-white dark:border-gray-600 shadow-sm"
               />
             ) : (
-              <div className="w-32 h-32 text-6xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-bold rounded-lg flex items-center justify-center">
+              <div className="w-36 h-36 text-4xl bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 font-bold rounded-lg flex items-center justify-center border-2 border-white dark:border-gray-600 shadow-sm">
                 {person.username?.charAt(0)?.toUpperCase() || "U"}
               </div>
             )}
@@ -167,7 +168,7 @@ export function PeopleDiscoveryWidget({
           {/* Bottom Section */}
           <div className="text-center pb-2">
             {/* Username */}
-            <h4 className="font-bold text-gray-900 dark:text-white text-base mb-1 truncate">
+            <h4 className="font-bold text-gray-900 dark:text-white text-lg mb-1 truncate">
               {person.username}
             </h4>
             
@@ -175,7 +176,7 @@ export function PeopleDiscoveryWidget({
             <div className="mb-2 space-y-1">
               {/* Hometown - Always show */}
               <p className="text-gray-600 dark:text-gray-400 text-xs truncate">
-                🏠 {person.location.split(',')[0]}
+                🏠 {person.location?.split(',')[0] || person.location || 'Unknown location'}
               </p>
               
               {/* Current Travel Location - Show if traveling */}
@@ -195,9 +196,9 @@ export function PeopleDiscoveryWidget({
                 </span>
               </div>
             ) : (
-              <div className="inline-flex items-center gap-1 bg-blue-500 rounded-full px-3 py-1">
+              <div className="inline-flex items-center gap-1 bg-gray-400 dark:bg-gray-500 rounded-full px-3 py-1">
                 <span className="text-white font-medium text-xs">
-                  Loading...
+                  New User
                 </span>
               </div>
             )}
@@ -207,12 +208,41 @@ export function PeopleDiscoveryWidget({
     );
   };
 
+  const displayedPeople = people.slice(0, displayCount);
+  const hasMore = people.length > displayCount;
+  const showingAll = displayCount >= people.length;
+
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div className="space-y-4">
       {/* People Grid - 3 Column Avatar Cards */}
-      {people.map((person) => (
-        <PersonWithCommonalities key={person.id} person={person} />
-      ))}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        {displayedPeople.map((person) => (
+          <PersonWithCommonalities key={person.id} person={person} />
+        ))}
+      </div>
+      
+      {/* Load More / Load Less buttons */}
+      {people.length > 6 && (
+        <div className="text-center pt-4">
+          {!showingAll ? (
+            <button
+              onClick={() => setDisplayCount(people.length)}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors"
+              data-testid="button-load-more-people"
+            >
+              Load More ({people.length - displayCount} more)
+            </button>
+          ) : (
+            <button
+              onClick={() => setDisplayCount(6)}
+              className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg font-medium transition-colors"
+              data-testid="button-load-less-people"
+            >
+              Load Less
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 }
