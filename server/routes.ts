@@ -7311,8 +7311,12 @@ Ready to start making real connections wherever you are?
       
       const memberCountMap = new Map();
       memberCountQuery.forEach(mc => {
-        memberCountMap.set(mc.chatroomId, parseInt(mc.count || '0') || 1);
+        memberCountMap.set(mc.chatroomId, parseInt(mc.count || '0'));
       });
+      
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`🏘️ CITY CHATROOMS: Member count map:`, Array.from(memberCountMap.entries()));
+      }
 
       // Check user membership status for all chatrooms
       const userMemberships = await db
