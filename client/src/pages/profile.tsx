@@ -1159,6 +1159,18 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         hometownCountry: user.hometownCountry
       });
       
+      // Initialize temp values for editing
+      setTempInterests(user.interests || []);
+      setTempActivities(user.activities || []);
+      setTempEvents(user.events || []);
+      
+      // Initialize editFormData with current user preferences
+      setEditFormData({
+        interests: user.interests || [],
+        activities: user.activities || [],
+        events: user.events || []
+      });
+      
       // Reset form with user type-specific data
       if (user.userType === 'business') {
         profileForm.reset({
@@ -3814,10 +3826,15 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               setEditingInterests(false);
                               setEditingActivities(false);
                               setEditingEvents(false);
-                              // Reset temp values
+                              // Reset temp values AND editFormData to original user data
                               setTempInterests(user?.interests || []);
                               setTempActivities(user?.activities || []);
                               setTempEvents(user?.events || []);
+                              setEditFormData({
+                                interests: user?.interests || [],
+                                activities: user?.activities || [],
+                                events: user?.events || []
+                              });
                             }}
                             className="border-orange-500 text-orange-600 hover:bg-orange-50 dark:border-orange-400 dark:text-orange-400 dark:hover:bg-orange-900/20 flex-1"
                           >
