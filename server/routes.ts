@@ -3422,16 +3422,16 @@ Ready to start making real connections wherever you are?
         if (process.env.NODE_ENV === 'development') console.log(`🌍 EVENTS METRO: Searching cities:`, searchCities);
         
         // Search events in all relevant cities using pattern matching like map data
-        // ENHANCED: Only return events in the next 2 weeks to prevent overwhelming UI
+        // ENHANCED: Only return events in the next 6 weeks to include all upcoming events
         const now = new Date();
-        const twoWeeksFromNow = new Date(now.getTime() + (14 * 24 * 60 * 60 * 1000));
+        const sixWeeksFromNow = new Date(now.getTime() + (42 * 24 * 60 * 60 * 1000));
         
         for (const searchCity of searchCities) {
           const cityEvents = await db.select().from(events)
             .where(and(
               ilike(events.city, `%${searchCity}%`),
               gte(events.date, now),
-              lte(events.date, twoWeeksFromNow)
+              lte(events.date, sixWeeksFromNow)
             ))
             .orderBy(asc(events.date));
           eventsQuery.push(...cityEvents);
@@ -3461,17 +3461,17 @@ Ready to start making real connections wherever you are?
           return new Date(a.date).getTime() - new Date(b.date).getTime();
         });
         
-        if (process.env.NODE_ENV === 'development') console.log(`🎪 EVENTS: Found ${eventsQuery.length} events in next 2 weeks for ${cityName} (including LA metro)`);
+        if (process.env.NODE_ENV === 'development') console.log(`🎪 EVENTS: Found ${eventsQuery.length} events in next 6 weeks for ${cityName} (including LA metro)`);
       } else {
-        // Return events in next 2 weeks if no city specified - EARLIEST FIRST
-        // ENHANCED: Limit to next 2 weeks to prevent overwhelming UI
+        // Return events in next 6 weeks if no city specified - EARLIEST FIRST
+        // ENHANCED: Limit to next 6 weeks to include all upcoming events
         const now = new Date();
-        const twoWeeksFromNow = new Date(now.getTime() + (14 * 24 * 60 * 60 * 1000));
+        const sixWeeksFromNow = new Date(now.getTime() + (42 * 24 * 60 * 60 * 1000));
         
         eventsQuery = await db.select().from(events)
           .where(and(
             gte(events.date, now),
-            lte(events.date, twoWeeksFromNow)
+            lte(events.date, sixWeeksFromNow)
           ));
         
         // PRIORITY SORTING: User-created events first, then by date
@@ -3487,7 +3487,7 @@ Ready to start making real connections wherever you are?
           // If both are the same type, sort by date (earliest first)
           return new Date(a.date).getTime() - new Date(b.date).getTime();
         });
-        if (process.env.NODE_ENV === 'development') console.log(`🎪 EVENTS: Returning ${eventsQuery.length} events in next 2 weeks`);
+        if (process.env.NODE_ENV === 'development') console.log(`🎪 EVENTS: Returning ${eventsQuery.length} events in next 6 weeks`);
       }
 
       // CRITICAL: Add participant counts to all events

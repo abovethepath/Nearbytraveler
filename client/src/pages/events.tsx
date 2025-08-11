@@ -706,9 +706,21 @@ export default function Events() {
                         )}
                         <div className="flex items-start justify-between">
                           <CardTitle className="text-lg line-clamp-2 dark:text-white">{event.title}</CardTitle>
-                          <Badge variant="secondary" className="ml-2 shrink-0">
-                            {event.category}
-                          </Badge>
+                          <div className="flex flex-col gap-1 ml-2">
+                            <Badge variant="secondary" className="shrink-0">
+                              {event.category}
+                            </Badge>
+                            {/* Recurring event indicator */}
+                            {event.isRecurring && (
+                              <Badge variant="outline" className="shrink-0 text-xs bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-300 dark:border-green-700">
+                                🔄 {event.recurrenceType === 'weekly' ? 'Weekly' : 
+                                     event.recurrenceType === 'daily' ? 'Daily' :
+                                     event.recurrenceType === 'monthly' ? 'Monthly' :
+                                     event.recurrenceType === 'biweekly' ? 'Bi-weekly' :
+                                     'Recurring'}
+                              </Badge>
+                            )}
+                          </div>
                         </div>
                       </CardHeader>
                       <CardContent>
@@ -979,9 +991,21 @@ export default function Events() {
                               <Badge variant="secondary" className="bg-green-100 text-green-800">
                                 Organizer
                               </Badge>
-                              <Badge variant="outline">
-                                {event.category}
-                              </Badge>
+                              <div className="flex flex-col gap-1">
+                                <Badge variant="outline">
+                                  {event.category}
+                                </Badge>
+                                {/* Recurring event indicator */}
+                                {event.isRecurring && (
+                                  <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-300 dark:border-green-700">
+                                    🔄 {event.recurrenceType === 'weekly' ? 'Weekly' : 
+                                         event.recurrenceType === 'daily' ? 'Daily' :
+                                         event.recurrenceType === 'monthly' ? 'Monthly' :
+                                         event.recurrenceType === 'biweekly' ? 'Bi-weekly' :
+                                         'Recurring'}
+                                  </Badge>
+                                )}
+                              </div>
                             </div>
 
                             <h3 className="font-semibold text-lg text-gray-900 dark:text-white mb-2 line-clamp-2">
@@ -1027,18 +1051,44 @@ export default function Events() {
                               </div>
                             </div>
 
-                            <Button 
-                              variant="outline" 
-                              size="sm" 
-                              className="w-full bg-gradient-to-r from-orange-500 to-blue-600 text-white border-0 hover:from-orange-600 hover:to-blue-700"
-                              style={{ transition: 'none' }}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setLocation(`/events/${event.id}`);
-                              }}
-                            >
-                              Manage Event
-                            </Button>
+                            <div className="flex gap-2">
+                              <Button 
+                                variant="outline" 
+                                size="sm" 
+                                className="flex-1 bg-gradient-to-r from-orange-500 to-blue-600 text-white border-0 hover:from-orange-600 hover:to-blue-700"
+                                style={{ transition: 'none' }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setLocation(`/events/${event.id}`);
+                                }}
+                              >
+                                View
+                              </Button>
+                              <Button 
+                                variant="outline" 
+                                size="sm" 
+                                className="flex-1 border-blue-200 text-blue-700 hover:bg-blue-50 dark:border-blue-700 dark:text-blue-300 dark:hover:bg-blue-900/20"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  // Navigate to edit event page (to be implemented)
+                                  setLocation(`/events/${event.id}/edit`);
+                                }}
+                              >
+                                Edit
+                              </Button>
+                              <Button 
+                                variant="outline" 
+                                size="sm" 
+                                className="flex-1 border-green-200 text-green-700 hover:bg-green-50 dark:border-green-700 dark:text-green-300 dark:hover:bg-green-900/20"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  // Copy event functionality (to be implemented)
+                                  console.log('Copy event:', event.id);
+                                }}
+                              >
+                                Copy
+                              </Button>
+                            </div>
                           </CardContent>
                         </Card>
                       ))}
