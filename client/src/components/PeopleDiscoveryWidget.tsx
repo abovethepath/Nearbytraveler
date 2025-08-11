@@ -26,6 +26,7 @@ interface PeopleDiscoveryWidgetProps {
   showSeeAll?: boolean;
   userLocation?: string;
   onPersonClick?: (person: PersonCard) => void;
+  currentUserId?: number; // Add explicit currentUserId prop
 }
 
 export function PeopleDiscoveryWidget({ 
@@ -33,12 +34,18 @@ export function PeopleDiscoveryWidget({
   title = "Nearby Travelers",
   showSeeAll = true,
   userLocation = "Culver City",
-  onPersonClick 
+  onPersonClick,
+  currentUserId: propCurrentUserId 
 }: PeopleDiscoveryWidgetProps) {
   const [, setLocation] = useLocation();
   const { user: currentUser } = useContext(AuthContext);
-  const currentUserId = currentUser?.id;
+  const currentUserId = propCurrentUserId || currentUser?.id;
   const [displayCount, setDisplayCount] = React.useState(6); // Show 6 people initially (3x2 grid)
+
+  // Debug current user ID
+  React.useEffect(() => {
+    console.log(`🔍 PEOPLE DISCOVERY WIDGET: currentUser:`, currentUser?.username || 'null', 'ID:', currentUserId || 'undefined', 'prop ID:', propCurrentUserId || 'undefined');
+  }, [currentUser, currentUserId, propCurrentUserId]);
 
   const PersonWithCommonalities = ({ person }: { person: PersonCard }) => {
     // Fetch travel plans for this person to show travel destination
@@ -110,18 +117,22 @@ export function PeopleDiscoveryWidget({
       );
     }
 
-    // Use the EXACT same compatibility API that profile pages use
+    // Use the correct compatibility API endpoint
     const { data: compatibilityData } = useQuery({
-      queryKey: [`/api/users/${currentUserId}/compatibility/${person.id}`],
+      queryKey: [`/api/compatibility/${currentUserId}/${person.id}`],
       enabled: !!currentUserId && !!person.id && currentUserId !== person.id
     });
 
     // Debug logging
     React.useEffect(() => {
+      console.log(`🔍 PEOPLE DISCOVERY: User ${person.username} (${person.id}) currentUserId: ${currentUserId}, enabled: ${!!currentUserId && !!person.id && currentUserId !== person.id}`);
+      console.log(`🔍 QUERY KEY: ["/api/compatibility/${currentUserId}/${person.id}"]`);
       if (compatibilityData) {
         console.log(`✅ PEOPLE DISCOVERY: User ${person.username} (${person.id}) compatibility data:`, compatibilityData);
+      } else {
+        console.log(`❌ PEOPLE DISCOVERY: No compatibility data for ${person.username} (${person.id})`);
       }
-    }, [compatibilityData, person.username, person.id]);
+    }, [compatibilityData, person.username, person.id, currentUserId]);
 
     const getCountryFlag = (location: string) => {
       if (location.includes('United States') || location.includes('USA')) return '🇺🇸';
@@ -242,8 +253,8 @@ export function PeopleDiscoveryWidget({
 
   return (
     <div className="space-y-4">
-      {/* People Grid - 3 Column Avatar Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+      {/* People Grid - 4 Column Avatar Cards with smaller gap */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
         {displayedPeople.map((person) => (
           <PersonWithCommonalities key={person.id} person={person} />
         ))}

@@ -2095,6 +2095,7 @@ export default function Home() {
                   showSeeAll={false}
                   userLocation={effectiveUser?.hometownCity || "Culver City"}
                   onPersonClick={(person) => setLocation(`/profile/${person.id}`)}
+                  currentUserId={effectiveUser?.id} // Pass current user ID explicitly as prop
                 />
 
                 {/* Load More Button */}
