@@ -52,12 +52,13 @@ export function PeopleDiscoveryWidget({
     const { data: travelPlans } = useQuery({
       queryKey: [`/api/travel-plans/${person.id}`],
       enabled: !!person.id,
-      staleTime: 15 * 60 * 1000, // 15 minutes - longer to prevent blinking
-      gcTime: 30 * 60 * 1000, // 30 minutes
+      staleTime: 60 * 60 * 1000, // 1 hour - very long to prevent blinking
+      gcTime: 2 * 60 * 60 * 1000, // 2 hours
       refetchOnMount: false,
       refetchOnWindowFocus: false,
-      refetchInterval: false, // Disable automatic refetching
-      refetchIntervalInBackground: false
+      refetchInterval: false,
+      refetchIntervalInBackground: false,
+      refetchOnReconnect: false
     });
 
     // Don't show commonalities for the current user themselves
@@ -128,12 +129,13 @@ export function PeopleDiscoveryWidget({
     const { data: compatibilityData } = useQuery({
       queryKey: [`/api/compatibility/${currentUserId}/${person.id}`],
       enabled: !!currentUserId && !!person.id && currentUserId !== person.id,
-      staleTime: 15 * 60 * 1000, // 15 minutes - longer to prevent blinking
-      gcTime: 30 * 60 * 1000, // 30 minutes
+      staleTime: 60 * 60 * 1000, // 1 hour - very long to prevent blinking
+      gcTime: 2 * 60 * 60 * 1000, // 2 hours
       refetchOnMount: false,
       refetchOnWindowFocus: false,
-      refetchInterval: false, // Disable automatic refetching
-      refetchIntervalInBackground: false
+      refetchInterval: false,
+      refetchIntervalInBackground: false,
+      refetchOnReconnect: false
     });
 
     // Debug logging

@@ -53,7 +53,7 @@ export default function ScrollingHeroGallery({ className = "" }: ScrollingHeroGa
     }, 5000); // 5 seconds for testing
 
     return () => clearInterval(interval);
-  }, [heroImages.length]);
+  }, [heroImages]);
 
   if (heroImages.length === 0) {
     return null;
