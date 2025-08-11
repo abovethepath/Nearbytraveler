@@ -20,7 +20,8 @@ import {
   Globe, 
   Loader2,
   ArrowLeft,
-  UserPlus 
+  UserPlus,
+  UserMinus 
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 
@@ -194,11 +195,39 @@ export default function CityChatroomsPage({ cityFilter }: CityChatroomsPageProps
         description: "Successfully joined the chatroom!"
       });
       queryClient.invalidateQueries({ queryKey: ['/api/chatrooms'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/chatrooms/my-locations'] });
     },
     onError: () => {
       toast({
         title: "Error",
         description: "Failed to join chatroom. Please try again.",
+        variant: "destructive"
+      });
+    }
+  });
+
+  // Leave chatroom mutation
+  const leaveChatroomMutation = useMutation({
+    mutationFn: async (chatroomId: number) => {
+      const response = await apiRequest('POST', `/api/chatrooms/${chatroomId}/leave`, {
+        body: JSON.stringify({ userId: currentUser?.id })
+      });
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Left Chatroom",
+        description: "You have left the chatroom."
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/chatrooms'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/chatrooms/my-locations'] });
+      // Go back to chatroom list after leaving
+      setSelectedChatroom(null);
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to leave chatroom. Please try again.",
         variant: "destructive"
       });
     }
@@ -386,17 +415,34 @@ export default function CityChatroomsPage({ cityFilter }: CityChatroomsPageProps
                     {selectedChatroom.memberCount} members
                   </Badge>
                 )}
-                {!selectedChatroom.userIsMember && (
-                  <Button
-                    size="sm"
-                    onClick={() => joinChatroomMutation.mutate(selectedChatroom.id)}
-                    disabled={joinChatroomMutation.isPending}
-                    className="bg-blue-600 hover:bg-blue-700 text-white ml-auto"
-                  >
-                    <UserPlus className="w-3 h-3 mr-1" />
-                    Join Chatroom
-                  </Button>
-                )}
+                <div className="ml-auto flex gap-2">
+                  {!selectedChatroom.userIsMember ? (
+                    <Button
+                      size="sm"
+                      onClick={() => joinChatroomMutation.mutate(selectedChatroom.id)}
+                      disabled={joinChatroomMutation.isPending}
+                      className="bg-blue-600 hover:bg-blue-700 text-white"
+                    >
+                      <UserPlus className="w-3 h-3 mr-1" />
+                      Join Chatroom
+                    </Button>
+                  ) : (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => leaveChatroomMutation.mutate(selectedChatroom.id)}
+                      disabled={leaveChatroomMutation.isPending}
+                      className="border-red-300 text-red-600 hover:bg-red-50"
+                    >
+                      {leaveChatroomMutation.isPending ? (
+                        <Loader2 className="w-3 h-3 mr-1 animate-spin" />
+                      ) : (
+                        <UserMinus className="w-3 h-3 mr-1" />
+                      )}
+                      Leave Chat
+                    </Button>
+                  )}
+                </div>
               </div>
               {selectedChatroom.description && (
                 <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
