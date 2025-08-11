@@ -2967,10 +2967,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 {/* Line 1: Username */}
                 <h1 className="text-xl sm:text-3xl font-bold text-black">@{user.username}</h1>
                 
-                {/* Line 2: Location/Status with pin icon */}
+                {/* Line 2: Location/Status with pin icon - Force single line */}
                 <div className="flex items-center gap-2 w-full">
                   <MapPin className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
-                  <span className="text-sm sm:text-base font-medium flex-1">
+                  <span className="text-sm sm:text-base font-medium flex-1 whitespace-nowrap overflow-hidden text-ellipsis">
                     {user.userType === 'business' 
                       ? `Nearby Business in ${user.hometownCity || 'Los Angeles'}`
                       : (() => {
@@ -3047,13 +3047,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </span>
                 </div>
 
-                {/* Line 3: Stats on ONE line */}
+                {/* Line 3: All stats on ONE line - no wrapping */}
                 {user.userType !== 'business' && (
-                  <div className="flex items-center gap-3 text-xs sm:text-sm w-full">
+                  <div className="flex items-center gap-3 text-xs sm:text-sm w-full whitespace-nowrap overflow-hidden">
                     <span className="font-medium">🌍 {countriesVisited?.length || 0} countries</span>
                     <span className="font-medium">⭐ {references?.length || 0} references</span>
                     <span className="font-medium">
-                      • Nearby Local in {user.hometownCity || user.location?.split(',')[0] || 'Hometown'}
+                      • Nearby Local in {user.hometownCity || 'Playa del Rey'}
                     </span>
                   </div>
                 )}
