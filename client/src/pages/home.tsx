@@ -36,7 +36,7 @@ import SmartPhotoGallery from "@/components/smart-photo-gallery";
 import SmartLocationInput from "@/components/SmartLocationInput";
 import AICityEventsWidget from "@/components/ai-city-events";
 import TravelMatches from "@/components/travel-matches";
-import CurrentCityWidget from "@/components/CurrentCityWidget";
+
 import ResponsiveUserGrid from "@/components/ResponsiveUserGrid";
 import { SimpleAvatar } from "@/components/simple-avatar";
 
@@ -2423,17 +2423,6 @@ export default function Home() {
 
           {/* Right Sidebar - Widgets - Always visible on mobile and desktop */}
           <div className="col-span-1 lg:col-span-1 space-y-3 sm:space-y-6 min-w-0">
-            {/* Current City Widget */}
-            <CurrentCityWidget 
-              userId={currentUserId}
-              onFilterByLocation={(location) => {
-                console.log('Home page - Current City widget clicked, filtering by:', location);
-                setActiveFilter("location");
-                setActiveLocationFilter(location);
-                setFilters(prev => ({ ...prev, location: location }));
-              }}
-            />
-
             {/* Weather Widget */}
             <CurrentLocationWeatherWidget />
 
