@@ -295,7 +295,9 @@ export const chatroomMembers = pgTable("chatroom_members", {
   lastReadAt: timestamp("last_read_at"),
   isMuted: boolean("is_muted").default(false),
   isActive: boolean("is_active").default(true),
-});
+}, (table) => [
+  unique().on(table.chatroomId, table.userId)
+]);
 
 export const chatroomAccessRequests = pgTable("chatroom_access_requests", {
   id: serial("id").primaryKey(),

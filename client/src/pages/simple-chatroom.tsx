@@ -46,6 +46,29 @@ export default function SimpleChatroomPage() {
   };
   
   const currentUser = getCurrentUser();
+  const currentUserId = Number(currentUser?.id || 0);
+
+  // Join room function
+  async function joinRoom() {
+    if (!currentUser?.id) return;
+    await fetch(`/api/simple-chatrooms/${chatroomId}/join`, {
+      method: "POST",
+      headers: { "x-user-id": String(currentUser.id) },
+      credentials: "include",
+    });
+    queryClient.invalidateQueries({ queryKey: [`/api/simple-chatrooms/${chatroomId}/members/count`] });
+  }
+
+  // Leave room function
+  async function leaveRoom() {
+    if (!currentUser?.id) return;
+    await fetch(`/api/simple-chatrooms/${chatroomId}/join`, {
+      method: "DELETE",
+      headers: { "x-user-id": String(currentUser.id) },
+      credentials: "include",
+    });
+    queryClient.invalidateQueries({ queryKey: [`/api/simple-chatrooms/${chatroomId}/members/count`] });
+  }
 
   // Fetch chatroom details
   const { data: chatroom } = useQuery<Chatroom>({
@@ -56,25 +79,39 @@ export default function SimpleChatroomPage() {
   // Fetch messages  
   const { data: messages = [], isLoading } = useQuery<ChatMessage[]>({
     queryKey: [`/api/simple-chatrooms/${chatroomId}/messages`],
-    refetchInterval: 3000,
+    refetchInterval: 2500,
+    refetchOnWindowFocus: false,
     enabled: !!chatroomId
   });
+
+  // Fetch member count
+  const { data: memberCountResp } = useQuery<{memberCount: number}>({
+    queryKey: [`/api/simple-chatrooms/${chatroomId}/members/count`],
+    refetchInterval: 5000,
+    enabled: !!chatroomId
+  });
+  const memberCount = memberCountResp?.memberCount ?? 0;
 
   // Send message mutation
   const sendMessageMutation = useMutation({
     mutationFn: async (content: string) => {
-      if (!currentUser) throw new Error("User not found");
-      
-      const response = await apiRequest('POST', `/api/simple-chatrooms/${chatroomId}/messages`, {
-        content: content.trim()
+      if (!currentUser?.id) throw new Error("User not found");
+
+      const res = await fetch(`/api/simple-chatrooms/${chatroomId}/messages`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-user-id": String(currentUser.id), // CRITICAL: Send user ID in header
+        },
+        credentials: "include",
+        body: JSON.stringify({ content: content.trim() }),
       });
-      
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Failed to send message');
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || err.message || "Failed to send message");
       }
-      
-      return response.json();
+      return res.json();
     },
     onSuccess: () => {
       setMessageText("");
@@ -118,11 +155,13 @@ export default function SimpleChatroomPage() {
                 <CardTitle className="text-xl">
                   {chatroom?.name || `Chatroom ${chatroomId}`}
                 </CardTitle>
-                {chatroom && (
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                    {chatroom.city}, {chatroom.state}
-                  </p>
-                )}
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                  {chatroom?.city && `${chatroom.city}, ${chatroom.state}`} · {memberCount} online
+                </p>
+              </div>
+              <div className="ml-auto flex gap-2">
+                <Button onClick={joinRoom} variant="secondary" size="sm">Join</Button>
+                <Button onClick={leaveRoom} variant="outline" size="sm">Leave</Button>
               </div>
             </div>
           </CardHeader>
@@ -144,10 +183,10 @@ export default function SimpleChatroomPage() {
                 messages.map((message) => (
                   <div
                     key={message.id}
-                    className={`flex ${message.sender_id === currentUser?.id ? 'justify-end' : 'justify-start'}`}
+                    className={`flex ${message.sender_id === currentUserId ? 'justify-end' : 'justify-start'}`}
                   >
                     <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-                      message.sender_id === currentUser?.id
+                      message.sender_id === currentUserId
                         ? 'bg-blue-500 text-white'
                         : 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white'
                     }`}>

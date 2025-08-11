@@ -11193,5 +11193,70 @@ Ready to start making real connections wherever you are?
     }
   });
 
+  // Join chatroom endpoint
+  app.post('/api/simple-chatrooms/:id/join', async (req, res) => {
+    try {
+      const chatroomId = parseInt(req.params.id);
+      const userId = parseInt(String(req.headers['x-user-id'] || 0));
+      if (!chatroomId || !userId) return res.status(400).json({ error: 'Missing chatroomId/userId' });
+
+      // upsert membership - insert if not exists, do nothing if exists
+      await db
+        .insert(chatroomMembers)
+        .values({ chatroomId, userId, role: 'member' })
+        .onConflictDoNothing();
+
+      // return fresh count
+      const [{ count }] = await db
+        .select({ count: sql<number>`count(*)::int` })
+        .from(chatroomMembers)
+        .where(eq(chatroomMembers.chatroomId, chatroomId));
+
+      console.log(`🔥 SIMPLE CHATROOM: User ${userId} joined room ${chatroomId}, new count: ${count}`);
+      res.json({ ok: true, memberCount: count });
+    } catch (e) {
+      console.error('join error', e);
+      res.status(500).json({ error: 'Failed to join' });
+    }
+  });
+
+  // Leave chatroom endpoint  
+  app.delete('/api/simple-chatrooms/:id/join', async (req, res) => {
+    try {
+      const chatroomId = parseInt(req.params.id);
+      const userId = parseInt(String(req.headers['x-user-id'] || 0));
+      if (!chatroomId || !userId) return res.status(400).json({ error: 'Missing chatroomId/userId' });
+
+      await db.delete(chatroomMembers)
+        .where(and(eq(chatroomMembers.chatroomId, chatroomId), eq(chatroomMembers.userId, userId)));
+
+      const [{ count }] = await db
+        .select({ count: sql<number>`count(*)::int` })
+        .from(chatroomMembers)
+        .where(eq(chatroomMembers.chatroomId, chatroomId));
+
+      console.log(`🔥 SIMPLE CHATROOM: User ${userId} left room ${chatroomId}, new count: ${count}`);
+      res.json({ ok: true, memberCount: count });
+    } catch (e) {
+      console.error('leave error', e);
+      res.status(500).json({ error: 'Failed to leave' });
+    }
+  });
+
+  // Get member count endpoint
+  app.get('/api/simple-chatrooms/:id/members/count', async (req, res) => {
+    try {
+      const chatroomId = parseInt(req.params.id);
+      const [{ count }] = await db
+        .select({ count: sql<number>`count(*)::int` })
+        .from(chatroomMembers)
+        .where(eq(chatroomMembers.chatroomId, chatroomId));
+      res.json({ memberCount: count });
+    } catch (e) {
+      console.error('member count error', e);
+      res.status(500).json({ error: 'Failed to get member count' });
+    }
+  });
+
   return httpServer;
 }
