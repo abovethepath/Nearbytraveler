@@ -3053,11 +3053,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </span>
                 </div>
 
-                {/* Line 3: Stats - countries and references */}
+                {/* Line 3: Stats + ALWAYS hometown info */}
                 {user.userType !== 'business' && (
                   <div className="flex items-center gap-3 text-xs sm:text-sm">
                     <span className="font-medium">{countriesVisited?.length || 0} countries</span>
                     <span className="font-medium">⭐ {references?.length || 0} references</span>
+                    <span className="font-medium">
+                      • Nearby Local in {user.hometownCity || user.location?.split(',')[0] || 'Hometown'}
+                    </span>
                   </div>
                 )}
               </div>
