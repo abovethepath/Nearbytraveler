@@ -49,16 +49,17 @@ export function PeopleDiscoveryWidget({
 
   const PersonWithCommonalities = ({ person }: { person: PersonCard }) => {
     // Fetch travel plans for this person to show travel destination
-    const { data: travelPlans } = useQuery({
+    const { data: travelPlans, isLoading: travelPlansLoading } = useQuery({
       queryKey: [`/api/travel-plans/${person.id}`],
       enabled: !!person.id,
-      staleTime: Infinity, // Never consider data stale
-      gcTime: Infinity, // Never garbage collect
+      staleTime: Infinity,
+      gcTime: Infinity,
       refetchOnMount: false,
       refetchOnWindowFocus: false,
       refetchInterval: false,
       refetchIntervalInBackground: false,
-      refetchOnReconnect: false
+      refetchOnReconnect: false,
+      retry: false
     });
 
     // Don't show commonalities for the current user themselves
@@ -126,16 +127,17 @@ export function PeopleDiscoveryWidget({
     }
 
     // Use the correct compatibility API endpoint
-    const { data: compatibilityData } = useQuery({
+    const { data: compatibilityData, isLoading: compatibilityLoading } = useQuery({
       queryKey: [`/api/compatibility/${currentUserId}/${person.id}`],
       enabled: !!currentUserId && !!person.id && currentUserId !== person.id,
-      staleTime: Infinity, // Never consider data stale
-      gcTime: Infinity, // Never garbage collect
+      staleTime: Infinity,
+      gcTime: Infinity,
       refetchOnMount: false,
       refetchOnWindowFocus: false,
       refetchInterval: false,
       refetchIntervalInBackground: false,
-      refetchOnReconnect: false
+      refetchOnReconnect: false,
+      retry: false
     });
 
     // Debug logging

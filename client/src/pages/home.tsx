@@ -204,11 +204,11 @@ export default function Home() {
   const heroPhotos = useMemo(() => {
     return [
       {
-        url: '/travelers coffee_1750995178947.png',
+        url: '/travelers coffee_1750995178947.png?v=' + Date.now(),
         position: 'center'
       },
       {
-        url: '/pexels-olly-2672979_1750959255667.jpg',
+        url: '/pexels-olly-2672979_1750959255667.jpg?v=' + Date.now(),
         position: 'center'
       }
     ];
@@ -219,6 +219,7 @@ export default function Home() {
   // Force reload of hero images to clear cache
   useEffect(() => {
     console.log('🔄 FORCE CLEARING photo cache and resetting index');
+    console.log('🔄 HOME COMPONENT MOUNTED - HERO ROTATION STARTING');
     setCurrentPhotoIndex(0);
   }, []);
 
