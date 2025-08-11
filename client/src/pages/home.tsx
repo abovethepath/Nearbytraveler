@@ -1345,6 +1345,44 @@ export default function Home() {
                   </h3>
                   <div className="flex items-center gap-2">
                     <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        // Reset all filters
+                        setFilters({
+                          gender: [],
+                          sexualPreference: [],
+                          minAge: "",
+                          maxAge: "",
+                          interests: [],
+                          activities: [],
+                          location: "",
+                          search: "",
+                          userType: [],
+                          events: [],
+                          travelerTypes: [],
+                          militaryStatus: [],
+                          startDate: "",
+                          endDate: ""
+                        });
+                        // Reset active filter to show all users
+                        setActiveFilter("all");
+                        // Reset location filter
+                        setActiveLocationFilter("");
+                        // Reset location filter state
+                        setLocationFilter({
+                          country: "",
+                          state: "",
+                          city: ""
+                        });
+                      }}
+                      className="bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 hover:bg-red-100 dark:hover:bg-red-900/30"
+                      data-testid="button-clear-all-filters-advanced"
+                    >
+                      <X className="w-4 h-4 mr-2" />
+                      Clear All Filters
+                    </Button>
+                    <Button
                       className="bg-gradient-to-r from-blue-500 to-orange-500 text-white hover:from-blue-600 hover:to-orange-600"
                       size="sm"
                       onClick={() => {
