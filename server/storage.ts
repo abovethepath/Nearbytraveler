@@ -6515,9 +6515,15 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  // Ensure "Meet Locals" chatroom exists for every city with users
+  // DISABLED: No longer auto-creating chatrooms - only use existing Los Angeles Metro chatrooms
   async ensureMeetLocalsChatrooms(city?: string, state?: string | null, country?: string): Promise<void> {
     try {
+      // DISABLED: All users now join the same 5 Los Angeles Metro chatrooms regardless of location
+      // This creates a unified global community instead of fragmented city-specific chatrooms
+      console.log('CHATROOM CREATION DISABLED: All users use unified Los Angeles Metro chatrooms');
+      return;
+
+      /* DISABLED CODE - DO NOT RE-ENABLE
       let cities;
       
       if (city && country) {
@@ -6589,6 +6595,7 @@ export class DatabaseStorage implements IStorage {
           }
         }
       }
+      */
     } catch (error) {
       console.error('Error ensuring Meet Locals chatrooms:', error);
     }
