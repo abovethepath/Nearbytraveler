@@ -409,12 +409,10 @@ export default function CityChatroomsPage({ cityFilter }: CityChatroomsPageProps
                 <span className="text-sm text-gray-600 dark:text-gray-400">
                   {selectedChatroom.city}, {selectedChatroom.country}
                 </span>
-                {selectedChatroom.memberCount && (
-                  <Badge variant="secondary">
-                    <Users className="w-3 h-3 mr-1" />
-                    {selectedChatroom.memberCount} members
-                  </Badge>
-                )}
+                <Badge variant="secondary">
+                  <Users className="w-3 h-3 mr-1" />
+                  {membersData?.length || selectedChatroom.memberCount || 0} members
+                </Badge>
                 <div className="ml-auto flex gap-2">
                   {!selectedChatroom.userIsMember ? (
                     <Button
@@ -479,7 +477,7 @@ export default function CityChatroomsPage({ cityFilter }: CityChatroomsPageProps
                           }`}>
                             {message.senderId !== currentUser?.id && (
                               <p className="text-xs opacity-75 mb-1">
-                                {message.sender.name || message.sender.username}
+                                {message.sender.username}
                               </p>
                             )}
                             <p>{message.content}</p>
@@ -543,11 +541,11 @@ export default function CityChatroomsPage({ cityFilter }: CityChatroomsPageProps
                         {members.map((member: any) => (
                           <div key={member.id} className="flex items-center gap-2 p-2 rounded hover:bg-gray-50 dark:hover:bg-gray-700">
                             <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white text-sm font-medium">
-                              {(member.name || member.username || 'U').charAt(0).toUpperCase()}
+                              {(member.username || 'U').charAt(0).toUpperCase()}
                             </div>
                             <div className="flex-1 min-w-0">
                               <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                                {member.name || member.username || 'Unknown'}
+                                {member.username || 'Unknown'}
                               </p>
                               {member.role === 'admin' && (
                                 <Badge variant="outline" className="text-xs">
