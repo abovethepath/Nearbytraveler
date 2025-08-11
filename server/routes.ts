@@ -7384,6 +7384,23 @@ Ready to start making real connections wherever you are?
         return res.status(400).json({ message: "Message content required" });
       }
 
+      // 🔒 SECURITY CHECK: Verify user is a member of the chatroom before allowing message posting
+      const memberCheck = await db
+        .select()
+        .from(chatroomMembers)
+        .where(
+          and(
+            eq(chatroomMembers.chatroomId, roomId),
+            eq(chatroomMembers.userId, parseInt(userId as string)),
+            eq(chatroomMembers.isActive, true)
+          )
+        );
+
+      if (memberCheck.length === 0) {
+        if (process.env.NODE_ENV === 'development') console.log(`🚫 SECURITY: User ${userId} attempted to post to chatroom ${roomId} without membership`);
+        return res.status(403).json({ message: "You must join the chatroom before sending messages" });
+      }
+
       if (process.env.NODE_ENV === 'development') console.log(`🏠 CHATROOM MESSAGE: User ${userId} sending message to chatroom ${roomId}`);
 
       const message = await storage.createChatroomMessage(roomId, parseInt(userId as string), content.trim());
