@@ -227,15 +227,18 @@ export default function MatchInCity() {
             cityName = 'New York City';
           }
 
-          // Dynamic gradient colors - removed pink overtones
+          // Dynamic gradient colors with more variety
           const gradients = [
             'from-orange-400 via-red-500 to-purple-600',
             'from-blue-400 via-purple-500 to-indigo-600', 
             'from-yellow-400 via-orange-500 to-red-600',
             'from-gray-400 via-blue-500 to-purple-600',
             'from-red-400 via-orange-500 to-yellow-600',
-            'from-orange-400 via-yellow-500 to-red-600',
             'from-green-400 via-blue-500 to-purple-600',
+            'from-indigo-400 via-purple-500 to-pink-600',
+            'from-teal-400 via-cyan-500 to-blue-600',
+            'from-purple-400 via-pink-500 to-red-600',
+            'from-emerald-400 via-teal-500 to-cyan-600',
             'from-purple-400 via-indigo-500 to-blue-600',
             'from-teal-400 via-blue-500 to-indigo-600',
             'from-cyan-400 via-blue-500 to-purple-600'
@@ -914,7 +917,7 @@ export default function MatchInCity() {
                       }}
                     >
                       <div className="relative h-56 overflow-hidden">
-                        <div className="w-full h-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                        <div className="w-full h-full bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center">
                           <MapPin className="w-16 h-16 text-white/60" />
                         </div>
                         <div className="absolute inset-0 bg-black/20" />
@@ -971,7 +974,7 @@ export default function MatchInCity() {
                     }}
                   >
                     <div className="relative h-24 overflow-hidden">
-                      <div className="w-full h-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                      <div className={`w-full h-full bg-gradient-to-br ${city.gradient} flex items-center justify-center`}>
                         <MapPin className="w-8 h-8 text-white/60" />
                       </div>
                       <div className="absolute inset-0 bg-black/20" />

@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Users, Calendar, Star, Search, Compass, TrendingUp, MessageCircle, Heart, Plane, Camera } from "lucide-react";
+import { MapPin, Users, Calendar, Star, Search, Compass, TrendingUp, MessageCircle, Heart, Plane } from "lucide-react";
 import { useLocation } from "wouter";
 import { ArrowLeft } from "lucide-react";
 // MobileNav removed - using global mobile navigation
@@ -38,134 +38,27 @@ function DiscoverPaused() {
     queryKey: ["/api/city-stats"],
   });
 
-  // Fetch city photos with optimized caching
-  const { data: cityPhotos, isLoading: photosLoading } = useQuery({
-    queryKey: ["/api/city-photos/all"],
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes
-    refetchOnMount: false,
-    refetchOnWindowFocus: false
-  });
-
-  // Stock image function
-  const getStockImageForCity = (cityName: string) => {
-    const cityImages: Record<string, string> = {
-      'Los Angeles Metro': '/attached_assets/LA PHOTO_1750698856553.jpg',
-      'Los Angeles': '/attached_assets/LA PHOTO_1750698856553.jpg',
-      'Boston': '/attached_assets/thaniel hall_1750699608804.jpeg',
-      'Budapest': '/attached_assets/budapest-at-night-chain-bridge-and-buda-castle-matthias-hauser_1750699409380.jpg',
-      'New York': 'https://images.unsplash.com/photo-1496588152823-86ff7695e68f?w=400&h=250&fit=crop&auto=format',
-      'Manhattan': 'https://images.unsplash.com/photo-1496588152823-86ff7695e68f?w=400&h=250&fit=crop&auto=format',
-      'Chicago': 'https://images.unsplash.com/photo-1477414348463-c0eb7f1359b6?w=400&h=250&fit=crop&auto=format',
-      'San Francisco': 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=400&h=250&fit=crop&auto=format',
-      'Philadelphia': 'https://images.unsplash.com/photo-1486299267070-83823f5448dd?w=400&h=250&fit=crop&auto=format',
-      'Seattle': 'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=400&h=250&fit=crop&auto=format',
-      'Miami': 'https://images.unsplash.com/photo-1506197603052-3cc9c3a201bd?w=400&h=250&fit=crop&auto=format',
-      'Austin': 'https://images.unsplash.com/photo-1531218150217-54595bc2b934?w=400&h=250&fit=crop&auto=format',
-      'Denver': 'https://images.unsplash.com/photo-1619856699906-09e1f58c98b1?w=400&h=250&fit=crop&auto=format',
-      'Nashville': 'https://images.unsplash.com/photo-1549213783-8284d0336c4f?w=400&h=250&fit=crop&auto=format',
-      'New Orleans': 'https://images.unsplash.com/photo-1569982175971-d92b01cf8694?w=400&h=250&fit=crop&auto=format',
-      'Portland': 'https://images.unsplash.com/photo-1544547606-5f134e64d0df?w=400&h=250&fit=crop&auto=format',
-      'London': 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=400&h=250&fit=crop&auto=format',
-      'Paris': 'https://images.unsplash.com/photo-1499856871958-5b9627545d1a?w=400&h=250&fit=crop&auto=format',
-      'Rome': 'https://images.unsplash.com/photo-1515542622106-78bda8ba0e5b?w=400&h=250&fit=crop&auto=format',
-      'Milan': 'https://images.unsplash.com/photo-1543832923-44667a44c804?w=400&h=250&fit=crop&auto=format',
-      'Barcelona': 'https://images.unsplash.com/photo-1539037116277-4db20889f2d4?w=400&h=250&fit=crop&auto=format',
-      'Madrid': 'https://images.unsplash.com/photo-1543785734-4b6e564642f8?w=400&h=250&fit=crop&auto=format',
-      'Amsterdam': 'https://images.unsplash.com/photo-1534351590666-13e3e96b5017?w=400&h=250&fit=crop&auto=format',
-      'Berlin': 'https://images.unsplash.com/photo-1587330979470-3day839981a7?w=400&h=250&fit=crop&auto=format',
-      'Prague': 'https://images.unsplash.com/photo-1541849546-216549ae216d?w=400&h=250&fit=crop&auto=format',
-      'Vienna': 'https://images.unsplash.com/photo-1516550893923-42d28e5677af?w=400&h=250&fit=crop&auto=format',
-      'Lisbon': 'https://images.unsplash.com/photo-1585208798174-6cedd86019a?w=400&h=250&fit=crop&auto=format',
-      'Dublin': 'https://images.unsplash.com/photo-1549918864-48ac978761a4?w=400&h=250&fit=crop&auto=format',
-      'Stockholm': 'https://images.unsplash.com/photo-1509356843151-3e7d96241e11?w=400&h=250&fit=crop&auto=format',
-      'Munich': 'https://images.unsplash.com/photo-1595867818082-083862f3d630?w=400&h=250&fit=crop&auto=format',
-      'Cannes': 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&h=250&fit=crop&auto=format',
-      'Tokyo': 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?w=400&h=250&fit=crop&auto=format',
-      'Singapore': 'https://images.unsplash.com/photo-1525625293386-3f8f99389edd?w=400&h=250&fit=crop&auto=format',
-      'Hong Kong': 'https://images.unsplash.com/photo-1536599018102-9f803c140fc1?w=400&h=250&fit=crop&auto=format',
-      'Seoul': 'https://images.unsplash.com/photo-1549693578-d683be217e58?w=400&h=250&fit=crop&auto=format',
-      'Bangkok': 'https://images.unsplash.com/photo-1508009603885-50cf7c579365?w=400&h=250&fit=crop&auto=format',
-      'Sydney': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=250&fit=crop&auto=format',
-      'Melbourne': 'https://images.unsplash.com/photo-1545044846-351ba102b6d5?w=400&h=250&fit=crop&auto=format',
-      'Toronto': 'https://images.unsplash.com/photo-1517935706615-2717063c2225?w=400&h=250&fit=crop&auto=format',
-      'Vancouver': 'https://images.unsplash.com/photo-1549224026-fca8d92ca2d2?w=400&h=250&fit=crop&auto=format',
-      'Mexico City': 'https://images.unsplash.com/photo-1585464231875-d9ef1707a874?w=400&h=250&fit=crop&auto=format',
-      'Sao Paulo': 'https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?w=400&h=250&fit=crop&auto=format',
-      'Buenos Aires': 'https://images.unsplash.com/photo-1589909202802-8f4aadce1849?w=400&h=250&fit=crop&auto=format',
-      'Cape Town': 'https://images.unsplash.com/photo-1580060839134-75a5edca2e99?w=400&h=250&fit=crop&auto=format',
-      'Cairo': 'https://images.unsplash.com/photo-1539650116574-75c0c6d73f6e?w=400&h=250&fit=crop&auto=format',
-      'Dubai': 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=400&h=250&fit=crop&auto=format',
-      'Tel Aviv': 'https://images.unsplash.com/photo-1544966503-7cc5ac882d5f?w=400&h=250&fit=crop&auto=format',
-      'Mumbai': 'https://images.unsplash.com/photo-1570168007204-dfb528c6958f?w=400&h=250&fit=crop&auto=format',
-      'Delhi': 'https://images.unsplash.com/photo-1597149720431-6cde7624248c?w=400&h=250&fit=crop&auto=format',
-      'Bangalore': 'https://images.unsplash.com/photo-1596176530529-78163a4f7af2?w=400&h=250&fit=crop&auto=format'
-    };
-
-    return cityImages[cityName] || 'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=400&h=250&fit=crop&auto=format';
-  };
-
-  // Complete photo lookup rebuild
-  const getCityImageUrl = (cityName: string) => {
-    console.log(`🔍 PHOTO LOOKUP: ${cityName}`);
-
-    // First check if we have cityPhotos data
-    if (!cityPhotos || !Array.isArray(cityPhotos)) {
-      console.log(`❌ No cityPhotos data available`);
-      return getStockImageForCity(cityName);
+  // Get gradient class for cities with varied colors
+  const getCityGradient = (cityName: string, index: number) => {
+    const gradients = [
+      'from-orange-400 via-red-500 to-purple-600',
+      'from-blue-400 via-purple-500 to-indigo-600', 
+      'from-yellow-400 via-orange-500 to-red-600',
+      'from-gray-400 via-blue-500 to-purple-600',
+      'from-red-400 via-orange-500 to-yellow-600',
+      'from-green-400 via-blue-500 to-purple-600',
+      'from-indigo-400 via-purple-500 to-pink-600',
+      'from-teal-400 via-cyan-500 to-blue-600',
+      'from-purple-400 via-pink-500 to-red-600',
+      'from-emerald-400 via-teal-500 to-cyan-600'
+    ];
+    
+    // Los Angeles gets the featured gradient
+    if (cityName === 'Los Angeles Metro' || cityName === 'Los Angeles') {
+      return 'from-orange-500 to-red-500';
     }
-
-    console.log(`📊 Have ${cityPhotos.length} city photos to search through`);
-
-    // Search through the array of photo objects for matching city
-    const matchingPhoto = cityPhotos.find((photo: any) => {
-      if (!photo || !photo.city) return false;
-
-      // Try exact match first
-      if (photo.city.toLowerCase() === cityName.toLowerCase()) {
-        return true;
-      }
-
-      // Try partial matches
-      if (photo.city.toLowerCase().includes(cityName.toLowerCase()) || 
-          cityName.toLowerCase().includes(photo.city.toLowerCase())) {
-        return true;
-      }
-
-      return false;
-    });
-
-    if (matchingPhoto && matchingPhoto.imageUrl) {
-      console.log(`✅ SUCCESS: Found uploaded photo for ${cityName} from ${matchingPhoto.city}`);
-      return matchingPhoto.imageUrl;
-    }
-
-    console.log(`🔄 No uploaded photo for ${cityName}, using stock image`);
-    return getStockImageForCity(cityName);
-  };
-
-  // Check if city has a custom photo (either uploaded or curated)
-  const hasCustomPhoto = (cityName: string) => {
-    // Check if user uploaded photo exists
-    if (cityPhotos && Array.isArray(cityPhotos)) {
-      const hasUploadedPhoto = cityPhotos.some((photo: any) => 
-        photo && photo.city && photo.imageUrl &&
-        (photo.city.toLowerCase() === cityName.toLowerCase() ||
-         photo.city.toLowerCase().includes(cityName.toLowerCase()) ||
-         cityName.toLowerCase().includes(photo.city.toLowerCase()))
-      );
-      if (hasUploadedPhoto) return true;
-    }
-
-    // Check if city has curated photo in default images  
-    const cityImages: Record<string, string> = {
-      'Los Angeles Metro': '/attached_assets/LA PHOTO_1750698856553.jpg',
-      'Los Angeles': '/attached_assets/LA PHOTO_1750698856553.jpg',
-      'Boston': '/attached_assets/thaniel hall_1750699608804.jpeg',
-      'Budapest': '/attached_assets/budapest-at-night-chain-bridge-and-buda-castle-matthias-hauser_1750699409380.jpg'
-    };
-
-    return !!cityImages[cityName];
+    
+    return gradients[index % gradients.length];
   };
 
   // Filter cities based on search
@@ -239,15 +132,9 @@ function DiscoverPaused() {
                   onClick={() => setLocation(`/city/${encodeURIComponent(city.city)}`)}
                 >
                   <div className="relative h-36 overflow-hidden">
-                    <div 
-                      className="w-full h-full bg-cover bg-center group-hover:scale-110 transition-transform duration-300"
-                      style={{
-                        backgroundImage: `url(${getCityImageUrl(city.city)})`,
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center top',
-                        backgroundRepeat: 'no-repeat'
-                      }}
-                    />
+                    <div className={`w-full h-full bg-gradient-to-br ${getCityGradient(city.city, index)} flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
+                      <MapPin className="w-12 h-12 text-white/60" />
+                    </div>
                     <div className="absolute inset-0 bg-black/20" />
                     <div className="absolute top-4 right-4">
                       <Badge className="bg-gradient-to-r from-orange-500 to-red-500 text-white text-lg px-4 py-2">
@@ -292,26 +179,10 @@ function DiscoverPaused() {
                 onClick={() => setLocation(`/city/${encodeURIComponent(city.city)}`)}
               >
                 <div className="relative h-48 overflow-hidden">
-                  <div 
-                    className="w-full h-full bg-cover bg-center group-hover:scale-110 transition-transform duration-300"
-                    style={{
-                      backgroundImage: `url(${getCityImageUrl(city.city)})`,
-                      backgroundSize: 'cover',
-                      backgroundPosition: 'center',
-                      backgroundRepeat: 'no-repeat'
-                    }}
-                  />
+                  <div className={`w-full h-full bg-gradient-to-br ${getCityGradient(city.city, index + 1)} flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
+                    <MapPin className="w-16 h-16 text-white/60" />
+                  </div>
                   <div className="absolute inset-0 bg-black/30" />
-                  
-                  {/* Custom photo indicator */}
-                  {hasCustomPhoto(city.city) && (
-                    <div className="absolute top-3 left-3">
-                      <Badge className="bg-green-500 text-white">
-                        <Camera className="w-3 h-3 mr-1" />
-                        Photo
-                      </Badge>
-                    </div>
-                  )}
 
                   {/* Highlight badges */}
                   <div className="absolute top-3 right-3 space-y-1">
