@@ -3240,7 +3240,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white border-0 shadow-lg"
                     >
                       <MessageCircleMore className="w-4 h-4 mr-2" />
-                      Join {user.hometownCity || user.location?.split(',')[0] || 'City'} Chatroom
+                      Go to Chatrooms
                     </Button>
                   </div>
                 )}

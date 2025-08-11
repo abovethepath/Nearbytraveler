@@ -6594,47 +6594,47 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  // Auto-join user to Welcome Newcomers chatroom for their city
+  // Auto-join user to both Welcome Newcomers and Let's Meet Up chatrooms for their city
   async autoJoinWelcomeChatroom(userId: number, city: string, country: string): Promise<void> {
     try {
-      // Find the Welcome Newcomers chatroom for this city
-      const welcomeChatroom = await db
+      // Find both chatrooms for this city
+      const cityChats = await db
         .select()
         .from(citychatrooms)
         .where(and(
           eq(citychatrooms.city, city),
-          ilike(citychatrooms.name, `Welcome Newcomers ${city}`)
-        ))
-        .limit(1);
+          or(
+            ilike(citychatrooms.name, `Welcome Newcomers ${city}`),
+            ilike(citychatrooms.name, `Let's Meet Up ${city}`)
+          )
+        ));
 
-      if (welcomeChatroom.length > 0) {
-        const chatroomId = welcomeChatroom[0].id;
-        
+      for (const chatroom of cityChats) {
         // Check if user is already a member
         const existingMembership = await db
           .select()
           .from(chatroomMembers)
           .where(and(
-            eq(chatroomMembers.chatroomId, chatroomId),
+            eq(chatroomMembers.chatroomId, chatroom.id),
             eq(chatroomMembers.userId, userId)
           ))
           .limit(1);
 
         if (existingMembership.length === 0) {
-          // Add user to the Welcome Newcomers chatroom
+          // Add user to the chatroom
           await db.insert(chatroomMembers).values({
-            chatroomId: chatroomId,
+            chatroomId: chatroom.id,
             userId: userId,
             role: 'member',
             isActive: true,
             joinedAt: new Date()
           });
           
-          console.log(`Auto-joined user ${userId} to Welcome Newcomers ${city} chatroom`);
+          console.log(`Auto-joined user ${userId} to ${chatroom.name} chatroom`);
         }
       }
     } catch (error) {
-      console.error('Error auto-joining Welcome chatroom:', error);
+      console.error('Error auto-joining city chatrooms:', error);
     }
   }
 

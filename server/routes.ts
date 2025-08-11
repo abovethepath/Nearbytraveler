@@ -2248,9 +2248,9 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           await storage.ensureMeetLocalsChatrooms(userData.hometownCity, userData.hometownState, userData.hometownCountry);
           if (process.env.NODE_ENV === 'development') console.log(`✓ Created/verified hometown chatroom for ${userData.hometownCity}, ${userData.hometownCountry}`);
           
-          // AUTO-JOIN: Add new user to Welcome Newcomers chatroom for their hometown
+          // AUTO-JOIN: Add new user to both Welcome Newcomers and Let's Meet Up chatrooms for their hometown
           await storage.autoJoinWelcomeChatroom(user.id, userData.hometownCity, userData.hometownCountry);
-          if (process.env.NODE_ENV === 'development') console.log(`✓ Auto-joined user ${user.id} to Welcome Newcomers ${userData.hometownCity}`);
+          if (process.env.NODE_ENV === 'development') console.log(`✓ Auto-joined user ${user.id} to both chatrooms for ${userData.hometownCity}`);
         } catch (error: any) {
           if (process.env.NODE_ENV === 'development') console.error('Error creating hometown chatroom:', error);
         }
@@ -2382,9 +2382,9 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           await storage.ensureMeetLocalsChatrooms(userData.hometownCity, userData.hometownState, userData.hometownCountry);
           if (process.env.NODE_ENV === 'development') console.log(`✓ Created/verified hometown chatrooms for ${userData.hometownCity}, ${userData.hometownCountry}`);
 
-          // AUTO-JOIN: Add user to Welcome Newcomers chatroom for their hometown
+          // AUTO-JOIN: Add user to both Welcome Newcomers and Let's Meet Up chatrooms for their hometown
           await storage.autoJoinWelcomeChatroom(updatedUser.id, userData.hometownCity, userData.hometownCountry);
-          if (process.env.NODE_ENV === 'development') console.log(`✓ Auto-joined user ${updatedUser.id} to Welcome Newcomers ${userData.hometownCity}`);
+          if (process.env.NODE_ENV === 'development') console.log(`✓ Auto-joined user ${updatedUser.id} to both chatrooms for ${userData.hometownCity}`);
         } catch (error: any) {
           if (process.env.NODE_ENV === 'development') console.error('Error creating hometown chatrooms:', error);
         }
