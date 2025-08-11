@@ -222,24 +222,20 @@ export function PeopleDiscoveryWidget({
               })()}
             </div>
             
-            {/* Line 3: Hometown */}
-            <div className="mb-1">
+            {/* Line 3: Hometown and Things in Common on same row */}
+            <div className="mb-2">
               <p className="text-gray-500 dark:text-gray-500 text-xs truncate">
                 From {(person as any).hometownCity || person.location?.split(',')[0] || 'Unknown hometown'}
+                {compatibilityData && (compatibilityData as any).totalCommonalities !== undefined ? (
+                  <span className="text-green-600 dark:text-green-400 font-medium ml-2">
+                    • {(compatibilityData as any).totalCommonalities} things in common
+                  </span>
+                ) : (
+                  <span className="text-purple-600 dark:text-purple-400 ml-2">
+                    • Calculating compatibility...
+                  </span>
+                )}
               </p>
-            </div>
-            
-            {/* Line 4: Things in Common */}
-            <div className="mb-2">
-              {compatibilityData && (compatibilityData as any).totalCommonalities !== undefined ? (
-                <p className="text-green-600 dark:text-green-400 text-xs font-medium">
-                  What you have in common: {(compatibilityData as any).totalCommonalities}
-                </p>
-              ) : (
-                <p className="text-purple-600 dark:text-purple-400 text-xs">
-                  What you have in common
-                </p>
-              )}
             </div>
           </div>
         </div>
