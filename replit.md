@@ -56,6 +56,7 @@ Preferred communication style: Simple, everyday language.
 - **User Cards**: Enhanced with larger photos, Load More/Load Less functionality, and improved compatibility display.
 - **Event Management**: Removed separate "My Events" tab per user request - all user events now appear prominently at top of Community Events section with special styling and management buttons.
 - **Metro Area Consolidation**: LA metro cities (Venice, Santa Monica, Culver City, etc.) automatically consolidate into "Los Angeles Metro" chatrooms to reduce fragmentation and increase user connections.
+- **Chatroom Database Cleanup (Aug 2025)**: Database cleaned to contain only 5 Los Angeles Metro chatrooms for a clean foundation. New chatrooms automatically created for cities as users join from those locations.
 
 ## External Dependencies
 
