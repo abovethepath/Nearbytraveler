@@ -73,28 +73,28 @@ export function PeopleDiscoveryWidget({
             
             {/* Bottom Section */}
             <div className="text-center pb-2">
-              {/* Line 1: Username */}
+              {/* Line 1: Username with @ prefix */}
               <h4 className="font-bold text-gray-900 dark:text-white text-base mb-1 truncate">
-                {person.username}
+                @{person.username}
               </h4>
               
-              {/* Line 2: Current status (under username) */}
+              {/* Line 2: Current status - Nearby Local/Traveler in current city */}
               <div className="mb-1">
                 {travelPlans && Array.isArray(travelPlans) && travelPlans.length > 0 && (travelPlans as any)[0]?.status === 'active' ? (
-                  <p className="text-blue-600 dark:text-blue-400 text-xs truncate">
-                    Nearby Traveler trip {(travelPlans as any)[0]?.destinationCity || (travelPlans as any)[0]?.destination?.split(',')[0]}
+                  <p className="text-gray-600 dark:text-gray-400 text-xs truncate">
+                    Nearby Traveler in {(travelPlans as any)[0]?.destinationCity || (travelPlans as any)[0]?.destination?.split(',')[0]}
                   </p>
                 ) : (
                   <p className="text-gray-600 dark:text-gray-400 text-xs truncate">
-                    Nearby Local {person.location?.split(',')[0] || person.location || 'Hometown'}
+                    Nearby Local in {person.location || 'Hometown'}
                   </p>
                 )}
               </div>
               
-              {/* Line 3: Always shows hometown info - never changes */}
+              {/* Line 3: Countries and references stats */}
               <div className="mb-2">
                 <p className="text-gray-500 dark:text-gray-500 text-xs truncate">
-                  0 countries, 0 references Nearby Traveler {person.location?.split(',')[0] || person.location || 'Hometown'}
+                  0 countries ⭐ 0 references
                 </p>
               </div>
               
@@ -175,28 +175,28 @@ export function PeopleDiscoveryWidget({
           
           {/* Bottom Section */}
           <div className="text-center pb-2">
-            {/* Line 1: Username */}
+            {/* Line 1: Username with @ prefix */}
             <h4 className="font-bold text-gray-900 dark:text-white text-lg mb-1 truncate">
-              {person.username}
+              @{person.username}
             </h4>
             
-            {/* Line 2: Current status (under username) */}
+            {/* Line 2: Current status - Nearby Local/Traveler in current city */}
             <div className="mb-1">
               {travelPlans && Array.isArray(travelPlans) && travelPlans.length > 0 && (travelPlans as any)[0]?.status === 'active' ? (
-                <p className="text-blue-600 dark:text-blue-400 text-xs truncate">
-                  Nearby Traveler trip {(travelPlans as any)[0]?.destinationCity || (travelPlans as any)[0]?.destination?.split(',')[0]}
+                <p className="text-gray-600 dark:text-gray-400 text-xs truncate">
+                  Nearby Traveler in {(travelPlans as any)[0]?.destinationCity || (travelPlans as any)[0]?.destination?.split(',')[0]}
                 </p>
               ) : (
                 <p className="text-gray-600 dark:text-gray-400 text-xs truncate">
-                  Nearby Local {person.location?.split(',')[0] || person.location || 'Hometown'}
+                  Nearby Local in {person.location || 'Hometown'}
                 </p>
               )}
             </div>
             
-            {/* Line 3: Always shows hometown info - never changes */}
+            {/* Line 3: Countries and references stats */}
             <div className="mb-2">
               <p className="text-gray-500 dark:text-gray-500 text-xs truncate">
-                0 countries, 0 references Nearby Traveler {person.location?.split(',')[0] || person.location || 'Hometown'}
+                0 countries ⭐ 0 references
               </p>
             </div>
             
