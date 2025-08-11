@@ -641,11 +641,15 @@ export class DatabaseStorage implements IStorage {
     // Automatically add the event creator as a participant
     if (newEvent.organizerId) {
       try {
-        await this.joinEvent(newEvent.id, newEvent.organizerId);
+        console.log(`🎯 AUTO-JOINING: Adding creator ${newEvent.organizerId} to event ${newEvent.id}`);
+        const participant = await this.joinEvent(newEvent.id, newEvent.organizerId);
+        console.log(`✅ AUTO-JOIN SUCCESS: Creator ${newEvent.organizerId} added as participant:`, participant.id);
       } catch (error) {
-        console.error('Failed to add event creator as participant:', error);
+        console.error('🔴 FAILED to add event creator as participant:', error);
         // Don't fail event creation if participant addition fails
       }
+    } else {
+      console.error('🔴 NO ORGANIZER ID: Cannot auto-join creator to event');
     }
     
     return newEvent;
@@ -891,6 +895,8 @@ export class DatabaseStorage implements IStorage {
 
   // Event participation methods
   async joinEvent(eventId: number, userId: number, notes?: string): Promise<EventParticipant> {
+    console.log(`🎯 JOIN EVENT: User ${userId} joining event ${eventId}`);
+    
     // Check if user is already a participant
     const [existingParticipant] = await db
       .select()
@@ -903,9 +909,11 @@ export class DatabaseStorage implements IStorage {
       );
 
     if (existingParticipant) {
+      console.log(`✅ ALREADY JOINED: User ${userId} already participant in event ${eventId}`);
       return existingParticipant;
     }
 
+    console.log(`📝 CREATING PARTICIPANT: Adding user ${userId} to event ${eventId}`);
     const [participant] = await db
       .insert(eventParticipants)
       .values({
@@ -915,6 +923,8 @@ export class DatabaseStorage implements IStorage {
         status: "confirmed"
       })
       .returning();
+    
+    console.log(`✅ PARTICIPANT CREATED: User ${userId} successfully joined event ${eventId} as participant ${participant.id}`);
     return participant;
   }
 
