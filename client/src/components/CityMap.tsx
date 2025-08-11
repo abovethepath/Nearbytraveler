@@ -18,6 +18,7 @@ interface MapData {
     userType: string;
     hometownCity?: string;
     hometownState?: string;
+    activeTravelDestination?: string;
   }>;
   events: Array<{
     id: number;
@@ -146,7 +147,9 @@ export function CityMap({ city, state, country }: CityMapProps) {
       lng: parseFloat(String(user.longitude)),
       name: `@${user.username}`,
       type: 'user' as const,
-      description: `${user.userType.charAt(0).toUpperCase() + user.userType.slice(1)} in ${user.hometownCity || city}`
+      description: user.activeTravelDestination 
+        ? `Traveling in ${user.activeTravelDestination}` 
+        : `${user.userType.charAt(0).toUpperCase() + user.userType.slice(1)} in ${user.hometownCity || city}`
     })) || []),
     ...(mapData?.events?.filter(e => e.latitude && e.longitude).map(event => ({
       id: event.id + 10000, // Offset to avoid ID conflicts

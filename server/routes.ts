@@ -6773,13 +6773,42 @@ Aaron`
         mapBusinesses = [];
       }
 
+      // Enhance users with active travel plan information for correct descriptions
+      const enhancedUsers = await Promise.all(mapUsers.map(async (user) => {
+        try {
+          const activeTravelPlan = await db.select({
+            destinationCity: travelPlans.destinationCity,
+            destinationState: travelPlans.destinationState
+          })
+          .from(travelPlans)
+          .where(
+            and(
+              eq(travelPlans.userId, user.id),
+              eq(travelPlans.status, 'active')
+            )
+          )
+          .limit(1);
+
+          return {
+            ...user,
+            activeTravelDestination: activeTravelPlan[0]?.destinationCity || null
+          };
+        } catch (error: any) {
+          if (process.env.NODE_ENV === 'development') console.error(`Error fetching travel plan for user ${user.id}:`, error);
+          return {
+            ...user,
+            activeTravelDestination: null
+          };
+        }
+      }));
+
       const mapData = {
-        users: mapUsers,
+        users: enhancedUsers,
         events: mapEvents,
         businesses: mapBusinesses
       };
 
-      if (process.env.NODE_ENV === 'development') console.log(`🗺️ CITY MAP DATA: Found ${mapUsers.length} users, ${mapEvents.length} events, ${mapBusinesses.length} businesses for ${city}`);
+      if (process.env.NODE_ENV === 'development') console.log(`🗺️ CITY MAP DATA: Found ${enhancedUsers.length} users, ${mapEvents.length} events, ${mapBusinesses.length} businesses for ${city}`);
       res.json(mapData);
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error('Error fetching city map data:', error);
