@@ -50,7 +50,6 @@ function MessagesWidget({ userId }: MessagesWidgetProps) {
         <div className="space-y-3">
           {messages
             .filter(message => message.senderId !== message.receiverId) // Filter out self-messages
-            .slice(0, 3)
             .map((message, index) => {
               const otherUserId = message.senderId === userId ? message.receiverId : message.senderId;
               const otherUser = users.find(u => u.id === otherUserId);

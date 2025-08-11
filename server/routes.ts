@@ -3244,13 +3244,29 @@ Ready to start making real connections wherever you are?
     }
   });
 
-  // CRITICAL: Get messages for user
+  // CRITICAL: Get messages for user - only latest message per conversation, limit to 4 recent conversations
   app.get("/api/messages/:userId", async (req, res) => {
     try {
       const userId = parseInt(req.params.userId || '0');
-      // Use direct database query
-      const userMessages = await db
-        .select()
+      
+      // Get the latest message from each conversation (only most recent per person)
+      const latestMessages = await db
+        .select({
+          id: messages.id,
+          senderId: messages.senderId,
+          receiverId: messages.receiverId,
+          content: messages.content,
+          messageType: messages.messageType,
+          isRead: messages.isRead,
+          createdAt: messages.createdAt,
+          // Add a field to identify the other person in the conversation
+          otherPersonId: sql<number>`
+            CASE 
+              WHEN ${messages.senderId} = ${userId} THEN ${messages.receiverId}
+              ELSE ${messages.senderId}
+            END
+          `
+        })
         .from(messages)
         .where(
           or(
@@ -3259,7 +3275,22 @@ Ready to start making real connections wherever you are?
           )
         )
         .orderBy(desc(messages.createdAt));
-      return res.json(userMessages || []);
+
+      // Group by conversation partner and keep only the latest message from each conversation
+      const conversationMap = new Map();
+      for (const message of latestMessages) {
+        const otherPersonId = message.otherPersonId;
+        if (!conversationMap.has(otherPersonId)) {
+          conversationMap.set(otherPersonId, message);
+        }
+      }
+
+      // Convert back to array, sort by creation time, and limit to 4 most recent conversations
+      const recentConversations = Array.from(conversationMap.values())
+        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+        .slice(0, 4);
+
+      return res.json(recentConversations || []);
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error fetching messages:", error);
       return res.status(500).json({ message: "Failed to fetch messages" });
