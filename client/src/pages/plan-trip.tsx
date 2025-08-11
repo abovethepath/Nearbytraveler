@@ -409,14 +409,20 @@ export default function PlanTrip() {
         console.log('Updating existing travel plan ID:', editingPlanId);
         console.log('Plan data:', travelPlanData);
         
-        const response = await apiRequest('PUT', `/api/travel-plans/${editingPlanId}`, travelPlanData);
+        const response = await apiRequest("PUT", `/api/travel-plans/${editingPlanId}`, travelPlanData);
         return response;
       } else {
         console.log('=== CREATE TRAVEL PLAN MUTATION ===');
         console.log('Creating NEW travel plan with data:', travelPlanData);
         
-        const response = await apiRequest('POST', '/api/travel-plans', travelPlanData);
-        return response;
+        try {
+          const response = await apiRequest("POST", "/api/travel-plans", travelPlanData);
+          console.log('✅ CREATE SUCCESS:', response);
+          return response;
+        } catch (error) {
+          console.error('❌ CREATE ERROR:', error);
+          throw error;
+        }
       }
     },
     onSuccess: (data) => {
@@ -617,6 +623,7 @@ export default function PlanTrip() {
     }
 
     console.log('About to call createTravelPlan.mutate with:', tripPlan);
+    console.log('Mutation status:', { isPending: createTravelPlan.isPending, isError: createTravelPlan.isError });
     createTravelPlan.mutate(tripPlan);
   };
 
