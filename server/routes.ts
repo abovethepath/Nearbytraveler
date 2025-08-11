@@ -3447,16 +3447,8 @@ Ready to start making real connections wherever you are?
           return true;
         });
         
-        // ENHANCED: Sort by member-created events FIRST (not AI-generated), then by date
+        // Sort by date (earliest first) - all events are member-created
         eventsQuery.sort((a, b) => {
-          // Member-created events (isAIGenerated = false) come first
-          const aIsMemberCreated = !a.isAIGenerated;
-          const bIsMemberCreated = !b.isAIGenerated;
-          
-          if (aIsMemberCreated && !bIsMemberCreated) return -1;
-          if (!aIsMemberCreated && bIsMemberCreated) return 1;
-          
-          // If both are same type (member-created or AI), sort by date (earliest first)
           return new Date(a.date).getTime() - new Date(b.date).getTime();
         });
         
@@ -3473,14 +3465,8 @@ Ready to start making real connections wherever you are?
             lte(events.date, twoWeeksFromNow)
           ));
         
-        // Sort by member-created events first (not AI-generated), then by date
+        // Sort by date (earliest first) - all events are member-created
         eventsQuery.sort((a, b) => {
-          const aIsMemberCreated = !a.isAIGenerated;
-          const bIsMemberCreated = !b.isAIGenerated;
-          
-          if (aIsMemberCreated && !bIsMemberCreated) return -1;
-          if (!aIsMemberCreated && bIsMemberCreated) return 1;
-          
           return new Date(a.date).getTime() - new Date(b.date).getTime();
         });
         if (process.env.NODE_ENV === 'development') console.log(`🎪 EVENTS: Returning ${eventsQuery.length} events in next 2 weeks`);
