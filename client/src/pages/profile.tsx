@@ -3065,11 +3065,17 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </span>
                 </div>
 
-                {/* Line 3: Stats + ALWAYS hometown info - Full width on one line */}
+                {/* Line 3: Stats + ALWAYS hometown info - ALL on one line with icons */}
                 {user.userType !== 'business' && (
                   <div className="flex items-center gap-3 text-xs sm:text-sm w-full">
-                    <span className="font-medium">{countriesVisited?.length || 0} countries</span>
-                    <span className="font-medium">⭐ {references?.length || 0} references</span>
+                    <div className="flex items-center gap-1">
+                      <Globe className="w-4 h-4 text-black" />
+                      <span className="font-medium">{countriesVisited?.length || 0} countries</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Star className="w-4 h-4 text-black" />
+                      <span className="font-medium">{references?.length || 0} references</span>
+                    </div>
                     <span className="font-medium">
                       • Nearby Local in {user.hometownCity || user.location?.split(',')[0] || 'Hometown'}
                     </span>
