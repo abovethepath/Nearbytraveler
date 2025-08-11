@@ -56,7 +56,7 @@ Preferred communication style: Simple, everyday language.
 - **User Cards**: Enhanced with larger photos, Load More/Load Less functionality, and improved compatibility display.
 - **Event Management**: Removed separate "My Events" tab per user request - all user events now appear prominently at top of Community Events section with special styling and management buttons.
 - **Metro Area Consolidation**: LA metro cities (Venice, Santa Monica, Culver City, etc.) automatically consolidate into "Los Angeles Metro" chatrooms to reduce fragmentation and increase user connections.
-- **Chatroom Database Cleanup (Aug 2025)**: Database cleaned to contain only 5 Los Angeles Metro chatrooms for a clean foundation. New chatrooms automatically created for cities as users join from those locations.
+- **Chatroom Database Cleanup (Aug 2025)**: Database cleaned to contain only 5 Los Angeles Metro city chatrooms for a clean foundation. Separated city chatrooms (general city chat) from meetup chatrooms (event-specific chat). Meetup chatrooms are automatically created when users join events and are preserved separately.
 - **Activity Search Removal (Aug 2025)**: Removed redundant activity search page since users can search activities using the advanced search widget with keyword filters. This simplifies the user experience by consolidating search functionality.
 
 ## External Dependencies
