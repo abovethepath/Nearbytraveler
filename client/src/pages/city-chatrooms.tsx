@@ -198,7 +198,7 @@ export default function CityChatroomsPage() {
                       <div className="flex gap-2">
                         <Button 
                           className="flex-1 bg-green-600 hover:bg-green-700 text-white"
-                          onClick={() => window.open(`/chatroom/${chatroom.id}`, '_blank')}
+                          onClick={() => window.open(`/simple-chatroom/${chatroom.id}`, '_blank')}
                           data-testid={`button-open-chat-${chatroom.id}`}
                         >
                           <MessageCircle className="w-4 h-4 mr-2" />
