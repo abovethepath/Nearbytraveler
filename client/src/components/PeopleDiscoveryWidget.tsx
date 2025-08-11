@@ -292,9 +292,9 @@ export function PeopleDiscoveryWidget({
                   setLocation(`/profile/${person.id}`);
                 }}
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white text-xs px-3 py-1.5 rounded-lg font-medium transition-colors"
-                data-testid={`button-interested-${person.id}`}
+                data-testid={`button-view-profile-${person.id}`}
               >
-                Interested
+                View Profile
               </button>
             </div>
           </div>
