@@ -52,8 +52,8 @@ export function PeopleDiscoveryWidget({
     const { data: travelPlans } = useQuery({
       queryKey: [`/api/travel-plans/${person.id}`],
       enabled: !!person.id,
-      staleTime: 60 * 60 * 1000, // 1 hour - very long to prevent blinking
-      gcTime: 2 * 60 * 60 * 1000, // 2 hours
+      staleTime: Infinity, // Never consider data stale
+      gcTime: Infinity, // Never garbage collect
       refetchOnMount: false,
       refetchOnWindowFocus: false,
       refetchInterval: false,
@@ -129,8 +129,8 @@ export function PeopleDiscoveryWidget({
     const { data: compatibilityData } = useQuery({
       queryKey: [`/api/compatibility/${currentUserId}/${person.id}`],
       enabled: !!currentUserId && !!person.id && currentUserId !== person.id,
-      staleTime: 60 * 60 * 1000, // 1 hour - very long to prevent blinking
-      gcTime: 2 * 60 * 60 * 1000, // 2 hours
+      staleTime: Infinity, // Never consider data stale
+      gcTime: Infinity, // Never garbage collect
       refetchOnMount: false,
       refetchOnWindowFocus: false,
       refetchInterval: false,

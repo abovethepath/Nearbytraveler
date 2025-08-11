@@ -66,7 +66,7 @@ export async function apiRequest(
     const res = await fetch(url, {
       method,
       headers,
-      body: data ? JSON.stringify(data) : undefined,
+      body: data ? JSON.stringify(data) : null,
       credentials: 'include', // Include cookies for session authentication
       signal: controller.signal,
     });
@@ -85,7 +85,7 @@ export async function apiRequest(
     if (import.meta.env.DEV) {
       console.error('Fetch error:', error);
     }
-    if (error.name === 'AbortError') {
+    if ((error as Error).name === 'AbortError') {
       throw new Error('Request timed out after 30 seconds');
     }
     throw error;

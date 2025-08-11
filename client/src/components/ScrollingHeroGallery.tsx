@@ -41,18 +41,33 @@ export default function ScrollingHeroGallery({ className = "" }: ScrollingHeroGa
       });
   }, []);
 
-  // Auto-rotate every 5 seconds for testing, then 60 seconds
+  // Auto-rotate every 3 seconds for better visibility
   useEffect(() => {
     console.log('📸 ScrollingHeroGallery: Initializing with images:', heroImages);
+    console.log('📸 ScrollingHeroGallery: Total images:', heroImages.length);
+    console.log('📸 ScrollingHeroGallery: Starting rotation at:', new Date().toISOString());
+    
+    if (heroImages.length <= 1) {
+      console.log('📸 ScrollingHeroGallery: Only 1 or no images, skipping rotation');
+      return;
+    }
+    
+    // Immediate log to confirm this runs
+    console.log('📸 ScrollingHeroGallery: Setting up interval for', heroImages.length, 'images');
+    
     const interval = setInterval(() => {
+      console.log('📸 ScrollingHeroGallery: INTERVAL FIRED at', new Date().toISOString());
       setCurrentIndex((prevIndex) => {
         const newIndex = (prevIndex + 1) % heroImages.length;
-        console.log('📸 ScrollingHeroGallery: Rotating to image', newIndex, heroImages[newIndex]);
+        console.log('📸 ScrollingHeroGallery: Rotating from', prevIndex, 'to', newIndex, 'showing:', heroImages[newIndex]);
         return newIndex;
       });
-    }, 5000); // 5 seconds for testing
+    }, 3000); // 3 seconds for better visibility
 
-    return () => clearInterval(interval);
+    return () => {
+      console.log('📸 ScrollingHeroGallery: Cleaning up interval');
+      clearInterval(interval);
+    };
   }, [heroImages]);
 
   if (heroImages.length === 0) {

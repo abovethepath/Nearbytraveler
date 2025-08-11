@@ -200,17 +200,9 @@ export default function Home() {
     return effectiveUser?.location || 'Unknown';
   };
 
-  // Background photo rotation with authentic production photos
+  // Background photo rotation with curated production photos (removed unwanted beach and group map)
   const heroPhotos = useMemo(() => {
     return [
-      {
-        url: '/beach travel_1750958707105.jpg',
-        position: 'center'
-      },
-      {
-        url: '/travel photo group map_1750993025212.jpeg',
-        position: 'center top'
-      },
       {
         url: '/travelers coffee_1750995178947.png',
         position: 'center'
@@ -224,18 +216,29 @@ export default function Home() {
 
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
 
-  // Rotate photos every 5 seconds for demo purposes
+  // Rotate photos every 3 seconds for better visibility
   useEffect(() => {
     console.log('🖼️ Home Hero: Initializing photo rotation with', heroPhotos.length, 'photos');
+    console.log('🖼️ Home Hero: Photos:', heroPhotos.map(p => p.url));
+    
+    if (heroPhotos.length <= 1) {
+      console.log('🖼️ Home Hero: Only 1 or no photos, skipping rotation');
+      return;
+    }
+    
     const interval = setInterval(() => {
+      console.log('🖼️ Home Hero: INTERVAL FIRED at', new Date().toISOString());
       setCurrentPhotoIndex((prevIndex) => {
         const newIndex = (prevIndex + 1) % heroPhotos.length;
-        console.log('🖼️ Home Hero: Rotating to photo', newIndex, heroPhotos[newIndex]?.url);
+        console.log('🖼️ Home Hero: Rotating from', prevIndex, 'to', newIndex, 'showing:', heroPhotos[newIndex]?.url);
         return newIndex;
       });
-    }, 5000);
+    }, 3000); // Faster rotation for better demo
 
-    return () => clearInterval(interval);
+    return () => {
+      console.log('🖼️ Home Hero: Cleaning up rotation interval');
+      clearInterval(interval);
+    };
   }, [heroPhotos.length]);
 
   // Check for URL parameter to auto-open advanced filters
