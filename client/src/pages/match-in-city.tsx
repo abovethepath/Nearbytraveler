@@ -862,22 +862,27 @@ export default function MatchInCity() {
           </div>
 
           {/* Cities Grid - Enhanced for LA */}
-          {/* Featured Los Angeles Section */}
+          {/* Featured Los Angeles Section - BETA CITY SPOTLIGHT */}
           {filteredCities.some(city => isLAAreaCity(city.city, city.state)) && (
-            <div className="mb-8">
+            <div className="mb-12">
+              {/* BETA City Header */}
+              <div className="text-center mb-6">
+                <h2 className="text-3xl font-bold text-white mb-2">🌟 BETA CITY</h2>
+                <p className="text-white/80 text-lg">Full features available in Los Angeles Metro</p>
+              </div>
               <div className="flex justify-center">
                 {filteredCities.filter(city => isLAAreaCity(city.city, city.state)).map((city, index) => {
                   const isLA = isLAAreaCity(city.city, city.state);
                   return (
                     <Card
                       key={`featured-${city.city}-${city.state}-${index}`}
-                      className="group cursor-pointer transform hover:scale-110 transition-all duration-300 overflow-hidden relative bg-gradient-to-br from-orange-500/30 to-red-500/30 backdrop-blur-sm border-orange-400/60 ring-4 ring-orange-300/50 shadow-2xl shadow-orange-500/25 max-w-lg w-full mx-auto"
+                      className="group cursor-pointer transform hover:scale-105 transition-all duration-300 overflow-hidden relative bg-gradient-to-br from-orange-500/40 to-red-500/40 backdrop-blur-sm border-orange-400/80 ring-8 ring-orange-300/60 shadow-2xl shadow-orange-500/40 max-w-2xl w-full mx-auto"
                       onClick={() => {
                         setSelectedCity(city.city);
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                       }}
                     >
-                      <div className="relative h-40 overflow-hidden">
+                      <div className="relative h-56 overflow-hidden">
                         {(() => {
                           const photoUrl = getCityPhotoUrl(city.city);
                           return photoUrl ? (
@@ -895,28 +900,36 @@ export default function MatchInCity() {
                           );
                         })()}
                         <div className="absolute inset-0 bg-black/20" />
-                        <div className="absolute top-2 right-2">
-                          <Badge className="bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs">
-                            🌟 BETA
+                        <div className="absolute top-3 right-3">
+                          <Badge className="bg-gradient-to-r from-orange-500 to-red-500 text-white text-sm px-3 py-1 animate-pulse">
+                            🌟 BETA CITY
+                          </Badge>
+                        </div>
+                        <div className="absolute top-3 left-3">
+                          <Badge className="bg-gradient-to-r from-green-500 to-blue-500 text-white text-sm px-3 py-1">
+                            Full Features
                           </Badge>
                         </div>
                       </div>
-                      <CardContent className="p-6">
-                        <div className="flex items-center gap-2 mb-2">
-                          <MapPin className="w-4 h-4 text-orange-300" />
-                          <h3 className="font-bold text-2xl text-orange-100 drop-shadow-lg">{city.city}</h3>
+                      <CardContent className="p-8">
+                        <div className="flex items-center justify-center gap-3 mb-3">
+                          <MapPin className="w-6 h-6 text-orange-300" />
+                          <h3 className="font-bold text-3xl text-orange-100 drop-shadow-lg text-center">{city.city}</h3>
                         </div>
-                        <p className="text-base mb-4 text-orange-200/90 font-medium">
+                        <p className="text-lg mb-6 text-orange-200/90 font-medium text-center">
                           {city.state && `${city.state}, `}{city.country}
                         </p>
+                        <div className="text-center mb-6">
+                          <p className="text-white/90 text-base">All platform features active • Most users online</p>
+                        </div>
                         <Button 
-                          className="w-full font-bold transition-all duration-300 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white shadow-xl text-base py-3"
+                          className="w-full font-bold transition-all duration-300 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white shadow-xl text-xl py-4 transform hover:scale-105"
                           onClick={(e) => {
                             e.stopPropagation();
                             setSelectedCity(city.city);
                           }}
                         >
-                          🌟 Explore LA
+                          🌟 Start Matching in LA
                         </Button>
                       </CardContent>
                     </Card>
@@ -929,6 +942,11 @@ export default function MatchInCity() {
           {/* Other Cities Grid - 4 per row as requested */}
           {filteredCities.filter(city => !isLAAreaCity(city.city, city.state)).length > 0 && (
             <div className="mb-8">
+              {/* Other Cities Header */}
+              <div className="text-center mb-6">
+                <h2 className="text-2xl font-bold text-white mb-2">Other Cities</h2>
+                <p className="text-white/70 text-base">Limited features • Coming soon</p>
+              </div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {filteredCities.filter(city => !isLAAreaCity(city.city, city.state)).map((city, index) => (
                   <Card
