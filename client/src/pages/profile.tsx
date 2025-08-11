@@ -2961,9 +2961,21 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
             {/* Profile Info - Right Side */}
             <div className="flex-1 min-w-0">
+              {isOwnProfile && (
+                <div className="mb-3">
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="bg-white/90 hover:bg-white text-gray-800 hover:text-gray-900 border border-white text-xs sm:text-sm px-3 py-1 font-medium shadow-sm"
+                    onClick={() => setSelectedGradient((prev) => (prev + 1) % gradientOptions.length)}
+                  >
+                    🎨 Change Color
+                  </Button>
+                </div>
+              )}
 
-              {/* EXACTLY 3 LINES as requested */}
-              <div className="space-y-1 text-black w-full">
+              {/* EXACTLY 3 LINES as requested - moved down */}
+              <div className="space-y-1 text-black w-full mt-2">
                 {/* Line 1: Username */}
                 <h1 className="text-xl sm:text-3xl font-bold text-black">@{user.username}</h1>
                 
