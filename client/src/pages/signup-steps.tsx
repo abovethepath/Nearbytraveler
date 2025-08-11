@@ -74,6 +74,17 @@ const calculateAge = (dateString: string): number => {
 
 const BASE_LANGUAGES = getAllLanguages();
 
+// Define the top choices that appear in the special section
+const TOP_CHOICES = [
+  "Single and Looking", "Coffee Culture", "Nightlife & Dancing", "Photography", 
+  "Meet Locals/Travelers", "Craft Beer & Breweries", "Local Food Specialties", "Hiking & Nature",
+  "City Tours & Sightseeing", "Street Art", "Cocktails & Bars", "Adventure Tours",
+  "Food Tours / Trucks", "Museums", "Rooftop Bars", "Local Hidden Gems",
+  "Beach Activities", "Fine Dining", "Yoga & Wellness", "Pub Crawls & Bar Tours",
+  "Walking Tours", "Happy Hour Deals", "Boat & Water Tours", "Brunch Spots",
+  "Live Music Venues", "Historical Tours", "Festivals & Events"
+];
+
 export default function SignupSteps() {
   const [, setLocation] = useLocation();
   const { setUser } = useContext(AuthContext);
@@ -322,6 +333,23 @@ export default function SignupSteps() {
     } else {
       setter([...array, value]);
     }
+  };
+
+  // Select All function for Top Choices sections
+  const selectAllTopChoices = () => {
+    const newInterests = TOP_CHOICES.filter(item => !formData.interests.includes(item));
+    setFormData({
+      ...formData,
+      interests: [...formData.interests, ...newInterests]
+    });
+  };
+
+  // Clear All function for Top Choices sections
+  const clearAllTopChoices = () => {
+    setFormData({
+      ...formData,
+      interests: formData.interests.filter(item => !TOP_CHOICES.includes(item))
+    });
   };
 
   const progressPercentage = (currentStep / totalSteps) * 100;
@@ -619,20 +647,36 @@ export default function SignupSteps() {
 
                 {/* Top Choices for Most Travelers */}
                 <div className="mb-6 p-4 bg-gradient-to-r from-blue-100 to-orange-100 border border-blue-300 rounded-lg">
-                  <div className="flex items-center mb-3">
-                    <span className="text-xl mr-2">⭐</span>
-                    <h4 className="text-lg font-semibold text-gray-900">Top Choices for Most Locals and Travelers</h4>
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center">
+                      <span className="text-xl mr-2">⭐</span>
+                      <h4 className="text-lg font-semibold text-gray-900">Top Choices for Most Locals and Travelers</h4>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        type="button"
+                        onClick={selectAllTopChoices}
+                        size="sm"
+                        variant="outline"
+                        className="text-xs px-2 py-1"
+                        data-testid="button-select-all-top-choices"
+                      >
+                        Select All
+                      </Button>
+                      <Button
+                        type="button"
+                        onClick={clearAllTopChoices}
+                        size="sm"
+                        variant="outline"
+                        className="text-xs px-2 py-1"
+                        data-testid="button-clear-all-top-choices"
+                      >
+                        Clear All
+                      </Button>
+                    </div>
                   </div>
                   <div className="grid grid-cols-4 gap-1">
-                    {[
-                      "Single and Looking", "Coffee Culture", "Nightlife & Dancing", "Photography", 
-                      "Meet Locals/Travelers", "Craft Beer & Breweries", "Local Food Specialties", "Hiking & Nature",
-                      "City Tours & Sightseeing", "Street Art", "Cocktails & Bars", "Adventure Tours",
-                      "Food Tours / Trucks", "Museums", "Rooftop Bars", "Local Hidden Gems",
-                      "Beach Activities", "Fine Dining", "Yoga & Wellness", "Pub Crawls & Bar Tours",
-                      "Walking Tours", "Happy Hour Deals", "Boat & Water Tours", "Brunch Spots",
-                      "Live Music Venues", "Historical Tours", "Festivals & Events"
-                    ].map((interest) => (
+                    {TOP_CHOICES.map((interest) => (
                       <div key={interest} className="flex items-center space-x-1">
                         <Checkbox
                           id={`top-interest-${interest}`}
@@ -642,6 +686,7 @@ export default function SignupSteps() {
                               setFormData({ ...formData, interests: newInterests })
                             )
                           }
+                          data-testid={`checkbox-top-choice-${interest.toLowerCase().replace(/\s+/g, '-')}`}
                         />
                         <Label htmlFor={`top-interest-${interest}`} className="text-xs font-semibold text-black">
                           {interest}

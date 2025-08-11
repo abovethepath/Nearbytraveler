@@ -56,6 +56,27 @@ export default function SignupTraveling() {
            formData.events.length;
   };
 
+  // Select All function for Top Choices sections
+  const selectAllTopChoices = () => {
+    setFormData(prev => {
+      // Get items not already selected
+      const newInterests = MOST_POPULAR_INTERESTS.filter(item => !prev.interests.includes(item));
+      
+      return {
+        ...prev,
+        interests: [...prev.interests, ...newInterests]
+      };
+    });
+  };
+
+  // Clear All function for Top Choices sections
+  const clearAllTopChoices = () => {
+    setFormData(prev => ({
+      ...prev,
+      interests: prev.interests.filter(item => !MOST_POPULAR_INTERESTS.includes(item))
+    }));
+  };
+
   // Load account data from sessionStorage on component mount
   useEffect(() => {
     const storedAccountData = sessionStorage.getItem('accountData');
@@ -541,9 +562,29 @@ export default function SignupTraveling() {
                 {/* Most Popular Section */}
                 <div className="mb-6">
                   <div className="bg-gradient-to-r from-blue-500 via-orange-500 to-red-500 p-4 rounded-lg">
-                    <div className="flex items-center gap-2 mb-3">
-                      <span className="text-yellow-300 text-lg">⭐</span>
-                      <h4 className="text-white font-bold text-lg">Top Choices for Most Locals and Travelers</h4>
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        <span className="text-yellow-300 text-lg">⭐</span>
+                        <h4 className="text-white font-bold text-lg">Top Choices for Most Locals and Travelers</h4>
+                      </div>
+                      <div className="flex gap-2">
+                        <button
+                          type="button"
+                          onClick={selectAllTopChoices}
+                          className="px-3 py-1 bg-white/20 text-white text-sm rounded-md hover:bg-white/30 transition-colors"
+                          data-testid="button-select-all-top-choices"
+                        >
+                          Select All
+                        </button>
+                        <button
+                          type="button"
+                          onClick={clearAllTopChoices}
+                          className="px-3 py-1 bg-white/20 text-white text-sm rounded-md hover:bg-white/30 transition-colors"
+                          data-testid="button-clear-all-top-choices"
+                        >
+                          Clear All
+                        </button>
+                      </div>
                     </div>
                     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
                       {MOST_POPULAR_INTERESTS.map((interest: string) => (
@@ -556,6 +597,7 @@ export default function SignupTraveling() {
                               ? 'bg-white text-blue-600 font-bold transform scale-105'
                               : 'bg-white/20 text-white hover:bg-white/30'
                           }`}
+                          data-testid={`button-top-choice-${interest.toLowerCase().replace(/\s+/g, '-')}`}
                         >
                           {interest}
                         </button>
