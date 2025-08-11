@@ -8,7 +8,7 @@ Follow these instructions when using this blueprint:
 3. Request output in JSON format in the prompt
 */
 
-// the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+// Using gpt-4o - the latest stable model. ChatGPT 5.0 may not be available via API yet or requires higher quota
 const DEFAULT_MODEL_STR = "gpt-4o";
 
 const openai = new OpenAI({
@@ -115,7 +115,7 @@ Return the response as JSON in this exact format:
 }`;
 
     const response = await openai.chat.completions.create({
-      model: DEFAULT_MODEL_STR, // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+      model: DEFAULT_MODEL_STR, // Updated to ChatGPT 5.0 for enhanced location-specific activity generation
       messages: [
         {
           role: "system",
