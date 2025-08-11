@@ -109,9 +109,7 @@ export function MobileBottomNav() {
               <button
                 key={item.path || index}
                 onClick={() => {
-                  if (item.isSpecial && item.onClick) {
-                    item.onClick();
-                  } else if (item.onClick) {
+                  if (item.onClick) {
                     item.onClick();
                   } else {
                     console.log(`🎯 MOBILE BOTTOM NAV: Navigating to ${item.path}`);
@@ -121,36 +119,24 @@ export function MobileBottomNav() {
                     }
                   }
                 }}
-                className={`flex flex-col items-center justify-center min-w-0 flex-1 py-1 ${
-                  item.isSpecial 
-                    ? "relative" 
-                    : ""
-                }`}
+                className="flex flex-col items-center justify-center min-w-0 flex-1 py-1"
               >
-                {item.isSpecial ? (
-                  <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center shadow-lg">
-                    <Icon className="w-6 h-6 text-white" />
-                  </div>
-                ) : (
-                  <>
-                    <Icon 
-                      className={`w-6 h-6 mb-1 ${
-                        isActive 
-                          ? "text-blue-500" 
-                          : "text-gray-400 dark:text-gray-500"
-                      }`} 
-                    />
-                    <span 
-                      className={`text-xs font-medium ${
-                        isActive 
-                          ? "text-blue-500" 
-                          : "text-gray-400 dark:text-gray-500"
-                      }`}
-                    >
-                      {item.label}
-                    </span>
-                  </>
-                )}
+                <Icon 
+                  className={`w-6 h-6 mb-1 ${
+                    isActive 
+                      ? "text-blue-500" 
+                      : "text-gray-400 dark:text-gray-500"
+                  }`} 
+                />
+                <span 
+                  className={`text-xs font-medium ${
+                    isActive 
+                      ? "text-blue-500" 
+                      : "text-gray-400 dark:text-gray-500"
+                  }`}
+                >
+                  {item.label}
+                </span>
               </button>
             );
           })}
