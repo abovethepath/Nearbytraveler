@@ -200,10 +200,26 @@ export default function Home() {
     return effectiveUser?.location || 'Unknown';
   };
 
-  // Use static hero image to prevent caching issues
-  const staticHeroImage = '/travelers coffee_1750995178947.png';
+  // Use static hero image to prevent caching issues - try URL encoding for space
+  const staticHeroImage = '/travelers%20coffee_1750995178947.png';
 
   console.log('🖼️ Home Hero: Using static image:', staticHeroImage);
+  
+  // Verify image exists
+  const checkImageExists = async (url: string) => {
+    try {
+      const response = await fetch(url, { method: 'HEAD' });
+      console.log('🖼️ Image check:', url, response.ok ? 'EXISTS' : 'MISSING');
+      return response.ok;
+    } catch (error) {
+      console.log('🖼️ Image check failed:', url, error);
+      return false;
+    }
+  };
+  
+  React.useEffect(() => {
+    checkImageExists(staticHeroImage);
+  }, []);
 
   // Check for URL parameter to auto-open advanced filters
   useEffect(() => {
