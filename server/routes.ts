@@ -7415,7 +7415,10 @@ Ready to start making real connections wherever you are?
           eq(chatroomMembers.chatroomId, roomId),
           eq(chatroomMembers.isActive, true)
         ))
-        .orderBy(asc(chatroomMembers.joinedAt));
+        .orderBy(
+          sql`CASE WHEN ${chatroomMembers.role} = 'admin' THEN 0 ELSE 1 END`,
+          asc(chatroomMembers.joinedAt)
+        );
 
       return res.json(members);
     } catch (error: any) {
