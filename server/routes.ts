@@ -2628,7 +2628,9 @@ Our interactive map helps travelers discover your business naturally, while our 
 
 Think of it as your direct line to engaged customers who are actively looking for experiences like yours, whether they're locals exploring their own city or travelers seeking authentic local gems.
 
-Ready to start connecting with customers who actually want to find you?`
+Ready to start connecting with customers who actually want to find you?
+
+- Aaron`
               : `Hello @${user.username},
 
 Welcome to Nearby Traveler! We created this site for travelers and locals to meet each other based on shared interests and commonalities, making every journey more meaningful and every hometown more exciting to explore.
@@ -2641,7 +2643,9 @@ Our vouching network helps you trust the community, and whether you're traveling
 
 Think of it as your social compass for discovering the human side of every place you visit.
 
-Ready to start making real connections wherever you are?`
+Ready to start making real connections wherever you are?
+
+- Aaron`
           });
 
           if (process.env.NODE_ENV === 'development') console.log(`✓ Auto-connected new user ${user.username} (ID: ${user.id}) to nearbytraveler with welcome message`);
