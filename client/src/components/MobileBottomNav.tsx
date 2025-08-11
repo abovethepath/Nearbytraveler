@@ -19,7 +19,15 @@ export function MobileBottomNav() {
       }
     },
     { icon: Search, label: "Discover", path: "/discover" },
-    { icon: MessageCircle, label: "Chat Rooms", path: "/city-chatrooms" },
+    { 
+      icon: MessageCircle, 
+      label: "Chat Rooms", 
+      path: "/city-chatrooms",
+      onClick: () => {
+        console.log('💬 MOBILE BOTTOM NAV: Chat Rooms clicked');
+        setLocation('/city-chatrooms');
+      }
+    },
     { icon: Calendar, label: "Events", path: "/events" },
     { 
       icon: User, 
@@ -101,7 +109,8 @@ export function MobileBottomNav() {
           {navItems.map((item, index) => {
             const isActive = location === item.path || 
               (item.path === "/" && location === "/") ||
-              (item.path.startsWith("/profile") && location.startsWith("/profile"));
+              (item.path.startsWith("/profile") && location.startsWith("/profile")) ||
+              (item.path === "/city-chatrooms" && (location === "/city-chatrooms" || location.startsWith("/city-chatrooms/")));
 
             const Icon = item.icon;
 
