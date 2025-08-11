@@ -7286,15 +7286,56 @@ Ready to start making real connections wherever you are?
   // Get city-based chatrooms
   app.get("/api/chatrooms/cities", async (req, res) => {
     try {
+      // Get user ID from headers
+      let userId = 1; // Default to nearbytraveler user if not specified
+      const userData = req.headers['x-user-data'];
+      if (userData) {
+        try {
+          userId = JSON.parse(userData as string).id;
+        } catch (e) {
+          // Use default user ID
+        }
+      }
+
       const allChatrooms = await db.select().from(citychatrooms);
+      
+      // Get member counts for all chatrooms  
+      const memberCountQuery = await db
+        .select({
+          chatroomId: chatroomMembers.chatroomId,
+          count: sql<string>`COUNT(*)::text`.as('count')
+        })
+        .from(chatroomMembers)
+        .where(eq(chatroomMembers.isActive, true))
+        .groupBy(chatroomMembers.chatroomId);
+      
+      const memberCountMap = new Map();
+      memberCountQuery.forEach(mc => {
+        memberCountMap.set(mc.chatroomId, parseInt(mc.count || '0') || 1);
+      });
+
+      // Check user membership status for all chatrooms
+      const userMemberships = await db
+        .select({ chatroomId: chatroomMembers.chatroomId })
+        .from(chatroomMembers)
+        .where(and(
+          eq(chatroomMembers.userId, userId),
+          eq(chatroomMembers.isActive, true)
+        ));
+
+      const membershipSet = new Set(userMemberships.map(m => m.chatroomId));
+
       const cityRooms = allChatrooms
         .filter(room => room.city && room.city !== '')
         .map(room => ({
           ...room,
-          isMember: false,
+          memberCount: memberCountMap.get(room.id) || 1,
+          userIsMember: membershipSet.has(room.id),
+          isMember: membershipSet.has(room.id), // Legacy field
           type: 'city'
         }));
 
+      if (process.env.NODE_ENV === 'development') console.log(`🏘️ CITY CHATROOMS: Found ${cityRooms.length} chatrooms with member counts for user ${userId}`);
       res.json(cityRooms);
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error fetching city rooms:", error);
