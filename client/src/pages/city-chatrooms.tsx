@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { 
   MessageCircle, 
@@ -96,8 +97,30 @@ export default function CityChatroomsPage({ cityFilter }: CityChatroomsPageProps
     name: "",
     description: "",
     city: "",
+    state: "",
     country: "",
     isPublic: true
+  });
+
+  // Fetch available cities for dropdown
+  const { data: availableCities } = useQuery({
+    queryKey: ['/api/chatrooms/cities'],
+    queryFn: async () => {
+      const response = await apiRequest('GET', '/api/chatrooms/cities');
+      const data = await response.json();
+      // Extract unique location combinations
+      const locations = new Set();
+      data.forEach((room: any) => {
+        if (room.city && room.country) {
+          locations.add(JSON.stringify({
+            city: room.city,
+            state: room.state,
+            country: room.country
+          }));
+        }
+      });
+      return Array.from(locations).map((loc: any) => JSON.parse(loc));
+    }
   });
 
   // Fetch user's location-based chatrooms (hometown + travel destination)
@@ -239,6 +262,7 @@ export default function CityChatroomsPage({ cityFilter }: CityChatroomsPageProps
       const response = await apiRequest('POST', '/api/chatrooms', {
         body: JSON.stringify({
           ...data,
+          state: data.state || null,
           createdById: currentUser?.id
         })
       });
@@ -250,7 +274,7 @@ export default function CityChatroomsPage({ cityFilter }: CityChatroomsPageProps
         description: "Chatroom created successfully!"
       });
       setIsCreateDialogOpen(false);
-      setNewChatroomData({ name: "", description: "", city: "", country: "", isPublic: true });
+      setNewChatroomData({ name: "", description: "", city: "", state: "", country: "", isPublic: true });
       queryClient.invalidateQueries({ queryKey: ['/api/chatrooms'] });
     },
     onError: () => {
@@ -347,19 +371,35 @@ export default function CityChatroomsPage({ cityFilter }: CityChatroomsPageProps
                       value={newChatroomData.description}
                       onChange={(e) => setNewChatroomData(prev => ({ ...prev, description: e.target.value }))}
                     />
-                    <Input
-                      placeholder="City"
-                      value={newChatroomData.city}
-                      onChange={(e) => setNewChatroomData(prev => ({ ...prev, city: e.target.value }))}
-                    />
-                    <Input
-                      placeholder="Country"
-                      value={newChatroomData.country}
-                      onChange={(e) => setNewChatroomData(prev => ({ ...prev, country: e.target.value }))}
-                    />
+                    <Select
+                      value={`${newChatroomData.city}|${newChatroomData.state}|${newChatroomData.country}`}
+                      onValueChange={(value) => {
+                        const [city, state, country] = value.split('|');
+                        setNewChatroomData(prev => ({ 
+                          ...prev, 
+                          city: city || "",
+                          state: state || "",
+                          country: country || ""
+                        }));
+                      }}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select city and country" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {availableCities?.map((location: any, index: number) => (
+                          <SelectItem 
+                            key={index}
+                            value={`${location.city}|${location.state || ""}|${location.country}`}
+                          >
+                            {location.city}{location.state ? `, ${location.state}` : ""}, {location.country}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <Button 
                       onClick={() => createChatroomMutation.mutate(newChatroomData)}
-                      disabled={!newChatroomData.name || !newChatroomData.city || createChatroomMutation.isPending}
+                      disabled={!newChatroomData.name || !newChatroomData.city || !newChatroomData.country || createChatroomMutation.isPending}
                       className="w-full"
                     >
                       {createChatroomMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : "Create Chatroom"}
