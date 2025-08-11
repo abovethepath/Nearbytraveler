@@ -6571,22 +6571,34 @@ export class DatabaseStorage implements IStorage {
             .limit(1);
 
           if (existingChatroom.length === 0) {
-            // Create the chatroom
+            // Create the chatroom with nearbytraveler as creator
             const chatroomData = {
               name: chatroomType.name,
               description: chatroomType.description,
               city: cityData.city,
               state: cityData.state || null,
               country: cityData.country || null,
-              createdById: 1, // System user
+              createdById: 2, // nearbytraveler as creator
               isPublic: true,
               maxMembers: 500,
               tags: chatroomType.tags,
               rules: 'Be respectful, share local knowledge, and help fellow travelers discover the city!'
             };
 
-            await this.createCityChatroom(chatroomData);
+            const newChatroom = await this.createCityChatroom(chatroomData);
             console.log(`Created "${chatroomType.name}" chatroom for ${cityData.city}`);
+            
+            // Automatically add nearbytraveler as first member/admin
+            if (newChatroom?.id) {
+              await db.insert(chatroomMembers).values({
+                chatroomId: newChatroom.id,
+                userId: 2, // nearbytraveler
+                role: 'admin',
+                isActive: true,
+                joinedAt: new Date()
+              });
+              console.log(`Added nearbytraveler as admin to ${chatroomType.name}`);
+            }
           }
         }
       }
