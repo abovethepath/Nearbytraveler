@@ -2961,44 +2961,28 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
             {/* Profile Info - Right Side */}
             <div className="flex-1 min-w-0">
-              {isOwnProfile && (
-                <div className="mb-2 sm:mb-3">
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className="bg-white/90 hover:bg-white text-gray-800 hover:text-gray-900 border border-white text-xs sm:text-sm px-3 py-1 font-medium shadow-sm"
-                    onClick={() => setSelectedGradient((prev) => (prev + 1) % gradientOptions.length)}
-                  >
-                    🎨 Change Color
-                  </Button>
-                </div>
-              )}
-              <h1 className="text-xl sm:text-3xl font-bold text-black mb-1">@{user.username}</h1>
-              {user.userType === 'business' && user.businessName && (
-                <div className="text-lg sm:text-xl font-semibold text-white/90 mb-1">
-                  {user.businessName}
-                </div>
-              )}
-              
-              {/* 3-line layout matching user's exact specification - Full width on desktop */}
+
+              {/* EXACTLY 3 LINES as requested */}
               <div className="space-y-1 text-black w-full">
-                {/* Line 2: Location/Travel Status with pin icon - Full width */}
+                {/* Line 1: Username */}
+                <h1 className="text-xl sm:text-3xl font-bold text-black">@{user.username}</h1>
+                
+                {/* Line 2: Location/Status with pin icon */}
                 <div className="flex items-center gap-2 w-full">
                   <MapPin className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
                   <span className="text-sm sm:text-base font-medium flex-1">
                     {user.userType === 'business' 
                       ? `Nearby Business in ${user.hometownCity || 'Los Angeles'}`
                       : (() => {
-                          // Check for active travel plans first - prioritize trip that started first
+                          // Check for active travel plans first
                           if (travelPlans && travelPlans.length > 0) {
                             const today = new Date();
-                            today.setHours(0, 0, 0, 0); // Set to start of day for accurate comparison
+                            today.setHours(0, 0, 0, 0);
                             
                             let activeTrips = [];
                             
                             for (const plan of travelPlans) {
                               if (plan.startDate && plan.endDate) {
-                                // FIXED: Manual date parsing to prevent timezone conversion
                                 const parseLocalDate = (dateInput: string | Date | null | undefined) => {
                                   if (!dateInput) return null;
                                   let dateString: string;
@@ -3033,17 +3017,15 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               }
                             }
                             
-                            // If multiple active trips, prioritize the one that started first
                             if (activeTrips.length > 0) {
                               activeTrips.sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
                               const currentTrip = activeTrips[0].plan;
-                              // Show full destination with state/country for better clarity
                               const destination = currentTrip.destination || 'Unknown';
                               return `Nearby Traveler in ${destination}`;
                             }
                           }
                           
-                          // Show "Nearby Local" when at home - use actual hometown city
+                          // Show "Nearby Local" when at home
                           const hometownCity = user.hometownCity;
                           const hometownState = user.hometownState;
                           const hometownCountry = user.hometownCountry;
@@ -3065,7 +3047,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </span>
                 </div>
 
-                {/* Line 3: Stats + hometown info with emoji icons */}
+                {/* Line 3: Stats on ONE line */}
                 {user.userType !== 'business' && (
                   <div className="flex items-center gap-3 text-xs sm:text-sm w-full">
                     <span className="font-medium">🌍 {countriesVisited?.length || 0} countries</span>
