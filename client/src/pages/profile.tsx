@@ -2968,14 +2968,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 </div>
               )}
               
-              {/* Clean 2-line layout - Desktop and Mobile Responsive */}
-              <div className="space-y-2 text-black">
-                {/* Line 1: Location/Travel Status - Full width on desktop, compact on mobile */}
+              {/* 3-line layout matching user's exact specification */}
+              <div className="space-y-1 text-black">
+                {/* Line 2: Location/Travel Status with pin icon */}
                 <div className="flex items-center gap-2">
                   <MapPin className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
                   <span className="text-sm sm:text-base font-medium">
                     {user.userType === 'business' 
-                      ? `🏢 Nearby Business in ${user.hometownCity || 'Los Angeles'}`
+                      ? `Nearby Business in ${user.hometownCity || 'Los Angeles'}`
                       : (() => {
                           // Check for active travel plans first - prioritize trip that started first
                           if (travelPlans && travelPlans.length > 0) {
@@ -3027,7 +3027,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               const currentTrip = activeTrips[0].plan;
                               // Show full destination with state/country for better clarity
                               const destination = currentTrip.destination || 'Unknown';
-                              return `✈️ Nearby Traveler in ${destination}`;
+                              return `Nearby Traveler in ${destination}`;
                             }
                           }
                           
@@ -3053,17 +3053,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </span>
                 </div>
 
-                {/* Line 2: Stats - Desktop layout with proper spacing */}
+                {/* Line 3: Stats - countries and references */}
                 {user.userType !== 'business' && (
-                  <div className="flex flex-wrap items-center gap-4 text-xs sm:text-sm">
-                    <div className="flex items-center gap-1">
-                      <Globe className="w-4 h-4 text-black" />
-                      <span className="font-medium">{countriesVisited?.length || 0} countries</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Star className="w-4 h-4 text-black" />
-                      <span className="font-medium">{references?.length || 0} references</span>
-                    </div>
+                  <div className="flex items-center gap-3 text-xs sm:text-sm">
+                    <span className="font-medium">{countriesVisited?.length || 0} countries</span>
+                    <span className="font-medium">⭐ {references?.length || 0} references</span>
                   </div>
                 )}
               </div>
