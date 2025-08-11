@@ -43,7 +43,7 @@ export function PeopleDiscoveryWidget({
   const PersonWithCommonalities = ({ person }: { person: PersonCard }) => {
     // Fetch travel plans for this person to show travel destination
     const { data: travelPlans } = useQuery({
-      queryKey: [`/api/travel-plans/${person.id}`],
+      queryKey: [`/api/users/${person.id}/travel-plans`],
       enabled: !!person.id
     });
 
@@ -181,42 +181,39 @@ export function PeopleDiscoveryWidget({
               @{person.username}
             </h4>
             
-            {/* Line 2: Current status - Nearby Local/Traveler in current city */}
+            {/* Line 2: Current location - where they are currently */}
             <div className="mb-1 flex items-center justify-center gap-1">
               <MapPin className="w-3 h-3 text-gray-500 dark:text-gray-400" />
               {travelPlans && Array.isArray(travelPlans) && travelPlans.length > 0 && (travelPlans as any)[0]?.status === 'active' ? (
                 <p className="text-gray-600 dark:text-gray-400 text-xs truncate">
-                  Nearby Traveler in {(travelPlans as any)[0]?.destinationCity || (travelPlans as any)[0]?.destination?.split(',')[0]}
+                  Traveling in {(travelPlans as any)[0]?.destinationCity || (travelPlans as any)[0]?.destination?.split(',')[0]}
                 </p>
               ) : (
                 <p className="text-gray-600 dark:text-gray-400 text-xs truncate">
-                  Nearby Local in {person.location || 'Hometown'}
+                  Currently in {person.location?.split(',')[0] || 'Unknown'}
                 </p>
               )}
             </div>
             
-            {/* Line 3: Countries and references + ALWAYS hometown */}
-            <div className="mb-2">
+            {/* Line 3: Hometown */}
+            <div className="mb-1">
               <p className="text-gray-500 dark:text-gray-500 text-xs truncate">
-                0 countries ⭐ 0 references • Nearby Local in {person.location?.split(',')[0] || 'Hometown'}
+                From {person.location?.split(',')[0] || 'Unknown hometown'}
               </p>
             </div>
             
-            {/* Things in Common Badge */}
-            {compatibilityData && (compatibilityData as any).totalCommonalities !== undefined ? (
-              <div className="inline-flex items-center gap-1 bg-green-500 rounded-full px-3 py-1">
-                <Heart className="w-3 h-3 text-white" />
-                <span className="text-white font-medium text-xs">
+            {/* Line 4: Things in Common */}
+            <div className="mb-2">
+              {compatibilityData && (compatibilityData as any).totalCommonalities !== undefined ? (
+                <p className="text-green-600 dark:text-green-400 text-xs font-medium">
                   {(compatibilityData as any).totalCommonalities} things in common
-                </span>
-              </div>
-            ) : (
-              <div className="inline-flex items-center gap-1 bg-purple-500 rounded-full px-3 py-1">
-                <span className="text-white font-medium text-xs">
-                  Discovering...
-                </span>
-              </div>
-            )}
+                </p>
+              ) : (
+                <p className="text-purple-600 dark:text-purple-400 text-xs">
+                  Discovering compatibility...
+                </p>
+              )}
+            </div>
           </div>
         </div>
       </div>

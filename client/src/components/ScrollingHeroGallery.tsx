@@ -7,18 +7,24 @@ interface ScrollingHeroGalleryProps {
 export default function ScrollingHeroGallery({ className = "" }: ScrollingHeroGalleryProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // Production hero images from the working backup
+  // Production hero images from the working backup (verified available in public folder)
   const heroImages = [
     "/beach travel_1750958707105.jpg",
     "/travel photo group map_1750993025212.jpeg", 
-    "/travelers coffee_1750995178947.png"
+    "/travelers coffee_1750995178947.png",
+    "/pexels-olly-2672979_1750959255667.jpg"
   ];
 
-  // Auto-rotate every 60 seconds
+  // Auto-rotate every 5 seconds for testing, then 60 seconds
   useEffect(() => {
+    console.log('📸 ScrollingHeroGallery: Initializing with images:', heroImages);
     const interval = setInterval(() => {
-      setCurrentIndex((prevIndex) => (prevIndex + 1) % heroImages.length);
-    }, 60000); // 60 seconds
+      setCurrentIndex((prevIndex) => {
+        const newIndex = (prevIndex + 1) % heroImages.length;
+        console.log('📸 ScrollingHeroGallery: Rotating to image', newIndex, heroImages[newIndex]);
+        return newIndex;
+      });
+    }, 5000); // 5 seconds for testing
 
     return () => clearInterval(interval);
   }, [heroImages.length]);
@@ -41,8 +47,12 @@ export default function ScrollingHeroGallery({ className = "" }: ScrollingHeroGa
             alt={`Travel experience ${index + 1}`}
             className="w-full h-full object-cover"
             style={{ objectPosition: 'center 70%' }}
+            onLoad={() => {
+              console.log(`✅ Successfully loaded hero image: ${image}`);
+            }}
             onError={(e) => {
-              console.error(`Failed to load hero image: ${image}`);
+              console.error(`❌ Failed to load hero image: ${image}`);
+              console.error('Image error details:', e);
               // Hide the broken image
               (e.target as HTMLImageElement).style.display = 'none';
             }}
