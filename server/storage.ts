@@ -6515,15 +6515,10 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  // DISABLED: No longer auto-creating chatrooms - only use existing Los Angeles Metro chatrooms
+  // Re-enabled chatroom creation for new cities - creates 2 chatrooms per city
   async ensureMeetLocalsChatrooms(city?: string, state?: string | null, country?: string): Promise<void> {
     try {
-      // DISABLED: All users now join the same 5 Los Angeles Metro chatrooms regardless of location
-      // This creates a unified global community instead of fragmented city-specific chatrooms
-      console.log('CHATROOM CREATION DISABLED: All users use unified Los Angeles Metro chatrooms');
-      return;
-
-      /* DISABLED CODE - DO NOT RE-ENABLE
+      console.log('✅ CHATROOM CREATION ENABLED: Creating chatrooms for new cities as needed');
       let cities;
       
       if (city && country) {
@@ -6595,28 +6590,31 @@ export class DatabaseStorage implements IStorage {
           }
         }
       }
-      */
     } catch (error) {
       console.error('Error ensuring Meet Locals chatrooms:', error);
     }
   }
 
-  // Auto-join user to both Welcome Newcomers and Let's Meet Up chatrooms for Los Angeles Metro only
+  // Auto-join user to both Welcome Newcomers and Let's Meet Up chatrooms for their city
   async autoJoinWelcomeChatroom(userId: number, city: string, country: string): Promise<void> {
     try {
-      // Everyone joins Los Angeles Metro chatrooms only
-      const laMetroChats = await db
+      console.log(`🎯 AUTO-JOIN: Finding chatrooms for user ${userId} in city: ${city}`);
+      
+      // Find chatrooms for the user's city
+      const cityChatrooms = await db
         .select()
         .from(citychatrooms)
         .where(and(
-          eq(citychatrooms.city, 'Los Angeles Metro'),
+          eq(citychatrooms.city, city),
           or(
-            ilike(citychatrooms.name, 'Welcome Newcomers Los Angeles Metro'),
-            ilike(citychatrooms.name, `Let's Meet Up Los Angeles Metro`)
+            ilike(citychatrooms.name, `Welcome Newcomers ${city}`),
+            ilike(citychatrooms.name, `Let's Meet Up ${city}`)
           )
         ));
 
-      for (const chatroom of laMetroChats) {
+      console.log(`🎯 AUTO-JOIN: Found ${cityChatrooms.length} chatrooms for ${city}`);
+
+      for (const chatroom of cityChatrooms) {
         // Check if user is already a member
         const existingMembership = await db
           .select()
