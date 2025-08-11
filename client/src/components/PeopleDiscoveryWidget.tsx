@@ -48,10 +48,18 @@ export function PeopleDiscoveryWidget({
   }, [currentUser, currentUserId, propCurrentUserId]);
 
   const PersonWithCommonalities = ({ person }: { person: PersonCard }) => {
+    // Show loading state to prevent avatar blinking
+    const [isLoading, setIsLoading] = useState(true);
+    
+    useEffect(() => {
+      const timer = setTimeout(() => setIsLoading(false), 100);
+      return () => clearTimeout(timer);
+    }, []);
+
     // Fetch travel plans for this person to show travel destination
     const { data: travelPlans, isLoading: travelPlansLoading } = useQuery({
       queryKey: [`/api/travel-plans/${person.id}`],
-      enabled: !!person.id,
+      enabled: !!person.id && !isLoading,
       staleTime: Infinity,
       gcTime: Infinity,
       refetchOnMount: false,
@@ -129,7 +137,7 @@ export function PeopleDiscoveryWidget({
     // Use the correct compatibility API endpoint
     const { data: compatibilityData, isLoading: compatibilityLoading } = useQuery({
       queryKey: [`/api/compatibility/${currentUserId}/${person.id}`],
-      enabled: !!currentUserId && !!person.id && currentUserId !== person.id,
+      enabled: !!currentUserId && !!person.id && currentUserId !== person.id && !isLoading,
       staleTime: Infinity,
       gcTime: Infinity,
       refetchOnMount: false,
@@ -172,6 +180,23 @@ export function PeopleDiscoveryWidget({
         setLocation(`/profile/${person.id}`);
       }
     };
+
+    // Show loading state to prevent blinking
+    if (isLoading || compatibilityLoading) {
+      return (
+        <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-2 h-72 animate-pulse">
+          <div className="flex flex-col h-full">
+            <div className="flex-1 flex items-center justify-center mt-1">
+              <div className="w-36 h-36 bg-gray-300 dark:bg-gray-600 rounded-lg"></div>
+            </div>
+            <div className="text-center pb-2">
+              <div className="h-4 bg-gray-300 dark:bg-gray-600 rounded w-3/4 mx-auto mb-2"></div>
+              <div className="h-3 bg-gray-300 dark:bg-gray-600 rounded w-1/2 mx-auto"></div>
+            </div>
+          </div>
+        </div>
+      );
+    }
 
     return (
       <div

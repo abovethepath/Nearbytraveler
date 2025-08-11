@@ -200,53 +200,10 @@ export default function Home() {
     return effectiveUser?.location || 'Unknown';
   };
 
-  // Background photo rotation with curated production photos (removed unwanted beach and group map)
-  const heroPhotos = useMemo(() => {
-    return [
-      {
-        url: '/travelers coffee_1750995178947.png?v=' + Date.now(),
-        position: 'center'
-      },
-      {
-        url: '/pexels-olly-2672979_1750959255667.jpg?v=' + Date.now(),
-        position: 'center'
-      }
-    ];
-  }, []);
+  // Use static hero image to prevent caching issues
+  const staticHeroImage = '/travelers coffee_1750995178947.png';
 
-  const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
-  
-  // Force reload of hero images to clear cache
-  useEffect(() => {
-    console.log('🔄 FORCE CLEARING photo cache and resetting index');
-    console.log('🔄 HOME COMPONENT MOUNTED - HERO ROTATION STARTING');
-    setCurrentPhotoIndex(0);
-  }, []);
-
-  // Rotate photos every 3 seconds for better visibility
-  useEffect(() => {
-    console.log('🖼️ Home Hero: Initializing photo rotation with', heroPhotos.length, 'photos');
-    console.log('🖼️ Home Hero: Photos:', heroPhotos.map(p => p.url));
-    
-    if (heroPhotos.length <= 1) {
-      console.log('🖼️ Home Hero: Only 1 or no photos, skipping rotation');
-      return;
-    }
-    
-    const interval = setInterval(() => {
-      console.log('🖼️ Home Hero: INTERVAL FIRED at', new Date().toISOString());
-      setCurrentPhotoIndex((prevIndex) => {
-        const newIndex = (prevIndex + 1) % heroPhotos.length;
-        console.log('🖼️ Home Hero: Rotating from', prevIndex, 'to', newIndex, 'showing:', heroPhotos[newIndex]?.url);
-        return newIndex;
-      });
-    }, 3000); // Faster rotation for better demo
-
-    return () => {
-      console.log('🖼️ Home Hero: Cleaning up rotation interval');
-      clearInterval(interval);
-    };
-  }, [heroPhotos.length]);
+  console.log('🖼️ Home Hero: Using static image:', staticHeroImage);
 
   // Check for URL parameter to auto-open advanced filters
   useEffect(() => {
@@ -1243,13 +1200,13 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
 
-      {/* Hero Section with Rotating Backgrounds */}
+      {/* Hero Section with Static Background */}
       <section 
         className="relative overflow-hidden text-white dark:bg-gray-800"
         style={{
-          backgroundImage: `url(${heroPhotos[currentPhotoIndex].url})`,
+          backgroundImage: `url(${staticHeroImage})`,
           backgroundSize: 'cover',
-          backgroundPosition: heroPhotos[currentPhotoIndex].position,
+          backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat'
         }}
       >
