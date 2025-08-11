@@ -11277,5 +11277,47 @@ Ready to start making real connections wherever you are?
     }
   });
 
+  // Get simple chatroom members with avatars
+  app.get('/api/simple-chatrooms/:id/members', async (req, res) => {
+    try {
+      const chatroomId = parseInt(req.params.id);
+      
+      if (process.env.NODE_ENV === 'development') console.log(`👥 SIMPLE CHATROOM: Getting members for room ${chatroomId}`);
+
+      // Get members with user details using SQL join  
+      const membersResult = await db.execute(sql`
+        SELECT 
+          cm.id,
+          cm.user_id,
+          cm.role,
+          u.username,
+          u.name,
+          u.profile_image
+        FROM chatroom_members cm
+        LEFT JOIN users u ON cm.user_id = u.id
+        WHERE cm.chatroom_id = ${chatroomId} AND cm.is_active = true
+        ORDER BY 
+          CASE WHEN cm.role = 'admin' THEN 0 ELSE 1 END,
+          cm.joined_at ASC
+      `);
+
+      const members = membersResult.rows.map((row: any) => ({
+        id: row.id,
+        user_id: row.user_id,
+        username: row.username,
+        name: row.name,
+        role: row.role,
+        profile_image: row.profile_image
+      }));
+
+      if (process.env.NODE_ENV === 'development') console.log(`👥 SIMPLE CHATROOM: Found ${members.length} members for room ${chatroomId}`);
+
+      res.json(members);
+    } catch (error: any) {
+      console.error('Error getting chatroom members:', error);
+      res.status(500).json({ error: 'Failed to get chatroom members' });
+    }
+  });
+
   return httpServer;
 }

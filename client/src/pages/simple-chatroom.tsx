@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useParams } from "wouter";
+import { useParams, useLocation } from "wouter";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Send, ArrowLeft } from "lucide-react";
+import { Send, ArrowLeft, Users } from "lucide-react";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 interface ChatMessage {
   id: number;
@@ -27,12 +28,25 @@ interface Chatroom {
   country: string;
 }
 
+interface ChatMember {
+  id: number;
+  user_id: number;
+  username: string;
+  name: string;
+  role: string;
+  profile_image?: string;
+}
+
 export default function SimpleChatroomPage() {
   const params = useParams();
-  const chatroomId = parseInt(params.id || '1');
+  const [location] = useLocation();
+  
+  // Extract chatroom ID from URL path: /simple-chatroom/198
+  const pathSegments = location.split('/');
+  const chatroomId = parseInt(pathSegments[2] || '198');
   const { toast } = useToast();
   
-  console.log('🚀 SIMPLE CHATROOM: Component loaded with chatroom ID:', chatroomId);
+  console.log('🚀 SIMPLE CHATROOM: Component loaded with chatroom ID:', chatroomId, 'from URL:', location, 'params:', params);
   const queryClient = useQueryClient();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [messageText, setMessageText] = useState("");
@@ -99,6 +113,15 @@ export default function SimpleChatroomPage() {
     cacheTime: 0  // Clear cache immediately
   });
   const memberCount = memberCountResp?.memberCount ?? 0;
+
+  // Fetch member list with avatars
+  const { data: members = [] } = useQuery<ChatMember[]>({
+    queryKey: [`/api/simple-chatrooms/${chatroomId}/members`],
+    refetchInterval: 10000,
+    enabled: !!chatroomId,
+    staleTime: 0,
+    cacheTime: 0
+  });
 
   // Send message mutation
   const sendMessageMutation = useMutation({
@@ -172,6 +195,35 @@ export default function SimpleChatroomPage() {
                 <Button onClick={leaveRoom} variant="outline" size="sm">Leave</Button>
               </div>
             </div>
+            
+            {/* Member List */}
+            {members.length > 0 && (
+              <div className="mt-4 pt-4 border-t">
+                <div className="flex items-center gap-2 mb-3">
+                  <Users className="w-4 h-4" />
+                  <span className="text-sm font-medium">{members.length} Member{members.length !== 1 ? 's' : ''}</span>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {members.map((member) => (
+                    <div key={member.user_id} className="flex items-center gap-2 bg-gray-50 dark:bg-gray-700 rounded-full px-3 py-1">
+                      <Avatar className="w-6 h-6">
+                        {member.profile_image ? (
+                          <AvatarImage src={member.profile_image} alt={member.username} />
+                        ) : (
+                          <AvatarFallback className="text-xs">
+                            {member.username.slice(0, 2).toUpperCase()}
+                          </AvatarFallback>
+                        )}
+                      </Avatar>
+                      <span className="text-sm">{member.username}</span>
+                      {member.role === 'admin' && (
+                        <span className="text-xs bg-blue-500 text-white rounded px-1">Admin</span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </CardHeader>
         </Card>
 
