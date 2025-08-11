@@ -79,7 +79,8 @@ export function PeopleDiscoveryWidget({
               </h4>
               
               {/* Line 2: Current status - Nearby Local/Traveler in current city */}
-              <div className="mb-1">
+              <div className="mb-1 flex items-center justify-center gap-1">
+                <MapPin className="w-3 h-3 text-gray-500 dark:text-gray-400" />
                 {travelPlans && Array.isArray(travelPlans) && travelPlans.length > 0 && (travelPlans as any)[0]?.status === 'active' ? (
                   <p className="text-gray-600 dark:text-gray-400 text-xs truncate">
                     Nearby Traveler in {(travelPlans as any)[0]?.destinationCity || (travelPlans as any)[0]?.destination?.split(',')[0]}
@@ -181,7 +182,8 @@ export function PeopleDiscoveryWidget({
             </h4>
             
             {/* Line 2: Current status - Nearby Local/Traveler in current city */}
-            <div className="mb-1">
+            <div className="mb-1 flex items-center justify-center gap-1">
+              <MapPin className="w-3 h-3 text-gray-500 dark:text-gray-400" />
               {travelPlans && Array.isArray(travelPlans) && travelPlans.length > 0 && (travelPlans as any)[0]?.status === 'active' ? (
                 <p className="text-gray-600 dark:text-gray-400 text-xs truncate">
                   Nearby Traveler in {(travelPlans as any)[0]?.destinationCity || (travelPlans as any)[0]?.destination?.split(',')[0]}
