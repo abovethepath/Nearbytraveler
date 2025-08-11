@@ -134,17 +134,21 @@ export default function Events() {
     staleTime: 30000, // Cache for 30 seconds to improve performance
   });
 
-  // Fetch all events to identify user's events
+  // Fetch all events to identify user's events - ALWAYS load when user is logged in
   const { data: allEvents = [], isLoading: allEventsLoading } = useQuery<Event[]>({
     queryKey: ["/api/events", "all"],
     queryFn: async () => {
+      console.log('🔍 Fetching ALL events for user events detection...');
       const response = await fetch(`/api/events`);
       if (!response.ok) {
         throw new Error('Failed to fetch events');
       }
-      return response.json();
+      const data = await response.json();
+      console.log('🔍 ALL EVENTS RESPONSE:', data.length, 'events');
+      console.log('🔍 Events with organizerId 3:', data.filter((e: any) => e.organizerId === 3));
+      return data;
     },
-    enabled: selectedTab === 'explore', // Only fetch when Community Events tab is active
+    enabled: selectedTab === 'explore' && !!currentUser, // Only fetch when Community Events tab is active AND user logged in
     staleTime: 30000,
   });
 
