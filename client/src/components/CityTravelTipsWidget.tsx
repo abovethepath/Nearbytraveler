@@ -14,12 +14,12 @@ export function CityTravelTipsWidget({ city, state, country }: CityTravelTipsWid
   const getTravelTips = (cityName: string, countryName: string) => {
     const tipsDatabase: Record<string, any> = {
       "Los Angeles": {
-        bestTime: "Oct-Apr (mild weather)",
+        bestTime: "Year-round (70-80°F)",
         currency: "USD",
-        transport: "Car rental recommended",
-        localTip: "Traffic is heavy 7-9am, 5-7pm",
-        mustTry: "In-N-Out Burger, Korean BBQ",
-        budget: "$150-250/day",
+        transport: "Car + Metro lines",
+        localTip: "Download parking apps, avoid rush hour",
+        mustTry: "In-N-Out, Korean BBQ, Mexican food",
+        budget: "$120-200/day",
         highlights: ["Hollywood", "Santa Monica", "Venice Beach", "Beverly Hills"]
       },
       "New York": {
@@ -98,6 +98,16 @@ export function CityTravelTipsWidget({ city, state, country }: CityTravelTipsWid
       highlights: ["City center", "Local markets", "Historical sites", "Parks"]
     };
 
+    // Handle Los Angeles metro area variations
+    if (cityName.includes("Los Angeles") || cityName === "Los Angeles Metro" || cityName === "LA" || cityName === "Playa del Rey") {
+      return tipsDatabase["Los Angeles"];
+    }
+    
+    // Handle other metro area variations
+    if (cityName.includes("New York") || cityName === "NYC" || cityName === "Manhattan") {
+      return tipsDatabase["New York"];
+    }
+    
     return tipsDatabase[cityName] || defaultTips;
   };
 
