@@ -2,6 +2,7 @@
 Nearby Traveler is a social networking platform designed to connect travelers, locals, and businesses through location-based meetups and cross-cultural interactions. Its core purpose is to enhance travel experiences and local engagement by fostering real-time connections. Key capabilities include AI-powered city content generation, robust photo management, mobile responsiveness, and a global map system for discovering users, events, and businesses.
 
 ## Recent Critical Fixes (August 2025)
+- **CHAT ROOMS TAB RESTORED** (August 11): CRITICAL SUCCESS - Added chat rooms navigation tab back to mobile bottom navigation. CityChatrooms component fully functional with existing routing at /city-chatrooms and /chatrooms paths. Users can now access city chat rooms directly from the mobile navigation.
 - **EVENT CHAT ROOMS FIXED** (August 11): CRITICAL SUCCESS - Fixed event chat room foreign key constraint error by creating missing chatrooms for all events. Users can now send messages in event chats without database errors.
 - **EXTERNAL EVENT PHOTOS CLEANED** (August 11): CRITICAL SUCCESS - Removed inappropriate BBQ party beach photos from external API events (French Quarter Jazz Walk, Hollywood Bowl Concert, etc.). External events now show no image instead of misleading fake photos.
 - **LA CITY MATCH PAGE PHOTOS DELETED** (August 11): CRITICAL SUCCESS - Removed problematic getCityImage and getMatchCityGallery functions causing issues in match-in-city.tsx. Replaced with gradient placeholders and removed photo gallery section. All LSP errors resolved.

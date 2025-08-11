@@ -19,7 +19,7 @@ export function MobileBottomNav() {
       }
     },
     { icon: Search, label: "Discover", path: "/discover" },
-    { icon: Plus, label: "Create", path: "#", isSpecial: true, onClick: () => setShowActionMenu(true) },
+    { icon: MessageCircle, label: "Chat Rooms", path: "/city-chatrooms" },
     { icon: Calendar, label: "Events", path: "/events" },
     { 
       icon: User, 
@@ -37,6 +37,7 @@ export function MobileBottomNav() {
     { label: "Create Event", path: "/create-event", icon: Calendar },
     { label: "Create Trip", path: "/plan-trip", icon: MapPin },
     { label: "Create Quick Meetup", path: "/quick-meetups", icon: Users },
+    { label: "Create Chat Room", path: "/city-chatrooms", icon: MessageCircle },
   ];
 
   return (
