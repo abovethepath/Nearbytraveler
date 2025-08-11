@@ -2968,110 +2968,70 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 </div>
               )}
               
-              {/* Clean 2-line layout - Mobile Responsive */}
-              <div className="space-y-1 text-black text-xs sm:text-sm">
-                {/* Line 1: Travel/Local status */}
-                <div className="flex items-center gap-3">
-                  <MapPin className="w-5 h-5 flex-shrink-0" />
-                  <div className="flex flex-col">
-                    <span className="text-sm font-medium">
-                      {user.userType === 'business' 
-                        ? `🏢 Nearby Business in ${user.hometownCity || 'Los Angeles'}`
-                        : (() => {
-                            // Check for active travel plans first - prioritize trip that started first
-                            if (travelPlans && travelPlans.length > 0) {
-                              const today = new Date();
-                              today.setHours(0, 0, 0, 0); // Set to start of day for accurate comparison
-                              
-                              let activeTrips = [];
-                              
-                              for (const plan of travelPlans) {
-                                if (plan.startDate && plan.endDate) {
-                                  // FIXED: Manual date parsing to prevent timezone conversion
-                                  const parseLocalDate = (dateInput: string | Date | null | undefined) => {
-                                    if (!dateInput) return null;
-                                    let dateString: string;
-                                    if (dateInput instanceof Date) {
-                                      dateString = dateInput.toISOString();
-                                    } else {
-                                      dateString = dateInput;
-                                    }
-                                    const parts = dateString.split('T')[0].split('-');
-                                    if (parts.length === 3) {
-                                      const year = parseInt(parts[0]);
-                                      const month = parseInt(parts[1]) - 1;
-                                      const day = parseInt(parts[2]);
-                                      return new Date(year, month, day);
-                                    }
-                                    return null;
-                                  };
-                                  
-                                  const startDate = parseLocalDate(plan.startDate);
-                                  const endDate = parseLocalDate(plan.endDate);
-                                  if (!startDate || !endDate) continue;
-                                  startDate.setHours(0, 0, 0, 0);
-                                  endDate.setHours(23, 59, 59, 999);
-                                  
-                                  const isCurrentlyActive = today >= startDate && today <= endDate;
-                                  if (isCurrentlyActive && plan.destination) {
-                                    activeTrips.push({
-                                      plan,
-                                      startDate
-                                    });
+              {/* Clean 2-line layout - Desktop and Mobile Responsive */}
+              <div className="space-y-2 text-black">
+                {/* Line 1: Location/Travel Status - Full width on desktop, compact on mobile */}
+                <div className="flex items-center gap-2">
+                  <MapPin className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+                  <span className="text-sm sm:text-base font-medium">
+                    {user.userType === 'business' 
+                      ? `🏢 Nearby Business in ${user.hometownCity || 'Los Angeles'}`
+                      : (() => {
+                          // Check for active travel plans first - prioritize trip that started first
+                          if (travelPlans && travelPlans.length > 0) {
+                            const today = new Date();
+                            today.setHours(0, 0, 0, 0); // Set to start of day for accurate comparison
+                            
+                            let activeTrips = [];
+                            
+                            for (const plan of travelPlans) {
+                              if (plan.startDate && plan.endDate) {
+                                // FIXED: Manual date parsing to prevent timezone conversion
+                                const parseLocalDate = (dateInput: string | Date | null | undefined) => {
+                                  if (!dateInput) return null;
+                                  let dateString: string;
+                                  if (dateInput instanceof Date) {
+                                    dateString = dateInput.toISOString();
+                                  } else {
+                                    dateString = dateInput;
                                   }
+                                  const parts = dateString.split('T')[0].split('-');
+                                  if (parts.length === 3) {
+                                    const year = parseInt(parts[0]);
+                                    const month = parseInt(parts[1]) - 1;
+                                    const day = parseInt(parts[2]);
+                                    return new Date(year, month, day);
+                                  }
+                                  return null;
+                                };
+                                
+                                const startDate = parseLocalDate(plan.startDate);
+                                const endDate = parseLocalDate(plan.endDate);
+                                if (!startDate || !endDate) continue;
+                                startDate.setHours(0, 0, 0, 0);
+                                endDate.setHours(23, 59, 59, 999);
+                                
+                                const isCurrentlyActive = today >= startDate && today <= endDate;
+                                if (isCurrentlyActive && plan.destination) {
+                                  activeTrips.push({
+                                    plan,
+                                    startDate
+                                  });
                                 }
                               }
-                              
-                              // If multiple active trips, prioritize the one that started first
-                              if (activeTrips.length > 0) {
-                                activeTrips.sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
-                                const currentTrip = activeTrips[0].plan;
-                                // Show full destination with state/country for better clarity
-                                const destination = currentTrip.destination || 'Unknown';
-                                return `✈️ Nearby Traveler in ${destination}`;
-                              }
                             }
                             
-                            // Show "Nearby Local" when at home - use actual hometown city
-                            const hometownCity = user.hometownCity;
-                            const hometownState = user.hometownState;
-                            const hometownCountry = user.hometownCountry;
-                            
-                            if (hometownCity) {
-                              if (hometownCountry && hometownCountry !== 'United States' && hometownCountry !== 'USA') {
-                                return `Nearby Local in ${hometownCity}, ${hometownCountry}`;
-                              } else if (hometownState && (hometownCountry === 'United States' || hometownCountry === 'USA')) {
-                                return `Nearby Local in ${hometownCity}, ${hometownState}`;
-                              } else {
-                                return `Nearby Local in ${hometownCity}`;
-                              }
-                            } else if (user.location) {
-                              return `Nearby Local in ${user.location}`;
+                            // If multiple active trips, prioritize the one that started first
+                            if (activeTrips.length > 0) {
+                              activeTrips.sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
+                              const currentTrip = activeTrips[0].plan;
+                              // Show full destination with state/country for better clarity
+                              const destination = currentTrip.destination || 'Unknown';
+                              return `✈️ Nearby Traveler in ${destination}`;
                             }
-                            return "Nearby Local";
-                          })()
-                      }
-                    </span>
-
-                  </div>
-                </div>
-
-                {/* Line 2: Stats and availability */}
-                {user.userType !== 'business' && (
-                  <div className="ml-8">
-                    <div className="flex items-center gap-3">
-                      <div className="flex items-center gap-2">
-                        <Globe className="w-5 h-5 text-black" />
-                        <span className="text-sm font-medium">{countriesVisited?.length || 0} countries</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Star className="w-5 h-5 text-black" />
-                        <span className="text-sm font-medium">{references?.length || 0} references</span>
-                      </div>
-                      <span className="text-sm font-medium flex items-center gap-2">
-                        <Users className="w-5 h-5" />
-{(() => {
-                          // ALWAYS show "Nearby Local in hometown" on line 2 - NEVER CHANGE THIS
+                          }
+                          
+                          // Show "Nearby Local" when at home - use actual hometown city
                           const hometownCity = user.hometownCity;
                           const hometownState = user.hometownState;
                           const hometownCountry = user.hometownCountry;
@@ -3088,10 +3048,22 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             return `Nearby Local in ${user.location}`;
                           }
                           return "Nearby Local";
-                        })()}
-                      </span>
-                    </div>
+                        })()
+                    }
+                  </span>
+                </div>
 
+                {/* Line 2: Stats - Desktop layout with proper spacing */}
+                {user.userType !== 'business' && (
+                  <div className="flex flex-wrap items-center gap-4 text-xs sm:text-sm">
+                    <div className="flex items-center gap-1">
+                      <Globe className="w-4 h-4 text-black" />
+                      <span className="font-medium">{countriesVisited?.length || 0} countries</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Star className="w-4 h-4 text-black" />
+                      <span className="font-medium">{references?.length || 0} references</span>
+                    </div>
                   </div>
                 )}
               </div>
