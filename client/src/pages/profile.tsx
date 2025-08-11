@@ -2968,12 +2968,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 </div>
               )}
               
-              {/* 3-line layout matching user's exact specification */}
-              <div className="space-y-1 text-black">
-                {/* Line 2: Location/Travel Status with pin icon */}
-                <div className="flex items-center gap-2">
+              {/* 3-line layout matching user's exact specification - Full width on desktop */}
+              <div className="space-y-1 text-black w-full">
+                {/* Line 2: Location/Travel Status with pin icon - Full width */}
+                <div className="flex items-center gap-2 w-full">
                   <MapPin className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
-                  <span className="text-sm sm:text-base font-medium">
+                  <span className="text-sm sm:text-base font-medium flex-1">
                     {user.userType === 'business' 
                       ? `Nearby Business in ${user.hometownCity || 'Los Angeles'}`
                       : (() => {
@@ -3053,9 +3053,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </span>
                 </div>
 
-                {/* Line 3: Stats + ALWAYS hometown info */}
+                {/* Line 3: Stats + ALWAYS hometown info - Full width on one line */}
                 {user.userType !== 'business' && (
-                  <div className="flex items-center gap-3 text-xs sm:text-sm">
+                  <div className="flex items-center gap-3 text-xs sm:text-sm w-full">
                     <span className="font-medium">{countriesVisited?.length || 0} countries</span>
                     <span className="font-medium">⭐ {references?.length || 0} references</span>
                     <span className="font-medium">
