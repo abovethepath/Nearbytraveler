@@ -184,21 +184,37 @@ export function PeopleDiscoveryWidget({
             {/* Line 2: Current location - where they are currently */}
             <div className="mb-1 flex items-center justify-center gap-1">
               <MapPin className="w-3 h-3 text-gray-500 dark:text-gray-400" />
-              {travelPlans && Array.isArray(travelPlans) && travelPlans.length > 0 && (travelPlans as any)[0]?.status === 'active' ? (
-                <p className="text-gray-600 dark:text-gray-400 text-xs truncate">
-                  Traveling in {(travelPlans as any)[0]?.destinationCity || (travelPlans as any)[0]?.destination?.split(',')[0]}
-                </p>
-              ) : (
-                <p className="text-gray-600 dark:text-gray-400 text-xs truncate">
-                  Currently in {person.location?.split(',')[0] || 'Unknown'}
-                </p>
-              )}
+              {(() => {
+                // Find current travel plan based on status
+                console.log('🧭 Travel plans for user', person.username, ':', travelPlans);
+                const currentTravel = travelPlans && Array.isArray(travelPlans) ? 
+                  (travelPlans as any).find((plan: any) => plan.status === 'active' || plan.status === 'current') : null;
+                
+                console.log('🧭 Current travel plan:', currentTravel);
+                
+                if (currentTravel) {
+                  const cityName = currentTravel.destinationCity || currentTravel.destination_city || currentTravel.destination?.split(',')[0];
+                  console.log('🧭 Using travel destination:', cityName);
+                  return (
+                    <p className="text-gray-600 dark:text-gray-400 text-xs truncate">
+                      Traveling in {cityName || 'Unknown destination'}
+                    </p>
+                  );
+                }
+                
+                console.log('🧭 No active travel, using location:', person.location);
+                return (
+                  <p className="text-gray-600 dark:text-gray-400 text-xs truncate">
+                    Currently in {person.location?.split(',')[0] || 'Unknown'}
+                  </p>
+                );
+              })()}
             </div>
             
             {/* Line 3: Hometown */}
             <div className="mb-1">
               <p className="text-gray-500 dark:text-gray-500 text-xs truncate">
-                From {person.location?.split(',')[0] || 'Unknown hometown'}
+                From {(person as any).hometownCity || person.location?.split(',')[0] || 'Unknown hometown'}
               </p>
             </div>
             
