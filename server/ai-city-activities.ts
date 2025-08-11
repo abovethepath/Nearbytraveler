@@ -105,7 +105,7 @@ For each activity, provide:
 2. A category (Tourism, Culture, Food, Nightlife, Outdoor, Shopping, Events, Sports, Local, Daytrips)
 3. A brief description with specific details
 
-Return the response as JSON in this exact format:
+CRITICAL: Return ONLY valid JSON, no markdown formatting, no code blocks, no explanatory text. Just the raw JSON object:
 {
   "activities": [
     {
@@ -130,7 +130,20 @@ ${prompt}`
       model: DEFAULT_MODEL_STR,
     });
 
-    const result = JSON.parse(response.content[0].text || '{"activities": []}');
+    // Clean the response to remove markdown formatting if present
+    let responseText = response.content[0].text || '{"activities": []}';
+    
+    // Remove markdown code blocks if they exist
+    if (responseText.includes('```json')) {
+      responseText = responseText.replace(/```json\s*/g, '').replace(/```\s*/g, '');
+    } else if (responseText.includes('```')) {
+      responseText = responseText.replace(/```\s*/g, '');
+    }
+    
+    // Trim whitespace
+    responseText = responseText.trim();
+    
+    const result = JSON.parse(responseText);
     const citySpecificActivities = result.activities || [];
     
     // Combine generic activities with city-specific ones
