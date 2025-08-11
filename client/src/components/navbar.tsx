@@ -396,6 +396,17 @@ function Navbar() {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56" align="end" forceMount>
+                  {/* Welcome item at the top */}
+                  {directUser?.userType !== 'business' && (
+                    <DropdownMenuItem onClick={() => {
+                      setLocation('/welcome');
+                      setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
+                    }}>
+                      <Star className="mr-2 h-4 w-4" />
+                      <span>Welcome</span>
+                    </DropdownMenuItem>
+                  )}
+                  
                   {/* Avatar dropdown now matches main navigation exactly */}
                   {navItems.map((item) => (
                     <DropdownMenuItem 
@@ -428,13 +439,7 @@ function Navbar() {
                         <span>Deals & Offers</span>
                       </DropdownMenuItem>
 
-                      <DropdownMenuItem onClick={() => {
-                        setLocation('/welcome');
-                        setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
-                      }}>
-                        <Star className="mr-2 h-4 w-4" />
-                        <span>Welcome</span>
-                      </DropdownMenuItem>
+
                       <DropdownMenuItem onClick={() => {
                         setLocation('/getting-started');
                         setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
