@@ -500,7 +500,7 @@ export default function SignupTraveling() {
                         currentState: location.state
                       }));
                     }}
-                    placeholder={{ country: "Where are you traveling?", city: "Select current city", state: "Select state/region" }}
+                    placeholder={{ country: "Where are you traveling?", city: "Select travel city", state: "Select state/region" }}
                     required
                   />
                 </div>

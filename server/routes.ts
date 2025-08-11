@@ -5455,17 +5455,22 @@ Aaron`
   // CRITICAL: Get quick meetups - ACTIVE FIRST, NEWEST FIRST - RAW SQL VERSION
   app.get("/api/quick-meetups", async (req, res) => {
     try {
-      const { city } = req.query;
+      const { city, userId } = req.query;
       const now = new Date();
 
       if (process.env.NODE_ENV === 'development') console.log(`QUICK MEETUPS: Fetching all meetups using Drizzle ORM, active first`);
 
-      // Use Drizzle ORM query builder to avoid Neon parameter binding issues
-      let query = db
-        .select()
-        .from(quickMeetups)
-        .leftJoin(users, eq(quickMeetups.organizerId, users.id))
-        .where(eq(quickMeetups.isActive, true));
+      // Build conditions array for proper AND/OR logic
+      const conditions = [eq(quickMeetups.isActive, true)];
+
+      // Add userId filtering if specified (for profile page)
+      if (userId && typeof userId === 'string') {
+        const targetUserId = parseInt(userId as string);
+        if (!isNaN(targetUserId)) {
+          if (process.env.NODE_ENV === 'development') console.log(`QUICK MEETUPS: Filtering by userId: ${targetUserId}`);
+          conditions.push(eq(quickMeetups.organizerId, targetUserId));
+        }
+      }
 
       // Add city filtering if specified with LA Metro consolidation
       if (city && typeof city === 'string') {
@@ -5490,13 +5495,15 @@ Aaron`
           )
         );
         
-        query = query.where(
-          and(
-            eq(quickMeetups.isActive, true),
-            or(...cityConditions)
-          )
-        );
+        conditions.push(or(...cityConditions));
       }
+
+      // Use Drizzle ORM query builder with combined conditions
+      let query = db
+        .select()
+        .from(quickMeetups)
+        .leftJoin(users, eq(quickMeetups.organizerId, users.id))
+        .where(and(...conditions));
 
       const queryResult = await query.orderBy(desc(quickMeetups.createdAt));
       

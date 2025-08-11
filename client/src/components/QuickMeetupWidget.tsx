@@ -26,7 +26,7 @@ interface NewMeetup {
   responseTime: string;
 }
 
-export function QuickMeetupWidget({ city }: { city?: string }) {
+export function QuickMeetupWidget({ city, profileUserId }: { city?: string; profileUserId?: number }) {
   const { user } = useAuth();
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [expandedMeetup, setExpandedMeetup] = useState<number | null>(null);
@@ -42,10 +42,17 @@ export function QuickMeetupWidget({ city }: { city?: string }) {
 
   // Fetch existing quick meetups
   const { data: quickMeetups, isLoading } = useQuery({
-    queryKey: ['/api/quick-meetups', city],
+    queryKey: ['/api/quick-meetups', city, profileUserId],
     queryFn: async () => {
-      const cityParam = city ? `?city=${encodeURIComponent(city)}` : '';
-      const response = await fetch(`/api/quick-meetups${cityParam}`, {
+      let url = '/api/quick-meetups';
+      const params = new URLSearchParams();
+      
+      if (city) params.append('city', city);
+      if (profileUserId) params.append('userId', profileUserId.toString());
+      
+      if (params.toString()) url += `?${params.toString()}`;
+      
+      const response = await fetch(url, {
         headers: {
           ...(actualUser?.id && { 'x-user-id': actualUser.id.toString() })
         }

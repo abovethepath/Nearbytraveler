@@ -4774,7 +4774,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             {/* Quick Meetup Widget - Only show for own profile */}
             {isOwnProfile && user?.userType !== 'business' && (
               <div className="mt-6">
-                <QuickMeetupWidget city={user?.hometownCity ?? ''} />
+                <QuickMeetupWidget city={user?.hometownCity ?? ''} profileUserId={user?.id} />
               </div>
             )}
 
