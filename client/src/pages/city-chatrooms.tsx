@@ -109,114 +109,140 @@ export default function CityChatroomsPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-800 flex items-center justify-center">
-        <div className="text-center text-white">
-          <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4" />
-          <p>Loading chatrooms...</p>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-orange-50 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 animate-spin mx-auto mb-4 text-blue-600" />
+          <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+            Loading Chatrooms...
+          </h3>
+          <p className="text-gray-600 dark:text-gray-400">
+            Finding chatrooms in your area
+          </p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-800">
-      <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-orange-50 dark:from-gray-900 dark:to-gray-800 pb-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-white mb-4">💬 City Chatrooms</h1>
-          <p className="text-white/80">Connect with locals and travelers in your city</p>
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+            💬 City Chatrooms
+          </h1>
+          <p className="text-lg text-gray-700 dark:text-gray-300 max-w-2xl mx-auto">
+            Connect with locals and travelers in your city
+          </p>
         </div>
 
-        {/* Debug Info */}
-        <div className="mb-4 p-3 bg-black/20 rounded text-white/60 text-sm">
-          <p>Found {chatrooms.length} chatrooms</p>
-          <p>User: {currentUser?.username || 'Not logged in'}</p>
-        </div>
+        {/* Chatrooms Grid - Mobile Responsive */}
+        {chatrooms.length > 0 ? (
+          <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+            {chatrooms.map((chatroom) => (
+              <Card 
+                key={chatroom.id} 
+                className="group cursor-pointer transform hover:scale-105 transition-all duration-300 overflow-hidden relative bg-white dark:bg-gray-800 shadow-lg hover:shadow-xl border-gray-200 dark:border-gray-700"
+              >
+                {/* Header with gradient background */}
+                <div className="relative h-24 bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
+                  <MessageCircle className="w-8 h-8 text-white/80" />
+                  <div className="absolute top-2 right-2">
+                    <Badge className="bg-white/20 text-white backdrop-blur-sm">
+                      <Users className="w-3 h-3 mr-1" />
+                      {chatroom.memberCount || 0}
+                    </Badge>
+                  </div>
+                </div>
 
-        {/* Chatrooms Grid */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {chatrooms.map((chatroom) => (
-            <Card key={chatroom.id} className="bg-white/10 backdrop-blur-sm border-white/20 hover:bg-white/20 transition-all">
-              <CardHeader>
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <CardTitle className="text-white text-lg mb-2">
+                <CardContent className="p-6">
+                  {/* Title and Location */}
+                  <div className="mb-4">
+                    <h3 className="font-bold text-xl text-gray-900 dark:text-white mb-2 line-clamp-2">
                       {chatroom.name}
-                    </CardTitle>
-                    <div className="flex items-center text-white/60 text-sm mb-2">
-                      <MapPin className="w-4 h-4 mr-1" />
-                      {chatroom.city}, {chatroom.state}
+                    </h3>
+                    <div className="flex items-center text-gray-600 dark:text-gray-400 text-sm">
+                      <MapPin className="w-4 h-4 mr-1 flex-shrink-0" />
+                      <span className="truncate">{chatroom.city}, {chatroom.state}</span>
                     </div>
                   </div>
-                  <Badge variant="secondary" className="bg-blue-500/20 text-blue-200">
-                    <Users className="w-3 h-3 mr-1" />
-                    {chatroom.memberCount || 0}
-                  </Badge>
-                </div>
-              </CardHeader>
-              
-              <CardContent>
-                <p className="text-white/80 text-sm mb-4 line-clamp-3">
-                  {chatroom.description}
-                </p>
-                
-                {/* Tags */}
-                {chatroom.tags && chatroom.tags.length > 0 && (
-                  <div className="flex flex-wrap gap-1 mb-4">
-                    {chatroom.tags.map((tag, index) => (
-                      <Badge key={index} variant="outline" className="text-xs border-white/20 text-white/60">
-                        {tag}
-                      </Badge>
-                    ))}
-                  </div>
-                )}
 
-                {/* Action Button */}
-                <div className="flex gap-2">
-                  {chatroom.userIsMember ? (
-                    <>
-                      <Button 
-                        className="flex-1 bg-green-600 hover:bg-green-700"
-                        disabled
-                      >
-                        <MessageCircle className="w-4 h-4 mr-2" />
-                        Joined
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => leaveMutation.mutate(chatroom.id)}
-                        disabled={leaveMutation.isPending}
-                        className="border-red-400/50 text-red-300 hover:bg-red-500/20"
-                      >
-                        Leave
-                      </Button>
-                    </>
-                  ) : (
-                    <Button 
-                      className="flex-1 bg-blue-600 hover:bg-blue-700"
-                      onClick={() => joinMutation.mutate(chatroom.id)}
-                      disabled={joinMutation.isPending}
-                    >
-                      {joinMutation.isPending ? (
-                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      ) : (
-                        <UserPlus className="w-4 h-4 mr-2" />
+                  {/* Description */}
+                  <p className="text-gray-700 dark:text-gray-300 text-sm mb-4 line-clamp-3 min-h-[3rem]">
+                    {chatroom.description}
+                  </p>
+                  
+                  {/* Tags */}
+                  {chatroom.tags && chatroom.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-1 mb-4">
+                      {chatroom.tags.slice(0, 3).map((tag, index) => (
+                        <Badge 
+                          key={index} 
+                          variant="secondary" 
+                          className="text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
+                        >
+                          {tag}
+                        </Badge>
+                      ))}
+                      {chatroom.tags.length > 3 && (
+                        <Badge variant="secondary" className="text-xs bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400">
+                          +{chatroom.tags.length - 3}
+                        </Badge>
                       )}
-                      Join Chatroom
-                    </Button>
+                    </div>
                   )}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
 
-        {chatrooms.length === 0 && (
-          <div className="text-center py-12">
-            <MessageCircle className="w-16 h-16 text-white/40 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-white mb-2">No Chatrooms Found</h3>
-            <p className="text-white/60">No chatrooms available for your locations yet.</p>
+                  {/* Action Button */}
+                  <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+                    {chatroom.userIsMember ? (
+                      <div className="flex gap-2">
+                        <Button 
+                          className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+                          disabled
+                        >
+                          <MessageCircle className="w-4 h-4 mr-2" />
+                          Joined
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => leaveMutation.mutate(chatroom.id)}
+                          disabled={leaveMutation.isPending}
+                          className="border-red-300 text-red-600 hover:bg-red-50 dark:border-red-700 dark:text-red-400 dark:hover:bg-red-900/20"
+                        >
+                          Leave
+                        </Button>
+                      </div>
+                    ) : (
+                      <Button 
+                        className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                        onClick={() => joinMutation.mutate(chatroom.id)}
+                        disabled={joinMutation.isPending}
+                      >
+                        {joinMutation.isPending ? (
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        ) : (
+                          <UserPlus className="w-4 h-4 mr-2" />
+                        )}
+                        Join Chatroom
+                      </Button>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-16">
+            <div className="max-w-md mx-auto">
+              <MessageCircle className="w-20 h-20 text-gray-400 mx-auto mb-6" />
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+                No Chatrooms Found
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400 mb-8">
+                No chatrooms available for your locations yet. Chatrooms are automatically created as users join from different cities.
+              </p>
+            </div>
           </div>
         )}
       </div>
