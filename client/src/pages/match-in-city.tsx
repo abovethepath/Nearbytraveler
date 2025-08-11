@@ -1340,7 +1340,7 @@ export default function MatchInCity() {
                     return (
                       <div
                         key={`event-${userEvent.id}`}
-                        className="relative group px-3 py-1.5 rounded-full text-sm font-medium bg-green-600 text-white border border-green-400"
+                        className="relative group px-3 py-1 rounded-lg text-sm font-medium bg-gradient-to-r from-green-500 to-green-600 text-white border border-green-400/20 shadow-sm"
                       >
                         <span>📅 {userEvent.eventtitle || userEvent.eventTitle || (userEvent.eventId ? `Event ${userEvent.eventId}` : "Saved Event")}</span>
                         <button
@@ -1371,7 +1371,7 @@ export default function MatchInCity() {
                   return (
                     <div
                       key={`event-${userEvent.id}`}
-                      className="relative group px-3 py-1.5 rounded-full text-sm font-medium bg-green-600 text-white border border-green-400"
+                      className="relative group px-3 py-1 rounded-lg text-sm font-medium bg-gradient-to-r from-green-500 to-green-600 text-white border border-green-400/20 shadow-sm"
                     >
                       <span>📅 {globalEvent.title}</span>
                       <button
