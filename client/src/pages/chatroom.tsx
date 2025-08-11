@@ -12,9 +12,15 @@ import { MessageCircle, Users, Send, ArrowLeft, Loader2 } from "lucide-react";
 interface ChatMessage {
   id: number;
   senderId: number;
-  senderUsername: string;
   content: string;
+  messageType: string;
   createdAt: string;
+  user: {
+    id: number;
+    username: string;
+    name: string;
+    profileImage?: string;
+  };
 }
 
 interface ChatroomDetails {
@@ -180,7 +186,7 @@ export default function ChatroomPage() {
                         : 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white'
                     }`}>
                       <div className="text-xs opacity-75 mb-1">
-                        {message.senderUsername}
+                        {message.user?.username || 'Unknown'}
                       </div>
                       <div>{message.content}</div>
                       <div className="text-xs opacity-75 mt-1">
