@@ -6594,22 +6594,22 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  // Auto-join user to both Welcome Newcomers and Let's Meet Up chatrooms for their city
+  // Auto-join user to both Welcome Newcomers and Let's Meet Up chatrooms for Los Angeles Metro only
   async autoJoinWelcomeChatroom(userId: number, city: string, country: string): Promise<void> {
     try {
-      // Find both chatrooms for this city
-      const cityChats = await db
+      // Everyone joins Los Angeles Metro chatrooms only
+      const laMetroChats = await db
         .select()
         .from(citychatrooms)
         .where(and(
-          eq(citychatrooms.city, city),
+          eq(citychatrooms.city, 'Los Angeles Metro'),
           or(
-            ilike(citychatrooms.name, `Welcome Newcomers ${city}`),
-            ilike(citychatrooms.name, `Let's Meet Up ${city}`)
+            ilike(citychatrooms.name, 'Welcome Newcomers Los Angeles Metro'),
+            ilike(citychatrooms.name, `Let's Meet Up Los Angeles Metro`)
           )
         ));
 
-      for (const chatroom of cityChats) {
+      for (const chatroom of laMetroChats) {
         // Check if user is already a member
         const existingMembership = await db
           .select()
@@ -6634,7 +6634,7 @@ export class DatabaseStorage implements IStorage {
         }
       }
     } catch (error) {
-      console.error('Error auto-joining city chatrooms:', error);
+      console.error('Error auto-joining Los Angeles Metro chatrooms:', error);
     }
   }
 
