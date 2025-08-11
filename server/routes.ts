@@ -3710,7 +3710,7 @@ Aaron`
       cleanEventData.state = eventData.state || '';
       cleanEventData.zipcode = eventData.zipcode || '';
       cleanEventData.location = eventData.location;
-      cleanEventData.date = safeDate(body.date); // Convert to proper Date object
+      cleanEventData.date = eventData.date; // Use already converted date
       cleanEventData.category = eventData.category;
       cleanEventData.organizerId = eventData.organizerId;
       
