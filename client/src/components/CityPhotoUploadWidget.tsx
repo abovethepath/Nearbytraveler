@@ -80,34 +80,56 @@ export function CityPhotoUploadWidget({ cityName }: CityPhotoUploadWidgetProps) 
     try {
       const username = getAuthenticatedUser();
       
-      // Convert file to base64
-      const base64Data = await new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = (e) => resolve(e.target?.result as string);
-        reader.onerror = reject;
-        reader.readAsDataURL(selectedFile);
-      });
-      
-      console.log('UPLOAD DEBUG - Starting upload with data:', {
+      console.log('UPLOAD DEBUG - Starting object storage upload for:', {
         cityName,
-        imageDataLength: base64Data.length,
+        fileName: selectedFile.name,
+        fileSize: selectedFile.size,
         username
       });
 
-      // Use apiRequest utility for proper authentication
-      const response = await apiRequest('POST', '/api/city-photos', {
+      // Step 1: Get upload URL from server
+      const uploadResponse = await apiRequest('POST', '/api/city-photos/upload-url', {
         cityName,
-        imageData: base64Data,
         photographerUsername: username,
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Upload failed');
+      if (!uploadResponse.ok) {
+        const errorData = await uploadResponse.json();
+        throw new Error(errorData.message || 'Failed to get upload URL');
       }
 
-      const result = await response.json();
-      console.log('Upload successful, photo ID:', result.id);
+      const { uploadURL } = await uploadResponse.json();
+      console.log('Got upload URL:', uploadURL);
+
+      // Step 2: Upload file directly to object storage
+      const uploadToStorageResponse = await fetch(uploadURL, {
+        method: 'PUT',
+        body: selectedFile,
+        headers: {
+          'Content-Type': selectedFile.type,
+        },
+      });
+
+      if (!uploadToStorageResponse.ok) {
+        throw new Error('Failed to upload file to storage');
+      }
+
+      console.log('File uploaded to storage successfully');
+
+      // Step 3: Notify server about successful upload
+      const confirmResponse = await apiRequest('POST', '/api/city-photos/confirm', {
+        cityName,
+        photographerUsername: username,
+        uploadURL,
+      });
+
+      if (!confirmResponse.ok) {
+        const errorData = await confirmResponse.json();
+        throw new Error(errorData.message || 'Failed to confirm upload');
+      }
+
+      const result = await confirmResponse.json();
+      console.log('Upload confirmed, photo ID:', result.id);
       
       // Clear all photo caches and force refresh
       queryClient.invalidateQueries({ queryKey: ['/api/city-photos/all'] });

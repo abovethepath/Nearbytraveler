@@ -6205,7 +6205,97 @@ Ready to start making real connections wherever you are?
     }
   });
 
-  // RESTORED: Upload city photo endpoint
+  // Serve public city photos from object storage
+  app.get("/public-objects/:filePath(*)", async (req, res) => {
+    const filePath = req.params.filePath;
+    try {
+      const { ObjectStorageService } = await import("./objectStorage");
+      const objectStorageService = new ObjectStorageService();
+      const file = await objectStorageService.searchPublicObject(filePath);
+      if (!file) {
+        return res.status(404).json({ error: "File not found" });
+      }
+      objectStorageService.downloadObject(file, res);
+    } catch (error) {
+      console.error("Error serving public object:", error);
+      return res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  // Object storage upload URL endpoint
+  app.post("/api/city-photos/upload-url", async (req, res) => {
+    try {
+      const { cityName, photographerUsername } = req.body;
+      
+      if (!cityName || !photographerUsername) {
+        return res.status(400).json({ message: "Missing required fields" });
+      }
+
+      // Import ObjectStorageService
+      const { ObjectStorageService } = await import("./objectStorage");
+      const objectStorageService = new ObjectStorageService();
+      
+      const uploadURL = await objectStorageService.getCityPhotoUploadURL();
+      
+      console.log(`📸 OBJECT STORAGE: Generated upload URL for ${photographerUsername}'s photo of ${cityName}`);
+      
+      res.json({ uploadURL });
+    } catch (error: any) {
+      console.error("Error generating upload URL:", error);
+      res.status(500).json({ message: "Failed to generate upload URL" });
+    }
+  });
+
+  // Confirm upload and save metadata
+  app.post("/api/city-photos/confirm", async (req, res) => {
+    try {
+      const { cityName, photographerUsername, uploadURL } = req.body;
+      
+      if (!cityName || !photographerUsername || !uploadURL) {
+        return res.status(400).json({ message: "Missing required fields" });
+      }
+
+      // Extract photo ID from upload URL for reference
+      const photoId = uploadURL.split('/').pop()?.split('?')[0] || 'unknown';
+      
+      // Create database record
+      const photoData = {
+        cityName,
+        state: '',
+        country: 'United States',
+        imageData: uploadURL, // Store the object storage URL
+        photographerUsername,
+        caption: `Beautiful view of ${cityName}`,
+        createdAt: new Date()
+      };
+
+      const photo = await storage.createCityPhoto(photoData);
+
+      // Award aura points
+      const photographer = await storage.getUserByUsername(photographerUsername);
+      if (photographer) {
+        const auraAwarded = 15;
+        const currentAura = photographer.aura || 0;
+        await storage.updateUser(photographer.id, { 
+          aura: currentAura + auraAwarded 
+        });
+        
+        console.log(`📸 PHOTO CONFIRMED: ${photographerUsername} uploaded photo of ${cityName}, awarded ${auraAwarded} aura`);
+      }
+
+      res.json({ 
+        success: true,
+        photo,
+        auraAwarded: 15,
+        message: "Photo uploaded successfully! You earned 15 aura points."
+      });
+    } catch (error: any) {
+      console.error("Error confirming upload:", error);
+      res.status(500).json({ message: "Failed to confirm upload" });
+    }
+  });
+
+  // RESTORED: Upload city photo endpoint (legacy base64 support)
   app.post("/api/city-photos", async (req, res) => {
     try {
       const { cityName, imageData, photographerUsername } = req.body;
