@@ -9,9 +9,9 @@ export default function ScrollingHeroGallery({ className = "" }: ScrollingHeroGa
 
   // Production hero images from the working backup
   const heroImages = [
-    "/attached_assets/attached_assets/beach travel_1750958707105.jpg",
-    "/attached_assets/attached_assets/travel photo group map_1750993025212.jpeg", 
-    "/attached_assets/attached_assets/travelers coffee_1750995178947.png"
+    "/beach travel_1750958707105.jpg",
+    "/travel photo group map_1750993025212.jpeg", 
+    "/travelers coffee_1750995178947.png"
   ];
 
   // Auto-rotate every 60 seconds

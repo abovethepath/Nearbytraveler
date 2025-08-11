@@ -294,7 +294,7 @@ function Navbar() {
             <div className="flex items-center">
               <Link href="/" className="flex items-center space-x-2 logo-container">
                 <img 
-                  src="/attached_assets/new-logo_1753994063802.png" 
+                  src="/new-logo_1753994063802.png" 
                   alt="Nearby Traveler" 
                   className="h-40 sm:h-24 md:h-24 lg:h-24 w-auto cursor-pointer hover:opacity-80 transition-opacity object-contain"
                   style={{ maxWidth: '320px' }}
