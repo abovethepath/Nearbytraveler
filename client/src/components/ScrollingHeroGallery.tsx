@@ -11,7 +11,6 @@ export default function ScrollingHeroGallery({ className = "" }: ScrollingHeroGa
 
   // Production hero images from the working backup (verified available in public folder)
   const heroImages = [
-    "/beach travel_1750958707105.jpg",
     "/travel photo group map_1750993025212.jpeg", 
     "/travelers coffee_1750995178947.png",
     "/pexels-olly-2672979_1750959255667.jpg"
