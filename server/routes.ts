@@ -7335,9 +7335,9 @@ Ready to start making real connections wherever you are?
       // Get all active chatrooms
       const allChatrooms = await db.select().from(citychatrooms).where(eq(citychatrooms.isActive, true));
       
-      // Get member counts using raw query for reliability
+      // Get member counts using raw query for reliability - FIXED COUNT
       const memberCountResults = await db.execute(sql`
-        SELECT chatroom_id as "chatroomId", COUNT(*)::integer as "memberCount"
+        SELECT chatroom_id as "chatroomId", COUNT(DISTINCT user_id)::integer as "memberCount"
         FROM chatroom_members 
         WHERE is_active = true 
         GROUP BY chatroom_id
@@ -7500,6 +7500,66 @@ Ready to start making real connections wherever you are?
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error sending chatroom message:", error);
       return res.status(500).json({ message: "Failed to send message" });
+    }
+  });
+
+  // Get individual chatroom details
+  app.get("/api/chatrooms/:roomId", async (req, res) => {
+    try {
+      const roomId = parseInt(req.params.roomId || '0');
+      
+      // Get chatroom details
+      const chatroom = await db.select().from(citychatrooms).where(eq(citychatrooms.id, roomId)).limit(1);
+      
+      if (chatroom.length === 0) {
+        return res.status(404).json({ message: "Chatroom not found" });
+      }
+
+      // Get member count
+      const memberCountResult = await db.execute(sql`
+        SELECT COUNT(DISTINCT user_id)::integer as "memberCount"
+        FROM chatroom_members 
+        WHERE chatroom_id = ${roomId} AND is_active = true
+      `);
+      
+      const memberCount = memberCountResult.rows[0]?.memberCount || 0;
+
+      // Get current user's membership status
+      let userId = null;
+      if (req.headers['x-user-id']) {
+        userId = parseInt(req.headers['x-user-id'] as string || '0');
+      } else if (req.headers['x-user-data']) {
+        try {
+          const userData = JSON.parse(req.headers['x-user-data'] as string);
+          userId = userData.id;
+        } catch (e) {
+          // Ignore parsing error
+        }
+      }
+
+      let userIsMember = false;
+      if (userId) {
+        const membership = await db.select()
+          .from(chatroomMembers)
+          .where(and(
+            eq(chatroomMembers.chatroomId, roomId),
+            eq(chatroomMembers.userId, userId),
+            eq(chatroomMembers.isActive, true)
+          ))
+          .limit(1);
+        userIsMember = membership.length > 0;
+      }
+
+      const chatroomWithDetails = {
+        ...chatroom[0],
+        memberCount,
+        userIsMember
+      };
+
+      res.json(chatroomWithDetails);
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error fetching chatroom details:", error);
+      res.status(500).json({ message: "Failed to fetch chatroom details" });
     }
   });
 

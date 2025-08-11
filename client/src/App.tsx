@@ -56,6 +56,7 @@ import HiddenGems from "@/pages/hidden-gems";
 import PlanTrip from "@/pages/plan-trip";
 import TravelIntentQuiz from "@/pages/TravelIntentQuiz";
 import CityChatrooms from "@/pages/city-chatrooms";
+import Chatroom from "@/pages/chatroom";
 
 import BusinessOffers from "@/pages/business-offers";
 import BusinessDashboard from "@/pages/business-dashboard";
@@ -643,6 +644,11 @@ function Router() {
     if (location.startsWith('/event-details/')) {
       const eventId = location.split('/')[2];
       return <EventDetails eventId={eventId} />;
+    }
+
+    if (location.startsWith('/chatroom/')) {
+      const chatroomId = location.split('/')[2];
+      return <Chatroom id={chatroomId} />;
     }
 
     if (location.startsWith('/city-chatrooms/')) {

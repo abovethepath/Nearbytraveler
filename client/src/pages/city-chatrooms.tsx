@@ -198,10 +198,11 @@ export default function CityChatroomsPage() {
                       <div className="flex gap-2">
                         <Button 
                           className="flex-1 bg-green-600 hover:bg-green-700 text-white"
-                          disabled
+                          onClick={() => window.open(`/chatroom/${chatroom.id}`, '_blank')}
+                          data-testid={`button-open-chat-${chatroom.id}`}
                         >
                           <MessageCircle className="w-4 h-4 mr-2" />
-                          Joined
+                          Open Chat
                         </Button>
                         <Button
                           variant="outline"
@@ -209,6 +210,7 @@ export default function CityChatroomsPage() {
                           onClick={() => leaveMutation.mutate(chatroom.id)}
                           disabled={leaveMutation.isPending}
                           className="border-red-300 text-red-600 hover:bg-red-50 dark:border-red-700 dark:text-red-400 dark:hover:bg-red-900/20"
+                          data-testid={`button-leave-${chatroom.id}`}
                         >
                           Leave
                         </Button>
@@ -218,6 +220,7 @@ export default function CityChatroomsPage() {
                         className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                         onClick={() => joinMutation.mutate(chatroom.id)}
                         disabled={joinMutation.isPending}
+                        data-testid={`button-join-${chatroom.id}`}
                       >
                         {joinMutation.isPending ? (
                           <Loader2 className="w-4 h-4 mr-2 animate-spin" />
