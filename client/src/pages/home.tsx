@@ -200,61 +200,23 @@ export default function Home() {
     return effectiveUser?.location || 'Unknown';
   };
 
-  // Background photo rotation with production versioning system
+  // Background photo rotation with authentic production photos
   const heroPhotos = useMemo(() => {
     return [
       {
-        url: getVersionedCityImage(
-          'Global',
-          '',
-          '',
-          '/attached_assets/beach%20travel_1750958707105.jpg'
-        ),
+        url: '/beach travel_1750958707105.jpg',
         position: 'center'
       },
       {
-        url: getVersionedCityImage(
-          'Global',
-          '',
-          '',
-          '/attached_assets/Travelers%20Sharing%20a%20Beer_1749576612655.png'
-        ),
-        position: 'center'
-      },
-      {
-        url: getVersionedCityImage(
-          'Global',
-          '',
-          '',
-          '/attached_assets/friends%20at%20the%20beach%20night_1749679112617.webp'
-        ),
-        position: 'center'
-      },
-      {
-        url: getVersionedCityImage(
-          'Global',
-          '',
-          '',
-          '/attached_assets/travel%20photo%20group%20map_1750993025212.jpeg'
-        ),
+        url: '/travel photo group map_1750993025212.jpeg',
         position: 'center top'
       },
       {
-        url: getVersionedCityImage(
-          'Global',
-          '',
-          '',
-          '/attached_assets/travelers%20coffee_1750995178947.png'
-        ),
+        url: '/travelers coffee_1750995178947.png',
         position: 'center'
       },
       {
-        url: getVersionedCityImage(
-          'Global',
-          '',
-          '',
-          '/attached_assets/4%20travelers%20around%20map%20in%20town_1750995541992.webp'
-        ),
+        url: '/pexels-olly-2672979_1750959255667.jpg',
         position: 'center'
       }
     ];
@@ -262,11 +224,16 @@ export default function Home() {
 
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
 
-  // Rotate photos every 60 seconds
+  // Rotate photos every 5 seconds for demo purposes
   useEffect(() => {
+    console.log('🖼️ Home Hero: Initializing photo rotation with', heroPhotos.length, 'photos');
     const interval = setInterval(() => {
-      setCurrentPhotoIndex((prevIndex) => (prevIndex + 1) % heroPhotos.length);
-    }, 60000);
+      setCurrentPhotoIndex((prevIndex) => {
+        const newIndex = (prevIndex + 1) % heroPhotos.length;
+        console.log('🖼️ Home Hero: Rotating to photo', newIndex, heroPhotos[newIndex]?.url);
+        return newIndex;
+      });
+    }, 5000);
 
     return () => clearInterval(interval);
   }, [heroPhotos.length]);
