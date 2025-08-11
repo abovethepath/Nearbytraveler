@@ -91,7 +91,7 @@ import TravelAgentPage from "@/pages/travel-agent-page";
 import WelcomeTravelAgent from "@/pages/welcome-travel-agent";
 import QuickLogin from "@/pages/quick-login";
 import MatchInCity from "@/pages/match-in-city";
-import ActivitySearch from "@/pages/activity-search";
+
 
 import Navbar from "@/components/navbar";
 // Removed conflicting MobileNav - using MobileTopNav and MobileBottomNav instead
@@ -749,8 +749,7 @@ function Router() {
         return <Discover />;
       case '/match-in-city':
         return <MatchInCity />;
-      case '/activity-search':
-        return <ActivitySearch />;
+
       case '/connect':
         return <Connect />;
       case '/matches':

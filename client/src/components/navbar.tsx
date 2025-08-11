@@ -427,13 +427,7 @@ function Navbar() {
                         <span className="mr-2">🏷️</span>
                         <span>Deals & Offers</span>
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => {
-                        setLocation('/activity-search');
-                        setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
-                      }}>
-                        <span className="mr-2">🔍</span>
-                        <span>Find Activity</span>
-                      </DropdownMenuItem>
+
                       <DropdownMenuItem onClick={() => {
                         setLocation('/welcome');
                         setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
