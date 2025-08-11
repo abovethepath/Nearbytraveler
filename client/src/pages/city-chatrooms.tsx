@@ -141,7 +141,21 @@ export default function CityChatroomsPage({ cityFilter }: CityChatroomsPageProps
     refetchInterval: 5000 // Auto-refresh messages every 5 seconds
   });
 
+  // Fetch chatroom members for selected chatroom
+  const { data: chatroomMembers, isLoading: membersLoading } = useQuery({
+    queryKey: ['/api/chatrooms', selectedChatroom?.id, 'members'],
+    queryFn: async () => {
+      if (!selectedChatroom) return [];
+      const response = await apiRequest('GET', `/api/chatrooms/${selectedChatroom.id}/members`);
+      const data = await response.json();
+      return Array.isArray(data) ? data : [];
+    },
+    enabled: !!selectedChatroom,
+    staleTime: 30000 // Refresh every 30 seconds
+  });
+
   const messages: ChatroomMessage[] = Array.isArray(messagesData) ? messagesData : [];
+  const members: any[] = Array.isArray(chatroomMembers) ? chatroomMembers : [];
 
   // Send message mutation
   const sendMessageMutation = useMutation({
@@ -357,7 +371,7 @@ export default function CityChatroomsPage({ cityFilter }: CityChatroomsPageProps
         </div>
 
         {selectedChatroom ? (
-          /* Chat View */
+          /* Chat View with Member Sidebar */
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm h-[600px] flex flex-col">
             {/* Chat Header */}
             <div className="p-4 border-b border-gray-200 dark:border-gray-700">
@@ -372,6 +386,17 @@ export default function CityChatroomsPage({ cityFilter }: CityChatroomsPageProps
                     {selectedChatroom.memberCount} members
                   </Badge>
                 )}
+                {!selectedChatroom.userIsMember && (
+                  <Button
+                    size="sm"
+                    onClick={() => joinChatroomMutation.mutate(selectedChatroom.id)}
+                    disabled={joinChatroomMutation.isPending}
+                    className="bg-blue-600 hover:bg-blue-700 text-white ml-auto"
+                  >
+                    <UserPlus className="w-3 h-3 mr-1" />
+                    Join Chatroom
+                  </Button>
+                )}
               </div>
               {selectedChatroom.description && (
                 <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
@@ -380,66 +405,116 @@ export default function CityChatroomsPage({ cityFilter }: CityChatroomsPageProps
               )}
             </div>
 
-            {/* Messages */}
-            <ScrollArea className="flex-1 p-4">
-              {messagesLoading ? (
-                <div className="flex items-center justify-center h-32">
-                  <Loader2 className="w-6 h-6 animate-spin" />
-                </div>
-              ) : messages.length === 0 ? (
-                <div className="text-center text-gray-500 py-8">
-                  <MessageCircle className="w-12 h-12 mx-auto mb-2 opacity-50" />
-                  <p>No messages yet. Start the conversation!</p>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {messages.map((message) => (
-                    <div 
-                      key={message.id} 
-                      className={`flex ${message.senderId === currentUser?.id ? 'justify-end' : 'justify-start'}`}
-                    >
-                      <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-                        message.senderId === currentUser?.id 
-                          ? 'bg-blue-500 text-white' 
-                          : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white'
-                      }`}>
-                        {message.senderId !== currentUser?.id && (
-                          <p className="text-xs opacity-75 mb-1">
-                            {message.sender.name || message.sender.username}
-                          </p>
-                        )}
-                        <p>{message.content}</p>
-                        <p className="text-xs opacity-75 mt-1">
-                          {formatDistanceToNow(new Date(message.createdAt), { addSuffix: true })}
-                        </p>
-                      </div>
+            {/* Main Chat Area - Two Columns */}
+            <div className="flex flex-1 overflow-hidden">
+              {/* Messages Column */}
+              <div className="flex-1 flex flex-col">
+                <ScrollArea className="flex-1 p-4">
+                  {messagesLoading ? (
+                    <div className="flex items-center justify-center h-32">
+                      <Loader2 className="w-6 h-6 animate-spin" />
                     </div>
-                  ))}
-                  <div ref={messagesEndRef} />
-                </div>
-              )}
-            </ScrollArea>
-
-            {/* Message Input */}
-            <div className="p-4 border-t border-gray-200 dark:border-gray-700">
-              <div className="flex gap-2">
-                <Input
-                  placeholder="Type your message..."
-                  value={newMessage}
-                  onChange={(e) => setNewMessage(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSendMessage()}
-                  className="flex-1"
-                />
-                <Button 
-                  onClick={handleSendMessage}
-                  disabled={!newMessage.trim() || sendMessageMutation.isPending}
-                >
-                  {sendMessageMutation.isPending ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : messages.length === 0 ? (
+                    <div className="text-center text-gray-500 py-8">
+                      <MessageCircle className="w-12 h-12 mx-auto mb-2 opacity-50" />
+                      <p>No messages yet. Start the conversation!</p>
+                    </div>
                   ) : (
-                    <Send className="w-4 h-4" />
+                    <div className="space-y-4">
+                      {messages.map((message) => (
+                        <div 
+                          key={message.id} 
+                          className={`flex ${message.senderId === currentUser?.id ? 'justify-end' : 'justify-start'}`}
+                        >
+                          <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+                            message.senderId === currentUser?.id 
+                              ? 'bg-blue-500 text-white' 
+                              : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white'
+                          }`}>
+                            {message.senderId !== currentUser?.id && (
+                              <p className="text-xs opacity-75 mb-1">
+                                {message.sender.name || message.sender.username}
+                              </p>
+                            )}
+                            <p>{message.content}</p>
+                            <p className="text-xs opacity-75 mt-1">
+                              {formatDistanceToNow(new Date(message.createdAt), { addSuffix: true })}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                      <div ref={messagesEndRef} />
+                    </div>
                   )}
-                </Button>
+                </ScrollArea>
+
+                {/* Message Input */}
+                <div className="p-4 border-t border-gray-200 dark:border-gray-700">
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder="Type your message..."
+                      value={newMessage}
+                      onChange={(e) => setNewMessage(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSendMessage()}
+                      className="flex-1"
+                      data-testid="input-message"
+                    />
+                    <Button 
+                      onClick={handleSendMessage}
+                      disabled={!newMessage.trim() || sendMessageMutation.isPending}
+                      data-testid="button-send-message"
+                    >
+                      {sendMessageMutation.isPending ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <Send className="w-4 h-4" />
+                      )}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Members Sidebar */}
+              <div className="w-64 border-l border-gray-200 dark:border-gray-700 flex flex-col">
+                <div className="p-3 border-b border-gray-200 dark:border-gray-700">
+                  <h3 className="font-medium text-gray-900 dark:text-white flex items-center gap-2">
+                    <Users className="w-4 h-4" />
+                    Members ({members.length})
+                  </h3>
+                </div>
+                <ScrollArea className="flex-1">
+                  <div className="p-2">
+                    {membersLoading ? (
+                      <div className="flex items-center justify-center py-8">
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      </div>
+                    ) : members.length === 0 ? (
+                      <p className="text-sm text-gray-500 text-center py-4">
+                        No members loaded
+                      </p>
+                    ) : (
+                      <div className="space-y-2">
+                        {members.map((member: any) => (
+                          <div key={member.id} className="flex items-center gap-2 p-2 rounded hover:bg-gray-50 dark:hover:bg-gray-700">
+                            <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white text-sm font-medium">
+                              {(member.name || member.username || 'U').charAt(0).toUpperCase()}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                                {member.name || member.username || 'Unknown'}
+                              </p>
+                              {member.role === 'admin' && (
+                                <Badge variant="outline" className="text-xs">
+                                  Admin
+                                </Badge>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </ScrollArea>
               </div>
             </div>
           </div>
@@ -470,18 +545,19 @@ export default function CityChatroomsPage({ cityFilter }: CityChatroomsPageProps
                     <CardTitle className="flex items-center justify-between">
                       <span className="truncate">{chatroom.name}</span>
                       {chatroom.userIsMember ? (
-                        <Badge variant="default">Member</Badge>
+                        <Badge variant="default">Joined</Badge>
                       ) : (
                         <Button
                           size="sm"
-                          variant="outline"
                           onClick={(e) => {
                             e.stopPropagation();
                             joinChatroomMutation.mutate(chatroom.id);
                           }}
                           disabled={joinChatroomMutation.isPending}
+                          className="bg-blue-600 hover:bg-blue-700 text-white"
                         >
-                          <UserPlus className="w-3 h-3" />
+                          <UserPlus className="w-3 h-3 mr-1" />
+                          Join
                         </Button>
                       )}
                     </CardTitle>

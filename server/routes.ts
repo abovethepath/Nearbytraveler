@@ -7302,6 +7302,87 @@ Ready to start making real connections wherever you are?
     }
   });
 
+  // Get chatroom messages
+  app.get("/api/chatrooms/:roomId/messages", async (req, res) => {
+    try {
+      const roomId = parseInt(req.params.roomId || '0');
+      const userId = req.headers['x-user-id'];
+      
+      if (!userId) {
+        return res.status(401).json({ message: "User ID required" });
+      }
+
+      if (process.env.NODE_ENV === 'development') console.log(`🏠 CHATROOM MESSAGES: Getting messages for chatroom ${roomId}`);
+
+      const messages = await storage.getChatroomMessages(roomId);
+      return res.json(messages);
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error fetching chatroom messages:", error);
+      return res.status(500).json({ message: "Failed to fetch messages" });
+    }
+  });
+
+  // Post chatroom message
+  app.post("/api/chatrooms/:roomId/messages", async (req, res) => {
+    try {
+      const roomId = parseInt(req.params.roomId || '0');
+      const userId = req.headers['x-user-id'];
+      const { content } = req.body;
+      
+      if (!userId) {
+        return res.status(401).json({ message: "User ID required" });
+      }
+
+      if (!content?.trim()) {
+        return res.status(400).json({ message: "Message content required" });
+      }
+
+      if (process.env.NODE_ENV === 'development') console.log(`🏠 CHATROOM MESSAGE: User ${userId} sending message to chatroom ${roomId}`);
+
+      const message = await storage.createChatroomMessage(roomId, parseInt(userId as string), content.trim());
+      return res.json(message);
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error sending chatroom message:", error);
+      return res.status(500).json({ message: "Failed to send message" });
+    }
+  });
+
+  // Get chatroom members
+  app.get("/api/chatrooms/:roomId/members", async (req, res) => {
+    try {
+      const roomId = parseInt(req.params.roomId || '0');
+      const userId = req.headers['x-user-id'];
+      
+      if (!userId) {
+        return res.status(401).json({ message: "User ID required" });
+      }
+
+      if (process.env.NODE_ENV === 'development') console.log(`🏠 CHATROOM MEMBERS: Getting members for chatroom ${roomId}`);
+
+      const members = await db
+        .select({
+          id: users.id,
+          username: users.username,
+          name: users.name,
+          profileImage: users.profileImage,
+          role: chatroomMembers.role,
+          joinedAt: chatroomMembers.joinedAt
+        })
+        .from(chatroomMembers)
+        .leftJoin(users, eq(chatroomMembers.userId, users.id))
+        .where(and(
+          eq(chatroomMembers.chatroomId, roomId),
+          eq(chatroomMembers.isActive, true)
+        ))
+        .orderBy(asc(chatroomMembers.joinedAt));
+
+      return res.json(members);
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error fetching chatroom members:", error);
+      return res.status(500).json({ message: "Failed to fetch members" });
+    }
+  });
+
   // Join a chatroom
   app.post("/api/chatrooms/:roomId/join", async (req, res) => {
     try {
