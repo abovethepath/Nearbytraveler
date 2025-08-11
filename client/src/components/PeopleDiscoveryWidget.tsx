@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useLocation } from "wouter";
 import { MapPin, Heart } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useQuery } from "@tanstack/react-query";
+import { AuthContext } from "@/App";
 import type { User, UserCityInterest, TravelPlan } from "@/../../shared/schema";
 
 interface PersonCard {
@@ -35,7 +36,8 @@ export function PeopleDiscoveryWidget({
   onPersonClick 
 }: PeopleDiscoveryWidgetProps) {
   const [, setLocation] = useLocation();
-  const currentUserId = 16; // Current user for compatibility testing
+  const { user: currentUser } = useContext(AuthContext);
+  const currentUserId = currentUser?.id;
   const [displayCount, setDisplayCount] = React.useState(6); // Show 6 people initially (3x2 grid)
 
   const PersonWithCommonalities = ({ person }: { person: PersonCard }) => {
@@ -92,7 +94,7 @@ export function PeopleDiscoveryWidget({
               
               <div className="inline-flex items-center gap-1 bg-blue-500 rounded-full px-3 py-1">
                 <span className="text-white font-medium text-xs">
-                  You
+                  Your Profile
                 </span>
               </div>
             </div>
@@ -196,9 +198,9 @@ export function PeopleDiscoveryWidget({
                 </span>
               </div>
             ) : (
-              <div className="inline-flex items-center gap-1 bg-gray-400 dark:bg-gray-500 rounded-full px-3 py-1">
+              <div className="inline-flex items-center gap-1 bg-purple-500 rounded-full px-3 py-1">
                 <span className="text-white font-medium text-xs">
-                  New User
+                  Discovering...
                 </span>
               </div>
             )}
