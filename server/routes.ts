@@ -7251,34 +7251,40 @@ Ready to start making real connections wherever you are?
 
       console.log(`🔥 USER ID DETERMINED: ${userId} 🔥`);
 
-      const chatrooms = await storage.getCityChatrooms(undefined, undefined, undefined, userId);
-      console.log(`🔥 STORAGE RETURNED: ${chatrooms.length} chatrooms 🔥`);
+      // COMPLETE REBUILD: Get chatrooms with member counts and user membership in one go
+      const chatroomsRaw = await db
+        .select({
+          id: citychatrooms.id,
+          name: citychatrooms.name,
+          description: citychatrooms.description,
+          city: citychatrooms.city,
+          state: citychatrooms.state,
+          country: citychatrooms.country,
+          createdById: citychatrooms.createdById,
+          isActive: citychatrooms.isActive,
+          isPublic: citychatrooms.isPublic,
+          maxMembers: citychatrooms.maxMembers,
+          tags: citychatrooms.tags,
+          rules: citychatrooms.rules,
+          createdAt: citychatrooms.createdAt
+        })
+        .from(citychatrooms)
+        .where(eq(citychatrooms.isActive, true));
+
+      console.log(`🔥 FETCHED ${chatroomsRaw.length} raw chatrooms from database 🔥`);
       
-      // MEMBER COUNT FIX: Direct database query for member counts
-      console.log(`🔥 ABOUT TO QUERY MEMBER COUNTS... 🔥`);
-      
-      const memberCountQuery = await db
+      // Get member counts for all chatrooms
+      const memberCounts = await db
         .select({
           chatroomId: chatroomMembers.chatroomId,
-          count: sql<string>`COUNT(*)::text`.as('count')
+          count: sql<number>`COUNT(*)`.as('count')
         })
         .from(chatroomMembers)
         .where(eq(chatroomMembers.isActive, true))
         .groupBy(chatroomMembers.chatroomId);
       
-      console.log(`🔥 MEMBER COUNT QUERY EXECUTED - Results: ${memberCountQuery.length} rows 🔥`);
-      
-      const memberCountMap = new Map();
-      memberCountQuery.forEach(mc => {
-        const count = parseInt(mc.count || '0') || 3; // Default to 3 since DB shows 3 members each
-        memberCountMap.set(mc.chatroomId, count);
-        console.log(`🔥 Chatroom ${mc.chatroomId} has ${count} members 🔥`);
-      });
-      
-      console.log(`🔥 MEMBER COUNT MAP SIZE: ${memberCountMap.size} entries 🔥`);
-      
-      // Check user membership for each chatroom
-      const membershipQuery = await db
+      // Get user's memberships
+      const userMemberships = await db
         .select({
           chatroomId: chatroomMembers.chatroomId,
         })
@@ -7288,36 +7294,29 @@ Ready to start making real connections wherever you are?
           eq(chatroomMembers.isActive, true)
         ));
       
-      const userMembershipSet = new Set(membershipQuery.map(m => m.chatroomId));
-      console.log(`🔥 USER ${userId} IS MEMBER OF CHATROOMS:`, Array.from(userMembershipSet));
+      console.log(`🔥 Found ${memberCounts.length} chatroom member counts, user is member of ${userMemberships.length} chatrooms 🔥`);
       
-      // Apply correct member counts and membership status to each chatroom
-      const chatroomsWithFixedMemberCount = chatrooms.map(chatroom => {
-        const dbCount = memberCountMap.get(chatroom.id);
-        const finalCount = dbCount || 3; // Force 3 members as we know from SQL that all have 3
+      const memberCountMap = new Map(memberCounts.map(mc => [mc.chatroomId, mc.count]));
+      const userMembershipSet = new Set(userMemberships.map(m => m.chatroomId));
+      
+      // Build final chatroom objects with all data
+      const chatroomsWithFixedMemberCount = chatroomsRaw.map(chatroom => {
+        const memberCount = memberCountMap.get(chatroom.id) || 0;
         const userIsMember = userMembershipSet.has(chatroom.id);
         
-        console.log(`🔥 Chatroom ${chatroom.id} (${chatroom.name}): DB count = ${dbCount}, Final = ${finalCount}, UserIsMember = ${userIsMember} 🔥`);
+        console.log(`🔥 Chatroom ${chatroom.id}: ${memberCount} members, user is member: ${userIsMember} 🔥`);
         
         return {
           ...chatroom,
-          memberCount: finalCount,
-          userIsMember: userIsMember
+          memberCount,
+          userIsMember
         };
       });
       
-      console.log(`🔥 FIXED MEMBER COUNT: First chatroom now has memberCount=${chatroomsWithFixedMemberCount[0]?.memberCount} 🔥`);
+      console.log(`🔥 FINAL API RESPONSE: First chatroom has memberCount=${chatroomsWithFixedMemberCount[0]?.memberCount}, userIsMember=${chatroomsWithFixedMemberCount[0]?.userIsMember} 🔥`);
       console.log(`🔥 MEMBER COUNT MAP:`, Array.from(memberCountMap.entries()));
-      console.log(`🔥 MEMBER COUNT QUERY RESULT:`, memberCountQuery);
-      console.log(`🔥 FINAL API RESPONSE:`, JSON.stringify(chatroomsWithFixedMemberCount[0], null, 2));
       
-      // Add timestamp to force cache bypass
-      const responseWithTimestamp = chatroomsWithFixedMemberCount.map(room => ({
-        ...room,
-        _timestamp: Date.now()
-      }));
-      
-      res.json(responseWithTimestamp);
+      res.json(chatroomsWithFixedMemberCount);
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("🔥 ERROR IN MY-LOCATIONS ROUTE:", error);
       res.status(500).json({ message: "Failed to fetch location chatrooms" });
