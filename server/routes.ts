@@ -37,6 +37,7 @@ import {
   cityPhotos,
   citychatrooms,
   chatroomMembers,
+  chatroomMessages,
   businessOffers,
   cityPages,
   cityActivities,
@@ -11128,6 +11129,67 @@ Ready to start making real connections wherever you are?
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error deleting user event interest:", error);
       return res.status(500).json({ message: "Failed to delete event interest", error: error.message });
+    }
+  });
+
+  // Simple Chatroom System - Clean rebuild
+  app.get('/api/simple-chatrooms/:id', async (req, res) => {
+    try {
+      const chatroomId = parseInt(req.params.id);
+      const [chatroom] = await db.select().from(citychatrooms).where(eq(citychatrooms.id, chatroomId));
+      res.json(chatroom);
+    } catch (error) {
+      console.error('Error fetching chatroom:', error);
+      res.status(500).json({ error: 'Failed to fetch chatroom' });
+    }
+  });
+
+  app.get('/api/simple-chatrooms/:id/messages', async (req, res) => {
+    try {
+      const chatroomId = parseInt(req.params.id);
+      const messages = await db.select({
+        id: chatroomMessages.id,
+        chatroom_id: chatroomMessages.chatroomId,
+        sender_id: chatroomMessages.senderId,
+        content: chatroomMessages.content,
+        created_at: chatroomMessages.createdAt,
+        username: users.username,
+        name: users.name
+      })
+      .from(chatroomMessages)
+      .leftJoin(users, eq(chatroomMessages.senderId, users.id))
+      .where(eq(chatroomMessages.chatroomId, chatroomId))
+      .orderBy(chatroomMessages.createdAt);
+
+      console.log(`🔥 SIMPLE CHATROOM: Got ${messages.length} messages for room ${chatroomId}`);
+      res.json(messages);
+    } catch (error) {
+      console.error('Error fetching messages:', error);
+      res.status(500).json({ error: 'Failed to fetch messages' });
+    }
+  });
+
+  app.post('/api/simple-chatrooms/:id/messages', async (req, res) => {
+    try {
+      const chatroomId = parseInt(req.params.id);
+      const userId = req.headers['x-user-id'];
+      const { content } = req.body;
+      
+      if (!userId || !content?.trim()) {
+        return res.status(400).json({ error: 'Missing required fields' });
+      }
+
+      const [message] = await db.insert(chatroomMessages).values({
+        chatroomId,
+        senderId: parseInt(userId as string),
+        content: content.trim()
+      }).returning();
+
+      console.log(`🔥 SIMPLE CHATROOM: Created message ${message.id} in room ${chatroomId}`);
+      res.json(message);
+    } catch (error) {
+      console.error('Error creating message:', error);
+      res.status(500).json({ error: 'Failed to create message' });
     }
   });
 
