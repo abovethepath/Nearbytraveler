@@ -1004,67 +1004,7 @@ export default function MatchInCity() {
             </div>
           )}
 
-          {/* Other Cities Grid - 4 per row as requested */}
-          {filteredCities.filter(city => !isLAAreaCity(city.city, city.state)).length > 0 && (
-            <div className="mb-8">
-              {/* Other Cities Header */}
-              <div className="text-center mb-6">
-                <h2 className="text-2xl font-bold text-white mb-2">Other Cities</h2>
-                <p className="text-white/70 text-base">Limited features • Coming soon</p>
-              </div>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {filteredCities.filter(city => !isLAAreaCity(city.city, city.state)).map((city, index) => (
-                  <Card
-                    key={`other-${city.city}-${city.state}-${index}`}
-                    className="group cursor-pointer transform hover:scale-105 transition-all duration-300 overflow-hidden relative bg-white/10 backdrop-blur-sm border-white/20 hover:border-white/40"
-                    onClick={() => {
-                      setSelectedCity(city.city);
-                      window.scrollTo({ top: 0, behavior: 'smooth' });
-                    }}
-                  >
-                    <div className="relative h-24 overflow-hidden">
-                      {(() => {
-                        const photoUrl = getCityPhotoUrl(city.city);
-                        return photoUrl ? (
-                          <img
-                            src={photoUrl}
-                            alt={city.city}
-                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                            onError={(e) => {
-                              const target = e.target as HTMLImageElement;
-                              target.style.display = 'none';
-                            }}
-                          />
-                        ) : (
-                          <div className={`w-full h-full bg-gradient-to-br ${city.gradient}`}></div>
-                        );
-                      })()}
-                      <div className="absolute inset-0 bg-black/20" />
-                    </div>
-                    <CardContent className="p-3">
-                      <div className="flex items-center gap-1 mb-1">
-                        <MapPin className="w-3 h-3 text-white/80" />
-                        <h3 className="font-semibold text-sm text-white truncate">{city.city}</h3>
-                      </div>
-                      <p className="text-xs text-white/60 mb-2 truncate">
-                        {city.state && `${city.state}, `}{city.country}
-                      </p>
-                      <Button 
-                        size="sm"
-                        className="w-full text-xs bg-blue-500 hover:bg-blue-600 text-white"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSelectedCity(city.city);
-                        }}
-                      >
-                        Explore
-                      </Button>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </div>
-          )}
+
         </div>
       </div>
     );
