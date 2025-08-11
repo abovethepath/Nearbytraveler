@@ -1007,10 +1007,6 @@ export default function MatchInCity() {
           {/* Other Cities Grid - 4 per row as requested */}
           {filteredCities.filter(city => !isLAAreaCity(city.city, city.state)).length > 0 && (
             <div className="mb-8">
-              {/* Other Cities Header */}
-              <div className="text-center mb-6">
-                <h2 className="text-2xl font-bold text-white mb-2">Other Cities</h2>
-              </div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {filteredCities.filter(city => !isLAAreaCity(city.city, city.state)).map((city, index) => (
                   <Card
