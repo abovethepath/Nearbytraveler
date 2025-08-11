@@ -2401,14 +2401,32 @@ export default function Home() {
             {(() => {
               // Priority 1: If user has active travel plans, show current travel destination
               const activeTravelPlan = travelPlans?.find(plan => plan.status === 'active');
-              if (activeTravelPlan?.destinationCity) {
-                return (
-                  <CityMap 
-                    city={activeTravelPlan.destinationCity} 
-                    state={activeTravelPlan.destinationState}
-                    country={activeTravelPlan.destinationCountry} 
-                  />
-                );
+              
+              if (activeTravelPlan) {
+                // Use structured fields if available, otherwise parse destination string
+                if (activeTravelPlan.destinationCity) {
+                  return (
+                    <CityMap 
+                      city={activeTravelPlan.destinationCity} 
+                      state={activeTravelPlan.destinationState}
+                      country={activeTravelPlan.destinationCountry} 
+                    />
+                  );
+                } else if (activeTravelPlan.destination) {
+                  // Parse destination string "City, State, Country" 
+                  const parts = activeTravelPlan.destination.split(', ');
+                  const city = parts[0];
+                  const state = parts.length > 2 ? parts[1] : undefined;
+                  const country = parts.length > 1 ? parts[parts.length - 1] : undefined;
+                  
+                  return (
+                    <CityMap 
+                      city={city} 
+                      state={state}
+                      country={country} 
+                    />
+                  );
+                }
               }
               
               // Priority 2: Fallback to hometown if no active travel
