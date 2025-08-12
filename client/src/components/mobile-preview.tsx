@@ -50,7 +50,8 @@ export default function MobilePreview({ children }: MobilePreviewProps) {
                   transformOrigin: 'top left', 
                   width: '250%', 
                   minHeight: '250%',
-                  height: 'auto'
+                  height: 'auto',
+                  pointerEvents: 'auto'
                 }}>
                   {children}
                 </div>

@@ -259,8 +259,12 @@ export default function SignupTraveling() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setLocation('/join')}
-                className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 border-blue-300 hover:border-blue-500 font-medium"
+                onClick={() => {
+                  console.log('Back button clicked - navigating to /join');
+                  setLocation('/join');
+                }}
+                className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 border-blue-300 hover:border-blue-500 font-medium touch-manipulation"
+                data-testid="button-back"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back
