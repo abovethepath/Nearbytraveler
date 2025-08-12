@@ -359,6 +359,7 @@ export default function Landing() {
         {/* Orange and blue gradient background */}
         <div className="absolute inset-0 bg-gradient-to-br from-orange-500 via-orange-600 to-blue-600"></div>
         <div className="absolute inset-0 bg-gradient-to-tl from-blue-700/30 via-transparent to-orange-400/20"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-600/60 via-transparent via-transparent to-transparent"></div>
         
         <div className="relative max-w-4xl mx-auto px-4">
           <div className="text-center mb-12 animate-fade-in-up">
