@@ -554,99 +554,179 @@ export default function Landing() {
         </div>
       </div>
 
-      {/* FOR LOCALS SECTION */}
-      <div id="locals" className="py-16 bg-white dark:sm:bg-gray-800 dark:bg-gray-400">
-        <div className="max-w-full mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-white mb-6 dark:drop-shadow-[0_0_8px_rgba(0,0,0,0.8)]" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700'}}>
-                🏠 Locals: Your City, Through Your Eyes
-              </h2>
-              <p className="text-lg text-gray-600 dark:text-gray-300 mb-6">
-                You know your city best. You create the experiences that make travelers fall in love 
-                with your hometown. You're not just participating - you're leading.
-              </p>
-              <ul className="space-y-4 text-gray-600 dark:text-gray-300">
-                <li className="flex items-start">
-                  <span className="text-teal-500 mr-3">✓</span>
-                  <span><strong>Host Events:</strong> Beach BBQs, hiking trips, cultural tours - share what you love</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-teal-500 mr-3">✓</span>
-                  <span><strong>Share Hidden Gems:</strong> Your secret spots become unforgettable discoveries</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-teal-500 mr-3">✓</span>
-                  <span><strong>Make Connections:</strong> Connect with other locals and welcome travelers</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-teal-500 mr-3">✓</span>
-                  <span><strong>Build Community:</strong> Create lasting friendships with fellow travelers and locals who share your interests</span>
-                </li>
-              </ul>
+      {/* FOR LOCALS SECTION - REDESIGNED */}
+      <div id="locals" className="py-20 bg-gradient-to-br from-white via-blue-50 to-teal-50 dark:from-gray-800 dark:via-blue-900/10 dark:to-teal-900/10">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <div className="space-y-8">
+              <div>
+                <span className="inline-block px-4 py-2 bg-gradient-to-r from-blue-100 to-teal-100 text-blue-800 text-sm font-bold rounded-full mb-4">
+                  FOR LOCALS
+                </span>
+                <h2 className="text-4xl sm:text-5xl font-black text-gray-900 dark:text-white mb-6" style={{fontFamily: '"Open Sans", sans-serif'}}>
+                  🏠 Your City, <span className="bg-gradient-to-r from-blue-600 to-teal-600 bg-clip-text text-transparent">Your Stage</span>
+                </h2>
+                <p className="text-xl text-gray-600 dark:text-gray-300 leading-relaxed">
+                  You're not just a resident—you're the curator of unforgettable experiences. 
+                  Transform your local knowledge into magical moments for travelers.
+                </p>
+              </div>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-blue-100 dark:border-blue-800">
+                  <div className="flex items-center mb-3">
+                    <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg flex items-center justify-center mr-3">
+                      <span className="text-white text-sm font-bold">🎉</span>
+                    </div>
+                    <h3 className="font-black text-gray-900 dark:text-white">Host Epic Events</h3>
+                  </div>
+                  <p className="text-gray-600 dark:text-gray-300 text-sm">Beach BBQs, hiking adventures, cultural deep-dives</p>
+                </div>
+                
+                <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-teal-100 dark:border-teal-800">
+                  <div className="flex items-center mb-3">
+                    <div className="w-10 h-10 bg-gradient-to-r from-teal-500 to-teal-600 rounded-lg flex items-center justify-center mr-3">
+                      <span className="text-white text-sm font-bold">💎</span>
+                    </div>
+                    <h3 className="font-black text-gray-900 dark:text-white">Share Hidden Gems</h3>
+                  </div>
+                  <p className="text-gray-600 dark:text-gray-300 text-sm">Your secret spots become legendary discoveries</p>
+                </div>
+                
+                <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-purple-100 dark:border-purple-800">
+                  <div className="flex items-center mb-3">
+                    <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg flex items-center justify-center mr-3">
+                      <span className="text-white text-sm font-bold">🤝</span>
+                    </div>
+                    <h3 className="font-black text-gray-900 dark:text-white">Build Connections</h3>
+                  </div>
+                  <p className="text-gray-600 dark:text-gray-300 text-sm">Welcome travelers, connect with fellow locals</p>
+                </div>
+                
+                <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-orange-100 dark:border-orange-800">
+                  <div className="flex items-center mb-3">
+                    <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg flex items-center justify-center mr-3">
+                      <span className="text-white text-sm font-bold">🌟</span>
+                    </div>
+                    <h3 className="font-black text-gray-900 dark:text-white">Create Community</h3>
+                  </div>
+                  <p className="text-gray-600 dark:text-gray-300 text-sm">Turn strangers into lifelong friends</p>
+                </div>
+              </div>
             </div>
-            <div className="bg-gradient-to-br from-blue-100 to-orange-100 dark:from-blue-900/30 dark:to-orange-800/30 rounded-2xl p-8 text-center">
-              <div className="text-6xl mb-4">🌟</div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Expand Your Social Network</h3>
-              <p className="text-gray-700 dark:text-gray-300 mb-6">
-                Share your favorite spots, host unique events, and show travelers the authentic side of your city.
-              </p>
-              <Button 
-                onClick={() => setLocation('/join')}
-                size="lg"
-                className="bg-blue-600 hover:bg-blue-700 px-8 py-4 text-lg rounded-lg shadow-lg hover:shadow-xl text-black"
-              >
-                Join as a Nearby Local
-              </Button>
+            
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-200 to-teal-200 rounded-3xl transform rotate-3 opacity-20"></div>
+              <div className="relative bg-white dark:bg-gray-800 rounded-3xl p-10 shadow-2xl border border-blue-100 dark:border-blue-800">
+                <div className="text-center">
+                  <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-teal-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+                    <span className="text-white text-3xl">🏠</span>
+                  </div>
+                  <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-4">
+                    Become a Local Legend
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-300 mb-8 leading-relaxed">
+                    Transform your city knowledge into unforgettable experiences. 
+                    Every event you host, every secret spot you share makes you the hero of someone's travel story.
+                  </p>
+                  <Button 
+                    onClick={() => setLocation('/join')}
+                    size="lg"
+                    className="w-full bg-gradient-to-r from-blue-600 to-teal-600 hover:from-blue-700 hover:to-teal-700 text-white font-black text-lg px-8 py-4 rounded-2xl shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
+                  >
+                    Join as a Local Guide
+                  </Button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* FOR TRAVELERS SECTION */}
-      <div id="travelers" className="py-16 bg-gray-50 dark:sm:bg-gray-900 dark:bg-gray-500">
-        <div className="max-w-full mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div className="bg-gradient-to-br from-orange-100 to-orange-200 dark:from-orange-900/30 dark:to-orange-800/30 rounded-2xl p-8 text-center">
-              <div className="text-6xl mb-4">🗺️</div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Your Next Adventure Awaits</h3>
-              <p className="text-gray-700 dark:text-gray-300 mb-6">
-                Find local-led experiences and connect with fellow travelers to make your next trip unforgettable.
-              </p>
-              <Button 
-                onClick={() => setLocation('/join')}
-                size="lg"
-                className="bg-orange-600 hover:bg-orange-700 px-8 py-4 text-lg rounded-lg shadow-lg hover:shadow-xl text-black"
-              >
-                Join as a Nearby Traveler
-              </Button>
+      {/* FOR TRAVELERS SECTION - REDESIGNED */}
+      <div id="travelers" className="py-20 bg-gradient-to-br from-gray-50 via-orange-50 to-red-50 dark:from-gray-900 dark:via-orange-900/10 dark:to-red-900/10">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <div className="relative order-2 lg:order-1">
+              <div className="absolute inset-0 bg-gradient-to-br from-orange-200 to-red-200 rounded-3xl transform -rotate-3 opacity-20"></div>
+              <div className="relative bg-white dark:bg-gray-800 rounded-3xl p-10 shadow-2xl border border-orange-100 dark:border-orange-800">
+                <div className="text-center">
+                  <div className="w-20 h-20 bg-gradient-to-r from-orange-500 to-red-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+                    <span className="text-white text-3xl">🌍</span>
+                  </div>
+                  <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-4">
+                    Adventure Beyond Guidebooks
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-300 mb-8 leading-relaxed">
+                    Skip the tourist traps and dive into authentic experiences. 
+                    Connect with locals who'll show you their city's soul and fellow travelers who share your wanderlust.
+                  </p>
+                  <Button 
+                    onClick={() => setLocation('/join')}
+                    size="lg"
+                    className="w-full bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white font-black text-lg px-8 py-4 rounded-2xl shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
+                  >
+                    Start Your Adventure
+                  </Button>
+                </div>
+              </div>
             </div>
-            <div>
-              <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-white mb-6 dark:drop-shadow-[0_0_8px_rgba(0,0,0,0.8)]" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700'}}>
-                🌍 For Travelers: Discover Cities Through Connections
-              </h2>
-              <p className="text-lg text-gray-600 dark:text-gray-300 mb-6">
-                Skip the tourist traps. Connect with locals who know their cities inside out and 
-                fellow travelers who share your interests and travel dates.
-              </p>
-              <ul className="space-y-4 text-gray-600 dark:text-gray-300">
-                <li className="flex items-start">
-                  <span className="text-orange-500 mr-3">✓</span>
-                  <span><strong>Local-Created Events:</strong> Join authentic experiences designed by locals</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-orange-500 mr-3">✓</span>
-                  <span><strong>Hidden Gem Access:</strong> Discover spots tourists never find</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-orange-500 mr-3">✓</span>
-                  <span><strong>Traveler Connections:</strong> Meet people who share your travel dates and interests</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-orange-500 mr-3">✓</span>
-                  <span><strong>Insider Knowledge:</strong> Get tips that guidebooks don't have</span>
-                </li>
-              </ul>
+            
+            <div className="space-y-8 order-1 lg:order-2">
+              <div>
+                <span className="inline-block px-4 py-2 bg-gradient-to-r from-orange-100 to-red-100 text-orange-800 text-sm font-bold rounded-full mb-4">
+                  FOR TRAVELERS
+                </span>
+                <h2 className="text-4xl sm:text-5xl font-black text-gray-900 dark:text-white mb-6" style={{fontFamily: '"Open Sans", sans-serif'}}>
+                  🌍 Travel Like a <span className="bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">Local Insider</span>
+                </h2>
+                <p className="text-xl text-gray-600 dark:text-gray-300 leading-relaxed">
+                  Forget the crowds and clichés. Discover destinations through the eyes of locals 
+                  and connect with fellow adventurers who get your travel vibe.
+                </p>
+              </div>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-orange-100 dark:border-orange-800">
+                  <div className="flex items-center mb-3">
+                    <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg flex items-center justify-center mr-3">
+                      <span className="text-white text-sm font-bold">🎯</span>
+                    </div>
+                    <h3 className="font-black text-gray-900 dark:text-white">Local-Led Events</h3>
+                  </div>
+                  <p className="text-gray-600 dark:text-gray-300 text-sm">Join authentic experiences crafted by locals</p>
+                </div>
+                
+                <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-red-100 dark:border-red-800">
+                  <div className="flex items-center mb-3">
+                    <div className="w-10 h-10 bg-gradient-to-r from-red-500 to-red-600 rounded-lg flex items-center justify-center mr-3">
+                      <span className="text-white text-sm font-bold">🗺️</span>
+                    </div>
+                    <h3 className="font-black text-gray-900 dark:text-white">Hidden Gems</h3>
+                  </div>
+                  <p className="text-gray-600 dark:text-gray-300 text-sm">Discover spots that tourists never find</p>
+                </div>
+                
+                <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-pink-100 dark:border-pink-800">
+                  <div className="flex items-center mb-3">
+                    <div className="w-10 h-10 bg-gradient-to-r from-pink-500 to-pink-600 rounded-lg flex items-center justify-center mr-3">
+                      <span className="text-white text-sm font-bold">👥</span>
+                    </div>
+                    <h3 className="font-black text-gray-900 dark:text-white">Travel Buddies</h3>
+                  </div>
+                  <p className="text-gray-600 dark:text-gray-300 text-sm">Meet travelers with your dates and interests</p>
+                </div>
+                
+                <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-purple-100 dark:border-purple-800">
+                  <div className="flex items-center mb-3">
+                    <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg flex items-center justify-center mr-3">
+                      <span className="text-white text-sm font-bold">💡</span>
+                    </div>
+                    <h3 className="font-black text-gray-900 dark:text-white">Insider Tips</h3>
+                  </div>
+                  <p className="text-gray-600 dark:text-gray-300 text-sm">Get secrets that guidebooks can't provide</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
