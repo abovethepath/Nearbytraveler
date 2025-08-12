@@ -96,7 +96,7 @@ export default function Landing() {
           <div className="relative bg-gray-800 dark:bg-gray-900 pb-32 overflow-hidden min-h-[600px]">
             <div className="absolute inset-0 h-full min-h-[600px]">
               <img
-                src="/travelers coffee_1750995178947.png"
+                src="/attached_assets/beach travel_1750958707105.jpg"
                 alt="Travel experience"
                 className="w-full h-full object-cover"
                 style={{ objectPosition: 'center 70%' }}
