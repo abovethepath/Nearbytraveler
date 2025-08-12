@@ -188,7 +188,7 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-12 animate-slide-in-left">
             <h2 className="text-4xl font-black text-gray-900 mb-4">
-              Connect with Locals
+              Connect with Locals and other Travelers
             </h2>
             <p className="text-xl text-gray-600">
               Real people. Real experiences. Zero tourist traps.
