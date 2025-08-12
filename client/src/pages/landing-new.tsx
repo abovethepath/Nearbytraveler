@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useLocation, Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import Footer from "@/components/footer";
-import Navbar from "@/components/navbar";
+import LandingNavbar from "@/components/landing-navbar";
 
 import MobileDebug from "@/components/mobile-debug";
 import MobilePreview from "@/components/mobile-preview";
@@ -72,8 +72,8 @@ function LandingContent({ setLocation }: { setLocation: (path: string) => void }
       {/* Mobile Debug Info */}
       <MobileDebug />
       
-      {/* Main Navigation - responsive for all screen sizes */}
-      <Navbar />
+      {/* Landing Page Navigation */}
+      <LandingNavbar />
       
       {/* Orange Sign-Up Header Bar for Mobile */}
       <div className="bg-orange-500 text-black text-center py-2 md:hidden sticky top-16 z-30">
