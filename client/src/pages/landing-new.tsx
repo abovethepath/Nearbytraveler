@@ -439,90 +439,117 @@ export default function Landing() {
         </div>
       </div>
 
-      {/* HOW IT WORKS SECTION - SIMPLIFIED */}
-      <div className="bg-gray-50 dark:sm:bg-gray-900 dark:bg-gray-500 py-12 sm:py-16">
-        <div className="max-w-full mx-auto">
-          <div className="text-center mb-8 sm:mb-12">
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white lg:text-4xl px-4" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700'}}>
-              How It Works
+      {/* HOW IT WORKS SECTION - SEXY REDESIGN */}
+      <div className="py-20 bg-gradient-to-br from-gray-50 via-blue-50 to-orange-50 dark:from-gray-900 dark:via-blue-900/20 dark:to-orange-900/20">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center mb-16">
+            <span className="inline-block px-6 py-2 bg-gradient-to-r from-blue-100 to-orange-100 text-blue-800 text-sm font-bold rounded-full mb-4 animate-pulse">
+              HOW IT WORKS
+            </span>
+            <h2 className="text-4xl sm:text-5xl font-black text-gray-900 dark:text-white mb-6" style={{fontFamily: '"Open Sans", sans-serif'}}>
+              From Stranger to <span className="bg-gradient-to-r from-blue-600 to-orange-600 bg-clip-text text-transparent">Adventure Buddy</span>
             </h2>
-            <p className="mt-4 text-base sm:text-lg text-gray-600 dark:text-gray-300 px-4">
-              Simple steps to connect with locals and travelers worldwide
+            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
+              Three simple steps that transform your travel experience from ordinary to extraordinary
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-            {/* Step 1: Join */}
-            <div className="text-center">
-              <div className="relative mb-6">
-                <div className="w-28 h-28 rounded-lg border-2 border-amber-400 flex items-center justify-center bg-white shadow-md mx-auto">
-                  <div className="w-full h-full flex items-center justify-center">
-                    <img 
-                      src="/step1-icon_1753297128966.png" 
-                      alt="Join Nearby Traveler" 
-                      className="w-20 h-20 object-contain"
-                      onError={(e) => {
-                        console.log('Step 1 icon failed to load, using fallback');
-                        (e.target as HTMLImageElement).style.display = 'none';
-                        (e.target as HTMLImageElement).parentElement!.innerHTML = '<div class="w-20 h-20 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full flex items-center justify-center text-white text-2xl font-bold">1</div>';
-                      }}
-                    />
+          <div className="relative">
+            {/* Connection line */}
+            <div className="hidden md:block absolute top-24 left-1/2 transform -translate-x-1/2 w-full max-w-4xl">
+              <div className="h-1 bg-gradient-to-r from-blue-300 via-purple-300 to-orange-300 rounded-full opacity-30"></div>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
+              {/* Step 1: Join */}
+              <div className="group">
+                <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-300 border border-blue-100 dark:border-blue-800">
+                  <div className="relative mb-8">
+                    <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg group-hover:shadow-xl transition-all duration-300">
+                      <span className="text-white text-2xl font-black">1</span>
+                    </div>
+                    <div className="absolute -top-2 -right-2 w-6 h-6 bg-blue-400 rounded-full animate-bounce"></div>
+                  </div>
+                  <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-4 text-center">
+                    Join the Movement
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-300 text-center leading-relaxed">
+                    Sign up in 60 seconds. Share your travel style, interests, and dream destinations. Our AI matches you with your perfect travel tribe.
+                  </p>
+                  <div className="mt-6 flex justify-center">
+                    <div className="flex space-x-1">
+                      <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+                      <div className="w-2 h-2 bg-blue-300 rounded-full animate-pulse" style={{animationDelay: '0.2s'}}></div>
+                      <div className="w-2 h-2 bg-blue-200 rounded-full animate-pulse" style={{animationDelay: '0.4s'}}></div>
+                    </div>
                   </div>
                 </div>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">Join Nearby Traveler</h3>
-              <p className="text-gray-600 dark:text-gray-300">
-                Join Nearby Traveler to help shape the future of travel connections, sharing your interests and travel style for personalized matches.
-              </p>
-            </div>
 
-            {/* Step 2: Connect */}
-            <div className="text-center">
-              <div className="relative mb-6">
-                <div className="w-28 h-28 rounded-lg border-2 border-amber-400 flex items-center justify-center bg-white shadow-md mx-auto">
-                  <div className="w-full h-full flex items-center justify-center">
-                    <img 
-                      src="/step2-icon_1753297145395.png" 
-                      alt="Connect with People" 
-                      className="w-20 h-20 object-contain"
-                      onError={(e) => {
-                        console.log('Step 2 icon failed to load, using fallback');
-                        (e.target as HTMLImageElement).style.display = 'none';
-                        (e.target as HTMLImageElement).parentElement!.innerHTML = '<div class="w-20 h-20 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full flex items-center justify-center text-white text-2xl font-bold">2</div>';
-                      }}
-                    />
+              {/* Step 2: Connect */}
+              <div className="group">
+                <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-300 border border-purple-100 dark:border-purple-800">
+                  <div className="relative mb-8">
+                    <div className="w-20 h-20 bg-gradient-to-r from-purple-500 to-orange-500 rounded-2xl flex items-center justify-center mx-auto shadow-lg group-hover:shadow-xl transition-all duration-300">
+                      <span className="text-white text-2xl font-black">2</span>
+                    </div>
+                    <div className="absolute -top-2 -right-2 w-6 h-6 bg-purple-400 rounded-full animate-bounce" style={{animationDelay: '0.5s'}}></div>
+                  </div>
+                  <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-4 text-center">
+                    Make Real Connections
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-300 text-center leading-relaxed">
+                    Chat with locals who know secret spots and fellow travelers heading to your destination. No awkward small talk - just shared adventures.
+                  </p>
+                  <div className="mt-6 flex justify-center">
+                    <div className="flex space-x-1">
+                      <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse"></div>
+                      <div className="w-2 h-2 bg-purple-300 rounded-full animate-pulse" style={{animationDelay: '0.2s'}}></div>
+                      <div className="w-2 h-2 bg-orange-300 rounded-full animate-pulse" style={{animationDelay: '0.4s'}}></div>
+                    </div>
                   </div>
                 </div>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">Connect</h3>
-              <p className="text-gray-600 dark:text-gray-300">
-                Connect with Nearby Travelers and Locals who share your interests and travel dates.
-              </p>
-            </div>
 
-            {/* Step 3: Explore */}
-            <div className="text-center">
-              <div className="relative mb-6">
-                <div className="w-28 h-28 rounded-lg border-2 border-amber-400 flex items-center justify-center bg-white shadow-md mx-auto">
-                  <div className="w-full h-full flex items-center justify-center">
-                    <img 
-                      src="/step3-icon_1753297157985.png" 
-                      alt="Explore and Discover" 
-                      className="w-20 h-20 object-contain"
-                      onError={(e) => {
-                        console.log('Step 3 icon failed to load, using fallback');
-                        (e.target as HTMLImageElement).style.display = 'none';
-                        (e.target as HTMLImageElement).parentElement!.innerHTML = '<div class="w-20 h-20 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full flex items-center justify-center text-white text-2xl font-bold">3</div>';
-                      }}
-                    />
+              {/* Step 3: Explore */}
+              <div className="group">
+                <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-300 border border-orange-100 dark:border-orange-800">
+                  <div className="relative mb-8">
+                    <div className="w-20 h-20 bg-gradient-to-r from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg group-hover:shadow-xl transition-all duration-300">
+                      <span className="text-white text-2xl font-black">3</span>
+                    </div>
+                    <div className="absolute -top-2 -right-2 w-6 h-6 bg-orange-400 rounded-full animate-bounce" style={{animationDelay: '1s'}}></div>
+                  </div>
+                  <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-4 text-center">
+                    Create Epic Memories
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-300 text-center leading-relaxed">
+                    Join authentic experiences, discover hidden gems, and turn strangers into lifelong friends. This is travel the way it's meant to be.
+                  </p>
+                  <div className="mt-6 flex justify-center">
+                    <div className="flex space-x-1">
+                      <div className="w-2 h-2 bg-orange-400 rounded-full animate-pulse"></div>
+                      <div className="w-2 h-2 bg-orange-300 rounded-full animate-pulse" style={{animationDelay: '0.2s'}}></div>
+                      <div className="w-2 h-2 bg-orange-200 rounded-full animate-pulse" style={{animationDelay: '0.4s'}}></div>
+                    </div>
                   </div>
                 </div>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">Explore</h3>
-              <p className="text-gray-600 dark:text-gray-300">
-                Explore your destination with your new connections.
-              </p>
             </div>
+          </div>
+
+          {/* Call to Action */}
+          <div className="text-center mt-16">
+            <Button 
+              onClick={() => setLocation('/join')}
+              size="lg"
+              className="bg-gradient-to-r from-blue-600 to-orange-600 hover:from-blue-700 hover:to-orange-700 text-white font-black text-xl px-12 py-6 rounded-2xl shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
+            >
+              Start Your Adventure Now
+            </Button>
+            <p className="text-gray-500 dark:text-gray-400 mt-4 text-sm">
+              Join thousands of travelers already making connections
+            </p>
           </div>
         </div>
       </div>
