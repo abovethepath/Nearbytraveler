@@ -556,9 +556,9 @@ export default function Landing() {
                     <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg flex items-center justify-center mr-3">
                       <span className="text-white text-sm font-bold">🎉</span>
                     </div>
-                    <h3 className="font-black text-gray-900 dark:text-white">Host Epic Events</h3>
+                    <h3 className="font-black text-black dark:text-white">Host Epic Events</h3>
                   </div>
-                  <p className="text-gray-600 dark:text-gray-300 text-sm">Beach BBQs, hiking adventures, cultural deep-dives</p>
+                  <p className="text-gray-800 dark:text-gray-300 text-sm font-medium">Beach BBQs, hiking adventures, cultural deep-dives</p>
                 </div>
                 
                 <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-teal-100 dark:border-teal-800">
@@ -566,9 +566,9 @@ export default function Landing() {
                     <div className="w-10 h-10 bg-gradient-to-r from-teal-500 to-teal-600 rounded-lg flex items-center justify-center mr-3">
                       <span className="text-white text-sm font-bold">💎</span>
                     </div>
-                    <h3 className="font-black text-gray-900 dark:text-white">Share Hidden Gems</h3>
+                    <h3 className="font-black text-black dark:text-white">Share Hidden Gems</h3>
                   </div>
-                  <p className="text-gray-600 dark:text-gray-300 text-sm">Your secret spots become legendary discoveries</p>
+                  <p className="text-gray-800 dark:text-gray-300 text-sm font-medium">Your secret spots become legendary discoveries</p>
                 </div>
                 
                 <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-purple-100 dark:border-purple-800">
@@ -576,9 +576,9 @@ export default function Landing() {
                     <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg flex items-center justify-center mr-3">
                       <span className="text-white text-sm font-bold">🤝</span>
                     </div>
-                    <h3 className="font-black text-gray-900 dark:text-white">Build Connections</h3>
+                    <h3 className="font-black text-black dark:text-white">Build Connections</h3>
                   </div>
-                  <p className="text-gray-600 dark:text-gray-300 text-sm">Welcome travelers, connect with fellow locals</p>
+                  <p className="text-gray-800 dark:text-gray-300 text-sm font-medium">Welcome travelers, connect with fellow locals</p>
                 </div>
                 
                 <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-orange-100 dark:border-orange-800">
@@ -586,9 +586,9 @@ export default function Landing() {
                     <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg flex items-center justify-center mr-3">
                       <span className="text-white text-sm font-bold">🌟</span>
                     </div>
-                    <h3 className="font-black text-gray-900 dark:text-white">Create Community</h3>
+                    <h3 className="font-black text-black dark:text-white">Create Community</h3>
                   </div>
-                  <p className="text-gray-600 dark:text-gray-300 text-sm">Turn strangers into lifelong friends</p>
+                  <p className="text-gray-800 dark:text-gray-300 text-sm font-medium">Turn strangers into lifelong friends</p>
                 </div>
               </div>
             </div>
