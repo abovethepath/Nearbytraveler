@@ -196,7 +196,7 @@ export default function Landing() {
           </div>
           
           {/* Event Cards - Modern Lu.ma style */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 
             {/* Beach Bonfire Event Card */}
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-2xl transform transition-all duration-300">
@@ -256,6 +256,35 @@ export default function Landing() {
               </div>
             </div>
             
+            {/* Hollywood Sign Hike Event Card */}
+            <div className="bg-white rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-2xl transform transition-all duration-300" style={{animationDelay: '0.3s'}}>
+              <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-blue-500 to-indigo-600">
+                <img 
+                  src="/attached_assets/Los_Angeles_Metro_1754944437196.jpg" 
+                  alt="Hollywood Sign hike with city views" 
+                  className="w-full h-48 object-cover"
+                />
+              </div>
+              <div className="p-6">
+                <div className="flex items-center mb-3">
+                  <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold mr-3">
+                    🥾
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-gray-900">Hollywood Sign Hike</h3>
+                    <p className="text-sm text-gray-600">Every Saturday • 9:00 AM</p>
+                  </div>
+                </div>
+                <p className="text-gray-700 text-sm mb-4">Weekly hike to the iconic Hollywood Sign with locals and travelers. Amazing city views, great photos, and authentic LA hiking culture.</p>
+                <Button 
+                  onClick={() => setLocation('/join')}
+                  className="w-full bg-orange-500 hover:bg-orange-600 text-black font-bold"
+                >
+                  JOIN TO CONNECT
+                </Button>
+              </div>
+            </div>
+
             {/* Venice Beach Dance Party Event Card */}
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-2xl transform transition-all duration-300" style={{animationDelay: '0.4s'}}>
               <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-purple-500 to-pink-500">
