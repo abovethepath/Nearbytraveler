@@ -558,7 +558,7 @@ export default function Landing() {
                     </div>
                     <h3 className="font-black text-black dark:text-white">Host Epic Events</h3>
                   </div>
-                  <p className="text-gray-800 dark:text-gray-300 text-sm font-medium">Beach BBQs, hiking adventures, cultural deep-dives</p>
+                  <p className="text-black dark:text-gray-300 text-sm font-semibold">Beach BBQs, hiking adventures, cultural deep-dives</p>
                 </div>
                 
                 <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-teal-100 dark:border-teal-800">
@@ -568,7 +568,7 @@ export default function Landing() {
                     </div>
                     <h3 className="font-black text-black dark:text-white">Share Hidden Gems</h3>
                   </div>
-                  <p className="text-gray-800 dark:text-gray-300 text-sm font-medium">Your secret spots become legendary discoveries</p>
+                  <p className="text-black dark:text-gray-300 text-sm font-semibold">Your secret spots become legendary discoveries</p>
                 </div>
                 
                 <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-purple-100 dark:border-purple-800">
@@ -578,7 +578,7 @@ export default function Landing() {
                     </div>
                     <h3 className="font-black text-black dark:text-white">Build Connections</h3>
                   </div>
-                  <p className="text-gray-800 dark:text-gray-300 text-sm font-medium">Welcome travelers, connect with fellow locals</p>
+                  <p className="text-black dark:text-gray-300 text-sm font-semibold">Welcome travelers, connect with fellow locals</p>
                 </div>
                 
                 <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-orange-100 dark:border-orange-800">
@@ -588,7 +588,7 @@ export default function Landing() {
                     </div>
                     <h3 className="font-black text-black dark:text-white">Create Community</h3>
                   </div>
-                  <p className="text-gray-800 dark:text-gray-300 text-sm font-medium">Turn strangers into lifelong friends</p>
+                  <p className="text-black dark:text-gray-300 text-sm font-semibold">Turn strangers into lifelong friends</p>
                 </div>
               </div>
             </div>
