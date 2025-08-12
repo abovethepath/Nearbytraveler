@@ -250,15 +250,34 @@ function EventsWidget({ userId }: EventsWidgetProps) {
                       </span>
                     )}
                     
-                    {/* Show specific event tags (not category) */}
-                    {event.tags && event.tags.length > 0 && event.tags.slice(0, 2).map((tag: string, index: number) => (
-                      <span 
-                        key={index}
-                        className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
-                      >
-                        {tag}
-                      </span>
-                    ))}
+                    {/* Show specific event tags (not category) - filter out redundant tags */}
+                    {event.tags && event.tags.length > 0 && event.tags
+                      .filter((tag: string) => {
+                        // Filter out tags that are redundant with the main category
+                        const categoryLower = event.category.toLowerCase();
+                        const tagLower = tag.toLowerCase();
+                        
+                        // Remove tags that are already covered by the category
+                        if (categoryLower.includes('health') && tagLower.includes('health')) return false;
+                        if (categoryLower.includes('wellness') && tagLower.includes('wellness')) return false;
+                        if (categoryLower.includes('sports') && tagLower.includes('sports')) return false;
+                        if (categoryLower.includes('fitness') && tagLower.includes('fitness')) return false;
+                        if (categoryLower.includes('entertainment') && tagLower.includes('entertainment')) return false;
+                        if (categoryLower.includes('food') && (tagLower.includes('food') || tagLower.includes('dining'))) return false;
+                        if (categoryLower.includes('dining') && (tagLower.includes('food') || tagLower.includes('dining'))) return false;
+                        if (categoryLower.includes('family') && tagLower.includes('family')) return false;
+                        
+                        return true;
+                      })
+                      .slice(0, 2)
+                      .map((tag: string, index: number) => (
+                        <span 
+                          key={index}
+                          className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+                        >
+                          {tag}
+                        </span>
+                      ))}
                   </div>
                 </div>
                 </div>
