@@ -446,7 +446,7 @@ export default function Landing() {
             <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white lg:text-4xl px-4" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700'}}>
               How It Works
             </h2>
-            <p className="mt-4 text-base sm:text-lg text-gray-100 sm:text-gray-600 sm:dark:text-gray-300 px-4">
+            <p className="mt-4 text-base sm:text-lg text-gray-600 dark:text-gray-300 px-4">
               Simple steps to connect with locals and travelers worldwide
             </p>
           </div>
@@ -471,7 +471,7 @@ export default function Landing() {
                 </div>
               </div>
               <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">Join Nearby Traveler</h3>
-              <p className="text-white sm:text-gray-600 sm:dark:text-gray-300">
+              <p className="text-gray-600 dark:text-gray-300">
                 Join Nearby Traveler to help shape the future of travel connections, sharing your interests and travel style for personalized matches.
               </p>
             </div>
@@ -495,7 +495,7 @@ export default function Landing() {
                 </div>
               </div>
               <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">Connect</h3>
-              <p className="text-white sm:text-gray-600 sm:dark:text-gray-300">
+              <p className="text-gray-600 dark:text-gray-300">
                 Connect with Nearby Travelers and Locals who share your interests and travel dates.
               </p>
             </div>
@@ -519,7 +519,7 @@ export default function Landing() {
                 </div>
               </div>
               <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">Explore</h3>
-              <p className="text-gray-100 sm:text-gray-600 sm:dark:text-gray-300">
+              <p className="text-gray-600 dark:text-gray-300">
                 Explore your destination with your new connections.
               </p>
             </div>
@@ -535,11 +535,11 @@ export default function Landing() {
               <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-white mb-6 dark:drop-shadow-[0_0_8px_rgba(0,0,0,0.8)]" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700'}}>
                 🏠 Locals: Your City, Through Your Eyes
               </h2>
-              <p className="text-lg text-gray-100 sm:text-gray-600 sm:dark:text-gray-300 mb-6">
+              <p className="text-lg text-gray-600 dark:text-gray-300 mb-6">
                 You know your city best. You create the experiences that make travelers fall in love 
                 with your hometown. You're not just participating - you're leading.
               </p>
-              <ul className="space-y-4 text-gray-100 sm:text-gray-600 sm:dark:text-gray-300">
+              <ul className="space-y-4 text-gray-600 dark:text-gray-300">
                 <li className="flex items-start">
                   <span className="text-teal-500 mr-3">✓</span>
                   <span><strong>Host Events:</strong> Beach BBQs, hiking trips, cultural tours - share what you love</span>
@@ -561,7 +561,7 @@ export default function Landing() {
             <div className="bg-gradient-to-br from-blue-100 to-orange-100 dark:from-blue-900/30 dark:to-orange-800/30 rounded-2xl p-8 text-center">
               <div className="text-6xl mb-4">🌟</div>
               <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Expand Your Social Network</h3>
-              <p className="text-gray-100 sm:text-gray-700 sm:dark:text-gray-300 mb-6">
+              <p className="text-gray-700 dark:text-gray-300 mb-6">
                 Share your favorite spots, host unique events, and show travelers the authentic side of your city.
               </p>
               <Button 
@@ -583,7 +583,7 @@ export default function Landing() {
             <div className="bg-gradient-to-br from-orange-100 to-orange-200 dark:from-orange-900/30 dark:to-orange-800/30 rounded-2xl p-8 text-center">
               <div className="text-6xl mb-4">🗺️</div>
               <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Your Next Adventure Awaits</h3>
-              <p className="text-gray-100 sm:text-gray-700 sm:dark:text-gray-300 mb-6">
+              <p className="text-gray-700 dark:text-gray-300 mb-6">
                 Find local-led experiences and connect with fellow travelers to make your next trip unforgettable.
               </p>
               <Button 
@@ -598,11 +598,11 @@ export default function Landing() {
               <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-white mb-6 dark:drop-shadow-[0_0_8px_rgba(0,0,0,0.8)]" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700'}}>
                 🌍 For Travelers: Discover Cities Through Connections
               </h2>
-              <p className="text-lg text-gray-100 sm:text-gray-600 sm:dark:text-gray-300 mb-6">
+              <p className="text-lg text-gray-600 dark:text-gray-300 mb-6">
                 Skip the tourist traps. Connect with locals who know their cities inside out and 
                 fellow travelers who share your interests and travel dates.
               </p>
-              <ul className="space-y-4 text-gray-100 sm:text-gray-600 sm:dark:text-gray-300">
+              <ul className="space-y-4 text-gray-600 dark:text-gray-300">
                 <li className="flex items-start">
                   <span className="text-orange-500 mr-3">✓</span>
                   <span><strong>Local-Created Events:</strong> Join authentic experiences designed by locals</span>
