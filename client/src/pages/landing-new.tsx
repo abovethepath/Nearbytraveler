@@ -2,8 +2,7 @@ import { useState } from "react";
 import { useLocation, Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import Footer from "@/components/footer";
-import LandingNavbar from "@/components/landing-navbar";
-import MobileTopNav from "@/components/mobile-top-nav";
+import Navbar from "@/components/navbar";
 
 import MobileDebug from "@/components/mobile-debug";
 import MobilePreview from "@/components/mobile-preview";
@@ -73,16 +72,11 @@ function LandingContent({ setLocation }: { setLocation: (path: string) => void }
       {/* Mobile Debug Info */}
       <MobileDebug />
       
-      {/* Mobile Navigation - Always visible on mobile */}
-      <MobileTopNav />
-      
-      {/* Desktop Navigation */}
-      <div className="hidden md:block">
-        <LandingNavbar />
-      </div>
+      {/* Main Navigation - responsive for all screen sizes */}
+      <Navbar />
       
       {/* Orange Sign-Up Header Bar for Mobile */}
-      <div className="bg-orange-500 text-black text-center py-2 md:hidden sticky top-14 z-30">
+      <div className="bg-orange-500 text-black text-center py-2 md:hidden sticky top-16 z-30">
         <button 
           onClick={() => setLocation('/join')}
           className="font-bold text-sm touch-manipulation"
@@ -114,7 +108,7 @@ function LandingContent({ setLocation }: { setLocation: (path: string) => void }
       {/* HERO SECTION */}
       <div className="relative">
         <div className="bg-gray-800 dark:bg-gray-900 border border-white/30 dark:border-gray-300/20">
-          <div className="relative bg-gray-800 dark:bg-gray-900 pb-32 overflow-hidden min-h-[600px]">
+          <div className="relative bg-gray-800 dark:bg-gray-900 pb-4 overflow-hidden min-h-[600px]">
             <div className="absolute inset-0 h-full min-h-[600px]">
               <img
                 src="/attached_assets/travelers together hugging_1754971726997.avif"
@@ -125,7 +119,7 @@ function LandingContent({ setLocation }: { setLocation: (path: string) => void }
               <div className="absolute inset-0 bg-gray-800/70 dark:bg-gray-800/40 mix-blend-multiply" aria-hidden="true" />
             </div>
             <div className="relative">
-              <div className="sm:pb-16 md:pb-20 lg:pb-28 xl:pb-32">
+              <div className="sm:pb-8 md:pb-12 lg:pb-16 xl:pb-20">
                 <main className="mt-4 mx-auto max-w-full sm:mt-6 md:mt-8 lg:mt-10 xl:mt-12">
                   <div className="text-center">
                     <div className="max-w-4xl mx-auto px-4">
