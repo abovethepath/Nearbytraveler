@@ -602,7 +602,7 @@ export default function Landing() {
                     <span className="text-white text-3xl">🏠</span>
                   </div>
                   <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-4">
-                    Become a Local Legend
+                    Become a Local Ambassador
                   </h3>
                   <p className="text-gray-600 dark:text-gray-300 mb-8 leading-relaxed">
                     Transform your city knowledge into unforgettable experiences. 
