@@ -7129,7 +7129,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Users className="w-5 h-5" />
-              {isOwnProfile ? 'Your City Chatrooms' : `${user?.name}'s City Chatrooms`}
+              {isOwnProfile ? 'Your City Chatrooms' : `${user?.username}'s City Chatrooms`}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-3">
