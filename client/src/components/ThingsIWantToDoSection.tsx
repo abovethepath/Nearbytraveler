@@ -3,7 +3,7 @@ import { X, Trash2 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 interface ThingsIWantToDoSectionProps {
@@ -34,8 +34,6 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const isMobile = useIsMobile();
-  const [localActivities, setLocalActivities] = useState<UserActivity[]>([]);
-  const [localEvents, setLocalEvents] = useState<UserEvent[]>([]);
 
   // Fetch activities
   const { data: activities = [], isLoading: loadingActivities } = useQuery({
@@ -51,18 +49,9 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
     gcTime: 1000 * 60 * 10, // 10 minutes
   });
 
-  // Initialize local state with fresh data
-  useEffect(() => {
-    if (activities && Array.isArray(activities)) {
-      setLocalActivities(activities);
-    }
-  }, [activities]);
-
-  useEffect(() => {
-    if (events && Array.isArray(events)) {
-      setLocalEvents(events);
-    }
-  }, [events]);
+  // Use the data directly from queries - no local state management needed
+  const localActivities = useMemo(() => Array.isArray(activities) ? activities : [], [activities]);
+  const localEvents = useMemo(() => Array.isArray(events) ? events : [], [events]);
 
   // Delete activity
   const deleteActivity = useMutation({
@@ -70,12 +59,9 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
       const response = await apiRequest('DELETE', `/api/user-city-interests/${activityId}`);
       if (!response.ok) throw new Error('Failed to delete');
     },
-    onSuccess: (_, activityId) => {
-      // Immediately update local state
-      setLocalActivities(prev => prev.filter(a => a.id !== activityId));
-      // Invalidate cache
+    onSuccess: () => {
+      // Just invalidate cache - no local state updates needed
       queryClient.invalidateQueries({ queryKey: [`/api/user-city-interests/${userId}`] });
-      queryClient.refetchQueries({ queryKey: [`/api/user-city-interests/${userId}`] });
       toast({ title: "Removed", description: "Activity deleted successfully." });
     },
     onError: () => {
@@ -89,12 +75,9 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
       const response = await apiRequest('DELETE', `/api/event-interests/${eventId}`);
       if (!response.ok) throw new Error('Failed to delete');
     },
-    onSuccess: (_, eventId) => {
-      // Immediately update local state  
-      setLocalEvents(prev => prev.filter(e => e.id !== eventId));
-      // Invalidate cache
+    onSuccess: () => {
+      // Just invalidate cache - no local state updates needed
       queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/event-interests`] });
-      queryClient.refetchQueries({ queryKey: [`/api/users/${userId}/event-interests`] });
       toast({ title: "Removed", description: "Event deleted successfully." });
     },
     onError: () => {
@@ -118,13 +101,9 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
       // Delete all events for this city
       await Promise.all(cityEvents.map(e => apiRequest('DELETE', `/api/event-interests/${e.id}`)));
 
-      // Update local state
-      setLocalActivities(prev => prev.filter(a => a.cityName !== cityName));
-      setLocalEvents(prev => prev.filter(e => e.cityName !== cityName));
-
-      // Refresh cache
-      queryClient.refetchQueries({ queryKey: [`/api/user-city-interests/${userId}`] });
-      queryClient.refetchQueries({ queryKey: [`/api/users/${userId}/event-interests`] });
+      // Refresh cache only - no local state updates needed
+      queryClient.invalidateQueries({ queryKey: [`/api/user-city-interests/${userId}`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/event-interests`] });
 
       toast({ 
         title: "City Removed", 
@@ -163,27 +142,31 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
     return laMetroCities.includes(cityName) ? 'Los Angeles Metro' : cityName;
   };
 
-  // Group by city with metro consolidation
-  const citiesByName: Record<string, { activities: UserActivity[], events: UserEvent[] }> = {};
+  // Group by city with metro consolidation - memoized to prevent infinite re-renders
+  const citiesByName = useMemo(() => {
+    const cities: Record<string, { activities: UserActivity[], events: UserEvent[] }> = {};
 
-  localActivities.forEach(activity => {
-    const consolidatedCity = consolidateCity(activity.cityName);
-    if (!citiesByName[consolidatedCity]) {
-      citiesByName[consolidatedCity] = { activities: [], events: [] };
-    }
-    citiesByName[consolidatedCity].activities.push(activity);
-  });
+    localActivities.forEach(activity => {
+      const consolidatedCity = consolidateCity(activity.cityName);
+      if (!cities[consolidatedCity]) {
+        cities[consolidatedCity] = { activities: [], events: [] };
+      }
+      cities[consolidatedCity].activities.push(activity);
+    });
 
-  localEvents.forEach(event => {
-    const cityName = event.cityName || 'Other';
-    const consolidatedCity = consolidateCity(cityName);
-    if (!citiesByName[consolidatedCity]) {
-      citiesByName[consolidatedCity] = { activities: [], events: [] };
-    }
-    citiesByName[consolidatedCity].events.push(event);
-  });
+    localEvents.forEach(event => {
+      const cityName = event.cityName || 'Other';
+      const consolidatedCity = consolidateCity(cityName);
+      if (!cities[consolidatedCity]) {
+        cities[consolidatedCity] = { activities: [], events: [] };
+      }
+      cities[consolidatedCity].events.push(event);
+    });
 
-  const cities = Object.keys(citiesByName);
+    return cities;
+  }, [localActivities, localEvents]);
+
+  const cities = useMemo(() => Object.keys(citiesByName), [citiesByName]);
 
   if (loadingActivities || loadingEvents) {
     return (

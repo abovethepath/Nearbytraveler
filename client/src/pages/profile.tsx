@@ -22,7 +22,7 @@ import { Check, ChevronsUpDown } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { MapPin, Camera, Globe, Users, Calendar, Star, Settings, ArrowLeft, Upload, Edit, Edit2, Heart, MessageSquare, X, Plus, Eye, EyeOff, MessageCircle, ImageIcon, Minus, RotateCcw, Sparkles, Package, Trash2, Home, FileText, TrendingUp, MessageCircleMore, Share2, ChevronDown, Search, Zap, History, Clock, Wifi, Shield } from "lucide-react";
+import { MapPin, Camera, Globe, Users, Calendar, Star, Settings, ArrowLeft, Upload, Edit, Edit2, Heart, MessageSquare, X, Plus, Eye, EyeOff, MessageCircle, ImageIcon, Minus, RotateCcw, Sparkles, Package, Trash2, Home, FileText, TrendingUp, MessageCircleMore, Share2, ChevronDown, Search, Zap, History, Clock, Wifi, Shield, ChevronRight } from "lucide-react";
 import { compressPhotoAdaptive } from "@/utils/photoCompression";
 import { AdaptiveCompressionIndicator } from "@/components/adaptive-compression-indicator";
 import { UniversalBackButton } from "@/components/UniversalBackButton";
@@ -530,6 +530,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const [selectedTravelPlan, setSelectedTravelPlan] = useState<TravelPlan | null>(null);
   const [showTravelPlanDetails, setShowTravelPlanDetails] = useState(false);
   const [showDestinationSuggestions, setShowDestinationSuggestions] = useState(false);
+  const [showChatroomList, setShowChatroomList] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
   const [showKeywordSearch, setShowKeywordSearch] = useState(false);
@@ -4805,9 +4806,15 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     <span className="text-gray-600 dark:text-gray-300">Cumulative Trips Taken</span>
                     <span className="font-semibold dark:text-white">{travelPlans.filter(plan => plan.status === 'completed').length}</span>
                   </div>
-                  <div className="flex items-center justify-between">
+                  <div 
+                    className="flex items-center justify-between cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg p-2 -m-2 transition-colors"
+                    onClick={() => setShowChatroomList(true)}
+                  >
                     <span className="text-gray-600 dark:text-gray-300">City Chatrooms</span>
-                    <span className="font-semibold dark:text-white">{userChatrooms.length}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold dark:text-white">{userChatrooms.length}</span>
+                      <ChevronRight className="w-4 h-4 text-gray-400" />
+                    </div>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-gray-600 dark:text-gray-300 flex items-center gap-2">
@@ -7116,6 +7123,69 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         </DialogContent>
       </Dialog>
       
+      {/* Chatroom List Modal */}
+      <Dialog open={showChatroomList} onOpenChange={setShowChatroomList}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Users className="w-5 h-5" />
+              {isOwnProfile ? 'Your City Chatrooms' : `${user?.name}'s City Chatrooms`}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            {userChatrooms.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                <Users className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+                <p>No city chatrooms yet</p>
+                {isOwnProfile && (
+                  <p className="text-sm mt-2">Join some city chatrooms to connect with locals and travelers!</p>
+                )}
+              </div>
+            ) : (
+              userChatrooms.map((chatroom: any) => (
+                <div 
+                  key={chatroom.id}
+                  className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+                  onClick={() => {
+                    setShowChatroomList(false);
+                    setLocation(`/simple-chatroom/${chatroom.id}`);
+                  }}
+                >
+                  <div className="flex-1 min-w-0">
+                    <div className="font-medium text-gray-800 dark:text-gray-200 truncate">
+                      {chatroom.name}
+                    </div>
+                    <div className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-2">
+                      📍 {chatroom.city}
+                      {chatroom.role === 'admin' && (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                          Admin
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="text-sm text-gray-500 dark:text-gray-400 ml-4">
+                    {chatroom.member_count} members
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+          {userChatrooms.length > 0 && (
+            <div className="text-center pt-4">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setShowChatroomList(false);
+                  setLocation('/city-chatrooms');
+                }}
+              >
+                View All City Chatrooms
+              </Button>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
