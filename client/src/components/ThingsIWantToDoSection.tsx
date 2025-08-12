@@ -171,7 +171,28 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
     });
 
     localEvents.forEach(event => {
-      const cityName = event.cityName || 'Other';
+      // Extract city from location field since cityName might not exist
+      let cityName = event.cityName;
+      
+      if (!cityName && event.location) {
+        // Try to extract city from location string
+        const locationParts = event.location.split(',');
+        if (locationParts.length >= 2) {
+          // Take the last part that looks like a city (before state)
+          cityName = locationParts[locationParts.length - 1].trim();
+          // If that's a state, take the second to last part
+          if (cityName.match(/^[A-Z]{2}$/) && locationParts.length >= 3) {
+            cityName = locationParts[locationParts.length - 2].trim();
+          }
+        } else {
+          // If location doesn't have commas, try to extract from the string
+          const words = event.location.split(' ');
+          cityName = words[words.length - 1] || 'Other';
+        }
+      }
+      
+      if (!cityName) cityName = 'Other';
+      
       const consolidatedCity = consolidateCity(cityName);
       if (!cities[consolidatedCity]) {
         cities[consolidatedCity] = { activities: [], events: [] };
@@ -269,7 +290,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
                           : 'px-3 py-2 text-sm'
                       }`}
                     >
-                      <span>📅 {event.eventTitle}</span>
+                      <span>📅 {event.eventTitle || event.title}</span>
                       {isOwnProfile && (
                         <button
                           onClick={() => deleteEvent.mutate(event.id)}
