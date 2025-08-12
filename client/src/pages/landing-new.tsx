@@ -175,7 +175,7 @@ function LandingContent({ setLocation }: { setLocation: (path: string) => void }
           </div>
           
           {/* Event Cards - Modern Lu.ma style */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
             {/* Beach Bonfire Event Card */}
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-2xl transform transition-all duration-300 flex flex-col">
