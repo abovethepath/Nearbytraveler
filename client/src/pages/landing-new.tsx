@@ -266,8 +266,8 @@ export default function Landing() {
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-2xl transform transition-all duration-300 flex flex-col" style={{animationDelay: '0.3s'}}>
               <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-blue-500 to-indigo-600">
                 <img 
-                  src="/attached_assets/Los_Angeles_Metro_1754944437196.jpg" 
-                  alt="Hollywood Sign hike with city views" 
+                  src="/attached_assets/image_1754974796221.png" 
+                  alt="Hollywood Sign at sunrise with mountain views" 
                   className="w-full h-48 object-cover"
                 />
               </div>
