@@ -78,7 +78,7 @@ function LandingContent({ setLocation }: { setLocation: (path: string) => void }
       </div>
 
       {/* Spacer equal to navbar height so content starts below it */}
-      <div className="h-16" />
+      <div className="h-20" />
 
 
 
@@ -97,7 +97,7 @@ function LandingContent({ setLocation }: { setLocation: (path: string) => void }
         </div>
 
         {/* HERO SECTION — non-interactive overlay and trimmed paddings */}
-        <section className="relative border border-white/30 dark:border-gray-300/20">
+        <section className="relative border border-white/30 dark:border-gray-300/20 mt-8">
           <div className="relative bg-gray-800 dark:bg-gray-900 overflow-hidden min-h-[520px]">
             {/* Non-interactive overlay so it can't eat clicks */}
             <div className="absolute inset-0 h-full min-h-[520px] pointer-events-none">
