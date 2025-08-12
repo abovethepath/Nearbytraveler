@@ -22,12 +22,20 @@ export default function EventCard({ event, compact = false, featured = false }: 
   const { toast } = useToast();
   const { isVisible, celebrationData, triggerCelebration, hideCelebration } = useConnectionCelebration();
 
+  // Get current user
+  const getCurrentUser = () => {
+    const storedUser = localStorage.getItem('travelconnect_user');
+    return storedUser ? JSON.parse(storedUser) : null;
+  };
+  
+  const currentUser = getCurrentUser();
+
   // Join event mutation
   const joinEventMutation = useMutation({
     mutationFn: async (eventId: number) => {
-      const currentUserId = 1; // Get from auth context
+      if (!currentUser?.id) throw new Error("User not authenticated");
       return await apiRequest("POST", `/api/events/${eventId}/join`, { 
-        userId: currentUserId 
+        userId: currentUser.id 
       });
     },
     onSuccess: () => {

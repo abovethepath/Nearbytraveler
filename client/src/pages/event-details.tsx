@@ -112,6 +112,7 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
         description: "You've left the event",
       });
       queryClient.invalidateQueries({ queryKey: [`/api/events/${eventId}/participants`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${currentUser.id}/all-events`] });
     },
     onError: (error: any) => {
       toast({
