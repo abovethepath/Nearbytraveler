@@ -309,6 +309,36 @@ export default function Landing() {
                 </Button>
               </div>
             </div>
+            
+            {/* Taco Tuesday Event Card */}
+            <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+              <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-yellow-400 to-orange-500">
+                <div className="w-full h-48 bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center">
+                  <div className="text-center text-white">
+                    <div className="text-6xl mb-2">🌮</div>
+                    <div className="text-lg font-bold">$1.50 Street Tacos</div>
+                  </div>
+                </div>
+              </div>
+              <div className="p-6">
+                <div className="flex items-center mb-3">
+                  <div className="w-10 h-10 bg-yellow-500 rounded-full flex items-center justify-center text-white font-bold mr-3">
+                    🌮
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-gray-900">Taco Tuesday</h3>
+                    <p className="text-sm text-gray-600">Every Tuesday • $1.50 tacos</p>
+                  </div>
+                </div>
+                <p className="text-gray-700 text-sm mb-4">Join locals every Tuesday for authentic street tacos at unbeatable prices. Meet fellow taco lovers and discover the best Mexican spots in the city.</p>
+                <Button 
+                  onClick={() => setLocation('/auth')}
+                  className="w-full bg-orange-500 hover:bg-orange-600 text-black font-bold"
+                >
+                  JOIN TO CONNECT
+                </Button>
+              </div>
+            </div>
           </div>
 
           {/* Call to action to see more */}
