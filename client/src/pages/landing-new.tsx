@@ -356,10 +356,8 @@ export default function Landing() {
 
       {/* FROM THE FOUNDER SECTION */}
       <div className="relative py-16 sm:py-20 overflow-hidden">
-        {/* Orange and blue gradient background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-orange-500 via-orange-600 to-blue-600"></div>
-        <div className="absolute inset-0 bg-gradient-to-tl from-blue-700/30 via-transparent to-orange-400/20"></div>
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-600/60 via-transparent via-transparent to-transparent"></div>
+        {/* Blue to orange gradient background */}
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-blue-500 to-orange-500"></div>
         
         <div className="relative max-w-4xl mx-auto px-4">
           <div className="text-center mb-12 animate-fade-in-up">
@@ -372,10 +370,10 @@ export default function Landing() {
           {/* Main content with better readability */}
           <div className="max-w-3xl mx-auto animate-slide-in-left" style={{animationDelay: '0.2s'}}>
             <div className="text-center mb-8">
-              <p className="text-xl sm:text-2xl text-black leading-relaxed font-medium mb-6">
+              <p className="text-xl sm:text-2xl text-white leading-relaxed font-medium mb-6">
                 "As a traveler and local, I always loved meeting new people—but finding those who truly shared my interests wasn't easy."
               </p>
-              <p className="text-2xl sm:text-3xl text-black font-bold leading-relaxed mb-6">
+              <p className="text-2xl sm:text-3xl text-white font-bold leading-relaxed mb-6">
                 That's why I created Nearby Traveler.
               </p>
             </div>
