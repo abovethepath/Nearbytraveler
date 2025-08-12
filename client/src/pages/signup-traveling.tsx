@@ -505,28 +505,15 @@ export default function SignupTraveling() {
                   />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label className="text-gray-900 dark:text-white">Travel Start Date *</Label>
-                    <Input
-                      type="date"
-                      max="9999-12-31"
-                      value={formData.travelStartDate}
-                      onChange={(e) => setFormData(prev => ({ ...prev, travelStartDate: e.target.value }))}
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <Label className="text-gray-900 dark:text-white">Travel End Date *</Label>
-                    <Input
-                      type="date"
-                      max="9999-12-31"
-                      value={formData.travelEndDate}
-                      onChange={(e) => setFormData(prev => ({ ...prev, travelEndDate: e.target.value }))}
-                      required
-                    />
-                  </div>
+                <div>
+                  <Label className="text-gray-900 dark:text-white">When does your trip end? *</Label>
+                  <Input
+                    type="date"
+                    max="9999-12-31"
+                    value={formData.travelEndDate}
+                    onChange={(e) => setFormData(prev => ({ ...prev, travelEndDate: e.target.value }))}
+                    required
+                  />
                 </div>
               </div>
 
