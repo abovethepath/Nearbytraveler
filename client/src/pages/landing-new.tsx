@@ -386,15 +386,15 @@ export default function Landing() {
               
               {/* Benefits with orange and blue theme */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div className="text-center p-4 bg-orange-50 rounded-2xl border-2 border-orange-300">
+                <div className="text-center p-4 bg-white rounded-2xl border-2 border-orange-300 shadow-lg">
                   <div className="text-3xl mb-3">🤝</div>
                   <p className="font-bold text-gray-900">Connect with like-minded people</p>
                 </div>
-                <div className="text-center p-4 bg-blue-50 rounded-2xl border-2 border-blue-300">
+                <div className="text-center p-4 bg-white rounded-2xl border-2 border-blue-300 shadow-lg">
                   <div className="text-3xl mb-3">💎</div>
                   <p className="font-bold text-gray-900">Discover hidden gems</p>
                 </div>
-                <div className="text-center p-4 bg-orange-50 rounded-2xl border-2 border-orange-300">
+                <div className="text-center p-4 bg-white rounded-2xl border-2 border-orange-300 shadow-lg">
                   <div className="text-3xl mb-3">✨</div>
                   <p className="font-bold text-gray-900">Create unforgettable memories</p>
                 </div>
