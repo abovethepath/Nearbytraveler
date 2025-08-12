@@ -208,15 +208,15 @@ export default function JoinNowWidgetNew() {
         <>
           {/* Step 1: User Type Selection */}
           <div className="space-y-3">
-            <Label htmlFor="userType" className="text-lg md:text-base text-gray-900 dark:text-white font-medium">I am a...</Label>
+            <Label htmlFor="userType" className="text-base text-gray-900 dark:text-white font-medium">I am a...</Label>
             <Select value={userType} onValueChange={setUserType}>
-              <SelectTrigger className="w-full h-16 md:h-14 text-xl md:text-lg p-5 md:p-4" style={{ fontSize: 'clamp(32px, 9vw, 36px)', minHeight: '60px' }}>
+              <SelectTrigger className="w-full h-12 text-base p-3">
                 <SelectValue placeholder="Select your type" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="local" className="text-xl md:text-lg p-5 md:p-4" style={{ fontSize: 'clamp(32px, 9vw, 36px)', minHeight: '60px' }}>Nearby Local (Not Traveling Now)</SelectItem>
-                <SelectItem value="currently_traveling" className="text-xl md:text-lg p-5 md:p-4" style={{ fontSize: 'clamp(32px, 9vw, 36px)', minHeight: '60px' }}>Currently Traveling</SelectItem>
-                <SelectItem value="business" className="text-xl md:text-lg p-5 md:p-4" style={{ fontSize: 'clamp(32px, 9vw, 36px)', minHeight: '60px' }}>Nearby Business</SelectItem>
+                <SelectItem value="local" className="text-base p-3">Nearby Local (Not Traveling Now)</SelectItem>
+                <SelectItem value="currently_traveling" className="text-base p-3">Currently Traveling</SelectItem>
+                <SelectItem value="business" className="text-base p-3">Nearby Business</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -228,10 +228,7 @@ export default function JoinNowWidgetNew() {
                 userType ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'
               }`}
               style={{
-                pointerEvents: userType ? 'auto' : 'none',
-                fontSize: 'clamp(32px, 9vw, 36px)',
-                minHeight: '60px',
-                padding: '16px 24px'
+                pointerEvents: userType ? 'auto' : 'none'
               }}
             >
               Continue

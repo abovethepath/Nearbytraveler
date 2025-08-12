@@ -143,11 +143,11 @@ export default function Auth() {
                 <Logo variant="landing" />
               </div>
             </div>
-            <CardTitle className="text-3xl md:text-2xl font-bold text-gray-900 dark:text-white" style={{ fontSize: 'clamp(42px, 12vw, 56px)' }}>
+            <CardTitle className="text-2xl font-bold text-gray-900 dark:text-white">
               {isLogin ? "Welcome Back" : "Join Nearby Traveler"}
             </CardTitle>
             {!isLogin && (
-              <p className="text-lg md:text-sm text-gray-600 dark:text-gray-300 mt-2 leading-relaxed" style={{ fontSize: 'clamp(28px, 8vw, 32px)' }}>
+              <p className="text-base text-gray-600 dark:text-gray-300 mt-2 leading-relaxed">
                 Start Connecting with Nearby Locals and Nearby Travelers Today Based on Common Interests and Demographics
               </p>
             )}
@@ -160,7 +160,7 @@ export default function Auth() {
                 {/* Login Form */}
                 <div className="space-y-4">
                   <div>
-                    <Label htmlFor="loginEmail" className="text-lg md:text-base text-gray-900 dark:text-white font-medium" style={{ fontSize: 'clamp(28px, 8vw, 32px)' }}>Email</Label>
+                    <Label htmlFor="loginEmail" className="text-lg md:text-base text-gray-900 dark:text-white font-medium" style={{}}>Email</Label>
                     <Input
                       id="loginEmail"
                       type="email"
@@ -171,7 +171,7 @@ export default function Auth() {
                     />
                   </div>
                   <div>
-                    <Label htmlFor="loginPassword" className="text-lg md:text-base text-gray-900 dark:text-white font-medium" style={{ fontSize: 'clamp(28px, 8vw, 32px)' }}>Password</Label>
+                    <Label htmlFor="loginPassword" className="text-lg md:text-base text-gray-900 dark:text-white font-medium" style={{}}>Password</Label>
                     <Input
                       id="loginPassword"
                       type="password"
@@ -203,7 +203,7 @@ export default function Auth() {
                   <button
                     onClick={() => setLocation('/forgot-password')}
                     className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-lg md:text-sm font-medium py-2"
-                    style={{ fontSize: 'clamp(28px, 8vw, 32px)' }}
+                    style={{}}
                   >
                     Forgot Password?
                   </button>
@@ -215,7 +215,7 @@ export default function Auth() {
               <button
                 onClick={() => setIsLogin(!isLogin)}
                 className="text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:text-gray-100 text-lg md:text-sm font-medium py-2"
-                style={{ fontSize: 'clamp(28px, 8vw, 32px)' }}
+                style={{}}
               >
                 {isLogin ? "Don't have an account? Create Account" : "Already have an account? Sign In"}
               </button>

@@ -318,65 +318,32 @@ body {
     -webkit-tap-highlight-color: transparent;
   }
 
-  /* Mobile-first responsive text sizing - MASSIVE SIZES for mobile readability */
-  .text-xs { font-size: clamp(28px, 8vw, 32px) !important; }
-  .text-sm { font-size: clamp(30px, 8.5vw, 34px) !important; }
-  .text-base { font-size: clamp(32px, 9vw, 36px) !important; }
-  .text-lg { font-size: clamp(34px, 9.5vw, 38px) !important; }
-  .text-xl { font-size: clamp(36px, 10vw, 42px) !important; }
-  .text-2xl { font-size: clamp(40px, 11vw, 48px) !important; }
-  .text-3xl { font-size: clamp(44px, 12vw, 52px) !important; }
-  .text-4xl { font-size: clamp(48px, 13vw, 64px) !important; }
-  .text-5xl { font-size: clamp(52px, 14vw, 72px) !important; }
-  .text-6xl { font-size: clamp(56px, 15vw, 80px) !important; }
 
-  /* Force all form elements to have HUGE text on mobile */
-  input, select, textarea, button {
-    font-size: clamp(28px, 8vw, 32px) !important;
-    min-height: 64px !important;
-    padding: 20px 24px !important;
-  }
 
-  /* Ensure labels are also readable */
-  label {
-    font-size: clamp(26px, 7.5vw, 30px) !important;
-  }
 
-  /* Override any existing font sizes with massive mobile-first scaling */
-  h1, h2, h3, h4, h5, h6 {
-    font-size: clamp(36px, 10vw, 48px) !important;
-  }
 
-  /* Make sure dropdown items are readable */
-  [role="option"], [data-radix-select-item] {
-    font-size: clamp(28px, 8vw, 32px) !important;
-    min-height: 64px !important;
-    padding: 20px 24px !important;
-  }
-
-  /* NUCLEAR OPTION - Force EVERYTHING to be large on mobile */
+  /* PROPER mobile text sizing - readable but not broken */
   @media (max-width: 768px) {
-    * {
-      font-size: clamp(28px, 8vw, 32px) !important;
-    }
-    
-    /* Specifically target common text elements */
-    p, span, div, a, li, td, th {
-      font-size: clamp(28px, 8vw, 32px) !important;
-    }
-    
-    /* Make buttons and inputs even larger on mobile */
+    /* Form elements and buttons */
     button, input, select, textarea {
-      font-size: clamp(32px, 9vw, 36px) !important;
-      min-height: 64px !important;
+      font-size: 18px !important;
+      min-height: 48px !important;
     }
-  }
-
-  /* But allow headings to be even larger */
-  @media (max-width: 768px) {
-    h1 { font-size: clamp(44px, 14vw, 72px) !important; }
-    h2 { font-size: clamp(42px, 12vw, 56px) !important; }
-    h3 { font-size: clamp(38px, 11vw, 48px) !important; }
+    
+    /* Regular text */
+    p, span, div, a, li, td, th {
+      font-size: 16px !important;
+    }
+    
+    /* Labels */
+    label {
+      font-size: 16px !important;
+    }
+    
+    /* Headings */
+    h1 { font-size: 32px !important; }
+    h2 { font-size: 28px !important; }
+    h3 { font-size: 24px !important; }
   }
 
   /* Prevent mobile back button issues and ensure navigation visibility */
