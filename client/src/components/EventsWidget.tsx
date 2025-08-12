@@ -73,9 +73,15 @@ function EventsWidget({ userId }: EventsWidgetProps) {
     return { allCities: locations };
   }, [userId, user?.hometownCity, user?.hometownState, user?.hometownCountry, user?.isCurrentlyTraveling, user?.travelDestination, travelPlans]);
 
+  // Fetch events that the user is attending
+  const { data: userEvents = [], isLoading: userEventsLoading } = useQuery({
+    queryKey: [`/api/users/${userId}/events`],
+    enabled: !!userId,
+  });
+
   // Fetch events from ALL locations
   const { data: allEvents = [], isLoading: eventsLoading } = useQuery({
-    queryKey: [`/api/events/widget-all-locations`, discoveryLocations.allCities.map(loc => loc.city)],
+    queryKey: [`/api/events/widget-all-locations`, discoveryLocations.allCities.map(loc => loc.city), userEvents.length],
     queryFn: async () => {
       if (!discoveryLocations.allCities.length) return [];
       
@@ -102,7 +108,12 @@ function EventsWidget({ userId }: EventsWidgetProps) {
         index === self.findIndex((e) => e.id === event.id)
       );
       
-      return unique;
+      // Mark events that user is attending
+      const userEventIds = new Set(userEvents.map((event: any) => event.id));
+      return unique.map((event: any) => ({
+        ...event,
+        isUserAttending: userEventIds.has(event.id)
+      }));
     },
     enabled: discoveryLocations.allCities.length > 0,
     staleTime: 0,
@@ -143,12 +154,24 @@ function EventsWidget({ userId }: EventsWidgetProps) {
     return uniqueEvents;
   }, [])
   .sort((a: any, b: any) => {
-    // Prioritize member-created events (not AI-generated) first
+    // HIGHEST PRIORITY: Events user is attending (their "Things I want to do")
+    if (a.isUserAttending && !b.isUserAttending) return -1;
+    if (!a.isUserAttending && b.isUserAttending) return 1;
+    
+    // Within attending events, prioritize member-created events (not AI-generated) first
     const aMemberCreated = !a.isAIGenerated;
     const bMemberCreated = !b.isAIGenerated;
     
-    if (aMemberCreated && !bMemberCreated) return -1;
-    if (!aMemberCreated && bMemberCreated) return 1;
+    if (a.isUserAttending && b.isUserAttending) {
+      if (aMemberCreated && !bMemberCreated) return -1;
+      if (!aMemberCreated && bMemberCreated) return 1;
+    }
+    
+    // For non-attending events, still prioritize member-created
+    if (!a.isUserAttending && !b.isUserAttending) {
+      if (aMemberCreated && !bMemberCreated) return -1;
+      if (!aMemberCreated && bMemberCreated) return 1;
+    }
     
     // Within same type, prioritize events created by current user
     const userCreatedA = a.organizerId === userId;
@@ -171,7 +194,7 @@ function EventsWidget({ userId }: EventsWidgetProps) {
       <CardContent className="p-6">
         <div className="flex items-center gap-2 mb-4">
           <Calendar className="w-5 h-5 text-blue-500" />
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Events</h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Things I Want to Do</h3>
         </div>
         <div className="space-y-4">
           {relevantEvents.slice(0, 3).map((event: any) => (
@@ -198,7 +221,14 @@ function EventsWidget({ userId }: EventsWidgetProps) {
               <div className="p-4">
                 <div className="flex items-start gap-3">
                 <div className="flex-1">
-                  <h4 className="text-base font-semibold text-gray-900 dark:text-white mb-1">{event.title}</h4>
+                  <div className="flex items-center gap-2 mb-1">
+                    <h4 className="text-base font-semibold text-gray-900 dark:text-white">{event.title}</h4>
+                    {event.isUserAttending && (
+                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                        ✓ Attending
+                      </span>
+                    )}
+                  </div>
                   <p className="text-sm text-gray-600 dark:text-gray-300 mb-2 line-clamp-2">{event.description || "Join us for this exciting event!"}</p>
                   <div className="flex items-center text-sm text-gray-500 dark:text-gray-400 space-x-4">
                     <span className="flex items-center gap-1">
