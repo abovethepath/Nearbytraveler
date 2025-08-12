@@ -38,29 +38,28 @@ export default function MobileBottomNav() {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 z-50 block md:hidden" style={{ display: 'block' }}>
-      <div className="flex items-center justify-around h-16 px-2">
+    <nav 
+      className="fixed bottom-0 left-0 right-0 bg-red-500 border-t-4 border-white z-50" 
+      style={{ 
+        display: 'block !important',
+        minHeight: '64px',
+        boxShadow: '0 -4px 20px rgba(0,0,0,0.3)'
+      }}
+    >
+      <div className="flex items-center justify-around h-16 px-2 bg-red-500">
         {navItems.map((item) => {
           const IconComponent = item.icon;
           return (
             <button
               key={item.path}
               onClick={() => setLocation(item.path)}
-              className={`flex flex-col items-center justify-center flex-1 h-full space-y-1 transition-colors touch-manipulation ${
-                item.isActive
-                  ? "text-blue-600 dark:text-blue-400"
-                  : "text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
-              }`}
+              className="flex flex-col items-center justify-center flex-1 h-full space-y-1 transition-colors touch-manipulation text-white font-bold"
             >
               <IconComponent 
-                size={20} 
-                className={item.isActive ? "text-blue-600 dark:text-blue-400" : ""} 
+                size={24} 
+                className="text-white" 
               />
-              <span 
-                className={`text-xs font-medium ${
-                  item.isActive ? "text-blue-600 dark:text-blue-400" : ""
-                }`}
-              >
+              <span className="text-xs font-bold text-white">
                 {item.label}
               </span>
             </button>
