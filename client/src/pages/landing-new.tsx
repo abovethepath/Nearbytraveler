@@ -90,7 +90,7 @@ function LandingContent({ setLocation }: { setLocation: (path: string) => void }
       {/* MAIN CONTENT */}
       <main className="flex-1">
         {/* Fixed mobile CTA button */}
-        <div className="fixed bottom-20 right-4 md:bottom-6 md:right-6 z-50">
+        <div className="fixed bottom-4 right-4 md:bottom-6 md:right-6 z-50">
           <Button
             onClick={() => setLocation('/join')}
             size="lg"
