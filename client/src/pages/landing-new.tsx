@@ -298,8 +298,8 @@ export default function Landing() {
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-2xl transform transition-all duration-300 flex flex-col" style={{animationDelay: '0.4s'}}>
               <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-amber-500 to-orange-600">
                 <img 
-                  src="/attached_assets/raliehg_1754973596672.webp" 
-                  alt="Happy hour at pub with live music" 
+                  src="/attached_assets/image_1754975666980.png" 
+                  alt="Jameson's Pub exterior with green storefront and traditional Irish pub atmosphere" 
                   className="w-full h-48 object-cover"
                 />
               </div>
