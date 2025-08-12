@@ -4316,11 +4316,13 @@ Ready to start making real connections wherever you are?
         FROM events e 
         JOIN event_participants ep ON e.id = ep.event_id
         WHERE ep.user_id = ${userId}
-        AND e.date >= CURRENT_DATE
         ORDER BY e.date ASC
       `);
 
-      if (process.env.NODE_ENV === 'development') console.log(`🎪 PROFILE EVENTS: Found ${userEvents.rows.length} events for user ${userId}`);
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`🎪 PROFILE EVENTS: Found ${userEvents.rows.length} events for user ${userId}`);
+        console.log(`🎪 PROFILE EVENTS: Event details:`, userEvents.rows.map(e => ({ id: e.id, title: e.title, date: e.date })));
+      }
 
       return res.json(userEvents.rows || []);
     } catch (error: any) {

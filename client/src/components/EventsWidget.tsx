@@ -79,11 +79,21 @@ function EventsWidget({ userId }: EventsWidgetProps) {
     enabled: !!userId,
     staleTime: 0, // Always refresh to get latest joined events
     gcTime: 0,
+
   });
+
+  // Debug logging for userEvents
+  React.useEffect(() => {
+    console.log('🎯 EventsWidget userEvents updated:', { 
+      userId, 
+      eventsCount: userEvents?.length, 
+      events: userEvents?.map((e: any) => ({ id: e.id, title: e.title })) 
+    });
+  }, [userEvents, userId]);
 
   // Fetch events from ALL locations
   const { data: allEvents = [], isLoading: eventsLoading } = useQuery({
-    queryKey: [`/api/events/widget-all-locations`, discoveryLocations.allCities.map(loc => loc.city), userEvents?.map(e => e.id).sort().join(',')],
+    queryKey: [`/api/events/widget-all-locations`, discoveryLocations.allCities.map(loc => loc.city), userEvents?.map((e: any) => e.id).sort().join(',')],
     queryFn: async () => {
       if (!discoveryLocations.allCities.length) return [];
       
