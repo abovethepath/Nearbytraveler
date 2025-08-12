@@ -497,7 +497,6 @@ export default function Landing() {
                     <div className="w-20 h-20 bg-gradient-to-r from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg group-hover:shadow-xl transition-all duration-300">
                       <span className="text-white text-2xl font-black">3</span>
                     </div>
-                    <div className="absolute -top-2 -right-2 w-6 h-6 bg-orange-400 rounded-full animate-bounce" style={{animationDelay: '1s'}}></div>
                   </div>
                   <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-4 text-center">
                     Create Epic Memories
