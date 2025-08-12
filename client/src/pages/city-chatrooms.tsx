@@ -58,13 +58,21 @@ export default function CityChatroomsPage() {
       
       return response.json();
     },
-    onSuccess: () => {
-      toast({
-        title: "Success",
-        description: "Successfully joined the chatroom!",
-      });
-      // Refresh chatrooms to update member status
+    onSuccess: (data) => {
+      if (data.newMember) {
+        toast({
+          title: "Success! ⭐ +1 Aura",
+          description: "Successfully joined the chatroom and earned aura!",
+        });
+      } else {
+        toast({
+          title: "Success",
+          description: "You're already a member of this chatroom",
+        });
+      }
+      // Refresh chatrooms and user data to update member status and aura
       queryClient.invalidateQueries({ queryKey: ['/api/chatrooms/my-locations'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/users'] });
     },
     onError: (error: any) => {
       toast({

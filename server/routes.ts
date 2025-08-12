@@ -7663,7 +7663,13 @@ Ready to start making real connections wherever you are?
 
       // Check if chatroom exists
       const chatroom = await db.select().from(citychatrooms).where(eq(citychatrooms.id, roomId)).limit(1);
+      if (process.env.NODE_ENV === 'development') console.log(`🏠 CHATROOM LOOKUP: Found ${chatroom.length} chatrooms for ID ${roomId}`);
+      if (process.env.NODE_ENV === 'development') console.log(`🏠 CHATROOM QUERY DEBUG: roomId=${roomId}, type=${typeof roomId}, isNaN=${isNaN(roomId)}`);
       if (chatroom.length === 0) {
+        if (process.env.NODE_ENV === 'development') console.log(`🔥 CHATROOM NOT FOUND: ID ${roomId} not in citychatrooms table`);
+        // Let's also check if any chatrooms exist at all
+        const allChatrooms = await db.select().from(citychatrooms).limit(5);
+        if (process.env.NODE_ENV === 'development') console.log(`🔥 DEBUG: Found ${allChatrooms.length} total chatrooms:`, allChatrooms.map(c => ({id: c.id, name: c.name})));
         return res.status(404).json({ message: "Chatroom not found" });
       }
 
@@ -7691,6 +7697,9 @@ Ready to start making real connections wherever you are?
         isActive: true,
         isMuted: false
       });
+
+      // Award 1 aura for joining chatroom
+      await storage.awardAura(userId, 1, 'joining chatroom');
 
       if (process.env.NODE_ENV === 'development') console.log(`🏠 CHATROOM JOIN: User ${userId} successfully joined chatroom ${roomId}`);
       res.json({ success: true, message: "Successfully joined chatroom!", newMember: true });
@@ -11363,6 +11372,30 @@ Ready to start making real connections wherever you are?
     } catch (error: any) {
       console.error('Error getting user chatrooms:', error);
       res.status(500).json({ error: 'Failed to get user chatrooms' });
+    }
+  });
+
+  // Test aura award endpoint
+  app.post("/debug/test-aura/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const amount = parseInt(req.body.amount || '1');
+      const reason = req.body.reason || 'test';
+      
+      // Award aura
+      await storage.awardAura(userId, amount, reason);
+      
+      // Get updated user data
+      const user = await storage.getUserById(userId);
+      res.json({ 
+        success: true, 
+        userId, 
+        newAura: user?.aura || 0,
+        awardedAmount: amount,
+        reason 
+      });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
     }
   });
 

@@ -3367,6 +3367,9 @@ export class DatabaseStorage implements IStorage {
         });
       }
 
+      // Award 2 aura for creating chatroom
+      await this.awardAura(data.createdById, 2, 'creating chatroom');
+
       console.log(`Created chatroom "${chatroom.name}" - ready for participants`);
       return chatroom;
     } catch (error) {
@@ -3444,13 +3447,19 @@ export class DatabaseStorage implements IStorage {
         .limit(1);
 
       if (existingMember.length > 0) {
-        // Reactivate membership if exists but inactive
-        await db.update(chatroomMembers)
-          .set({ isActive: true })
-          .where(and(
-            eq(chatroomMembers.chatroomId, chatroomId),
-            eq(chatroomMembers.userId, userId)
-          ));
+        // Reactivate membership if exists but inactive and award aura for rejoining
+        const member = existingMember[0];
+        if (!member.isActive) {
+          await db.update(chatroomMembers)
+            .set({ isActive: true })
+            .where(and(
+              eq(chatroomMembers.chatroomId, chatroomId),
+              eq(chatroomMembers.userId, userId)
+            ));
+          
+          // Award 1 aura for rejoining chatroom
+          await this.awardAura(userId, 1, 'rejoining chatroom');
+        }
         return { success: true };
       }
 
@@ -3461,6 +3470,9 @@ export class DatabaseStorage implements IStorage {
         role: 'member',
         isActive: true
       });
+
+      // Award 1 aura for joining chatroom
+      await this.awardAura(userId, 1, 'joining chatroom');
 
       return { success: true };
     } catch (error) {
@@ -8453,7 +8465,7 @@ export class DatabaseStorage implements IStorage {
         );
       
       if (existingMember) {
-        // Update to active if inactive
+        // Update to active if inactive and award aura for rejoining
         if (!existingMember.isActive) {
           await db
             .update(chatroomMembers)
@@ -8464,6 +8476,9 @@ export class DatabaseStorage implements IStorage {
                 eq(chatroomMembers.userId, userId)
               )
             );
+          
+          // Award 1 aura for rejoining chatroom
+          await this.awardAura(userId, 1, 'rejoining chatroom');
         }
         return existingMember;
       }
@@ -8479,6 +8494,9 @@ export class DatabaseStorage implements IStorage {
           joinedAt: new Date()
         })
         .returning();
+      
+      // Award 1 aura for joining chatroom
+      await this.awardAura(userId, 1, 'joining chatroom');
       
       return newMember;
     } catch (error) {
@@ -9628,6 +9646,33 @@ export class DatabaseStorage implements IStorage {
   // Create vouch with object parameter (API compatibility)
   async createVouchFromData(vouchData: { voucherUserId: number; vouchedUserId: number; vouchMessage: string; vouchCategory: string }): Promise<any> {
     return this.createVouch(vouchData.voucherUserId, vouchData.vouchedUserId, vouchData.vouchMessage, vouchData.vouchCategory);
+  }
+
+  // Aura reward system
+  async awardAura(userId: number, points: number, reason: string): Promise<void> {
+    try {
+      console.log(`🌟 AURA REWARD: Awarding ${points} aura to user ${userId} for ${reason}`);
+      
+      await db
+        .update(users)
+        .set({
+          aura: sql`COALESCE(aura, 0) + ${points}`
+        })
+        .where(eq(users.id, userId));
+      
+      // Get updated aura count for logging
+      const [user] = await db
+        .select({ id: users.id, username: users.username, aura: users.aura })
+        .from(users)
+        .where(eq(users.id, userId))
+        .limit(1);
+      
+      if (user) {
+        console.log(`🌟 AURA UPDATE: User ${user.username} now has ${user.aura} total aura`);
+      }
+    } catch (error) {
+      console.error('Error awarding aura points:', error);
+    }
   }
 }
 
