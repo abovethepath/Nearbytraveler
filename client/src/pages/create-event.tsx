@@ -385,13 +385,35 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
       if (data.state) locationParts.push(data.state);
       const displayLocation = locationParts.join(', ');
       
-      // Validate categories
+      // Validate categories and remove duplicates/redundancy
       let finalCategories = [...selectedCategories];
       if (selectedCategories.includes("Custom") && customCategory.trim()) {
         finalCategories = finalCategories.filter(cat => cat !== "Custom").concat([customCategory.trim()]);
       } else if (selectedCategories.includes("Custom")) {
         finalCategories = finalCategories.filter(cat => cat !== "Custom");
       }
+      
+      // Remove redundant categories (e.g., if both "Adventure Sports" and "Sports & Fitness" are selected, keep only "Adventure Sports")
+      const redundancyMap = {
+        "Adventure Sports": ["Sports & Fitness"],
+        "Health & Wellness": ["Sports & Fitness"],
+        "Entertainment": ["Music", "Arts & Culture"],
+        "Food & Dining": ["Food"]
+      };
+      
+      finalCategories = finalCategories.filter((category, index, array) => {
+        // Check if this category should be removed due to redundancy
+        for (const [primary, redundant] of Object.entries(redundancyMap)) {
+          if (redundant.includes(category) && array.includes(primary)) {
+            return false; // Remove the redundant category
+          }
+        }
+        return true;
+      });
+      
+      // Remove duplicates
+      finalCategories = [...new Set(finalCategories)];
+      
       if (finalCategories.length === 0) {
         throw new Error('At least one event category is required');
       }
