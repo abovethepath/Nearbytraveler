@@ -259,12 +259,11 @@ export default function Landing() {
             {/* Venice Beach Dance Party Event Card */}
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
               <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-purple-500 to-pink-500">
-                <div className="w-full h-48 bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
-                  <div className="text-center text-white">
-                    <div className="text-6xl mb-2">🕺</div>
-                    <div className="text-lg font-bold">Venice Beach Vibes</div>
-                  </div>
-                </div>
+                <img 
+                  src="/attached_assets/beach travel_1754973619241.jpg" 
+                  alt="Friends celebrating together on beach at sunset" 
+                  className="w-full h-48 object-cover"
+                />
               </div>
               <div className="p-6">
                 <div className="flex items-center mb-3">
