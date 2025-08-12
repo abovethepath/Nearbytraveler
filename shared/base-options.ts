@@ -99,7 +99,7 @@ export const ADDITIONAL_INTERESTS = [
   "Digital Nomads",
   
   // Shopping/Lifestyle
-  "Flea Markets / Thrift Stores",
+  "Flea Markets",
   
   // Unique/Specialty
   "Astronomy"
