@@ -324,26 +324,40 @@ body {
 
   /* PROPER mobile text sizing - readable but not broken */
   @media (max-width: 768px) {
+    /* Force larger text on ALL mobile elements */
+    * {
+      font-size: 18px !important;
+    }
+    
     /* Form elements and buttons */
     button, input, select, textarea {
-      font-size: 18px !important;
-      min-height: 48px !important;
+      font-size: 20px !important;
+      min-height: 50px !important;
+      padding: 12px 16px !important;
     }
     
     /* Regular text */
-    p, span, div, a, li, td, th {
-      font-size: 16px !important;
-    }
-    
-    /* Labels */
-    label {
-      font-size: 16px !important;
+    p, span, div, a, li, td, th, label {
+      font-size: 18px !important;
     }
     
     /* Headings */
-    h1 { font-size: 32px !important; }
-    h2 { font-size: 28px !important; }
-    h3 { font-size: 24px !important; }
+    h1 { font-size: 36px !important; }
+    h2 { font-size: 32px !important; }
+    h3 { font-size: 28px !important; }
+    h4 { font-size: 24px !important; }
+    
+    /* Card titles and important text */
+    .text-xl, .text-lg, .text-base, .text-sm {
+      font-size: 20px !important;
+    }
+    
+    /* Make sure dropdowns are readable */
+    [role="option"], [data-radix-select-item] {
+      font-size: 18px !important;
+      min-height: 50px !important;
+      padding: 12px 16px !important;
+    }
   }
 
   /* Prevent mobile back button issues and ensure navigation visibility */
