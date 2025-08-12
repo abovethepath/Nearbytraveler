@@ -120,18 +120,20 @@ export default function Auth() {
           }
         `}
       </style>
-      <div className={`${!isLogin ? 'join-page-background' : 'login-page-background'} min-h-screen flex flex-col items-center justify-center p-4 relative`}>
-      {/* Overlay to maintain readability */}
-      <div className="absolute inset-0 bg-white/10 dark:bg-gray-900/20"></div>
-      <div className="w-full max-w-md relative z-10">
-        <Card className="auth-page-card shadow-2xl border-4 border-blue-500/50 bg-white/80 dark:bg-gray-900/95 backdrop-blur-md">
+      <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gray-50 dark:bg-gray-900">
+      <div className="w-full max-w-md">
+        <Card className="shadow-lg border bg-white dark:bg-gray-900">
           <CardHeader className="text-center">
             <div className="flex justify-start mb-4">
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => window.history.back()}
-                className="text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
+                onClick={() => {
+                  console.log('Auth back button clicked - navigating to /');
+                  setLocation('/');
+                }}
+                className="text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 touch-manipulation"
+                data-testid="button-back-auth"
               >
                 ← Back
               </Button>
@@ -217,7 +219,7 @@ export default function Auth() {
           </CardContent>
         </Card>
       </div>
-      </div>
+    </div>
     </>
   );
 }
