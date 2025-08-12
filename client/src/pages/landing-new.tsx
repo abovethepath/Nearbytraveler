@@ -159,27 +159,7 @@ export default function Landing() {
         </div>
       </div>
 
-      {/* Exclusive Beta Access */}
-      <div className="py-12 bg-gradient-to-r from-orange-100 to-red-100 dark:from-orange-900/30 dark:to-red-900/30">
-        <div className="max-w-4xl mx-auto px-4">
-          <div className="p-8 bg-gradient-to-r from-orange-600 to-red-600 dark:from-orange-700 dark:to-red-700 rounded-xl shadow-2xl">
-            <div className="flex items-center justify-center mb-4">
-              <span className="inline-block w-3 h-3 bg-yellow-400 rounded-full mr-2 animate-pulse"></span>
-              <span className="text-white font-bold text-sm uppercase tracking-wide">Exclusive Beta Access</span>
-              <span className="inline-block w-3 h-3 bg-yellow-400 rounded-full ml-2 animate-pulse"></span>
-            </div>
-            <h3 className="text-2xl font-bold text-white text-center mb-4">
-              Join Our Premium Los Angeles Launch
-            </h3>
-            <p className="text-lg text-white text-center leading-relaxed mb-4">
-              <span className="font-semibold">You're invited to be among the first</span> to experience our curated community of travelers and locals. While our network is global, we're launching with an exclusive focus on Los Angeles premium events and experiences.
-            </p>
-            <p className="text-base text-orange-100 text-center">
-              Early members get lifetime premium features and priority access to new cities as we expand worldwide.
-            </p>
-          </div>
-        </div>
-      </div>
+
 
 
 
@@ -752,6 +732,28 @@ export default function Landing() {
             >
               Join Nearby Traveler
             </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Exclusive Beta Access */}
+      <div className="py-12 bg-gradient-to-r from-orange-100 to-red-100 dark:from-orange-900/30 dark:to-red-900/30">
+        <div className="max-w-4xl mx-auto px-4">
+          <div className="p-8 bg-gradient-to-r from-orange-600 to-red-600 dark:from-orange-700 dark:to-red-700 rounded-xl shadow-2xl">
+            <div className="flex items-center justify-center mb-4">
+              <span className="inline-block w-3 h-3 bg-yellow-400 rounded-full mr-2 animate-pulse"></span>
+              <span className="text-white font-bold text-sm uppercase tracking-wide">Exclusive Beta Access</span>
+              <span className="inline-block w-3 h-3 bg-yellow-400 rounded-full ml-2 animate-pulse"></span>
+            </div>
+            <h3 className="text-2xl font-bold text-white text-center mb-4">
+              Join Our Premium Los Angeles Launch
+            </h3>
+            <p className="text-lg text-white text-center leading-relaxed mb-4">
+              <span className="font-semibold">You're invited to be among the first</span> to experience our curated community of travelers and locals. While our network is global, we're launching with an exclusive focus on Los Angeles premium events and experiences.
+            </p>
+            <p className="text-base text-orange-100 text-center">
+              Early members get lifetime premium features and priority access to new cities as we expand worldwide.
+            </p>
           </div>
         </div>
       </div>
