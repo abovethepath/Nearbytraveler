@@ -2035,17 +2035,28 @@ div[class*="rounded-lg border"].selected:not(input):not(textarea) {
   display: none !important;
 }
 
-/* Make mobile preview scrollable */
+/* Make mobile preview scrollable with visible scrollbar */
 .mobile-viewport::-webkit-scrollbar {
-  width: 4px;
+  width: 8px;
 }
 
 .mobile-viewport::-webkit-scrollbar-track {
-  background: transparent;
+  background: #f1f1f1;
+  border-radius: 4px;
 }
 
 .mobile-viewport::-webkit-scrollbar-thumb {
-  background: rgba(0,0,0,0.2);
-  border-radius: 2px;
+  background: #888;
+  border-radius: 4px;
+}
+
+.mobile-viewport::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* For Firefox */
+.mobile-viewport {
+  scrollbar-width: thin;
+  scrollbar-color: #888 #f1f1f1;
 }
 

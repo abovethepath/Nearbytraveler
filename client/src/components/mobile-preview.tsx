@@ -42,9 +42,9 @@ export default function MobilePreview({ children }: MobilePreviewProps) {
             <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-28 h-7 bg-black rounded-b-2xl z-50"></div>
             
             {/* Screen */}
-            <div className="bg-white rounded-xl h-full overflow-auto relative">
-              {/* Mobile View Content */}
-              <div className="w-full mobile-viewport overflow-auto" style={{ transform: 'scale(0.4)', transformOrigin: 'top left', width: '250%', minHeight: '250%' }}>
+            <div className="bg-white rounded-xl h-full overflow-hidden relative">
+              {/* Mobile View Content with visible scrollbar */}
+              <div className="w-full h-full mobile-viewport overflow-auto" style={{ transform: 'scale(0.4)', transformOrigin: 'top left', width: '250%', minHeight: '250%' }}>
                 {children}
               </div>
             </div>
