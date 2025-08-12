@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useLocation, Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import Footer from "@/components/footer";
-import LandingNavbar from "@/components/landing-navbar";
+import SimpleNavbar from "@/components/simple-navbar";
 
 import MobileDebug from "@/components/mobile-debug";
 import MobilePreview from "@/components/mobile-preview";
@@ -73,29 +73,14 @@ function LandingContent({ setLocation }: { setLocation: (path: string) => void }
       <MobileDebug />
 
       {/* NAVBAR (fixed, always visible) */}
-      <div className="fixed inset-x-0 top-0 z-[100] w-full">
-        <LandingNavbar />
+      <div className="fixed inset-x-0 top-0 z-[9999] w-full">
+        <SimpleNavbar />
       </div>
 
       {/* Spacer equal to navbar height so content starts below it */}
-      <div className="h-16 md:h-[72px]" />
+      <div className="h-16" />
 
-      {/* Orange Sign-Up Header Bar with Sign In option */}
-      <div className="bg-orange-500 text-black text-center py-2 md:hidden z-40 flex justify-between items-center px-4">
-        <button
-          onClick={() => setLocation('/auth')}
-          className="font-bold text-xs touch-manipulation bg-white/20 px-2 py-1 rounded"
-        >
-          SIGN IN
-        </button>
-        <button
-          onClick={() => setLocation('/join')}
-          className="font-bold text-sm touch-manipulation flex-1 mx-2"
-        >
-          🔥 JOIN NEARBY TRAVELER NOW - FREE! 🔥
-        </button>
-        <div className="w-12"></div> {/* spacer for balance */}
-      </div>
+
 
       {/* Main content takes remaining space */}
       <main className="flex-1">

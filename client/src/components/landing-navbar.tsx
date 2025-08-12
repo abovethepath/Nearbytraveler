@@ -6,16 +6,14 @@ export default function LandingNavbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <nav className="bg-red-600 text-white shadow-lg w-full border-b-4 border-red-800" style={{ minHeight: '64px' }}>
+    <nav className="bg-red-600 text-white shadow-lg w-full border-b-4 border-red-800" style={{ minHeight: '64px', position: 'relative', zIndex: 100 }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
+        <div className="flex justify-between h-16 items-center">
           <div className="flex">
             <div className="flex-shrink-0 flex items-center">
               <Link href="/" className="flex items-center">
-                <div className="transform scale-150">
-                  <Logo variant="navbar" />
-                </div>
-                <span className="ml-8 text-white text-sm font-bold uppercase tracking-wide bg-white/20 px-2 py-1 rounded">BETA</span>
+                <span className="text-white text-xl font-bold">NEARBY TRAVELER</span>
+                <span className="ml-4 text-white text-sm font-bold uppercase tracking-wide bg-white/20 px-2 py-1 rounded">BETA</span>
               </Link>
             </div>
             <div className="hidden sm:ml-12 sm:flex sm:space-x-8">
