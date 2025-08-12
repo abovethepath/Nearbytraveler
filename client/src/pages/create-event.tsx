@@ -378,8 +378,12 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
         throw new Error('End date must be a valid date');
       }
 
-      // Create combined display location from address fields
-      const displayLocation = `${data.street}, ${data.city}, ${data.state} ${data.zipcode}`;
+      // Create combined display location from address fields - avoid undefined concatenation
+      const locationParts = [];
+      if (data.street) locationParts.push(data.street);
+      if (data.city) locationParts.push(data.city);
+      if (data.state) locationParts.push(data.state);
+      const displayLocation = locationParts.join(', ');
       
       // Validate categories
       let finalCategories = [...selectedCategories];

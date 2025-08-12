@@ -3815,7 +3815,17 @@ Ready to start making real connections wherever you are?
       cleanEventData.city = eventData.city;
       cleanEventData.state = eventData.state || '';
       cleanEventData.zipcode = eventData.zipcode || '';
-      cleanEventData.location = eventData.location;
+      // CRITICAL: Build location field properly without undefined values
+      if (eventData.location && eventData.location !== 'undefined' && !eventData.location.includes('undefined')) {
+        cleanEventData.location = eventData.location;
+      } else {
+        // Build location from individual components if not provided or if contains undefined
+        const locationParts = [];
+        if (eventData.street && eventData.street !== 'undefined') locationParts.push(eventData.street);
+        if (eventData.city && eventData.city !== 'undefined') locationParts.push(eventData.city);
+        if (eventData.state && eventData.state !== 'undefined') locationParts.push(eventData.state);
+        cleanEventData.location = locationParts.join(', ');
+      }
       cleanEventData.date = eventData.date; // Use already converted date
       cleanEventData.category = eventData.category;
       cleanEventData.organizerId = eventData.organizerId;
