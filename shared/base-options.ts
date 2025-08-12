@@ -68,7 +68,6 @@ export const ADDITIONAL_INTERESTS = [
   "LGBTQIA+",
   "Local Gay Parties/Events",
   "Polyamory and ENM",
-  "Adult Entertainment",
   
   // Family/Kids
   "Parent Meetups",
