@@ -771,11 +771,7 @@ function LandingContent({ setLocation }: { setLocation: (path: string) => void }
       </div>
 
       {/* Footer */}
-      <div className="pb-16 md:pb-0">
-        <Footer />
-      </div>
-      
-      {/* NO MOBILE BOTTOM NAVIGATION ON LANDING PAGE - Users aren't signed up yet */}
+      <Footer />
     </div>
   );
 }
