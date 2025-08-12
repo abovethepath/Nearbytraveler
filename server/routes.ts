@@ -11373,26 +11373,93 @@ Ready to start making real connections wherever you are?
         return res.json({ hasAccess: true, isPublic: true });
       }
 
-      // For private chatrooms, check if user has approved access request
-      const [accessRequest] = await db.select()
+      // For private chatrooms, check if user has any access request
+      const [existingRequest] = await db.select()
         .from(chatroomAccessRequests)
         .where(and(
           eq(chatroomAccessRequests.chatroomId, chatroomId),
-          eq(chatroomAccessRequests.userId, userId),
-          eq(chatroomAccessRequests.status, 'approved')
+          eq(chatroomAccessRequests.userId, userId)
         ))
         .limit(1);
 
-      if (accessRequest) {
-        console.log(`🔓 PRIVATE CHATROOM: User ${userId} has approved access to room ${chatroomId}`);
-        return res.json({ hasAccess: true, isPublic: false });
+      if (existingRequest) {
+        if (existingRequest.status === 'approved') {
+          console.log(`🔓 PRIVATE CHATROOM: User ${userId} has approved access to room ${chatroomId}`);
+          return res.json({ hasAccess: true, isPublic: false });
+        } else if (existingRequest.status === 'pending') {
+          console.log(`⏳ PRIVATE CHATROOM: User ${userId} has pending request for room ${chatroomId}`);
+          return res.json({ hasAccess: false, isPublic: false, status: 'pending', message: 'Your access request is pending approval' });
+        } else if (existingRequest.status === 'rejected') {
+          console.log(`❌ PRIVATE CHATROOM: User ${userId} has rejected request for room ${chatroomId}`);
+          return res.json({ hasAccess: false, isPublic: false, status: 'rejected', message: 'Your access request was denied' });
+        }
       }
 
-      console.log(`🔒 ACCESS DENIED: User ${userId} has no approved access to private room ${chatroomId}`);
-      res.json({ hasAccess: false, isPublic: false, needsApproval: true });
+      console.log(`🔒 PRIVATE CHATROOM: User ${userId} needs to request access to room ${chatroomId}`);
+      res.json({ hasAccess: false, isPublic: false, status: 'none', needsApproval: true, message: 'You need to request access to this private chatroom' });
     } catch (error) {
       console.error('Error checking chatroom access:', error);
       res.status(500).json({ hasAccess: false, error: 'Failed to check access' });
+    }
+  });
+
+  // Request access to private chatroom
+  app.post('/api/simple-chatrooms/:id/request-access', async (req, res) => {
+    try {
+      const chatroomId = parseInt(req.params.id);
+      const userId = parseInt(String(req.headers['x-user-id'] || 0));
+      const { message } = req.body;
+      
+      if (!chatroomId || !userId) {
+        return res.status(400).json({ error: 'Missing chatroomId/userId' });
+      }
+
+      // Check if chatroom exists and is private
+      const [chatroom] = await db.select().from(citychatrooms).where(eq(citychatrooms.id, chatroomId)).limit(1);
+      if (!chatroom) {
+        return res.status(404).json({ error: 'Chatroom not found' });
+      }
+
+      if (chatroom.isPublic) {
+        return res.status(400).json({ error: 'Cannot request access to public chatroom' });
+      }
+
+      // Check if user already has a request
+      const [existingRequest] = await db.select()
+        .from(chatroomAccessRequests)
+        .where(and(
+          eq(chatroomAccessRequests.chatroomId, chatroomId),
+          eq(chatroomAccessRequests.userId, userId)
+        ))
+        .limit(1);
+
+      if (existingRequest) {
+        return res.status(400).json({ 
+          error: `Access request already exists with status: ${existingRequest.status}`,
+          status: existingRequest.status 
+        });
+      }
+
+      // Create new access request
+      const [newRequest] = await db.insert(chatroomAccessRequests)
+        .values({
+          chatroomId,
+          userId,
+          message: message || null,
+          status: 'pending'
+        })
+        .returning();
+
+      console.log(`📝 ACCESS REQUEST: User ${userId} requested access to private room ${chatroomId}`);
+      res.json({ 
+        success: true, 
+        status: 'pending',
+        message: 'Access request submitted successfully',
+        requestId: newRequest.id 
+      });
+    } catch (error) {
+      console.error('Error creating access request:', error);
+      res.status(500).json({ error: 'Failed to create access request' });
     }
   });
 

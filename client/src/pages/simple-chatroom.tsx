@@ -240,8 +240,69 @@ export default function SimpleChatroomPage() {
     );
   }
 
-  // Show access denied screen if user doesn't have permission
+  // Request access mutation
+  const requestAccessMutation = useMutation({
+    mutationFn: async (message?: string) => {
+      const response = await fetch(`/api/simple-chatrooms/${chatroomId}/request-access`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-user-id': String(currentUserId)
+        },
+        credentials: 'include',
+        body: JSON.stringify({ message: message || '' })
+      });
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to request access');
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Access Requested",
+        description: "Your request has been submitted and is pending approval",
+      });
+      queryClient.invalidateQueries({ queryKey: [`/api/simple-chatrooms/${chatroomId}/access-check`] });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
+    }
+  });
+
+  // Show access control screen if user doesn't have permission
   if (accessError || (accessCheck && !accessCheck.hasAccess)) {
+    const getStatusInfo = () => {
+      if (accessCheck?.status === 'pending') {
+        return {
+          title: '⏳ Access Pending',
+          message: 'Your access request is pending organizer approval.',
+          color: 'text-yellow-600 dark:text-yellow-400',
+          showRequestButton: false
+        };
+      } else if (accessCheck?.status === 'rejected') {
+        return {
+          title: '❌ Access Denied',
+          message: 'Your access request was denied by the organizer.',
+          color: 'text-red-600 dark:text-red-400',
+          showRequestButton: false
+        };
+      } else {
+        return {
+          title: '🔒 Private Chatroom',
+          message: 'This is a private chatroom. Request access from the organizer to join.',
+          color: 'text-blue-600 dark:text-blue-400',
+          showRequestButton: true
+        };
+      }
+    };
+
+    const statusInfo = getStatusInfo();
+
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-orange-50 dark:from-gray-900 dark:to-gray-800">
         <div className="max-w-4xl mx-auto px-4 py-6">
@@ -255,23 +316,30 @@ export default function SimpleChatroomPage() {
                 >
                   <ArrowLeft className="w-4 h-4" />
                 </Button>
-                <CardTitle className="text-xl">🔒 Private Chatroom</CardTitle>
+                <CardTitle className="text-xl">{statusInfo.title}</CardTitle>
               </div>
             </CardHeader>
             <CardContent className="p-8 text-center">
               <div className="space-y-4">
-                <div className="text-lg font-semibold text-red-600 dark:text-red-400">
-                  Access Denied
+                <div className={`text-lg font-semibold ${statusInfo.color}`}>
+                  {accessCheck?.message || statusInfo.message}
                 </div>
-                <p className="text-gray-600 dark:text-gray-400">
-                  This is a private chatroom. You need organizer approval to access this chat.
-                </p>
-                <Button 
-                  onClick={() => navigate('/city-chatrooms')}
-                  className="mt-4"
-                >
-                  Back to Chatrooms
-                </Button>
+                <div className="flex gap-3 justify-center">
+                  <Button 
+                    onClick={() => navigate('/city-chatrooms')}
+                    variant="outline"
+                  >
+                    Back to Chatrooms
+                  </Button>
+                  {statusInfo.showRequestButton && (
+                    <Button 
+                      onClick={() => requestAccessMutation.mutate()}
+                      disabled={requestAccessMutation.isPending}
+                    >
+                      {requestAccessMutation.isPending ? 'Requesting...' : 'Request Access'}
+                    </Button>
+                  )}
+                </div>
               </div>
             </CardContent>
           </Card>
