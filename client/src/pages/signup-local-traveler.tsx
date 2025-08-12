@@ -690,16 +690,7 @@ export default function SignupLocalTraveler() {
                 <div className="text-center mb-6">
                   <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Your Connection Preferences</h3>
                   <div className="text-sm text-blue-600 bg-blue-50 border border-blue-400 rounded-md p-3 mb-4 dark:bg-blue-900/20 dark:border-blue-500 dark:text-blue-300">
-                    <strong>Connection Preferences for Matching with Nearby Locals and Travelers</strong> - Choose interests, activities, and events to find locals and travelers who share your passions. This helps match you with people who want to connect and explore together.
-                  </div>
-                  <div className="text-sm text-orange-600 bg-orange-50 border border-orange-400 rounded-md p-3 mb-4 dark:bg-orange-900/20 dark:border-orange-500 dark:text-orange-300">
-                    <strong>Minimum: Choose at least 10 from the following 4 columns below (Top Choices, Interests, Activities, Events)</strong>
-                  </div>
-                  <div className="text-sm text-green-600 bg-green-50 border border-green-400 rounded-md p-3 mb-3 dark:bg-green-900/20 dark:border-green-500 dark:text-green-300">
-                    <strong>These will save as your default choices</strong> for matching with nearby locals and travelers and can be updated anytime in your profile settings
-                  </div>
-                  <div className="text-sm text-purple-600 bg-purple-50 border border-purple-400 rounded-md p-3 dark:bg-purple-900/20 dark:border-purple-500 dark:text-purple-300">
-                    💡 <strong>Pro Tip:</strong> After creating your profile, visit the City Match page to add and check off specific activities, events, and plans for your city. Find locals and travelers who want to do the exact same things!
+                    <strong>Quick Setup:</strong> Choose 10+ items below to match with locals and travelers who share your interests. You can update these anytime later.
                   </div>
                   <div className="text-center mt-4">
                     <div className={`text-lg font-bold ${getTotalSelections() >= 10 ? 'text-green-600' : 'text-red-600'}`}>

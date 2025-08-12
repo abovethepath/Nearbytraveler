@@ -535,13 +535,7 @@ export default function SignupTraveling() {
                 <div className="text-center mb-6">
                   <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Your Connection Preferences</h3>
                   <div className="text-sm text-blue-600 bg-blue-50 border border-blue-400 rounded-md p-3 mb-4 dark:bg-blue-900/20 dark:border-blue-500 dark:text-blue-300">
-                    <strong>Connection Preferences for Travel</strong> - Choose interests, activities, and events to find the right travel matches and connect with locals who share your passions. Once signed into Nearby Traveler there will be a CITY MATCH page to let others know exactly what you are doing in that city or in your hometown.
-                  </div>
-                  <div className="text-sm text-orange-600 bg-orange-50 border border-orange-400 rounded-md p-3 mb-4 dark:bg-orange-900/20 dark:border-orange-500 dark:text-orange-300">
-                    <strong>Minimum: To better match others on this site, choose at least 10 from the following next 4 columns below (top choices, interests, activities, events)</strong>
-                  </div>
-                  <div className="text-sm text-green-600 bg-green-50 border border-green-400 rounded-md p-3 dark:bg-green-900/20 dark:border-green-500 dark:text-green-300">
-                    <strong>These will save as your default choices</strong> for future travel matching and can be updated anytime in your profile settings
+                    <strong>Quick Setup:</strong> Choose 10+ items below to match with locals and travelers who share your interests. You can update these anytime later.
                   </div>
                   <div className="text-center mt-4">
                     <div className={`text-lg font-bold ${getTotalSelections() >= 10 ? 'text-green-600' : 'text-red-600'}`}>
