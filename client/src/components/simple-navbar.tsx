@@ -17,16 +17,16 @@ export default function SimpleNavbar() {
     >
       <div className="flex items-center justify-between w-full max-w-7xl mx-auto">
         <div className="flex items-center">
-          <Link href="/" className="text-white text-xl font-bold mr-4">
+          <Link href="/" className="text-white text-2xl font-bold mr-4" style={{ fontSize: '24px' }}>
             Nearby Traveler
           </Link>
-          <span className="text-white text-sm font-bold uppercase tracking-wide bg-white/20 px-2 py-1 rounded">BETA</span>
+          <span className="text-white text-lg font-bold uppercase tracking-wide bg-white/20 px-3 py-2 rounded" style={{ fontSize: '16px' }}>BETA</span>
         </div>
         <div className="flex items-center space-x-4">
-          <Link href="/auth" className="bg-white text-red-600 hover:bg-white/90 px-4 py-2 rounded-md text-sm font-medium">
+          <Link href="/auth" className="bg-white text-red-600 hover:bg-white/90 px-6 py-3 rounded-md text-lg font-medium" style={{ fontSize: '18px', minHeight: '48px' }}>
             Sign In
           </Link>
-          <Link href="/join" className="bg-orange-500 hover:bg-orange-600 text-black px-4 py-2 rounded-md text-sm font-medium">
+          <Link href="/join" className="bg-orange-500 hover:bg-orange-600 text-black px-6 py-3 rounded-md text-lg font-medium" style={{ fontSize: '18px', minHeight: '48px' }}>
             Join
           </Link>
         </div>

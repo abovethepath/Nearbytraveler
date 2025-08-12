@@ -81,28 +81,49 @@ body {
 /* Ensure mobile text is readable and scalable */
 @media (max-width: 768px) {
   html {
-    font-size: 16px;
+    font-size: 18px !important;
   }
   
   body {
-    font-size: 16px;
-    line-height: 1.6;
+    font-size: 18px !important;
+    line-height: 1.8 !important;
+  }
+  
+  /* Force larger text for all elements */
+  * {
+    font-size: 18px !important;
+    line-height: 1.8 !important;
   }
   
   /* Improve button and text readability */
   button, .btn, a {
-    min-height: 44px;
-    font-size: 16px;
+    min-height: 48px !important;
+    font-size: 20px !important;
+    padding: 12px 16px !important;
   }
   
   /* Ensure headings are properly sized */
-  h1 { font-size: 1.75rem; }
-  h2 { font-size: 1.5rem; }
-  h3 { font-size: 1.25rem; }
+  h1 { font-size: 2.5rem !important; font-weight: bold !important; }
+  h2 { font-size: 2rem !important; font-weight: bold !important; }
+  h3 { font-size: 1.75rem !important; font-weight: bold !important; }
   
-  /* Make sure all text is at least 16px for readability */
-  p, span, div, input, textarea {
-    font-size: 16px;
+  /* Make sure all text is at least 18px for readability */
+  p, span, div, input, textarea, label {
+    font-size: 18px !important;
+    line-height: 1.8 !important;
+  }
+  
+  /* Special larger sizes for key elements */
+  .text-xl, .text-lg {
+    font-size: 24px !important;
+  }
+  
+  .text-2xl {
+    font-size: 28px !important;
+  }
+  
+  .text-3xl {
+    font-size: 32px !important;
   }
 }
 
