@@ -150,7 +150,7 @@ function LandingContent({ setLocation }: { setLocation: (path: string) => void }
               <div className="mx-auto max-w-5xl px-4 text-center">
                 
 
-                <h1 className="text-3xl md:text-5xl lg:text-6xl tracking-tight" style={{ fontSize: 'clamp(28px, 9vw, 54px)' }}>
+                <h1 className="text-3xl md:text-5xl lg:text-6xl tracking-tight" style={{ fontSize: 'clamp(36px, 12vw, 64px)' }}>
                   <span className="block text-white font-black leading-tight" style={{ fontSize: 'inherit' }}>Skip the tourist traps.</span>
                   <span className="block text-orange-400 font-black leading-tight" style={{ fontSize: 'inherit' }}>
                     Meet locals and other Nearby Travelers today.
@@ -158,7 +158,7 @@ function LandingContent({ setLocation }: { setLocation: (path: string) => void }
                 </h1>
 
                 <div className="mt-6 p-4 md:p-6 bg-black/40 backdrop-blur-sm rounded-2xl border border-white/20">
-                  <p className="text-base md:text-lg text-white leading-relaxed" style={{ fontSize: 'clamp(20px, 5vw, 24px)', lineHeight: '1.6' }}>
+                  <p className="text-base md:text-lg text-white leading-relaxed" style={{ fontSize: 'clamp(26px, 7vw, 30px)', lineHeight: '1.6' }}>
                     <span className="text-orange-300 font-bold" style={{ fontSize: 'inherit' }}>
                       "Over 15 years I hosted and toured 400+ travelers from 30+ countries as a local.
                     </span>
@@ -176,7 +176,7 @@ function LandingContent({ setLocation }: { setLocation: (path: string) => void }
                   <Button
                     onClick={() => setLocation('/join')}
                     size="lg"
-                    className="bg-orange-500 hover:bg-orange-600 text-black font-black text-lg md:text-2xl px-8 md:px-16 py-4 md:py-5 rounded-2xl shadow-2xl transition-all duration-200 hover:scale-105 border-3 md:border-4 border-white w-full max-w-md md:w-auto"
+                    className="bg-orange-500 hover:bg-orange-600 text-black font-black text-2xl md:text-3xl px-10 md:px-16 py-5 md:py-6 rounded-2xl shadow-2xl transition-all duration-200 hover:scale-105 border-3 md:border-4 border-white w-full max-w-md md:w-auto"
                     style={{ boxShadow: '0 15px 40px rgba(0,0,0,0.4), 0 0 0 3px rgba(255,255,255,0.9)' }}
                   >
                     JOIN NEARBY TRAVELER NOW
