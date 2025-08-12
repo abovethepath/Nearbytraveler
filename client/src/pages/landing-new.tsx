@@ -117,7 +117,7 @@ export default function Landing() {
                     <div className="max-w-4xl mx-auto">
                       <h1 className="text-4xl tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
                         <span className="block text-white font-black" style={{fontFamily: '"Inter", sans-serif'}}>Skip the tourist traps.</span>
-                        <span className="block text-orange-400 font-black" style={{fontFamily: '"Inter", sans-serif'}}>Get private invites from LA locals.</span>
+                        <span className="block text-orange-400 font-black" style={{fontFamily: '"Inter", sans-serif'}}>Meet locals and other Nearby Travelers right now, today, at hosted, created events specifically made for the travel community.</span>
                       </h1>
                       
                       {/* Personal credibility as founder */}
