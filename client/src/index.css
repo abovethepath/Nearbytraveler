@@ -318,6 +318,18 @@ body {
     -webkit-tap-highlight-color: transparent;
   }
 
+  /* Mobile-first responsive text sizing - MUCH LARGER for better readability */
+  .text-xs { font-size: clamp(18px, 4.5vw, 20px) !important; }
+  .text-sm { font-size: clamp(20px, 5vw, 22px) !important; }
+  .text-base { font-size: clamp(22px, 5.5vw, 24px) !important; }
+  .text-lg { font-size: clamp(24px, 6vw, 26px) !important; }
+  .text-xl { font-size: clamp(26px, 6.5vw, 30px) !important; }
+  .text-2xl { font-size: clamp(30px, 7.5vw, 38px) !important; }
+  .text-3xl { font-size: clamp(34px, 8.5vw, 42px) !important; }
+  .text-4xl { font-size: clamp(38px, 9.5vw, 54px) !important; }
+  .text-5xl { font-size: clamp(42px, 10.5vw, 62px) !important; }
+  .text-6xl { font-size: clamp(46px, 11.5vw, 70px) !important; }
+
   /* Prevent mobile back button issues and ensure navigation visibility */
   .mobile-nav-button {
     @apply touch-manipulation select-none;
