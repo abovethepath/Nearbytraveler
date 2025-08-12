@@ -150,7 +150,7 @@ function LandingContent({ setLocation }: { setLocation: (path: string) => void }
               <div className="mx-auto max-w-5xl px-4 text-center">
                 
 
-                <h1 className="text-3xl md:text-5xl lg:text-6xl tracking-tight" style={{ fontSize: 'clamp(36px, 12vw, 64px)' }}>
+                <h1 className="text-3xl md:text-5xl lg:text-6xl tracking-tight" style={{ fontSize: 'clamp(44px, 14vw, 72px)' }}>
                   <span className="block text-white font-black leading-tight" style={{ fontSize: 'inherit' }}>Skip the tourist traps.</span>
                   <span className="block text-orange-400 font-black leading-tight" style={{ fontSize: 'inherit' }}>
                     Meet locals and other Nearby Travelers today.
@@ -158,7 +158,7 @@ function LandingContent({ setLocation }: { setLocation: (path: string) => void }
                 </h1>
 
                 <div className="mt-6 p-4 md:p-6 bg-black/40 backdrop-blur-sm rounded-2xl border border-white/20">
-                  <p className="text-base md:text-lg text-white leading-relaxed" style={{ fontSize: 'clamp(26px, 7vw, 30px)', lineHeight: '1.6' }}>
+                  <p className="text-base md:text-lg text-white leading-relaxed" style={{ fontSize: 'clamp(32px, 9vw, 36px)', lineHeight: '1.6' }}>
                     <span className="text-orange-300 font-bold" style={{ fontSize: 'inherit' }}>
                       "Over 15 years I hosted and toured 400+ travelers from 30+ countries as a local.
                     </span>

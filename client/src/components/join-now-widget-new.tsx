@@ -210,13 +210,13 @@ export default function JoinNowWidgetNew() {
           <div className="space-y-3">
             <Label htmlFor="userType" className="text-lg md:text-base text-gray-900 dark:text-white font-medium">I am a...</Label>
             <Select value={userType} onValueChange={setUserType}>
-              <SelectTrigger className="w-full h-16 md:h-14 text-xl md:text-lg p-5 md:p-4" style={{ fontSize: 'clamp(24px, 7vw, 28px)', minHeight: '60px' }}>
+              <SelectTrigger className="w-full h-16 md:h-14 text-xl md:text-lg p-5 md:p-4" style={{ fontSize: 'clamp(32px, 9vw, 36px)', minHeight: '60px' }}>
                 <SelectValue placeholder="Select your type" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="local" className="text-xl md:text-lg p-5 md:p-4" style={{ fontSize: 'clamp(24px, 7vw, 28px)', minHeight: '60px' }}>Nearby Local (Not Traveling Now)</SelectItem>
-                <SelectItem value="currently_traveling" className="text-xl md:text-lg p-5 md:p-4" style={{ fontSize: 'clamp(24px, 7vw, 28px)', minHeight: '60px' }}>Currently Traveling</SelectItem>
-                <SelectItem value="business" className="text-xl md:text-lg p-5 md:p-4" style={{ fontSize: 'clamp(24px, 7vw, 28px)', minHeight: '60px' }}>Nearby Business</SelectItem>
+                <SelectItem value="local" className="text-xl md:text-lg p-5 md:p-4" style={{ fontSize: 'clamp(32px, 9vw, 36px)', minHeight: '60px' }}>Nearby Local (Not Traveling Now)</SelectItem>
+                <SelectItem value="currently_traveling" className="text-xl md:text-lg p-5 md:p-4" style={{ fontSize: 'clamp(32px, 9vw, 36px)', minHeight: '60px' }}>Currently Traveling</SelectItem>
+                <SelectItem value="business" className="text-xl md:text-lg p-5 md:p-4" style={{ fontSize: 'clamp(32px, 9vw, 36px)', minHeight: '60px' }}>Nearby Business</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -229,7 +229,7 @@ export default function JoinNowWidgetNew() {
               }`}
               style={{
                 pointerEvents: userType ? 'auto' : 'none',
-                fontSize: 'clamp(24px, 7vw, 28px)',
+                fontSize: 'clamp(32px, 9vw, 36px)',
                 minHeight: '60px',
                 padding: '16px 24px'
               }}
@@ -260,7 +260,7 @@ export default function JoinNowWidgetNew() {
                 placeholder="Your full name"
                 required
                 className="mt-2 h-16 md:h-14 text-xl md:text-lg p-5 md:p-4"
-                style={{ fontSize: 'clamp(24px, 7vw, 28px)', minHeight: '60px' }}
+                style={{ fontSize: 'clamp(32px, 9vw, 36px)', minHeight: '60px' }}
               />
             </div>
 
@@ -278,7 +278,7 @@ export default function JoinNowWidgetNew() {
                     usernameAvailable === true ? 'border-green-500' : 
                     usernameAvailable === false ? 'border-red-500' : ''
                   }`}
-                  style={{ fontSize: 'clamp(24px, 7vw, 28px)', minHeight: '60px' }}
+                  style={{ fontSize: 'clamp(32px, 9vw, 36px)', minHeight: '60px' }}
                 />
                 <div className="absolute inset-y-0 right-0 flex items-center pr-3 z-10">
                   {usernameChecking ? (
@@ -316,7 +316,7 @@ export default function JoinNowWidgetNew() {
                 placeholder="your@email.com"
                 required
                 className="h-16 md:h-14 text-xl md:text-lg p-5 md:p-4"
-                style={{ fontSize: 'clamp(24px, 7vw, 28px)', minHeight: '60px' }}
+                style={{ fontSize: 'clamp(32px, 9vw, 36px)', minHeight: '60px' }}
               />
             </div>
             
@@ -335,7 +335,7 @@ export default function JoinNowWidgetNew() {
                       formData.email === formData.confirmEmail ? 'border-green-500' : 'border-red-500'
                     ) : ''
                   }`}
-                  style={{ fontSize: 'clamp(24px, 7vw, 28px)', minHeight: '60px' }}
+                  style={{ fontSize: 'clamp(32px, 9vw, 36px)', minHeight: '60px' }}
                 />
                 <div className="absolute inset-y-0 right-0 flex items-center pr-3">
                   {formData.confirmEmail && formData.email && (
@@ -369,7 +369,7 @@ export default function JoinNowWidgetNew() {
                     formData.password && formData.password.length >= 8 ? 'border-green-500' : 
                     formData.password && formData.password.length < 8 ? 'border-yellow-500' : ''
                   }`}
-                  style={{ fontSize: 'clamp(24px, 7vw, 28px)', minHeight: '60px' }}
+                  style={{ fontSize: 'clamp(32px, 9vw, 36px)', minHeight: '60px' }}
                 />
                 <div className="absolute inset-y-0 right-0 flex items-center pr-3">
                   {formData.password && (
@@ -404,7 +404,7 @@ export default function JoinNowWidgetNew() {
                       formData.password === formData.confirmPassword ? 'border-green-500' : 'border-red-500'
                     ) : ''
                   }`}
-                  style={{ fontSize: 'clamp(24px, 7vw, 28px)', minHeight: '60px' }}
+                  style={{ fontSize: 'clamp(32px, 9vw, 36px)', minHeight: '60px' }}
                 />
                 <div className="absolute inset-y-0 right-0 flex items-center pr-3">
                   {formData.confirmPassword && formData.password && (
@@ -430,7 +430,7 @@ export default function JoinNowWidgetNew() {
               onClick={handleCreateAccount}
               className="join-page-gradient-button w-full py-4 md:py-3 px-6 md:px-4 rounded-md font-bold text-center cursor-pointer select-none"
               style={{
-                fontSize: 'clamp(24px, 7vw, 28px)',
+                fontSize: 'clamp(32px, 9vw, 36px)',
                 minHeight: '60px',
                 padding: '16px 24px'
               }}
@@ -442,7 +442,7 @@ export default function JoinNowWidgetNew() {
               onClick={() => setLocation('/')}
               variant="outline"
               className="w-full bg-gray-200 dark:bg-gray-700 border-gray-400 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 h-16 md:h-14 text-xl md:text-lg p-5 md:p-4"
-              style={{ fontSize: 'clamp(24px, 7vw, 28px)', minHeight: '60px' }}
+              style={{ fontSize: 'clamp(32px, 9vw, 36px)', minHeight: '60px' }}
             >
               Back to Landing Page
             </Button>
