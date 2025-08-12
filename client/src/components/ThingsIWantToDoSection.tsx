@@ -176,18 +176,20 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
       
       if (!cityName && event.location) {
         // Try to extract city from location string
-        const locationParts = event.location.split(',');
+        const locationParts = event.location.split(',').map(part => part.trim()).filter(part => part && part !== 'undefined');
         if (locationParts.length >= 2) {
-          // Take the last part that looks like a city (before state)
-          cityName = locationParts[locationParts.length - 1].trim();
-          // If that's a state, take the second to last part
-          if (cityName.match(/^[A-Z]{2}$/) && locationParts.length >= 3) {
-            cityName = locationParts[locationParts.length - 2].trim();
+          // Take the second to last part (usually the city)
+          cityName = locationParts[locationParts.length - 2];
+          // If that doesn't exist or is too short, take the last meaningful part
+          if (!cityName || cityName.length < 2) {
+            cityName = locationParts[locationParts.length - 1];
           }
-        } else {
-          // If location doesn't have commas, try to extract from the string
-          const words = event.location.split(' ');
+        } else if (locationParts.length === 1) {
+          // If only one part, extract city from the string
+          const words = locationParts[0].split(' ').filter(word => word && word !== 'undefined');
           cityName = words[words.length - 1] || 'Other';
+        } else {
+          cityName = 'Other';
         }
       }
       
