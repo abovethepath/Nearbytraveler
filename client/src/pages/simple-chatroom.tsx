@@ -133,7 +133,7 @@ export default function SimpleChatroomPage() {
     },
     enabled: !!chatroomId && !!currentUserId,
     staleTime: 0,
-    cacheTime: 0,
+    gcTime: 0,
     retry: false
   });
 
@@ -142,7 +142,7 @@ export default function SimpleChatroomPage() {
     queryKey: [`/api/simple-chatrooms/${chatroomId}`],
     enabled: !!chatroomId && accessCheck?.hasAccess,
     staleTime: 0, // No caching
-    cacheTime: 0  // Clear cache immediately
+    gcTime: 0  // Clear cache immediately
   });
 
   // Fetch messages only if access is granted  
@@ -152,7 +152,7 @@ export default function SimpleChatroomPage() {
     refetchOnWindowFocus: false,
     enabled: !!chatroomId && accessCheck?.hasAccess,
     staleTime: 0, // No caching
-    cacheTime: 0  // Clear cache immediately
+    gcTime: 0  // Clear cache immediately
   });
 
   // Fetch member count only if access is granted
@@ -161,7 +161,7 @@ export default function SimpleChatroomPage() {
     refetchInterval: accessCheck?.hasAccess ? 5000 : false,
     enabled: !!chatroomId && accessCheck?.hasAccess,
     staleTime: 0, // No caching
-    cacheTime: 0  // Clear cache immediately
+    gcTime: 0  // Clear cache immediately
   });
   const memberCount = memberCountResp?.memberCount ?? 0;
 
@@ -171,7 +171,7 @@ export default function SimpleChatroomPage() {
     refetchInterval: accessCheck?.hasAccess ? 10000 : false,
     enabled: !!chatroomId && accessCheck?.hasAccess,
     staleTime: 0,
-    cacheTime: 0
+    gcTime: 0
   });
 
   // Send message mutation
