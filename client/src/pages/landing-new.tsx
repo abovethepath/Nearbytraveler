@@ -143,6 +143,19 @@ function LandingContent({ setLocation }: { setLocation: (path: string) => void }
             {/* Trimmed vertical padding */}
             <div className="relative py-8 md:py-10 lg:py-12">
               <div className="mx-auto max-w-5xl px-4 text-center">
+                
+                {/* EMERGENCY MOBILE TEXT TEST - HUGE SIZE */}
+                <div className="block md:hidden bg-yellow-400 text-black p-8 mb-8 rounded-lg">
+                  <h1 style={{ fontSize: '48px', fontWeight: 'bold', lineHeight: '1.2' }}>
+                    MOBILE TEST
+                  </h1>
+                  <p style={{ fontSize: '32px', fontWeight: 'normal', lineHeight: '1.4' }}>
+                    Can you read this text?
+                  </p>
+                  <button style={{ fontSize: '24px', padding: '16px 32px', backgroundColor: '#ff0000', color: 'white', border: 'none', borderRadius: '8px', marginTop: '16px' }}>
+                    CLICK TEST
+                  </button>
+                </div>
                 <h1 className="text-3xl md:text-5xl lg:text-6xl tracking-tight">
                   <span className="block text-white font-black leading-tight">Skip the tourist traps.</span>
                   <span className="block text-orange-400 font-black leading-tight">
