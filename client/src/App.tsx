@@ -184,9 +184,15 @@ function Router() {
     }
 
     // Always set loading to false after 100ms to prevent infinite loading
-    setTimeout(() => {
+    // Immediate loading completion for chatroom routes to prevent white screen flash
+    if (location.includes('chatroom')) {
+      console.log('🚀 CHATROOM ROUTE: Skipping auth delay to prevent white screen');
       setIsLoading(false);
-    }, 100);
+    } else {
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 100);
+    }
   }, []);
 
   // Initialize WebSocket connection for authenticated users
@@ -580,7 +586,8 @@ function Router() {
       }
 
       // MOBILE ROUTE FALLBACK: Check if this should go to authenticated section
-      if (hasUserInLocalStorage || hasTravelConnectUser || hasAuthToken) {
+      // Skip home redirect for chatroom routes to prevent white screen flash
+      if (!location.includes('chatroom') && (hasUserInLocalStorage || hasTravelConnectUser || hasAuthToken)) {
         console.log('🔄 MOBILE: User has auth data, redirecting to home');
         setLocation('/');
         return null;
