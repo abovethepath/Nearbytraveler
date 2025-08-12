@@ -9,7 +9,7 @@ export default function MobileTopNav() {
   return (
     <>
       {/* Mobile Top Navigation */}
-      <nav className="sticky top-0 z-40 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 md:hidden">
+      <nav className="sticky top-0 z-40 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 block md:hidden">
         <div className="flex items-center justify-between h-14 px-4">
           <Link href="/" className="flex items-center">
             <div className="transform scale-125">
@@ -61,10 +61,10 @@ export default function MobileTopNav() {
                 </Link>
                 <Link
                   href="/join"
-                  className="block w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white text-center py-3 rounded-lg font-medium transition-colors touch-manipulation"
+                  className="block w-full bg-orange-500 hover:bg-orange-600 text-black font-bold text-center py-3 rounded-lg transition-colors touch-manipulation"
                   onClick={() => setIsOpen(false)}
                 >
-                  Join Now
+                  JOIN NOW
                 </Link>
               </div>
             </div>

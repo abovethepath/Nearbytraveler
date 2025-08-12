@@ -72,13 +72,24 @@ function LandingContent({ setLocation }: { setLocation: (path: string) => void }
     <div className="bg-gray-50 dark:bg-gray-900 font-sans min-h-screen" key="landing-v2-mobile-optimized">
       {/* Mobile Debug Info */}
       <MobileDebug />
+      
+      {/* Mobile Navigation - Always visible on mobile */}
+      <MobileTopNav />
+      
       {/* Desktop Navigation */}
       <div className="hidden md:block">
         <LandingNavbar />
       </div>
       
-      {/* Mobile Navigation */}
-      <MobileTopNav />
+      {/* Orange Sign-Up Header Bar for Mobile */}
+      <div className="bg-orange-500 text-black text-center py-2 md:hidden sticky top-14 z-30">
+        <button 
+          onClick={() => setLocation('/join')}
+          className="font-bold text-sm touch-manipulation"
+        >
+          🔥 JOIN NEARBY TRAVELER NOW - FREE! 🔥
+        </button>
+      </div>
       
       {/* Mobile-First Sticky CTA - Positioned for mobile users */}
       <div className="fixed bottom-20 right-4 md:bottom-6 md:right-6 z-50">
