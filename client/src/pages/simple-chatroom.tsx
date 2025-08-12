@@ -43,7 +43,8 @@ export default function SimpleChatroomPage() {
   
   // Extract chatroom ID from URL path: /simple-chatroom/198
   const pathSegments = location.split('/');
-  const chatroomId = parseInt(pathSegments[2] || '198');
+  const chatroomIdFromUrl = pathSegments[2];
+  const chatroomId = chatroomIdFromUrl ? parseInt(chatroomIdFromUrl) : 198;
   const { toast } = useToast();
   
   console.log('🚀 SIMPLE CHATROOM: Component loaded with chatroom ID:', chatroomId, 'from URL:', location, 'params:', params);
