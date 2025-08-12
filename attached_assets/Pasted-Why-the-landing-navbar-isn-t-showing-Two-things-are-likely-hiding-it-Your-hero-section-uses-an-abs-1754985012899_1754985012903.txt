@@ -1,0 +1,155 @@
+Why the landing navbar isn’t showing
+Two things are likely hiding it:
+
+Your hero section uses an absolutely positioned image + dark overlay that can sit “above” the navbar.
+
+The landing navbar isn’t fixed/sticky with a high z-index, so it gets overlapped.
+
+Why there’s a mile of space near the footer
+The page stacks a bunch of paddings/margins (e.g., sm:pb-8 md:pb-12 lg:pb-16 xl:pb-20) and the footer likely has its own padding/margin. There’s no flex layout keeping the footer at the bottom with content taking the middle, so extra paddings balloon the page.
+
+Drop-in fixes (copy/paste)
+Make these edits in this landing page file:
+
+Make the layout a flex column, pin the navbar on top, and make content take the space.
+
+Give the navbar a high z-index so the hero overlay can’t cover it.
+
+Reduce excessive paddings in the hero.
+
+Make the footer mt-auto so it sits flush at the bottom without extra space.
+
+Replace your top-level return with this structure
+tsx
+Copy
+Edit
+export default function Landing() {
+  const [, setLocation] = useLocation();
+  return <LandingContent setLocation={setLocation} />;
+}
+
+function LandingContent({ setLocation }: { setLocation: (path: string) => void }) {
+  return (
+    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900 font-sans" key="landing-v2-mobile-optimized">
+      {/* Debug (optional) */}
+      <MobileDebug />
+
+      {/* NAVBAR — keep it on top and above everything */}
+      <div className="sticky top-0 z-50">
+        <LandingNavbar />
+      </div>
+
+      {/* Orange Sign-Up Header Bar (below navbar on mobile) */}
+      <div className="bg-orange-500 text-black text-center py-2 md:hidden sticky top-[56px] z-40">
+        <button
+          onClick={() => setLocation('/join')}
+          className="font-bold text-sm touch-manipulation"
+        >
+          🔥 JOIN NEARBY TRAVELER NOW - FREE! 🔥
+        </button>
+      </div>
+
+      {/* MAIN CONTENT */}
+      <main className="flex-1">
+        {/* Fixed mobile CTA button */}
+        <div className="fixed bottom-20 right-4 md:bottom-6 md:right-6 z-50">
+          <Button
+            onClick={() => setLocation('/join')}
+            size="lg"
+            className="bg-orange-500 hover:bg-orange-600 text-black font-black px-6 py-3 md:px-8 md:py-4 rounded-2xl shadow-2xl transition-all duration-200 hover:scale-105 border-3 border-white text-sm md:text-base"
+            style={{ boxShadow: '0 8px 25px rgba(0,0,0,0.3), 0 0 0 2px rgba(255,255,255,0.9)' }}
+          >
+            JOIN NOW
+          </Button>
+        </div>
+
+        {/* HERO SECTION — trim padding and make overlay non-interactive */}
+        <section className="relative border border-white/30 dark:border-gray-300/20">
+          <div className="relative bg-gray-800 dark:bg-gray-900 overflow-hidden min-h-[520px]">
+            <div className="absolute inset-0 h-full min-h-[520px] pointer-events-none">
+              <img
+                src="/attached_assets/travelers together hugging_1754971726997.avif"
+                alt="Travel experience"
+                className="w-full h-full object-cover"
+                style={{ objectPosition: 'center 70%' }}
+              />
+              <div className="absolute inset-0 bg-gray-800/70 dark:bg-gray-800/40 mix-blend-multiply" aria-hidden="true" />
+            </div>
+
+            {/* Content */}
+            <div className="relative py-8 md:py-10 lg:py-12">
+              <div className="mx-auto max-w-5xl px-4 text-center">
+                <h1 className="text-3xl md:text-5xl lg:text-6xl tracking-tight">
+                  <span className="block text-white font-black leading-tight">Skip the tourist traps.</span>
+                  <span className="block text-orange-400 font-black leading-tight">
+                    Meet locals and other Nearby Travelers today.
+                  </span>
+                </h1>
+
+                <div className="mt-6 p-4 md:p-6 bg-black/40 backdrop-blur-sm rounded-2xl border border-white/20">
+                  <p className="text-base md:text-lg text-white leading-relaxed">
+                    <span className="text-orange-300 font-bold">
+                      “Over 15 years I hosted and toured 400+ travelers from 30+ countries as a local.
+                    </span>
+                    <span className="text-white">
+                      {' '}Now I built Nearby Traveler to do exactly that—meet real locals and travelers.”
+                    </span>
+                  </p>
+                  <div className="mt-4">
+                    <p className="text-white font-bold">— Aaron, Founder</p>
+                    <p className="text-orange-200 text-sm">400+ travelers hosted • 30+ countries • 15 years</p>
+                  </div>
+                </div>
+
+                <div className="mt-8 md:mt-10 mb-6">
+                  <Button
+                    onClick={() => setLocation('/join')}
+                    size="lg"
+                    className="bg-orange-500 hover:bg-orange-600 text-black font-black text-lg md:text-2xl px-8 md:px-16 py-4 md:py-5 rounded-2xl shadow-2xl transition-all duration-200 hover:scale-105 border-3 md:border-4 border-white w-full max-w-md md:w-auto"
+                    style={{ boxShadow: '0 15px 40px rgba(0,0,0,0.4), 0 0 0 3px rgba(255,255,255,0.9)' }}
+                  >
+                    JOIN NEARBY TRAVELER NOW
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* …rest of sections (features/testimonials/etc.) with sensible spacing */}
+      </main>
+
+      {/* FOOTER — dock to bottom with minimal padding */}
+      <div className="mt-auto">
+        <Footer />
+      </div>
+    </div>
+  );
+}
+Notes on those changes
+Navbar visibility: wrapping <LandingNavbar /> in a sticky top-0 z-50 container ensures it’s on top; adding pointer-events-none to the hero overlay prevents it from intercepting clicks/menus.
+
+Orange bar position: top-[56px] assumes the navbar height on mobile ~56px; adjust if your navbar is taller (e.g., top-[64px]).
+
+Padding trims: replaced the large sm:pb-8 md:pb-12 lg:pb-16 xl:pb-20 stack with a single py-8 md:py-10 lg:py-12. This keeps it tight across breakpoints.
+
+Footer spacing: using flex flex-col and mt-auto prevents extra “miles” of space. If your <Footer /> component itself has big py-20/pb-32, reduce those inside the footer to py-6 md:py-8.
+
+If the navbar still doesn’t appear
+Make sure you’re importing the correct component:
+import LandingNavbar from "@/components/landing-navbar";
+
+If LandingNavbar is fixed internally (e.g., it already uses fixed top-0), you don’t need the wrapper’s sticky. Keep the wrapper but remove sticky and leave just z-50.
+
+If a parent has overflow-hidden and the navbar is fixed, it’s fine; if the navbar is sticky, an ancestor with overflow:hidden can clip it. That’s why I put sticky on its own wrapper immediately under <body>.
+
+Extra mobile polish (optional)
+Add safe-area-inset padding for iOS:
+
+On the orange bar: pt-[calc(env(safe-area-inset-top))] if it sits at the very top (we placed it under the navbar, so this may be unnecessary).
+
+For the fixed CTA button, you can add mb-[env(safe-area-inset-bottom)] to avoid the iOS home bar overlap.
+
+Ensure the hamburger menu in LandingNavbar has z-50 as well (dropdowns often sit under hero overlays).
+
+If you want, paste your LandingNavbar component too—I’ll make sure its hamburger menu and dropdown z-index work correctly with the hero overlay and mobile header.

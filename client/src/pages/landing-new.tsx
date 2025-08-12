@@ -68,48 +68,48 @@ export default function Landing() {
 
 function LandingContent({ setLocation }: { setLocation: (path: string) => void }) {
   return (
-    <div className="bg-gray-50 dark:bg-gray-900 font-sans min-h-screen" key="landing-v2-mobile-optimized">
-      {/* Mobile Debug Info */}
+    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900 font-sans" key="landing-v2-mobile-optimized">
+      {/* Debug (optional) */}
       <MobileDebug />
-      
-      {/* Landing Page Navigation */}
-      <LandingNavbar />
-      
-      {/* Orange Sign-Up Header Bar for Mobile */}
-      <div className="bg-orange-500 text-black text-center py-2 md:hidden sticky top-16 z-30">
-        <button 
+
+      {/* NAVBAR — keep it on top and above everything */}
+      <div className="sticky top-0 z-50">
+        <LandingNavbar />
+      </div>
+
+      {/* Orange Sign-Up Header Bar (below navbar on mobile) */}
+      <div className="bg-orange-500 text-black text-center py-2 md:hidden sticky top-[56px] z-40">
+        <button
           onClick={() => setLocation('/join')}
           className="font-bold text-sm touch-manipulation"
         >
           🔥 JOIN NEARBY TRAVELER NOW - FREE! 🔥
         </button>
       </div>
-      
-      {/* Mobile-First Sticky CTA - Positioned for mobile users */}
-      <div className="fixed bottom-20 right-4 md:bottom-6 md:right-6 z-50">
-        <Button
-          onClick={() => setLocation('/join')}
-          size="lg"
-          className="bg-orange-500 hover:bg-orange-600 text-black font-black px-6 py-3 md:px-8 md:py-4 rounded-2xl shadow-2xl transform transition-all duration-200 hover:scale-105 border-3 border-white text-sm md:text-base"
-          style={{
-            boxShadow: '0 8px 25px rgba(0,0,0,0.3), 0 0 0 2px rgba(255,255,255,0.9)',
-            animation: 'gentle-pulse 2.5s ease-in-out infinite',
-          }}
-        >
-          JOIN NOW
-        </Button>
-      </div>
-      
 
+      {/* MAIN CONTENT */}
+      <main className="flex-1">
+        {/* Fixed mobile CTA button */}
+        <div className="fixed bottom-20 right-4 md:bottom-6 md:right-6 z-50">
+          <Button
+            onClick={() => setLocation('/join')}
+            size="lg"
+            className="bg-orange-500 hover:bg-orange-600 text-black font-black px-6 py-3 md:px-8 md:py-4 rounded-2xl shadow-2xl transition-all duration-200 hover:scale-105 border-3 border-white text-sm md:text-base"
+            style={{ boxShadow: '0 8px 25px rgba(0,0,0,0.3), 0 0 0 2px rgba(255,255,255,0.9)' }}
+          >
+            JOIN NOW
+          </Button>
+        </div>
       
 
+      
 
 
-      {/* HERO SECTION */}
-      <div className="relative">
-        <div className="bg-gray-800 dark:bg-gray-900 border border-white/30 dark:border-gray-300/20">
-          <div className="relative bg-gray-800 dark:bg-gray-900 pb-4 overflow-hidden min-h-[600px]">
-            <div className="absolute inset-0 h-full min-h-[600px]">
+
+        {/* HERO SECTION — trim padding and make overlay non-interactive */}
+        <section className="relative border border-white/30 dark:border-gray-300/20">
+          <div className="relative bg-gray-800 dark:bg-gray-900 overflow-hidden min-h-[520px]">
+            <div className="absolute inset-0 h-full min-h-[520px] pointer-events-none">
               <img
                 src="/attached_assets/travelers together hugging_1754971726997.avif"
                 alt="Travel experience"
@@ -118,54 +118,45 @@ function LandingContent({ setLocation }: { setLocation: (path: string) => void }
               />
               <div className="absolute inset-0 bg-gray-800/70 dark:bg-gray-800/40 mix-blend-multiply" aria-hidden="true" />
             </div>
-            <div className="relative">
-              <div className="sm:pb-8 md:pb-12 lg:pb-16 xl:pb-20">
-                <main className="mt-4 mx-auto max-w-full sm:mt-6 md:mt-8 lg:mt-10 xl:mt-12">
-                  <div className="text-center">
-                    <div className="max-w-4xl mx-auto px-4">
-                      <h1 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl tracking-tight">
-                        <span className="block text-white font-black leading-tight" style={{fontFamily: '"Inter", sans-serif'}}>Skip the tourist traps.</span>
-                        <span className="block text-orange-400 font-black leading-tight" style={{fontFamily: '"Inter", sans-serif'}}>Meet locals and other Nearby Travelers right now, today!!!</span>
-                      </h1>
-                      
-                      {/* Personal credibility as founder */}
-                      <div className="mt-6 mx-4 md:mt-8 p-4 md:p-6 bg-black/40 backdrop-blur-sm rounded-2xl border border-white/20 animate-zoom-in" style={{animationDelay: '0.3s'}}>
-                        <p className="text-lg md:text-xl text-white leading-relaxed">
-                          <span className="text-orange-300 font-bold">"Over 15 years I hosted and toured 400+ travelers from 30+ countries as a local.</span>
-                          <span className="text-white"> Now I built Nearby Traveler to do exactly that - meet real locals and real travelers while creating amazing new travel adventures."</span>
-                        </p>
-                        <div className="mt-4 text-center">
-                          <p className="text-white font-bold text-base md:text-lg">— Aaron, Founder</p>
-                          <p className="text-orange-200 text-sm">400+ travelers hosted • 30+ countries • 15 years</p>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    {/* Primary signup CTA */}
-                    <div className="mt-8 md:mt-12 mb-8 px-4">
-                      <Button
-                        onClick={() => setLocation('/join')}
-                        size="lg"
-                        className="bg-orange-500 hover:bg-orange-600 text-black font-black text-lg md:text-2xl px-8 md:px-16 py-4 md:py-6 rounded-2xl shadow-2xl transform transition-all duration-200 hover:scale-105 border-3 md:border-4 border-white w-full max-w-md md:w-auto"
-                        style={{
-                          fontSize: '1.2rem',
-                          minHeight: '60px',
-                          boxShadow: '0 15px 40px rgba(0,0,0,0.4), 0 0 0 3px rgba(255,255,255,0.9)',
-                          animation: 'gentle-pulse 2.5s ease-in-out infinite',
-                        }}
-                      >
-                        JOIN NEARBY TRAVELER NOW!!!
-                      </Button>
-                      <p className="text-white mt-3 text-base md:text-lg font-semibold">Join the travel community • Connect today</p>
-                    </div>
+            {/* Content */}
+            <div className="relative py-8 md:py-10 lg:py-12">
+              <div className="mx-auto max-w-5xl px-4 text-center">
+                <h1 className="text-3xl md:text-5xl lg:text-6xl tracking-tight">
+                  <span className="block text-white font-black leading-tight">Skip the tourist traps.</span>
+                  <span className="block text-orange-400 font-black leading-tight">
+                    Meet locals and other Nearby Travelers today.
+                  </span>
+                </h1>
 
+                <div className="mt-6 p-4 md:p-6 bg-black/40 backdrop-blur-sm rounded-2xl border border-white/20">
+                  <p className="text-base md:text-lg text-white leading-relaxed">
+                    <span className="text-orange-300 font-bold">
+                      "Over 15 years I hosted and toured 400+ travelers from 30+ countries as a local.
+                    </span>
+                    <span className="text-white">
+                      {' '}Now I built Nearby Traveler to do exactly that—meet real locals and travelers."
+                    </span>
+                  </p>
+                  <div className="mt-4">
+                    <p className="text-white font-bold">— Aaron, Founder</p>
+                    <p className="text-orange-200 text-sm">400+ travelers hosted • 30+ countries • 15 years</p>
                   </div>
-                </main>
+                </div>
+
+                <div className="mt-8 md:mt-10 mb-6">
+                  <Button
+                    onClick={() => setLocation('/join')}
+                    size="lg"
+                    className="bg-orange-500 hover:bg-orange-600 text-black font-black text-lg md:text-2xl px-8 md:px-16 py-4 md:py-5 rounded-2xl shadow-2xl transition-all duration-200 hover:scale-105 border-3 md:border-4 border-white w-full max-w-md md:w-auto"
+                    style={{ boxShadow: '0 15px 40px rgba(0,0,0,0.4), 0 0 0 3px rgba(255,255,255,0.9)' }}
+                  >
+                    JOIN NEARBY TRAVELER NOW
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </div>
+        </section>
 
 
 
@@ -764,8 +755,12 @@ function LandingContent({ setLocation }: { setLocation: (path: string) => void }
         </div>
       </div>
 
-      {/* Footer */}
-      <Footer />
+      </main>
+
+      {/* FOOTER — dock to bottom with minimal padding */}
+      <div className="mt-auto">
+        <Footer />
+      </div>
     </div>
   );
 }
