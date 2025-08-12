@@ -275,11 +275,11 @@ export const secretLocalExperienceLikes = pgTable("secret_local_experience_likes
 // Group chat and enhanced messaging support
 export const chatroomMessages = pgTable("chatroom_messages", {
   id: serial("id").primaryKey(),
-  chatroomId: integer("chatroom_id").notNull(),
-  senderId: integer("sender_id").notNull(),
+  chatroomId: integer("chatroom_id").notNull().references(() => citychatrooms.id),
+  senderId: integer("sender_id").notNull().references(() => users.id),
   content: text("content").notNull(),
   messageType: text("message_type").default("text"), // 'text', 'image', 'system'
-  replyToId: integer("reply_to_id"), // For threaded replies
+  replyToId: integer("reply_to_id").references(() => chatroomMessages.id), // For threaded replies
   isEdited: boolean("is_edited").default(false),
   editedAt: timestamp("edited_at"),
   createdAt: timestamp("created_at").defaultNow(),
