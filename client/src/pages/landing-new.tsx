@@ -280,6 +280,35 @@ export default function Landing() {
                 </Button>
               </div>
             </div>
+            
+            {/* Beach Bonfire Event Card */}
+            <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+              <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-orange-400 to-red-500">
+                <img 
+                  src="/event page bbq party_1753299541268.png" 
+                  alt="Beach bonfire event" 
+                  className="w-full h-48 object-cover"
+                />
+              </div>
+              <div className="p-6">
+                <div className="flex items-center mb-3">
+                  <div className="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold mr-3">
+                    🏖️
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-gray-900">Beach Bonfire & BBQ</h3>
+                    <p className="text-sm text-gray-600">Sunset gathering on the beach</p>
+                  </div>
+                </div>
+                <p className="text-gray-700 text-sm mb-4">Join locals for an authentic beach bonfire with BBQ, music, and sunset views. Experience the real LA beach culture with friendly people.</p>
+                <Button 
+                  onClick={() => setLocation('/auth')}
+                  className="w-full bg-orange-500 hover:bg-orange-600 text-black font-bold"
+                >
+                  JOIN TO CONNECT
+                </Button>
+              </div>
+            </div>
           </div>
 
           {/* Call to action to see more */}
