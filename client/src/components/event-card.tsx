@@ -208,21 +208,29 @@ export default function EventCard({ event, compact = false, featured = false }: 
           {/* Show specific event tags (not category) - filter out redundant tags */}
           {event.tags && event.tags.length > 0 && event.tags
             .filter((tag: string) => {
+              if (!tag || typeof tag !== 'string') return false;
+              
               // Filter out tags that are redundant with the main category
-              const categoryLower = event.category.toLowerCase();
-              const tagLower = tag.toLowerCase();
+              const categoryLower = (event.category || '').toLowerCase();
+              const tagLower = tag.toLowerCase().trim();
               
-              // Remove tags that are already covered by the category
-              if (categoryLower.includes('health') && tagLower.includes('health')) return false;
-              if (categoryLower.includes('wellness') && tagLower.includes('wellness')) return false;
-              if (categoryLower.includes('sports') && tagLower.includes('sports')) return false;
-              if (categoryLower.includes('fitness') && tagLower.includes('fitness')) return false;
-              if (categoryLower.includes('entertainment') && tagLower.includes('entertainment')) return false;
-              if (categoryLower.includes('food') && (tagLower.includes('food') || tagLower.includes('dining'))) return false;
-              if (categoryLower.includes('dining') && (tagLower.includes('food') || tagLower.includes('dining'))) return false;
-              if (categoryLower.includes('family') && tagLower.includes('family')) return false;
+              // Skip empty tags
+              if (!tagLower) return false;
               
-              return true;
+              // Remove exact matches or substring matches with category keywords
+              const categoryWords = categoryLower.split(/[,&\s]+/).filter(word => word.length > 2);
+              const tagWords = tagLower.split(/[\s]+/);
+              
+              // Check if any tag word matches any category word
+              for (const tagWord of tagWords) {
+                for (const categoryWord of categoryWords) {
+                  if (tagWord.includes(categoryWord) || categoryWord.includes(tagWord)) {
+                    return false; // Filter out redundant tag
+                  }
+                }
+              }
+              
+              return true; // Keep non-redundant tag
             })
             .slice(0, 3)
             .map((tag: string, index: number) => (
