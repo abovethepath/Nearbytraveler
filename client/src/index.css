@@ -355,18 +355,28 @@ body {
   }
 
   /* NUCLEAR OPTION - Force EVERYTHING to be large on mobile */
-  * {
-    font-size: clamp(28px, 8vw, 32px) !important;
+  @media (max-width: 768px) {
+    * {
+      font-size: clamp(28px, 8vw, 32px) !important;
+    }
+    
+    /* Specifically target common text elements */
+    p, span, div, a, li, td, th {
+      font-size: clamp(28px, 8vw, 32px) !important;
+    }
+    
+    /* Make buttons and inputs even larger on mobile */
+    button, input, select, textarea {
+      font-size: clamp(32px, 9vw, 36px) !important;
+      min-height: 64px !important;
+    }
   }
 
   /* But allow headings to be even larger */
-  h1 { font-size: clamp(44px, 14vw, 72px) !important; }
-  h2 { font-size: clamp(42px, 12vw, 56px) !important; }
-  h3 { font-size: clamp(38px, 11vw, 48px) !important; }
-
-  /* Override any tiny text in components */
-  span, p, div, a {
-    font-size: inherit !important;
+  @media (max-width: 768px) {
+    h1 { font-size: clamp(44px, 14vw, 72px) !important; }
+    h2 { font-size: clamp(42px, 12vw, 56px) !important; }
+    h3 { font-size: clamp(38px, 11vw, 48px) !important; }
   }
 
   /* Prevent mobile back button issues and ensure navigation visibility */
