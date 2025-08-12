@@ -67,12 +67,14 @@ export default function SimpleChatroomPage() {
   // Join room function
   async function joinRoom() {
     if (!currentUser?.id) return;
-    await fetch(`/api/simple-chatrooms/${chatroomId}/join`, {
-      method: "POST",
-      headers: { "x-user-id": String(currentUser.id) },
-      credentials: "include",
-    });
+    await apiRequest(
+      "POST",
+      `/api/simple-chatrooms/${chatroomId}/join`,
+      undefined,
+      { "x-user-id": String(currentUser.id) }
+    );
     queryClient.invalidateQueries({ queryKey: [`/api/simple-chatrooms/${chatroomId}/members/count`] });
+    queryClient.invalidateQueries({ queryKey: [`/api/simple-chatrooms/${chatroomId}/members`] });
   }
 
   // Leave room function
@@ -80,14 +82,12 @@ export default function SimpleChatroomPage() {
     if (!currentUser?.id) return;
     
     try {
-      const response = await fetch(`/api/simple-chatrooms/${chatroomId}/leave`, {
-        method: "POST",
-        headers: { 
-          "x-user-id": String(currentUser.id),
-          "Content-Type": "application/json"
-        },
-        credentials: "include",
-      });
+      const response = await apiRequest(
+        "POST",
+        `/api/simple-chatrooms/${chatroomId}/leave`,
+        undefined,
+        { "x-user-id": String(currentUser.id) }
+      );
       
       if (response.ok) {
         toast({
@@ -178,15 +178,12 @@ export default function SimpleChatroomPage() {
     mutationFn: async (content: string) => {
       if (!currentUser?.id) throw new Error("User not found");
 
-      const res = await fetch(`/api/simple-chatrooms/${chatroomId}/messages`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-user-id": String(currentUser.id), // CRITICAL: Send user ID in header
-        },
-        credentials: "include",
-        body: JSON.stringify({ content: content.trim() }),
-      });
+      const res = await apiRequest(
+        "POST", 
+        `/api/simple-chatrooms/${chatroomId}/messages`,
+        { content: content.trim() },
+        { "x-user-id": String(currentUser.id) }
+      );
 
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));

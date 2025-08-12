@@ -11373,6 +11373,14 @@ Ready to start making real connections wherever you are?
 
   // Simple Chatroom System - Clean rebuild
   
+  // Debug middleware for simple chatroom routes
+  app.use((req, res, next) => {
+    if (req.path.startsWith("/api/simple-chatrooms")) {
+      console.log("[simple]", req.method, req.path, "uid:", req.headers["x-user-id"]);
+    }
+    next();
+  });
+  
   // Check access permission to chatroom (CRITICAL SECURITY ENDPOINT)
   app.get('/api/simple-chatrooms/:id/access-check', async (req, res) => {
     try {
