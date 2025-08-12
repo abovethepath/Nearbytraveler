@@ -53,15 +53,15 @@ body {
   }
 }
 
-/* Gentler pulse animation for CTA buttons */
+/* More noticeable pulse animation for CTA buttons */
 @keyframes gentle-pulse {
   0%, 100% {
     opacity: 1;
     transform: scale(1);
   }
   50% {
-    opacity: 0.9;
-    transform: scale(1.02);
+    opacity: 0.85;
+    transform: scale(1.04);
   }
 }
 

@@ -76,18 +76,7 @@ export default function Landing() {
       {/* Landing Navbar with BETA badge */}
       <LandingNavbar />
       
-      {/* Desktop Sticky CTA Bar */}
-      <div className="hidden md:block fixed top-20 right-4 z-50">
-        <div className="bg-orange-500 text-white px-6 py-3 rounded-l-full shadow-2xl border-4 border-white animate-pulse">
-          <Button
-            onClick={() => setLocation('/auth')}
-            variant="ghost"
-            className="text-white hover:text-orange-100 font-bold text-lg p-0 h-auto"
-          >
-🚀 GET STARTED TODAY! →
-          </Button>
-        </div>
-      </div>
+
 
 
       {/* HERO SECTION */}
@@ -115,8 +104,8 @@ export default function Landing() {
                       Nearby Traveler- Connecting you to Nearby Locals and Nearby Travelers based on your interests, activities, events and demographics.
                     </p>
                     
-                    {/* Prominent Call-to-Action Button */}
-                    <div className="mt-8 mb-4">
+                    {/* Prominent Call-to-Action Button - Positioned lower in hero */}
+                    <div className="mt-16 mb-8">
                       <Button
                         onClick={() => setLocation('/auth')}
                         size="lg"
@@ -125,7 +114,7 @@ export default function Landing() {
                           fontSize: '1.5rem',
                           minHeight: '60px',
                           boxShadow: '0 10px 30px rgba(0,0,0,0.3), 0 0 0 4px rgba(255,255,255,0.8)',
-                          animation: 'gentle-pulse 4s ease-in-out infinite',
+                          animation: 'gentle-pulse 3s ease-in-out infinite',
                         }}
                       >
 🚀 JOIN THE COMMUNITY 🚀
