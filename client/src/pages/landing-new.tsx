@@ -447,7 +447,7 @@ export default function Landing() {
               HOW IT WORKS
             </span>
             <h2 className="text-4xl sm:text-5xl font-black text-gray-900 dark:text-white mb-6" style={{fontFamily: '"Open Sans", sans-serif'}}>
-              From Stranger to <span className="bg-gradient-to-r from-blue-600 to-orange-600 bg-clip-text text-transparent">Adventure Buddy</span>
+              Turn Connections into <span className="bg-gradient-to-r from-blue-600 to-orange-600 bg-clip-text text-transparent">Epic Adventures</span>
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
               Three simple steps that transform your travel experience from ordinary to extraordinary
