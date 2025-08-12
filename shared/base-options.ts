@@ -73,8 +73,6 @@ export const ADDITIONAL_INTERESTS = [
   "Parent Meetups",
   
   // Food Extensions
-  "Pizza",
-  "Bakeries",
   "Barbecue & Grilling",
   "Farm-to-Table",
   "Late Night Eats",
@@ -98,11 +96,9 @@ export const ADDITIONAL_INTERESTS = [
   
   // Creative/Learning
   "Dance Classes and Events",
-  "Language Exchange",
   "Digital Nomads",
   
   // Shopping/Lifestyle
-  "Fashion & Clothing",
   "Flea Markets",
   "Thrift Shopping",
   
