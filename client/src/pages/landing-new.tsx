@@ -78,7 +78,7 @@ function LandingContent({ setLocation }: { setLocation: (path: string) => void }
       </div>
 
       {/* Orange Sign-Up Header Bar (below navbar on mobile) */}
-      <div className="bg-orange-500 text-black text-center py-2 md:hidden sticky top-[56px] z-40">
+      <div className="bg-orange-500 text-black text-center py-2 md:hidden z-40">
         <button
           onClick={() => setLocation('/join')}
           className="font-bold text-sm touch-manipulation"
@@ -100,11 +100,6 @@ function LandingContent({ setLocation }: { setLocation: (path: string) => void }
             JOIN NOW
           </Button>
         </div>
-      
-
-      
-
-
 
         {/* HERO SECTION — trim padding and make overlay non-interactive */}
         <section className="relative border border-white/30 dark:border-gray-300/20">
