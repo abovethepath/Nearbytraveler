@@ -62,7 +62,7 @@ export default function Landing() {
       {/* Sticky CTA - Always Visible on All Devices */}
       <div className="fixed bottom-6 right-6 z-50">
         <Button
-          onClick={() => setLocation('/auth')}
+          onClick={() => setLocation('/join')}
           size="lg"
           className="bg-orange-500 hover:bg-orange-600 text-black font-black px-8 py-4 rounded-2xl shadow-2xl transform transition-all duration-200 hover:scale-105 border-3 border-white"
           style={{
@@ -81,7 +81,7 @@ export default function Landing() {
             <span className="font-bold text-lg">🔥 Connect with Locals and Travelers TODAY - Sign Up Now!</span>
           </div>
           <Button
-            onClick={() => setLocation('/auth')}
+            onClick={() => setLocation('/join')}
             className="bg-black text-orange-400 font-bold px-6 py-2 rounded-lg hover:bg-gray-800 ml-4"
           >
             SIGN UP NOW
@@ -136,7 +136,7 @@ export default function Landing() {
                     {/* Primary signup CTA */}
                     <div className="mt-12 mb-8">
                       <Button
-                        onClick={() => setLocation('/auth')}
+                        onClick={() => setLocation('/join')}
                         size="lg"
                         className="bg-orange-500 hover:bg-orange-600 text-black font-black text-2xl px-16 py-6 rounded-2xl shadow-2xl transform transition-all duration-200 hover:scale-105 border-4 border-white"
                         style={{
@@ -219,7 +219,7 @@ export default function Landing() {
                 </div>
                 <p className="text-gray-700 text-sm mb-4">Join locals for an authentic beach bonfire with BBQ, music, and sunset views. Experience the real LA beach culture with friendly people.</p>
                 <Button 
-                  onClick={() => setLocation('/auth')}
+                  onClick={() => setLocation('/join')}
                   className="w-full bg-orange-500 hover:bg-orange-600 text-black font-bold"
                 >
                   JOIN TO CONNECT
@@ -248,7 +248,7 @@ export default function Landing() {
                 </div>
                 <p className="text-gray-700 text-sm mb-4">Join locals every Tuesday for authentic street tacos at unbeatable prices. Meet fellow taco lovers and discover the best Mexican spots in the city.</p>
                 <Button 
-                  onClick={() => setLocation('/auth')}
+                  onClick={() => setLocation('/join')}
                   className="w-full bg-orange-500 hover:bg-orange-600 text-black font-bold"
                 >
                   JOIN TO CONNECT
@@ -277,7 +277,7 @@ export default function Landing() {
                 </div>
                 <p className="text-gray-700 text-sm mb-4">Join the legendary Venice Beach dance scene with locals and travelers. Dancing on the sand as the sun sets over the Pacific Ocean.</p>
                 <Button 
-                  onClick={() => setLocation('/auth')}
+                  onClick={() => setLocation('/join')}
                   className="w-full bg-orange-500 hover:bg-orange-600 text-black font-bold"
                 >
                   JOIN TO CONNECT
@@ -289,7 +289,7 @@ export default function Landing() {
           {/* Call to action to see more */}
           <div className="text-center mt-12">
             <Button 
-              onClick={() => setLocation('/auth')}
+              onClick={() => setLocation('/join')}
               size="lg"
               className="bg-black text-orange-400 font-black px-12 py-4 rounded-2xl hover:bg-gray-800 text-xl"
             >
