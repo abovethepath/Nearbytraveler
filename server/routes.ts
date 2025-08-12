@@ -38,6 +38,7 @@ import {
   citychatrooms,
   chatroomMembers,
   chatroomMessages,
+  chatroomAccessRequests,
   businessOffers,
   cityPages,
   cityActivities,
