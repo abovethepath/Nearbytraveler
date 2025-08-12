@@ -42,16 +42,24 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
     gcTime: 1000 * 60 * 10, // 10 minutes
   });
 
-  // Fetch events  
+  // Fetch events that the user is attending  
   const { data: events = [], isLoading: loadingEvents } = useQuery({
-    queryKey: [`/api/users/${userId}/event-interests`],
-    staleTime: 1000 * 60 * 5, // 5 minutes
-    gcTime: 1000 * 60 * 10, // 10 minutes
+    queryKey: [`/api/users/${userId}/all-events`],
+    staleTime: 0, // Always refresh to get latest joined events
+    gcTime: 0,
   });
 
   // Use the data directly from queries - no local state management needed
   const localActivities = useMemo(() => Array.isArray(activities) ? activities : [], [activities]);
-  const localEvents = useMemo(() => Array.isArray(events) ? events : [], [events]);
+  const localEvents = useMemo(() => {
+    console.log('🎯 ThingsIWantToDoSection events data:', { 
+      userId, 
+      rawEvents: events, 
+      eventsCount: events?.length,
+      eventsType: typeof events 
+    });
+    return Array.isArray(events) ? events : [];
+  }, [events, userId]);
 
   // Delete activity
   const deleteActivity = useMutation({
@@ -77,7 +85,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
     },
     onSuccess: () => {
       // Just invalidate cache - no local state updates needed
-      queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/event-interests`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/all-events`] });
       toast({ title: "Removed", description: "Event deleted successfully." });
     },
     onError: () => {
@@ -103,7 +111,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
 
       // Refresh cache only - no local state updates needed
       queryClient.invalidateQueries({ queryKey: [`/api/user-city-interests/${userId}`] });
-      queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/event-interests`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/all-events`] });
 
       toast({ 
         title: "City Removed", 
