@@ -302,42 +302,64 @@ export default function Landing() {
 
 
       {/* FROM THE FOUNDER SECTION */}
-      <div className="bg-gradient-to-br from-orange-50 to-yellow-50 py-12 sm:py-16 border-t border-orange-200">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-8">
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900 lg:text-4xl" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700'}}>
+      <div className="relative py-16 sm:py-20 overflow-hidden">
+        {/* Dynamic gradient background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-orange-100 via-yellow-50 to-orange-200"></div>
+        <div className="absolute inset-0 bg-gradient-to-tl from-red-100/50 via-transparent to-orange-300/30"></div>
+        
+        <div className="relative max-w-4xl mx-auto px-4">
+          <div className="text-center mb-12 animate-fade-in-up">
+            <h2 className="text-3xl sm:text-4xl font-black text-gray-900 mb-4" style={{fontFamily: '"Inter", sans-serif'}}>
               From the Founder
             </h2>
+            <div className="w-24 h-1 bg-gradient-to-r from-orange-500 to-red-500 mx-auto rounded-full"></div>
           </div>
           
-          <div className="bg-white rounded-2xl p-8 shadow-xl border-2 border-orange-200">
-            <div className="prose prose-lg text-gray-700 mx-auto text-left">
-              <p className="mb-4 text-base sm:text-lg text-gray-800 leading-relaxed">
-                As a traveler and local, I always loved meeting new people—but finding those who truly shared my interests wasn't easy.
+          {/* Main content with no borders - just text on gradient */}
+          <div className="max-w-3xl mx-auto animate-slide-in-left" style={{animationDelay: '0.2s'}}>
+            <div className="text-center mb-8">
+              <p className="text-xl sm:text-2xl text-gray-800 leading-relaxed font-medium mb-6">
+                "As a traveler and local, I always loved meeting new people—but finding those who truly shared my interests wasn't easy."
               </p>
-              <p className="mb-4 text-base sm:text-lg text-orange-600 font-semibold leading-relaxed">
+              <p className="text-2xl sm:text-3xl text-orange-600 font-bold leading-relaxed mb-6">
                 That's why I created Nearby Traveler.
               </p>
-              <p className="mb-4 text-base sm:text-lg text-gray-800 leading-relaxed">
+            </div>
+            
+            <div className="bg-white/60 backdrop-blur-sm rounded-3xl p-8 shadow-lg animate-zoom-in" style={{animationDelay: '0.4s'}}>
+              <p className="text-lg text-gray-800 leading-relaxed mb-6 text-center">
                 This platform helps travelers and locals meet each other, based on shared interests, activities, demographics, and events—making every encounter more meaningful.
               </p>
-              <p className="mb-4 text-base sm:text-lg text-gray-800 leading-relaxed">
-                Whether you're exploring your city or visiting somewhere new, Nearby Traveler helps you:
-              </p>
-              <div className="mb-6 pl-4">
-                <p className="mb-2 text-base sm:text-lg"><span className="text-orange-600 font-semibold">• Connect with like-minded people</span></p>
-                <p className="mb-2 text-base sm:text-lg"><span className="text-orange-600 font-semibold">• Discover hidden gems</span></p>
-                <p className="mb-2 text-base sm:text-lg"><span className="text-orange-600 font-semibold">• Create unforgettable memories</span></p>
+              
+              {/* Benefits in a more visual way */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div className="text-center p-4 bg-orange-100/50 rounded-2xl">
+                  <div className="text-3xl mb-3">🤝</div>
+                  <p className="font-semibold text-orange-700">Connect with like-minded people</p>
+                </div>
+                <div className="text-center p-4 bg-yellow-100/50 rounded-2xl">
+                  <div className="text-3xl mb-3">💎</div>
+                  <p className="font-semibold text-orange-700">Discover hidden gems</p>
+                </div>
+                <div className="text-center p-4 bg-red-100/50 rounded-2xl">
+                  <div className="text-3xl mb-3">✨</div>
+                  <p className="font-semibold text-orange-700">Create unforgettable memories</p>
+                </div>
               </div>
-              <p className="mb-4 text-base sm:text-lg text-gray-800 leading-relaxed">
-                It's more than just travel—it's about real community, wherever you are. So complete your profile, dive in, and start connecting.
+              
+              <p className="text-lg text-gray-800 leading-relaxed text-center mb-6">
+                It's more than just travel—it's about real community, wherever you are.
               </p>
-              <p className="mb-2 text-base sm:text-lg text-gray-800 leading-relaxed">
-                Thanks for being part of the journey.
-              </p>
-              <div className="text-right mt-6">
-                <p className="text-base sm:text-lg font-semibold text-gray-900">Aaron Lefkowitz</p>
-                <p className="text-sm text-orange-600">Founder, Nearby Traveler</p>
+              
+              {/* Founder signature with better styling */}
+              <div className="text-center pt-6 border-t border-orange-200">
+                <p className="text-lg text-gray-700 mb-3">Thanks for being part of the journey.</p>
+                <div className="flex items-center justify-center space-x-4">
+                  <div>
+                    <p className="text-xl font-bold text-gray-900">Aaron Lefkowitz</p>
+                    <p className="text-orange-600 font-medium">Founder, Nearby Traveler</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
