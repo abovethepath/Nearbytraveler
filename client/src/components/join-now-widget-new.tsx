@@ -210,13 +210,13 @@ export default function JoinNowWidgetNew() {
           <div className="space-y-3">
             <Label htmlFor="userType" className="text-lg md:text-base text-gray-900 dark:text-white font-medium">I am a...</Label>
             <Select value={userType} onValueChange={setUserType}>
-              <SelectTrigger className="w-full h-12 md:h-10 text-lg md:text-base">
+              <SelectTrigger className="w-full h-14 md:h-12 text-lg md:text-base p-4 md:p-3" style={{ fontSize: 'clamp(16px, 4vw, 18px)', minHeight: '48px' }}>
                 <SelectValue placeholder="Select your type" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="local">Nearby Local (Not Traveling Now)</SelectItem>
-                <SelectItem value="currently_traveling">Currently Traveling</SelectItem>
-                <SelectItem value="business">Nearby Business</SelectItem>
+                <SelectItem value="local" className="text-lg md:text-base p-4 md:p-3" style={{ fontSize: 'clamp(16px, 4vw, 18px)', minHeight: '48px' }}>Nearby Local (Not Traveling Now)</SelectItem>
+                <SelectItem value="currently_traveling" className="text-lg md:text-base p-4 md:p-3" style={{ fontSize: 'clamp(16px, 4vw, 18px)', minHeight: '48px' }}>Currently Traveling</SelectItem>
+                <SelectItem value="business" className="text-lg md:text-base p-4 md:p-3" style={{ fontSize: 'clamp(16px, 4vw, 18px)', minHeight: '48px' }}>Nearby Business</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -228,7 +228,10 @@ export default function JoinNowWidgetNew() {
                 userType ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'
               }`}
               style={{
-                pointerEvents: userType ? 'auto' : 'none'
+                pointerEvents: userType ? 'auto' : 'none',
+                fontSize: 'clamp(16px, 4vw, 18px)',
+                minHeight: '48px',
+                padding: '16px 24px'
               }}
             >
               Continue
@@ -256,7 +259,8 @@ export default function JoinNowWidgetNew() {
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 placeholder="Your full name"
                 required
-                className="mt-2"
+                className="mt-2 h-14 md:h-12 text-lg md:text-base p-4 md:p-3"
+                style={{ fontSize: 'clamp(16px, 4vw, 18px)', minHeight: '48px' }}
               />
             </div>
 
@@ -270,10 +274,11 @@ export default function JoinNowWidgetNew() {
                   onChange={(e) => handleUsernameChange(e.target.value)}
                   placeholder="Choose username"
                   required
-                  className={`pr-10 ${
+                  className={`pr-10 h-14 md:h-12 text-lg md:text-base p-4 md:p-3 ${
                     usernameAvailable === true ? 'border-green-500' : 
                     usernameAvailable === false ? 'border-red-500' : ''
                   }`}
+                  style={{ fontSize: 'clamp(16px, 4vw, 18px)', minHeight: '48px' }}
                 />
                 <div className="absolute inset-y-0 right-0 flex items-center pr-3 z-10">
                   {usernameChecking ? (
@@ -310,6 +315,8 @@ export default function JoinNowWidgetNew() {
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 placeholder="your@email.com"
                 required
+                className="h-14 md:h-12 text-lg md:text-base p-4 md:p-3"
+                style={{ fontSize: 'clamp(16px, 4vw, 18px)', minHeight: '48px' }}
               />
             </div>
             
@@ -323,11 +330,12 @@ export default function JoinNowWidgetNew() {
                   onChange={(e) => setFormData({ ...formData, confirmEmail: e.target.value })}
                   placeholder="Confirm your email"
                   required
-                  className={`pr-10 ${
+                  className={`pr-10 h-14 md:h-12 text-lg md:text-base p-4 md:p-3 ${
                     formData.confirmEmail && formData.email ? (
                       formData.email === formData.confirmEmail ? 'border-green-500' : 'border-red-500'
                     ) : ''
                   }`}
+                  style={{ fontSize: 'clamp(16px, 4vw, 18px)', minHeight: '48px' }}
                 />
                 <div className="absolute inset-y-0 right-0 flex items-center pr-3">
                   {formData.confirmEmail && formData.email && (
@@ -357,10 +365,11 @@ export default function JoinNowWidgetNew() {
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   placeholder="Create password"
                   required
-                  className={`pr-10 ${
+                  className={`pr-10 h-14 md:h-12 text-lg md:text-base p-4 md:p-3 ${
                     formData.password && formData.password.length >= 8 ? 'border-green-500' : 
                     formData.password && formData.password.length < 8 ? 'border-yellow-500' : ''
                   }`}
+                  style={{ fontSize: 'clamp(16px, 4vw, 18px)', minHeight: '48px' }}
                 />
                 <div className="absolute inset-y-0 right-0 flex items-center pr-3">
                   {formData.password && (
@@ -390,11 +399,12 @@ export default function JoinNowWidgetNew() {
                   onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                   placeholder="Confirm password"
                   required
-                  className={`pr-10 ${
+                  className={`pr-10 h-14 md:h-12 text-lg md:text-base p-4 md:p-3 ${
                     formData.confirmPassword && formData.password ? (
                       formData.password === formData.confirmPassword ? 'border-green-500' : 'border-red-500'
                     ) : ''
                   }`}
+                  style={{ fontSize: 'clamp(16px, 4vw, 18px)', minHeight: '48px' }}
                 />
                 <div className="absolute inset-y-0 right-0 flex items-center pr-3">
                   {formData.confirmPassword && formData.password && (
@@ -418,7 +428,12 @@ export default function JoinNowWidgetNew() {
           <div className="mt-8 pt-4 space-y-3">
             <div
               onClick={handleCreateAccount}
-              className="join-page-gradient-button w-full py-3 px-4 rounded-md font-bold text-center cursor-pointer select-none"
+              className="join-page-gradient-button w-full py-4 md:py-3 px-6 md:px-4 rounded-md font-bold text-center cursor-pointer select-none"
+              style={{
+                fontSize: 'clamp(16px, 4vw, 18px)',
+                minHeight: '48px',
+                padding: '16px 24px'
+              }}
             >
               Create Account & Continue
             </div>
@@ -426,7 +441,8 @@ export default function JoinNowWidgetNew() {
             <Button
               onClick={() => setLocation('/')}
               variant="outline"
-              className="w-full bg-gray-200 dark:bg-gray-700 border-gray-400 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600"
+              className="w-full bg-gray-200 dark:bg-gray-700 border-gray-400 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 h-14 md:h-12 text-lg md:text-base p-4 md:p-3"
+              style={{ fontSize: 'clamp(16px, 4vw, 18px)', minHeight: '48px' }}
             >
               Back to Landing Page
             </Button>
