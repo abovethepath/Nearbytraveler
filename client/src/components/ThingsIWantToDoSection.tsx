@@ -56,7 +56,15 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
       userId, 
       rawEvents: events, 
       eventsCount: events?.length,
-      eventsType: typeof events 
+      eventsType: typeof events,
+      firstEventSample: events?.[0] ? {
+        id: events[0].id,
+        title: events[0].title,
+        eventTitle: events[0].eventTitle,
+        cityName: events[0].cityName,
+        location: events[0].location,
+        allKeys: Object.keys(events[0])
+      } : null
     });
     return Array.isArray(events) ? events : [];
   }, [events, userId]);
