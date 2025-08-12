@@ -613,7 +613,7 @@ export default function Landing() {
                     size="lg"
                     className="w-full bg-gradient-to-r from-blue-600 to-teal-600 hover:from-blue-700 hover:to-teal-700 text-white font-black text-lg px-8 py-4 rounded-2xl shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
                   >
-                    Join as a Local Guide
+                    Join as a Nearby Local
                   </Button>
                 </div>
               </div>
