@@ -136,14 +136,6 @@ export default function Landing() {
                           </div>
                         </div>
                       </div>
-
-                      {/* Testimonial */}
-                      <div className="mt-6 p-4 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20">
-                        <p className="text-lg text-white italic">
-                          "Aaron helped me meet a local musician who showed me the hidden side of Silver Lake and Downtown. Way better than any tour."
-                        </p>
-                        <p className="text-orange-200 text-sm mt-2">– LM, from Paris</p>
-                      </div>
                     </div>
                     
                     {/* Immediate action CTA - No signup required */}
@@ -201,116 +193,95 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-black text-gray-900 mb-4">
-              Tonight in Los Angeles
+              Connect with LA Locals
             </h2>
             <p className="text-xl text-gray-600">
-              Real events. Real locals. Zero tourist traps.
+              Real people. Real experiences. Zero tourist traps.
             </p>
           </div>
           
           {/* Event Cards - Modern Lu.ma style */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Event 1 */}
+            {/* Example Experience 1 */}
             <div className="bg-white border-2 border-gray-200 rounded-2xl overflow-hidden hover:border-orange-300 transition-all duration-200 hover:shadow-xl cursor-pointer">
               <div className="h-48 bg-gradient-to-br from-purple-400 via-pink-400 to-orange-400 relative">
-                <div className="absolute top-4 left-4">
-                  <span className="bg-white/90 text-black px-3 py-1 rounded-full text-sm font-bold">
-                    TONIGHT 8PM
-                  </span>
-                </div>
                 <div className="absolute bottom-4 left-4 text-white">
                   <h3 className="text-xl font-bold mb-1">Silver Lake Music Scene</h3>
-                  <p className="text-sm opacity-90">Local musician's secret spots</p>
+                  <p className="text-sm opacity-90">Underground venues & vinyl shops</p>
                 </div>
               </div>
               <div className="p-4">
                 <div className="flex items-center mb-3">
                   <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-bold mr-3">
-                    M
+                    ?
                   </div>
                   <div>
-                    <p className="font-bold text-gray-900">Marcus (Local)</p>
-                    <p className="text-sm text-gray-600">Music Producer • 5 years LA</p>
+                    <p className="font-bold text-gray-900">Local Music Producer</p>
+                    <p className="text-sm text-gray-600">Insider knowledge of the scene</p>
                   </div>
                 </div>
-                <p className="text-gray-700 text-sm mb-3">Join me for underground venues, vinyl shops, and the real Silver Lake music culture. Not on any tour guide.</p>
-                <div className="flex items-center text-sm text-gray-500 mb-3">
-                  <span className="mr-4">📍 Silver Lake</span>
-                  <span className="mr-4">👥 4/6 spots</span>
-                  <span>💰 Free</span>
-                </div>
-                <Button className="w-full bg-orange-500 hover:bg-orange-600 text-black font-bold">
-                  JOIN TONIGHT
+                <p className="text-gray-700 text-sm mb-4">Connect with locals who know the real Silver Lake music culture - venues, record shops, and artists not on any tour guide.</p>
+                <Button 
+                  onClick={() => setLocation('/events')}
+                  className="w-full bg-orange-500 hover:bg-orange-600 text-black font-bold"
+                >
+                  FIND MUSIC LOCALS
                 </Button>
               </div>
             </div>
 
-            {/* Event 2 */}
+            {/* Example Experience 2 */}
             <div className="bg-white border-2 border-gray-200 rounded-2xl overflow-hidden hover:border-orange-300 transition-all duration-200 hover:shadow-xl cursor-pointer">
               <div className="h-48 bg-gradient-to-br from-blue-400 via-cyan-400 to-green-400 relative">
-                <div className="absolute top-4 left-4">
-                  <span className="bg-white/90 text-black px-3 py-1 rounded-full text-sm font-bold">
-                    TOMORROW 7PM
-                  </span>
-                </div>
                 <div className="absolute bottom-4 left-4 text-white">
                   <h3 className="text-xl font-bold mb-1">Venice Beach Locals</h3>
-                  <p className="text-sm opacity-90">Skateboarding & hidden eats</p>
+                  <p className="text-sm opacity-90">Beyond the boardwalk crowds</p>
                 </div>
               </div>
               <div className="p-4">
                 <div className="flex items-center mb-3">
                   <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-green-500 rounded-full flex items-center justify-center text-white font-bold mr-3">
-                    J
+                    ?
                   </div>
                   <div>
-                    <p className="font-bold text-gray-900">Jake (Local)</p>
-                    <p className="text-sm text-gray-600">Skater • Born in Venice</p>
+                    <p className="font-bold text-gray-900">Venice Native</p>
+                    <p className="text-sm text-gray-600">Knows the real Venice</p>
                   </div>
                 </div>
-                <p className="text-gray-700 text-sm mb-3">Skip the boardwalk crowds. I'll show you where locals actually hang, eat, and skate. 20+ years here.</p>
-                <div className="flex items-center text-sm text-gray-500 mb-3">
-                  <span className="mr-4">📍 Venice Beach</span>
-                  <span className="mr-4">👥 2/8 spots</span>
-                  <span>💰 $15</span>
-                </div>
-                <Button className="w-full bg-orange-500 hover:bg-orange-600 text-black font-bold">
-                  JOIN TOMORROW
+                <p className="text-gray-700 text-sm mb-4">Skip the tourist traps. Meet Venice locals who can show you where they actually hang out, eat, and experience the authentic neighborhood.</p>
+                <Button 
+                  onClick={() => setLocation('/events')}
+                  className="w-full bg-orange-500 hover:bg-orange-600 text-black font-bold"
+                >
+                  MEET VENICE LOCALS
                 </Button>
               </div>
             </div>
 
-            {/* Event 3 */}
+            {/* Example Experience 3 */}
             <div className="bg-white border-2 border-gray-200 rounded-2xl overflow-hidden hover:border-orange-300 transition-all duration-200 hover:shadow-xl cursor-pointer">
               <div className="h-48 bg-gradient-to-br from-orange-400 via-red-400 to-pink-400 relative">
-                <div className="absolute top-4 left-4">
-                  <span className="bg-white/90 text-black px-3 py-1 rounded-full text-sm font-bold">
-                    THIS WEEKEND
-                  </span>
-                </div>
                 <div className="absolute bottom-4 left-4 text-white">
-                  <h3 className="text-xl font-bold mb-1">Downtown Art Walk</h3>
-                  <p className="text-sm opacity-90">Galleries locals actually go to</p>
+                  <h3 className="text-xl font-bold mb-1">Downtown Art Scene</h3>
+                  <p className="text-sm opacity-90">Galleries locals actually visit</p>
                 </div>
               </div>
               <div className="p-4">
                 <div className="flex items-center mb-3">
                   <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center text-white font-bold mr-3">
-                    S
+                    ?
                   </div>
                   <div>
-                    <p className="font-bold text-gray-900">Sofia (Local)</p>
-                    <p className="text-sm text-gray-600">Gallery Owner • 8 years DTLA</p>
+                    <p className="font-bold text-gray-900">Art Scene Insider</p>
+                    <p className="text-sm text-gray-600">Connected to DTLA arts</p>
                   </div>
                 </div>
-                <p className="text-gray-700 text-sm mb-3">The real downtown art scene - not the touristy galleries. Meet artists, see studios, discover emerging talent.</p>
-                <div className="flex items-center text-sm text-gray-500 mb-3">
-                  <span className="mr-4">📍 Downtown LA</span>
-                  <span className="mr-4">👥 6/10 spots</span>
-                  <span>💰 $25</span>
-                </div>
-                <Button className="w-full bg-orange-500 hover:bg-orange-600 text-black font-bold">
-                  JOIN THIS WEEKEND
+                <p className="text-gray-700 text-sm mb-4">Discover the real downtown LA art scene through locals who work in galleries, know emerging artists, and visit spaces off the beaten path.</p>
+                <Button 
+                  onClick={() => setLocation('/events')}
+                  className="w-full bg-orange-500 hover:bg-orange-600 text-black font-bold"
+                >
+                  EXPLORE ART SCENE
                 </Button>
               </div>
             </div>
@@ -323,7 +294,7 @@ export default function Landing() {
               size="lg"
               className="bg-black text-orange-400 font-black px-12 py-4 rounded-2xl hover:bg-gray-800 text-xl"
             >
-              SEE ALL 47 EVENTS THIS WEEK →
+              BROWSE ALL EVENTS →
             </Button>
           </div>
         </div>
