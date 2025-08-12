@@ -77,11 +77,13 @@ function EventsWidget({ userId }: EventsWidgetProps) {
   const { data: userEvents = [], isLoading: userEventsLoading } = useQuery({
     queryKey: [`/api/users/${userId}/all-events`],
     enabled: !!userId,
+    staleTime: 0, // Always refresh to get latest joined events
+    gcTime: 0,
   });
 
   // Fetch events from ALL locations
   const { data: allEvents = [], isLoading: eventsLoading } = useQuery({
-    queryKey: [`/api/events/widget-all-locations`, discoveryLocations.allCities.map(loc => loc.city), userEvents.length],
+    queryKey: [`/api/events/widget-all-locations`, discoveryLocations.allCities.map(loc => loc.city), userEvents?.map(e => e.id).sort().join(',')],
     queryFn: async () => {
       if (!discoveryLocations.allCities.length) return [];
       

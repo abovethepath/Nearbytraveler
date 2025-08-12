@@ -4310,7 +4310,7 @@ Ready to start making real connections wherever you are?
           e.organizer_id,
           e.category,
           e.tags,
-          e.is_ai_generated,
+          COALESCE(e.is_ai_generated, false) as is_ai_generated,
           ep.user_id as userId,
           ep.event_id as eventId
         FROM events e 
