@@ -568,7 +568,7 @@ export default function Landing() {
                 </h2>
                 <p className="text-xl text-gray-600 dark:text-gray-300 leading-relaxed">
                   You're not just a resident—you're the curator of unforgettable experiences. 
-                  Transform your local knowledge into magical moments for travelers.
+                  Transform your local knowledge into magical moments for travelers and other locals.
                 </p>
               </div>
               
