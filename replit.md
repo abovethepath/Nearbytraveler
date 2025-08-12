@@ -58,6 +58,7 @@ Preferred communication style: Simple, everyday language.
 - **Metro Area Consolidation**: LA metro cities (Venice, Santa Monica, Culver City, etc.) automatically consolidate into "Los Angeles Metro" chatrooms to reduce fragmentation and increase user connections.
 - **Chatroom Database Cleanup (Aug 2025)**: Database cleaned to contain only 5 Los Angeles Metro city chatrooms for a clean foundation. Separated city chatrooms (general city chat) from meetup chatrooms (event-specific chat). Meetup chatrooms are automatically created when users join events and are preserved separately.
 - **Activity Search Removal (Aug 2025)**: Removed redundant activity search page since users can search activities using the advanced search widget with keyword filters. This simplifies the user experience by consolidating search functionality.
+- **Private Chat Approval System (Aug 2025)**: Implemented complete public/private chatroom system where private chats require organizer approval. Users can request access with optional messages, organizers can approve/deny requests. Private chatrooms display with Lock icons and distinctive styling. Database includes chatroom_access_requests table and unique constraints on chatroom_members.
 
 ## External Dependencies
 
