@@ -3338,6 +3338,83 @@ Ready to start making real connections wherever you are?
     }
   });
 
+  // Get chatrooms for user's locations (hometown + travel destinations) - FIXED MEMBER COUNT
+  app.get("/api/chatrooms/my-locations", async (req, res) => {
+    try {
+      console.log(`🚀🚀🚀 MY-LOCATIONS ROUTE CALLED - FIRST ROUTE WORKING!!! 🚀🚀🚀`);
+      // Get user ID from headers - FIXED USER ID EXTRACTION
+      let userId = 1; // Default to nearbytraveler user if not specified
+      
+      // First try x-user-id header (what frontend sends)
+      if (req.headers['x-user-id']) {
+        userId = parseInt(req.headers['x-user-id'] as string);
+      }
+      // Fallback to x-user-data header  
+      else if (req.headers['x-user-data']) {
+        try {
+          userId = JSON.parse(req.headers['x-user-data'] as string).id;
+        } catch (e) {
+          // Use default user ID
+        }
+      }
+
+      if (process.env.NODE_ENV === 'development') console.log(`🏠 MY-LOCATIONS: User ${userId} requesting chatrooms`);
+
+      // Get all active chatrooms
+      const allChatrooms = await db.select().from(citychatrooms).where(eq(citychatrooms.isActive, true));
+      
+      if (process.env.NODE_ENV === 'development') console.log(`🏠 MY-LOCATIONS: Found ${allChatrooms.length} active chatrooms`);
+      
+      // Get member counts using raw query for reliability - FIXED COUNT
+      const memberCountResults = await db.execute(sql`
+        SELECT chatroom_id as "chatroomId", COUNT(DISTINCT user_id)::integer as "memberCount"
+        FROM chatroom_members 
+        WHERE is_active = true 
+        GROUP BY chatroom_id
+      `);
+      
+      // Get user memberships using raw query
+      const userMembershipResults = await db.execute(sql`
+        SELECT chatroom_id as "chatroomId"
+        FROM chatroom_members 
+        WHERE user_id = ${userId} AND is_active = true
+      `);
+      
+      // Build lookup maps
+      const memberCountMap = new Map();
+      memberCountResults.rows.forEach((row: any) => {
+        memberCountMap.set(row.chatroomId, row.memberCount);
+      });
+      
+      const userMembershipSet = new Set();
+      userMembershipResults.rows.forEach((row: any) => {
+        userMembershipSet.add(row.chatroomId);
+      });
+      
+      // Add member count and membership status to each chatroom
+      const chatroomsWithCounts = allChatrooms.map(chatroom => ({
+        ...chatroom,
+        memberCount: memberCountMap.get(chatroom.id) || 0,
+        userIsMember: userMembershipSet.has(chatroom.id)
+      }));
+      
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`🏠 MY-LOCATIONS: Returning ${chatroomsWithCounts.length} chatrooms with counts`);
+        console.log(`🏠 MY-LOCATIONS: First chatroom details:`, {
+          id: chatroomsWithCounts[0]?.id,
+          name: chatroomsWithCounts[0]?.name,
+          memberCount: chatroomsWithCounts[0]?.memberCount,
+          userIsMember: chatroomsWithCounts[0]?.userIsMember
+        });
+      }
+      
+      res.json(chatroomsWithCounts);
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("🔥 ERROR IN MY-LOCATIONS ROUTE:", error);
+      res.status(500).json({ message: "Failed to fetch location chatrooms" });
+    }
+  });
+
   // CRITICAL: Get chatrooms for user
   app.get("/api/chatrooms/:userId", async (req, res) => {
     try {
@@ -7316,82 +7393,6 @@ Ready to start making real connections wherever you are?
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error fetching event rooms:", error);
       res.status(500).json({ message: "Failed to fetch event rooms" });
-    }
-  });
-
-  // Get chatrooms for user's locations (hometown + travel destinations) - FIXED MEMBER COUNT
-  app.get("/api/chatrooms/my-locations", async (req, res) => {
-    try {
-      // Get user ID from headers - FIXED USER ID EXTRACTION
-      let userId = 1; // Default to nearbytraveler user if not specified
-      
-      // First try x-user-id header (what frontend sends)
-      if (req.headers['x-user-id']) {
-        userId = parseInt(req.headers['x-user-id'] as string);
-      }
-      // Fallback to x-user-data header  
-      else if (req.headers['x-user-data']) {
-        try {
-          userId = JSON.parse(req.headers['x-user-data'] as string).id;
-        } catch (e) {
-          // Use default user ID
-        }
-      }
-
-      if (process.env.NODE_ENV === 'development') console.log(`🏠 MY-LOCATIONS: User ${userId} requesting chatrooms`);
-
-      // Get all active chatrooms
-      const allChatrooms = await db.select().from(citychatrooms).where(eq(citychatrooms.isActive, true));
-      
-      if (process.env.NODE_ENV === 'development') console.log(`🏠 MY-LOCATIONS: Found ${allChatrooms.length} active chatrooms`);
-      
-      // Get member counts using raw query for reliability - FIXED COUNT
-      const memberCountResults = await db.execute(sql`
-        SELECT chatroom_id as "chatroomId", COUNT(DISTINCT user_id)::integer as "memberCount"
-        FROM chatroom_members 
-        WHERE is_active = true 
-        GROUP BY chatroom_id
-      `);
-      
-      // Get user memberships using raw query
-      const userMembershipResults = await db.execute(sql`
-        SELECT chatroom_id as "chatroomId"
-        FROM chatroom_members 
-        WHERE user_id = ${userId} AND is_active = true
-      `);
-      
-      // Build lookup maps
-      const memberCountMap = new Map();
-      memberCountResults.rows.forEach((row: any) => {
-        memberCountMap.set(row.chatroomId, row.memberCount);
-      });
-      
-      const userMembershipSet = new Set();
-      userMembershipResults.rows.forEach((row: any) => {
-        userMembershipSet.add(row.chatroomId);
-      });
-      
-      // Add member count and membership status to each chatroom
-      const chatroomsWithCounts = allChatrooms.map(chatroom => ({
-        ...chatroom,
-        memberCount: memberCountMap.get(chatroom.id) || 0,
-        userIsMember: userMembershipSet.has(chatroom.id)
-      }));
-      
-      if (process.env.NODE_ENV === 'development') {
-        console.log(`🏠 MY-LOCATIONS: Returning ${chatroomsWithCounts.length} chatrooms with counts`);
-        console.log(`🏠 MY-LOCATIONS: First chatroom details:`, {
-          id: chatroomsWithCounts[0]?.id,
-          name: chatroomsWithCounts[0]?.name,
-          memberCount: chatroomsWithCounts[0]?.memberCount,
-          userIsMember: chatroomsWithCounts[0]?.userIsMember
-        });
-      }
-      
-      res.json(chatroomsWithCounts);
-    } catch (error: any) {
-      if (process.env.NODE_ENV === 'development') console.error("🔥 ERROR IN MY-LOCATIONS ROUTE:", error);
-      res.status(500).json({ message: "Failed to fetch location chatrooms" });
     }
   });
 
