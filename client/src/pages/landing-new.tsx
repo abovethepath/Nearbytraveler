@@ -59,22 +59,40 @@ export default function Landing() {
 
   return (
     <div className="bg-gray-50 dark:bg-gray-900 font-sans" key="landing-v2-no-copy-button">
-      {/* Sticky Call-to-Action Button - Always Visible */}
-      <div className="fixed bottom-4 right-4 z-50 md:hidden">
+      {/* Sticky CTA - Always Visible on All Devices */}
+      <div className="fixed bottom-6 right-6 z-50">
         <Button
-          onClick={() => setLocation('/auth')}
+          onClick={() => setLocation('/events')}
           size="lg"
-          className="bg-orange-500 hover:bg-orange-600 text-white font-bold px-6 py-3 rounded-full shadow-2xl transform transition-all duration-200 hover:scale-105 border-2 border-white animate-pulse"
+          className="bg-orange-500 hover:bg-orange-600 text-black font-black px-8 py-4 rounded-2xl shadow-2xl transform transition-all duration-200 hover:scale-105 border-3 border-white"
           style={{
-            boxShadow: '0 8px 25px rgba(0,0,0,0.3), 0 0 0 2px rgba(255,255,255,0.8)',
+            boxShadow: '0 12px 35px rgba(0,0,0,0.4), 0 0 0 3px rgba(255,255,255,0.9)',
+            animation: 'gentle-pulse 2.5s ease-in-out infinite',
           }}
         >
-🚀 JOIN NOW
+          BROWSE EVENTS
         </Button>
       </div>
+      
+      {/* Top sticky bar for maximum visibility */}
+      <div className="fixed top-0 left-0 right-0 bg-orange-500 text-black py-3 px-4 z-40 shadow-lg">
+        <div className="flex items-center justify-between max-w-6xl mx-auto">
+          <div className="flex-1 text-center">
+            <span className="font-bold text-lg">🔥 Meet LA locals tonight - No signup required</span>
+          </div>
+          <Button
+            onClick={() => setLocation('/events')}
+            className="bg-black text-orange-400 font-bold px-6 py-2 rounded-lg hover:bg-gray-800 ml-4"
+          >
+            SEE EVENTS
+          </Button>
+        </div>
+      </div>
 
-      {/* Landing Navbar with BETA badge */}
-      <LandingNavbar />
+      {/* Landing Navbar with BETA badge - Add top padding for sticky bar */}
+      <div className="pt-16">
+        <LandingNavbar />
+      </div>
       
 
 
@@ -96,45 +114,54 @@ export default function Landing() {
               <div className="sm:pb-16 md:pb-20 lg:pb-28 xl:pb-32">
                 <main className="mt-4 mx-auto max-w-full sm:mt-6 md:mt-8 lg:mt-10 xl:mt-12">
                   <div className="text-center">
-                    <h1 className="text-3xl tracking-tight sm:text-4xl md:text-5xl lg:text-6xl">
-                      <span className="block text-white" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700'}}>Transform Your Travel</span>
-                      <span className="block text-orange-400" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700'}}>Into Authentic Connections</span>
-                    </h1>
-                    <p className="mt-4 text-lg text-white sm:text-xl md:text-2xl lg:text-3xl px-4">
-                      The premium social platform connecting discerning travelers with verified locals and like-minded explorers worldwide.
-                    </p>
-                    
-                    {/* Social Proof Stats */}
-                    <div className="mt-6 flex flex-wrap justify-center items-center gap-6 text-white">
-                      <div className="text-center">
-                        <div className="text-2xl font-bold text-orange-400">2,500+</div>
-                        <div className="text-sm">Active Members</div>
+                    <div className="max-w-4xl mx-auto">
+                      <h1 className="text-4xl tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
+                        <span className="block text-white font-black" style={{fontFamily: '"Inter", sans-serif'}}>Skip the tourist traps.</span>
+                        <span className="block text-orange-400 font-black" style={{fontFamily: '"Inter", sans-serif'}}>Get private invites from LA locals.</span>
+                      </h1>
+                      
+                      {/* Personal credibility as founder */}
+                      <div className="mt-8 p-6 bg-black/40 backdrop-blur-sm rounded-2xl border border-white/20">
+                        <p className="text-xl text-white leading-relaxed">
+                          <span className="text-orange-300 font-bold">"Over 10 years I hosted and toured 731 travelers from 23 countries as a LA local.</span>
+                          <span className="text-white"> Now I built Nearby Traveler to do exactly that - meet real locals on your LA trip."</span>
+                        </p>
+                        <div className="flex items-center mt-4">
+                          <div className="w-12 h-12 bg-gradient-to-r from-orange-400 to-red-500 rounded-full flex items-center justify-center text-white font-bold mr-4">
+                            A
+                          </div>
+                          <div>
+                            <p className="text-white font-bold">Aaron - Founder</p>
+                            <p className="text-orange-200 text-sm">731 travelers hosted • 23 countries</p>
+                          </div>
+                        </div>
                       </div>
-                      <div className="text-center">
-                        <div className="text-2xl font-bold text-orange-400">15+</div>
-                        <div className="text-sm">Global Cities</div>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-2xl font-bold text-orange-400">500+</div>
-                        <div className="text-sm">Monthly Events</div>
+
+                      {/* Testimonial */}
+                      <div className="mt-6 p-4 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20">
+                        <p className="text-lg text-white italic">
+                          "Aaron helped me meet a local musician who showed me the hidden side of Silver Lake and Downtown. Way better than any tour."
+                        </p>
+                        <p className="text-orange-200 text-sm mt-2">– LM, from Paris</p>
                       </div>
                     </div>
                     
-                    {/* Prominent Call-to-Action Button - Positioned lower in hero */}
-                    <div className="mt-16 mb-8">
+                    {/* Immediate action CTA - No signup required */}
+                    <div className="mt-12 mb-8">
                       <Button
-                        onClick={() => setLocation('/auth')}
+                        onClick={() => setLocation('/events')}
                         size="lg"
-                        className="bg-orange-500 hover:bg-orange-600 text-white font-bold text-xl px-12 py-4 rounded-full shadow-2xl transform transition-all duration-200 hover:scale-105 hover:shadow-3xl border-4 border-white"
+                        className="bg-orange-500 hover:bg-orange-600 text-black font-black text-2xl px-16 py-6 rounded-2xl shadow-2xl transform transition-all duration-200 hover:scale-105 border-4 border-white"
                         style={{
-                          fontSize: '1.5rem',
-                          minHeight: '60px',
-                          boxShadow: '0 10px 30px rgba(0,0,0,0.3), 0 0 0 4px rgba(255,255,255,0.8)',
-                          animation: 'gentle-pulse 3s ease-in-out infinite',
+                          fontSize: '1.8rem',
+                          minHeight: '80px',
+                          boxShadow: '0 15px 40px rgba(0,0,0,0.4), 0 0 0 4px rgba(255,255,255,0.9)',
+                          animation: 'gentle-pulse 2.5s ease-in-out infinite',
                         }}
                       >
-🚀 JOIN THE COMMUNITY 🚀
+                        SEE LOCAL EVENTS NOW →
                       </Button>
+                      <p className="text-white/80 mt-3 text-lg">No signup required • Start browsing immediately</p>
                     </div>
 
                   </div>
@@ -169,150 +196,140 @@ export default function Landing() {
 
 
 
-      {/* Testimonials Section */}
-      <div className="py-16 bg-gradient-to-r from-blue-50 to-orange-50 dark:from-gray-900 dark:to-gray-800">
-        <div className="max-w-6xl mx-auto px-4">
+      {/* Live Events - Lu.ma style */}
+      <div className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
-              Trusted by Travelers Worldwide
+            <h2 className="text-4xl font-black text-gray-900 mb-4">
+              Tonight in Los Angeles
             </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-300">
-              Join thousands who've transformed their travel experiences
+            <p className="text-xl text-gray-600">
+              Real events. Real locals. Zero tourist traps.
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-            {/* Testimonial 1 */}
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
-              <div className="flex mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <svg key={i} className="w-5 h-5 text-yellow-400 fill-current" viewBox="0 0 24 24">
-                    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
-                  </svg>
-                ))}
-              </div>
-              <p className="text-gray-700 dark:text-gray-300 mb-4 italic">
-                "I found my travel squad for Tokyo through Nearby Traveler. Instead of exploring alone, I had instant friends who knew the best ramen spots and hidden temples. Game changer!"
-              </p>
-              <div className="flex items-center">
-                <div className="w-10 h-10 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white font-bold mr-3">
-                  S
+          {/* Event Cards - Modern Lu.ma style */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* Event 1 */}
+            <div className="bg-white border-2 border-gray-200 rounded-2xl overflow-hidden hover:border-orange-300 transition-all duration-200 hover:shadow-xl cursor-pointer">
+              <div className="h-48 bg-gradient-to-br from-purple-400 via-pink-400 to-orange-400 relative">
+                <div className="absolute top-4 left-4">
+                  <span className="bg-white/90 text-black px-3 py-1 rounded-full text-sm font-bold">
+                    TONIGHT 8PM
+                  </span>
                 </div>
-                <div>
-                  <p className="font-semibold text-gray-900 dark:text-white">Sarah Chen</p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Digital Nomad, San Francisco</p>
+                <div className="absolute bottom-4 left-4 text-white">
+                  <h3 className="text-xl font-bold mb-1">Silver Lake Music Scene</h3>
+                  <p className="text-sm opacity-90">Local musician's secret spots</p>
                 </div>
               </div>
-            </div>
-            
-            {/* Testimonial 2 */}
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
-              <div className="flex mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <svg key={i} className="w-5 h-5 text-yellow-400 fill-current" viewBox="0 0 24 24">
-                    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
-                  </svg>
-                ))}
-              </div>
-              <p className="text-gray-700 dark:text-gray-300 mb-4 italic">
-                "As a local in Barcelona, I love showing visitors the real city beyond tourist traps. The connections I've made through this platform have been genuine and lasting."
-              </p>
-              <div className="flex items-center">
-                <div className="w-10 h-10 bg-gradient-to-r from-green-400 to-blue-500 rounded-full flex items-center justify-center text-white font-bold mr-3">
-                  M
+              <div className="p-4">
+                <div className="flex items-center mb-3">
+                  <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-bold mr-3">
+                    M
+                  </div>
+                  <div>
+                    <p className="font-bold text-gray-900">Marcus (Local)</p>
+                    <p className="text-sm text-gray-600">Music Producer • 5 years LA</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="font-semibold text-gray-900 dark:text-white">Miguel Rodriguez</p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Local Host, Barcelona</p>
+                <p className="text-gray-700 text-sm mb-3">Join me for underground venues, vinyl shops, and the real Silver Lake music culture. Not on any tour guide.</p>
+                <div className="flex items-center text-sm text-gray-500 mb-3">
+                  <span className="mr-4">📍 Silver Lake</span>
+                  <span className="mr-4">👥 4/6 spots</span>
+                  <span>💰 Free</span>
                 </div>
+                <Button className="w-full bg-orange-500 hover:bg-orange-600 text-black font-bold">
+                  JOIN TONIGHT
+                </Button>
               </div>
             </div>
-            
-            {/* Testimonial 3 */}
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
-              <div className="flex mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <svg key={i} className="w-5 h-5 text-yellow-400 fill-current" viewBox="0 0 24 24">
-                    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l-5.46 4.73L5.82 21z"/>
-                  </svg>
-                ))}
+
+            {/* Event 2 */}
+            <div className="bg-white border-2 border-gray-200 rounded-2xl overflow-hidden hover:border-orange-300 transition-all duration-200 hover:shadow-xl cursor-pointer">
+              <div className="h-48 bg-gradient-to-br from-blue-400 via-cyan-400 to-green-400 relative">
+                <div className="absolute top-4 left-4">
+                  <span className="bg-white/90 text-black px-3 py-1 rounded-full text-sm font-bold">
+                    TOMORROW 7PM
+                  </span>
+                </div>
+                <div className="absolute bottom-4 left-4 text-white">
+                  <h3 className="text-xl font-bold mb-1">Venice Beach Locals</h3>
+                  <p className="text-sm opacity-90">Skateboarding & hidden eats</p>
+                </div>
               </div>
-              <p className="text-gray-700 dark:text-gray-300 mb-4 italic">
-                "Business travel used to be lonely. Now I connect with entrepreneurs and professionals in every city I visit. It's transformed my entire approach to work travel."
-              </p>
-              <div className="flex items-center">
-                <div className="w-10 h-10 bg-gradient-to-r from-orange-400 to-red-500 rounded-full flex items-center justify-center text-white font-bold mr-3">
-                  A
+              <div className="p-4">
+                <div className="flex items-center mb-3">
+                  <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-green-500 rounded-full flex items-center justify-center text-white font-bold mr-3">
+                    J
+                  </div>
+                  <div>
+                    <p className="font-bold text-gray-900">Jake (Local)</p>
+                    <p className="text-sm text-gray-600">Skater • Born in Venice</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="font-semibold text-gray-900 dark:text-white">Amanda Foster</p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">VP Marketing, NYC</p>
+                <p className="text-gray-700 text-sm mb-3">Skip the boardwalk crowds. I'll show you where locals actually hang, eat, and skate. 20+ years here.</p>
+                <div className="flex items-center text-sm text-gray-500 mb-3">
+                  <span className="mr-4">📍 Venice Beach</span>
+                  <span className="mr-4">👥 2/8 spots</span>
+                  <span>💰 $15</span>
                 </div>
+                <Button className="w-full bg-orange-500 hover:bg-orange-600 text-black font-bold">
+                  JOIN TOMORROW
+                </Button>
               </div>
             </div>
+
+            {/* Event 3 */}
+            <div className="bg-white border-2 border-gray-200 rounded-2xl overflow-hidden hover:border-orange-300 transition-all duration-200 hover:shadow-xl cursor-pointer">
+              <div className="h-48 bg-gradient-to-br from-orange-400 via-red-400 to-pink-400 relative">
+                <div className="absolute top-4 left-4">
+                  <span className="bg-white/90 text-black px-3 py-1 rounded-full text-sm font-bold">
+                    THIS WEEKEND
+                  </span>
+                </div>
+                <div className="absolute bottom-4 left-4 text-white">
+                  <h3 className="text-xl font-bold mb-1">Downtown Art Walk</h3>
+                  <p className="text-sm opacity-90">Galleries locals actually go to</p>
+                </div>
+              </div>
+              <div className="p-4">
+                <div className="flex items-center mb-3">
+                  <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center text-white font-bold mr-3">
+                    S
+                  </div>
+                  <div>
+                    <p className="font-bold text-gray-900">Sofia (Local)</p>
+                    <p className="text-sm text-gray-600">Gallery Owner • 8 years DTLA</p>
+                  </div>
+                </div>
+                <p className="text-gray-700 text-sm mb-3">The real downtown art scene - not the touristy galleries. Meet artists, see studios, discover emerging talent.</p>
+                <div className="flex items-center text-sm text-gray-500 mb-3">
+                  <span className="mr-4">📍 Downtown LA</span>
+                  <span className="mr-4">👥 6/10 spots</span>
+                  <span>💰 $25</span>
+                </div>
+                <Button className="w-full bg-orange-500 hover:bg-orange-600 text-black font-bold">
+                  JOIN THIS WEEKEND
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Call to action to see more */}
+          <div className="text-center mt-12">
+            <Button 
+              onClick={() => setLocation('/events')}
+              size="lg"
+              className="bg-black text-orange-400 font-black px-12 py-4 rounded-2xl hover:bg-gray-800 text-xl"
+            >
+              SEE ALL 47 EVENTS THIS WEEK →
+            </Button>
           </div>
         </div>
       </div>
 
-      {/* Value Proposition Section */}
-      <div className="py-12 sm:py-16 bg-white dark:sm:bg-gray-800 dark:bg-gray-400">
-        <div className="max-w-full mx-auto">
-          <div className="text-center mb-8 sm:mb-12">
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white lg:text-4xl px-4" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700'}}>
-              Why Discerning Travelers Choose Us
-            </h2>
-            <p className="mt-4 text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto px-4">
-              Skip the tourist traps. Connect with verified locals and like-minded travelers who share your passion for authentic experiences.
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 px-4">
-            {/* Value Prop 1 - Verified Community */}
-            <div className="text-center p-8 bg-gray-50 dark:bg-gray-300 rounded-xl hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
-              <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-r from-green-500 to-blue-500 rounded-full flex items-center justify-center">
-                <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-black mb-3">Verified Community</h3>
-              <p className="text-gray-600 dark:text-gray-700 text-base leading-relaxed">Connect safely with authenticated members. Every profile is verified for quality connections and authentic experiences.</p>
-            </div>
 
-            {/* Value Prop 2 - Curated Experiences */}
-            <div className="text-center p-8 bg-gray-50 dark:bg-gray-300 rounded-xl hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
-              <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
-                <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.196-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-black mb-3">Premium Experiences</h3>
-              <p className="text-gray-600 dark:text-gray-700 text-base leading-relaxed">Access exclusive events, hidden gems, and curated experiences that showcase the authentic soul of each destination.</p>
-            </div>
-
-            {/* Value Prop 3 - Global Network */}
-            <div className="text-center p-8 bg-gray-50 dark:bg-gray-300 rounded-xl hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
-              <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center">
-                <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-black mb-3">Global Network</h3>
-              <p className="text-gray-600 dark:text-gray-700 text-base leading-relaxed">Join a worldwide community of sophisticated travelers and locals across 15+ major cities and growing.</p>
-            </div>
-
-            {/* Value Prop 4 - Smart Matching */}
-            <div className="text-center p-8 bg-gray-50 dark:bg-gray-300 rounded-xl hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
-              <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full flex items-center justify-center">
-                <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-black mb-3">AI-Powered Matching</h3>
-              <p className="text-gray-600 dark:text-gray-700 text-base leading-relaxed">Our intelligent algorithm connects you with people who share your interests, travel style, and professional background.</p>
-            </div>
-          </div>
-        </div>
-      </div>
 
       {/* FROM THE FOUNDER SECTION */}
       <div className="bg-white dark:sm:bg-gray-800 dark:bg-gray-400 py-12 sm:py-16 border-t border-gray-200 dark:border-gray-700">
