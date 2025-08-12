@@ -93,8 +93,7 @@ export default function SignupLocalTraveler() {
     customEvents: [] as string[],
     customEventInput: "",
 
-    // Secret local activities
-    localActivities: "",
+
 
     // Military status
     isVeteran: false,
@@ -339,7 +338,7 @@ export default function SignupLocalTraveler() {
         events: formData.events,
         languagesSpoken: formData.languagesSpoken,
         sexualPreference: formData.sexualPreference,
-        secretActivities: formData.localActivities,
+
         isVeteran: formData.isVeteran,
         isActiveDuty: formData.isActiveDuty,
         travelingWithChildren: formData.travelingWithChildren
@@ -667,23 +666,7 @@ export default function SignupLocalTraveler() {
                 </div>
               </div>
 
-              {/* Secret Activities Section */}
-              <div className="space-y-4">
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Secret Local Activities</h3>
-                <div className="bg-orange-50 dark:bg-orange-900/20 p-4 border-2 border-orange-300 dark:border-orange-500 rounded-lg">
-                  <Label className="font-semibold" style={{color: '#1d4ed8'}}>Secret activities I'd share about my hometown to nearby travelers and friends</Label>
-                  <div className="text-sm font-medium mb-2" style={{color: '#000000'}}>
-                    Share hidden gems, local spots, or insider tips that only locals know about
-                  </div>
-                  <Textarea
-                    value={formData.localActivities}
-                    onChange={(e) => setFormData(prev => ({ ...prev, localActivities: e.target.value }))}
-                    placeholder="Example: There's a hidden waterfall behind the old mill that locals love, or try the secret menu at Joe's Diner..."
-                    rows={3}
-                    className="border-orange-300 dark:border-orange-600 focus:border-orange-500 focus:ring-orange-500"
-                  />
-                </div>
-              </div>
+
 
               {/* Connection Preferences Section */}
               <div className="space-y-6">
