@@ -143,11 +143,11 @@ export default function Auth() {
                 <Logo variant="landing" />
               </div>
             </div>
-            <CardTitle className="text-2xl font-bold text-gray-900 dark:text-white">
+            <CardTitle className="text-3xl md:text-2xl font-bold text-gray-900 dark:text-white">
               {isLogin ? "Welcome Back" : "Join Nearby Traveler"}
             </CardTitle>
             {!isLogin && (
-              <p className="text-sm text-gray-600 dark:text-gray-300 mt-2 leading-relaxed">
+              <p className="text-lg md:text-sm text-gray-600 dark:text-gray-300 mt-2 leading-relaxed">
                 Start Connecting with Nearby Locals and Nearby Travelers Today Based on Common Interests and Demographics
               </p>
             )}
@@ -160,23 +160,25 @@ export default function Auth() {
                 {/* Login Form */}
                 <div className="space-y-4">
                   <div>
-                    <Label htmlFor="loginEmail" className="text-gray-900 dark:text-white">Email</Label>
+                    <Label htmlFor="loginEmail" className="text-lg md:text-base text-gray-900 dark:text-white font-medium">Email</Label>
                     <Input
                       id="loginEmail"
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="Enter your email"
+                      className="mt-2"
                     />
                   </div>
                   <div>
-                    <Label htmlFor="loginPassword" className="text-gray-900 dark:text-white">Password</Label>
+                    <Label htmlFor="loginPassword" className="text-lg md:text-base text-gray-900 dark:text-white font-medium">Password</Label>
                     <Input
                       id="loginPassword"
                       type="password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="Enter your password"
+                      className="mt-2"
                     />
                   </div>
                 </div>
@@ -184,7 +186,7 @@ export default function Auth() {
                 <div className="mt-8 pt-4 space-y-3">
                   <div
                     onClick={(!isLoading && email && password) ? handleLogin : undefined}
-                    className={`login-page-gradient-button w-full py-3 px-4 rounded-md font-bold text-center select-none ${
+                    className={`login-page-gradient-button w-full py-4 md:py-3 px-6 md:px-4 rounded-md font-bold text-lg md:text-base text-center select-none ${
                       (!isLoading && email && password) ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'
                     }`}
                     style={{
@@ -200,7 +202,7 @@ export default function Auth() {
                 <div className="text-center space-y-2">
                   <button
                     onClick={() => setLocation('/forgot-password')}
-                    className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm"
+                    className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-lg md:text-sm font-medium py-2"
                   >
                     Forgot Password?
                   </button>
@@ -211,7 +213,7 @@ export default function Auth() {
             <div className="text-center mt-6">
               <button
                 onClick={() => setIsLogin(!isLogin)}
-                className="text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:text-gray-100 text-sm font-medium"
+                className="text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:text-gray-100 text-lg md:text-sm font-medium py-2"
               >
                 {isLogin ? "Don't have an account? Create Account" : "Already have an account? Sign In"}
               </button>
