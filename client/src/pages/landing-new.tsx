@@ -72,9 +72,25 @@ function LandingContent({ setLocation }: { setLocation: (path: string) => void }
       {/* Debug (optional) */}
       <MobileDebug />
 
-      {/* NAVBAR (fixed, always visible) */}
-      <div className="fixed inset-x-0 top-0 z-[9999] w-full">
-        <SimpleNavbar />
+      {/* NAVBAR (fixed, always visible) - TEST VERSION */}
+      <div 
+        className="fixed w-full h-16 bg-red-600 text-white flex items-center px-4 border-b-4 border-red-800" 
+        style={{ 
+          position: 'fixed', 
+          top: 0, 
+          left: 0, 
+          right: 0, 
+          zIndex: 9999999,
+          display: 'flex'
+        }}
+      >
+        <div className="flex items-center justify-between w-full max-w-7xl mx-auto">
+          <div className="text-white text-xl font-bold">NEARBY TRAVELER BETA</div>
+          <div className="flex space-x-4">
+            <button className="bg-white text-red-600 px-4 py-2 rounded text-sm font-medium">Sign In</button>
+            <button className="bg-orange-500 text-black px-4 py-2 rounded text-sm font-medium">Join</button>
+          </div>
+        </div>
       </div>
 
       {/* Spacer equal to navbar height plus safe area so content starts below it */}
