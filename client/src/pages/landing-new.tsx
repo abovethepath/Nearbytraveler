@@ -474,7 +474,7 @@ export default function Landing() {
                     Join the Movement
                   </h3>
                   <p className="text-gray-600 dark:text-gray-300 text-center leading-relaxed">
-                    Share your travel style, interests, and dream destinations. Our AI matches you with your perfect travel tribe.
+                    Share your travel style, interests, and dream destinations. Our matching algorithm connects you with like-minded travelers and locals.
                   </p>
                   <div className="mt-6 flex justify-center">
                     <div className="flex space-x-1">
