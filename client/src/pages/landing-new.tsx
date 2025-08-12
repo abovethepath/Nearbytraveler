@@ -72,8 +72,8 @@ function LandingContent({ setLocation }: { setLocation: (path: string) => void }
       {/* Debug (optional) */}
       <MobileDebug />
 
-      {/* NAVBAR — keep it on top and above everything */}
-      <div className="sticky top-0 z-50">
+      {/* NAVBAR — keep it on top and above everything with safe area */}
+      <div className="sticky top-0 z-50 pt-2">
         <LandingNavbar />
       </div>
 
