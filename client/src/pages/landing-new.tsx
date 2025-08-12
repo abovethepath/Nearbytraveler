@@ -338,6 +338,36 @@ export default function Landing() {
                 </Button>
               </div>
             </div>
+            
+            {/* Venice Beach Dance Party Event Card */}
+            <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+              <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-purple-500 to-pink-500">
+                <div className="w-full h-48 bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                  <div className="text-center text-white">
+                    <div className="text-6xl mb-2">🕺</div>
+                    <div className="text-lg font-bold">Venice Beach Vibes</div>
+                  </div>
+                </div>
+              </div>
+              <div className="p-6">
+                <div className="flex items-center mb-3">
+                  <div className="w-10 h-10 bg-purple-500 rounded-full flex items-center justify-center text-white font-bold mr-3">
+                    💃
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-gray-900">Venice Beach Dance Party</h3>
+                    <p className="text-sm text-gray-600">Sunset dancing on the beach</p>
+                  </div>
+                </div>
+                <p className="text-gray-700 text-sm mb-4">Join the legendary Venice Beach dance scene with locals and travelers. Dancing on the sand as the sun sets over the Pacific Ocean.</p>
+                <Button 
+                  onClick={() => setLocation('/auth')}
+                  className="w-full bg-orange-500 hover:bg-orange-600 text-black font-bold"
+                >
+                  JOIN TO CONNECT
+                </Button>
+              </div>
+            </div>
           </div>
 
           {/* Call to action to see more */}
