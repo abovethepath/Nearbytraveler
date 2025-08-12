@@ -64,21 +64,18 @@ export default function Landing() {
   const [, setLocation] = useLocation();
   const [showPreview, setShowPreview] = useState(false);
 
-  // Show preview mode for development
-  if (showPreview || window.location.search.includes('preview=true')) {
+  // Show mobile preview for user to see mobile layout
+  const showMobilePreview = window.location.search.includes('mobile=true') || true; // Force show for now
+  
+  if (showMobilePreview) {
     return (
       <MobilePreview>
         <LandingContent setLocation={setLocation} />
       </MobilePreview>
     );
   }
-
-  return (
-    <>
-      <RealMobileTest />
-      <LandingContent setLocation={setLocation} />
-    </>
-  );
+  
+  return <LandingContent setLocation={setLocation} />;
 }
 
 function LandingContent({ setLocation }: { setLocation: (path: string) => void }) {

@@ -40,16 +40,8 @@ export default function MobilePreview({ children }: MobilePreviewProps) {
           <div className="bg-gray-800 text-white px-4 py-2 rounded-t-lg flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Smartphone size={16} />
-              <span className="text-sm">iPhone 14 Pro</span>
+              <span className="text-sm">Mobile View - Your 95% of Users</span>
             </div>
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={() => setShowMobile(false)}
-              className="text-white hover:bg-gray-700 p-1"
-            >
-              <X size={14} />
-            </Button>
           </div>
           
           {/* Mobile Device Frame */}
@@ -60,39 +52,9 @@ export default function MobilePreview({ children }: MobilePreviewProps) {
               
               {/* Screen */}
               <div className="bg-white rounded-lg h-full overflow-hidden relative">
-                <iframe
-                  src={window.location.href}
-                  className="w-full h-full border-0 scale-[0.4] origin-top-left"
-                  style={{
-                    width: '250%',
-                    height: '250%',
-                    pointerEvents: 'none'
-                  }}
-                  title="Mobile Preview"
-                />
-                
-                {/* Mobile Navigation Overlay - Show what should be there */}
-                <div className="absolute bottom-0 left-0 right-0 bg-red-500 h-16 flex items-center justify-around text-white text-xs font-bold">
-                  <div className="flex flex-col items-center">
-                    <div className="w-5 h-5 bg-white rounded-full mb-1"></div>
-                    <span>Home</span>
-                  </div>
-                  <div className="flex flex-col items-center">
-                    <div className="w-5 h-5 bg-white rounded-full mb-1"></div>
-                    <span>Explore</span>
-                  </div>
-                  <div className="flex flex-col items-center">
-                    <div className="w-5 h-5 bg-white rounded-full mb-1"></div>
-                    <span>Events</span>
-                  </div>
-                  <div className="flex flex-col items-center">
-                    <div className="w-5 h-5 bg-white rounded-full mb-1"></div>
-                    <span>Chat</span>
-                  </div>
-                  <div className="flex flex-col items-center">
-                    <div className="w-5 h-5 bg-white rounded-full mb-1"></div>
-                    <span>Profile</span>
-                  </div>
+                {/* Mobile View Content - Actual mobile rendering */}
+                <div className="w-full h-full mobile-viewport" style={{ transform: 'scale(0.35)', transformOrigin: 'top left', width: '285%', height: '285%' }}>
+                  {children}
                 </div>
               </div>
             </div>
