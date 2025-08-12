@@ -175,21 +175,27 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
       let cityName = event.cityName;
       
       if (!cityName && event.location) {
-        // Try to extract city from location string
+        // Try to extract city from location string like "Hollywood Bowl, Los Angeles" or "3200 The Strand, Manhattan Beach, California"
         const locationParts = event.location.split(',').map(part => part.trim()).filter(part => part && part !== 'undefined');
-        if (locationParts.length >= 2) {
-          // Take the second to last part (usually the city)
+        
+        if (locationParts.length >= 3) {
+          // Format: "Address, City, State" - take the middle part (city)
           cityName = locationParts[locationParts.length - 2];
-          // If that doesn't exist or is too short, take the last meaningful part
-          if (!cityName || cityName.length < 2) {
-            cityName = locationParts[locationParts.length - 1];
-          }
+        } else if (locationParts.length === 2) {
+          // Format: "Address, City" or "City, State" - take the last part 
+          cityName = locationParts[1];
         } else if (locationParts.length === 1) {
-          // If only one part, extract city from the string
+          // Single location string - try to extract from words
           const words = locationParts[0].split(' ').filter(word => word && word !== 'undefined');
+          // Look for city names in the string
           cityName = words[words.length - 1] || 'Other';
         } else {
           cityName = 'Other';
+        }
+        
+        // Clean up common state abbreviations from city names
+        if (cityName === 'California' || cityName === 'CA') {
+          cityName = 'Los Angeles'; // Default for California events
         }
       }
       
