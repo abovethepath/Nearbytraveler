@@ -302,42 +302,42 @@ export default function Landing() {
 
 
       {/* FROM THE FOUNDER SECTION */}
-      <div className="bg-white dark:sm:bg-gray-800 dark:bg-gray-400 py-12 sm:py-16 border-t border-gray-200 dark:border-gray-700">
+      <div className="bg-gradient-to-br from-orange-50 to-yellow-50 py-12 sm:py-16 border-t border-orange-200">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-8">
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white lg:text-4xl" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700'}}>
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900 lg:text-4xl" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700'}}>
               From the Founder
             </h2>
           </div>
           
-          <div className="bg-gray-50 dark:bg-gray-700 rounded-2xl p-8 shadow-lg">
-            <div className="prose prose-lg text-gray-700 dark:text-gray-300 mx-auto text-left">
-              <p className="mb-4 text-base sm:text-lg text-gray-800 dark:text-gray-200 leading-relaxed">
+          <div className="bg-white rounded-2xl p-8 shadow-xl border-2 border-orange-200">
+            <div className="prose prose-lg text-gray-700 mx-auto text-left">
+              <p className="mb-4 text-base sm:text-lg text-gray-800 leading-relaxed">
                 As a traveler and local, I always loved meeting new people—but finding those who truly shared my interests wasn't easy.
               </p>
-              <p className="mb-4 text-base sm:text-lg text-gray-800 dark:text-gray-200 leading-relaxed">
+              <p className="mb-4 text-base sm:text-lg text-orange-600 font-semibold leading-relaxed">
                 That's why I created Nearby Traveler.
               </p>
-              <p className="mb-4 text-base sm:text-lg text-gray-800 dark:text-gray-200 leading-relaxed">
+              <p className="mb-4 text-base sm:text-lg text-gray-800 leading-relaxed">
                 This platform helps travelers and locals meet each other, based on shared interests, activities, demographics, and events—making every encounter more meaningful.
               </p>
-              <p className="mb-4 text-base sm:text-lg text-gray-800 dark:text-gray-200 leading-relaxed">
+              <p className="mb-4 text-base sm:text-lg text-gray-800 leading-relaxed">
                 Whether you're exploring your city or visiting somewhere new, Nearby Traveler helps you:
               </p>
               <div className="mb-6 pl-4">
-                <p className="mb-2 text-base sm:text-lg"><span className="text-blue-600 dark:text-blue-400 font-semibold">• Connect with like-minded people</span></p>
-                <p className="mb-2 text-base sm:text-lg"><span className="text-blue-600 dark:text-blue-400 font-semibold">• Discover hidden gems</span></p>
-                <p className="mb-2 text-base sm:text-lg"><span className="text-blue-600 dark:text-blue-400 font-semibold">• Create unforgettable memories</span></p>
+                <p className="mb-2 text-base sm:text-lg"><span className="text-orange-600 font-semibold">• Connect with like-minded people</span></p>
+                <p className="mb-2 text-base sm:text-lg"><span className="text-orange-600 font-semibold">• Discover hidden gems</span></p>
+                <p className="mb-2 text-base sm:text-lg"><span className="text-orange-600 font-semibold">• Create unforgettable memories</span></p>
               </div>
-              <p className="mb-4 text-base sm:text-lg text-gray-800 dark:text-gray-200 leading-relaxed">
+              <p className="mb-4 text-base sm:text-lg text-gray-800 leading-relaxed">
                 It's more than just travel—it's about real community, wherever you are. So complete your profile, dive in, and start connecting.
               </p>
-              <p className="mb-2 text-base sm:text-lg text-gray-800 dark:text-gray-200 leading-relaxed">
+              <p className="mb-2 text-base sm:text-lg text-gray-800 leading-relaxed">
                 Thanks for being part of the journey.
               </p>
               <div className="text-right mt-6">
-                <p className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">Aaron Lefkowitz</p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Founder, Nearby Traveler</p>
+                <p className="text-base sm:text-lg font-semibold text-gray-900">Aaron Lefkowitz</p>
+                <p className="text-sm text-orange-600">Founder, Nearby Traveler</p>
               </div>
             </div>
           </div>
