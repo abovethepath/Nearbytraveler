@@ -117,15 +117,12 @@ export const ALL_INTERESTS = [...MOST_POPULAR_INTERESTS, ...ADDITIONAL_INTERESTS
 // GROUPED ACTIVITIES FOR EASIER SELECTION
 
 export const SOCIAL_ACTIVITIES = [
-  "Travel Buddy Finding",
   "Local Connections",
   "Meetup Organizing",
-  "Experience Sharing",
   "Language Practice"
 ];
 
 export const PLANNING_ACTIVITIES = [
-  "Itinerary Planning",
   "Cultural Learning",
   "Blogging"
 ];
@@ -133,8 +130,7 @@ export const PLANNING_ACTIVITIES = [
 export const FITNESS_ACTIVITIES = [
   "Fitness Challenges",
   "Working out at Gym",
-  "Running & Jogging",
-  "Park Workouts"
+  "Running & Jogging"
 ];
 
 // Combined activities in logical order
