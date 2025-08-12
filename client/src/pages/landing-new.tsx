@@ -77,8 +77,8 @@ function LandingContent({ setLocation }: { setLocation: (path: string) => void }
         <SimpleNavbar />
       </div>
 
-      {/* Spacer equal to navbar height so content starts below it */}
-      <div className="h-20" />
+      {/* Spacer equal to navbar height plus safe area so content starts below it */}
+      <div className="h-20" style={{ marginTop: 'env(safe-area-inset-top)' }} />
 
 
 
