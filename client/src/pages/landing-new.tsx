@@ -208,14 +208,9 @@ export default function Landing() {
                 />
               </div>
               <div className="p-6 flex flex-col flex-grow">
-                <div className="flex items-center mb-3">
-                  <div className="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold mr-3">
-                    🏖️
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-gray-900">Beach Bonfire & BBQ</h3>
-                    <p className="text-sm text-gray-600">Sunset gathering on the beach</p>
-                  </div>
+                <div className="mb-3">
+                  <h3 className="font-bold text-gray-900 mb-1">Beach Bonfire & BBQ</h3>
+                  <p className="text-sm text-gray-600">Sunset gathering on the beach</p>
                 </div>
                 
                 {/* Tags */}
@@ -245,14 +240,9 @@ export default function Landing() {
                 />
               </div>
               <div className="p-6 flex flex-col flex-grow">
-                <div className="flex items-center mb-3">
-                  <div className="w-10 h-10 bg-yellow-500 rounded-full flex items-center justify-center text-white font-bold mr-3">
-                    🌮
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-gray-900">Taco Tuesday</h3>
-                    <p className="text-sm text-gray-600">Every Tuesday • $1.50 tacos</p>
-                  </div>
+                <div className="mb-3">
+                  <h3 className="font-bold text-gray-900 mb-1">Taco Tuesday</h3>
+                  <p className="text-sm text-gray-600">Every Tuesday • $1.50 tacos</p>
                 </div>
                 
                 {/* Tags */}
@@ -282,14 +272,9 @@ export default function Landing() {
                 />
               </div>
               <div className="p-6 flex flex-col flex-grow">
-                <div className="flex items-center mb-3">
-                  <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold mr-3">
-                    🥾
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-gray-900">Hollywood Sign Hike</h3>
-                    <p className="text-sm text-gray-600">Every Saturday • 9:00 AM</p>
-                  </div>
+                <div className="mb-3">
+                  <h3 className="font-bold text-gray-900 mb-1">Hollywood Sign Hike</h3>
+                  <p className="text-sm text-gray-600">Every Saturday • 9:00 AM</p>
                 </div>
                 
                 {/* Tags */}
@@ -319,14 +304,9 @@ export default function Landing() {
                 />
               </div>
               <div className="p-6 flex flex-col flex-grow">
-                <div className="flex items-center mb-3">
-                  <div className="w-10 h-10 bg-amber-500 rounded-full flex items-center justify-center text-white font-bold mr-3">
-                    🍻
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-gray-900">Happy Hour Thursday</h3>
-                    <p className="text-sm text-gray-600">Jameson Pub • Live Music</p>
-                  </div>
+                <div className="mb-3">
+                  <h3 className="font-bold text-gray-900 mb-1">Happy Hour Thursday</h3>
+                  <p className="text-sm text-gray-600">Jameson Pub • Live Music</p>
                 </div>
                 
                 {/* Tags */}
@@ -356,14 +336,9 @@ export default function Landing() {
                 />
               </div>
               <div className="p-6 flex flex-col flex-grow">
-                <div className="flex items-center mb-3">
-                  <div className="w-10 h-10 bg-purple-500 rounded-full flex items-center justify-center text-white font-bold mr-3">
-                    💃
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-gray-900">Venice Beach Dance Party</h3>
-                    <p className="text-sm text-gray-600">Sunset dancing on the beach</p>
-                  </div>
+                <div className="mb-3">
+                  <h3 className="font-bold text-gray-900 mb-1">Venice Beach Dance Party</h3>
+                  <p className="text-sm text-gray-600">Sunset dancing on the beach</p>
                 </div>
                 
                 {/* Tags */}
