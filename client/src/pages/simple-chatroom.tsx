@@ -351,21 +351,24 @@ export default function SimpleChatroomPage() {
         {/* Header */}
         <Card className="mb-6">
           <CardHeader>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3 sm:gap-4">
               <Button 
                 variant="ghost" 
-                size="sm"
-                onClick={() => navigate('/city-chatrooms')}
+                size="icon" 
+                className="h-9 w-9 sm:h-8 sm:w-8" 
+                onClick={() => window.history.back()}
               >
-                <ArrowLeft className="w-4 h-4" />
+                <ArrowLeft className="h-5 w-5" />
               </Button>
-              <div>
-                <CardTitle className="text-xl">
+              <div className="min-w-0">
+                <CardTitle className="text-lg sm:text-xl truncate">
                   {chatroom?.name || `Chatroom ${chatroomId}`}
                 </CardTitle>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                  {chatroom?.city && `${chatroom.city}, ${chatroom.state}`} · {memberCount} online
-                </p>
+                {chatroom && (
+                  <p className="text-xs sm:text-sm text-muted-foreground truncate">
+                    {chatroom.city}, {chatroom.state} · {memberCount} online
+                  </p>
+                )}
               </div>
               <div className="ml-auto flex gap-2">
                 <Button onClick={joinRoom} variant="secondary" size="sm">Join</Button>
@@ -382,8 +385,8 @@ export default function SimpleChatroomPage() {
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {members.map((member) => (
-                    <div key={member.user_id} className="flex items-center gap-2 bg-gray-50 dark:bg-gray-700 rounded-full px-3 py-1">
-                      <Avatar className="w-6 h-6">
+                    <div key={member.user_id} className="flex items-center gap-1 sm:gap-2 bg-gray-50 dark:bg-gray-700 rounded-full px-2 sm:px-3 py-1">
+                      <Avatar className="w-5 h-5 sm:w-6 sm:h-6">
                         {member.profile_image ? (
                           <AvatarImage src={member.profile_image} alt={member.username} />
                         ) : (
@@ -392,7 +395,7 @@ export default function SimpleChatroomPage() {
                           </AvatarFallback>
                         )}
                       </Avatar>
-                      <span className="text-sm">{member.username}</span>
+                      <span className="text-xs sm:text-sm truncate">{member.username}</span>
                       {member.role === 'admin' && (
                         <span className="text-xs bg-blue-500 text-white rounded px-1">Admin</span>
                       )}
@@ -407,7 +410,7 @@ export default function SimpleChatroomPage() {
         {/* Messages Container */}
         <Card className="mb-4">
           <CardContent className="p-4">
-            <div className="h-96 overflow-y-auto space-y-3 mb-4">
+            <div className="max-h-[60vh] sm:max-h-[70vh] overflow-y-auto space-y-3 mb-4 pr-1">
               {isLoading ? (
                 <div className="flex items-center justify-center h-full">
                   <span>Loading messages...</span>
@@ -430,7 +433,7 @@ export default function SimpleChatroomPage() {
                       <div className="text-xs opacity-75 mb-1">
                         {message.username || 'Unknown'}
                       </div>
-                      <div>{message.content}</div>
+                      <div className="break-words whitespace-pre-wrap leading-relaxed">{message.content}</div>
                       <div className="text-xs opacity-75 mt-1">
                         {new Date(message.created_at).toLocaleTimeString()}
                       </div>
@@ -441,22 +444,24 @@ export default function SimpleChatroomPage() {
               <div ref={messagesEndRef} />
             </div>
 
-            {/* Message Input */}
-            <form onSubmit={handleSendMessage} className="flex gap-2">
-              <Input
-                value={messageText}
-                onChange={(e) => setMessageText(e.target.value)}
-                placeholder="Type your message..."
-                disabled={sendMessageMutation.isPending}
-                className="flex-1"
-              />
-              <Button 
-                type="submit" 
-                disabled={!messageText.trim() || sendMessageMutation.isPending}
-              >
-                <Send className="w-4 h-4" />
-              </Button>
-            </form>
+            <div className="sticky bottom-0 bg-background pt-2">
+              <form onSubmit={handleSendMessage} className="flex gap-2">
+                <Input
+                  value={messageText}
+                  onChange={(e) => setMessageText(e.target.value)}
+                  placeholder="Type your message..."
+                  inputMode="text"
+                  disabled={sendMessageMutation.isPending}
+                  className="flex-1"
+                />
+                <Button 
+                  type="submit" 
+                  disabled={!messageText.trim() || sendMessageMutation.isPending}
+                >
+                  <Send className="w-4 h-4" />
+                </Button>
+              </form>
+            </div>
           </CardContent>
         </Card>
       </div>
