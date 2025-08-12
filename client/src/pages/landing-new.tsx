@@ -7,6 +7,7 @@ import MobileTopNav from "@/components/mobile-top-nav";
 import MobileBottomNav from "@/components/mobile-bottom-nav";
 import MobileDebug from "@/components/mobile-debug";
 import MobilePreview from "@/components/mobile-preview";
+import RealMobileTest from "@/components/real-mobile-test";
 
 
 
@@ -72,7 +73,12 @@ export default function Landing() {
     );
   }
 
-  return <LandingContent setLocation={setLocation} />;
+  return (
+    <>
+      <RealMobileTest />
+      <LandingContent setLocation={setLocation} />
+    </>
+  );
 }
 
 function LandingContent({ setLocation }: { setLocation: (path: string) => void }) {
