@@ -305,10 +305,10 @@ export default function SignupLocalTraveler() {
       }
 
       // Bio length validation
-      if (formData.bio.length < 100) {
+      if (formData.bio.length < 50) {
         toast({
           title: "Bio too short",
-          description: "Your bio must be at least 100 characters long.",
+          description: "Your bio must be at least 50 characters long.",
           variant: "destructive",
         });
         setIsLoading(false);
@@ -604,7 +604,7 @@ export default function SignupLocalTraveler() {
                 <div>
                   <Label className="text-gray-900 dark:text-white">Bio *</Label>
                   <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                    Minimum 100 characters, maximum 500 characters
+                    Minimum 50 characters, maximum 500 characters
                   </div>
                   <Textarea
                     value={formData.bio}
@@ -613,23 +613,23 @@ export default function SignupLocalTraveler() {
                     rows={4}
                     maxLength={500}
                     required
-                    minLength={100}
+                    minLength={50}
                     className={`${
-                      formData.bio.length > 0 && formData.bio.length < 100 
+                      formData.bio.length > 0 && formData.bio.length < 50 
                         ? 'border-red-500 focus:border-red-500' 
-                        : formData.bio.length >= 100 
+                        : formData.bio.length >= 50 
                         ? 'border-green-500 focus:border-green-500' 
                         : ''
                     }`}
                   />
                   <div className="flex justify-between text-sm mt-1">
                     <span className={`${
-                      formData.bio.length < 100 
+                      formData.bio.length < 50 
                         ? 'text-red-600' 
                         : 'text-green-600'
                     }`}>
-                      {formData.bio.length < 100 
-                        ? `Need ${100 - formData.bio.length} more characters` 
+                      {formData.bio.length < 50 
+                        ? `Need ${50 - formData.bio.length} more characters` 
                         : 'Minimum requirement met'}
                     </span>
                     <span className={`${
