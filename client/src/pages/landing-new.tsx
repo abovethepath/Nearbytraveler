@@ -199,7 +199,7 @@ export default function Landing() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
 
             {/* Beach Bonfire Event Card */}
-            <div className="bg-white rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-2xl transform transition-all duration-300">
+            <div className="bg-white rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-2xl transform transition-all duration-300 flex flex-col">
               <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-orange-400 to-red-500">
                 <img 
                   src="/event page bbq party_1753299541268.png" 
@@ -207,7 +207,7 @@ export default function Landing() {
                   className="w-full h-48 object-cover"
                 />
               </div>
-              <div className="p-6">
+              <div className="p-6 flex flex-col flex-grow">
                 <div className="flex items-center mb-3">
                   <div className="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold mr-3">
                     🏖️
@@ -217,10 +217,18 @@ export default function Landing() {
                     <p className="text-sm text-gray-600">Sunset gathering on the beach</p>
                   </div>
                 </div>
-                <p className="text-gray-700 text-sm mb-4">Join locals for an authentic beach bonfire with BBQ, music, and sunset views. Experience the real LA beach culture with friendly people.</p>
+                
+                {/* Tags */}
+                <div className="flex flex-wrap gap-2 mb-3">
+                  <span className="bg-orange-100 text-orange-700 px-2 py-1 rounded-full text-xs font-medium">Free</span>
+                  <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs font-medium">Beach</span>
+                  <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-medium">Music</span>
+                </div>
+                
+                <p className="text-gray-700 text-sm mb-4 flex-grow">Join locals for an authentic beach bonfire with BBQ, music, and sunset views. Experience the real LA beach culture with friendly people.</p>
                 <Button 
                   onClick={() => setLocation('/join')}
-                  className="w-full bg-orange-500 hover:bg-orange-600 text-black font-bold"
+                  className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold mt-auto"
                 >
                   JOIN TO CONNECT
                 </Button>
@@ -228,7 +236,7 @@ export default function Landing() {
             </div>
             
             {/* Taco Tuesday Event Card */}
-            <div className="bg-white rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-2xl transform transition-all duration-300" style={{animationDelay: '0.2s'}}>
+            <div className="bg-white rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-2xl transform transition-all duration-300 flex flex-col" style={{animationDelay: '0.2s'}}>
               <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-yellow-400 to-orange-500">
                 <img 
                   src="/attached_assets/image_1754973365104.png" 
@@ -236,7 +244,7 @@ export default function Landing() {
                   className="w-full h-48 object-cover"
                 />
               </div>
-              <div className="p-6">
+              <div className="p-6 flex flex-col flex-grow">
                 <div className="flex items-center mb-3">
                   <div className="w-10 h-10 bg-yellow-500 rounded-full flex items-center justify-center text-white font-bold mr-3">
                     🌮
@@ -246,10 +254,18 @@ export default function Landing() {
                     <p className="text-sm text-gray-600">Every Tuesday • $1.50 tacos</p>
                   </div>
                 </div>
-                <p className="text-gray-700 text-sm mb-4">Join locals every Tuesday for authentic street tacos at unbeatable prices. Meet fellow taco lovers and discover the best Mexican spots in the city.</p>
+                
+                {/* Tags */}
+                <div className="flex flex-wrap gap-2 mb-3">
+                  <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-medium">$1.50</span>
+                  <span className="bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full text-xs font-medium">Food</span>
+                  <span className="bg-red-100 text-red-700 px-2 py-1 rounded-full text-xs font-medium">Weekly</span>
+                </div>
+                
+                <p className="text-gray-700 text-sm mb-4 flex-grow">Join locals every Tuesday for authentic street tacos at unbeatable prices. Meet fellow taco lovers and discover the best Mexican spots in the city.</p>
                 <Button 
                   onClick={() => setLocation('/join')}
-                  className="w-full bg-orange-500 hover:bg-orange-600 text-black font-bold"
+                  className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold mt-auto"
                 >
                   JOIN TO CONNECT
                 </Button>
@@ -257,7 +273,7 @@ export default function Landing() {
             </div>
             
             {/* Hollywood Sign Hike Event Card */}
-            <div className="bg-white rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-2xl transform transition-all duration-300" style={{animationDelay: '0.3s'}}>
+            <div className="bg-white rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-2xl transform transition-all duration-300 flex flex-col" style={{animationDelay: '0.3s'}}>
               <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-blue-500 to-indigo-600">
                 <img 
                   src="/attached_assets/Los_Angeles_Metro_1754944437196.jpg" 
@@ -265,7 +281,7 @@ export default function Landing() {
                   className="w-full h-48 object-cover"
                 />
               </div>
-              <div className="p-6">
+              <div className="p-6 flex flex-col flex-grow">
                 <div className="flex items-center mb-3">
                   <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold mr-3">
                     🥾
@@ -275,10 +291,18 @@ export default function Landing() {
                     <p className="text-sm text-gray-600">Every Saturday • 9:00 AM</p>
                   </div>
                 </div>
-                <p className="text-gray-700 text-sm mb-4">Weekly hike to the iconic Hollywood Sign with locals and travelers. Amazing city views, great photos, and authentic LA hiking culture.</p>
+                
+                {/* Tags */}
+                <div className="flex flex-wrap gap-2 mb-3">
+                  <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs font-medium">Free</span>
+                  <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-medium">Hiking</span>
+                  <span className="bg-purple-100 text-purple-700 px-2 py-1 rounded-full text-xs font-medium">Photos</span>
+                </div>
+                
+                <p className="text-gray-700 text-sm mb-4 flex-grow">Weekly hike to the iconic Hollywood Sign with locals and travelers. Amazing city views, great photos, and authentic LA hiking culture.</p>
                 <Button 
                   onClick={() => setLocation('/join')}
-                  className="w-full bg-orange-500 hover:bg-orange-600 text-black font-bold"
+                  className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold mt-auto"
                 >
                   JOIN TO CONNECT
                 </Button>
@@ -286,7 +310,7 @@ export default function Landing() {
             </div>
 
             {/* Happy Hour at Jameson Pub Event Card */}
-            <div className="bg-white rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-2xl transform transition-all duration-300" style={{animationDelay: '0.4s'}}>
+            <div className="bg-white rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-2xl transform transition-all duration-300 flex flex-col" style={{animationDelay: '0.4s'}}>
               <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-amber-500 to-orange-600">
                 <img 
                   src="/attached_assets/raliehg_1754973596672.webp" 
@@ -294,7 +318,7 @@ export default function Landing() {
                   className="w-full h-48 object-cover"
                 />
               </div>
-              <div className="p-6">
+              <div className="p-6 flex flex-col flex-grow">
                 <div className="flex items-center mb-3">
                   <div className="w-10 h-10 bg-amber-500 rounded-full flex items-center justify-center text-white font-bold mr-3">
                     🍻
@@ -304,10 +328,18 @@ export default function Landing() {
                     <p className="text-sm text-gray-600">Jameson Pub • Live Music</p>
                   </div>
                 </div>
-                <p className="text-gray-700 text-sm mb-4">Join locals and travelers for Thursday happy hour with live music at Jameson Pub. Great drinks, live bands, and authentic LA nightlife.</p>
+                
+                {/* Tags */}
+                <div className="flex flex-wrap gap-2 mb-3">
+                  <span className="bg-amber-100 text-amber-700 px-2 py-1 rounded-full text-xs font-medium">Drinks</span>
+                  <span className="bg-purple-100 text-purple-700 px-2 py-1 rounded-full text-xs font-medium">Live Music</span>
+                  <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs font-medium">21+</span>
+                </div>
+                
+                <p className="text-gray-700 text-sm mb-4 flex-grow">Join locals and travelers for Thursday happy hour with live music at Jameson Pub. Great drinks, live bands, and authentic LA nightlife.</p>
                 <Button 
                   onClick={() => setLocation('/join')}
-                  className="w-full bg-orange-500 hover:bg-orange-600 text-black font-bold"
+                  className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold mt-auto"
                 >
                   JOIN TO CONNECT
                 </Button>
@@ -315,7 +347,7 @@ export default function Landing() {
             </div>
 
             {/* Venice Beach Dance Party Event Card */}
-            <div className="bg-white rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-2xl transform transition-all duration-300" style={{animationDelay: '0.5s'}}>
+            <div className="bg-white rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-2xl transform transition-all duration-300 flex flex-col" style={{animationDelay: '0.5s'}}>
               <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-purple-500 to-pink-500">
                 <img 
                   src="/attached_assets/beach travel_1754973619241.jpg" 
@@ -323,7 +355,7 @@ export default function Landing() {
                   className="w-full h-48 object-cover"
                 />
               </div>
-              <div className="p-6">
+              <div className="p-6 flex flex-col flex-grow">
                 <div className="flex items-center mb-3">
                   <div className="w-10 h-10 bg-purple-500 rounded-full flex items-center justify-center text-white font-bold mr-3">
                     💃
@@ -333,10 +365,18 @@ export default function Landing() {
                     <p className="text-sm text-gray-600">Sunset dancing on the beach</p>
                   </div>
                 </div>
-                <p className="text-gray-700 text-sm mb-4">Join the legendary Venice Beach dance scene with locals and travelers. Dancing on the sand as the sun sets over the Pacific Ocean.</p>
+                
+                {/* Tags */}
+                <div className="flex flex-wrap gap-2 mb-3">
+                  <span className="bg-pink-100 text-pink-700 px-2 py-1 rounded-full text-xs font-medium">Free</span>
+                  <span className="bg-purple-100 text-purple-700 px-2 py-1 rounded-full text-xs font-medium">Dance</span>
+                  <span className="bg-orange-100 text-orange-700 px-2 py-1 rounded-full text-xs font-medium">Sunset</span>
+                </div>
+                
+                <p className="text-gray-700 text-sm mb-4 flex-grow">Join the legendary Venice Beach dance scene with locals and travelers. Dancing on the sand as the sun sets over the Pacific Ocean.</p>
                 <Button 
                   onClick={() => setLocation('/join')}
-                  className="w-full bg-orange-500 hover:bg-orange-600 text-black font-bold"
+                  className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold mt-auto"
                 >
                   JOIN TO CONNECT
                 </Button>
