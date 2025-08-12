@@ -13,6 +13,7 @@ import { QueryClientProvider, useQueryClient } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
+import MobilePreview from "@/components/mobile-preview";
 import Home from "@/pages/home";
 import Discover from "@/pages/discover";
 import Profile from "@/pages/profile";
@@ -876,7 +877,10 @@ function Router() {
     }
   };
 
-  return (
+  // Force mobile preview for ALL pages
+  const forceMobilePreview = true;
+  
+  const AppContent = () => (
     <AuthContext.Provider value={authValue}>
       {!authValue.isAuthenticated ? (
         // MOBILE FIX: Check if this is a navigation to home page from mobile nav
@@ -962,6 +966,17 @@ function Router() {
       )}
     </AuthContext.Provider>
   );
+
+  // Return mobile preview wrapper if enabled
+  if (forceMobilePreview) {
+    return (
+      <MobilePreview>
+        <AppContent />
+      </MobilePreview>
+    );
+  }
+
+  return <AppContent />;
 }
 
 function App() {

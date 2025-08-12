@@ -64,17 +64,6 @@ export default function Landing() {
   const [, setLocation] = useLocation();
   const [showPreview, setShowPreview] = useState(false);
 
-  // Show mobile preview for user to see mobile layout
-  const showMobilePreview = window.location.search.includes('mobile=true') || true; // Force show for now
-  
-  if (showMobilePreview) {
-    return (
-      <MobilePreview>
-        <LandingContent setLocation={setLocation} />
-      </MobilePreview>
-    );
-  }
-  
   return <LandingContent setLocation={setLocation} />;
 }
 
