@@ -391,7 +391,7 @@ export default function Landing() {
                 </div>
                 <div className="text-center p-4 bg-white rounded-2xl border-2 border-blue-300 shadow-lg">
                   <div className="text-3xl mb-3">💎</div>
-                  <p className="font-bold text-black">Discover hidden gems</p>
+                  <p className="font-bold text-gray-900">Discover hidden gems</p>
                 </div>
                 <div className="text-center p-4 bg-white rounded-2xl border-2 border-orange-300 shadow-lg">
                   <div className="text-3xl mb-3">✨</div>
