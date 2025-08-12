@@ -99,6 +99,7 @@ import Navbar from "@/components/navbar";
 // Removed conflicting MobileNav - using MobileTopNav and MobileBottomNav instead
 import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { MobileTopNav } from "@/components/MobileTopNav";
+import SimpleNavbar from "@/components/simple-navbar";
 import Footer from "@/components/footer";
 import { UniversalBackButton } from "@/components/UniversalBackButton";
 import IMAlert from "@/components/instant-messaging/IMAlert";
@@ -908,7 +909,16 @@ function Router() {
           // Show appropriate page based on routing for unauthenticated users
           <>
             {console.log('🔍 APP ROUTING: User NOT authenticated, showing unauthenticated page for location:', location)}
-            {renderPage()}
+            <div className="min-h-screen w-full max-w-full flex flex-col bg-background text-foreground overflow-x-hidden">
+              {/* Landing page navigation for unauthenticated users */}
+              <SimpleNavbar />
+              
+              <main className="flex-1 w-full max-w-full pt-16 pb-0 overflow-x-hidden">
+                <div className="w-full max-w-full overflow-x-hidden">
+                  {renderPage()}
+                </div>
+              </main>
+            </div>
           </>
         )
       ) : (
@@ -930,10 +940,16 @@ function Router() {
                 </div>
               </>
             ) : (
-              // This part is technically unreachable if !authValue.isAuthenticated is false,
-              // but keeping it for structural completeness if logic were to change.
-              // A dedicated LandingNavbar component would be used here if needed.
-              null
+              <>
+                {/* Landing page navigation for unauthenticated users */}
+                <div className="hidden md:block">
+                  <SimpleNavbar />
+                </div>
+                {/* Mobile landing navigation */}
+                <div className="md:hidden">
+                  <SimpleNavbar />
+                </div>
+              </>
             )}
 
             <main className="flex-1 w-full max-w-full pt-16 pb-24 md:pt-0 md:pb-0 overflow-x-hidden">

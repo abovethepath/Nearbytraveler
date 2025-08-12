@@ -1,0 +1,102 @@
+NEARBY TRAVELER DATABASE EXPORT SUMMARY
+=========================================
+
+Export Date: 2025-08-12T13:06:29.572Z
+Database: Neon PostgreSQL
+Total Tables: 89
+
+TABLE BREAKDOWN:
+- achievements: 0 rows, 13 columns
+- ai_conversations: 0 rows, 10 columns
+- ai_recommendations: 0 rows, 22 columns
+- blocked_users: 0 rows, 5 columns
+- business_customer_photos: 0 rows, 9 columns
+- business_interest_notifications: 0 rows, 13 columns
+- business_locations: 0 rows, 16 columns
+- business_offer_redemptions: 0 rows, 7 columns
+- business_offers: 0 rows, 31 columns
+- business_referrals: 0 rows, 12 columns
+- business_subscriptions: 0 rows, 11 columns
+- chatroom_access_requests: 1 rows, 9 columns
+- chatroom_invitations: 0 rows, 8 columns
+- chatroom_members: 8 rows, 8 columns
+- chatroom_messages: 5 rows, 9 columns
+- city_activities: 306 rows, 10 columns
+- city_chatrooms: 12 rows, 13 columns
+- city_landmarks: 0 rows, 24 columns
+- city_pages: 0 rows, 26 columns
+- city_photos: 0 rows, 15 columns
+- citychatrooms: 8 rows, 13 columns
+- connections: 1 rows, 5 columns
+- custom_location_activities: 0 rows, 14 columns
+- emergency_contacts: 0 rows, 7 columns
+- event_participants: 5 rows, 7 columns
+- events: 13 rows, 38 columns
+- external_event_interests: 0 rows, 13 columns
+- hangout_participants: 0 rows, 5 columns
+- hangouts: 0 rows, 15 columns
+- hosting_offers: 0 rows, 15 columns
+- instagram_posts: 0 rows, 16 columns
+- itinerary_items: 0 rows, 19 columns
+- landmark_ratings: 0 rows, 8 columns
+- meetup_chatroom_messages: 0 rows, 7 columns
+- meetup_chatrooms: 11 rows, 14 columns
+- messages: 2 rows, 14 columns
+- mood_board_items: 0 rows, 10 columns
+- mood_boards: 0 rows, 8 columns
+- mood_entries: 0 rows, 12 columns
+- notifications: 0 rows, 9 columns
+- packing_list_items: 0 rows, 11 columns
+- packing_lists: 0 rows, 13 columns
+- passport_stamps: 0 rows, 17 columns
+- photo_albums: 0 rows, 13 columns
+- pricing_tiers: 0 rows, 8 columns
+- proximity_notifications: 0 rows, 7 columns
+- quick_meetup_participants: 3 rows, 6 columns
+- quick_meetup_templates: 0 rows, 15 columns
+- quick_meetups: 3 rows, 23 columns
+- recommendation_requests: 0 rows, 13 columns
+- recommendations: 0 rows, 26 columns
+- reference_responses: 0 rows, 6 columns
+- reference_votes: 0 rows, 5 columns
+- references: 0 rows, 11 columns
+- referrals: 0 rows, 13 columns
+- restaurant_categories: 0 rows, 5 columns
+- restaurant_reviews: 0 rows, 18 columns
+- restaurants: 0 rows, 21 columns
+- secret_experience_likes: 0 rows, 4 columns
+- secret_local_experience_likes: 0 rows, 4 columns
+- secret_local_experiences: 0 rows, 9 columns
+- shared_itineraries: 0 rows, 10 columns
+- travel_blog_comment_likes: 0 rows, 4 columns
+- travel_blog_comments: 0 rows, 8 columns
+- travel_blog_likes: 0 rows, 4 columns
+- travel_blog_posts: 0 rows, 16 columns
+- travel_challenges: 0 rows, 10 columns
+- travel_memories: 0 rows, 16 columns
+- travel_memory_comments: 0 rows, 5 columns
+- travel_memory_likes: 0 rows, 4 columns
+- travel_plans: 3 rows, 18 columns
+- trip_itineraries: 0 rows, 13 columns
+- user_challenges: 0 rows, 9 columns
+- user_city_interests: 12 rows, 7 columns
+- user_contributed_interests: 0 rows, 14 columns
+- user_custom_activities: 0 rows, 4 columns
+- user_event_interests: 4 rows, 10 columns
+- user_leaderboard: 0 rows, 11 columns
+- user_notification_settings: 0 rows, 18 columns
+- user_photos: 0 rows, 8 columns
+- user_preferences: 0 rows, 11 columns
+- user_recommendation_interactions: 0 rows, 9 columns
+- user_references: 0 rows, 6 columns
+- user_reputation: 0 rows, 13 columns
+- user_stats: 0 rows, 14 columns
+- users: 2 rows, 114 columns
+- verifications: 0 rows, 8 columns
+- vouch_credits: 1 rows, 8 columns
+- vouches: 1 rows, 7 columns
+
+FILES CREATED:
+- database-export-2025-08-12-1306.sql (SQL dump)
+- database-export-2025-08-12-1306.json (JSON data)
+- database-summary-2025-08-12-1306.txt (this summary)
