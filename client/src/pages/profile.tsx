@@ -6150,7 +6150,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       <FormControl>
                         <Textarea 
                           {...field} 
-                          placeholder="Secret activities you'd share with Nearby Travelers and friends..."
+                          placeholder="Fill this out for others to see secret activities, hidden gems, local spots, or insider tips that only locals know about. Example: There's a hidden waterfall behind the old mill that locals love, or try the secret menu at Joe's Diner..."
                           className="min-h-[80px] resize-none"
                           maxLength={500}
                         />
