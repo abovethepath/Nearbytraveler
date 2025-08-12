@@ -148,7 +148,7 @@ export default function Landing() {
                       >
                         JOIN NEARBY TRAVELER NOW!!!
                       </Button>
-                      <p className="text-white/80 mt-3 text-lg">Join the travel community • Connect today</p>
+                      <p className="text-white mt-3 text-lg font-semibold">Join the travel community • Connect today</p>
                     </div>
 
                   </div>
