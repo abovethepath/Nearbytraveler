@@ -73,7 +73,7 @@ function LandingContent({ setLocation }: { setLocation: (path: string) => void }
       <MobileDebug />
 
       {/* NAVBAR (fixed, always visible) */}
-      <div className="fixed inset-x-0 top-0 z-[100]">
+      <div className="fixed inset-x-0 top-0 z-[100] w-full">
         <LandingNavbar />
       </div>
 
