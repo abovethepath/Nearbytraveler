@@ -62,7 +62,7 @@ export default function Landing() {
       {/* Sticky CTA - Always Visible on All Devices */}
       <div className="fixed bottom-6 right-6 z-50">
         <Button
-          onClick={() => setLocation('/events')}
+          onClick={() => setLocation('/auth')}
           size="lg"
           className="bg-orange-500 hover:bg-orange-600 text-black font-black px-8 py-4 rounded-2xl shadow-2xl transform transition-all duration-200 hover:scale-105 border-3 border-white"
           style={{
@@ -70,7 +70,7 @@ export default function Landing() {
             animation: 'gentle-pulse 2.5s ease-in-out infinite',
           }}
         >
-          BROWSE EVENTS
+          JOIN NOW
         </Button>
       </div>
       
@@ -78,13 +78,13 @@ export default function Landing() {
       <div className="fixed top-0 left-0 right-0 bg-orange-500 text-black py-3 px-4 z-40 shadow-lg">
         <div className="flex items-center justify-between max-w-6xl mx-auto">
           <div className="flex-1 text-center">
-            <span className="font-bold text-lg">🔥 Connect with LA locals - No signup required</span>
+            <span className="font-bold text-lg">🔥 Connect with Locals and Travelers TODAY - Sign Up Now!</span>
           </div>
           <Button
-            onClick={() => setLocation('/events')}
+            onClick={() => setLocation('/auth')}
             className="bg-black text-orange-400 font-bold px-6 py-2 rounded-lg hover:bg-gray-800 ml-4"
           >
-            SEE EVENTS
+            SIGN UP NOW
           </Button>
         </div>
       </div>
@@ -133,10 +133,10 @@ export default function Landing() {
                       </div>
                     </div>
                     
-                    {/* Immediate action CTA - No signup required */}
+                    {/* Primary signup CTA */}
                     <div className="mt-12 mb-8">
                       <Button
-                        onClick={() => setLocation('/events')}
+                        onClick={() => setLocation('/auth')}
                         size="lg"
                         className="bg-orange-500 hover:bg-orange-600 text-black font-black text-2xl px-16 py-6 rounded-2xl shadow-2xl transform transition-all duration-200 hover:scale-105 border-4 border-white"
                         style={{
@@ -146,9 +146,9 @@ export default function Landing() {
                           animation: 'gentle-pulse 2.5s ease-in-out infinite',
                         }}
                       >
-                        SEE LOCAL EVENTS NOW →
+                        SIGN UP NOW - IT'S FREE! →
                       </Button>
-                      <p className="text-white/80 mt-3 text-lg">No signup required • Start browsing immediately</p>
+                      <p className="text-white/80 mt-3 text-lg">Join the travel community • Connect today</p>
                     </div>
 
                   </div>
@@ -217,10 +217,10 @@ export default function Landing() {
                 </div>
                 <p className="text-gray-700 text-sm mb-4">Connect with locals who know the real Silver Lake music culture - venues, record shops, and artists not on any tour guide.</p>
                 <Button 
-                  onClick={() => setLocation('/events')}
+                  onClick={() => setLocation('/auth')}
                   className="w-full bg-orange-500 hover:bg-orange-600 text-black font-bold"
                 >
-                  FIND MUSIC LOCALS
+                  JOIN TO CONNECT
                 </Button>
               </div>
             </div>
@@ -245,10 +245,10 @@ export default function Landing() {
                 </div>
                 <p className="text-gray-700 text-sm mb-4">Skip the tourist traps. Meet Venice locals who can show you where they actually hang out, eat, and experience the authentic neighborhood.</p>
                 <Button 
-                  onClick={() => setLocation('/events')}
+                  onClick={() => setLocation('/auth')}
                   className="w-full bg-orange-500 hover:bg-orange-600 text-black font-bold"
                 >
-                  MEET VENICE LOCALS
+                  JOIN TO CONNECT
                 </Button>
               </div>
             </div>
@@ -273,10 +273,10 @@ export default function Landing() {
                 </div>
                 <p className="text-gray-700 text-sm mb-4">Discover the real downtown LA art scene through locals who work in galleries, know emerging artists, and visit spaces off the beaten path.</p>
                 <Button 
-                  onClick={() => setLocation('/events')}
+                  onClick={() => setLocation('/auth')}
                   className="w-full bg-orange-500 hover:bg-orange-600 text-black font-bold"
                 >
-                  EXPLORE ART SCENE
+                  JOIN TO CONNECT
                 </Button>
               </div>
             </div>
@@ -285,11 +285,11 @@ export default function Landing() {
           {/* Call to action to see more */}
           <div className="text-center mt-12">
             <Button 
-              onClick={() => setLocation('/events')}
+              onClick={() => setLocation('/auth')}
               size="lg"
               className="bg-black text-orange-400 font-black px-12 py-4 rounded-2xl hover:bg-gray-800 text-xl"
             >
-              BROWSE ALL EVENTS →
+              JOIN THE COMMUNITY →
             </Button>
           </div>
         </div>
