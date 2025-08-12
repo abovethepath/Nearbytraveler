@@ -71,6 +71,11 @@ function LandingContent({ setLocation }: { setLocation: (path: string) => void }
     <div className="min-h-dvh flex flex-col bg-gray-50 dark:bg-gray-900 overflow-x-hidden" key="landing-v2-mobile-optimized">
       {/* Debug (optional) */}
       <MobileDebug />
+      
+      {/* LARGE MOBILE STATUS INDICATOR */}
+      <div className="fixed top-20 left-4 bg-green-500 text-white px-4 py-2 rounded-lg z-50 md:hidden" style={{ fontSize: '20px', fontWeight: 'bold' }}>
+        MOBILE VIEW ACTIVE
+      </div>
 
       {/* NAVBAR (fixed, always visible) - TEST VERSION */}
       <div 
