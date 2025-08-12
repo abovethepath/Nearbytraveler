@@ -69,7 +69,7 @@ export default function Landing() {
             boxShadow: '0 8px 25px rgba(0,0,0,0.3), 0 0 0 2px rgba(255,255,255,0.8)',
           }}
         >
-          🚀 SIGN UP FREE
+🚀 JOIN NOW
         </Button>
       </div>
 
@@ -84,7 +84,7 @@ export default function Landing() {
             variant="ghost"
             className="text-white hover:text-orange-100 font-bold text-lg p-0 h-auto"
           >
-            🚀 JOIN FREE TODAY! →
+🚀 GET STARTED TODAY! →
           </Button>
         </div>
       </div>
@@ -127,7 +127,7 @@ export default function Landing() {
                           boxShadow: '0 10px 30px rgba(0,0,0,0.3), 0 0 0 4px rgba(255,255,255,0.8)',
                         }}
                       >
-                        🚀 SIGN UP NOW - IT'S FREE! 🚀
+🚀 JOIN THE COMMUNITY 🚀
                       </Button>
                     </div>
 
