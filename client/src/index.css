@@ -2036,27 +2036,31 @@ div[class*="rounded-lg border"].selected:not(input):not(textarea) {
 }
 
 /* Make mobile preview scrollable with visible scrollbar */
-.mobile-viewport::-webkit-scrollbar {
+.mobile-viewport-container::-webkit-scrollbar {
   width: 8px;
 }
 
-.mobile-viewport::-webkit-scrollbar-track {
+.mobile-viewport-container::-webkit-scrollbar-track {
   background: #f1f1f1;
   border-radius: 4px;
 }
 
-.mobile-viewport::-webkit-scrollbar-thumb {
+.mobile-viewport-container::-webkit-scrollbar-thumb {
   background: #888;
   border-radius: 4px;
 }
 
-.mobile-viewport::-webkit-scrollbar-thumb:hover {
+.mobile-viewport-container::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
 
 /* For Firefox */
-.mobile-viewport {
+.mobile-viewport-container {
   scrollbar-width: thin;
   scrollbar-color: #888 #f1f1f1;
+}
+
+.mobile-viewport {
+  pointer-events: auto;
 }
 
