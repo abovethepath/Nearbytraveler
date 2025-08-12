@@ -196,7 +196,7 @@ export default function Landing() {
           </div>
           
           {/* Event Cards - Modern Lu.ma style */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
 
             {/* Beach Bonfire Event Card */}
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-2xl transform transition-all duration-300">
@@ -285,8 +285,37 @@ export default function Landing() {
               </div>
             </div>
 
-            {/* Venice Beach Dance Party Event Card */}
+            {/* Happy Hour at Jameson Pub Event Card */}
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-2xl transform transition-all duration-300" style={{animationDelay: '0.4s'}}>
+              <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-amber-500 to-orange-600">
+                <img 
+                  src="/attached_assets/raliehg_1754973596672.webp" 
+                  alt="Happy hour at pub with live music" 
+                  className="w-full h-48 object-cover"
+                />
+              </div>
+              <div className="p-6">
+                <div className="flex items-center mb-3">
+                  <div className="w-10 h-10 bg-amber-500 rounded-full flex items-center justify-center text-white font-bold mr-3">
+                    🍻
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-gray-900">Happy Hour Thursday</h3>
+                    <p className="text-sm text-gray-600">Jameson Pub • Live Music</p>
+                  </div>
+                </div>
+                <p className="text-gray-700 text-sm mb-4">Join locals and travelers for Thursday happy hour with live music at Jameson Pub. Great drinks, live bands, and authentic LA nightlife.</p>
+                <Button 
+                  onClick={() => setLocation('/join')}
+                  className="w-full bg-orange-500 hover:bg-orange-600 text-black font-bold"
+                >
+                  JOIN TO CONNECT
+                </Button>
+              </div>
+            </div>
+
+            {/* Venice Beach Dance Party Event Card */}
+            <div className="bg-white rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-2xl transform transition-all duration-300" style={{animationDelay: '0.5s'}}>
               <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-purple-500 to-pink-500">
                 <img 
                   src="/attached_assets/beach travel_1754973619241.jpg" 
