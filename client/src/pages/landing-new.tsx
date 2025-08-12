@@ -72,19 +72,26 @@ function LandingContent({ setLocation }: { setLocation: (path: string) => void }
       {/* Debug (optional) */}
       <MobileDebug />
 
-      {/* NAVBAR — keep it on top and above everything with safe area */}
-      <div className="sticky top-0 z-50 pt-2">
+      {/* NAVBAR — keep it on top and above everything */}
+      <div className="sticky top-0 z-50">
         <LandingNavbar />
       </div>
 
-      {/* Orange Sign-Up Header Bar (below navbar on mobile) */}
-      <div className="bg-orange-500 text-black text-center py-2 md:hidden z-40">
+      {/* Orange Sign-Up Header Bar with Sign In option */}
+      <div className="bg-orange-500 text-black text-center py-2 md:hidden z-40 flex justify-between items-center px-4">
+        <button
+          onClick={() => setLocation('/auth')}
+          className="font-bold text-xs touch-manipulation bg-white/20 px-2 py-1 rounded"
+        >
+          SIGN IN
+        </button>
         <button
           onClick={() => setLocation('/join')}
-          className="font-bold text-sm touch-manipulation"
+          className="font-bold text-sm touch-manipulation flex-1 mx-2"
         >
           🔥 JOIN NEARBY TRAVELER NOW - FREE! 🔥
         </button>
+        <div className="w-12"></div> {/* spacer for balance */}
       </div>
 
       {/* MAIN CONTENT */}

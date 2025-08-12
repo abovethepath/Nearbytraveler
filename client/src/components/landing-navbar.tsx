@@ -6,7 +6,7 @@ export default function LandingNavbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <nav className="bg-red-600 text-white shadow-lg relative z-50">
+    <nav className="bg-red-600 text-white shadow-lg relative z-50" style={{ minHeight: '64px' }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex">
