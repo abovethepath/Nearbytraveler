@@ -146,7 +146,7 @@ export default function Landing() {
                           animation: 'gentle-pulse 2.5s ease-in-out infinite',
                         }}
                       >
-                        SIGN UP NOW - IT'S FREE! →
+                        JOIN NEARBY TRAVELER NOW!!!
                       </Button>
                       <p className="text-white/80 mt-3 text-lg">Join the travel community • Connect today</p>
                     </div>
