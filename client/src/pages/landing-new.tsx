@@ -303,25 +303,25 @@ export default function Landing() {
 
       {/* FROM THE FOUNDER SECTION */}
       <div className="relative py-16 sm:py-20 overflow-hidden">
-        {/* Darker, richer gradient background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-orange-600 via-red-600 to-orange-700"></div>
-        <div className="absolute inset-0 bg-gradient-to-tl from-red-700/40 via-transparent to-orange-800/20"></div>
+        {/* Orange and blue gradient background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-orange-500 via-orange-600 to-blue-600"></div>
+        <div className="absolute inset-0 bg-gradient-to-tl from-blue-700/30 via-transparent to-orange-400/20"></div>
         
         <div className="relative max-w-4xl mx-auto px-4">
           <div className="text-center mb-12 animate-fade-in-up">
             <h2 className="text-3xl sm:text-4xl font-black text-white mb-4" style={{fontFamily: '"Inter", sans-serif'}}>
               From the Founder
             </h2>
-            <div className="w-24 h-1 bg-gradient-to-r from-yellow-400 to-white mx-auto rounded-full"></div>
+            <div className="w-24 h-1 bg-gradient-to-r from-white to-blue-300 mx-auto rounded-full"></div>
           </div>
           
-          {/* Main content with darker text for better readability */}
+          {/* Main content with better readability */}
           <div className="max-w-3xl mx-auto animate-slide-in-left" style={{animationDelay: '0.2s'}}>
             <div className="text-center mb-8">
               <p className="text-xl sm:text-2xl text-white leading-relaxed font-medium mb-6">
                 "As a traveler and local, I always loved meeting new people—but finding those who truly shared my interests wasn't easy."
               </p>
-              <p className="text-2xl sm:text-3xl text-yellow-300 font-bold leading-relaxed mb-6">
+              <p className="text-2xl sm:text-3xl text-blue-100 font-bold leading-relaxed mb-6">
                 That's why I created Nearby Traveler.
               </p>
             </div>
@@ -331,17 +331,17 @@ export default function Landing() {
                 This platform helps travelers and locals meet each other, based on shared interests, activities, demographics, and events—making every encounter more meaningful.
               </p>
               
-              {/* Benefits with better contrast */}
+              {/* Benefits with orange and blue theme */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div className="text-center p-4 bg-orange-50 rounded-2xl border border-orange-200">
+                <div className="text-center p-4 bg-orange-50 rounded-2xl border-2 border-orange-300">
                   <div className="text-3xl mb-3">🤝</div>
                   <p className="font-bold text-gray-900">Connect with like-minded people</p>
                 </div>
-                <div className="text-center p-4 bg-yellow-50 rounded-2xl border border-yellow-200">
+                <div className="text-center p-4 bg-blue-50 rounded-2xl border-2 border-blue-300">
                   <div className="text-3xl mb-3">💎</div>
                   <p className="font-bold text-gray-900">Discover hidden gems</p>
                 </div>
-                <div className="text-center p-4 bg-red-50 rounded-2xl border border-red-200">
+                <div className="text-center p-4 bg-orange-50 rounded-2xl border-2 border-orange-300">
                   <div className="text-3xl mb-3">✨</div>
                   <p className="font-bold text-gray-900">Create unforgettable memories</p>
                 </div>
@@ -351,13 +351,13 @@ export default function Landing() {
                 It's more than just travel—it's about real community, wherever you are.
               </p>
               
-              {/* Founder signature with better contrast */}
-              <div className="text-center pt-6 border-t border-gray-300">
+              {/* Founder signature with orange and blue accents */}
+              <div className="text-center pt-6 border-t border-blue-200">
                 <p className="text-lg text-gray-800 mb-3 font-medium">Thanks for being part of the journey.</p>
                 <div className="flex items-center justify-center space-x-4">
                   <div>
                     <p className="text-xl font-black text-gray-900">Aaron Lefkowitz</p>
-                    <p className="text-orange-600 font-bold">Founder, Nearby Traveler</p>
+                    <p className="text-blue-600 font-bold">Founder, Nearby Traveler</p>
                   </div>
                 </div>
               </div>
