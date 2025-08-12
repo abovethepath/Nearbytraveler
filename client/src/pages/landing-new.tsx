@@ -90,17 +90,22 @@ function LandingContent({ setLocation }: { setLocation: (path: string) => void }
         }}
       >
         <div className="flex items-center justify-between w-full max-w-7xl mx-auto">
-          <div className="text-white text-lg md:text-xl font-bold">NEARBY TRAVELER <span className="text-sm bg-white/20 px-2 py-1 rounded ml-2">BETA</span></div>
+          <div className="text-white text-lg md:text-xl font-bold" style={{ fontSize: 'clamp(18px, 5vw, 24px)' }}>
+            NEARBY TRAVELER 
+            <span className="text-sm bg-white/20 px-2 py-1 rounded ml-2" style={{ fontSize: 'clamp(14px, 3vw, 16px)' }}>BETA</span>
+          </div>
           <div className="flex space-x-2 md:space-x-4">
             <button 
               onClick={() => window.location.href = '/auth'} 
               className="bg-white text-red-600 hover:bg-white/90 px-3 py-1 md:px-4 md:py-2 rounded text-xs md:text-sm font-medium"
+              style={{ fontSize: 'clamp(14px, 3.5vw, 16px)', minHeight: '40px' }}
             >
               Sign In
             </button>
             <button 
               onClick={() => window.location.href = '/join'} 
               className="bg-orange-500 hover:bg-orange-600 text-black px-3 py-1 md:px-4 md:py-2 rounded text-xs md:text-sm font-medium"
+              style={{ fontSize: 'clamp(14px, 3.5vw, 16px)', minHeight: '40px' }}
             >
               Join
             </button>
@@ -144,28 +149,17 @@ function LandingContent({ setLocation }: { setLocation: (path: string) => void }
             <div className="relative py-8 md:py-10 lg:py-12">
               <div className="mx-auto max-w-5xl px-4 text-center">
                 
-                {/* EMERGENCY MOBILE TEXT TEST - HUGE SIZE */}
-                <div className="block md:hidden bg-yellow-400 text-black p-8 mb-8 rounded-lg">
-                  <h1 style={{ fontSize: '48px', fontWeight: 'bold', lineHeight: '1.2' }}>
-                    MOBILE TEST
-                  </h1>
-                  <p style={{ fontSize: '32px', fontWeight: 'normal', lineHeight: '1.4' }}>
-                    Can you read this text?
-                  </p>
-                  <button style={{ fontSize: '24px', padding: '16px 32px', backgroundColor: '#ff0000', color: 'white', border: 'none', borderRadius: '8px', marginTop: '16px' }}>
-                    CLICK TEST
-                  </button>
-                </div>
-                <h1 className="text-3xl md:text-5xl lg:text-6xl tracking-tight">
-                  <span className="block text-white font-black leading-tight">Skip the tourist traps.</span>
-                  <span className="block text-orange-400 font-black leading-tight">
+
+                <h1 className="text-3xl md:text-5xl lg:text-6xl tracking-tight" style={{ fontSize: 'clamp(24px, 8vw, 48px)' }}>
+                  <span className="block text-white font-black leading-tight" style={{ fontSize: 'inherit' }}>Skip the tourist traps.</span>
+                  <span className="block text-orange-400 font-black leading-tight" style={{ fontSize: 'inherit' }}>
                     Meet locals and other Nearby Travelers today.
                   </span>
                 </h1>
 
                 <div className="mt-6 p-4 md:p-6 bg-black/40 backdrop-blur-sm rounded-2xl border border-white/20">
-                  <p className="text-base md:text-lg text-white leading-relaxed">
-                    <span className="text-orange-300 font-bold">
+                  <p className="text-base md:text-lg text-white leading-relaxed" style={{ fontSize: 'clamp(16px, 4vw, 20px)', lineHeight: '1.6' }}>
+                    <span className="text-orange-300 font-bold" style={{ fontSize: 'inherit' }}>
                       "Over 15 years I hosted and toured 400+ travelers from 30+ countries as a local.
                     </span>
                     <span className="text-white">
