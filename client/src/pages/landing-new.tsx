@@ -120,11 +120,12 @@ export default function Landing() {
                       <Button
                         onClick={() => setLocation('/auth')}
                         size="lg"
-                        className="bg-orange-500 hover:bg-orange-600 text-white font-bold text-xl px-12 py-4 rounded-full shadow-2xl transform transition-all duration-200 hover:scale-105 hover:shadow-3xl border-4 border-white animate-pulse"
+                        className="bg-orange-500 hover:bg-orange-600 text-white font-bold text-xl px-12 py-4 rounded-full shadow-2xl transform transition-all duration-200 hover:scale-105 hover:shadow-3xl border-4 border-white"
                         style={{
                           fontSize: '1.5rem',
                           minHeight: '60px',
                           boxShadow: '0 10px 30px rgba(0,0,0,0.3), 0 0 0 4px rgba(255,255,255,0.8)',
+                          animation: 'gentle-pulse 4s ease-in-out infinite',
                         }}
                       >
 🚀 JOIN THE COMMUNITY 🚀

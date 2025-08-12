@@ -53,6 +53,18 @@ body {
   }
 }
 
+/* Gentler pulse animation for CTA buttons */
+@keyframes gentle-pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.02);
+  }
+}
+
 /* Mobile containers - proper mobile padding */
 @media (max-width: 767px) {
   .container, .max-w-7xl, .max-w-6xl, .max-w-5xl, .max-w-4xl {
