@@ -594,8 +594,8 @@ function Router() {
         return null;
       }
 
-      // Default: show new landing page for unknown routes
-      console.log('❌ Unknown route, showing new landing page:', location);
+      // Default: show new landing page for unknown routes (including root path '/')
+      console.log('🏠 Showing landing page for unauthenticated user:', location);
       return <LandingNew />;
     }
 

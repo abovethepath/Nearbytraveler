@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import Footer from "@/components/footer";
 import LandingNavbar from "@/components/landing-navbar";
 import MobileTopNav from "@/components/mobile-top-nav";
-import MobileBottomNav from "@/components/mobile-bottom-nav";
+
 import MobileDebug from "@/components/mobile-debug";
 import MobilePreview from "@/components/mobile-preview";
 import RealMobileTest from "@/components/real-mobile-test";
@@ -775,10 +775,7 @@ function LandingContent({ setLocation }: { setLocation: (path: string) => void }
         <Footer />
       </div>
       
-      {/* Mobile Bottom Navigation - Always visible on mobile */}
-      <div className="block md:hidden">
-        <MobileBottomNav />
-      </div>
+      {/* NO MOBILE BOTTOM NAVIGATION ON LANDING PAGE - Users aren't signed up yet */}
     </div>
   );
 }
