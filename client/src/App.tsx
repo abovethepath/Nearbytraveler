@@ -48,7 +48,7 @@ import SignupBusiness from "@/pages/signup-business";
 import SignupSteps from "@/pages/signup-steps";
 import UnifiedSignup from "@/pages/unified-signup";
 import BusinessRegistration from "@/pages/business-registration";
-import LandingNew from "@/pages/landing-new";
+import LandingAlt from "@/pages/landing-alt";
 import Photos from "@/pages/photos";
 import UploadPhotos from "@/pages/upload-photos";
 import AICompanion from "@/pages/ai-companion";
@@ -487,7 +487,7 @@ function Router() {
 
       // Show landing page for /landing route too
       if (location === '/landing') {
-        return <LandingNew />;
+        return <LandingAlt />;
       }
 
       // CRITICAL FIX: Allow profile routes even when user state is loading
@@ -504,7 +504,7 @@ function Router() {
           console.log('🏠 MOBILE FIX: User has auth data, showing Home page instead of landing');
           return <Home />;
         }
-        return <LandingNew />;
+        return <LandingAlt />;
       }
       // Allow access to signup pages without authentication
       // Three separate signup forms: Local, Traveling, Business
