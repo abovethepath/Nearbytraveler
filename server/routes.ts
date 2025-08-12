@@ -11461,7 +11461,7 @@ Ready to start making real connections wherever you are?
     }
   });
 
-  // Leave chatroom endpoint  
+  // Leave chatroom endpoint (DELETE method)
   app.delete('/api/simple-chatrooms/:id/join', async (req, res) => {
     try {
       const chatroomId = parseInt(req.params.id);
@@ -11478,6 +11478,39 @@ Ready to start making real connections wherever you are?
 
       console.log(`🔥 SIMPLE CHATROOM: User ${userId} left room ${chatroomId}, new count: ${count}`);
       res.json({ ok: true, memberCount: count });
+    } catch (e) {
+      console.error('leave error', e);
+      res.status(500).json({ error: 'Failed to leave' });
+    }
+  });
+
+  // Leave chatroom endpoint (POST method for frontend compatibility)
+  app.post('/api/simple-chatrooms/:id/leave', async (req, res) => {
+    try {
+      const chatroomId = parseInt(req.params.id);
+      const userId = parseInt(String(req.headers['x-user-id'] || 0));
+      if (!chatroomId || !userId) return res.status(400).json({ error: 'Missing chatroomId/userId' });
+
+      console.log(`🔥 SIMPLE CHATROOM: User ${userId} attempting to leave room ${chatroomId}`);
+
+      // Use UPDATE to set isActive = false instead of DELETE for consistency with main chatrooms
+      await db.update(chatroomMembers)
+        .set({ isActive: false })
+        .where(and(
+          eq(chatroomMembers.chatroomId, chatroomId), 
+          eq(chatroomMembers.userId, userId)
+        ));
+
+      const [{ count }] = await db
+        .select({ count: sql<number>`count(*)::int` })
+        .from(chatroomMembers)
+        .where(and(
+          eq(chatroomMembers.chatroomId, chatroomId),
+          eq(chatroomMembers.isActive, true)
+        ));
+
+      console.log(`🔥 SIMPLE CHATROOM: User ${userId} left room ${chatroomId}, new count: ${count}`);
+      res.json({ success: true, message: "Successfully left room", memberCount: count });
     } catch (e) {
       console.error('leave error', e);
       res.status(500).json({ error: 'Failed to leave' });

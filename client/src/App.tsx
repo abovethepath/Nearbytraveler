@@ -653,9 +653,8 @@ function Router() {
     }
 
     if (location.startsWith('/simple-chatroom/')) {
-      const chatroomId = location.split('/')[2];
-      console.log('🚀 ROUTING: Simple chatroom route matched, ID:', chatroomId);
-      return <SimpleChatroom id={chatroomId} />;
+      console.log('🚀 ROUTING: Simple chatroom route matched');
+      return <SimpleChatroom />;
     }
 
     if (location.startsWith('/city-chatrooms/')) {
