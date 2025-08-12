@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useLocation, Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import Footer from "@/components/footer";
@@ -5,6 +6,7 @@ import LandingNavbar from "@/components/landing-navbar";
 import MobileTopNav from "@/components/mobile-top-nav";
 import MobileBottomNav from "@/components/mobile-bottom-nav";
 import MobileDebug from "@/components/mobile-debug";
+import MobilePreview from "@/components/mobile-preview";
 
 
 
@@ -59,7 +61,21 @@ const CustomIcon = ({ iconName, className }: { iconName: string; className?: str
 
 export default function Landing() {
   const [, setLocation] = useLocation();
+  const [showPreview, setShowPreview] = useState(false);
 
+  // Show preview mode for development
+  if (showPreview || window.location.search.includes('preview=true')) {
+    return (
+      <MobilePreview>
+        <LandingContent setLocation={setLocation} />
+      </MobilePreview>
+    );
+  }
+
+  return <LandingContent setLocation={setLocation} />;
+}
+
+function LandingContent({ setLocation }: { setLocation: (path: string) => void }) {
   return (
     <div className="bg-gray-50 dark:bg-gray-900 font-sans min-h-screen" key="landing-v2-mobile-optimized">
       {/* Mobile Debug Info */}
