@@ -126,14 +126,9 @@ export default function Landing() {
                           <span className="text-orange-300 font-bold">"Over 15 years I hosted and toured 400+ travelers from 30+ countries as a local.</span>
                           <span className="text-white"> Now I built Nearby Traveler to do exactly that - meet real locals and real travelers while creating amazing new travel adventures."</span>
                         </p>
-                        <div className="flex items-center mt-4">
-                          <div className="w-12 h-12 bg-gradient-to-r from-orange-400 to-red-500 rounded-full flex items-center justify-center text-white font-bold mr-4">
-                            A
-                          </div>
-                          <div>
-                            <p className="text-white font-bold">Aaron - Founder</p>
-                            <p className="text-orange-200 text-sm">400+ travelers hosted • 30+ countries • 15 years</p>
-                          </div>
+                        <div className="mt-4 text-center">
+                          <p className="text-white font-bold text-lg">— Aaron, Founder</p>
+                          <p className="text-orange-200 text-sm">400+ travelers hosted • 30+ countries • 15 years</p>
                         </div>
                       </div>
                     </div>
