@@ -42,9 +42,8 @@ export default function SimpleChatroomPage() {
   const [location, navigate] = useLocation();
   
   // Extract chatroom ID from URL path: /simple-chatroom/198
-  const pathSegments = location.split('/');
-  const chatroomIdFromUrl = pathSegments[2];
-  const chatroomId = chatroomIdFromUrl ? parseInt(chatroomIdFromUrl) : 198;
+  // Wouter doesn't use :id patterns, it uses prefix matching
+  const chatroomId = Number(location.split('/')[2]);
   const { toast } = useToast();
   
   console.log('🚀 SIMPLE CHATROOM: Component loaded with chatroom ID:', chatroomId, 'from URL:', location, 'params:', params);
