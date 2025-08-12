@@ -11416,6 +11416,31 @@ Ready to start making real connections wherever you are?
       const userId = parseInt(String(req.headers['x-user-id'] || 0));
       if (!chatroomId || !userId) return res.status(400).json({ error: 'Missing chatroomId/userId' });
 
+      // Check if chatroom is private
+      const [chatroom] = await db.select().from(citychatrooms).where(eq(citychatrooms.id, chatroomId)).limit(1);
+      if (!chatroom) {
+        return res.status(404).json({ error: 'Chatroom not found' });
+      }
+
+      // If chatroom is private, check if user has approved access
+      if (!chatroom.isPublic) {
+        const [accessRequest] = await db.select()
+          .from(chatroomAccessRequests)
+          .where(and(
+            eq(chatroomAccessRequests.chatroomId, chatroomId),
+            eq(chatroomAccessRequests.userId, userId),
+            eq(chatroomAccessRequests.status, 'approved')
+          ))
+          .limit(1);
+
+        if (!accessRequest) {
+          return res.status(403).json({ 
+            error: 'Access denied. You need approval to join this private chatroom.',
+            requiresApproval: true 
+          });
+        }
+      }
+
       // upsert membership - insert if not exists, do nothing if exists
       await db
         .insert(chatroomMembers)

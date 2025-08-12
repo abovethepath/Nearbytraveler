@@ -4,8 +4,13 @@ import { apiRequest } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { MessageCircle, Users, MapPin, UserPlus, Loader2, Lock } from "lucide-react";
+import { MessageCircle, Users, MapPin, UserPlus, Loader2, Lock, Plus } from "lucide-react";
 
 interface CityChatroom {
   id: number;
@@ -23,6 +28,12 @@ interface CityChatroom {
 export default function CityChatroomsPage() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [newChatroom, setNewChatroom] = useState({
+    name: '',
+    description: '',
+    isPublic: true
+  });
   
   // Get current user
   const getCurrentUser = () => {
@@ -148,6 +159,45 @@ export default function CityChatroomsPage() {
     }
   });
 
+  // Create chatroom mutation
+  const createChatroomMutation = useMutation({
+    mutationFn: async (chatroomData: { name: string; description: string; isPublic: boolean }) => {
+      if (!currentUser) throw new Error("User not found");
+      
+      const response = await apiRequest('POST', '/api/chatrooms', {
+        ...chatroomData,
+        createdById: currentUser.id,
+        city: currentUser.hometownCity || currentUser.location?.split(',')[0] || 'Unknown',
+        state: currentUser.hometownState || currentUser.location?.split(',')[1]?.trim() || 'Unknown',
+        country: currentUser.hometownCountry || 'United States'
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to create chatroom');
+      }
+      
+      return response.json();
+    },
+    onSuccess: (data) => {
+      toast({
+        title: "Chatroom Created!",
+        description: `Successfully created "${data.name}". You are now the organizer.`,
+      });
+      setIsCreateDialogOpen(false);
+      setNewChatroom({ name: '', description: '', isPublic: true });
+      queryClient.invalidateQueries({ queryKey: ['/api/chatrooms/my-locations'] });
+    },
+    onError: (error: any) => {
+      console.error('Create chatroom error:', error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to create chatroom. Please try again.",
+        variant: "destructive",
+      });
+    }
+  });
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-orange-50 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
@@ -172,9 +222,75 @@ export default function CityChatroomsPage() {
           <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
             💬 City Chatrooms
           </h1>
-          <p className="text-lg text-gray-700 dark:text-gray-300 max-w-2xl mx-auto">
+          <p className="text-lg text-gray-700 dark:text-gray-300 max-w-2xl mx-auto mb-6">
             Connect with locals and travelers in your city
           </p>
+          
+          {/* Create Chatroom Button */}
+          <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+                <Plus className="w-4 h-4 mr-2" />
+                Create New Chatroom
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle>Create New Chatroom</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4 pt-4">
+                <div>
+                  <Label htmlFor="chatroom-name">Chatroom Name</Label>
+                  <Input
+                    id="chatroom-name"
+                    placeholder="e.g., Coffee Lovers Meetup"
+                    value={newChatroom.name}
+                    onChange={(e) => setNewChatroom(prev => ({ ...prev, name: e.target.value }))}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="chatroom-description">Description</Label>
+                  <Textarea
+                    id="chatroom-description"
+                    placeholder="Describe what this chatroom is about..."
+                    value={newChatroom.description}
+                    onChange={(e) => setNewChatroom(prev => ({ ...prev, description: e.target.value }))}
+                  />
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="chatroom-public"
+                    checked={newChatroom.isPublic}
+                    onCheckedChange={(checked) => setNewChatroom(prev => ({ ...prev, isPublic: checked }))}
+                  />
+                  <Label htmlFor="chatroom-public">
+                    {newChatroom.isPublic ? 'Public (Anyone can join)' : 'Private (Requires approval)'}
+                  </Label>
+                </div>
+                <div className="flex gap-2 pt-4">
+                  <Button
+                    onClick={() => setIsCreateDialogOpen(false)}
+                    variant="outline"
+                    className="flex-1"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={() => createChatroomMutation.mutate(newChatroom)}
+                    disabled={!newChatroom.name.trim() || createChatroomMutation.isPending}
+                    className="flex-1 bg-blue-600 hover:bg-blue-700"
+                  >
+                    {createChatroomMutation.isPending ? (
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    ) : (
+                      <Plus className="w-4 h-4 mr-2" />
+                    )}
+                    Create
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
 
         {/* Chatrooms Grid - Mobile Responsive */}
