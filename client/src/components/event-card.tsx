@@ -148,7 +148,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
               Featured
             </Badge>
           )}
-          <Badge className="absolute top-3 right-3 bg-white text-gray-900">
+          <Badge className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm text-gray-900 font-medium">
             {event.category}
           </Badge>
         </div>
@@ -171,6 +171,49 @@ export default function EventCard({ event, compact = false, featured = false }: 
             <MapPin className="w-4 h-4 mr-2 text-travel-blue" />
             {event.location}
           </div>
+        </div>
+
+        {/* Event detail tags - different from main category badge */}
+        <div className="flex flex-wrap gap-2 mb-4">
+          {event.costEstimate && (
+            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+              💰 {event.costEstimate}
+            </span>
+          )}
+          
+          {event.isSpontaneous && (
+            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">
+              ⚡ Last Minute
+            </span>
+          )}
+          
+          {event.isRecurring && (
+            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
+              🔄 Recurring
+            </span>
+          )}
+          
+          {event.urgency === 'urgent' && (
+            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
+              🚨 Urgent
+            </span>
+          )}
+          
+          {event.maxParticipants && (
+            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+              👥 Max {event.maxParticipants}
+            </span>
+          )}
+          
+          {/* Show specific event tags (not category) */}
+          {event.tags && event.tags.length > 0 && event.tags.slice(0, 3).map((tag: string, index: number) => (
+            <span 
+              key={index}
+              className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200"
+            >
+              {tag}
+            </span>
+          ))}
         </div>
 
         <div className="flex items-center justify-between">

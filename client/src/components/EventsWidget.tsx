@@ -223,9 +223,42 @@ function EventsWidget({ userId }: EventsWidgetProps) {
                       {event.location}
                     </span>
                   </div>
-                  <div className="flex items-center gap-1 text-sm text-blue-600 dark:text-blue-400 mt-2">
-                    <Users className="w-4 h-4" />
-                    <span>{Math.max(1, event.participantCount || 1)} attending</span>
+                  {/* Widget-specific detail tags - different from main category */}
+                  <div className="flex flex-wrap items-center gap-2 mt-2">
+                    <div className="flex items-center gap-1 text-sm text-blue-600 dark:text-blue-400">
+                      <Users className="w-4 h-4" />
+                      <span>{Math.max(1, event.participantCount || 1)} attending</span>
+                    </div>
+                    
+                    {/* Cost indicator tag */}
+                    {event.costEstimate && (
+                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                        {event.costEstimate}
+                      </span>
+                    )}
+                    
+                    {/* Event type tags */}
+                    {event.isSpontaneous && (
+                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">
+                        ⚡ Last Minute
+                      </span>
+                    )}
+                    
+                    {event.isRecurring && (
+                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
+                        🔄 Recurring
+                      </span>
+                    )}
+                    
+                    {/* Show specific event tags (not category) */}
+                    {event.tags && event.tags.length > 0 && event.tags.slice(0, 2).map((tag: string, index: number) => (
+                      <span 
+                        key={index}
+                        className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+                      >
+                        {tag}
+                      </span>
+                    ))}
                   </div>
                 </div>
                 </div>
