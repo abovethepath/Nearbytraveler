@@ -4294,20 +4294,30 @@ Ready to start making real connections wherever you are?
       
       if (process.env.NODE_ENV === 'development') console.log(`🎪 PROFILE EVENTS: Getting all events for user ${userId}`);
 
-      // Get all user event interests with event details (LEFT JOIN to include orphaned interests)
+      // Get all events that the user is attending (from event_participants table)
       const userEvents = await db.execute(sql`
         SELECT 
-          uei.id,
-          uei.user_id as userId,
-          uei.event_id as eventId,
-          COALESCE(e.title, 'Event No Longer Available') as title,
-          uei.city_name as city
-        FROM user_event_interests uei
-        LEFT JOIN events e ON uei.event_id = e.id
-        WHERE uei.user_id = ${userId} 
-        AND uei.is_active = true
-        AND e.id IS NOT NULL
-        ORDER BY uei.created_at DESC
+          e.id,
+          e.title,
+          e.description,
+          e.location,
+          e.date,
+          e.end_date,
+          e.image_url,
+          e.cost_estimate,
+          e.is_spontaneous,
+          e.is_recurring,
+          e.organizer_id,
+          e.category,
+          e.tags,
+          e.is_ai_generated,
+          ep.user_id as userId,
+          ep.event_id as eventId
+        FROM events e 
+        JOIN event_participants ep ON e.id = ep.event_id
+        WHERE ep.user_id = ${userId}
+        AND e.date >= CURRENT_DATE
+        ORDER BY e.date ASC
       `);
 
       if (process.env.NODE_ENV === 'development') console.log(`🎪 PROFILE EVENTS: Found ${userEvents.rows.length} events for user ${userId}`);

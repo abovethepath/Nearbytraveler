@@ -75,7 +75,7 @@ function EventsWidget({ userId }: EventsWidgetProps) {
 
   // Fetch events that the user is attending
   const { data: userEvents = [], isLoading: userEventsLoading } = useQuery({
-    queryKey: [`/api/users/${userId}/events`],
+    queryKey: [`/api/users/${userId}/all-events`],
     enabled: !!userId,
   });
 
