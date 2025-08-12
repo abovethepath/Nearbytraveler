@@ -545,7 +545,7 @@ function Router() {
 
       // Enhanced routing for potentially authenticated users accessing main routes
       // Check for common app routes that authenticated users might be trying to access
-      const commonAppRoutes = ['/discover', '/match-in-city', '/quick-meetups', '/messages', '/profile', '/cities', '/plan-trip', '/home', '/events', '/deals'];
+      const commonAppRoutes = ['/discover', '/match-in-city', '/quick-meetups', '/messages', '/profile', '/cities', '/plan-trip', '/home', '/events', '/deals', '/simple-chatroom', '/city-chatrooms', '/chatroom'];
       const isCommonAppRoute = commonAppRoutes.some(route => location.startsWith(route));
 
       if (isCommonAppRoute && (localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || localStorage.getItem('auth_token'))) {
@@ -564,14 +564,16 @@ function Router() {
       }
 
       // FINAL CHECK: Before showing landing, double-check if user is actually authenticated
-      if (localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || localStorage.getItem('auth_token')) {
+      // Skip home redirect for chatroom routes to prevent white screen flash
+      if (!location.includes('chatroom') && (localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || localStorage.getItem('auth_token'))) {
         console.log('🔄 FINAL AUTH CHECK: User has auth data, redirecting to home instead of landing');
         window.location.href = '/home';
         return null;
       }
 
       // MOBILE FIX: If user has authentication data, show home page instead of landing
-      if (localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || localStorage.getItem('auth_token')) {
+      // Skip home redirect for chatroom routes to prevent white screen flash
+      if (!location.includes('chatroom') && (localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || localStorage.getItem('auth_token'))) {
         console.log('🔄 MOBILE FIX: User has auth data, redirecting to home instead of showing unknown route message');
         window.location.href = '/home';
         return null;
