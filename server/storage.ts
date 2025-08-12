@@ -3357,15 +3357,7 @@ export class DatabaseStorage implements IStorage {
         isActive: true
       });
 
-      // If chatroom is public, automatically add nearbytraveler as admin (user ID 1)
-      if (data.isPublic && data.createdById !== 1) {
-        await db.insert(chatroomMembers).values({
-          chatroomId: chatroom.id,
-          userId: 1, // nearbytraveler user ID
-          role: 'admin',
-          isActive: true
-        });
-      }
+      // Note: Removed automatic addition of user ID 1 as admin since that user no longer exists
 
       // Award 2 aura for creating chatroom
       await this.awardAura(data.createdById, 2, 'creating chatroom');
