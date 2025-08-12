@@ -172,7 +172,7 @@ export default function Landing() {
               Join Our Premium Los Angeles Launch
             </h3>
             <p className="text-lg text-white text-center leading-relaxed mb-4">
-              <span className="font-semibold">You're invited to be among the first</span> to experience our curated community of travelers and locals. While our global network spans 15+ cities, we're launching with an exclusive focus on Los Angeles premium events and experiences.
+              <span className="font-semibold">You're invited to be among the first</span> to experience our curated community of travelers and locals. While our network is global, we're launching with an exclusive focus on Los Angeles premium events and experiences.
             </p>
             <p className="text-base text-orange-100 text-center">
               Early members get lifetime premium features and priority access to new cities as we expand worldwide.
