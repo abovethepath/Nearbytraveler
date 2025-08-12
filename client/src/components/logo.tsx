@@ -13,7 +13,7 @@ export default function Logo({ className, variant = "default" }: LogoProps) {
       case "landing":
         return "h-12 w-auto"; // Fixed size for landing
       case "navbar":
-        return "h-10 w-auto"; // Fixed size for navbar - appropriate for mobile header
+        return "h-32 w-auto"; // Fixed size for navbar - 30% bigger than before
       case "black-navbar":
         return "h-32 w-auto"; // Fixed size for black navbar - 30% bigger than before
       case "footer":

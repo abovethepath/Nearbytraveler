@@ -362,10 +362,10 @@ export default function SignupSteps() {
           <div className="flex items-center justify-center mb-1">
             <Logo variant="landing" />
           </div>
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white text-center mb-2">
+          <h1 className="text-3xl font-extrabold text-white text-center mb-2">
             Where Local Experiences Meet Worldwide Connections
           </h1>
-          <p className="text-base sm:text-lg text-teal-100 text-center">
+          <p className="text-teal-100 text-center">
             Create your profile in {totalSteps} simple steps
           </p>
           <div className="mt-4">
@@ -381,14 +381,14 @@ export default function SignupSteps() {
       <div className="max-w-4xl mx-auto px-4 py-8">
         <Card className="shadow-lg border-teal-200">
           <CardHeader>
-            <CardTitle className="text-xl sm:text-2xl lg:text-3xl text-center text-teal-700">
+            <CardTitle className="text-2xl text-center text-teal-700">
               {currentStep === 1 && "Sign Up"}
               {currentStep === 2 && "Personal Details"}
               {currentStep === 3 && "Location Information"}
               {currentStep === 4 && "Your Preferences"}
               {currentStep === 5 && "Final Details"}
             </CardTitle>
-            <CardDescription className="text-base sm:text-lg text-center">
+            <CardDescription className="text-center">
               {currentStep === 1 && "Choose your account type and create your login credentials"}
               {currentStep === 2 && "Tell us a bit about yourself"}
               {currentStep === 3 && "Where are you from and where are you now?"}
@@ -397,7 +397,7 @@ export default function SignupSteps() {
             </CardDescription>
           </CardHeader>
 
-          <CardContent className="space-y-4 sm:space-y-6">
+          <CardContent className="space-y-6">
             {/* Step 1: Account Information */}
             {currentStep === 1 && (
               <>
@@ -418,64 +418,59 @@ export default function SignupSteps() {
                       <Icon className={`w-8 h-8 mx-auto mb-2 ${
                         formData.userType === type ? 'text-teal-600' : 'text-gray-400'
                       }`} />
-                      <h3 className="text-base sm:text-lg font-semibold text-center">{title}</h3>
-                      <p className="text-sm sm:text-base text-gray-600 text-center">{desc}</p>
+                      <h3 className="font-semibold text-center">{title}</h3>
+                      <p className="text-sm text-gray-600 text-center">{desc}</p>
                     </div>
                   ))}
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="name" className="text-base sm:text-lg font-medium">Full Name *</Label>
+                    <Label htmlFor="name">Full Name *</Label>
                     <Input
                       id="name"
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       placeholder="Enter your full name"
-                      className="h-12 sm:h-14 text-base sm:text-lg"
                     />
                   </div>
                   <div>
-                    <Label htmlFor="username" className="text-base sm:text-lg font-medium">Username *</Label>
+                    <Label htmlFor="username">Username *</Label>
                     <Input
                       id="username"
                       value={formData.username}
                       onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                       placeholder="Choose a username"
-                      className="h-12 sm:h-14 text-base sm:text-lg"
                     />
                   </div>
                   <div>
-                    <Label htmlFor="email" className="text-base sm:text-lg font-medium">Email *</Label>
+                    <Label htmlFor="email">Email *</Label>
                     <Input
                       id="email"
                       type="email"
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                       placeholder="Enter your email"
-                      className="h-12 sm:h-14 text-base sm:text-lg"
                     />
                   </div>
                   <div>
-                    <Label htmlFor="password" className="text-base sm:text-lg font-medium">Password *</Label>
+                    <Label htmlFor="password">Password *</Label>
                     <Input
                       id="password"
                       type="password"
                       value={formData.password}
                       onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                       placeholder="Create a password (min 8 characters)"
-                      className="h-12 sm:h-14 text-base sm:text-lg"
                     />
                   </div>
                   <div className="md:col-span-2">
-                    <Label htmlFor="confirmPassword" className="text-base sm:text-lg font-medium">Confirm Password *</Label>
+                    <Label htmlFor="confirmPassword">Confirm Password *</Label>
                     <Input
                       id="confirmPassword"
                       type="password"
                       value={formData.confirmPassword}
                       onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                       placeholder="Confirm your password"
-                      className="h-12 sm:h-14 text-base sm:text-lg"
                     />
                   </div>
                 </div>
@@ -485,9 +480,9 @@ export default function SignupSteps() {
             {/* Step 2: Personal Details */}
             {currentStep === 2 && (
               <>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="dateOfBirth" className="text-base sm:text-lg font-medium">Date of Birth * (Can Be Hidden Later)</Label>
+                    <Label htmlFor="dateOfBirth">Date of Birth * (Can Be Hidden Later)</Label>
                     <Input
                       id="dateOfBirth"
                       type="date"
@@ -507,13 +502,13 @@ export default function SignupSteps() {
                       min="1925-01-01"
                       max={new Date().toISOString().split('T')[0]}
                       placeholder="YYYY-MM-DD"
-                      className="h-12 sm:h-14 text-base sm:text-lg [&::-webkit-calendar-picker-indicator]:dark:invert"
+                      className="[&::-webkit-calendar-picker-indicator]:dark:invert"
                     />
                   </div>
                   <div>
-                    <Label htmlFor="gender" className="text-base sm:text-lg font-medium">Gender *</Label>
+                    <Label htmlFor="gender">Gender *</Label>
                     <Select value={formData.gender} onValueChange={(value) => setFormData({ ...formData, gender: value })}>
-                      <SelectTrigger className="h-12 sm:h-14 text-base sm:text-lg">
+                      <SelectTrigger>
                         <SelectValue placeholder="Select gender" />
                       </SelectTrigger>
                       <SelectContent>
@@ -529,13 +524,13 @@ export default function SignupSteps() {
                   </div>
                 </div>
                 <div>
-                  <Label htmlFor="bio" className="text-base sm:text-lg font-medium">Bio *</Label>
+                  <Label htmlFor="bio">Bio *</Label>
                   <textarea
                     id="bio"
                     value={formData.bio}
                     onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
                     placeholder="Tell us about yourself..."
-                    className="w-full p-3 sm:p-4 text-base sm:text-lg border border-gray-300 rounded-md min-h-[100px] sm:min-h-[120px]"
+                    className="w-full p-3 border border-gray-300 rounded-md min-h-[100px]"
                   />
                 </div>
               </>
@@ -545,7 +540,7 @@ export default function SignupSteps() {
             {currentStep === 3 && (
               <>
                 <div>
-                  <h3 className="text-xl sm:text-2xl font-medium mb-4 text-teal-700">Hometown Information</h3>
+                  <h3 className="text-lg font-medium mb-4 text-teal-700">Hometown Information</h3>
                   <SmartLocationInput
                     city={formData.hometownCity}
                     state={formData.hometownState}
@@ -571,7 +566,7 @@ export default function SignupSteps() {
                 {formData.userType === 'current_traveler' && (
                   <>
                     <div>
-                      <h3 className="text-xl sm:text-2xl font-medium mb-4 text-teal-700">Current Travel Destination</h3>
+                      <h3 className="text-lg font-medium mb-4 text-teal-700">Current Travel Destination</h3>
                       <SmartLocationInput
                         city={formData.currentCity}
                         state={formData.currentState}
@@ -595,10 +590,10 @@ export default function SignupSteps() {
                     </div>
 
                     <div>
-                      <h3 className="text-xl sm:text-2xl font-medium mb-4 text-teal-700">Travel Dates</h3>
+                      <h3 className="text-lg font-medium mb-4 text-teal-700">Travel Dates</h3>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                          <Label htmlFor="travelStartDate" className="text-base sm:text-lg font-medium">Travel Start Date *</Label>
+                          <Label htmlFor="travelStartDate">Travel Start Date *</Label>
                           <Input
                             id="travelStartDate"
                             type="date"
@@ -607,12 +602,12 @@ export default function SignupSteps() {
                             required
                             min="1925-01-01"
                             max="9999-12-31"
-                            className="h-12 sm:h-14 text-base sm:text-lg calendar-white-icon"
+                            className="calendar-white-icon"
                           />
-                          <p className="text-sm sm:text-base text-gray-500 mt-1">Start date can be tomorrow or in the past</p>
+                          <p className="text-xs text-gray-500 mt-1">Start date can be tomorrow or in the past</p>
                         </div>
                         <div>
-                          <Label htmlFor="travelEndDate" className="text-base sm:text-lg font-medium">Travel End Date *</Label>
+                          <Label htmlFor="travelEndDate">Travel End Date *</Label>
                           <Input
                             id="travelEndDate"
                             type="date"
@@ -621,9 +616,9 @@ export default function SignupSteps() {
                             required
                             min="1925-01-01"
                             max="9999-12-31"
-                            className="h-12 sm:h-14 text-base sm:text-lg calendar-white-icon"
+                            className="calendar-white-icon"
                           />
-                          <p className="text-sm sm:text-base text-gray-500 mt-1">End date can be anytime in the future</p>
+                          <p className="text-xs text-gray-500 mt-1">End date can be anytime in the future</p>
                         </div>
                       </div>
                       {formData.travelStartDate && formData.travelEndDate && (
@@ -641,11 +636,11 @@ export default function SignupSteps() {
             {currentStep === 4 && (
               <>
                 <div className="text-center mb-6">
-                  <h3 className="text-xl sm:text-2xl lg:text-3xl font-semibold text-gray-900">Your Travel Preferences</h3>
-                  <div className="text-base sm:text-lg font-medium text-gray-700 mt-2">
+                  <h3 className="text-xl font-semibold text-gray-900">Your Travel Preferences</h3>
+                  <div className="text-lg font-medium text-gray-700 mt-2">
                     Minimum: To better match others on this site, choose at least 10 from the following next 4 lists (top choices, interests, activities, events)
                   </div>
-                  <div className="text-sm sm:text-base text-gray-600 mt-1">
+                  <div className="text-sm text-gray-600 mt-1">
                     Current selections: {formData.interests.length + formData.activities.length + formData.events.length}/10
                   </div>
                 </div>
@@ -655,7 +650,7 @@ export default function SignupSteps() {
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center">
                       <span className="text-xl mr-2">⭐</span>
-                      <h4 className="text-base sm:text-lg font-semibold text-gray-900">Top Choices for Most Locals and Travelers</h4>
+                      <h4 className="text-lg font-semibold text-gray-900">Top Choices for Most Locals and Travelers</h4>
                     </div>
                     <div className="flex gap-2">
                       <Button
@@ -864,19 +859,19 @@ export default function SignupSteps() {
                     value={formData.secretActivities}
                     onChange={(e) => setFormData({ ...formData, secretActivities: e.target.value })}
                     placeholder="Share a secret local experience, hidden spot, or insider tip..."
-                    className="w-full p-3 sm:p-4 text-base sm:text-lg border-2 border-orange-300 focus:border-orange-500 focus:ring-orange-500 rounded-md min-h-[80px] sm:min-h-[100px]"
+                    className="w-full p-3 border-2 border-orange-300 focus:border-orange-500 focus:ring-orange-500 rounded-md min-h-[80px]"
                   />
                 </div>
               </>
             )}
 
             {/* Navigation Buttons */}
-            <div className="flex flex-col sm:flex-row justify-between gap-3 sm:gap-0 pt-6">
+            <div className="flex justify-between pt-6">
               <Button
                 onClick={handleBack}
                 variant="outline"
                 disabled={currentStep === 1}
-                className="h-12 sm:h-14 text-base sm:text-lg flex items-center space-x-2 order-2 sm:order-1"
+                className="flex items-center space-x-2"
               >
                 <ArrowLeft className="w-4 h-4" />
                 <span>Back</span>
@@ -885,7 +880,7 @@ export default function SignupSteps() {
               {currentStep < totalSteps ? (
                 <Button
                   onClick={handleNext}
-                  className="h-12 sm:h-14 text-base sm:text-lg bg-teal-600 hover:bg-teal-700 flex items-center space-x-2 order-1 sm:order-2"
+                  className="bg-teal-600 hover:bg-teal-700 flex items-center space-x-2"
                 >
                   <span>Continue</span>
                   <ArrowRight className="w-4 h-4" />
@@ -894,7 +889,7 @@ export default function SignupSteps() {
                 <Button
                   onClick={handleSubmit}
                   disabled={registerMutation.isPending}
-                  className="h-12 sm:h-14 text-base sm:text-lg bg-gradient-to-r from-teal-600 to-blue-600 hover:from-teal-700 hover:to-blue-700 flex items-center space-x-2 order-1 sm:order-2"
+                  className="bg-gradient-to-r from-teal-600 to-blue-600 hover:from-teal-700 hover:to-blue-700 flex items-center space-x-2"
                 >
                   {registerMutation.isPending ? (
                     <>

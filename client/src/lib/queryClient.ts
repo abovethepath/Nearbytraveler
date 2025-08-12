@@ -26,7 +26,6 @@ export async function apiRequest(
   method: string,
   url: string,
   data?: unknown | undefined,
-  extraHeaders: Record<string, string> = {}
 ): Promise<Response> {
   // Only log in development
   if (import.meta.env.DEV) {
@@ -36,7 +35,7 @@ export async function apiRequest(
   // Use cached user data for better performance
   const user = getCachedUser();
   
-  const headers: Record<string, string> = { ...extraHeaders };
+  const headers: Record<string, string> = {};
   if (data) {
     headers["Content-Type"] = "application/json";
   }

@@ -120,20 +120,18 @@ export default function Auth() {
           }
         `}
       </style>
-      <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gray-50 dark:bg-gray-900">
-      <div className="w-full max-w-md">
-        <Card className="shadow-lg border bg-white dark:bg-gray-900">
+      <div className={`${!isLogin ? 'join-page-background' : 'login-page-background'} min-h-screen flex flex-col items-center justify-center p-4 relative`}>
+      {/* Overlay to maintain readability */}
+      <div className="absolute inset-0 bg-white/10 dark:bg-gray-900/20"></div>
+      <div className="w-full max-w-md relative z-10">
+        <Card className="auth-page-card shadow-2xl border-4 border-blue-500/50 bg-white/80 dark:bg-gray-900/95 backdrop-blur-md">
           <CardHeader className="text-center">
             <div className="flex justify-start mb-4">
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => {
-                  console.log('Auth back button clicked - navigating to /');
-                  setLocation('/');
-                }}
-                className="text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 touch-manipulation"
-                data-testid="button-back-auth"
+                onClick={() => window.history.back()}
+                className="text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
               >
                 ← Back
               </Button>
@@ -147,7 +145,7 @@ export default function Auth() {
               {isLogin ? "Welcome Back" : "Join Nearby Traveler"}
             </CardTitle>
             {!isLogin && (
-              <p className="text-base text-gray-600 dark:text-gray-300 mt-2 leading-relaxed">
+              <p className="text-sm text-gray-600 dark:text-gray-300 mt-2 leading-relaxed">
                 Start Connecting with Nearby Locals and Nearby Travelers Today Based on Common Interests and Demographics
               </p>
             )}
@@ -160,25 +158,23 @@ export default function Auth() {
                 {/* Login Form */}
                 <div className="space-y-4">
                   <div>
-                    <Label htmlFor="loginEmail" className="text-lg md:text-base text-gray-900 dark:text-white font-medium" style={{}}>Email</Label>
+                    <Label htmlFor="loginEmail" className="text-gray-900 dark:text-white">Email</Label>
                     <Input
                       id="loginEmail"
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="Enter your email"
-                      className="mt-2"
                     />
                   </div>
                   <div>
-                    <Label htmlFor="loginPassword" className="text-lg md:text-base text-gray-900 dark:text-white font-medium" style={{}}>Password</Label>
+                    <Label htmlFor="loginPassword" className="text-gray-900 dark:text-white">Password</Label>
                     <Input
                       id="loginPassword"
                       type="password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="Enter your password"
-                      className="mt-2"
                     />
                   </div>
                 </div>
@@ -186,7 +182,7 @@ export default function Auth() {
                 <div className="mt-8 pt-4 space-y-3">
                   <div
                     onClick={(!isLoading && email && password) ? handleLogin : undefined}
-                    className={`login-page-gradient-button w-full py-4 md:py-3 px-6 md:px-4 rounded-md font-bold text-lg md:text-base text-center select-none ${
+                    className={`login-page-gradient-button w-full py-3 px-4 rounded-md font-bold text-center select-none ${
                       (!isLoading && email && password) ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'
                     }`}
                     style={{
@@ -202,8 +198,7 @@ export default function Auth() {
                 <div className="text-center space-y-2">
                   <button
                     onClick={() => setLocation('/forgot-password')}
-                    className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-lg md:text-sm font-medium py-2"
-                    style={{}}
+                    className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm"
                   >
                     Forgot Password?
                   </button>
@@ -214,8 +209,7 @@ export default function Auth() {
             <div className="text-center mt-6">
               <button
                 onClick={() => setIsLogin(!isLogin)}
-                className="text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:text-gray-100 text-lg md:text-sm font-medium py-2"
-                style={{}}
+                className="text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:text-gray-100 text-sm font-medium"
               >
                 {isLogin ? "Don't have an account? Create Account" : "Already have an account? Sign In"}
               </button>
@@ -223,7 +217,7 @@ export default function Auth() {
           </CardContent>
         </Card>
       </div>
-    </div>
+      </div>
     </>
   );
 }

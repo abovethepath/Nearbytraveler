@@ -42,8 +42,8 @@ export default function SimpleChatroomPage() {
   const [location, navigate] = useLocation();
   
   // Extract chatroom ID from URL path: /simple-chatroom/198
-  // Wouter doesn't use :id patterns, it uses prefix matching
-  const chatroomId = Number(location.split('/')[2]);
+  const pathSegments = location.split('/');
+  const chatroomId = parseInt(pathSegments[2] || '198');
   const { toast } = useToast();
   
   console.log('🚀 SIMPLE CHATROOM: Component loaded with chatroom ID:', chatroomId, 'from URL:', location, 'params:', params);
@@ -67,14 +67,12 @@ export default function SimpleChatroomPage() {
   // Join room function
   async function joinRoom() {
     if (!currentUser?.id) return;
-    await apiRequest(
-      "POST",
-      `/api/simple-chatrooms/${chatroomId}/join`,
-      undefined,
-      { "x-user-id": String(currentUser.id) }
-    );
+    await fetch(`/api/simple-chatrooms/${chatroomId}/join`, {
+      method: "POST",
+      headers: { "x-user-id": String(currentUser.id) },
+      credentials: "include",
+    });
     queryClient.invalidateQueries({ queryKey: [`/api/simple-chatrooms/${chatroomId}/members/count`] });
-    queryClient.invalidateQueries({ queryKey: [`/api/simple-chatrooms/${chatroomId}/members`] });
   }
 
   // Leave room function
@@ -82,12 +80,14 @@ export default function SimpleChatroomPage() {
     if (!currentUser?.id) return;
     
     try {
-      const response = await apiRequest(
-        "POST",
-        `/api/simple-chatrooms/${chatroomId}/leave`,
-        undefined,
-        { "x-user-id": String(currentUser.id) }
-      );
+      const response = await fetch(`/api/simple-chatrooms/${chatroomId}/leave`, {
+        method: "POST",
+        headers: { 
+          "x-user-id": String(currentUser.id),
+          "Content-Type": "application/json"
+        },
+        credentials: "include",
+      });
       
       if (response.ok) {
         toast({
@@ -132,7 +132,7 @@ export default function SimpleChatroomPage() {
     },
     enabled: !!chatroomId && !!currentUserId,
     staleTime: 0,
-    gcTime: 0,
+    cacheTime: 0,
     retry: false
   });
 
@@ -141,7 +141,7 @@ export default function SimpleChatroomPage() {
     queryKey: [`/api/simple-chatrooms/${chatroomId}`],
     enabled: !!chatroomId && accessCheck?.hasAccess,
     staleTime: 0, // No caching
-    gcTime: 0  // Clear cache immediately
+    cacheTime: 0  // Clear cache immediately
   });
 
   // Fetch messages only if access is granted  
@@ -151,7 +151,7 @@ export default function SimpleChatroomPage() {
     refetchOnWindowFocus: false,
     enabled: !!chatroomId && accessCheck?.hasAccess,
     staleTime: 0, // No caching
-    gcTime: 0  // Clear cache immediately
+    cacheTime: 0  // Clear cache immediately
   });
 
   // Fetch member count only if access is granted
@@ -160,7 +160,7 @@ export default function SimpleChatroomPage() {
     refetchInterval: accessCheck?.hasAccess ? 5000 : false,
     enabled: !!chatroomId && accessCheck?.hasAccess,
     staleTime: 0, // No caching
-    gcTime: 0  // Clear cache immediately
+    cacheTime: 0  // Clear cache immediately
   });
   const memberCount = memberCountResp?.memberCount ?? 0;
 
@@ -170,7 +170,7 @@ export default function SimpleChatroomPage() {
     refetchInterval: accessCheck?.hasAccess ? 10000 : false,
     enabled: !!chatroomId && accessCheck?.hasAccess,
     staleTime: 0,
-    gcTime: 0
+    cacheTime: 0
   });
 
   // Send message mutation
@@ -178,12 +178,15 @@ export default function SimpleChatroomPage() {
     mutationFn: async (content: string) => {
       if (!currentUser?.id) throw new Error("User not found");
 
-      const res = await apiRequest(
-        "POST", 
-        `/api/simple-chatrooms/${chatroomId}/messages`,
-        { content: content.trim() },
-        { "x-user-id": String(currentUser.id) }
-      );
+      const res = await fetch(`/api/simple-chatrooms/${chatroomId}/messages`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-user-id": String(currentUser.id), // CRITICAL: Send user ID in header
+        },
+        credentials: "include",
+        body: JSON.stringify({ content: content.trim() }),
+      });
 
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
@@ -351,24 +354,21 @@ export default function SimpleChatroomPage() {
         {/* Header */}
         <Card className="mb-6">
           <CardHeader>
-            <div className="flex items-center gap-3 sm:gap-4">
+            <div className="flex items-center gap-4">
               <Button 
                 variant="ghost" 
-                size="icon" 
-                className="h-9 w-9 sm:h-8 sm:w-8" 
-                onClick={() => window.history.back()}
+                size="sm"
+                onClick={() => navigate('/city-chatrooms')}
               >
-                <ArrowLeft className="h-5 w-5" />
+                <ArrowLeft className="w-4 h-4" />
               </Button>
-              <div className="min-w-0">
-                <CardTitle className="text-lg sm:text-xl truncate">
+              <div>
+                <CardTitle className="text-xl">
                   {chatroom?.name || `Chatroom ${chatroomId}`}
                 </CardTitle>
-                {chatroom && (
-                  <p className="text-xs sm:text-sm text-muted-foreground truncate">
-                    {chatroom.city}, {chatroom.state} · {memberCount} online
-                  </p>
-                )}
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                  {chatroom?.city && `${chatroom.city}, ${chatroom.state}`} · {memberCount} online
+                </p>
               </div>
               <div className="ml-auto flex gap-2">
                 <Button onClick={joinRoom} variant="secondary" size="sm">Join</Button>
@@ -385,8 +385,8 @@ export default function SimpleChatroomPage() {
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {members.map((member) => (
-                    <div key={member.user_id} className="flex items-center gap-1 sm:gap-2 bg-gray-50 dark:bg-gray-700 rounded-full px-2 sm:px-3 py-1">
-                      <Avatar className="w-5 h-5 sm:w-6 sm:h-6">
+                    <div key={member.user_id} className="flex items-center gap-2 bg-gray-50 dark:bg-gray-700 rounded-full px-3 py-1">
+                      <Avatar className="w-6 h-6">
                         {member.profile_image ? (
                           <AvatarImage src={member.profile_image} alt={member.username} />
                         ) : (
@@ -395,7 +395,7 @@ export default function SimpleChatroomPage() {
                           </AvatarFallback>
                         )}
                       </Avatar>
-                      <span className="text-xs sm:text-sm truncate">{member.username}</span>
+                      <span className="text-sm">{member.username}</span>
                       {member.role === 'admin' && (
                         <span className="text-xs bg-blue-500 text-white rounded px-1">Admin</span>
                       )}
@@ -410,7 +410,7 @@ export default function SimpleChatroomPage() {
         {/* Messages Container */}
         <Card className="mb-4">
           <CardContent className="p-4">
-            <div className="max-h-[60vh] sm:max-h-[70vh] overflow-y-auto space-y-3 mb-4 pr-1">
+            <div className="h-96 overflow-y-auto space-y-3 mb-4">
               {isLoading ? (
                 <div className="flex items-center justify-center h-full">
                   <span>Loading messages...</span>
@@ -433,7 +433,7 @@ export default function SimpleChatroomPage() {
                       <div className="text-xs opacity-75 mb-1">
                         {message.username || 'Unknown'}
                       </div>
-                      <div className="break-words whitespace-pre-wrap leading-relaxed">{message.content}</div>
+                      <div>{message.content}</div>
                       <div className="text-xs opacity-75 mt-1">
                         {new Date(message.created_at).toLocaleTimeString()}
                       </div>
@@ -444,24 +444,22 @@ export default function SimpleChatroomPage() {
               <div ref={messagesEndRef} />
             </div>
 
-            <div className="sticky bottom-0 bg-background pt-2">
-              <form onSubmit={handleSendMessage} className="flex gap-2">
-                <Input
-                  value={messageText}
-                  onChange={(e) => setMessageText(e.target.value)}
-                  placeholder="Type your message..."
-                  inputMode="text"
-                  disabled={sendMessageMutation.isPending}
-                  className="flex-1"
-                />
-                <Button 
-                  type="submit" 
-                  disabled={!messageText.trim() || sendMessageMutation.isPending}
-                >
-                  <Send className="w-4 h-4" />
-                </Button>
-              </form>
-            </div>
+            {/* Message Input */}
+            <form onSubmit={handleSendMessage} className="flex gap-2">
+              <Input
+                value={messageText}
+                onChange={(e) => setMessageText(e.target.value)}
+                placeholder="Type your message..."
+                disabled={sendMessageMutation.isPending}
+                className="flex-1"
+              />
+              <Button 
+                type="submit" 
+                disabled={!messageText.trim() || sendMessageMutation.isPending}
+              >
+                <Send className="w-4 h-4" />
+              </Button>
+            </form>
           </CardContent>
         </Card>
       </div>

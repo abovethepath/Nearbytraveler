@@ -7,12 +7,10 @@ html {
   width: 100%;
   max-width: 100vw;
   overflow-x: hidden;
-  -webkit-text-size-adjust: none;
-  -ms-text-size-adjust: none;
-  text-size-adjust: none;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-weight: 400;
-  font-size: 16px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -23,9 +21,6 @@ body {
   overflow-x: hidden;
   margin: 0;
   padding: 0;
-  font-size: 16px;
-  line-height: 1.5;
-  min-height: 100vh;
 }
 
 /* Force ALL elements to stay within viewport */
@@ -76,81 +71,6 @@ body {
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
   50% { transform: translateY(-10px); }
-}
-
-/* Ensure mobile text is readable and scalable */
-@media (max-width: 768px) {
-  html {
-    font-size: 18px !important;
-  }
-  
-  body {
-    font-size: 18px !important;
-    line-height: 1.8 !important;
-  }
-  
-  /* Force larger text for all elements */
-  * {
-    font-size: 18px !important;
-    line-height: 1.8 !important;
-  }
-  
-  /* Improve button and text readability */
-  button, .btn, a {
-    min-height: 48px !important;
-    font-size: 20px !important;
-    padding: 12px 16px !important;
-  }
-  
-  /* Ensure headings are properly sized */
-  h1 { font-size: 2.5rem !important; font-weight: bold !important; }
-  h2 { font-size: 2rem !important; font-weight: bold !important; }
-  h3 { font-size: 1.75rem !important; font-weight: bold !important; }
-  
-  /* Make sure all text is at least 18px for readability */
-  p, span, div, input, textarea, label {
-    font-size: 18px !important;
-    line-height: 1.8 !important;
-  }
-  
-  /* Special larger sizes for key elements */
-  .text-xl, .text-lg {
-    font-size: 24px !important;
-  }
-  
-  .text-2xl {
-    font-size: 28px !important;
-  }
-  
-  .text-3xl {
-    font-size: 32px !important;
-  }
-  
-  /* Force larger sizes for landing page headers */
-  h1.text-3xl, h1[class*="text-3xl"] {
-    font-size: 28px !important;
-  }
-  
-  h1.text-5xl, h1[class*="text-5xl"] {
-    font-size: 36px !important;
-  }
-  
-  h1.text-6xl, h1[class*="text-6xl"] {
-    font-size: 40px !important;
-  }
-  
-  /* Landing page specific text fixes */
-  .text-base {
-    font-size: 18px !important;
-  }
-  
-  .text-sm {
-    font-size: 16px !important;
-  }
-  
-  .text-xs {
-    font-size: 14px !important;
-  }
 }
 
 @keyframes slideInLeft {
@@ -316,48 +236,6 @@ body {
     padding: 0.75rem 1rem;
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
-  }
-
-
-
-
-
-  /* PROPER mobile text sizing - readable but not broken */
-  @media (max-width: 768px) {
-    /* Force larger text on ALL mobile elements */
-    * {
-      font-size: 18px !important;
-    }
-    
-    /* Form elements and buttons */
-    button, input, select, textarea {
-      font-size: 20px !important;
-      min-height: 50px !important;
-      padding: 12px 16px !important;
-    }
-    
-    /* Regular text */
-    p, span, div, a, li, td, th, label {
-      font-size: 18px !important;
-    }
-    
-    /* Headings */
-    h1 { font-size: 36px !important; }
-    h2 { font-size: 32px !important; }
-    h3 { font-size: 28px !important; }
-    h4 { font-size: 24px !important; }
-    
-    /* Card titles and important text */
-    .text-xl, .text-lg, .text-base, .text-sm {
-      font-size: 20px !important;
-    }
-    
-    /* Make sure dropdowns are readable */
-    [role="option"], [data-radix-select-item] {
-      font-size: 18px !important;
-      min-height: 50px !important;
-      padding: 12px 16px !important;
-    }
   }
 
   /* Prevent mobile back button issues and ensure navigation visibility */
@@ -2132,57 +2010,3 @@ div[class*="rounded-lg border"].selected:not(input):not(textarea) {
     grid-template-columns: repeat(3, 1fr) !important;
   }
 }
-/* REAL MOBILE VIEWPORT TESTING */
-.mobile-viewport {
-  overflow-x: hidden !important;
-  overflow-y: auto !important;
-  max-width: 100vw !important;
-  height: auto !important;
-  min-height: 100vh !important;
-  -webkit-overflow-scrolling: touch !important;
-  scroll-behavior: smooth !important;
-}
-
-.mobile-viewport * {
-  max-width: 100vw !important;
-  box-sizing: border-box !important;
-}
-
-/* Force mobile breakpoints */
-.mobile-viewport .md\:hidden {
-  display: block !important;
-}
-
-.mobile-viewport .hidden.md\:block {
-  display: none !important;
-}
-
-/* Make mobile preview scrollable with visible scrollbar */
-.mobile-viewport-container::-webkit-scrollbar {
-  width: 8px;
-}
-
-.mobile-viewport-container::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 4px;
-}
-
-.mobile-viewport-container::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 4px;
-}
-
-.mobile-viewport-container::-webkit-scrollbar-thumb:hover {
-  background: #555;
-}
-
-/* For Firefox */
-.mobile-viewport-container {
-  scrollbar-width: thin;
-  scrollbar-color: #888 #f1f1f1;
-}
-
-.mobile-viewport {
-  pointer-events: auto;
-}
-

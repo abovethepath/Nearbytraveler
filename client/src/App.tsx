@@ -13,7 +13,6 @@ import { QueryClientProvider, useQueryClient } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
-import MobilePreview from "@/components/mobile-preview";
 import Home from "@/pages/home";
 import Discover from "@/pages/discover";
 import Profile from "@/pages/profile";
@@ -48,7 +47,7 @@ import SignupBusiness from "@/pages/signup-business";
 import SignupSteps from "@/pages/signup-steps";
 import UnifiedSignup from "@/pages/unified-signup";
 import BusinessRegistration from "@/pages/business-registration";
-import LandingAlt from "@/pages/landing-alt";
+import LandingNew from "@/pages/landing-new";
 import Photos from "@/pages/photos";
 import UploadPhotos from "@/pages/upload-photos";
 import AICompanion from "@/pages/ai-companion";
@@ -99,7 +98,6 @@ import Navbar from "@/components/navbar";
 // Removed conflicting MobileNav - using MobileTopNav and MobileBottomNav instead
 import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { MobileTopNav } from "@/components/MobileTopNav";
-import SimpleNavbar from "@/components/simple-navbar";
 import Footer from "@/components/footer";
 import { UniversalBackButton } from "@/components/UniversalBackButton";
 import IMAlert from "@/components/instant-messaging/IMAlert";
@@ -487,7 +485,7 @@ function Router() {
 
       // Show landing page for /landing route too
       if (location === '/landing') {
-        return <LandingAlt />;
+        return <LandingNew />;
       }
 
       // CRITICAL FIX: Allow profile routes even when user state is loading
@@ -504,7 +502,7 @@ function Router() {
           console.log('🏠 MOBILE FIX: User has auth data, showing Home page instead of landing');
           return <Home />;
         }
-        return <LandingAlt />;
+        return <LandingNew />;
       }
       // Allow access to signup pages without authentication
       // Three separate signup forms: Local, Traveling, Business
@@ -595,8 +593,8 @@ function Router() {
         return null;
       }
 
-      // Default: show new landing page for unknown routes (including root path '/')
-      console.log('🏠 Showing landing page for unauthenticated user:', location);
+      // Default: show new landing page for unknown routes
+      console.log('❌ Unknown route, showing new landing page:', location);
       return <LandingNew />;
     }
 
@@ -878,10 +876,7 @@ function Router() {
     }
   };
 
-  // Force mobile preview for ALL pages
-  const forceMobilePreview = true;
-  
-  const AppContent = () => (
+  return (
     <AuthContext.Provider value={authValue}>
       {!authValue.isAuthenticated ? (
         // MOBILE FIX: Check if this is a navigation to home page from mobile nav
@@ -909,16 +904,7 @@ function Router() {
           // Show appropriate page based on routing for unauthenticated users
           <>
             {console.log('🔍 APP ROUTING: User NOT authenticated, showing unauthenticated page for location:', location)}
-            <div className="min-h-screen w-full max-w-full flex flex-col bg-background text-foreground overflow-x-hidden">
-              {/* Landing page navigation for unauthenticated users */}
-              <SimpleNavbar />
-              
-              <main className="flex-1 w-full max-w-full pt-16 pb-0 overflow-x-hidden">
-                <div className="w-full max-w-full overflow-x-hidden">
-                  {renderPage()}
-                </div>
-              </main>
-            </div>
+            {renderPage()}
           </>
         )
       ) : (
@@ -940,16 +926,10 @@ function Router() {
                 </div>
               </>
             ) : (
-              <>
-                {/* Landing page navigation for unauthenticated users */}
-                <div className="hidden md:block">
-                  <SimpleNavbar />
-                </div>
-                {/* Mobile landing navigation */}
-                <div className="md:hidden">
-                  <SimpleNavbar />
-                </div>
-              </>
+              // This part is technically unreachable if !authValue.isAuthenticated is false,
+              // but keeping it for structural completeness if logic were to change.
+              // A dedicated LandingNavbar component would be used here if needed.
+              null
             )}
 
             <main className="flex-1 w-full max-w-full pt-16 pb-24 md:pt-0 md:pb-0 overflow-x-hidden">
@@ -982,17 +962,6 @@ function Router() {
       )}
     </AuthContext.Provider>
   );
-
-  // Return mobile preview wrapper if enabled
-  if (forceMobilePreview) {
-    return (
-      <MobilePreview>
-        <AppContent />
-      </MobilePreview>
-    );
-  }
-
-  return <AppContent />;
 }
 
 function App() {

@@ -54,13 +54,11 @@ app.use((req, _res, next) => {
   next();
 });
 
-const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || "http://localhost:5173";
-
 app.use(cors({
-  origin: [CLIENT_ORIGIN],              // tighten this when you deploy
+  origin: true, // Allow all origins for now to fix blank page issue
   credentials: true,
-  methods: ["GET","POST","DELETE","OPTIONS"],
-  allowedHeaders: ["Content-Type","Authorization","x-user-id"], // <-- add this
+  methods: ["GET","POST","PUT","PATCH","DELETE","OPTIONS"],
+  allowedHeaders: ["Content-Type","Authorization"],
 }));
 
 // Security headers

@@ -207,16 +207,16 @@ export default function JoinNowWidgetNew() {
       {step === 1 ? (
         <>
           {/* Step 1: User Type Selection */}
-          <div className="space-y-3">
-            <Label htmlFor="userType" className="text-base text-gray-900 dark:text-white font-medium">I am a...</Label>
+          <div className="space-y-2">
+            <Label htmlFor="userType" className="text-gray-900 dark:text-white">I am a...</Label>
             <Select value={userType} onValueChange={setUserType}>
-              <SelectTrigger className="w-full h-12 text-base p-3">
+              <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select your type" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="local" className="text-base p-3">Nearby Local (Not Traveling Now)</SelectItem>
-                <SelectItem value="currently_traveling" className="text-base p-3">Currently Traveling</SelectItem>
-                <SelectItem value="business" className="text-base p-3">Nearby Business</SelectItem>
+                <SelectItem value="local">Nearby Local (Not Traveling Now)</SelectItem>
+                <SelectItem value="currently_traveling">Currently Traveling</SelectItem>
+                <SelectItem value="business">Nearby Business</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -224,7 +224,7 @@ export default function JoinNowWidgetNew() {
           <div className="mt-8 pt-4">
             <div
               onClick={userType ? handleStepOne : undefined}
-              className={`join-page-gradient-button w-full py-4 md:py-3 px-6 md:px-4 rounded-md font-bold text-lg md:text-base text-center select-none ${
+              className={`join-page-gradient-button w-full py-3 px-4 rounded-md font-bold text-center select-none ${
                 userType ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'
               }`}
               style={{
@@ -246,9 +246,9 @@ export default function JoinNowWidgetNew() {
               </div>
             </div>
           )}
-          <div className="space-y-4">
+          <div className="space-y-3">
             <div>
-              <Label htmlFor="name" className="text-lg md:text-base text-gray-900 dark:text-white font-medium">Full Name *</Label>
+              <Label htmlFor="name" className="text-gray-900 dark:text-white">Full Name *</Label>
               <Input
                 id="name"
                 type="text"
@@ -256,13 +256,11 @@ export default function JoinNowWidgetNew() {
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 placeholder="Your full name"
                 required
-                className="mt-2 h-16 md:h-14 text-xl md:text-lg p-5 md:p-4"
-                style={{ fontSize: 'clamp(32px, 9vw, 36px)', minHeight: '60px' }}
               />
             </div>
 
             <div>
-              <Label htmlFor="username" className="text-lg md:text-base text-gray-900 dark:text-white font-medium">Username * (min 6 characters)</Label>
+              <Label htmlFor="username" className="text-gray-900 dark:text-white">Username * (min 6 characters)</Label>
               <div className="relative">
                 <Input
                   id="username"
@@ -271,11 +269,10 @@ export default function JoinNowWidgetNew() {
                   onChange={(e) => handleUsernameChange(e.target.value)}
                   placeholder="Choose username"
                   required
-                  className={`pr-10 h-16 md:h-14 text-xl md:text-lg p-5 md:p-4 ${
+                  className={`pr-10 ${
                     usernameAvailable === true ? 'border-green-500' : 
                     usernameAvailable === false ? 'border-red-500' : ''
                   }`}
-                  style={{ fontSize: 'clamp(32px, 9vw, 36px)', minHeight: '60px' }}
                 />
                 <div className="absolute inset-y-0 right-0 flex items-center pr-3 z-10">
                   {usernameChecking ? (
@@ -290,21 +287,21 @@ export default function JoinNowWidgetNew() {
                 </div>
               </div>
               {formData.username && formData.username.length < 6 && (
-                <p className="text-yellow-500 text-base md:text-sm font-medium mt-2">⚠️ Username must be at least 6 characters</p>
+                <p className="text-yellow-500 text-sm font-medium mt-1">⚠️ Username must be at least 6 characters</p>
               )}
               {usernameAvailable === false && (
-                <p className="text-red-500 text-base md:text-sm font-medium mt-2">❌ Username not available</p>
+                <p className="text-red-500 text-sm font-medium mt-1">❌ Username not available</p>
               )}
               {usernameAvailable === true && (
-                <p className="text-green-500 text-base md:text-sm font-medium mt-2">✅ Username available</p>
+                <p className="text-green-500 text-sm font-medium mt-1">✅ Username available</p>
               )}
               {usernameChecking && (
-                <p className="text-blue-500 text-base md:text-sm font-medium mt-2">🔍 Checking availability...</p>
+                <p className="text-blue-500 text-sm font-medium mt-1">🔍 Checking availability...</p>
               )}
             </div>
 
             <div>
-              <Label htmlFor="email" className="text-lg md:text-base text-gray-900 dark:text-white font-medium">Email *</Label>
+              <Label htmlFor="email" className="text-gray-900 dark:text-white">Email *</Label>
               <Input
                 id="email"
                 type="email"
@@ -312,14 +309,12 @@ export default function JoinNowWidgetNew() {
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 placeholder="your@email.com"
                 required
-                className="h-16 md:h-14 text-xl md:text-lg p-5 md:p-4"
-                style={{ fontSize: 'clamp(32px, 9vw, 36px)', minHeight: '60px' }}
               />
             </div>
             
             <div>
-              <Label htmlFor="confirmEmail" className="text-lg md:text-base text-gray-900 dark:text-white font-medium">Confirm Email *</Label>
-              <div className="relative mt-2">
+              <Label htmlFor="confirmEmail" className="text-gray-900 dark:text-white">Confirm Email *</Label>
+              <div className="relative">
                 <Input
                   id="confirmEmail"
                   type="email"
@@ -327,34 +322,33 @@ export default function JoinNowWidgetNew() {
                   onChange={(e) => setFormData({ ...formData, confirmEmail: e.target.value })}
                   placeholder="Confirm your email"
                   required
-                  className={`pr-10 h-16 md:h-14 text-xl md:text-lg p-5 md:p-4 ${
+                  className={`pr-10 ${
                     formData.confirmEmail && formData.email ? (
                       formData.email === formData.confirmEmail ? 'border-green-500' : 'border-red-500'
                     ) : ''
                   }`}
-                  style={{ fontSize: 'clamp(32px, 9vw, 36px)', minHeight: '60px' }}
                 />
                 <div className="absolute inset-y-0 right-0 flex items-center pr-3">
                   {formData.confirmEmail && formData.email && (
                     formData.email === formData.confirmEmail ? (
-                      <span className="text-green-500 text-xl">✓</span>
+                      <span className="text-green-500">✓</span>
                     ) : (
-                      <span className="text-red-500 text-xl">✗</span>
+                      <span className="text-red-500">✗</span>
                     )
                   )}
                 </div>
               </div>
               {formData.confirmEmail && formData.email && formData.email !== formData.confirmEmail && (
-                <p className="text-red-500 text-base md:text-sm mt-2">Emails don't match</p>
+                <p className="text-red-500 text-xs mt-1">Emails don't match</p>
               )}
               {formData.confirmEmail && formData.email && formData.email === formData.confirmEmail && (
-                <p className="text-green-500 text-base md:text-sm mt-2">Emails match</p>
+                <p className="text-green-500 text-xs mt-1">Emails match</p>
               )}
             </div>
             
             <div>
-              <Label htmlFor="password" className="text-lg md:text-base text-gray-900 dark:text-white font-medium">Password * (min 8 characters)</Label>
-              <div className="relative mt-2">
+              <Label htmlFor="password" className="text-gray-900 dark:text-white">Password * (min 8 characters)</Label>
+              <div className="relative">
                 <Input
                   id="password"
                   type="password"
@@ -362,33 +356,32 @@ export default function JoinNowWidgetNew() {
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   placeholder="Create password"
                   required
-                  className={`pr-10 h-16 md:h-14 text-xl md:text-lg p-5 md:p-4 ${
+                  className={`pr-10 ${
                     formData.password && formData.password.length >= 8 ? 'border-green-500' : 
                     formData.password && formData.password.length < 8 ? 'border-yellow-500' : ''
                   }`}
-                  style={{ fontSize: 'clamp(32px, 9vw, 36px)', minHeight: '60px' }}
                 />
                 <div className="absolute inset-y-0 right-0 flex items-center pr-3">
                   {formData.password && (
                     formData.password.length >= 8 ? (
-                      <span className="text-green-500 text-xl">✓</span>
+                      <span className="text-green-500">✓</span>
                     ) : (
-                      <span className="text-yellow-500 text-xl">⚠️</span>
+                      <span className="text-yellow-500">⚠️</span>
                     )
                   )}
                 </div>
               </div>
               {formData.password && formData.password.length < 8 && (
-                <p className="text-yellow-500 text-base md:text-sm mt-2">Password must be at least 8 characters</p>
+                <p className="text-yellow-500 text-xs mt-1">Password must be at least 8 characters</p>
               )}
               {formData.password && formData.password.length >= 8 && (
-                <p className="text-green-500 text-base md:text-sm mt-2">Password meets requirements</p>
+                <p className="text-green-500 text-xs mt-1">Password meets requirements</p>
               )}
             </div>
             
             <div>
-              <Label htmlFor="confirmPassword" className="text-lg md:text-base text-gray-900 dark:text-white font-medium">Confirm Password *</Label>
-              <div className="relative mt-2">
+              <Label htmlFor="confirmPassword" className="text-gray-900 dark:text-white">Confirm Password *</Label>
+              <div className="relative">
                 <Input
                   id="confirmPassword"
                   type="password"
@@ -396,28 +389,27 @@ export default function JoinNowWidgetNew() {
                   onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                   placeholder="Confirm password"
                   required
-                  className={`pr-10 h-16 md:h-14 text-xl md:text-lg p-5 md:p-4 ${
+                  className={`pr-10 ${
                     formData.confirmPassword && formData.password ? (
                       formData.password === formData.confirmPassword ? 'border-green-500' : 'border-red-500'
                     ) : ''
                   }`}
-                  style={{ fontSize: 'clamp(32px, 9vw, 36px)', minHeight: '60px' }}
                 />
                 <div className="absolute inset-y-0 right-0 flex items-center pr-3">
                   {formData.confirmPassword && formData.password && (
                     formData.password === formData.confirmPassword ? (
-                      <span className="text-green-500 text-xl">✓</span>
+                      <span className="text-green-500">✓</span>
                     ) : (
-                      <span className="text-red-500 text-xl">✗</span>
+                      <span className="text-red-500">✗</span>
                     )
                   )}
                 </div>
               </div>
               {formData.confirmPassword && formData.password && formData.password !== formData.confirmPassword && (
-                <p className="text-red-500 text-base md:text-sm mt-2">Passwords don't match</p>
+                <p className="text-red-500 text-xs mt-1">Passwords don't match</p>
               )}
               {formData.confirmPassword && formData.password && formData.password === formData.confirmPassword && (
-                <p className="text-green-500 text-base md:text-sm mt-2">Passwords match</p>
+                <p className="text-green-500 text-xs mt-1">Passwords match</p>
               )}
             </div>
           </div>
@@ -425,12 +417,7 @@ export default function JoinNowWidgetNew() {
           <div className="mt-8 pt-4 space-y-3">
             <div
               onClick={handleCreateAccount}
-              className="join-page-gradient-button w-full py-4 md:py-3 px-6 md:px-4 rounded-md font-bold text-center cursor-pointer select-none"
-              style={{
-                fontSize: 'clamp(32px, 9vw, 36px)',
-                minHeight: '60px',
-                padding: '16px 24px'
-              }}
+              className="join-page-gradient-button w-full py-3 px-4 rounded-md font-bold text-center cursor-pointer select-none"
             >
               Create Account & Continue
             </div>
@@ -438,8 +425,7 @@ export default function JoinNowWidgetNew() {
             <Button
               onClick={() => setLocation('/')}
               variant="outline"
-              className="w-full bg-gray-200 dark:bg-gray-700 border-gray-400 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 h-16 md:h-14 text-xl md:text-lg p-5 md:p-4"
-              style={{ fontSize: 'clamp(32px, 9vw, 36px)', minHeight: '60px' }}
+              className="w-full bg-gray-200 dark:bg-gray-700 border-gray-400 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600"
             >
               Back to Landing Page
             </Button>

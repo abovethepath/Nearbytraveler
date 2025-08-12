@@ -1,12 +1,7 @@
-import { useState } from "react";
 import { useLocation, Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import Footer from "@/components/footer";
-import SimpleNavbar from "@/components/simple-navbar";
-
-import MobileDebug from "@/components/mobile-debug";
-import MobilePreview from "@/components/mobile-preview";
-import RealMobileTest from "@/components/real-mobile-test";
+import LandingNavbar from "@/components/landing-navbar";
 
 
 
@@ -61,84 +56,52 @@ const CustomIcon = ({ iconName, className }: { iconName: string; className?: str
 
 export default function Landing() {
   const [, setLocation] = useLocation();
-  const [showPreview, setShowPreview] = useState(false);
 
-  return <LandingContent setLocation={setLocation} />;
-}
-
-function LandingContent({ setLocation }: { setLocation: (path: string) => void }) {
   return (
-    <div className="min-h-dvh flex flex-col bg-gray-50 dark:bg-gray-900 overflow-x-hidden" key="landing-v2-mobile-optimized">
-      {/* Debug (optional) */}
-      <MobileDebug />
-      
-      {/* DESKTOP STATUS INDICATOR */}
-      <div className="hidden md:block fixed top-28 left-4 bg-blue-500 text-white px-4 py-2 rounded-lg z-50" style={{ fontSize: '18px', fontWeight: 'bold' }}>
-        DESKTOP VIEW ACTIVE
+    <div className="bg-gray-50 dark:bg-gray-900 font-sans" key="landing-v2-no-copy-button">
+      {/* Sticky CTA - Always Visible on All Devices */}
+      <div className="fixed bottom-6 right-6 z-50">
+        <Button
+          onClick={() => setLocation('/join')}
+          size="lg"
+          className="bg-orange-500 hover:bg-orange-600 text-black font-black px-8 py-4 rounded-2xl shadow-2xl transform transition-all duration-200 hover:scale-105 border-3 border-white"
+          style={{
+            boxShadow: '0 12px 35px rgba(0,0,0,0.4), 0 0 0 3px rgba(255,255,255,0.9)',
+            animation: 'gentle-pulse 2.5s ease-in-out infinite',
+          }}
+        >
+          JOIN NOW
+        </Button>
       </div>
       
-      {/* MOBILE STATUS INDICATOR */}
-      <div className="block md:hidden fixed top-20 left-4 bg-green-500 text-white px-4 py-2 rounded-lg z-50" style={{ fontSize: '20px', fontWeight: 'bold' }}>
-        MOBILE VIEW ACTIVE
-      </div>
-
-      {/* NAVBAR (fixed, always visible) - RESPONSIVE VERSION */}
-      <div 
-        className="fixed w-full h-16 md:h-20 lg:h-24 bg-red-600 text-white flex items-center px-4 md:px-6 lg:px-8 border-b-4 border-red-800" 
-        style={{ 
-          position: 'fixed', 
-          top: 0, 
-          left: 0, 
-          right: 0, 
-          zIndex: 9999999,
-          display: 'flex'
-        }}
-      >
-        <div className="flex items-center justify-between w-full max-w-7xl mx-auto">
-          <div className="text-white text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold">
-            NEARBY TRAVELER 
-            <span className="text-sm md:text-base lg:text-lg bg-white/20 px-2 py-1 rounded ml-2">BETA</span>
+      {/* Top sticky bar for maximum visibility */}
+      <div className="fixed top-0 left-0 right-0 bg-orange-500 text-black py-3 px-4 z-40 shadow-lg">
+        <div className="flex items-center justify-between max-w-6xl mx-auto">
+          <div className="flex-1 text-center">
+            <span className="font-bold text-lg">🔥 Connect with Locals and Travelers TODAY - Sign Up Now!</span>
           </div>
-          <div className="flex space-x-3 md:space-x-4 lg:space-x-6">
-            <button 
-              onClick={() => window.location.href = '/auth'} 
-              className="bg-white text-red-600 hover:bg-white/90 px-4 py-2 md:px-6 md:py-3 lg:px-8 lg:py-4 rounded text-sm md:text-base lg:text-lg font-medium transition-all duration-200"
-            >
-              Sign In
-            </button>
-            <button 
-              onClick={() => window.location.href = '/join'} 
-              className="bg-orange-500 hover:bg-orange-600 text-black px-4 py-2 md:px-6 md:py-3 lg:px-8 lg:py-4 rounded text-sm md:text-base lg:text-lg font-medium transition-all duration-200"
-            >
-              Join
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div className="h-16 md:h-20 lg:h-24 bg-transparent"></div>
-
-
-
-      {/* Main content takes remaining space */}
-      <main className="flex-1">
-        {/* Fixed mobile CTA button */}
-        <div className="fixed bottom-4 right-4 md:bottom-6 md:right-6 z-50">
           <Button
             onClick={() => setLocation('/join')}
-            size="lg"
-            className="bg-orange-500 hover:bg-orange-600 text-black font-black px-6 py-3 md:px-8 md:py-4 rounded-2xl shadow-2xl transition-all duration-200 hover:scale-105 border-3 border-white text-sm md:text-base"
-            style={{ boxShadow: '0 8px 25px rgba(0,0,0,0.3), 0 0 0 2px rgba(255,255,255,0.9)' }}
+            className="bg-black text-orange-400 font-bold px-6 py-2 rounded-lg hover:bg-gray-800 ml-4"
           >
-            JOIN NOW
+            SIGN UP NOW
           </Button>
         </div>
+      </div>
 
-        {/* HERO SECTION — responsive design */}
-        <section className="relative border border-white/30 dark:border-gray-300/20 mt-8">
-          <div className="relative bg-gray-800 dark:bg-gray-900 overflow-hidden min-h-[520px] md:min-h-[600px] lg:min-h-[700px] xl:min-h-[800px]">
-            {/* Non-interactive overlay so it can't eat clicks */}
-            <div className="absolute inset-0 h-full pointer-events-none">
+      {/* Landing Navbar with BETA badge - Add top padding for sticky bar */}
+      <div className="pt-16">
+        <LandingNavbar />
+      </div>
+      
+
+
+
+      {/* HERO SECTION */}
+      <div className="relative">
+        <div className="bg-gray-800 dark:bg-gray-900 border border-white/30 dark:border-gray-300/20">
+          <div className="relative bg-gray-800 dark:bg-gray-900 pb-32 overflow-hidden min-h-[600px]">
+            <div className="absolute inset-0 h-full min-h-[600px]">
               <img
                 src="/attached_assets/travelers together hugging_1754971726997.avif"
                 alt="Travel experience"
@@ -147,48 +110,54 @@ function LandingContent({ setLocation }: { setLocation: (path: string) => void }
               />
               <div className="absolute inset-0 bg-gray-800/70 dark:bg-gray-800/40 mix-blend-multiply" aria-hidden="true" />
             </div>
-            
-            {/* Responsive vertical padding */}
-            <div className="relative py-12 md:py-16 lg:py-20 xl:py-24">
-              <div className="mx-auto max-w-7xl px-4 text-center">
-                
+            <div className="relative">
+              <div className="sm:pb-16 md:pb-20 lg:pb-28 xl:pb-32">
+                <main className="mt-4 mx-auto max-w-full sm:mt-6 md:mt-8 lg:mt-10 xl:mt-12">
+                  <div className="text-center">
+                    <div className="max-w-4xl mx-auto">
+                      <h1 className="text-4xl tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
+                        <span className="block text-white font-black" style={{fontFamily: '"Inter", sans-serif'}}>Skip the tourist traps.</span>
+                        <span className="block text-orange-400 font-black" style={{fontFamily: '"Inter", sans-serif'}}>Meet locals and other Nearby Travelers right now, today!!!</span>
+                      </h1>
+                      
+                      {/* Personal credibility as founder */}
+                      <div className="mt-8 p-6 bg-black/40 backdrop-blur-sm rounded-2xl border border-white/20 animate-zoom-in" style={{animationDelay: '0.3s'}}>
+                        <p className="text-xl text-white leading-relaxed">
+                          <span className="text-orange-300 font-bold">"Over 15 years I hosted and toured 400+ travelers from 30+ countries as a local.</span>
+                          <span className="text-white"> Now I built Nearby Traveler to do exactly that - meet real locals and real travelers while creating amazing new travel adventures."</span>
+                        </p>
+                        <div className="mt-4 text-center">
+                          <p className="text-white font-bold text-lg">— Aaron, Founder</p>
+                          <p className="text-orange-200 text-sm">400+ travelers hosted • 30+ countries • 15 years</p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Primary signup CTA */}
+                    <div className="mt-12 mb-8">
+                      <Button
+                        onClick={() => setLocation('/join')}
+                        size="lg"
+                        className="bg-orange-500 hover:bg-orange-600 text-black font-black text-2xl px-16 py-6 rounded-2xl shadow-2xl transform transition-all duration-200 hover:scale-105 border-4 border-white"
+                        style={{
+                          fontSize: '1.8rem',
+                          minHeight: '80px',
+                          boxShadow: '0 15px 40px rgba(0,0,0,0.4), 0 0 0 4px rgba(255,255,255,0.9)',
+                          animation: 'gentle-pulse 2.5s ease-in-out infinite',
+                        }}
+                      >
+                        JOIN NEARBY TRAVELER NOW!!!
+                      </Button>
+                      <p className="text-white mt-3 text-lg font-semibold">Join the travel community • Connect today</p>
+                    </div>
 
-                <h1 className="text-4xl md:text-6xl lg:text-7xl xl:text-8xl tracking-tight">
-                  <span className="block text-white font-black leading-tight">Skip the tourist traps.</span>
-                  <span className="block text-orange-400 font-black leading-tight">
-                    Meet locals and other Nearby Travelers today.
-                  </span>
-                </h1>
-
-                <div className="mt-8 p-6 md:p-8 lg:p-10 bg-black/40 backdrop-blur-sm rounded-2xl border border-white/20 max-w-5xl mx-auto">
-                  <p className="text-lg md:text-xl lg:text-2xl xl:text-3xl text-white leading-relaxed">
-                    <span className="text-orange-300 font-bold">
-                      "Over 15 years I hosted and toured 400+ travelers from 30+ countries as a local.
-                    </span>
-                    <span className="text-white">
-                      {' '}Now I built Nearby Traveler to do exactly that—meet real locals and travelers."
-                    </span>
-                  </p>
-                  <div className="mt-6">
-                    <p className="text-white font-bold text-lg md:text-xl">— Aaron, Founder</p>
-                    <p className="text-orange-200 text-base md:text-lg">400+ travelers hosted • 30+ countries • 15 years</p>
                   </div>
-                </div>
-
-                <div className="mt-10 md:mt-12 lg:mt-16 mb-8">
-                  <Button
-                    onClick={() => setLocation('/join')}
-                    size="lg"
-                    className="bg-orange-500 hover:bg-orange-600 text-black font-black text-xl md:text-2xl lg:text-3xl xl:text-4xl px-8 md:px-12 lg:px-16 xl:px-20 py-4 md:py-5 lg:py-6 xl:py-8 rounded-2xl shadow-2xl transition-all duration-200 hover:scale-105 border-3 md:border-4 border-white w-full max-w-lg md:w-auto"
-                    style={{ boxShadow: '0 15px 40px rgba(0,0,0,0.4), 0 0 0 3px rgba(255,255,255,0.9)' }}
-                  >
-                    JOIN NEARBY TRAVELER NOW
-                  </Button>
-                </div>
+                </main>
               </div>
             </div>
           </div>
-        </section>
+        </div>
+      </div>
 
 
 
@@ -207,7 +176,7 @@ function LandingContent({ setLocation }: { setLocation: (path: string) => void }
           </div>
           
           {/* Event Cards - Modern Lu.ma style */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
 
             {/* Beach Bonfire Event Card */}
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-2xl transform transition-all duration-300 flex flex-col">
@@ -241,7 +210,37 @@ function LandingContent({ setLocation }: { setLocation: (path: string) => void }
               </div>
             </div>
             
-
+            {/* Taco Tuesday Event Card */}
+            <div className="bg-white rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-2xl transform transition-all duration-300 flex flex-col" style={{animationDelay: '0.2s'}}>
+              <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-yellow-400 to-orange-500">
+                <img 
+                  src="/attached_assets/image_1754973365104.png" 
+                  alt="Authentic taco stand with vintage neon sign" 
+                  className="w-full h-48 object-cover"
+                />
+              </div>
+              <div className="p-6 flex flex-col flex-grow">
+                <div className="mb-3">
+                  <h3 className="font-bold text-gray-900 mb-1">Taco Tuesday</h3>
+                  <p className="text-sm text-gray-600">Every Tuesday • $1.50 tacos</p>
+                </div>
+                
+                {/* Tags */}
+                <div className="flex flex-wrap gap-2 mb-3">
+                  <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-medium">$1.50</span>
+                  <span className="bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full text-xs font-medium">Food</span>
+                  <span className="bg-red-100 text-red-700 px-2 py-1 rounded-full text-xs font-medium">Weekly</span>
+                </div>
+                
+                <p className="text-gray-700 text-sm mb-4 flex-grow">Join locals every Tuesday for authentic street tacos at unbeatable prices. Meet fellow taco lovers and discover the best Mexican spots in the city.</p>
+                <Button 
+                  onClick={() => setLocation('/join')}
+                  className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold mt-auto"
+                >
+                  JOIN TO CONNECT
+                </Button>
+              </div>
+            </div>
             
             {/* Hollywood Sign Hike Event Card */}
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-2xl transform transition-all duration-300 flex flex-col" style={{animationDelay: '0.3s'}}>
@@ -307,7 +306,37 @@ function LandingContent({ setLocation }: { setLocation: (path: string) => void }
               </div>
             </div>
 
-
+            {/* Venice Beach Dance Party Event Card */}
+            <div className="bg-white rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-2xl transform transition-all duration-300 flex flex-col" style={{animationDelay: '0.5s'}}>
+              <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-purple-500 to-pink-500">
+                <img 
+                  src="/attached_assets/beach travel_1754973619241.jpg" 
+                  alt="Friends celebrating together on beach at sunset" 
+                  className="w-full h-48 object-cover"
+                />
+              </div>
+              <div className="p-6 flex flex-col flex-grow">
+                <div className="mb-3">
+                  <h3 className="font-bold text-gray-900 mb-1">Venice Beach Dance Party</h3>
+                  <p className="text-sm text-gray-600">Sunset dancing on the beach</p>
+                </div>
+                
+                {/* Tags */}
+                <div className="flex flex-wrap gap-2 mb-3">
+                  <span className="bg-pink-100 text-pink-700 px-2 py-1 rounded-full text-xs font-medium">Free</span>
+                  <span className="bg-purple-100 text-purple-700 px-2 py-1 rounded-full text-xs font-medium">Dance</span>
+                  <span className="bg-orange-100 text-orange-700 px-2 py-1 rounded-full text-xs font-medium">Sunset</span>
+                </div>
+                
+                <p className="text-gray-700 text-sm mb-4 flex-grow">Join the legendary Venice Beach dance scene with locals and travelers. Dancing on the sand as the sun sets over the Pacific Ocean.</p>
+                <Button 
+                  onClick={() => setLocation('/join')}
+                  className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold mt-auto"
+                >
+                  JOIN TO CONNECT
+                </Button>
+              </div>
+            </div>
           </div>
 
           {/* Call to action to see more */}
@@ -727,12 +756,7 @@ function LandingContent({ setLocation }: { setLocation: (path: string) => void }
         </div>
       </div>
 
-      </main>
-
-      {/* Footer pinned to bottom */}
-      <footer className="mt-auto">
-        <Footer />
-      </footer>
+      <Footer />
     </div>
   );
 }
