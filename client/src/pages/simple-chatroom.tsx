@@ -39,7 +39,7 @@ interface ChatMember {
 
 export default function SimpleChatroomPage() {
   const params = useParams();
-  const [location] = useLocation();
+  const [location, navigate] = useLocation();
   
   // Extract chatroom ID from URL path: /simple-chatroom/198
   const pathSegments = location.split('/');
@@ -96,6 +96,8 @@ export default function SimpleChatroomPage() {
         });
         queryClient.invalidateQueries({ queryKey: [`/api/simple-chatrooms/${chatroomId}/members/count`] });
         queryClient.invalidateQueries({ queryKey: [`/api/simple-chatrooms/${chatroomId}/members`] });
+        // Navigate back to chatrooms list after successfully leaving
+        setTimeout(() => navigate('/city-chatrooms'), 1000);
       } else {
         const error = await response.json();
         toast({
@@ -205,7 +207,7 @@ export default function SimpleChatroomPage() {
               <Button 
                 variant="ghost" 
                 size="sm"
-                onClick={() => window.history.back()}
+                onClick={() => navigate('/city-chatrooms')}
               >
                 <ArrowLeft className="w-4 h-4" />
               </Button>
