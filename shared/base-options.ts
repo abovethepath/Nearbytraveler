@@ -144,9 +144,7 @@ export const ALL_ACTIVITIES = [
 
 export const CULTURAL_COMMUNITY_EVENTS = [
   "Street Festivals",
-  "Cultural Celebrations",
   "Community Events",
-  "Historical Commemorations",
   "Charity Events"
 ];
 
@@ -157,7 +155,6 @@ export const PARTY_NIGHTLIFE_EVENTS = [
 
 export const SPORTS_COMPETITION_EVENTS = [
   "Sports Events",
-  "Contests & Competitions",
   "Game Nights",
   "Trivia Nights"
 ];
@@ -172,7 +169,6 @@ export const SOCIAL_NETWORKING_EVENTS = [
 export const ENTERTAINMENT_EVENTS = [
   "Pop-up Restaurants",
   "Outdoor Movies",
-  "Book Launches",
   "Open Mic Nights"
 ];
 
