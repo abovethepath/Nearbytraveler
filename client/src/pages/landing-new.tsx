@@ -78,7 +78,7 @@ export default function Landing() {
       <div className="fixed top-0 left-0 right-0 bg-orange-500 text-black py-3 px-4 z-40 shadow-lg">
         <div className="flex items-center justify-between max-w-6xl mx-auto">
           <div className="flex-1 text-center">
-            <span className="font-bold text-lg">🔥 Meet LA locals tonight - No signup required</span>
+            <span className="font-bold text-lg">🔥 Connect with LA locals - No signup required</span>
           </div>
           <Button
             onClick={() => setLocation('/events')}
@@ -123,8 +123,8 @@ export default function Landing() {
                       {/* Personal credibility as founder */}
                       <div className="mt-8 p-6 bg-black/40 backdrop-blur-sm rounded-2xl border border-white/20">
                         <p className="text-xl text-white leading-relaxed">
-                          <span className="text-orange-300 font-bold">"Over 10 years I hosted and toured 731 travelers from 23 countries as a LA local.</span>
-                          <span className="text-white"> Now I built Nearby Traveler to do exactly that - meet real locals on your LA trip."</span>
+                          <span className="text-orange-300 font-bold">"Over 15 years I hosted and toured 400+ travelers from 30+ countries as a local.</span>
+                          <span className="text-white"> Now I built Nearby Traveler to do exactly that - meet real locals and real travelers while creating amazing new travel adventures."</span>
                         </p>
                         <div className="flex items-center mt-4">
                           <div className="w-12 h-12 bg-gradient-to-r from-orange-400 to-red-500 rounded-full flex items-center justify-center text-white font-bold mr-4">
@@ -132,7 +132,7 @@ export default function Landing() {
                           </div>
                           <div>
                             <p className="text-white font-bold">Aaron - Founder</p>
-                            <p className="text-orange-200 text-sm">731 travelers hosted • 23 countries</p>
+                            <p className="text-orange-200 text-sm">400+ travelers hosted • 30+ countries • 15 years</p>
                           </div>
                         </div>
                       </div>
