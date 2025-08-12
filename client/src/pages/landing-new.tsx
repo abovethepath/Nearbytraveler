@@ -2,6 +2,8 @@ import { useLocation, Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import Footer from "@/components/footer";
 import LandingNavbar from "@/components/landing-navbar";
+import MobileTopNav from "@/components/mobile-top-nav";
+import MobileBottomNav from "@/components/mobile-bottom-nav";
 
 
 
@@ -58,15 +60,23 @@ export default function Landing() {
   const [, setLocation] = useLocation();
 
   return (
-    <div className="bg-gray-50 dark:bg-gray-900 font-sans" key="landing-v2-no-copy-button">
-      {/* Sticky CTA - Always Visible on All Devices */}
-      <div className="fixed bottom-6 right-6 z-50">
+    <div className="bg-gray-50 dark:bg-gray-900 font-sans min-h-screen" key="landing-v2-mobile-optimized">
+      {/* Desktop Navigation */}
+      <div className="hidden md:block">
+        <LandingNavbar />
+      </div>
+      
+      {/* Mobile Navigation */}
+      <MobileTopNav />
+      
+      {/* Mobile-First Sticky CTA - Positioned for mobile users */}
+      <div className="fixed bottom-20 right-4 md:bottom-6 md:right-6 z-50">
         <Button
           onClick={() => setLocation('/join')}
           size="lg"
-          className="bg-orange-500 hover:bg-orange-600 text-black font-black px-8 py-4 rounded-2xl shadow-2xl transform transition-all duration-200 hover:scale-105 border-3 border-white"
+          className="bg-orange-500 hover:bg-orange-600 text-black font-black px-6 py-3 md:px-8 md:py-4 rounded-2xl shadow-2xl transform transition-all duration-200 hover:scale-105 border-3 border-white text-sm md:text-base"
           style={{
-            boxShadow: '0 12px 35px rgba(0,0,0,0.4), 0 0 0 3px rgba(255,255,255,0.9)',
+            boxShadow: '0 8px 25px rgba(0,0,0,0.3), 0 0 0 2px rgba(255,255,255,0.9)',
             animation: 'gentle-pulse 2.5s ease-in-out infinite',
           }}
         >
@@ -74,25 +84,7 @@ export default function Landing() {
         </Button>
       </div>
       
-      {/* Top sticky bar for maximum visibility */}
-      <div className="fixed top-0 left-0 right-0 bg-orange-500 text-black py-3 px-4 z-40 shadow-lg">
-        <div className="flex items-center justify-between max-w-6xl mx-auto">
-          <div className="flex-1 text-center">
-            <span className="font-bold text-lg">🔥 Connect with Locals and Travelers TODAY - Sign Up Now!</span>
-          </div>
-          <Button
-            onClick={() => setLocation('/join')}
-            className="bg-black text-orange-400 font-bold px-6 py-2 rounded-lg hover:bg-gray-800 ml-4"
-          >
-            SIGN UP NOW
-          </Button>
-        </div>
-      </div>
 
-      {/* Landing Navbar with BETA badge - Add top padding for sticky bar */}
-      <div className="pt-16">
-        <LandingNavbar />
-      </div>
       
 
 
@@ -114,41 +106,41 @@ export default function Landing() {
               <div className="sm:pb-16 md:pb-20 lg:pb-28 xl:pb-32">
                 <main className="mt-4 mx-auto max-w-full sm:mt-6 md:mt-8 lg:mt-10 xl:mt-12">
                   <div className="text-center">
-                    <div className="max-w-4xl mx-auto">
-                      <h1 className="text-4xl tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
-                        <span className="block text-white font-black" style={{fontFamily: '"Inter", sans-serif'}}>Skip the tourist traps.</span>
-                        <span className="block text-orange-400 font-black" style={{fontFamily: '"Inter", sans-serif'}}>Meet locals and other Nearby Travelers right now, today!!!</span>
+                    <div className="max-w-4xl mx-auto px-4">
+                      <h1 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl tracking-tight">
+                        <span className="block text-white font-black leading-tight" style={{fontFamily: '"Inter", sans-serif'}}>Skip the tourist traps.</span>
+                        <span className="block text-orange-400 font-black leading-tight" style={{fontFamily: '"Inter", sans-serif'}}>Meet locals and other Nearby Travelers right now, today!!!</span>
                       </h1>
                       
                       {/* Personal credibility as founder */}
-                      <div className="mt-8 p-6 bg-black/40 backdrop-blur-sm rounded-2xl border border-white/20 animate-zoom-in" style={{animationDelay: '0.3s'}}>
-                        <p className="text-xl text-white leading-relaxed">
+                      <div className="mt-6 mx-4 md:mt-8 p-4 md:p-6 bg-black/40 backdrop-blur-sm rounded-2xl border border-white/20 animate-zoom-in" style={{animationDelay: '0.3s'}}>
+                        <p className="text-lg md:text-xl text-white leading-relaxed">
                           <span className="text-orange-300 font-bold">"Over 15 years I hosted and toured 400+ travelers from 30+ countries as a local.</span>
                           <span className="text-white"> Now I built Nearby Traveler to do exactly that - meet real locals and real travelers while creating amazing new travel adventures."</span>
                         </p>
                         <div className="mt-4 text-center">
-                          <p className="text-white font-bold text-lg">— Aaron, Founder</p>
+                          <p className="text-white font-bold text-base md:text-lg">— Aaron, Founder</p>
                           <p className="text-orange-200 text-sm">400+ travelers hosted • 30+ countries • 15 years</p>
                         </div>
                       </div>
                     </div>
                     
                     {/* Primary signup CTA */}
-                    <div className="mt-12 mb-8">
+                    <div className="mt-8 md:mt-12 mb-8 px-4">
                       <Button
                         onClick={() => setLocation('/join')}
                         size="lg"
-                        className="bg-orange-500 hover:bg-orange-600 text-black font-black text-2xl px-16 py-6 rounded-2xl shadow-2xl transform transition-all duration-200 hover:scale-105 border-4 border-white"
+                        className="bg-orange-500 hover:bg-orange-600 text-black font-black text-lg md:text-2xl px-8 md:px-16 py-4 md:py-6 rounded-2xl shadow-2xl transform transition-all duration-200 hover:scale-105 border-3 md:border-4 border-white w-full max-w-md md:w-auto"
                         style={{
-                          fontSize: '1.8rem',
-                          minHeight: '80px',
-                          boxShadow: '0 15px 40px rgba(0,0,0,0.4), 0 0 0 4px rgba(255,255,255,0.9)',
+                          fontSize: '1.2rem',
+                          minHeight: '60px',
+                          boxShadow: '0 15px 40px rgba(0,0,0,0.4), 0 0 0 3px rgba(255,255,255,0.9)',
                           animation: 'gentle-pulse 2.5s ease-in-out infinite',
                         }}
                       >
                         JOIN NEARBY TRAVELER NOW!!!
                       </Button>
-                      <p className="text-white mt-3 text-lg font-semibold">Join the travel community • Connect today</p>
+                      <p className="text-white mt-3 text-base md:text-lg font-semibold">Join the travel community • Connect today</p>
                     </div>
 
                   </div>
@@ -756,7 +748,13 @@ export default function Landing() {
         </div>
       </div>
 
-      <Footer />
+      {/* Footer */}
+      <div className="pb-16 md:pb-0">
+        <Footer />
+      </div>
+      
+      {/* Mobile Bottom Navigation */}
+      <MobileBottomNav />
     </div>
   );
 }
