@@ -8,18 +8,16 @@ export default function MobileTopNav() {
 
   return (
     <>
-      {/* Mobile Top Navigation */}
-      <nav className="sticky top-0 z-40 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 block md:hidden">
-        <div className="flex items-center justify-between h-14 px-4">
+      {/* Mobile Top Navigation - FORCED VISIBLE */}
+      <nav className="sticky top-0 z-40 bg-red-600 border-b-4 border-black shadow-2xl block" style={{ display: 'block !important' }}>
+        <div className="flex items-center justify-between h-16 px-4 bg-red-600">
           <Link href="/" className="flex items-center">
-            <div className="transform scale-125">
-              <Logo variant="navbar" />
-            </div>
+            <div className="text-white font-bold text-xl">NEARBY TRAVELER</div>
           </Link>
           
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="p-2 rounded-lg text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors touch-manipulation"
+            className="p-2 rounded-lg text-white hover:text-yellow-200 hover:bg-red-700 transition-colors touch-manipulation font-bold"
             aria-label={isOpen ? "Close menu" : "Open menu"}
           >
             {isOpen ? <X size={24} /> : <Menu size={24} />}
