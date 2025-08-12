@@ -371,10 +371,10 @@ export default function Landing() {
           {/* Main content with better readability */}
           <div className="max-w-3xl mx-auto animate-slide-in-left" style={{animationDelay: '0.2s'}}>
             <div className="text-center mb-8">
-              <p className="text-xl sm:text-2xl text-white leading-relaxed font-medium mb-6">
+              <p className="text-xl sm:text-2xl text-black leading-relaxed font-medium mb-6">
                 "As a traveler and local, I always loved meeting new people—but finding those who truly shared my interests wasn't easy."
               </p>
-              <p className="text-2xl sm:text-3xl text-blue-100 font-bold leading-relaxed mb-6">
+              <p className="text-2xl sm:text-3xl text-black font-bold leading-relaxed mb-6">
                 That's why I created Nearby Traveler.
               </p>
             </div>
