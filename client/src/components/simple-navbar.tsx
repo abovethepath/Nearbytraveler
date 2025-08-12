@@ -6,7 +6,7 @@ export default function SimpleNavbar() {
       className="bg-red-600 text-white w-full h-16 flex items-center px-4 border-b-4 border-red-800 shadow-xl" 
       style={{ 
         position: 'fixed', 
-        top: 0, 
+        top: 'env(safe-area-inset-top)', 
         left: 0, 
         right: 0, 
         zIndex: 999999,
