@@ -308,7 +308,10 @@ export const chatroomAccessRequests = pgTable("chatroom_access_requests", {
   createdAt: timestamp("created_at").defaultNow(),
   respondedAt: timestamp("responded_at"),
   respondedById: integer("responded_by_id"),
-});
+  responseMessage: text("response_message"), // Optional message from organizer when accepting/declining
+}, (table) => [
+  unique().on(table.chatroomId, table.userId) // One request per user per chatroom
+]);
 
 export const events = pgTable("events", {
   id: serial("id").primaryKey(),
@@ -2003,6 +2006,12 @@ export const insertChatroomMemberSchema = createInsertSchema(chatroomMembers).om
   lastReadAt: true,
 });
 
+export const insertChatroomAccessRequestSchema = createInsertSchema(chatroomAccessRequests).omit({
+  id: true,
+  createdAt: true,
+  respondedAt: true,
+});
+
 // City Pages insert schemas
 export const insertCityPageSchema = createInsertSchema(cityPages).omit({
   id: true,
@@ -2054,6 +2063,8 @@ export type ChatroomMember = typeof chatroomMembers.$inferSelect;
 export type InsertChatroomMember = z.infer<typeof insertChatroomMemberSchema>;
 export type ChatroomInvitation = typeof chatroomInvitations.$inferSelect;
 export type InsertChatroomInvitation = z.infer<typeof insertChatroomInvitationSchema>;
+export type ChatroomAccessRequest = typeof chatroomAccessRequests.$inferSelect;
+export type InsertChatroomAccessRequest = z.infer<typeof insertChatroomAccessRequestSchema>;
 
 export const insertProximityNotificationSchema = createInsertSchema(proximityNotifications).omit({
   id: true,

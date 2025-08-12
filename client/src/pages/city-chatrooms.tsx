@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { MessageCircle, Users, MapPin, UserPlus, Loader2 } from "lucide-react";
+import { MessageCircle, Users, MapPin, UserPlus, Loader2, Lock } from "lucide-react";
 
 interface CityChatroom {
   id: number;
@@ -16,6 +16,7 @@ interface CityChatroom {
   country: string;
   memberCount: number;
   userIsMember: boolean;
+  isPublic: boolean;
   tags: string[];
 }
 
@@ -115,6 +116,38 @@ export default function CityChatroomsPage() {
     }
   });
 
+  // Request access to private chatroom mutation
+  const requestAccessMutation = useMutation({
+    mutationFn: async ({ chatroomId, message }: { chatroomId: number; message?: string }) => {
+      if (!currentUser) throw new Error("User not found");
+      
+      const response = await apiRequest('POST', `/api/chatrooms/${chatroomId}/request-access`, {
+        message
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to request access');
+      }
+      
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Request Sent",
+        description: "Your access request has been sent to the organizer. You'll be notified when they respond.",
+      });
+    },
+    onError: (error: any) => {
+      console.error('Request access error:', error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to send access request. Please try again.",
+        variant: "destructive",
+      });
+    }
+  });
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-orange-50 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
@@ -157,14 +190,29 @@ export default function CityChatroomsPage() {
                 }}
               >
                 {/* Header with gradient background */}
-                <div className="relative h-24 bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
-                  <MessageCircle className="w-8 h-8 text-white/80" />
+                <div className={`relative h-24 bg-gradient-to-r flex items-center justify-center ${
+                  chatroom.isPublic 
+                    ? 'from-blue-500 to-purple-600' 
+                    : 'from-yellow-500 to-orange-600'
+                }`}>
+                  {chatroom.isPublic ? (
+                    <MessageCircle className="w-8 h-8 text-white/80" />
+                  ) : (
+                    <Lock className="w-8 h-8 text-white/80" />
+                  )}
                   <div className="absolute top-2 right-2">
                     <Badge className="bg-white/20 text-white backdrop-blur-sm">
                       <Users className="w-3 h-3 mr-1" />
                       {chatroom.memberCount || 0}
                     </Badge>
                   </div>
+                  {!chatroom.isPublic && (
+                    <div className="absolute top-2 left-2">
+                      <Badge className="bg-yellow-500/20 text-white backdrop-blur-sm text-xs">
+                        Private
+                      </Badge>
+                    </div>
+                  )}
                 </div>
 
                 <CardContent className="p-6">
@@ -232,7 +280,7 @@ export default function CityChatroomsPage() {
                           Leave
                         </Button>
                       </div>
-                    ) : (
+                    ) : chatroom.isPublic ? (
                       <Button 
                         className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                         onClick={() => joinMutation.mutate(chatroom.id)}
@@ -245,6 +293,25 @@ export default function CityChatroomsPage() {
                           <UserPlus className="w-4 h-4 mr-2" />
                         )}
                         Join Chatroom
+                      </Button>
+                    ) : (
+                      <Button 
+                        className="w-full bg-yellow-600 hover:bg-yellow-700 text-white"
+                        onClick={() => {
+                          const message = prompt("Send a message to the organizer (optional):");
+                          if (message !== null) { // User didn't cancel
+                            requestAccessMutation.mutate({ chatroomId: chatroom.id, message });
+                          }
+                        }}
+                        disabled={requestAccessMutation.isPending}
+                        data-testid={`button-request-access-${chatroom.id}`}
+                      >
+                        {requestAccessMutation.isPending ? (
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        ) : (
+                          <Lock className="w-4 h-4 mr-2" />
+                        )}
+                        Request Access
                       </Button>
                     )}
                   </div>

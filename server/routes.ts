@@ -7763,6 +7763,193 @@ Ready to start making real connections wherever you are?
     }
   });
 
+  // Private Chat Approval System Routes
+
+  // Request access to a private chatroom
+  app.post("/api/chatrooms/:roomId/request-access", async (req, res) => {
+    try {
+      const roomId = parseInt(req.params.roomId || '0');
+      const userId = parseInt(req.headers['x-user-id'] as string || '0');
+      const { message } = req.body;
+      
+      if (!userId) {
+        return res.status(401).json({ error: 'User not authenticated' });
+      }
+      
+      if (process.env.NODE_ENV === 'development') console.log(`🔐 ACCESS REQUEST: User ${userId} requesting access to private chatroom ${roomId}`);
+      
+      // Check if chatroom exists and is private
+      const [chatroom] = await db.select().from(citychatrooms).where(eq(citychatrooms.id, roomId));
+      if (!chatroom) {
+        return res.status(404).json({ error: 'Chatroom not found' });
+      }
+      
+      if (chatroom.isPublic) {
+        return res.status(400).json({ error: 'This chatroom is public - no access request needed' });
+      }
+      
+      // Check if user is already a member
+      const [existingMember] = await db.select().from(chatroomMembers)
+        .where(and(eq(chatroomMembers.chatroomId, roomId), eq(chatroomMembers.userId, userId)));
+      
+      if (existingMember) {
+        return res.status(400).json({ error: 'You are already a member of this chatroom' });
+      }
+      
+      // Check if there's already a pending request
+      const [existingRequest] = await db.select().from(chatroomAccessRequests)
+        .where(and(
+          eq(chatroomAccessRequests.chatroomId, roomId), 
+          eq(chatroomAccessRequests.userId, userId),
+          eq(chatroomAccessRequests.status, 'pending')
+        ));
+      
+      if (existingRequest) {
+        return res.status(400).json({ error: 'You already have a pending access request for this chatroom' });
+      }
+      
+      // Create access request
+      const [accessRequest] = await db.insert(chatroomAccessRequests)
+        .values({
+          chatroomId: roomId,
+          userId: userId,
+          message: message || null,
+          status: 'pending'
+        })
+        .returning();
+      
+      if (process.env.NODE_ENV === 'development') console.log(`🔐 ACCESS REQUEST: Created request ${accessRequest.id} for user ${userId} to chatroom ${roomId}`);
+      
+      return res.json({ 
+        success: true, 
+        message: "Access request sent! Wait for organizer approval.",
+        requestId: accessRequest.id
+      });
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error requesting chatroom access:", error);
+      return res.status(500).json({ error: "Failed to request access" });
+    }
+  });
+
+  // Get pending access requests for chatrooms the user organizes
+  app.get("/api/chatrooms/pending-requests", async (req, res) => {
+    try {
+      const userId = parseInt(req.headers['x-user-id'] as string || '0');
+      
+      if (!userId) {
+        return res.status(401).json({ error: 'User not authenticated' });
+      }
+      
+      if (process.env.NODE_ENV === 'development') console.log(`🔐 PENDING REQUESTS: Getting pending requests for organizer ${userId}`);
+      
+      const pendingRequests = await db.execute(sql`
+        SELECT 
+          car.id,
+          car.chatroom_id as chatroomId,
+          car.user_id as userId,
+          car.message,
+          car.status,
+          car.created_at as createdAt,
+          cc.name as chatroomName,
+          u.username,
+          u.avatar_url as avatarUrl
+        FROM chatroom_access_requests car
+        INNER JOIN city_chatrooms cc ON car.chatroom_id = cc.id
+        INNER JOIN users u ON car.user_id = u.id
+        WHERE cc.created_by_id = ${userId}
+        AND car.status = 'pending'
+        ORDER BY car.created_at ASC
+      `);
+      
+      if (process.env.NODE_ENV === 'development') console.log(`🔐 PENDING REQUESTS: Found ${pendingRequests.rows.length} pending requests for organizer ${userId}`);
+      
+      return res.json(pendingRequests.rows || []);
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error getting pending requests:", error);
+      return res.status(500).json({ error: "Failed to get pending requests" });
+    }
+  });
+
+  // Approve or reject access request
+  app.post("/api/chatrooms/access-requests/:requestId/respond", async (req, res) => {
+    try {
+      const requestId = parseInt(req.params.requestId || '0');
+      const organizerId = parseInt(req.headers['x-user-id'] as string || '0');
+      const { action, responseMessage } = req.body; // action: 'approve' or 'reject'
+      
+      if (!organizerId) {
+        return res.status(401).json({ error: 'User not authenticated' });
+      }
+      
+      if (!['approve', 'reject'].includes(action)) {
+        return res.status(400).json({ error: 'Invalid action. Must be "approve" or "reject"' });
+      }
+      
+      if (process.env.NODE_ENV === 'development') console.log(`🔐 RESPOND REQUEST: Organizer ${organizerId} ${action}ing request ${requestId}`);
+      
+      // Get the access request and verify organizer
+      const requestResult = await db.execute(sql`
+        SELECT 
+          car.*,
+          cc.created_by_id as organizerId,
+          cc.name as chatroomName
+        FROM chatroom_access_requests car
+        INNER JOIN city_chatrooms cc ON car.chatroom_id = cc.id
+        WHERE car.id = ${requestId}
+        AND car.status = 'pending'
+      `);
+      
+      const accessRequest = requestResult.rows?.[0];
+      if (!accessRequest) {
+        return res.status(404).json({ error: 'Access request not found or already processed' });
+      }
+      
+      if (accessRequest.organizerId !== organizerId) {
+        return res.status(403).json({ error: 'You are not authorized to respond to this request' });
+      }
+      
+      const newStatus = action === 'approve' ? 'approved' : 'rejected';
+      
+      // Update the access request
+      await db.update(chatroomAccessRequests)
+        .set({
+          status: newStatus,
+          respondedAt: new Date(),
+          respondedById: organizerId,
+          responseMessage: responseMessage || null
+        })
+        .where(eq(chatroomAccessRequests.id, requestId));
+      
+      // If approved, add user to chatroom and award aura
+      if (action === 'approve') {
+        // Add user to chatroom
+        await db.insert(chatroomMembers)
+          .values({
+            chatroomId: accessRequest.chatroomId,
+            userId: accessRequest.userId,
+            role: 'member'
+          });
+        
+        // Award aura for joining chatroom
+        await storage.awardAura(accessRequest.userId, 1, 'approved private chatroom access');
+        
+        if (process.env.NODE_ENV === 'development') console.log(`🌟 AURA REWARD: Awarded 1 aura to user ${accessRequest.userId} for approved private chatroom access`);
+      }
+      
+      if (process.env.NODE_ENV === 'development') console.log(`🔐 RESPOND REQUEST: Successfully ${action}ed request ${requestId}`);
+      
+      return res.json({ 
+        success: true, 
+        message: `Access request ${action}ed successfully`,
+        action,
+        chatroomName: accessRequest.chatroomName
+      });
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error responding to access request:", error);
+      return res.status(500).json({ error: "Failed to respond to access request" });
+    }
+  });
+
   // CRITICAL: Create new chatroom with automatic membership for creator
   app.post("/api/chatrooms", async (req, res) => {
     try {
