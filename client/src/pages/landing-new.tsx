@@ -72,10 +72,13 @@ function LandingContent({ setLocation }: { setLocation: (path: string) => void }
       {/* Debug (optional) */}
       <MobileDebug />
 
-      {/* NAVBAR — keep it on top and above everything */}
-      <div className="sticky top-0 z-50">
+      {/* NAVBAR (fixed, always visible) */}
+      <div className="fixed inset-x-0 top-0 z-[100]">
         <LandingNavbar />
       </div>
+
+      {/* Spacer equal to navbar height so content starts below it */}
+      <div className="h-16 md:h-[72px]" />
 
       {/* Orange Sign-Up Header Bar with Sign In option */}
       <div className="bg-orange-500 text-black text-center py-2 md:hidden z-40 flex justify-between items-center px-4">
@@ -94,7 +97,7 @@ function LandingContent({ setLocation }: { setLocation: (path: string) => void }
         <div className="w-12"></div> {/* spacer for balance */}
       </div>
 
-      {/* MAIN CONTENT */}
+      {/* Main content takes remaining space */}
       <main className="flex-1">
         {/* Fixed mobile CTA button */}
         <div className="fixed bottom-4 right-4 md:bottom-6 md:right-6 z-50">
@@ -108,9 +111,10 @@ function LandingContent({ setLocation }: { setLocation: (path: string) => void }
           </Button>
         </div>
 
-        {/* HERO SECTION — trim padding and make overlay non-interactive */}
+        {/* HERO SECTION — non-interactive overlay and trimmed paddings */}
         <section className="relative border border-white/30 dark:border-gray-300/20">
           <div className="relative bg-gray-800 dark:bg-gray-900 overflow-hidden min-h-[520px]">
+            {/* Non-interactive overlay so it can't eat clicks */}
             <div className="absolute inset-0 h-full min-h-[520px] pointer-events-none">
               <img
                 src="/attached_assets/travelers together hugging_1754971726997.avif"
@@ -120,7 +124,8 @@ function LandingContent({ setLocation }: { setLocation: (path: string) => void }
               />
               <div className="absolute inset-0 bg-gray-800/70 dark:bg-gray-800/40 mix-blend-multiply" aria-hidden="true" />
             </div>
-            {/* Content */}
+            
+            {/* Trimmed vertical padding */}
             <div className="relative py-8 md:py-10 lg:py-12">
               <div className="mx-auto max-w-5xl px-4 text-center">
                 <h1 className="text-3xl md:text-5xl lg:text-6xl tracking-tight">
@@ -759,7 +764,7 @@ function LandingContent({ setLocation }: { setLocation: (path: string) => void }
 
       </main>
 
-      {/* Footer pinned to bottom, no extra padding */}
+      {/* Footer pinned to bottom */}
       <footer className="mt-auto">
         <Footer />
       </footer>

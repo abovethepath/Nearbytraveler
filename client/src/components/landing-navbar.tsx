@@ -68,7 +68,7 @@ export default function LandingNavbar() {
       
       {/* Enhanced Mobile menu */}
       {mobileMenuOpen && (
-        <div className="sm:hidden bg-red-600 shadow-lg">
+        <div className="sm:hidden bg-red-600 shadow-lg z-[110]">
           <div className="pt-3 pb-3 space-y-1 px-4">
             <Link href="/" 
               className="bg-white/20 border-l-4 border-white text-white block pl-4 pr-4 py-4 text-lg font-medium rounded-r-lg transition-all duration-200"
