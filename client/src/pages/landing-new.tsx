@@ -216,37 +216,7 @@ function LandingContent({ setLocation }: { setLocation: (path: string) => void }
               </div>
             </div>
             
-            {/* Taco Tuesday Event Card */}
-            <div className="bg-white rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-2xl transform transition-all duration-300 flex flex-col" style={{animationDelay: '0.2s'}}>
-              <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-yellow-400 to-orange-500">
-                <img 
-                  src="/attached_assets/image_1754973365104.png" 
-                  alt="Authentic taco stand with vintage neon sign" 
-                  className="w-full h-48 object-cover"
-                />
-              </div>
-              <div className="p-6 flex flex-col flex-grow">
-                <div className="mb-3">
-                  <h3 className="font-bold text-gray-900 mb-1">Taco Tuesday</h3>
-                  <p className="text-sm text-gray-600">Every Tuesday • $1.50 tacos</p>
-                </div>
-                
-                {/* Tags */}
-                <div className="flex flex-wrap gap-2 mb-3">
-                  <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-medium">$1.50</span>
-                  <span className="bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full text-xs font-medium">Food</span>
-                  <span className="bg-red-100 text-red-700 px-2 py-1 rounded-full text-xs font-medium">Weekly</span>
-                </div>
-                
-                <p className="text-gray-700 text-sm mb-4 flex-grow">Join locals every Tuesday for authentic street tacos at unbeatable prices. Meet fellow taco lovers and discover the best Mexican spots in the city.</p>
-                <Button 
-                  onClick={() => setLocation('/join')}
-                  className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold mt-auto"
-                >
-                  JOIN TO CONNECT
-                </Button>
-              </div>
-            </div>
+
             
             {/* Hollywood Sign Hike Event Card */}
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-2xl transform transition-all duration-300 flex flex-col" style={{animationDelay: '0.3s'}}>
@@ -312,37 +282,7 @@ function LandingContent({ setLocation }: { setLocation: (path: string) => void }
               </div>
             </div>
 
-            {/* Venice Beach Dance Party Event Card */}
-            <div className="bg-white rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-2xl transform transition-all duration-300 flex flex-col" style={{animationDelay: '0.5s'}}>
-              <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-purple-500 to-pink-500">
-                <img 
-                  src="/attached_assets/beach travel_1754973619241.jpg" 
-                  alt="Friends celebrating together on beach at sunset" 
-                  className="w-full h-48 object-cover"
-                />
-              </div>
-              <div className="p-6 flex flex-col flex-grow">
-                <div className="mb-3">
-                  <h3 className="font-bold text-gray-900 mb-1">Venice Beach Dance Party</h3>
-                  <p className="text-sm text-gray-600">Sunset dancing on the beach</p>
-                </div>
-                
-                {/* Tags */}
-                <div className="flex flex-wrap gap-2 mb-3">
-                  <span className="bg-pink-100 text-pink-700 px-2 py-1 rounded-full text-xs font-medium">Free</span>
-                  <span className="bg-purple-100 text-purple-700 px-2 py-1 rounded-full text-xs font-medium">Dance</span>
-                  <span className="bg-orange-100 text-orange-700 px-2 py-1 rounded-full text-xs font-medium">Sunset</span>
-                </div>
-                
-                <p className="text-gray-700 text-sm mb-4 flex-grow">Join the legendary Venice Beach dance scene with locals and travelers. Dancing on the sand as the sun sets over the Pacific Ocean.</p>
-                <Button 
-                  onClick={() => setLocation('/join')}
-                  className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold mt-auto"
-                >
-                  JOIN TO CONNECT
-                </Button>
-              </div>
-            </div>
+
           </div>
 
           {/* Call to action to see more */}
