@@ -11350,6 +11350,52 @@ Ready to start making real connections wherever you are?
   });
 
   // Simple Chatroom System - Clean rebuild
+  
+  // Check access permission to chatroom (CRITICAL SECURITY ENDPOINT)
+  app.get('/api/simple-chatrooms/:id/access-check', async (req, res) => {
+    try {
+      const chatroomId = parseInt(req.params.id);
+      const userId = parseInt(String(req.headers['x-user-id'] || 0));
+      
+      if (!chatroomId || !userId) {
+        return res.status(400).json({ hasAccess: false, error: 'Missing chatroomId/userId' });
+      }
+
+      // Get chatroom details first
+      const [chatroom] = await db.select().from(citychatrooms).where(eq(citychatrooms.id, chatroomId)).limit(1);
+      if (!chatroom) {
+        return res.status(404).json({ hasAccess: false, error: 'Chatroom not found' });
+      }
+
+      // If chatroom is public, access is granted
+      if (chatroom.isPublic) {
+        console.log(`🔓 PUBLIC CHATROOM: User ${userId} granted access to public room ${chatroomId}`);
+        return res.json({ hasAccess: true, isPublic: true });
+      }
+
+      // For private chatrooms, check if user has approved access request
+      const [accessRequest] = await db.select()
+        .from(chatroomAccessRequests)
+        .where(and(
+          eq(chatroomAccessRequests.chatroomId, chatroomId),
+          eq(chatroomAccessRequests.userId, userId),
+          eq(chatroomAccessRequests.status, 'approved')
+        ))
+        .limit(1);
+
+      if (accessRequest) {
+        console.log(`🔓 PRIVATE CHATROOM: User ${userId} has approved access to room ${chatroomId}`);
+        return res.json({ hasAccess: true, isPublic: false });
+      }
+
+      console.log(`🔒 ACCESS DENIED: User ${userId} has no approved access to private room ${chatroomId}`);
+      res.json({ hasAccess: false, isPublic: false, needsApproval: true });
+    } catch (error) {
+      console.error('Error checking chatroom access:', error);
+      res.status(500).json({ hasAccess: false, error: 'Failed to check access' });
+    }
+  });
+
   app.get('/api/simple-chatrooms/:id', async (req, res) => {
     try {
       const chatroomId = parseInt(req.params.id);

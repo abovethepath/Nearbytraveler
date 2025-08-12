@@ -115,39 +115,60 @@ export default function SimpleChatroomPage() {
     }
   }
 
-  // Fetch chatroom details
+  // Check access permission first
+  const { data: accessCheck, isLoading: accessLoading, error: accessError } = useQuery({
+    queryKey: [`/api/simple-chatrooms/${chatroomId}/access-check`],
+    queryFn: async () => {
+      const response = await fetch(`/api/simple-chatrooms/${chatroomId}/access-check`, {
+        headers: {
+          'x-user-id': String(currentUserId)
+        },
+        credentials: 'include'
+      });
+      if (!response.ok) {
+        throw new Error('Access check failed');
+      }
+      return response.json();
+    },
+    enabled: !!chatroomId && !!currentUserId,
+    staleTime: 0,
+    cacheTime: 0,
+    retry: false
+  });
+
+  // Fetch chatroom details only if access is granted
   const { data: chatroom } = useQuery<Chatroom>({
     queryKey: [`/api/simple-chatrooms/${chatroomId}`],
-    enabled: !!chatroomId,
+    enabled: !!chatroomId && accessCheck?.hasAccess,
     staleTime: 0, // No caching
     cacheTime: 0  // Clear cache immediately
   });
 
-  // Fetch messages  
+  // Fetch messages only if access is granted  
   const { data: messages = [], isLoading } = useQuery<ChatMessage[]>({
     queryKey: [`/api/simple-chatrooms/${chatroomId}/messages`],
-    refetchInterval: 2500,
+    refetchInterval: accessCheck?.hasAccess ? 2500 : false,
     refetchOnWindowFocus: false,
-    enabled: !!chatroomId,
+    enabled: !!chatroomId && accessCheck?.hasAccess,
     staleTime: 0, // No caching
     cacheTime: 0  // Clear cache immediately
   });
 
-  // Fetch member count
+  // Fetch member count only if access is granted
   const { data: memberCountResp } = useQuery<{memberCount: number}>({
     queryKey: [`/api/simple-chatrooms/${chatroomId}/members/count`],
-    refetchInterval: 5000,
-    enabled: !!chatroomId,
+    refetchInterval: accessCheck?.hasAccess ? 5000 : false,
+    enabled: !!chatroomId && accessCheck?.hasAccess,
     staleTime: 0, // No caching
     cacheTime: 0  // Clear cache immediately
   });
   const memberCount = memberCountResp?.memberCount ?? 0;
 
-  // Fetch member list with avatars
+  // Fetch member list with avatars only if access is granted
   const { data: members = [] } = useQuery<ChatMember[]>({
     queryKey: [`/api/simple-chatrooms/${chatroomId}/members`],
-    refetchInterval: 10000,
-    enabled: !!chatroomId,
+    refetchInterval: accessCheck?.hasAccess ? 10000 : false,
+    enabled: !!chatroomId && accessCheck?.hasAccess,
     staleTime: 0,
     cacheTime: 0
   });
@@ -201,6 +222,63 @@ export default function SimpleChatroomPage() {
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
+
+  // Show loading state while checking access
+  if (accessLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-orange-50 dark:from-gray-900 dark:to-gray-800">
+        <div className="max-w-4xl mx-auto px-4 py-6">
+          <Card>
+            <CardContent className="p-8">
+              <div className="flex items-center justify-center">
+                <span>Checking access...</span>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
+  // Show access denied screen if user doesn't have permission
+  if (accessError || (accessCheck && !accessCheck.hasAccess)) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-orange-50 dark:from-gray-900 dark:to-gray-800">
+        <div className="max-w-4xl mx-auto px-4 py-6">
+          <Card>
+            <CardHeader>
+              <div className="flex items-center gap-4">
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => navigate('/city-chatrooms')}
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                </Button>
+                <CardTitle className="text-xl">🔒 Private Chatroom</CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent className="p-8 text-center">
+              <div className="space-y-4">
+                <div className="text-lg font-semibold text-red-600 dark:text-red-400">
+                  Access Denied
+                </div>
+                <p className="text-gray-600 dark:text-gray-400">
+                  This is a private chatroom. You need organizer approval to access this chat.
+                </p>
+                <Button 
+                  onClick={() => navigate('/city-chatrooms')}
+                  className="mt-4"
+                >
+                  Back to Chatrooms
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-orange-50 dark:from-gray-900 dark:to-gray-800">
