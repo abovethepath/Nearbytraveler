@@ -34,7 +34,7 @@ export default function SignupTraveling() {
     currentCity: '',
     currentState: '',
     currentCountry: '',
-    travelStartDate: '',
+
     travelEndDate: '',
     interests: [] as string[],
     activities: [] as string[],
@@ -200,7 +200,9 @@ export default function SignupTraveling() {
         userType: 'traveler',
         isCurrentlyTraveling: true,
         travelDestination: `${formData.currentCity}, ${formData.currentState ? formData.currentState + ', ' : ''}${formData.currentCountry}`,
-        languagesSpoken: formData.languages
+        languagesSpoken: formData.languages,
+        // Since user is currently traveling, set start date to today
+        travelStartDate: new Date().toISOString().split('T')[0]
       };
 
       const response = await fetch('/api/auth/register', {
