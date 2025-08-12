@@ -68,7 +68,7 @@ export default function Landing() {
 
 function LandingContent({ setLocation }: { setLocation: (path: string) => void }) {
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900 font-sans" key="landing-v2-mobile-optimized">
+    <div className="min-h-dvh flex flex-col bg-gray-50 dark:bg-gray-900 overflow-x-hidden" key="landing-v2-mobile-optimized">
       {/* Debug (optional) */}
       <MobileDebug />
 
@@ -752,10 +752,10 @@ function LandingContent({ setLocation }: { setLocation: (path: string) => void }
 
       </main>
 
-      {/* FOOTER — dock to bottom with minimal padding */}
-      <div className="mt-auto">
+      {/* Footer pinned to bottom, no extra padding */}
+      <footer className="mt-auto">
         <Footer />
-      </div>
+      </footer>
     </div>
   );
 }

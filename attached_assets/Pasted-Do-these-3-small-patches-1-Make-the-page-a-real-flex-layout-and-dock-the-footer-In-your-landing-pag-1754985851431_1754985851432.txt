@@ -1,0 +1,97 @@
+Do these 3 small patches
+1) Make the page a real flex layout and dock the footer
+In your landing page file, change the outer wrapper + footer:
+
+tsx
+Copy
+Edit
+function LandingContent({ setLocation }: { setLocation: (path: string) => void }) {
+  return (
+    // use dvh on mobile; make a column; kill horizontal scroll
+    <div className="min-h-dvh flex flex-col bg-gray-50 dark:bg-gray-900 overflow-x-hidden">
+      {/* ... */}
+      <main className="flex-1">
+        {/* hero + rest */}
+      </main>
+
+      {/* Footer pinned to bottom, no extra padding */}
+      <footer className="mt-auto">
+        <Footer />
+      </footer>
+    </div>
+  );
+}
+2) Ensure the navbar can sit above overlays (this is why it “doesn’t show”)
+Wrap LandingNavbar with a sticky high z-index, and make the hero overlay non-interactive so it can’t block clicks.
+
+tsx
+Copy
+Edit
+{/* NAVBAR */}
+<div className="sticky top-0 z-50">
+  <LandingNavbar />
+</div>
+
+{/* HERO overlay container */}
+<div className="absolute inset-0 h-full min-h-[520px] pointer-events-none">
+  {/* image + dark layer */}
+</div>
+pointer-events-none stops the dark overlay from eating clicks/taps on the navbar hamburger.
+
+3) Reduce the hidden paddings that balloon the page
+In your hero section, replace the stacked paddings with tighter ones:
+
+tsx
+Copy
+Edit
+<section className="relative border border-white/30 dark:border-gray-300/20">
+  <div className="relative bg-gray-800 dark:bg-gray-900 overflow-hidden min-h-[520px]">
+    {/* ... */}
+    <div className="relative py-8 md:py-10 lg:py-12">  {/* trimmed */}
+      <div className="mx-auto max-w-5xl px-4 text-center">
+        {/* content */}
+        <div className="mt-8 md:mt-10 mb-6">       {/* trimmed */}
+          {/* CTA */}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+Tweak the Footer component (one-time)
+Open components/footer.tsx (or wherever it lives) and remove big bottom padding/margins. Keep it small and tight:
+
+tsx
+Copy
+Edit
+export default function Footer() {
+  return (
+    <div className="w-full border-t border-white/10 bg-gray-900">
+      <div className="mx-auto max-w-6xl px-4 py-6 md:py-8 text-xs text-gray-400">
+        {/* ...your footer rows... */}
+      </div>
+    </div>
+  );
+}
+If you previously had pb-20, pb-32, or mb-20, delete them.
+
+If there’s still space after this
+Add this temporary debug outline to see what’s tall:
+
+tsx
+Copy
+Edit
+{/* TEMP: debug—remove after checking */}
+<style>{`
+  .debug * { outline: 1px dashed rgba(255,255,255,.15); }
+`}</style>
+<div className="debug">
+  {/* wrap your page here briefly to see which block is huge */}
+</div>
+You’ll immediately see which element is creating extra height (often a leftover pb-32 in Footer or a section after the footer). Remove that class, then delete the debug wrapper.
+
+Quick checklist
+Navbar shows? If not, confirm the import path is correct and that no parent has overflow-hidden clipping a sticky navbar. If your LandingNavbar is fixed internally, keep the wrapper z-50 but you can drop sticky.
+
+Footer gap gone? If not, check the Footer’s own classes for any pb-*/mb-*, and verify you’re using min-h-dvh flex flex-col + mt-auto as shown.
+
+Want me to look at your actual LandingNavbar and Footer components? Paste them and I’ll give you exact class edits so the hamburger/dropdown renders above the hero and the footer sits flush with zero wasted space.
