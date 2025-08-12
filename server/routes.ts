@@ -11319,5 +11319,51 @@ Ready to start making real connections wherever you are?
     }
   });
 
+  // Get user's chatroom memberships (for showing which chatrooms they're in)
+  app.get('/api/users/:userId/chatrooms', async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      
+      if (process.env.NODE_ENV === 'development') console.log(`🏠 USER CHATROOMS: Getting chatrooms for user ${userId}`);
+
+      // Get user's active chatroom memberships with chatroom details
+      const chatroomsResult = await db.execute(sql`
+        SELECT 
+          cc.id,
+          cc.name,
+          cc.description,
+          cc.city,
+          cc.state,
+          cc.country,
+          cm.role,
+          cm.joined_at,
+          (SELECT COUNT(*) FROM chatroom_members cm2 WHERE cm2.chatroom_id = cc.id AND cm2.is_active = true) as member_count
+        FROM chatroom_members cm
+        LEFT JOIN citychatrooms cc ON cm.chatroom_id = cc.id
+        WHERE cm.user_id = ${userId} AND cm.is_active = true
+        ORDER BY cm.joined_at DESC
+      `);
+
+      const chatrooms = chatroomsResult.rows.map((row: any) => ({
+        id: row.id,
+        name: row.name,
+        description: row.description,
+        city: row.city,
+        state: row.state,
+        country: row.country,
+        role: row.role,
+        joined_at: row.joined_at,
+        member_count: parseInt(row.member_count || '0')
+      }));
+
+      if (process.env.NODE_ENV === 'development') console.log(`🏠 USER CHATROOMS: Found ${chatrooms.length} chatrooms for user ${userId}`);
+
+      res.json(chatrooms);
+    } catch (error: any) {
+      console.error('Error getting user chatrooms:', error);
+      res.status(500).json({ error: 'Failed to get user chatrooms' });
+    }
+  });
+
   return httpServer;
 }
