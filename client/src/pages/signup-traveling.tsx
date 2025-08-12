@@ -40,7 +40,7 @@ export default function SignupTraveling() {
     activities: [] as string[],
     events: [] as string[],
     languages: [] as string[],
-    secretActivities: '',
+
     sexualPreference: [] as string[],
     isVeteran: false,
     isActiveDuty: false,
@@ -721,19 +721,7 @@ export default function SignupTraveling() {
                 </div>
               </div>
 
-              {/* Secret Local Activities */}
-              <div className="space-y-4">
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Secret Local Activities 🔐</h3>
-                <p className="text-lg text-gray-700 dark:text-gray-300 mb-4 font-medium">
-                  Share your favorite local activities and places you love from your HOMETOWN. Connect with others who share similar interests
-                </p>
-                <Textarea
-                  value={formData.secretActivities}
-                  onChange={(e) => setFormData(prev => ({ ...prev, secretActivities: e.target.value }))}
-                  placeholder="What are your favorite local activities and places you love in your hometown?"
-                  className="min-h-[100px]"
-                />
-              </div>
+
 
               {/* Military Status */}
               <div className="space-y-4">
