@@ -1,12 +1,6 @@
-import { Pool, neonConfig } from '@neondatabase/serverless';
-import { drizzle } from 'drizzle-orm/neon-serverless';
-import ws from "ws";
+import { drizzle } from 'drizzle-orm/postgres-js';
+import postgres from 'postgres';
 import * as schema from "@shared/schema";
-
-// Configure Neon for production scale
-neonConfig.webSocketConstructor = ws;
-neonConfig.useSecureWebSocket = true;
-neonConfig.pipelineConnect = false; // Better for high concurrency
 
 if (!process.env.DATABASE_URL) {
   throw new Error(
@@ -14,15 +8,17 @@ if (!process.env.DATABASE_URL) {
   );
 }
 
-// Production-scale connection pool for 10,000+ users
-export const pool = new Pool({ 
-  connectionString: process.env.DATABASE_URL,
-  max: 20, // Maximum connections for high load
-  idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 2000,
+console.log('Initializing PostgreSQL connection...');
+
+// Create a more reliable connection using postgres-js instead of Neon serverless
+const client = postgres(process.env.DATABASE_URL, { 
+  ssl: 'require',
+  max: 10,
+  idle_timeout: 20,
+  connect_timeout: 10,
 });
 
-export const db = drizzle({ client: pool, schema });
+export const db = drizzle(client, { schema });
 
 // Add connection wrapper with retry logic for critical operations
 export async function withRetry<T>(operation: () => Promise<T>, maxRetries = 3): Promise<T> {
@@ -30,7 +26,8 @@ export async function withRetry<T>(operation: () => Promise<T>, maxRetries = 3):
     try {
       return await operation();
     } catch (error: any) {
-      if (attempt === maxRetries || !error?.message?.includes('Too many database connection attempts')) {
+      console.error(`Database operation attempt ${attempt} failed:`, error.message);
+      if (attempt === maxRetries) {
         throw error;
       }
       // Wait exponentially longer between retries
@@ -39,3 +36,15 @@ export async function withRetry<T>(operation: () => Promise<T>, maxRetries = 3):
   }
   throw new Error('Max retries exceeded');
 }
+
+console.log('Database connection initialized successfully');
+
+// For backward compatibility, also export individual functions
+export function getDb() {
+  return db;
+}
+
+export function getPool() {
+  return client;
+}
+
