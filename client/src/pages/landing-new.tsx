@@ -85,16 +85,25 @@ function LandingContent({ setLocation }: { setLocation: (path: string) => void }
         }}
       >
         <div className="flex items-center justify-between w-full max-w-7xl mx-auto">
-          <div className="text-white text-xl font-bold">NEARBY TRAVELER BETA</div>
-          <div className="flex space-x-4">
-            <button className="bg-white text-red-600 px-4 py-2 rounded text-sm font-medium">Sign In</button>
-            <button className="bg-orange-500 text-black px-4 py-2 rounded text-sm font-medium">Join</button>
+          <div className="text-white text-lg md:text-xl font-bold">NEARBY TRAVELER <span className="text-sm bg-white/20 px-2 py-1 rounded ml-2">BETA</span></div>
+          <div className="flex space-x-2 md:space-x-4">
+            <button 
+              onClick={() => window.location.href = '/auth'} 
+              className="bg-white text-red-600 hover:bg-white/90 px-3 py-1 md:px-4 md:py-2 rounded text-xs md:text-sm font-medium"
+            >
+              Sign In
+            </button>
+            <button 
+              onClick={() => window.location.href = '/join'} 
+              className="bg-orange-500 hover:bg-orange-600 text-black px-3 py-1 md:px-4 md:py-2 rounded text-xs md:text-sm font-medium"
+            >
+              Join
+            </button>
           </div>
         </div>
       </div>
 
-      {/* Spacer equal to navbar height plus safe area so content starts below it */}
-      <div className="h-20" style={{ marginTop: 'env(safe-area-inset-top)' }} />
+      <div className="h-24 bg-gray-200" style={{ minHeight: '96px' }}></div>
 
 
 
