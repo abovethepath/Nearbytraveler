@@ -313,12 +313,11 @@ export default function Landing() {
             {/* Taco Tuesday Event Card */}
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
               <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-yellow-400 to-orange-500">
-                <div className="w-full h-48 bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center">
-                  <div className="text-center text-white">
-                    <div className="text-6xl mb-2">🌮</div>
-                    <div className="text-lg font-bold">$1.50 Street Tacos</div>
-                  </div>
-                </div>
+                <img 
+                  src="/attached_assets/image_1754973365104.png" 
+                  alt="Authentic taco stand with vintage neon sign" 
+                  className="w-full h-48 object-cover"
+                />
               </div>
               <div className="p-6">
                 <div className="flex items-center mb-3">
