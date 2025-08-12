@@ -59,9 +59,35 @@ export default function Landing() {
 
   return (
     <div className="bg-gray-50 dark:bg-gray-900 font-sans" key="landing-v2-no-copy-button">
+      {/* Sticky Call-to-Action Button - Always Visible */}
+      <div className="fixed bottom-4 right-4 z-50 md:hidden">
+        <Button
+          onClick={() => setLocation('/auth')}
+          size="lg"
+          className="bg-orange-500 hover:bg-orange-600 text-white font-bold px-6 py-3 rounded-full shadow-2xl transform transition-all duration-200 hover:scale-105 border-2 border-white animate-pulse"
+          style={{
+            boxShadow: '0 8px 25px rgba(0,0,0,0.3), 0 0 0 2px rgba(255,255,255,0.8)',
+          }}
+        >
+          🚀 SIGN UP FREE
+        </Button>
+      </div>
 
       {/* Landing Navbar with BETA badge */}
       <LandingNavbar />
+      
+      {/* Desktop Sticky CTA Bar */}
+      <div className="hidden md:block fixed top-20 right-4 z-50">
+        <div className="bg-orange-500 text-white px-6 py-3 rounded-l-full shadow-2xl border-4 border-white animate-pulse">
+          <Button
+            onClick={() => setLocation('/auth')}
+            variant="ghost"
+            className="text-white hover:text-orange-100 font-bold text-lg p-0 h-auto"
+          >
+            🚀 JOIN FREE TODAY! →
+          </Button>
+        </div>
+      </div>
 
 
       {/* HERO SECTION */}
@@ -89,6 +115,21 @@ export default function Landing() {
                       Nearby Traveler- Connecting you to Nearby Locals and Nearby Travelers based on your interests, activities, events and demographics.
                     </p>
                     
+                    {/* Prominent Call-to-Action Button */}
+                    <div className="mt-8 mb-4">
+                      <Button
+                        onClick={() => setLocation('/auth')}
+                        size="lg"
+                        className="bg-orange-500 hover:bg-orange-600 text-white font-bold text-xl px-12 py-4 rounded-full shadow-2xl transform transition-all duration-200 hover:scale-105 hover:shadow-3xl border-4 border-white animate-pulse"
+                        style={{
+                          fontSize: '1.5rem',
+                          minHeight: '60px',
+                          boxShadow: '0 10px 30px rgba(0,0,0,0.3), 0 0 0 4px rgba(255,255,255,0.8)',
+                        }}
+                      >
+                        🚀 SIGN UP NOW - IT'S FREE! 🚀
+                      </Button>
+                    </div>
 
                   </div>
                 </main>
