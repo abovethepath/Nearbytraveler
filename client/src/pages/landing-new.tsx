@@ -753,8 +753,10 @@ export default function Landing() {
         <Footer />
       </div>
       
-      {/* Mobile Bottom Navigation */}
-      <MobileBottomNav />
+      {/* Mobile Bottom Navigation - Always visible on mobile */}
+      <div className="block md:hidden">
+        <MobileBottomNav />
+      </div>
     </div>
   );
 }
