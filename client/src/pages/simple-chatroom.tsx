@@ -40,29 +40,74 @@ interface ChatMember {
 export default function SimpleChatroomPage() {
   const params = useParams();
   const [location, navigate] = useLocation();
-  
-  // Extract chatroom ID from URL path: /simple-chatroom/198
-  const pathSegments = location.split('/');
-  const chatroomId = parseInt(pathSegments[2] || '198');
   const { toast } = useToast();
-  
-  console.log('🚀 SIMPLE CHATROOM: Component loaded with chatroom ID:', chatroomId, 'from URL:', location, 'params:', params);
   const queryClient = useQueryClient();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [messageText, setMessageText] = useState("");
   
-  // Get current user
+  // Extract chatroom ID from URL path: /simple-chatroom/198
+  const pathSegments = location.split('/');
+  const chatroomId = parseInt(pathSegments[2] || '198');
+  
+  console.log('🚀 SIMPLE CHATROOM: Component loaded with chatroom ID:', chatroomId, 'from URL:', location, 'params:', params, 'pathSegments:', pathSegments);
+  
+  // Get current user with better error handling
   const getCurrentUser = () => {
     try {
-      const storedUser = localStorage.getItem('travelconnect_user');
-      return storedUser ? JSON.parse(storedUser) : null;
+      const storedUser = localStorage.getItem('travelconnect_user') || localStorage.getItem('user');
+      if (storedUser) {
+        const user = JSON.parse(storedUser);
+        console.log('🔑 CHATROOM: Found user in localStorage:', user?.username || 'unknown');
+        return user;
+      } else {
+        console.log('⚠️ CHATROOM: No user found in localStorage');
+        return null;
+      }
     } catch (e) {
+      console.error('❌ CHATROOM: Error parsing user from localStorage:', e);
       return null;
     }
   };
   
   const currentUser = getCurrentUser();
   const currentUserId = Number(currentUser?.id || 0);
+  
+  console.log('🔑 CHATROOM: Current user data:', { currentUser: currentUser?.username || 'null', currentUserId });
+  
+  // Early error handling for invalid chatroom ID
+  if (isNaN(chatroomId) || chatroomId <= 0) {
+    console.error('❌ CHATROOM: Invalid chatroom ID:', chatroomId);
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-orange-50 dark:from-gray-900 dark:to-gray-800">
+        <div className="max-w-4xl mx-auto px-4 py-6">
+          <Card>
+            <CardContent className="p-8 text-center">
+              <div className="text-red-600 font-semibold mb-4">Invalid Chatroom ID</div>
+              <Button onClick={() => navigate('/city-chatrooms')}>Back to Chatrooms</Button>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+  
+  // Early error handling for missing user
+  if (!currentUser || !currentUserId) {
+    console.error('❌ CHATROOM: No authenticated user found');
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-orange-50 dark:from-gray-900 dark:to-gray-800">
+        <div className="max-w-4xl mx-auto px-4 py-6">
+          <Card>
+            <CardContent className="p-8 text-center">
+              <div className="text-red-600 font-semibold mb-4">Authentication Required</div>
+              <div className="text-gray-600 mb-4">Please log in to access chatrooms</div>
+              <Button onClick={() => navigate('/auth')}>Log In</Button>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   // Join room function
   async function joinRoom() {
@@ -119,16 +164,22 @@ export default function SimpleChatroomPage() {
   const { data: accessCheck, isLoading: accessLoading, error: accessError } = useQuery({
     queryKey: [`/api/simple-chatrooms/${chatroomId}/access-check`],
     queryFn: async () => {
+      console.log('🔍 CHATROOM: Checking access for chatroom ID:', chatroomId, 'user ID:', currentUserId);
       const response = await fetch(`/api/simple-chatrooms/${chatroomId}/access-check`, {
         headers: {
           'x-user-id': String(currentUserId)
         },
         credentials: 'include'
       });
+      console.log('🔍 CHATROOM: Access check response status:', response.status);
       if (!response.ok) {
+        const error = await response.text();
+        console.error('❌ CHATROOM: Access check failed:', error);
         throw new Error('Access check failed');
       }
-      return response.json();
+      const result = await response.json();
+      console.log('✅ CHATROOM: Access check result:', result);
+      return result;
     },
     enabled: !!chatroomId && !!currentUserId,
     staleTime: 0,
@@ -223,15 +274,37 @@ export default function SimpleChatroomPage() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
 
+  // Add comprehensive debug logging for access state
+  console.log('🔍 CHATROOM: Access state:', {
+    accessLoading,
+    accessError: accessError?.message || 'none',
+    accessCheck: accessCheck || 'none',
+    hasAccess: accessCheck?.hasAccess || false
+  });
+
   // Show loading state while checking access
   if (accessLoading) {
+    console.log('⏳ CHATROOM: Showing loading state for access check');
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-orange-50 dark:from-gray-900 dark:to-gray-800">
         <div className="max-w-4xl mx-auto px-4 py-6">
           <Card>
+            <CardHeader>
+              <div className="flex items-center gap-4">
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => navigate('/city-chatrooms')}
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                </Button>
+                <div>Loading Chatroom...</div>
+              </div>
+            </CardHeader>
             <CardContent className="p-8">
               <div className="flex items-center justify-center">
-                <span>Checking access...</span>
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mr-3"></div>
+                <span>Checking chatroom access...</span>
               </div>
             </CardContent>
           </Card>

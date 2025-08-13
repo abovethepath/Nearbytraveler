@@ -696,7 +696,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   // Dynamic profile schema based on user type
   const getProfileFormSchema = (userType: string) => {
     const baseSchema = z.object({
-      bio: z.string().max(1000, "Bio must be 1000 characters or less"),
+      bio: z.string().min(30, "Bio must be at least 30 characters").max(1000, "Bio must be 1000 characters or less"),
       hometownCity: z.string().optional(),
       hometownState: z.string().optional(),
       hometownCountry: z.string().optional(),
@@ -6132,7 +6132,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         />
                       </FormControl>
                       <div className="text-xs text-gray-500 text-right">
-                        {field.value?.length || 0}/1000 characters
+                        {field.value?.length || 0}/1000 characters {(field.value?.length || 0) < 30 && '(minimum 30 required)'}
                       </div>
                       <FormMessage />
                     </FormItem>

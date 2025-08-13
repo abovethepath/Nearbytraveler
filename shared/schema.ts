@@ -487,6 +487,7 @@ export const insertUserSchema = createInsertSchema(users).omit({
 }).extend({
   username: z.string().min(6, "Username must be at least 6 characters long"),
   password: z.string().min(8, "Password must be at least 8 characters long"),
+  bio: z.string().min(30, "Bio must be at least 30 characters long").optional(),
 });
 
 export const insertConnectionSchema = createInsertSchema(connections).omit({
