@@ -735,15 +735,15 @@ export default function MatchInCity() {
               </div>
               
               <div className="grid md:grid-cols-2 gap-4 mb-4">
-                <div className="bg-green-500/20 p-3 rounded-lg">
+                <div className="bg-emerald-500/20 border border-emerald-300/30 p-3 rounded-lg">
                   <div className="flex items-center gap-2 mb-2">
-                    <div className="bg-green-500 rounded-full w-6 h-6 flex items-center justify-center text-white text-sm font-bold">1</div>
-                    <h3 className="font-bold text-sm">Add Your Activities</h3>
+                    <div className="bg-emerald-600 rounded-full w-6 h-6 flex items-center justify-center text-white text-sm font-bold">1</div>
+                    <h3 className="font-bold text-sm text-emerald-100">Add Your Activities</h3>
                   </div>
                   <div className="text-xs mb-2 font-mono bg-black/20 p-2 rounded">
                     + "Comic-Con" + "Auto Show" + "Ted Talk" + "Coachella" + "South by Southwest" + "Lollapalooza" + "New York Fashion Week" + "Mardi Gras"
                   </div>
-                  <ul className="text-xs space-y-1 text-green-100">
+                  <ul className="text-xs space-y-1 text-emerald-100">
                     <li>• Add specific events, activities, or interests</li>
                     <li>• Create your unique activity profile</li>
                     <li>• Show what you're passionate about</li>

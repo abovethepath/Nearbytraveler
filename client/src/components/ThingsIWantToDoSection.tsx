@@ -292,7 +292,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
                   {cityData.events.map((event) => (
                     <div
                       key={`evt-${event.id}`}
-                      className={`relative group bg-green-600 text-white rounded-full hover:bg-green-700 transition-colors ${
+                      className={`relative group bg-purple-600 text-white rounded-full hover:bg-purple-700 transition-colors ${
                         isMobile 
                           ? 'px-3 py-2 text-sm min-h-[40px] flex items-center' 
                           : 'px-3 py-2 text-sm'
