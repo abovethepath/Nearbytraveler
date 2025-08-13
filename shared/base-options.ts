@@ -10,7 +10,7 @@ export const MOST_POPULAR_INTERESTS = [
   
   // Party/Nightlife second
   "Craft Beer & Breweries",
-  "Cocktails & Bars",
+  "Cocktail Bars",
   "Happy Hour Deals",
   "Nightlife & Dancing",
   "Live Music Venues",
