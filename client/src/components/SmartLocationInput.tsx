@@ -23,9 +23,9 @@ interface SmartLocationInputProps {
 }
 
 export function SmartLocationInput({ 
-  city = "", 
-  state = "", 
-  country = "", 
+  city: propCity = "", 
+  state: propState = "", 
+  country: propCountry = "", 
   onLocationChange, 
   onLocationSelect,
   required = false, 
@@ -34,6 +34,9 @@ export function SmartLocationInput({
   className = "",
   "data-testid": dataTestId
 }: SmartLocationInputProps) {
+  const [country, setCountry] = useState(propCountry);
+  const [city, setCity] = useState(propCity);
+  const [state, setState] = useState(propState);
   const [isStateOptional, setIsStateOptional] = useState(false);
   const [stateLabel, setStateLabel] = useState("State/Province/Region");
   const [customCity, setCustomCity] = useState("");
@@ -85,6 +88,9 @@ export function SmartLocationInput({
   const handleCountryChange = (newCountry: string) => {
     console.log('🌍 SmartLocationInput: Country changed to:', newCountry);
     // Reset city and state when country changes
+    setCountry(newCountry);
+    setCity("");
+    setState("");
     const newLocation = { city: "", state: "", country: newCountry };
     if (onLocationChange && typeof onLocationChange === 'function') {
       onLocationChange(newLocation);
@@ -96,13 +102,15 @@ export function SmartLocationInput({
 
   const handleCityChange = (newCity: string) => {
     console.log('🏙️ SmartLocationInput: City changed to:', newCity);
-    let newState = state;
+    setCity(newCity);
     
+    let newState = state;
     // Auto-populate state if we know it
     if (country) {
       const autoRegion = getRegionForCity(newCity, country);
       if (autoRegion) {
         newState = autoRegion;
+        setState(autoRegion);
       }
     }
     
@@ -117,6 +125,7 @@ export function SmartLocationInput({
 
   const handleStateChange = (newState: string) => {
     console.log('📍 SmartLocationInput: State changed to:', newState);
+    setState(newState);
     const newLocation = { city, state: newState, country };
     if (onLocationChange && typeof onLocationChange === 'function') {
       onLocationChange(newLocation);
