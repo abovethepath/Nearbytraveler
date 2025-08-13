@@ -138,7 +138,7 @@ function DiscoverPaused() {
                     <div className="absolute inset-0 bg-black/20" />
                     <div className="absolute top-4 right-4">
                       <Badge className="bg-gradient-to-r from-orange-500 to-red-500 text-white text-lg px-4 py-2">
-                        🌟 BETA FOCUS
+                        🌟 FOCUS
                       </Badge>
                     </div>
                   </div>
