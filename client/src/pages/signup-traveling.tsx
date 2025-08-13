@@ -63,6 +63,10 @@ export default function SignupTraveling() {
     interests: [] as string[],
     // Traveler specific
     isCurrentlyTraveling: true,
+    // Hometown fields - REQUIRED for all users (where they're FROM)
+    hometownCountry: "",
+    hometownCity: "",
+    hometownState: "",
     // Travel destination fields - REQUIRED for chatrooms and city pages
     currentCity: "",
     currentState: "",
@@ -129,6 +133,8 @@ export default function SignupTraveling() {
       if (!finalFormData.username) missingFields.push("Username");
       if (!finalFormData.name) missingFields.push("Full Name");
       if (!formData.dateOfBirth) missingFields.push("Date of Birth");
+      if (!formData.hometownCity) missingFields.push("Hometown");
+      if (!formData.hometownCountry) missingFields.push("Hometown Country");
       if (!formData.currentCity) missingFields.push("Travel Destination");
       if (!formData.currentCountry) missingFields.push("Travel Country");
 
@@ -177,14 +183,21 @@ export default function SignupTraveling() {
         name: finalFormData.name.trim(),
         dateOfBirth: new Date(formData.dateOfBirth),
         interests: formData.interests,
+        // Hometown - CRITICAL for all users
+        hometownCity: formData.hometownCity,
+        hometownState: formData.hometownState,
+        hometownCountry: formData.hometownCountry,
+        location: formData.hometownState 
+          ? `${formData.hometownCity}, ${formData.hometownState}, ${formData.hometownCountry}`
+          : `${formData.hometownCity}, ${formData.hometownCountry}`,
+        hometown: formData.hometownState 
+          ? `${formData.hometownCity}, ${formData.hometownState}, ${formData.hometownCountry}`
+          : `${formData.hometownCity}, ${formData.hometownCountry}`,
         // Travel destination - CRITICAL for chatrooms and city pages
         currentCity: formData.currentCity,
         currentState: formData.currentState,
         currentCountry: formData.currentCountry,
         travelDestination: formData.currentState 
-          ? `${formData.currentCity}, ${formData.currentState}, ${formData.currentCountry}`
-          : `${formData.currentCity}, ${formData.currentCountry}`,
-        location: formData.currentState 
           ? `${formData.currentCity}, ${formData.currentState}, ${formData.currentCountry}`
           : `${formData.currentCity}, ${formData.currentCountry}`,
         travelReturnDate: formData.travelReturnDate ? new Date(formData.travelReturnDate) : null,
@@ -196,9 +209,6 @@ export default function SignupTraveling() {
         // Default values for removed fields
         bio: '',
         gender: '',
-        hometownCity: '',
-        hometownState: '',
-        hometownCountry: '',
         isVeteran: false,
         isActiveDuty: false,
         travelingWithChildren: false
@@ -319,6 +329,37 @@ export default function SignupTraveling() {
                 />
               </div>
 
+              {/* Hometown Location - CRITICAL for all users */}
+              <div className="space-y-4">
+                <Label className="text-base md:text-lg font-semibold text-gray-900 dark:text-white text-crisp">
+                  Where are you from? (Hometown) *
+                </Label>
+                <SmartLocationInput
+                  onLocationSelect={(location) => {
+                    console.log('🏠 Hometown selected:', location);
+                    setFormData(prev => ({
+                      ...prev,
+                      hometownCity: location.city,
+                      hometownState: location.state || '',
+                      hometownCountry: location.country
+                    }));
+                  }}
+                  placeholder="Enter your hometown (e.g., Denver, CO, USA)"
+                  className="text-base py-3 text-crisp font-medium"
+                  data-testid="input-hometown-location"
+                />
+                
+                {formData.hometownCity && (
+                  <div className="mt-2 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+                    <p className="text-sm text-green-800 dark:text-green-200" data-testid="text-selected-hometown">
+                      <strong>Hometown:</strong> {formData.hometownCity}
+                      {formData.hometownState && `, ${formData.hometownState}`}
+                      {formData.hometownCountry && `, ${formData.hometownCountry}`}
+                    </p>
+                  </div>
+                )}
+              </div>
+
               {/* Travel Destination - CRITICAL for chatrooms and city pages */}
               <div className="space-y-4">
                 <Label className="text-base md:text-lg font-semibold text-gray-900 dark:text-white text-crisp">
@@ -401,7 +442,7 @@ export default function SignupTraveling() {
 
               <Button
                 type="submit"
-                disabled={isSubmitting || formData.interests.length < 3 || !formData.currentCity}
+                disabled={isSubmitting || formData.interests.length < 3 || !formData.hometownCity || !formData.currentCity}
                 className="w-full text-lg md:text-xl py-4 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 disabled:bg-gray-400 disabled:cursor-not-allowed font-bold text-white rounded-lg transition-all duration-200 hover:scale-105 disabled:hover:scale-100 text-crisp"
                 data-testid="button-create-account"
               >
