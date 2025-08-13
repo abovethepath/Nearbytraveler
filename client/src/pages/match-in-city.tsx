@@ -30,67 +30,9 @@ import {
 
 // Removed problematic city images and photo gallery functions
 
-// Metro consolidation function - matches the backend logic
+// DISABLED: Metro consolidation per user request - return original city names
 const consolidateToMetroArea = (city: string, state?: string): string => {
-  if (!city) return city;
-  
-  const METRO_AREAS = [
-    {
-      mainCity: 'Los Angeles Metro',
-      state: 'California',
-      cities: [
-        'Los Angeles', 'Santa Monica', 'Venice', 'Venice Beach', 'El Segundo', 
-        'Manhattan Beach', 'Beverly Hills', 'West Hollywood', 'Pasadena', 
-        'Burbank', 'Glendale', 'Long Beach', 'Torrance', 'Inglewood', 
-        'Compton', 'Downey', 'Pomona', 'Playa del Rey', 'Redondo Beach',
-        'Culver City', 'Marina del Rey', 'Hermosa Beach', 'Hawthorne',
-        'Gardena', 'Carson', 'Lakewood', 'Norwalk', 'Whittier', 'Montebello',
-        'East Los Angeles', 'Monterey Park', 'Alhambra', 'South Pasadena',
-        'San Fernando', 'North Hollywood', 'Hollywood', 'Studio City',
-        'Sherman Oaks', 'Encino', 'Reseda', 'Van Nuys', 'Northridge',
-        'Malibu', 'Pacific Palisades', 'Brentwood', 'Westwood', 'Century City',
-        'West LA', 'Koreatown', 'Mid-City', 'Miracle Mile', 'Los Feliz',
-        'Silver Lake', 'Echo Park', 'Downtown LA', 'Arts District', 'Little Tokyo',
-        'Chinatown', 'Boyle Heights', 'East LA', 'Highland Park', 'Eagle Rock',
-        'Atwater Village', 'Glassell Park', 'Mount Washington', 'Cypress Park',
-        'Sun Valley', 'Pacoima', 'Sylmar', 'Granada Hills', 'Porter Ranch',
-        'Chatsworth', 'Canoga Park', 'Woodland Hills', 'Tarzana', 'Panorama City',
-        'Mission Hills', 'Sepulveda', 'Arleta', 'San Pedro', 'Wilmington',
-        'Harbor City', 'Harbor Gateway', 'Watts', 'South LA', 'Crenshaw',
-        'Leimert Park', 'View Park', 'Baldwin Hills', 'Ladera Heights'
-      ]
-    },
-    {
-      mainCity: 'New York City',
-      state: 'New York',
-      cities: [
-        'New York City', 'New York', 'NYC', 'Manhattan', 'Brooklyn', 'Queens', 
-        'Bronx', 'Staten Island', 'Long Island City', 'Astoria', 'Flushing',
-        'Jamaica', 'Forest Hills', 'Williamsburg', 'Park Slope', 'DUMBO',
-        'Brooklyn Heights', 'Red Hook', 'Greenpoint', 'Bushwick', 'Crown Heights',
-        'Bay Ridge', 'Bensonhurst', 'Coney Island', 'Brighton Beach', 'Sheepshead Bay',
-        'Harlem', 'East Harlem', 'Washington Heights', 'Inwood', 'Upper East Side',
-        'Upper West Side', 'Midtown', 'Lower East Side', 'SoHo', 'Tribeca',
-        'Greenwich Village', 'East Village', 'Chelsea', 'Hell\'s Kitchen', 'Financial District'
-      ]
-    }
-  ];
-  
-  for (const metro of METRO_AREAS) {
-    const cityMatch = metro.cities.some(metroCity => 
-      metroCity.toLowerCase() === city.toLowerCase()
-    );
-    
-    if (cityMatch) {
-      if (state && metro.state && metro.state.toLowerCase() !== state.toLowerCase()) {
-        continue;
-      }
-      console.log(`🌍 FRONTEND METRO CONSOLIDATION: ${city} → ${metro.mainCity}`);
-      return metro.mainCity;
-    }
-  }
-  
-  return city;
+  return city; // No consolidation
 };
 
 export default function MatchInCity() {

@@ -777,167 +777,55 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         return { state: '', country: 'United States' };
       };
 
-      // Consolidate LA metro cities into "Los Angeles Metro"
-      const laMetroCities = [
-        'Los Angeles', 'Playa del Rey', 'Santa Monica', 'Venice', 'Venice Beach', 'El Segundo',
-        'Manhattan Beach', 'Beverly Hills', 'West Hollywood', 'Pasadena', 'Burbank',
-        'Glendale', 'Long Beach', 'Torrance', 'Inglewood', 'Compton', 'Downey',
-        'Pomona', 'Redondo Beach', 'Culver City', 'Marina del Rey', 'Hermosa Beach',
-        'Hawthorne', 'Gardena', 'Carson', 'Lakewood', 'Norwalk', 'Whittier',
-        'Montebello', 'East Los Angeles', 'Monterey Park', 'Alhambra', 'South Pasadena',
-        'San Fernando', 'North Hollywood', 'Hollywood', 'Studio City', 'Sherman Oaks',
-        'Encino', 'Reseda', 'Van Nuys', 'Northridge', 'Malibu', 'Pacific Palisades',
-        'Brentwood', 'Westwood', 'Century City', 'West LA', 'Koreatown', 'Mid-City',
-        'Miracle Mile', 'Los Feliz', 'Silver Lake', 'Echo Park', 'Downtown LA',
-        'Arts District', 'Little Tokyo', 'Chinatown', 'Boyle Heights', 'East LA',
-        'Highland Park', 'Eagle Rock', 'Atwater Village', 'Glassell Park',
-        'Mount Washington', 'Cypress Park', 'Sun Valley', 'Pacoima', 'Sylmar',
-        'Granada Hills', 'Porter Ranch', 'Chatsworth', 'Canoga Park', 'Woodland Hills',
-        'Tarzana', 'Panorama City', 'Mission Hills', 'Sepulveda', 'Arleta',
-        'San Pedro', 'Wilmington', 'Harbor City', 'Harbor Gateway', 'Watts',
-        'South LA', 'Crenshaw', 'Leimert Park', 'View Park', 'Baldwin Hills', 'Ladera Heights'
-      ];
-
+      // DISABLED: Metro consolidation per user request - show original cities
       const rawCities = uniqueCitiesQuery.rows.map((row: any) => row.city);
-      const consolidatedCities = new Set<string>();
-      
-      // Check each city and consolidate LA metro
-      rawCities.forEach(city => {
-        if (laMetroCities.includes(city)) {
-          consolidatedCities.add('Los Angeles Metro');
-        } else {
-          consolidatedCities.add(city);
-        }
-      });
-
-      const actualCities = Array.from(consolidatedCities);
+      const actualCities = [...new Set(rawCities)]; // Remove duplicates without consolidation
 
       const citiesWithStats = await Promise.all(
         actualCities.map(async (cityName: string) => {
           try {
             let localUsersResult, businessUsersResult, travelPlansResult, currentTravelersResult, eventsResult;
 
-            if (cityName === 'Los Angeles Metro') {
-              // For Los Angeles Metro, count users from ALL metro cities
-              const laMetroCities = [
-                'Playa del Rey', 'Los Angeles', 'Santa Monica', 'Venice', 'Venice Beach', 'El Segundo',
-                'Manhattan Beach', 'Beverly Hills', 'West Hollywood', 'Pasadena', 'Burbank',
-                'Glendale', 'Long Beach', 'Torrance', 'Inglewood', 'Compton', 'Downey',
-                'Pomona', 'Redondo Beach', 'Culver City', 'Marina del Rey', 'Hermosa Beach',
-                'Hawthorne', 'Gardena', 'Carson', 'Lakewood', 'Norwalk', 'Whittier',
-                'Montebello', 'East Los Angeles', 'Monterey Park', 'Alhambra', 'South Pasadena',
-                'San Fernando', 'North Hollywood', 'Hollywood', 'Studio City', 'Sherman Oaks',
-                'Encino', 'Reseda', 'Van Nuys', 'Northridge', 'Malibu', 'Pacific Palisades',
-                'Brentwood', 'Westwood', 'Century City', 'West LA', 'Koreatown', 'Mid-City',
-                'Miracle Mile', 'Los Feliz', 'Silver Lake', 'Echo Park', 'Downtown LA',
-                'Arts District', 'Little Tokyo', 'Chinatown', 'Boyle Heights', 'East LA',
-                'Highland Park', 'Eagle Rock', 'Atwater Village', 'Glassell Park',
-                'Mount Washington', 'Cypress Park', 'Sun Valley', 'Pacoima', 'Sylmar',
-                'Granada Hills', 'Porter Ranch', 'Chatsworth', 'Canoga Park', 'Woodland Hills',
-                'Tarzana', 'Panorama City', 'Mission Hills', 'Sepulveda', 'Arleta',
-                'San Pedro', 'Wilmington', 'Harbor City', 'Harbor Gateway', 'Watts',
-                'South LA', 'Crenshaw', 'Leimert Park', 'View Park', 'Baldwin Hills', 'Ladera Heights'
-              ];
+            // DISABLED: Metro consolidation - use individual city matching for all cities
+            localUsersResult = await db
+              .select({ count: count() })
+              .from(users)
+              .where(
+                and(
+                  eq(users.hometownCity, cityName),
+                  eq(users.userType, 'local')
+                )
+              );
 
-              // Count locals from all LA metro cities
-              localUsersResult = await db
-                .select({ count: count() })
-                .from(users)
-                .where(
-                  and(
-                    or(
-                      ...laMetroCities.map(city => eq(users.hometownCity, city))
-                    ),
-                    eq(users.userType, 'local')
-                  )
-                );
+            businessUsersResult = await db
+              .select({ count: count() })
+              .from(users)
+              .where(
+                and(
+                  eq(users.hometownCity, cityName),
+                  eq(users.userType, 'business')
+                )
+              );
 
-              // Count businesses from all LA metro cities
-              businessUsersResult = await db
-                .select({ count: count() })
-                .from(users)
-                .where(
-                  and(
-                    or(
-                      ...laMetroCities.map(city => eq(users.hometownCity, city))
-                    ),
-                    eq(users.userType, 'business')
-                  )
-                );
+            travelPlansResult = await db
+              .select({ count: count() })
+              .from(travelPlans)
+              .where(ilike(travelPlans.destination, `%${cityName}%`));
 
-              // Count travelers to any LA metro city
-              travelPlansResult = await db
-                .select({ count: count() })
-                .from(travelPlans)
-                .where(
-                  or(
-                    ...laMetroCities.map(city => ilike(travelPlans.destination, `%${city}%`))
-                  )
-                );
+            currentTravelersResult = await db
+              .select({ count: count() })
+              .from(users)
+              .where(
+                and(
+                  ilike(users.travelDestination, `%${cityName}%`),
+                  eq(users.isCurrentlyTraveling, true)
+                )
+              );
 
-              currentTravelersResult = await db
-                .select({ count: count() })
-                .from(users)
-                .where(
-                  and(
-                    or(
-                      ...laMetroCities.map(city => ilike(users.travelDestination, `%${city}%`))
-                    ),
-                    eq(users.isCurrentlyTraveling, true)
-                  )
-                );
-
-              // Count events in any LA metro city
-              eventsResult = await db
-                .select({ count: count() })
-                .from(events)
-                .where(
-                  or(
-                    ...laMetroCities.map(city => ilike(events.city, `%${city}%`))
-                  )
-                );
-            } else {
-              // For non-LA cities, use exact matching
-              localUsersResult = await db
-                .select({ count: count() })
-                .from(users)
-                .where(
-                  and(
-                    eq(users.hometownCity, cityName),
-                    eq(users.userType, 'local')
-                  )
-                );
-
-              businessUsersResult = await db
-                .select({ count: count() })
-                .from(users)
-                .where(
-                  and(
-                    eq(users.hometownCity, cityName),
-                    eq(users.userType, 'business')
-                  )
-                );
-
-              travelPlansResult = await db
-                .select({ count: count() })
-                .from(travelPlans)
-                .where(ilike(travelPlans.destination, `%${cityName}%`));
-
-              currentTravelersResult = await db
-                .select({ count: count() })
-                .from(users)
-                .where(
-                  and(
-                    ilike(users.travelDestination, `%${cityName}%`),
-                    eq(users.isCurrentlyTraveling, true)
-                  )
-                );
-
-              eventsResult = await db
-                .select({ count: count() })
-                .from(events)
-                .where(ilike(events.city, `%${cityName}%`));
-            }
+            eventsResult = await db
+              .select({ count: count() })
+              .from(events)
+              .where(ilike(events.city, `%${cityName}%`));
 
             const localCount = localUsersResult[0]?.count || 0;
             const businessCount = businessUsersResult[0]?.count || 0;
@@ -3505,21 +3393,14 @@ Ready to start making real connections wherever you are?
 
       let eventsQuery = [];
       if (city && typeof city === 'string') {
-        // Apply global metropolitan area consolidation for Events search
+        // DISABLED: Metro consolidation per user request - search only the requested city
         const cityName = city.toString();
         if (process.env.NODE_ENV === 'development') console.log(`🎪 EVENTS: Getting events for city: ${cityName}`);
         
-        // Extract location components for proper consolidation
-        const cityParts = (typeof cityName === 'string' ? (typeof cityName === 'string' ? cityName.split(',') : []) : []).map(part => part.trim());
-        const [searchCity, searchState, searchCountry] = cityParts;
-        const consolidatedCity = consolidateToMetropolitanArea(searchCity, searchState, searchCountry);
+        // Search only the requested city without metro consolidation
+        const searchCities = [cityName];
         
-        // Get all cities in the metropolitan area for search
-        // ALWAYS search all metro cities if this is a metro area, whether it's the main city or not
-        const allMetroCities = getMetropolitanAreaCities(consolidatedCity, searchState, searchCountry);
-        const searchCities = allMetroCities.length > 1 ? allMetroCities : [cityName];
-        
-        if (process.env.NODE_ENV === 'development') console.log(`🌍 EVENTS METRO: Searching cities:`, searchCities);
+        if (process.env.NODE_ENV === 'development') console.log(`🌍 EVENTS: Searching single city:`, searchCities);
         
         // Search events in all relevant cities using pattern matching like map data
         // ENHANCED: Only return events in the next 6 weeks to include all upcoming events
@@ -3561,7 +3442,7 @@ Ready to start making real connections wherever you are?
           return new Date(a.date).getTime() - new Date(b.date).getTime();
         });
         
-        if (process.env.NODE_ENV === 'development') console.log(`🎪 EVENTS: Found ${eventsQuery.length} events in next 6 weeks for ${cityName} (including LA metro)`);
+        if (process.env.NODE_ENV === 'development') console.log(`🎪 EVENTS: Found ${eventsQuery.length} events in next 6 weeks for ${cityName}`);
       } else {
         // Return events in next 6 weeks if no city specified - EARLIEST FIRST
         // ENHANCED: Limit to next 6 weeks to include all upcoming events
@@ -5732,16 +5613,10 @@ Ready to start making real connections wherever you are?
         const cityName = city.toString().split(',')[0].trim();
         if (process.env.NODE_ENV === 'development') console.log(`QUICK MEETUPS: Filtering by city: ${cityName}`);
         
-        // Apply global metropolitan area consolidation for Quick Meetups search
-        const cityParts = (typeof cityName === 'string' ? (typeof cityName === 'string' ? cityName.split(',') : []) : []).map(part => part.trim());
-        const [searchCity, searchState, searchCountry] = cityParts;
-        const consolidatedCity = consolidateToMetropolitanArea(searchCity, searchState, searchCountry);
+        // DISABLED: Metro consolidation per user request - search only the requested city  
+        const searchCities = [cityName];
         
-        const searchCities = consolidatedCity !== searchCity 
-          ? [consolidatedCity, ...getMetropolitanAreaCities(consolidatedCity, searchState, searchCountry)]
-          : [cityName];
-        
-        if (process.env.NODE_ENV === 'development') console.log(`🌍 QUICK MEETUPS METRO: Searching cities:`, searchCities);
+        if (process.env.NODE_ENV === 'development') console.log(`🌍 QUICK MEETUPS: Searching single city:`, searchCities);
         
         const cityConditions = searchCities.map(searchCity => 
           or(
