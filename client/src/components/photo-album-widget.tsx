@@ -63,7 +63,7 @@ export function PhotoAlbumWidget({ userId, isOwnProfile = false }: TravelMemoryW
   const [newMemory, setNewMemory] = useState({
     title: '',
     description: '',
-    startDate: new Date().toISOString().split('T')[0], // Trip start date
+    startDate: '', // No default date - let user choose or fall back to photo upload date
     endDate: '', // Optional trip end date 
     location: '',
     photos: [] as File[],
@@ -192,7 +192,7 @@ export function PhotoAlbumWidget({ userId, isOwnProfile = false }: TravelMemoryW
       setNewMemory({
         title: '',
         description: '',
-        startDate: new Date().toISOString().split('T')[0],
+        startDate: '', // Reset to empty, let backend handle fallback logic
         endDate: '',
         location: '',
         photos: [],
@@ -364,7 +364,7 @@ export function PhotoAlbumWidget({ userId, isOwnProfile = false }: TravelMemoryW
         userId: userId,
         title: newMemory.title.trim(),
         description: newMemory.description.trim(),
-        startDate: newMemory.startDate,
+        startDate: newMemory.startDate || null, // Send null if empty, let backend handle fallback
         endDate: newMemory.endDate || null,
         location: newMemory.location.trim(),
         photoIds: photoIds, // Send photo IDs instead of full data
@@ -563,7 +563,7 @@ export function PhotoAlbumWidget({ userId, isOwnProfile = false }: TravelMemoryW
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                Trip Start Date
+                Trip Start Date (Optional - defaults to photo date)
               </label>
               <Input
                 type="date"

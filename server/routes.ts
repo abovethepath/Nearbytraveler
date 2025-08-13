@@ -6633,23 +6633,23 @@ Ready to start making real connections wherever you are?
         });
       }
 
-      // Ensure we have at least startDate
-      if (!startDate) {
-        return res.status(400).json({ 
-          message: "Start date is required for travel memories" 
-        });
-      }
+      // We'll handle date fallback after we get photo data
 
       if (process.env.NODE_ENV === 'development') console.log('📸 ALBUM CREATION: Looking up photo URLs for IDs:', photoIds);
 
-      // Look up actual photo URLs from photo IDs
+      // Look up actual photo URLs from photo IDs and collect photo dates
       const photoUrls: string[] = [];
+      const photoUploadDates: Date[] = [];
       for (const photoId of photoIds) {
         try {
           const photo = await storage.getPhotoById(photoId);
           if (photo && photo.imageUrl) {
             photoUrls.push(photo.imageUrl);
-            if (process.env.NODE_ENV === 'development') console.log(`✅ Photo ID ${photoId} -> URL found`);
+            // Collect upload dates for fallback
+            if (photo.uploadedAt) {
+              photoUploadDates.push(new Date(photo.uploadedAt));
+            }
+            if (process.env.NODE_ENV === 'development') console.log(`✅ Photo ID ${photoId} -> URL found, uploaded: ${photo.uploadedAt}`);
           } else {
             if (process.env.NODE_ENV === 'development') console.error(`❌ Photo ID ${photoId} not found or no URL`);
           }
@@ -6664,12 +6664,40 @@ Ready to start making real connections wherever you are?
         });
       }
 
+      // Handle date fallback logic
+      let finalStartDate: Date | null = null;
+      let finalEndDate: Date | null = null;
+
+      if (startDate) {
+        finalStartDate = new Date(startDate);
+        if (process.env.NODE_ENV === 'development') console.log('📅 Using provided start date:', finalStartDate);
+      } else if (photoUploadDates.length > 0) {
+        // Fall back to earliest photo upload date
+        finalStartDate = new Date(Math.min(...photoUploadDates.map(d => d.getTime())));
+        if (process.env.NODE_ENV === 'development') console.log('📅 No start date provided, using earliest photo date:', finalStartDate);
+      } else {
+        // Last fallback to current date
+        finalStartDate = new Date();
+        if (process.env.NODE_ENV === 'development') console.log('📅 No dates available, using current date:', finalStartDate);
+      }
+
+      if (endDate) {
+        finalEndDate = new Date(endDate);
+      } else if (photoUploadDates.length > 0) {
+        // If no end date, use latest photo upload date or same as start date
+        const latestPhotoDate = new Date(Math.max(...photoUploadDates.map(d => d.getTime())));
+        finalEndDate = latestPhotoDate > finalStartDate ? latestPhotoDate : finalStartDate;
+        if (process.env.NODE_ENV === 'development') console.log('📅 No end date provided, using latest photo date:', finalEndDate);
+      } else {
+        finalEndDate = finalStartDate; // Same day trip
+      }
+
       const albumData = {
         userId: parseInt(userId.toString() || '0'),
         title: title.trim(),
         description: description?.trim() || '',
-        startDate: startDate ? new Date(startDate) : null,
-        endDate: endDate ? new Date(endDate) : null,
+        startDate: finalStartDate,
+        endDate: finalEndDate,
         location: location?.trim() || '',
         photos: photoUrls,
         coverPhoto: photoUrls[0], // First photo as cover
