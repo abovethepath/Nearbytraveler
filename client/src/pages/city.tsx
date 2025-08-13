@@ -334,16 +334,7 @@ export default function CityPage({ cityName }: CityPageProps) {
             } font-bold mb-3 sm:mb-4 drop-shadow-2xl leading-tight`}>
               {decodedCityName}
             </h1>
-            <p className={`${
-              isLAArea 
-                ? 'text-lg sm:text-xl md:text-2xl text-yellow-100 font-medium'
-                : 'text-base sm:text-lg md:text-xl text-white/90'
-            } max-w-2xl drop-shadow-lg px-4`}>
-              {isLAArea 
-                ? 'Your premier destination for authentic local experiences and community connections'
-                : 'Connect with locals, discover events, and explore authentic experiences'
-              }
-            </p>
+            {/* Removed tagline per user request */}
           </div>
         </div>
       </div>
