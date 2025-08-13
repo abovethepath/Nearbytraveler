@@ -47,27 +47,54 @@ function MessagesWidget({ userId }: MessagesWidgetProps) {
             View Connection Requests
           </Button>
         </div>
-        <div className="space-y-3">
+        <div className="space-y-3 max-h-64 overflow-y-auto">
           {messages
             .filter(message => message.senderId !== message.receiverId) // Filter out self-messages
+            .slice(0, 5) // Show more messages (up to 5)
             .map((message, index) => {
               const otherUserId = message.senderId === userId ? message.receiverId : message.senderId;
               const otherUser = users.find(u => u.id === otherUserId);
               const isFromMe = message.senderId === userId;
             
             return (
-              <button
+              <div
                 key={message.id || index} 
                 onClick={() => setLocation("/messages")}
-                className="block w-full text-left hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg p-2 transition-all duration-200 cursor-pointer"
+                className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg p-3 transition-all duration-200 border border-gray-100 dark:border-gray-600"
               >
-                <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                  {isFromMe ? "You: " : ""}{message.content}
-                </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                  {isFromMe ? `To: ${otherUser?.username || "Unknown"}` : `From: ${otherUser?.username || "Unknown"}`}
-                </p>
-              </button>
+                {/* Message Header */}
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center space-x-2">
+                    <div className={`w-2 h-2 rounded-full ${isFromMe ? 'bg-blue-500' : 'bg-green-500'}`}></div>
+                    <span className="text-xs font-medium text-gray-600 dark:text-gray-300">
+                      {isFromMe ? `To: ${otherUser?.username || "Unknown"}` : `From: ${otherUser?.username || "Unknown"}`}
+                    </span>
+                  </div>
+                  {message.createdAt && (
+                    <span className="text-xs text-gray-400 dark:text-gray-500">
+                      {new Date(message.createdAt).toLocaleDateString()}
+                    </span>
+                  )}
+                </div>
+                
+                {/* Message Content Bubble */}
+                <div className={`p-3 rounded-lg max-w-full ${
+                  isFromMe 
+                    ? 'bg-blue-500 text-white ml-4' 
+                    : 'bg-gray-100 dark:bg-gray-600 text-gray-900 dark:text-white mr-4'
+                }`}>
+                  <p className="text-sm leading-relaxed break-words">
+                    {message.content}
+                  </p>
+                </div>
+                
+                {/* Message Status */}
+                <div className="mt-2 text-right">
+                  <span className="text-xs text-gray-400 dark:text-gray-500">
+                    Click to view conversation
+                  </span>
+                </div>
+              </div>
             );
             })}
           {messages.filter(message => message.senderId !== message.receiverId).length === 0 && (
