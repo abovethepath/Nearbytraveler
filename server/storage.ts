@@ -6474,13 +6474,29 @@ export class DatabaseStorage implements IStorage {
         .orderBy(desc(secretLocalExperiences.likes), desc(secretLocalExperiences.createdAt));
         
       } else {
-        // For other cities, find the city page first
+        // For other cities, find the city page first with better matching
         console.log(`🔍 SECRET ACTIVITIES: Searching for city page for ${city}`);
         
-        const cityPage = await db.select()
+        let cityPage = await db.select()
           .from(cityPages)
-          .where(ilike(cityPages.city, `%${city}%`))
+          .where(eq(cityPages.city, city))
           .limit(1);
+          
+        // If exact match fails, try pattern matching
+        if (cityPage.length === 0) {
+          cityPage = await db.select()
+            .from(cityPages)
+            .where(ilike(cityPages.city, `%${city}%`))
+            .limit(1);
+        }
+        
+        // Special handling for Nashville Metro
+        if (cityPage.length === 0 && city === 'Nashville Metro') {
+          cityPage = await db.select()
+            .from(cityPages)
+            .where(eq(cityPages.city, 'Nashville Metro'))
+            .limit(1);
+        }
         
         if (cityPage.length > 0) {
           const cityPageId = cityPage[0].id;

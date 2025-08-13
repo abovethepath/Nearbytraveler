@@ -987,125 +987,65 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       
       if (process.env.NODE_ENV === 'development') console.log(`🔍 CITY STATS: ${city} consolidated to ${consolidatedCity}`);
       
-      if (consolidatedCity !== city || city.includes('Los Angeles Metro')) {
-        // For metropolitan areas (or specifically Los Angeles Metro), search all metro cities
-        let metroCities;
-        if (city.includes('Los Angeles Metro')) {
-          // Force Los Angeles Metro consolidation
-          metroCities = getMetropolitanAreaCities('Los Angeles Metro', 'California', 'United States');
-        } else {
-          metroCities = getMetropolitanAreaCities(consolidatedCity, state as string, country as string);
-        }
-        
-        if (process.env.NODE_ENV === 'development') console.log(`🔍 CITY STATS DEBUG: Searching for local users in ${city} metro cities:`, metroCities.slice(0, 10));
-        
-        localUsersResult = await db
-          .select({ count: count() })
-          .from(users)
-          .where(
-            and(
-              or(
-                ...metroCities.map(cityName => eq(users.hometownCity, cityName))
-              ),
-              eq(users.userType, 'local')
-            )
-          );
-          
-        if (process.env.NODE_ENV === 'development') console.log(`🔍 CITY STATS DEBUG: Local users result:`, localUsersResult);
-
-        businessUsersResult = await db
-          .select({ count: count() })
-          .from(users)
-          .where(
-            and(
-              or(
-                ...metroCities.map(cityName => eq(users.hometownCity, cityName))
-              ),
-              eq(users.userType, 'business')
-            )
-          );
-
-        travelPlansResult = await db
-          .select({ count: count() })
-          .from(travelPlans)
-          .where(
-            or(
-              ...metroCities.map(cityName => ilike(travelPlans.destination, `%${cityName}%`))
-            )
-          );
-
-        currentTravelersResult = await db
-          .select({ count: count() })
-          .from(users)
-          .where(
-            and(
-              or(
-                ...metroCities.map(cityName => ilike(users.travelDestination, `%${cityName}%`))
-              ),
-              eq(users.isCurrentlyTraveling, true)
-            )
-          );
-
-        eventsResult = await db
-          .select({ count: count() })
-          .from(events)
-          .where(
-            or(
-              ...metroCities.map(cityName => ilike(events.city, `%${cityName}%`))
-            )
-          );
-
-      } else {
-        // For non-metro cities, use exact matching but also check for Nashville Metro → Nashville
-        let searchCities = [city];
-        if (city === 'Nashville Metro') {
-          searchCities = ['Nashville', 'Nashville Metro'];
-        }
-        
-        localUsersResult = await db
-          .select({ count: count() })
-          .from(users)
-          .where(
-            and(
-              or(...searchCities.map(searchCity => eq(users.hometownCity, searchCity))),
-              eq(users.userType, 'local')
-            )
-          );
-
-        businessUsersResult = await db
-          .select({ count: count() })
-          .from(users)
-          .where(
-            and(
-              or(...searchCities.map(searchCity => eq(users.hometownCity, searchCity))),
-              eq(users.userType, 'business')
-            )
-          );
-
-        travelPlansResult = await db
-          .select({ count: count() })
-          .from(travelPlans)
-          .where(
-            or(...searchCities.map(searchCity => ilike(travelPlans.destination, `%${searchCity}%`)))
-          );
-
-        currentTravelersResult = await db
-          .select({ count: count() })
-          .from(users)
-          .where(
-            and(
-              or(...searchCities.map(searchCity => ilike(users.travelDestination, `%${searchCity}%`))),
-              eq(users.isCurrentlyTraveling, true)
-            )
-          );
-
-        eventsResult = await db
-          .select({ count: count() })
-          .from(events)
-          .where(
-            or(...searchCities.map(searchCity => ilike(events.city, `%${searchCity}%`)))
-          );
+      // COMPLETELY REWRITTEN CITY STATS - FIXED FOR ALL CITIES
+      let searchCities = [city];
+      
+      // Apply specific city mappings for accurate user counting
+      if (city === 'Los Angeles Metro') {
+        searchCities = ['Los Angeles', 'Santa Monica', 'Venice', 'Playa del Rey', 'Hollywood', 'Beverly Hills', 'Culver City', 'Marina del Rey'];
+      } else if (city === 'Nashville Metro') {
+        searchCities = ['Nashville', 'Nashville Metro'];
+      } else if (city === 'New York City') {
+        searchCities = ['New York City', 'New York', 'NYC'];
       }
+      
+      if (process.env.NODE_ENV === 'development') console.log(`🔍 CITY STATS FIXED: Searching for users in cities:`, searchCities);
+        
+      localUsersResult = await db
+        .select({ count: count() })
+        .from(users)
+        .where(
+          and(
+            or(...searchCities.map(searchCity => eq(users.hometownCity, searchCity))),
+            eq(users.userType, 'local')
+          )
+        );
+          
+      if (process.env.NODE_ENV === 'development') console.log(`🔍 CITY STATS DEBUG: Local users result:`, localUsersResult);
+
+      businessUsersResult = await db
+        .select({ count: count() })
+        .from(users)
+        .where(
+          and(
+            or(...searchCities.map(searchCity => eq(users.hometownCity, searchCity))),
+            eq(users.userType, 'business')
+          )
+        );
+
+      travelPlansResult = await db
+        .select({ count: count() })
+        .from(travelPlans)
+        .where(
+          or(...searchCities.map(searchCity => ilike(travelPlans.destination, `%${searchCity}%`)))
+        );
+
+      currentTravelersResult = await db
+        .select({ count: count() })
+        .from(users)
+        .where(
+          and(
+            or(...searchCities.map(searchCity => ilike(users.travelDestination, `%${searchCity}%`))),
+            eq(users.isCurrentlyTraveling, true)
+          )
+        );
+
+      eventsResult = await db
+        .select({ count: count() })
+        .from(events)
+        .where(
+          or(...searchCities.map(searchCity => ilike(events.city, `%${searchCity}%`)))
+        );
 
       const localCount = localUsersResult[0]?.count || 0;
       const businessCount = businessUsersResult[0]?.count || 0;
