@@ -6,20 +6,34 @@ import { getRegionForCity, isStateOptionalForCountry, validateLocationForCountry
 import { COUNTRIES, CITIES_BY_COUNTRY } from "@/lib/locationData";
 
 interface SmartLocationInputProps {
-  city: string;
-  state: string;
-  country: string;
-  onLocationChange: (location: { city: string; state: string; country: string }) => void;
+  city?: string;
+  state?: string;
+  country?: string;
+  onLocationChange?: (location: { city: string; state: string; country: string }) => void;
+  onLocationSelect?: (location: { city: string; state: string; country: string }) => void;
   required?: boolean;
   label?: string;
-  placeholder?: {
+  placeholder?: string | {
     country: string;
     state: string;
     city: string;
   };
+  className?: string;
+  "data-testid"?: string;
 }
 
-export function SmartLocationInput({ city, state, country, onLocationChange, required = false, label, placeholder }: SmartLocationInputProps) {
+export function SmartLocationInput({ 
+  city = "", 
+  state = "", 
+  country = "", 
+  onLocationChange, 
+  onLocationSelect,
+  required = false, 
+  label, 
+  placeholder,
+  className = "",
+  "data-testid": dataTestId
+}: SmartLocationInputProps) {
   const [isStateOptional, setIsStateOptional] = useState(false);
   const [stateLabel, setStateLabel] = useState("State/Province/Region");
   const [customCity, setCustomCity] = useState("");
@@ -56,17 +70,27 @@ export function SmartLocationInput({ city, state, country, onLocationChange, req
   useEffect(() => {
     if (city && country && !state) {
       const autoRegion = getRegionForCity(city, country);
-      if (autoRegion && onLocationChange && typeof onLocationChange === 'function') {
-        onLocationChange({ city, state: autoRegion, country });
+      if (autoRegion) {
+        const newLocation = { city, state: autoRegion, country };
+        if (onLocationChange && typeof onLocationChange === 'function') {
+          onLocationChange(newLocation);
+        }
+        if (onLocationSelect && typeof onLocationSelect === 'function') {
+          onLocationSelect(newLocation);
+        }
       }
     }
-  }, [city, country, state, onLocationChange]);
+  }, [city, country, state, onLocationChange, onLocationSelect]);
 
   const handleCountryChange = (newCountry: string) => {
     console.log('🌍 SmartLocationInput: Country changed to:', newCountry);
     // Reset city and state when country changes
+    const newLocation = { city: "", state: "", country: newCountry };
     if (onLocationChange && typeof onLocationChange === 'function') {
-      onLocationChange({ city: "", state: "", country: newCountry });
+      onLocationChange(newLocation);
+    }
+    if (onLocationSelect && typeof onLocationSelect === 'function') {
+      onLocationSelect(newLocation);
     }
   };
 
@@ -82,8 +106,23 @@ export function SmartLocationInput({ city, state, country, onLocationChange, req
       }
     }
     
+    const newLocation = { city: newCity, state: newState, country };
     if (onLocationChange && typeof onLocationChange === 'function') {
-      onLocationChange({ city: newCity, state: newState, country });
+      onLocationChange(newLocation);
+    }
+    if (onLocationSelect && typeof onLocationSelect === 'function') {
+      onLocationSelect(newLocation);
+    }
+  };
+
+  const handleStateChange = (newState: string) => {
+    console.log('📍 SmartLocationInput: State changed to:', newState);
+    const newLocation = { city, state: newState, country };
+    if (onLocationChange && typeof onLocationChange === 'function') {
+      onLocationChange(newLocation);
+    }
+    if (onLocationSelect && typeof onLocationSelect === 'function') {
+      onLocationSelect(newLocation);
     }
   };
 
@@ -144,11 +183,7 @@ export function SmartLocationInput({ city, state, country, onLocationChange, req
           </Label>
           <Select 
             value={state} 
-            onValueChange={(value) => {
-              if (onLocationChange && typeof onLocationChange === 'function') {
-                onLocationChange({ city, state: value, country });
-              }
-            }}
+            onValueChange={handleStateChange}
           >
             <SelectTrigger className="dark:bg-gray-700 dark:text-white dark:border-gray-600">
               <SelectValue placeholder={

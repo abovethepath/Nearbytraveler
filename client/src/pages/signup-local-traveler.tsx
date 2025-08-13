@@ -262,7 +262,7 @@ export default function SignupLocalTraveler() {
     }));
   };
 
-  const { minDate, maxDate } = getDateInputConstraints();
+  const { min: minDate, max: maxDate } = getDateInputConstraints();
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
