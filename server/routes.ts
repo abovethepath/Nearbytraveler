@@ -8448,30 +8448,56 @@ Ready to start making real connections wherever you are?
         }
       }
 
-      // Interests, activities, events filters (simplified for now - can be enhanced later)
+      // Interests, activities, events filters - search in actual arrays AND bio for comprehensive coverage
       if (interests && typeof interests === 'string') {
         const interestList = (typeof interests === 'string' ? interests.split(',') : []);
-        // For now, search in bio - can be enhanced with dedicated interest tables
-        const interestConditions = interestList.map(interest => 
-          ilike(users.bio, `%${interest.trim()}%`)
-        );
-        whereConditions.push(or(...interestConditions));
+        const interestConditions = [];
+        
+        interestList.forEach(interest => {
+          const trimmedInterest = interest.trim();
+          // Search in interests array (for custom and predefined interests)
+          interestConditions.push(sql`${users.interests} && ARRAY[${trimmedInterest}]`);
+          // Also search in bio as fallback
+          interestConditions.push(ilike(users.bio, `%${trimmedInterest}%`));
+        });
+        
+        if (interestConditions.length > 0) {
+          whereConditions.push(or(...interestConditions));
+        }
       }
 
       if (activities && typeof activities === 'string') {
         const activityList = (typeof activities === 'string' ? activities.split(',') : []);
-        const activityConditions = activityList.map(activity => 
-          ilike(users.bio, `%${activity.trim()}%`)
-        );
-        whereConditions.push(or(...activityConditions));
+        const activityConditions = [];
+        
+        activityList.forEach(activity => {
+          const trimmedActivity = activity.trim();
+          // Search in activities array (for custom and predefined activities)
+          activityConditions.push(sql`${users.activities} && ARRAY[${trimmedActivity}]`);
+          // Also search in bio as fallback
+          activityConditions.push(ilike(users.bio, `%${trimmedActivity}%`));
+        });
+        
+        if (activityConditions.length > 0) {
+          whereConditions.push(or(...activityConditions));
+        }
       }
 
       if (events && typeof events === 'string') {
         const eventList = (typeof events === 'string' ? events.split(',') : []);
-        const eventConditions = eventList.map(event => 
-          ilike(users.bio, `%${event.trim()}%`)
-        );
-        whereConditions.push(or(...eventConditions));
+        const eventConditions = [];
+        
+        eventList.forEach(event => {
+          const trimmedEvent = event.trim();
+          // Search in events array (for custom and predefined events)
+          eventConditions.push(sql`${users.events} && ARRAY[${trimmedEvent}]`);
+          // Also search in bio as fallback
+          eventConditions.push(ilike(users.bio, `%${trimmedEvent}%`));
+        });
+        
+        if (eventConditions.length > 0) {
+          whereConditions.push(or(...eventConditions));
+        }
       }
 
       // Execute search query
