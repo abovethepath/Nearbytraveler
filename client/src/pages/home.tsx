@@ -51,6 +51,7 @@ import BusinessNotifications from "@/components/BusinessNotifications";
 import { QuickMeetupWidget } from "@/components/QuickMeetupWidget";
 import CityMap from "@/components/CityMap";
 import PeopleDiscoveryWidget from "@/components/PeopleDiscoveryWidget";
+import ScrollingHeroGallery from "@/components/ScrollingHeroGallery";
 
 // Import centralized constants for consistency
 import { GENDER_OPTIONS, SEXUAL_PREFERENCE_OPTIONS, PRIVACY_NOTES } from "@/lib/formConstants";
@@ -1216,25 +1217,16 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
 
-      {/* Hero Section with Animated Background */}
+      {/* Hero Section with Scrolling Photo Gallery */}
       <section 
         className="relative overflow-hidden text-white dark:bg-gray-800 animate-fade-in-up"
-        style={{
-          backgroundImage: `url(${staticHeroImage})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat'
-        }}
+        style={{ minHeight: '600px' }}
       >
-        <div className="absolute inset-0 bg-gradient-to-br from-black/40 via-black/30 to-black/50 dark:from-black/60 dark:to-black/70"></div>
+        {/* Scrolling Photo Gallery Background */}
+        <ScrollingHeroGallery className="absolute inset-0" />
         
-        {/* Floating background elements for visual interest */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-10 left-10 w-20 h-20 bg-blue-500/20 rounded-full animate-float" style={{animationDelay: '0s'}}></div>
-          <div className="absolute top-32 right-20 w-16 h-16 bg-orange-500/20 rounded-full animate-float" style={{animationDelay: '1s'}}></div>
-          <div className="absolute bottom-20 left-1/4 w-12 h-12 bg-purple-500/20 rounded-full animate-float" style={{animationDelay: '2s'}}></div>
-          <div className="absolute bottom-10 right-1/3 w-24 h-24 bg-green-500/15 rounded-full animate-float" style={{animationDelay: '0.5s'}}></div>
-        </div>
+        {/* Dark overlay for text readability */}
+        <div className="absolute inset-0 bg-gradient-to-br from-black/40 via-black/30 to-black/50 dark:from-black/60 dark:to-black/70"></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-16 animate-slide-in-left">
           <div className="text-center max-w-3xl mx-auto">
             <h1 className="text-xl xs:text-2xl sm:text-4xl lg:text-6xl font-bold mb-6 leading-tight text-white text-center animate-zoom-in" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700', textShadow: '1px 1px 0 black, -1px 1px 0 black, 1px -1px 0 black, -1px -1px 0 black, 0 1px 0 black, 0 -1px 0 black, 1px 0 0 black, -1px 0 0 black'}}>

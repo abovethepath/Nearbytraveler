@@ -9,10 +9,11 @@ export default function ScrollingHeroGallery({ className = "" }: ScrollingHeroGa
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loadedImages, setLoadedImages] = useState<Set<number>>(new Set());
 
-  // Production hero images from the working backup (verified available in public folder)
+  // Production hero images - waiting for user to provide 4 photos
   const heroImages = [
     "/travelers coffee_1750995178947.png",
     "/pexels-olly-2672979_1750959255667.jpg"
+    // TODO: User will provide 4 photos to replace these placeholder images
   ];
 
   // Preload all images to prevent loading delays
