@@ -11,9 +11,9 @@ export default function ScrollingHeroGallery({ className = "" }: ScrollingHeroGa
 
   // Production hero images - beach paraty, travelers around map, travelers sharing beer
   const heroImages = [
-    "/attached_assets/beach travel_1750958707105.jpg",
-    "/attached_assets/4 travelers around map in town_1750995541992.webp",
-    "/attached_assets/Travelers Sharing a Beer_1749576612655.png"
+    "/attached_assets/attached_assets/beach%20travel_1750958707105.jpg",
+    "/attached_assets/attached_assets/4%20travelers%20around%20map%20in%20town_1750995541992.webp", 
+    "/attached_assets/attached_assets/Travelers%20Sharing%20a%20Beer_1749576612655.png"
   ];
 
   // Preload all images to prevent loading delays
