@@ -24,7 +24,7 @@ export const MOST_POPULAR_INTERESTS = [
   "City Tours & Sightseeing",
   "Historical Sites & Walking Tours",
   "Architecture",
-  "Art Galleries and Workshops",
+  "Art Galleries",
   "Local Hidden Gems",
   "Street Art",
   "Cultural Sites",
