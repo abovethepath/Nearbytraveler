@@ -895,22 +895,11 @@ export default function MatchInCity() {
 
         {/* Removed problematic photo gallery */}
 
-        {/* HOW MATCHING WORKS - Compact explanation */}
-        <Card className="mb-4 bg-white/5 backdrop-blur-sm border-white/10">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-white flex items-center gap-2 text-sm">
-              <Users className="w-4 h-4" />
-              How Activity Matching Works
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="text-white/90">
-            <div className="space-y-1 text-xs">
-              <p><strong>1. Select Activities:</strong> Click the colorful pills below to add them to your "Things I Want to Do" profile section.</p>
-              <p><strong>2. Find Matches:</strong> The system finds other users who selected the same activities in {selectedCity}.</p>
-              <p><strong>3. Connect & Plan:</strong> View matched users below and click "Connect" to start planning activities together!</p>
-              <div className="bg-blue-500/10 p-2 rounded text-xs mt-2">
-                <p>💡 <strong>Tip:</strong> Select specific activities for better matches!</p>
-              </div>
+        {/* HOW MATCHING WORKS - Small compact widget */}
+        <Card className="mb-3 bg-white/5 backdrop-blur-sm border-white/10 max-w-2xl">
+          <CardContent className="p-3">
+            <div className="text-white/80 text-xs">
+              <strong className="text-blue-400">Quick Start:</strong> Click blue activities below to add them to your profile, then see who else wants to do the same things in {selectedCity}!
             </div>
           </CardContent>
         </Card>
