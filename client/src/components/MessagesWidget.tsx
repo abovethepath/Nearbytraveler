@@ -16,6 +16,8 @@ function MessagesWidget({ userId }: MessagesWidgetProps) {
   const { data: messages = [], isLoading: messagesLoading } = useQuery<Message[]>({
     queryKey: [`/api/messages/${userId}`],
     enabled: !!userId,
+    staleTime: 0, // Always fetch fresh data
+    refetchOnWindowFocus: true,
   });
 
 
