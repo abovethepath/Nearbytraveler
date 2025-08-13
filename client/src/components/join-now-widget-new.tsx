@@ -208,15 +208,15 @@ export default function JoinNowWidgetNew() {
         <>
           {/* Step 1: User Type Selection */}
           <div className="space-y-2">
-            <Label htmlFor="userType" className="text-gray-900 dark:text-white">I am a...</Label>
+            <Label htmlFor="userType" className="text-base md:text-lg font-medium text-gray-900 dark:text-white text-crisp">I am a...</Label>
             <Select value={userType} onValueChange={setUserType}>
-              <SelectTrigger className="w-full">
+              <SelectTrigger className="w-full text-base py-3 text-crisp font-medium">
                 <SelectValue placeholder="Select your type" />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="local">Nearby Local (Not Traveling Now)</SelectItem>
-                <SelectItem value="currently_traveling">Currently Traveling</SelectItem>
-                <SelectItem value="business">Nearby Business</SelectItem>
+              <SelectContent className="text-crisp">
+                <SelectItem value="local" className="text-base text-crisp">Nearby Local (Not Traveling Now)</SelectItem>
+                <SelectItem value="currently_traveling" className="text-base text-crisp">Currently Traveling</SelectItem>
+                <SelectItem value="business" className="text-base text-crisp">Nearby Business</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -224,7 +224,7 @@ export default function JoinNowWidgetNew() {
           <div className="mt-8 pt-4">
             <div
               onClick={userType ? handleStepOne : undefined}
-              className={`join-page-gradient-button w-full py-3 px-4 rounded-md font-bold text-center select-none ${
+              className={`join-page-gradient-button w-full py-3 px-4 rounded-md font-bold text-center select-none text-base md:text-lg text-crisp ${
                 userType ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'
               }`}
               style={{
@@ -248,19 +248,20 @@ export default function JoinNowWidgetNew() {
           )}
           <div className="space-y-3">
             <div>
-              <Label htmlFor="name" className="text-gray-900 dark:text-white">Full Name *</Label>
+              <Label htmlFor="name" className="text-base md:text-lg font-medium text-gray-900 dark:text-white text-crisp">Full Name *</Label>
               <Input
                 id="name"
                 type="text"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 placeholder="Your full name"
+                className="text-base py-3 text-crisp font-medium"
                 required
               />
             </div>
 
             <div>
-              <Label htmlFor="username" className="text-gray-900 dark:text-white">Username * (min 6 characters)</Label>
+              <Label htmlFor="username" className="text-base md:text-lg font-medium text-gray-900 dark:text-white text-crisp">Username * (min 6 characters)</Label>
               <div className="relative">
                 <Input
                   id="username"

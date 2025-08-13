@@ -141,11 +141,11 @@ export default function Auth() {
                 <Logo variant="landing" />
               </div>
             </div>
-            <CardTitle className="text-2xl font-bold text-gray-900 dark:text-white">
+            <CardTitle className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white text-crisp leading-tight">
               {isLogin ? "Welcome Back" : "Join Nearby Traveler"}
             </CardTitle>
             {!isLogin && (
-              <p className="text-sm text-gray-600 dark:text-gray-300 mt-2 leading-relaxed">
+              <p className="text-sm md:text-base text-gray-600 dark:text-gray-300 mt-2 leading-relaxed text-crisp">
                 Start Connecting with Nearby Locals and Nearby Travelers Today Based on Common Interests and Demographics
               </p>
             )}
@@ -158,23 +158,25 @@ export default function Auth() {
                 {/* Login Form */}
                 <div className="space-y-4">
                   <div>
-                    <Label htmlFor="loginEmail" className="text-gray-900 dark:text-white">Email</Label>
+                    <Label htmlFor="loginEmail" className="text-base md:text-lg font-medium text-gray-900 dark:text-white text-crisp">Email</Label>
                     <Input
                       id="loginEmail"
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="Enter your email"
+                      className="text-base py-3 text-crisp font-medium"
                     />
                   </div>
                   <div>
-                    <Label htmlFor="loginPassword" className="text-gray-900 dark:text-white">Password</Label>
+                    <Label htmlFor="loginPassword" className="text-base md:text-lg font-medium text-gray-900 dark:text-white text-crisp">Password</Label>
                     <Input
                       id="loginPassword"
                       type="password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="Enter your password"
+                      className="text-base py-3 text-crisp font-medium"
                     />
                   </div>
                 </div>

@@ -276,7 +276,7 @@ export default function SignupTraveling() {
                 Back
               </Button>
             </div>
-            <CardTitle className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-3 text-crisp">
+            <CardTitle className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-3 text-crisp leading-tight">
               Complete Your Profile ✈️
             </CardTitle>
             <CardDescription className="text-base md:text-lg text-gray-600 dark:text-gray-300 leading-relaxed max-w-lg mx-auto text-crisp">
@@ -298,7 +298,7 @@ export default function SignupTraveling() {
                   onChange={(e) => setFormData(prev => ({ ...prev, dateOfBirth: e.target.value }))}
                   min={minDate}
                   max={maxDate}
-                  className="text-base py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg focus:border-blue-500 dark:focus:border-blue-400"
+                  className="text-base py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg focus:border-blue-500 dark:focus:border-blue-400 text-crisp font-medium"
                   data-testid="input-date-of-birth"
                   required
                 />
@@ -314,7 +314,7 @@ export default function SignupTraveling() {
                     {formData.interests.length} selected
                   </span>
                 </div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+                <p className="text-sm md:text-base text-gray-600 dark:text-gray-400 text-crisp leading-relaxed">
                   Please choose 3 from the list below to better match with others. Once inside you can add more city specific events and activities.
                 </p>
                 
@@ -325,7 +325,7 @@ export default function SignupTraveling() {
                       type="button"
                       variant={formData.interests.includes(interest) ? "default" : "outline"}
                       onClick={() => toggleInterest(interest)}
-                      className="h-auto py-3 px-4 text-sm font-medium transition-all duration-200 hover:scale-105"
+                      className="h-auto py-3 px-4 text-sm md:text-base font-medium transition-all duration-200 hover:scale-105 text-crisp"
                       data-testid={`button-interest-${interest.toLowerCase().replace(/\s+/g, '-')}`}
                     >
                       {interest}
@@ -337,7 +337,7 @@ export default function SignupTraveling() {
               <Button
                 type="submit"
                 disabled={isSubmitting || formData.interests.length < 3}
-                className="w-full text-lg py-4 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 disabled:bg-gray-400 disabled:cursor-not-allowed font-bold text-white rounded-lg transition-all duration-200 hover:scale-105 disabled:hover:scale-100"
+                className="w-full text-lg md:text-xl py-4 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 disabled:bg-gray-400 disabled:cursor-not-allowed font-bold text-white rounded-lg transition-all duration-200 hover:scale-105 disabled:hover:scale-100 text-crisp"
                 data-testid="button-create-account"
               >
                 {isSubmitting ? "Creating Account..." : "Create My Account"}
