@@ -424,6 +424,50 @@ export interface IStorage {
 }
 
 export class DatabaseStorage implements IStorage {
+  // Metropolitan area consolidation data
+  private GLOBAL_METROPOLITAN_AREAS = [
+    {
+      mainCity: 'Los Angeles Metro',
+      state: 'California',
+      country: 'United States',
+      cities: ['Los Angeles', 'Santa Monica', 'Venice', 'Beverly Hills', 'West Hollywood', 'Pasadena', 'Burbank', 'Glendale', 'Long Beach', 'Torrance', 'Inglewood', 'Playa del Rey', 'Culver City', 'Marina del Rey']
+    },
+    {
+      mainCity: 'Nashville Metro', 
+      state: 'Tennessee',
+      country: 'United States',
+      cities: ['Nashville', 'Franklin', 'Murfreesboro', 'Clarksville', 'Hendersonville', 'Smyrna', 'Brentwood']
+    },
+    {
+      mainCity: 'New York City',
+      state: 'New York',
+      country: 'United States', 
+      cities: ['New York City', 'New York', 'Manhattan', 'Brooklyn', 'Queens', 'Bronx', 'Staten Island']
+    }
+  ];
+
+  // Metropolitan area consolidation function
+  private consolidateToMetropolitanArea(city: string, state?: string | null, country?: string | null): string {
+    if (!city) return '';
+    
+    const cityLower = city.toLowerCase();
+    const stateLower = (state || '').toLowerCase();
+    const countryLower = (country || '').toLowerCase();
+    
+    for (const metro of this.GLOBAL_METROPOLITAN_AREAS) {
+      const metroState = (metro.state || '').toLowerCase();
+      const metroCountry = metro.country.toLowerCase();
+      
+      if (country && metroCountry !== countryLower) continue;
+      if (state && metro.state && metroState !== stateLower) continue;
+      
+      if (metro.cities.some(metroCity => metroCity.toLowerCase() === cityLower)) {
+        return metro.mainCity;
+      }
+    }
+    
+    return city;
+  }
   // User methods
   async getUser(id: number): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.id, id));
@@ -6549,16 +6593,24 @@ export class DatabaseStorage implements IStorage {
       for (const cityData of cities) {
         if (!cityData.city) continue;
 
-        // Create simplified chatroom set for each city (only 2 chatrooms)
+        // Apply metro consolidation - use consolidated metropolitan area name for chatroom creation
+        const consolidatedCity = this.consolidateToMetropolitanArea(cityData.city, cityData.state, cityData.country);
+        
+        if (process.env.NODE_ENV === 'development') console.log(`🌍 CHATROOM CONSOLIDATION: ${cityData.city} → ${consolidatedCity}`);
+        
+        // Use the consolidated city name (either same city or metro area) for chatroom creation
+        const chatroomCity = consolidatedCity;
+
+        // Create simplified chatroom set for each metropolitan city (only 2 chatrooms)
         const chatroomTypes = [
           {
-            name: `Welcome Newcomers ${cityData.city}`,
-            description: `Welcome travelers and newcomers to ${cityData.city}! Get oriented, ask questions, and connect with the community.`,
+            name: `Welcome Newcomers ${chatroomCity}`,
+            description: `Welcome travelers and newcomers to ${chatroomCity}! Get oriented, ask questions, and connect with the community.`,
             tags: ['welcome', 'newcomers', 'travelers', 'orientation']
           },
           {
-            name: `Let's Meet Up ${cityData.city}`,
-            description: `Organize meetups and social events in ${cityData.city}! Plan activities, find companions, and make new friends.`,
+            name: `Let's Meet Up ${chatroomCity}`,
+            description: `Organize meetups and social events in ${chatroomCity}! Plan activities, find companions, and make new friends.`,
             tags: ['meetup', 'social', 'events', 'planning']
           }
         ];
@@ -6569,7 +6621,7 @@ export class DatabaseStorage implements IStorage {
             .select()
             .from(citychatrooms)
             .where(and(
-              eq(citychatrooms.city, cityData.city),
+              eq(citychatrooms.city, chatroomCity),
               eq(citychatrooms.name, chatroomType.name)
             ))
             .limit(1);
@@ -6579,7 +6631,7 @@ export class DatabaseStorage implements IStorage {
             const chatroomData = {
               name: chatroomType.name,
               description: chatroomType.description,
-              city: cityData.city,
+              city: chatroomCity,
               state: cityData.state || null,
               country: cityData.country || null,
               createdById: 2, // nearbytraveler as creator
@@ -6590,7 +6642,7 @@ export class DatabaseStorage implements IStorage {
             };
 
             const newChatroom = await this.createCityChatroom(chatroomData);
-            console.log(`Created "${chatroomType.name}" chatroom for ${cityData.city}`);
+            console.log(`Created "${chatroomType.name}" chatroom for ${chatroomCity}`);
             
             // Automatically add nearbytraveler as first member/admin
             if (newChatroom?.id) {
@@ -6616,19 +6668,23 @@ export class DatabaseStorage implements IStorage {
     try {
       console.log(`🎯 AUTO-JOIN: Finding chatrooms for user ${userId} in city: ${city}`);
       
-      // Find chatrooms for the user's city
+      // Apply metro consolidation to find the correct chatroom city
+      const consolidatedCity = this.consolidateToMetropolitanArea(city, null, country);
+      console.log(`🎯 AUTO-JOIN: ${city} consolidated to ${consolidatedCity} for chatroom lookup`);
+      
+      // Find chatrooms for the consolidated city
       const cityChatrooms = await db
         .select()
         .from(citychatrooms)
         .where(and(
-          eq(citychatrooms.city, city),
+          eq(citychatrooms.city, consolidatedCity),
           or(
-            ilike(citychatrooms.name, `Welcome Newcomers ${city}`),
-            ilike(citychatrooms.name, `Let's Meet Up ${city}`)
+            ilike(citychatrooms.name, `Welcome Newcomers ${consolidatedCity}`),
+            ilike(citychatrooms.name, `Let's Meet Up ${consolidatedCity}`)
           )
         ));
 
-      console.log(`🎯 AUTO-JOIN: Found ${cityChatrooms.length} chatrooms for ${city}`);
+      console.log(`🎯 AUTO-JOIN: Found ${cityChatrooms.length} chatrooms for ${consolidatedCity}`);
 
       for (const chatroom of cityChatrooms) {
         // Check if user is already a member
