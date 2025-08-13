@@ -44,6 +44,9 @@ export default function SimpleChatroomPage() {
   const queryClient = useQueryClient();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [messageText, setMessageText] = useState("");
+
+  // Early error boundary - wrap entire component logic
+  try {
   
   // Extract chatroom ID from URL path: /simple-chatroom/198
   const pathSegments = location.split('/');
@@ -538,4 +541,21 @@ export default function SimpleChatroomPage() {
       </div>
     </div>
   );
+  
+  } catch (error) {
+    console.error('❌ CHATROOM: Component error:', error);
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-orange-50 dark:from-gray-900 dark:to-gray-800">
+        <div className="max-w-4xl mx-auto px-4 py-6">
+          <Card>
+            <CardContent className="p-8 text-center">
+              <div className="text-red-600 font-semibold mb-4">Chatroom Error</div>
+              <div className="text-gray-600 mb-4">Something went wrong loading this chatroom</div>
+              <Button onClick={() => navigate('/city-chatrooms')}>Back to Chatrooms</Button>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 }
