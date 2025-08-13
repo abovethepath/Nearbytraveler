@@ -314,6 +314,9 @@ export default function SignupTraveling() {
                     {formData.interests.length} selected
                   </span>
                 </div>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Please choose 3 from the list below to better match with others. Once inside you can add more city specific events and activities.
+                </p>
                 
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                   {MOST_POPULAR_INTERESTS.map((interest) => (
