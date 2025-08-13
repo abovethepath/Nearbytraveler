@@ -6105,7 +6105,18 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       <Dialog open={isEditMode} onOpenChange={setIsEditMode}>
         <DialogContent className="w-[calc(100vw-16px)] max-w-[calc(100vw-16px)] md:max-w-2xl max-h-[80vh] md:max-h-[90vh] overflow-y-auto mx-2 md:mx-auto p-3 md:p-6">
           <DialogHeader>
-            <DialogTitle>Edit Profile</DialogTitle>
+            <div className="flex items-center justify-between">
+              <DialogTitle>Edit Profile</DialogTitle>
+              <Button
+                type="button"
+                size="sm"
+                onClick={profileForm.handleSubmit(onSubmitProfile)}
+                disabled={profileFormMutation.isPending}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                {profileFormMutation.isPending ? "Saving..." : "Save"}
+              </Button>
+            </div>
           </DialogHeader>
           <Form {...profileForm}>
             <form onSubmit={profileForm.handleSubmit(onSubmitProfile)} className="space-y-6">
