@@ -1198,14 +1198,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           hometownState: user.hometownState || "",
           hometownCountry: user.hometownCountry || "",
           dateOfBirth: user.dateOfBirth ? new Date(user.dateOfBirth).toISOString().split('T')[0] : "",
-          ageVisible: user.ageVisible || false,
+          ageVisible: user.ageVisible !== undefined ? user.ageVisible : false,
           gender: user.gender || "",
           sexualPreference: user.sexualPreference || [],
-          sexualPreferenceVisible: user.sexualPreferenceVisible || false,
+          sexualPreferenceVisible: user.sexualPreferenceVisible !== undefined ? user.sexualPreferenceVisible : false,
           travelStyle: user.travelStyle || [],
-          travelingWithChildren: user.travelingWithChildren || false,
-          isVeteran: user.isVeteran || false,
-          isActiveDuty: user.isActiveDuty || false,
+          travelingWithChildren: user.travelingWithChildren !== undefined ? user.travelingWithChildren : false,
+          isVeteran: user.isVeteran !== undefined ? user.isVeteran : false,
+          isActiveDuty: user.isActiveDuty !== undefined ? user.isActiveDuty : false,
         });
       }
     }
@@ -2592,6 +2592,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     },
     onSuccess: (updatedUser) => {
       console.log('🔥 PROFILE UPDATE SUCCESS - Immediate cache refresh:', updatedUser);
+      console.log('🔥 Updated travelingWithChildren value:', updatedUser.travelingWithChildren);
       
       // CRITICAL: Update ALL possible cache keys immediately
       queryClient.setQueryData([`/api/users/${effectiveUserId}`, currentUser?.id], updatedUser);
@@ -2622,6 +2623,29 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         window.dispatchEvent(new CustomEvent('userDataUpdated', { detail: updatedUser }));
         window.dispatchEvent(new CustomEvent('profileUpdated', { detail: updatedUser }));
       }
+      
+      // CRITICAL: Reset form with updated values immediately to prevent toggle drift
+      setTimeout(() => {
+        console.log('🔥 Re-syncing form with updated user data');
+        if (user?.userType !== 'business') {
+          profileForm.reset({
+            bio: updatedUser.bio || "",
+            secretActivities: updatedUser.secretActivities || "",
+            hometownCity: updatedUser.hometownCity || "",
+            hometownState: updatedUser.hometownState || "",
+            hometownCountry: updatedUser.hometownCountry || "",
+            dateOfBirth: updatedUser.dateOfBirth ? new Date(updatedUser.dateOfBirth).toISOString().split('T')[0] : "",
+            ageVisible: updatedUser.ageVisible !== undefined ? updatedUser.ageVisible : false,
+            gender: updatedUser.gender || "",
+            sexualPreference: updatedUser.sexualPreference || [],
+            sexualPreferenceVisible: updatedUser.sexualPreferenceVisible !== undefined ? updatedUser.sexualPreferenceVisible : false,
+            travelStyle: updatedUser.travelStyle || [],
+            travelingWithChildren: updatedUser.travelingWithChildren !== undefined ? updatedUser.travelingWithChildren : false,
+            isVeteran: updatedUser.isVeteran !== undefined ? updatedUser.isVeteran : false,
+            isActiveDuty: updatedUser.isActiveDuty !== undefined ? updatedUser.isActiveDuty : false,
+          });
+        }
+      }, 100);
       
       // Force immediate refetch to trigger component re-render
       refetchUser();
