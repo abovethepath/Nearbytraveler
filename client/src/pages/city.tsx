@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Users, MapPin, Calendar, Filter, ArrowLeft, Camera, ArrowUpDown, ChevronDown, Clock, Globe, Star, Zap, Briefcase, Phone } from "lucide-react";
+import { Users, MapPin, Calendar, Filter, ArrowLeft, ArrowUpDown, ChevronDown, Clock, Globe, Star, Zap, Briefcase, Phone } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 import UserCard from "@/components/user-card";
@@ -21,66 +21,7 @@ import { SecretExperiencesWidget } from "@/components/SecretExperiencesWidget";
 import { useAuth } from "@/App";
 import type { User, Event } from "@shared/schema";
 
-// Authentic city images from assets
-const getCityImage = (cityName: string) => {
-  const cityImages: Record<string, string> = {
-    'Los Angeles Metro': '/attached_assets/Los_Angeles_1753819372180.jpg',
-    'Los Angeles': '/attached_assets/Los_Angeles_1753819372180.jpg',
-    'Boston': '/attached_assets/thaniel hall_1750699608804.jpeg',
-    'Budapest': '/attached_assets/budapest-at-night-chain-bridge-and-buda-castle-matthias-hauser_1750699409380.jpg',
-    'New York': '/attached_assets/image_1754862373277.png',
-    'Manhattan': '/attached_assets/image_1754862373277.png',
-    'Chicago': '/attached_assets/image_1754862408395.png',
-    'San Francisco': '/attached_assets/image_1754862445361.png',
-    'Philadelphia': '/attached_assets/image_1754862486988.png',
-    'Seattle': '/attached_assets/image_1754862527032.png',
-    'Miami': '/attached_assets/beach travel_1750958707105.jpg',
-    'Austin': '/attached_assets/image_1754862534387.png',
-    'Denver': '/attached_assets/image_1754862567976.png',
-    'Nashville': '/attached_assets/image_1754862636529.png',
-    'New Orleans': '/attached_assets/image_1754862647564.png',
-    'Portland': '/attached_assets/image_1754862686951.png',
-    'London': '/attached_assets/image_1754862905677.png',
-    'Paris': '/attached_assets/image_1754862913594.png',
-    'Rome': '/attached_assets/image_1754862952628.png',
-    'Milan': '/attached_assets/image_1754870879393.png',
-    'Barcelona': '/attached_assets/image_1754871157632.png',
-    'Madrid': '/attached_assets/image_1754871267113.png',
-    'Amsterdam': '/attached_assets/image_1754871749891.png',
-    'Berlin': '/attached_assets/image_1754872606823.png',
-    'Prague': '/attached_assets/image_1754873168134.png',
-    'Vienna': '/attached_assets/image_1754873550449.png',
-    'Lisbon': '/attached_assets/image_1754873719290.png',
-    'Dublin': '/attached_assets/image_1754875823668.png',
-    'Stockholm': '/attached_assets/image_1754878207849.png',
-    // Fallback to travel-themed assets for other cities
-    'Default': '/attached_assets/travel photo group map_1750993025212.jpeg'
-  };
-  return cityImages[cityName] || cityImages['Default'] || '/attached_assets/travel photo group map_1750993025212.jpeg';
-};
-
-// City photo gallery data from assets
-const getCityPhotoGallery = (cityName: string) => {
-  const galleryPhotos: Record<string, string[]> = {
-    'Los Angeles': [
-      '/attached_assets/Los_Angeles_1753819372180.jpg',
-      '/attached_assets/beach travel_1750958707105.jpg',
-      '/attached_assets/beach night_1749678644498.jpeg',
-      '/attached_assets/friends at the beach night_1749679112617.webp'
-    ],
-    'Travel': [
-      '/attached_assets/travel photo group map_1750993025212.jpeg',
-      '/attached_assets/people-planning-vacation-trip-map-85261359_1750857749346.webp',
-      '/attached_assets/trip planning_1750857535371.webp',
-      '/attached_assets/Travelers Sharing a Beer_1749576612655.png',
-      '/attached_assets/travelers coffee_1750995178947.png',
-      '/attached_assets/4 travelers around map in town_1750995541992.webp'
-    ]
-  };
-  
-  // Return city-specific photos or default travel photos
-  return galleryPhotos[cityName] || galleryPhotos['Travel'] || [];
-};
+// Removed all city images and photo gallery functions per user request
 
 interface CityPageProps {
   cityName?: string;
@@ -123,10 +64,7 @@ export default function CityPage({ cityName }: CityPageProps) {
   
   // Removed flickering city photos functionality
 
-  // Use static city images without flickering uploads
-  const getDisplayImage = () => {
-    return getCityImage(parsedCityName);
-  };
+  // Removed photo display functions per user request
 
   // Fetch users for this city using metropolitan area consolidation
   const { data: users = [], isLoading: usersLoading } = useQuery({
@@ -304,85 +242,29 @@ export default function CityPage({ cityName }: CityPageProps) {
         </button>
       </div>
       
-      {/* Mobile-optimized Hero Section - Enhanced for LA */}
-      <div className={`relative mb-6 rounded-xl overflow-hidden shadow-2xl mx-4 mt-2 ${
-        isLAArea ? 'ring-4 ring-orange-400/30 shadow-orange-500/20' : ''
+      {/* Simplified Hero Section - No Photos */}
+      <div className={`relative mb-6 rounded-xl overflow-hidden mx-4 mt-2 bg-gradient-to-r from-blue-600 to-purple-700 ${
+        isLAArea ? 'from-orange-500 to-red-600' : ''
       }`}>
-        <div className={`${isLAArea ? 'h-[350px] sm:h-[500px]' : 'h-[300px] sm:h-[400px]'} relative`}>
-          {/* Background Image */}
-          <img 
-            src={getDisplayImage()}
-            alt={`${decodedCityName} city view`}
-            className="absolute inset-0 w-full h-full object-cover"
-          />
-          {/* Gradient Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/40 to-black/70"></div>
-          
-          {/* Mobile-optimized Content Overlay - Enhanced for LA */}
-          <div className="absolute inset-0 flex flex-col justify-center items-center text-center px-4">
-            {isLAArea && (
-              <div className="mb-2 sm:mb-4">
-                <Badge className="bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs sm:text-sm px-3 py-1 rounded-full shadow-lg animate-pulse">
-                  🌟 Beta Launch City
-                </Badge>
-              </div>
-            )}
-            <h1 className={`${
-              isLAArea 
-                ? 'text-4xl sm:text-5xl md:text-6xl lg:text-7xl bg-gradient-to-r from-orange-300 via-yellow-300 to-red-300 bg-clip-text text-transparent'
-                : 'text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-white'
-            } font-bold mb-3 sm:mb-4 drop-shadow-2xl leading-tight`}>
-              {decodedCityName}
-            </h1>
-            {/* Removed tagline per user request */}
-          </div>
+        <div className="h-[200px] relative flex flex-col justify-center items-center text-center px-4">
+          {isLAArea && (
+            <div className="mb-2 sm:mb-4">
+              <Badge className="bg-white/20 text-white text-xs sm:text-sm px-3 py-1 rounded-full">
+                🌟 Beta Launch City
+              </Badge>
+            </div>
+          )}
+          <h1 className={`${
+            isLAArea 
+              ? 'text-4xl sm:text-5xl font-bold text-white'
+              : 'text-3xl sm:text-4xl font-bold text-white'
+          } mb-3 sm:mb-4 leading-tight`}>
+            {decodedCityName}
+          </h1>
         </div>
       </div>
 
-      {/* City Photo Gallery */}
-      <div className="mx-4 mb-6">
-        {(() => {
-          const galleryPhotos = getCityPhotoGallery(parsedCityName);
-          if (galleryPhotos.length > 0) {
-            return (
-              <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 shadow-lg mb-4">
-                <CardHeader className="pb-3">
-                  <CardTitle className="flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-white">
-                    <Camera className="w-5 h-5 text-blue-500" />
-                    City Photos
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-                    {galleryPhotos.slice(0, 8).map((photo, index) => (
-                      <div key={index} className="relative group overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-700 aspect-square">
-                        <img
-                          src={photo}
-                          alt={`${parsedCityName} photo ${index + 1}`}
-                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).src = '/attached_assets/travel photo group map_1750993025212.jpeg';
-                          }}
-                        />
-                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors duration-300" />
-                      </div>
-                    ))}
-                  </div>
-                  {galleryPhotos.length > 8 && (
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-3 text-center">
-                      +{galleryPhotos.length - 8} more photos from the community
-                    </p>
-                  )}
-                </CardContent>
-              </Card>
-            );
-          }
-          return null;
-        })()}
-
-        {/* Upload Photo Section */}
-        {/* Removed flickering city photo upload widget */}
-      </div>
+      {/* City Photo Gallery section completely removed per user request */}
 
       {/* Content */}
       <main className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 py-4 sm:py-8">

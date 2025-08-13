@@ -70,6 +70,7 @@ Preferred communication style: Simple, everyday language.
 - **City Match Tab Enhancement (Aug 2025)**: Enhanced City Match tab with distinctive orange color theme including gradient backgrounds, subtle ring borders, enhanced typography, and direct routing to match-in-city page for better visual prominence.
 - **Color Accessibility Improvements (Aug 2025)**: Fixed green-on-green readability issues in "Things I Want to Do" section by changing event pills to purple and improving color contrast in City Match instructional cards with emerald color scheme and proper borders. Updated global CSS to change activity badges from green to purple for better readability on dark backgrounds.
 - **Username Length Constraints (Aug 2025)**: Implemented 6-13 character limit for all usernames with both frontend validation (Zod schema) and database constraints (varchar(13) + check constraint). Updated existing usernames to comply: 'nearbytraveler' → 'nearbytravlr', 'nearbytraveler30' → 'nearbytravl30'.
+- **Complete Photo Removal from City Pages (Aug 2025)**: Completely removed all photo functionality from city pages including City Photos gallery, photo upload widgets, background images, and all photo-related functions (getCityImage, getCityPhotoGallery). Replaced image hero sections with clean gradient backgrounds. All photo assets and references eliminated per user request for non-functional features.
 
 ## External Dependencies
 
