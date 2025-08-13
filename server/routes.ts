@@ -714,6 +714,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           'Barcelona': { state: 'Catalonia', country: 'Spain' },
           'Madrid': { state: '', country: 'Spain' },
           'London': { state: '', country: 'United Kingdom' },
+          'Edinburgh': { state: 'Scotland', country: 'United Kingdom' },
           'Paris': { state: '', country: 'France' },
           'Rome': { state: '', country: 'Italy' },
           'Milan': { state: '', country: 'Italy' },

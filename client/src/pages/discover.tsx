@@ -202,7 +202,9 @@ function DiscoverPaused() {
                     <p className="text-sm text-gray-200 mb-3">
                       {city.country === 'United States' 
                         ? `${city.city}, ${city.state || 'Unknown State'}, United States`
-                        : city.country || 'Unknown Location'
+                        : city.state 
+                          ? `${city.city}, ${city.state}, ${city.country}`
+                          : `${city.city}, ${city.country || 'Unknown Location'}`
                       }
                     </p>
                     <div className="flex flex-wrap gap-2">
