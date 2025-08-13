@@ -11524,12 +11524,13 @@ Ready to start making real connections wherever you are?
         return res.status(400).json({ error: 'Missing required fields' });
       }
 
-      // SECURITY: Check if user is a member of the chatroom before allowing message sending
+      // SECURITY: Check if user is an ACTIVE member of the chatroom before allowing message sending
       const [membership] = await db.select()
         .from(chatroomMembers)
         .where(and(
           eq(chatroomMembers.chatroomId, chatroomId),
-          eq(chatroomMembers.userId, userId)
+          eq(chatroomMembers.userId, userId),
+          eq(chatroomMembers.isActive, true)
         ))
         .limit(1);
 
@@ -11587,11 +11588,18 @@ Ready to start making real connections wherever you are?
         }
       }
 
-      // upsert membership - insert if not exists, do nothing if exists
+      // upsert membership - insert if not exists, or reactivate if exists but inactive
       await db
         .insert(chatroomMembers)
-        .values({ chatroomId, userId, role: 'member' })
-        .onConflictDoNothing();
+        .values({ chatroomId, userId, role: 'member', isActive: true })
+        .onConflictDoUpdate({
+          target: [chatroomMembers.chatroomId, chatroomMembers.userId],
+          set: {
+            isActive: true,
+            joinedAt: sql`NOW()`,
+            role: 'member'
+          }
+        });
 
       // return fresh count
       const [{ count }] = await db
