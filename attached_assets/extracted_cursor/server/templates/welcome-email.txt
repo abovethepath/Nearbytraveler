@@ -1,0 +1,41 @@
+Welcome to Nearby Traveler!
+Where local experiences meet worldwide connections
+
+Hi {{username}},
+
+Welcome to our community of explorers, locals, and adventure seekers! We're thrilled to have you join the Nearby Traveler family.
+
+What makes Nearby Traveler special?
+
+• Connect with Nearby Locals: Discover authentic experiences through people who call your destination home
+• Meet Fellow Travelers: Find like-minded adventurers with similar interests and travel dates  
+• Smart Matching: Our algorithm connects you with people who share your passions and travel style
+• Local Events & Activities: Access insider knowledge about the best events happening in your area
+• Travel Planning Tools: Create detailed itineraries and get personalized recommendations
+• AI-Powered Insights: Get intelligent travel suggestions based on your preferences
+
+Quick Tips to Get Started:
+• Complete your profile with interests and travel preferences
+• Upload a profile photo to increase connection success
+• Create your first trip plan to start meeting fellow travelers
+• Browse local events in your area or upcoming destinations
+• Don't be shy - send connection requests to people who interest you!
+
+Complete Your Profile: {{profile_url}}
+
+Your journey to authentic travel experiences starts now. Whether you're planning your next adventure or looking to share your local expertise, our community is here to help you make meaningful connections.
+
+Questions? Just reply to this email - we're here to help!
+
+Happy travels,
+The Nearby Traveler Team
+
+---
+Visit Website: {{website_url}}
+Help Center: {{help_url}}
+Privacy Policy: {{privacy_url}}
+
+© 2025 The NearbyTraveler.com. All rights reserved.
+You're receiving this email because you signed up for Nearby Traveler.
+
+Unsubscribe: {{unsubscribe_url}}

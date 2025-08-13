@@ -658,7 +658,7 @@ function Router() {
 
     if (location.startsWith('/chatroom/')) {
       const chatroomId = location.split('/')[2];
-      return <Chatroom id={chatroomId} />;
+      return <Chatroom />;
     }
 
     if (location.startsWith('/simple-chatroom/')) {
@@ -672,7 +672,7 @@ function Router() {
       if (!cityName || cityName.trim() === '') {
         return <NotFound />;
       }
-      return <CityChatrooms cityFilter={cityName} />;
+      return <CityChatrooms />;
     }
 
     if (location.startsWith('/city/')) {

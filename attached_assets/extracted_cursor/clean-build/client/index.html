@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover" />
+    <title>The NearbyTraveler.com - Social Travel Networking Platform</title>
+    
+    <!-- Aggressive Cache Control for Mobile Deployment -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    
+    <!-- CRITICAL Mobile Cache Busting Version - FORCE REFRESH -->
+    <meta name="app-version" content="mobile-layout-v6-20250705-SITE-WIDE-FIXES" />
+    <meta name="cache-killer" content="1751753400000-FORCE-MOBILE-REFRESH" />
+    
+    <!-- PWA Configuration -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#3b82f6" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Nearby Traveler" />
+    
+    <!-- App Icons -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/icon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/icon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon-152x152.png" />
+    <link rel="apple-touch-icon" sizes="144x144" href="/apple-touch-icon-144x144.png" />
+    <link rel="apple-touch-icon" sizes="120x120" href="/apple-touch-icon-120x120.png" />
+    <link rel="apple-touch-icon" sizes="114x114" href="/apple-touch-icon-114x114.png" />
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon-76x76.png" />
+    <link rel="apple-touch-icon" sizes="72x72" href="/apple-touch-icon-72x72.png" />
+    <link rel="apple-touch-icon" sizes="60x60" href="/apple-touch-icon-60x60.png" />
+    <link rel="apple-touch-icon" sizes="57x57" href="/apple-touch-icon-57x57.png" />
+    
+    <!-- Mobile optimization -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-touch-fullscreen" content="yes" />
+    <meta name="format-detection" content="telephone=no" />
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Connect with travelers and locals worldwide. Find travel companions, discover authentic experiences, and build meaningful connections through our social travel platform." />
+    <meta name="keywords" content="travel, social network, travelers, locals, travel companions, authentic experiences, travel connections" />
+    <meta name="author" content="Nearby Traveler" />
+    
+    <!-- Open Graph Tags -->
+    <meta property="og:title" content="Nearby Traveler - Social Travel Networking" />
+    <meta property="og:description" content="Connect with travelers and locals worldwide. Find travel companions and authentic experiences." />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Nearby Traveler" />
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700;800&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+    
+    <!-- Mobile Layout Cache Control -->
+    <script>
+      console.log('✅ CRITICAL MOBILE LAYOUT v6-20250705 - SITE-WIDE FIXES DEPLOYED');
+      
+      // Force complete cache clear for critical mobile fixes
+      const currentVersion = 'v6-20250705-SITE-WIDE';
+      if (localStorage.getItem('layout-version') !== currentVersion) {
+        console.log('🧹 CRITICAL: Clearing ALL caches for site-wide mobile fixes');
+        localStorage.setItem('layout-version', currentVersion);
+        
+        // Clear ALL browser caches
+        if ('caches' in window) {
+          caches.keys().then(function(names) {
+            names.forEach(function(name) {
+              caches.delete(name);
+              console.log('🗑️ Cleared cache:', name);
+            });
+          });
+        }
+        
+        // Clear additional storage
+        try {
+          sessionStorage.clear();
+          console.log('🗑️ Cleared session storage');
+        } catch (e) {
+          console.log('⚠️ Could not clear session storage');
+        }
+        
+        console.log('💯 Mobile layout fixes applied - refresh complete');
+      }
+    </script>
+    
+    <!-- This is a replit script which adds a banner on the top of the page when opened in development mode outside the replit environment -->
+    <script type="text/javascript" src="https://replit.com/public/js/replit-dev-banner.js"></script>
+  </body>
+</html>

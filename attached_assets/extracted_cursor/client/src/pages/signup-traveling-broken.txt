@@ -1,0 +1,767 @@
+import { useState, useEffect, useContext } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { useToast } from "@/hooks/use-toast";
+import { useLocation } from "wouter";
+import { apiRequest } from "@/lib/queryClient";
+import { BASE_TRAVELER_TYPES, getAllInterests, getAllActivities, getAllEvents, BASE_LANGUAGES } from "@/lib/travelOptions";
+import { validateCustomInput, filterCustomEntries } from "@/lib/contentFilter";
+import { AuthContext } from "@/App";
+import { SmartLocationInput } from "@/components/SmartLocationInput";
+import { authStorage } from "@/lib/auth";
+import { ArrowLeft } from "lucide-react";
+
+// Gender options used consistently across the platform
+const GENDER_OPTIONS = [
+  "Male", "Female", "Trans Male", "Trans Female", "Non-Binary", "Other", "Prefer Not To Say"
+];
+
+// Age validation utility
+const validateAge = (dateOfBirth: string): { isValid: boolean; message?: string } => {
+  if (!dateOfBirth) return { isValid: false, message: "Date of birth is required" };
+  
+  const today = new Date();
+  const birthDate = new Date(dateOfBirth);
+  
+  if (isNaN(birthDate.getTime())) {
+    return { isValid: false, message: "Please enter a valid date of birth" };
+  }
+  
+  if (birthDate > today) {
+    return { isValid: false, message: "Date of birth cannot be in the future" };
+  }
+  
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const monthDiff = today.getMonth() - birthDate.getMonth();
+  
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+    age--;
+  }
+  
+  if (age < 16) {
+    return { isValid: false, message: "You must be at least 16 years old to register" };
+  }
+  
+  if (age > 99) {
+    return { isValid: false, message: "You must be under 100 years old to register" };
+  }
+  
+  return { isValid: true };
+};
+
+export default function SignupTraveling() {
+  const [, setLocation] = useLocation();
+  const { toast } = useToast();
+  const authContext = useContext(AuthContext);
+  const { setUser, login } = useContext(AuthContext);
+
+  const [formData, setFormData] = useState({
+    userType: "currently_traveling",
+    
+    // Account fields (for direct testing) 
+    email: "",
+    password: "",
+    username: "",
+    name: "",
+    
+    // Profile fields
+    dateOfBirth: "",
+    bio: "",
+    gender: "",
+    
+    // Location fields
+    hometownCity: "",
+    hometownState: "",
+    hometownCountry: "",
+    
+    // Travel fields - specific to traveling users
+    currentDestination: "",
+    currentCity: "",
+    currentState: "",
+    currentCountry: "",
+    travelStartDate: "",
+    travelEndDate: "",
+    
+    // Preferences
+    travelerTypes: [] as string[],
+    interests: [] as string[],
+    activities: [] as string[],
+    events: [] as string[],
+    languages: [] as string[],
+    
+    // Profile visibility
+    profileVisibility: "public" as "public" | "connections_only" | "private",
+    sexualPreferenceVisibility: false,
+    ageVisibility: true,
+    isSmokingFriendly: false,
+    isDrinkingFriendly: false,
+    isPetFriendly: false,
+    isGroupFriendly: false,
+    
+    // Secret local activities
+    secretActivities: "",
+    
+    // Military status
+    militaryStatus: "none" as "none" | "active" | "veteran" | "family",
+    
+    // Sexual preference
+    sexualPreference: "",
+  });
+
+  const [customInterest, setCustomInterest] = useState("");
+  const [customActivity, setCustomActivity] = useState("");
+  const [customEvent, setCustomEvent] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Load account data from sessionStorage
+  useEffect(() => {
+    const accountData = sessionStorage.getItem('accountData');
+    if (accountData) {
+      const parsed = JSON.parse(accountData);
+      setFormData(prev => ({
+        ...prev,
+        email: parsed.email || "",
+        password: parsed.password || "",
+        username: parsed.username || "",
+        name: parsed.name || "",
+        userType: parsed.userType || "currently_traveling"
+      }));
+    } else {
+      // No account data, redirect to join
+      setLocation('/join');
+    }
+  }, [setLocation]);
+
+  const handleLocationUpdate = (type: 'hometown' | 'current', locationData: { city: string; state: string; country: string }) => {
+    if (type === 'hometown') {
+      setFormData(prev => ({
+        ...prev,
+        hometownCity: locationData.city,
+        hometownState: locationData.state,
+        hometownCountry: locationData.country
+      }));
+    } else if (type === 'current') {
+      setFormData(prev => ({
+        ...prev,
+        currentCity: locationData.city,
+        currentState: locationData.state,
+        currentCountry: locationData.country
+      }));
+    }
+  };
+
+  const addCustomItem = (type: 'interest' | 'activity' | 'event', customValue: string, setter: (value: string) => void) => {
+    if (!customValue.trim()) return;
+    
+    const validationResult = validateCustomInput(customValue);
+    if (!validationResult.isValid) {
+      toast({
+        title: "Invalid input",
+        description: validationResult.message || "Invalid input provided",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const cleanValue = customValue.trim();
+    
+    if (type === 'interest' && !formData.interests.includes(cleanValue)) {
+      setFormData(prev => ({ ...prev, interests: [...prev.interests, cleanValue] }));
+      setter("");
+    } else if (type === 'activity' && !formData.activities.includes(cleanValue)) {
+      setFormData(prev => ({ ...prev, activities: [...prev.activities, cleanValue] }));
+      setter("");
+    } else if (type === 'event' && !formData.events.includes(cleanValue)) {
+      setFormData(prev => ({ ...prev, events: [...prev.events, cleanValue] }));
+      setter("");
+    }
+  };
+
+  const removeItem = (type: 'interests' | 'activities' | 'events' | 'languages' | 'travelerTypes', item: string) => {
+    setFormData(prev => ({
+      ...prev,
+      [type]: (prev[type] as string[]).filter(i => i !== item)
+    }));
+  };
+
+  const toggleItem = (type: 'interests' | 'activities' | 'events' | 'languages' | 'travelerTypes', item: string) => {
+    const currentItems = formData[type] as string[];
+    if (currentItems.includes(item)) {
+      removeItem(type, item);
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [type]: [...currentItems, item]
+      }));
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      // Validation
+      if (!formData.email || !formData.password || !formData.username || !formData.name) {
+        toast({
+          title: "Missing account information",
+          description: "Please ensure all account fields are filled.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (!formData.dateOfBirth || !formData.gender || !formData.bio) {
+        toast({
+          title: "Missing profile information",
+          description: "Please fill in date of birth, gender, and bio.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const ageValidation = validateAge(formData.dateOfBirth);
+      if (!ageValidation.isValid) {
+        toast({
+          title: "Age validation failed",
+          description: ageValidation.message,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (!formData.hometownCity || !formData.hometownCountry) {
+        toast({
+          title: "Missing hometown information",
+          description: "Please provide your hometown location.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (!formData.currentCity || !formData.currentCountry) {
+        toast({
+          title: "Missing current location",
+          description: "Please provide where you're currently traveling.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (!formData.travelStartDate || !formData.travelEndDate) {
+        toast({
+          title: "Missing travel dates",
+          description: "Please provide your travel start and end dates.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (formData.interests.length < 5) {
+        toast({
+          title: "More interests needed",
+          description: "Please select at least 5 interests.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (formData.activities.length < 5) {
+        toast({
+          title: "More activities needed", 
+          description: "Please select at least 5 activities.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (formData.events.length < 5) {
+        toast({
+          title: "More events needed",
+          description: "Please select at least 5 events.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (formData.languages.length < 1) {
+        toast({
+          title: "Language required",
+          description: "Please select at least 1 language.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Filter inappropriate content
+      const filteredData = {
+        ...formData,
+        interests: formData.interests,
+        activities: formData.activities,
+        events: formData.events,
+        secretActivities: formData.secretActivities.trim()
+      };
+
+      // Create account
+      console.log('Creating traveling user account...');
+      const result = await apiRequest('/api/register', {
+        method: 'POST',
+        body: {
+          ...filteredData,
+          // Mark as currently traveling
+          isCurrentlyTraveling: true,
+          travelDestination: `${filteredData.currentCity}, ${filteredData.currentState ? filteredData.currentState + ', ' : ''}${filteredData.currentCountry}`,
+          // Create hometown as separate field
+          hometown: `${filteredData.hometownCity}, ${filteredData.hometownState ? filteredData.hometownState + ', ' : ''}${filteredData.hometownCountry}`
+        }
+      });
+
+      if (result.error) {
+        toast({
+          title: "Registration failed",
+          description: result.error || "Registration failed",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Clear session storage
+      sessionStorage.removeItem('accountData');
+
+      // Set authentication
+      authStorage.setUser(result);
+      if (setUser) setUser(result);
+
+      toast({
+        title: "Welcome to Nearby Traveler!",
+        description: "Your traveling account has been created successfully.",
+      });
+
+      // Redirect to welcome page
+      setTimeout(() => {
+        window.location.href = "/welcome";
+      }, 300);
+
+    } catch (error) {
+      console.error('Registration error:', error);
+      toast({
+        title: "Registration failed",
+        description: "An error occurred. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-purple-100 via-blue-50 to-orange-100 dark:from-gray-900 dark:via-purple-900 dark:to-gray-800 p-4">
+      <div className="max-w-2xl mx-auto">
+        <Card className="shadow-2xl border-2 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md ring-1 ring-purple-200/50 dark:ring-purple-800/30">
+          <CardHeader className="text-center bg-gradient-to-r from-purple-50/80 to-orange-50/80 dark:from-purple-900/20 dark:to-orange-900/20 rounded-t-lg pb-8">
+            <div className="flex justify-start mb-4">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setLocation('/join')}
+                className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 border-blue-300 hover:border-blue-500 font-medium"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back
+              </Button>
+            </div>
+            <CardTitle className="text-4xl font-bold bg-gradient-to-r from-purple-600 via-blue-600 to-orange-500 bg-clip-text text-transparent mb-3">
+              Complete Your Traveling Profile ✈️
+            </CardTitle>
+            <CardDescription className="text-xl text-gray-700 dark:text-gray-300 font-medium">
+              Connect with locals and travelers in your current destination
+            </CardDescription>
+          </CardHeader>
+
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-8">
+              
+              {/* Personal Information */}
+              <div className="space-y-4">
+                <h3 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">Personal Information</h3>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label className="text-gray-900 dark:text-white">Date of Birth *</Label>
+                    <Input
+                      type="date"
+                      value={formData.dateOfBirth}
+                      onChange={(e) => setFormData(prev => ({ ...prev, dateOfBirth: e.target.value }))}
+                      required
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label className="text-gray-900 dark:text-white">Gender *</Label>
+                    <Select value={formData.gender} onValueChange={(value) => setFormData(prev => ({ ...prev, gender: value }))}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select gender" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {GENDER_OPTIONS.map(option => (
+                          <SelectItem key={option} value={option}>{option}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div>
+                  <Label className="text-gray-900 dark:text-white">Bio *</Label>
+                  <Textarea
+                    value={formData.bio}
+                    onChange={(e) => setFormData(prev => ({ ...prev, bio: e.target.value }))}
+                    placeholder="Tell us about yourself..."
+                    className="min-h-[100px]"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Location Information */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Location Information</h3>
+                
+                <div>
+                  <Label className="text-gray-900 dark:text-white">Hometown (Where You're From) *</Label>
+                  <SmartLocationInput
+                    onLocationUpdate={(locationData) => handleLocationUpdate('hometown', locationData)}
+                    placeholder="Enter your hometown"
+                    initialCity={formData.hometownCity}
+                    initialState={formData.hometownState}
+                    initialCountry={formData.hometownCountry}
+                  />
+                </div>
+
+                <div>
+                  <Label className="text-gray-900 dark:text-white">Current Travel Destination *</Label>
+                  <SmartLocationInput
+                    onLocationUpdate={(locationData) => handleLocationUpdate('current', locationData)}
+                    placeholder="Where are you traveling to?"
+                    initialCity={formData.currentCity}
+                    initialState={formData.currentState}
+                    initialCountry={formData.currentCountry}
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label className="text-gray-900 dark:text-white">Travel Start Date *</Label>
+                    <Input
+                      type="date"
+                      value={formData.travelStartDate}
+                      onChange={(e) => setFormData(prev => ({ ...prev, travelStartDate: e.target.value }))}
+                      required
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label className="text-gray-900 dark:text-white">Travel End Date *</Label>
+                    <Input
+                      type="date"
+                      value={formData.travelEndDate}
+                      onChange={(e) => setFormData(prev => ({ ...prev, travelEndDate: e.target.value }))}
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Top Choices for Most Travelers */}
+              <div 
+                className="p-6 rounded-lg"
+                style={{
+                  background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)',
+                  color: 'white'
+                }}
+              >
+                <h3 className="text-xl font-bold mb-4 text-center">
+                  ⭐ Top Choices for Most Travelers
+                </h3>
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                  {[
+                    "Single and Looking", "Craft Beer & Breweries", "Coffee Culture", "Cocktails & Bars",
+                    "Nightlife & Dancing", "Photography", "Street Art", "Food Tours / Trucks", 
+                    "Rooftop Bars", "Pub Crawls & Bar Tours", "Local Food Specialties", "Walking Tours",
+                    "Happy Hour Deals", "Local Hidden Gems", "Boat & Water Tours", "Brunch Spots",
+                    "Adventure Tours", "City Tours & Sightseeing", "Hiking & Nature", "Museums",
+                    "Local Unknown Hotspots", "Meet Locals/Travelers", "Yoga & Wellness", "Live Music Venues",
+                    "Beach Activities", "Fine Dining", "Historical Tours", "Festivals & Events"
+                  ].map(interest => (
+                    <button
+                      key={interest}
+                      type="button"
+                      onClick={() => toggleItem('interests', interest)}
+                      className={`p-2 rounded text-sm font-medium transition-all ${
+                        formData.interests.includes(interest)
+                          ? 'bg-white text-blue-600 shadow-md'
+                          : 'bg-white/20 text-white hover:bg-white/30'
+                      }`}
+                    >
+                      {interest}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Additional Interests */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  Additional Interests <span className="text-sm text-gray-500">(Select at least 5 total)</span>
+                </h3>
+                
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+                  {getAllInterests().map(interest => (
+                    <div key={interest} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`interest-${interest}`}
+                        checked={formData.interests.includes(interest)}
+                        onCheckedChange={() => toggleItem('interests', interest)}
+                      />
+                      <Label
+                        htmlFor={`interest-${interest}`}
+                        className="text-sm text-gray-700 dark:text-gray-300 cursor-pointer"
+                      >
+                        {interest}
+                      </Label>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex gap-2">
+                  <Input
+                    value={customInterest}
+                    onChange={(e) => setCustomInterest(e.target.value)}
+                    placeholder="Add custom interest"
+                    onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addCustomItem('interest', customInterest, setCustomInterest))}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => addCustomItem('interest', customInterest, setCustomInterest)}
+                  >
+                    Add
+                  </Button>
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  {formData.interests.map(interest => (
+                    <span
+                      key={interest}
+                      className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm flex items-center gap-1"
+                    >
+                      {interest}
+                      <button
+                        type="button"
+                        onClick={() => removeItem('interests', interest)}
+                        className="text-blue-600 hover:text-blue-800"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Activities */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  Activities <span className="text-sm text-gray-500">(Select at least 5)</span>
+                </h3>
+                
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+                  {getAllActivities().map(activity => (
+                    <div key={activity} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`activity-${activity}`}
+                        checked={formData.activities.includes(activity)}
+                        onCheckedChange={() => toggleItem('activities', activity)}
+                      />
+                      <Label
+                        htmlFor={`activity-${activity}`}
+                        className="text-sm text-gray-700 dark:text-gray-300 cursor-pointer"
+                      >
+                        {activity}
+                      </Label>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex gap-2">
+                  <Input
+                    value={customActivity}
+                    onChange={(e) => setCustomActivity(e.target.value)}
+                    placeholder="Add custom activity"
+                    onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addCustomItem('activity', customActivity, setCustomActivity))}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => addCustomItem('activity', customActivity, setCustomActivity)}
+                  >
+                    Add
+                  </Button>
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  {formData.activities.map(activity => (
+                    <span
+                      key={activity}
+                      className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm flex items-center gap-1"
+                    >
+                      {activity}
+                      <button
+                        type="button"
+                        onClick={() => removeItem('activities', activity)}
+                        className="text-green-600 hover:text-green-800"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Events */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  Events <span className="text-sm text-gray-500">(Select at least 5)</span>
+                </h3>
+                
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+                  {getAllEvents().map(event => (
+                    <div key={event} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`event-${event}`}
+                        checked={formData.events.includes(event)}
+                        onCheckedChange={() => toggleItem('events', event)}
+                      />
+                      <Label
+                        htmlFor={`event-${event}`}
+                        className="text-sm text-gray-700 dark:text-gray-300 cursor-pointer"
+                      >
+                        {event}
+                      </Label>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex gap-2">
+                  <Input
+                    value={customEvent}
+                    onChange={(e) => setCustomEvent(e.target.value)}
+                    placeholder="Add custom event"
+                    onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addCustomItem('event', customEvent, setCustomEvent))}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => addCustomItem('event', customEvent, setCustomEvent)}
+                  >
+                    Add
+                  </Button>
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  {formData.events.map(event => (
+                    <span
+                      key={event}
+                      className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm flex items-center gap-1"
+                    >
+                      {event}
+                      <button
+                        type="button"
+                        onClick={() => removeItem('events', event)}
+                        className="text-purple-600 hover:text-purple-800"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Languages */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  Languages <span className="text-sm text-gray-500">(Select at least 1)</span>
+                </h3>
+                
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+                  {BASE_LANGUAGES.map(language => (
+                    <div key={language} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`language-${language}`}
+                        checked={formData.languages.includes(language)}
+                        onCheckedChange={() => toggleItem('languages', language)}
+                      />
+                      <Label
+                        htmlFor={`language-${language}`}
+                        className="text-sm text-gray-700 dark:text-gray-300 cursor-pointer"
+                      >
+                        {language}
+                      </Label>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  {formData.languages.map(language => (
+                    <span
+                      key={language}
+                      className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm flex items-center gap-1"
+                    >
+                      {language}
+                      <button
+                        type="button"
+                        onClick={() => removeItem('languages', language)}
+                        className="text-yellow-600 hover:text-yellow-800"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Secret Local Activities */}
+              <div className="space-y-4">
+                <h3 className="text-2xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">Secret Local Activities 🔐</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Share hidden gems or local knowledge from places you've been or are visiting
+                </p>
+                <Textarea
+                  value={formData.secretActivities}
+                  onChange={(e) => setFormData(prev => ({ ...prev, secretActivities: e.target.value }))}
+                  placeholder="Share your secret local knowledge..."
+                  className="min-h-[100px]"
+                />
+              </div>
+
+              {/* Submit Button */}
+              <div className="pt-6">
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full bg-gradient-to-r from-purple-600 via-blue-600 to-orange-500 hover:from-purple-700 hover:via-blue-700 hover:to-orange-600 text-white font-bold py-4 text-lg shadow-lg"
+                >
+                  {isSubmitting ? "Creating Your Traveling Account..." : "Create Traveling Account ✈️"}
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}

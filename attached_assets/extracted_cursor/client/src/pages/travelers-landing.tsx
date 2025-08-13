@@ -1,0 +1,203 @@
+import React from "react";
+import LandingNavbar from "@/components/landing-navbar";
+import Footer from "@/components/footer";
+import travelersHeaderImage from "@assets/ChatGPT Image Jul 23, 2025, 01_18_34 PM_1753301968074.png";
+
+export default function TravelersLanding() {
+
+  return (
+    <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900">
+      <LandingNavbar />
+      
+      {/* Hero Section */}
+      <div className="relative">
+        <div className="relative h-[70vh] overflow-hidden">
+          <img 
+            src={travelersHeaderImage} 
+            alt="Travelers making connections and sharing experiences" 
+            className="w-full h-full object-cover"
+
+          />
+          <div className="absolute inset-0 bg-black/40" />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="text-center text-white px-4 max-w-4xl">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold mb-6 drop-shadow-2xl" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700'}}>
+                Nearby Traveler For Travelers
+              </h1>
+              <p className="text-lg sm:text-xl lg:text-2xl mb-8 drop-shadow-xl max-w-3xl mx-auto">
+                Discover hidden gems, connect with locals who share your interests, and experience authentic culture. Skip the tourist traps and explore like a local.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <main className="flex-1 px-4 py-16">
+        {/* Why Travelers Love Nearby Traveler */}
+        <div className="max-w-6xl mx-auto text-center mb-16">
+          <h2 className="text-3xl sm:text-4xl font-bold mb-8 text-gray-900 dark:text-white" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700'}}>
+            Why Travelers Choose Nearby Traveler
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/30 dark:to-orange-800/30 p-6 rounded-xl shadow-lg border dark:border-orange-700/50">
+              <div className="text-4xl mb-4">🗺️</div>
+              <h3 className="text-xl font-bold mb-3" style={{color: '#000000'}}>Hidden Gems</h3>
+              <p style={{color: '#000000'}}>Discover secret spots, local hangouts, and authentic experiences that guidebooks never mention.</p>
+            </div>
+            <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 p-6 rounded-xl shadow-lg border dark:border-blue-700/50">
+              <div className="text-4xl mb-4">🤝</div>
+              <h3 className="text-xl font-bold mb-3" style={{color: '#000000'}}>Local Connections</h3>
+              <p style={{color: '#000000'}}>Connect with locals who share your interests and get insider tips from people who actually live there.</p>
+            </div>
+            <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/30 dark:to-green-800/30 p-6 rounded-xl shadow-lg border dark:border-green-700/50">
+              <div className="text-4xl mb-4">🎯</div>
+              <h3 className="text-xl font-bold mb-3" style={{color: '#000000'}}>Smart Matching</h3>
+              <p style={{color: '#000000'}}>Our AI matches you with locals and travelers based on shared interests, travel dates, and compatibility.</p>
+            </div>
+            <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/30 dark:to-purple-800/30 p-6 rounded-xl shadow-lg border dark:border-purple-700/50">
+              <div className="text-4xl mb-4">⚡</div>
+              <h3 className="text-xl font-bold mb-3" style={{color: '#000000'}}>Instant Meetups</h3>
+              <p style={{color: '#000000'}}>Create "meet now" events for instant connections when you arrive in a new city and want to explore.</p>
+            </div>
+            <div className="bg-gradient-to-br from-pink-50 to-pink-100 dark:from-pink-900/30 dark:to-pink-800/30 p-6 rounded-xl shadow-lg border dark:border-pink-700/50">
+              <div className="text-4xl mb-4">🌍</div>
+              <h3 className="text-xl font-bold mb-3" style={{color: '#000000'}}>Cultural Immersion</h3>
+              <p style={{color: '#000000'}}>Experience authentic local culture through community events and personal connections with residents.</p>
+            </div>
+            <div className="bg-gradient-to-br from-teal-50 to-teal-100 dark:from-teal-900/30 dark:to-teal-800/30 p-6 rounded-xl shadow-lg border dark:border-teal-700/50">
+              <div className="text-4xl mb-4">💡</div>
+              <h3 className="text-xl font-bold mb-3" style={{color: '#000000'}}>Personalized Tips</h3>
+              <p style={{color: '#000000'}}>Get customized recommendations based on your interests, budget, and travel style from real locals.</p>
+            </div>
+            <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 dark:from-indigo-900/30 dark:to-indigo-800/30 p-6 rounded-xl shadow-lg border dark:border-indigo-700/50">
+              <div className="text-4xl mb-4">💬</div>
+              <h3 className="text-xl font-bold mb-3" style={{color: '#000000'}}>Real-Time Messaging</h3>
+              <p style={{color: '#000000'}}>Instant messaging with typing indicators, read receipts, and online status like AOL Messenger.</p>
+            </div>
+            <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-900/30 dark:to-yellow-800/30 p-6 rounded-xl shadow-lg border dark:border-yellow-700/50">
+              <div className="text-4xl mb-4">📅</div>
+              <h3 className="text-xl font-bold mb-3" style={{color: '#000000'}}>Travel Date Matching</h3>
+              <p style={{color: '#000000'}}>Find travelers with overlapping dates in the same destination for coordinated adventures.</p>
+            </div>
+            <div className="bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/30 dark:to-red-800/30 p-6 rounded-xl shadow-lg border dark:border-red-700/50">
+              <div className="text-4xl mb-4">🎨</div>
+              <h3 className="text-xl font-bold mb-3" style={{color: '#000000'}}>AI Trip Planning</h3>
+              <p style={{color: '#000000'}}>Claude AI companion creates personalized itineraries based on your interests and travel style.</p>
+            </div>
+            <div className="bg-gradient-to-br from-cyan-50 to-cyan-100 dark:from-cyan-900/30 dark:to-cyan-800/30 p-6 rounded-xl shadow-lg border dark:border-cyan-700/50">
+              <div className="text-4xl mb-4">📸</div>
+              <h3 className="text-xl font-bold mb-3" style={{color: '#000000'}}>Travel Memories</h3>
+              <p style={{color: '#000000'}}>Photo sharing with AI analysis, travel stories, and memory timeline to document your adventures.</p>
+            </div>
+            <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/30 dark:to-emerald-800/30 p-6 rounded-xl shadow-lg border dark:border-emerald-700/50">
+              <div className="text-4xl mb-4">🏆</div>
+              <h3 className="text-xl font-bold mb-3" style={{color: '#000000'}}>Travel Aura System</h3>
+              <p style={{color: '#000000'}}>Earn points for participating, sharing photos, and helping other travelers build your reputation.</p>
+            </div>
+            <div className="bg-gradient-to-br from-violet-50 to-violet-100 dark:from-violet-900/30 dark:to-violet-800/30 p-6 rounded-xl shadow-lg border dark:border-violet-700/50">
+              <div className="text-4xl mb-4">🔒</div>
+              <h3 className="text-xl font-bold mb-3" style={{color: '#000000'}}>Safety & References</h3>
+              <p style={{color: '#000000'}}>Reference system, user verification, and safety features to ensure trustworthy connections.</p>
+            </div>
+          </div>
+        </div>
+
+        {/* How It Works for Travelers */}
+        <div className="max-w-6xl mx-auto mb-16">
+          <h2 className="text-3xl sm:text-4xl font-bold text-center mb-12 text-gray-900 dark:text-white" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700'}}>
+            How It Works for Travelers
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="text-center">
+              <div className="bg-orange-100 dark:bg-orange-900/30 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl font-bold text-orange-600 dark:text-orange-400">1</span>
+              </div>
+              <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">Plan Your Trip</h3>
+              <p className="text-gray-700 dark:text-gray-300">Add your travel dates and destinations to find locals and other travelers who'll be there at the same time.</p>
+            </div>
+            <div className="text-center">
+              <div className="bg-blue-100 dark:bg-blue-900/30 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">2</span>
+              </div>
+              <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">Get Matched</h3>
+              <p className="text-gray-700 dark:text-gray-300">Our smart algorithm connects you with compatible locals and travelers based on interests and travel overlap.</p>
+            </div>
+            <div className="text-center">
+              <div className="bg-green-100 dark:bg-green-900/30 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl font-bold text-green-600 dark:text-green-400">3</span>
+              </div>
+              <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">Experience & Connect</h3>
+              <p className="text-gray-700 dark:text-gray-300">Join local events, create meetups, and build lasting connections that enhance your travel experience.</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Advanced Travel Features */}
+        <div className="max-w-6xl mx-auto mb-16">
+          <h2 className="text-3xl sm:text-4xl font-bold text-center mb-12 text-gray-900 dark:text-white" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700'}}>
+            Advanced Travel Features
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-gray-800 dark:to-gray-700 p-6 rounded-xl shadow-lg border border-purple-200 dark:border-gray-600">
+              <div className="text-4xl mb-4">🎲</div>
+              <h3 className="text-xl font-bold mb-3 text-black dark:text-black">Surprise Me Feature</h3>
+              <p className="text-black dark:text-black">Let locals surprise you with spontaneous activities and hidden gems you'd never discover on your own.</p>
+            </div>
+            <div className="bg-gradient-to-br from-teal-50 to-teal-100 dark:from-gray-800 dark:to-gray-700 p-6 rounded-xl shadow-lg border border-teal-200 dark:border-gray-600">
+              <div className="text-4xl mb-4">📍</div>
+              <h3 className="text-xl font-bold mb-3 text-black dark:text-black">Location Intelligence</h3>
+              <p className="text-black dark:text-black">Smart location detection shows you nearby travelers, events, and meetup opportunities in real-time.</p>
+            </div>
+            <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 dark:from-gray-800 dark:to-gray-700 p-6 rounded-xl shadow-lg border border-indigo-200 dark:border-gray-600">
+              <div className="text-4xl mb-4">🌐</div>
+              <h3 className="text-xl font-bold mb-3 text-black dark:text-black">Global Community</h3>
+              <p className="text-black dark:text-black">Starting our beta launch in Los Angeles, growing to connect travelers worldwide with authentic local experiences.</p>
+            </div>
+            <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-gray-800 dark:to-gray-700 p-6 rounded-xl shadow-lg border border-emerald-200 dark:border-gray-600">
+              <div className="text-4xl mb-4">🔄</div>
+              <h3 className="text-xl font-bold mb-3 text-black dark:text-black">Trip Synchronization</h3>
+              <p className="text-black dark:text-black">Automatically sync your travel plans across devices and share itineraries with travel companions.</p>
+            </div>
+            <div className="bg-gradient-to-br from-rose-50 to-rose-100 dark:from-gray-800 dark:to-gray-700 p-6 rounded-xl shadow-lg border border-rose-200 dark:border-gray-600">
+              <div className="text-4xl mb-4">🎯</div>
+              <h3 className="text-xl font-bold mb-3 text-black dark:text-black">Interest Targeting</h3>
+              <p className="text-black dark:text-black">Precision matching based on 100+ interests and activities to find your perfect travel companions.</p>
+            </div>
+            <div className="bg-gradient-to-br from-amber-50 to-amber-100 dark:from-gray-800 dark:to-gray-700 p-6 rounded-xl shadow-lg border border-amber-200 dark:border-gray-600">
+              <div className="text-4xl mb-4">🎪</div>
+              <h3 className="text-xl font-bold mb-3 text-black dark:text-black">Event Discovery</h3>
+              <p className="text-black dark:text-black">Access exclusive local events, festivals, and cultural experiences only available to community members.</p>
+            </div>
+          </div>
+        </div>
+        
+        {/* Final CTA Section */}
+        <div className="mt-16 bg-gradient-to-r from-orange-600 to-blue-600 text-white p-12 rounded-2xl shadow-2xl max-w-5xl mx-auto">
+          <div className="text-center">
+            <h2 className="text-3xl sm:text-4xl font-bold mb-6" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700'}}>
+              Ready for Authentic Travel?
+            </h2>
+            <p className="text-lg sm:text-xl mb-8 max-w-3xl mx-auto">
+              Join millions of travelers discovering the world through local eyes. Your next adventure with real connections awaits.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <a
+                href="/join"
+                className="px-10 py-4 bg-white text-orange-600 font-bold rounded-xl shadow-xl hover:scale-105 hover:shadow-2xl transition transform text-lg"
+              >
+                Sign up as a Traveler
+              </a>
+              <a
+                href="/auth"
+                className="px-10 py-4 border-2 border-white text-white font-bold rounded-xl shadow-xl hover:bg-white/20 backdrop-blur-sm transition text-lg"
+              >
+                Sign In to Explore
+              </a>
+            </div>
+          </div>
+        </div>
+      </main>
+      <Footer />
+    </div>
+  );
+}
