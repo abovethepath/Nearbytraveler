@@ -70,7 +70,7 @@ export function validateDateInput(dateString: string): { isValid: boolean; messa
   
   // Ensure year is exactly 4 digits
   if (year < 1000 || year > 9999) {
-    return { isValid: false, message: "Year must be 4 digits" };
+    return { isValid: false, message: "Please enter a valid year" };
   }
 
   // Check age limit for date of birth

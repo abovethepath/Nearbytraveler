@@ -6358,15 +6358,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             min={getDateInputConstraints().min}
                             max={getDateInputConstraints().max}
                             onChange={(e) => {
-                              const { isValid, message } = validateDateInput(e.target.value);
                               field.onChange(e.target.value);
-                              if (!isValid && e.target.value) {
-                                toast({
-                                  title: "Invalid Date",
-                                  description: message,
-                                  variant: "destructive",
-                                });
-                              }
                             }}
                             className="dark:bg-gray-800 dark:border-gray-600 dark:text-white [&::-webkit-calendar-picker-indicator]:dark:invert"
                           />
