@@ -241,20 +241,32 @@ export default function PlanTrip() {
     }
   }, [isEditMode, existingPlan]);
 
+  // Load user data for default preferences
+  const { data: userData, isLoading: userLoading } = useQuery<any>({
+    queryKey: [`/api/users/${user?.id}`],
+    enabled: !!user?.id,
+  });
+
   // NEW TRIP MODE: Load user defaults when not editing
   useEffect(() => {
-    if (!isEditMode && user && Object.keys(user).length > 0 && !hasInitialized) {
+    if (!isEditMode && userData && !userLoading && !hasInitialized) {
       console.log('=== LOADING USER DEFAULTS FOR NEW TRIP ===');
+      console.log('User data for defaults:', userData);
+      console.log('User interests from signup:', userData?.interests);
+      console.log('User activities from signup:', userData?.activities);
+      console.log('User events from signup:', userData?.events);
+      
       setTripPlan(prev => ({
         ...prev,
-        interests: user?.defaultTravelInterests || user?.interests || [],
-        activities: user?.defaultTravelActivities || user?.activities || user?.localActivities || [],
-        events: user?.defaultTravelEvents || user?.events || user?.localEvents || [],
-        travelerTypes: user?.travelStyle || []
+        interests: userData?.defaultTravelInterests || userData?.interests || [],
+        activities: userData?.defaultTravelActivities || userData?.activities || userData?.localActivities || [],
+        events: userData?.defaultTravelEvents || userData?.events || userData?.localEvents || [],
+        travelerTypes: userData?.travelStyle || []
       }));
       setHasInitialized(true);
+      console.log('=== USER DEFAULTS LOADED FOR NEW TRIP ===');
     }
-  }, [user, hasInitialized, isEditMode]);
+  }, [userData, userLoading, hasInitialized, isEditMode]);
 
   // Get current user
   const { data: currentUser } = useQuery({
@@ -845,9 +857,10 @@ export default function PlanTrip() {
                   </summary>
                   <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 pt-4 border-t border-gray-200 dark:border-gray-600">
                     {ADDITIONAL_INTERESTS.map((interest: string) => (
-                      <button
+                      <Button
                         key={interest}
                         type="button"
+                        variant={tripPlan.interests.includes(interest) ? "default" : "outline"}
                         onClick={() => {
                           if (tripPlan.interests.includes(interest)) {
                             setTripPlan(prev => ({ ...prev, interests: prev.interests.filter(i => i !== interest) }));
@@ -855,14 +868,10 @@ export default function PlanTrip() {
                             setTripPlan(prev => ({ ...prev, interests: [...prev.interests, interest] }));
                           }
                         }}
-                        className={`px-3 py-2 rounded-md text-sm font-medium transition-all ${
-                          tripPlan.interests.includes(interest)
-                            ? 'bg-blue-600 text-white font-bold transform scale-105'
-                            : 'bg-white text-gray-700 hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600'
-                        }`}
+                        className="h-auto py-2 px-3 text-sm font-medium transition-colors duration-200"
                       >
                         {interest}
-                      </button>
+                      </Button>
                     ))}
                   </div>
                 </details>
