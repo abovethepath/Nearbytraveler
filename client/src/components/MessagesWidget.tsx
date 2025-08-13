@@ -52,7 +52,8 @@ function MessagesWidget({ userId }: MessagesWidgetProps) {
         <div className="space-y-3 max-h-64 overflow-y-auto">
           {messages
             .filter(message => message.senderId !== message.receiverId) // Filter out self-messages
-            .slice(0, 3) // Show recent messages
+            .sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()) // Sort by newest first
+            .slice(0, 3) // Show top 3 recent messages
             .map((message, index) => {
               const otherUserId = message.senderId === userId ? message.receiverId : message.senderId;
               const otherUser = users.find(u => u.id === otherUserId);
@@ -70,12 +71,19 @@ function MessagesWidget({ userId }: MessagesWidgetProps) {
                   </span>
                   {message.createdAt && (
                     <span className="text-xs text-gray-400 dark:text-gray-500">
-                      {new Date(message.createdAt).toLocaleDateString()}
+                      {new Date(message.createdAt).toLocaleDateString('en-US', { 
+                        month: 'short', 
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      })}
                     </span>
                   )}
                 </div>
                 <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
-                  {message.content}
+                  {message.content && message.content.length > 100 
+                    ? `${message.content.substring(0, 100)}...` 
+                    : message.content}
                 </p>
               </div>
             );
