@@ -2625,6 +2625,11 @@ Ready to start making real connections wherever you are?
         }
       }
 
+      // Clear children ages if traveling with children is turned off
+      if (updates.travelingWithChildren === false) {
+        updates.childrenAges = null;
+      }
+
       // Update user in database
       const updatedUser = await storage.updateUser(userId, updates);
 

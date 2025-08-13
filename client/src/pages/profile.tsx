@@ -2680,6 +2680,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     console.log('onSubmitProfile called with data:', data);
     console.log('Form validation errors:', profileForm.formState.errors);
     
+    // Clear children ages if traveling with children is turned off
+    if (!data.travelingWithChildren) {
+      data.childrenAges = "";
+    }
+    
     // Send dateOfBirth as string - server will handle conversion to Date
     editProfile.mutate(data);
   };
