@@ -267,7 +267,7 @@ export default function SignupLocalTraveler() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
       <div className="max-w-2xl mx-auto">
-        <Card className="shadow-2xl border-2 border-gray-200 dark:border-gray-700 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md">
+        <Card className="shadow-2xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
           <CardHeader className="text-center bg-gray-50 dark:bg-gray-800 rounded-t-lg pb-8">
             <div className="flex justify-start mb-4">
               <Button
