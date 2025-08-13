@@ -1056,13 +1056,18 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           );
 
       } else {
-        // For non-metro cities, use exact matching
+        // For non-metro cities, use exact matching but also check for Nashville Metro → Nashville
+        let searchCities = [city];
+        if (city === 'Nashville Metro') {
+          searchCities = ['Nashville', 'Nashville Metro'];
+        }
+        
         localUsersResult = await db
           .select({ count: count() })
           .from(users)
           .where(
             and(
-              ilike(users.hometownCity, `%${city}%`),
+              or(...searchCities.map(searchCity => eq(users.hometownCity, searchCity))),
               eq(users.userType, 'local')
             )
           );
@@ -1072,7 +1077,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           .from(users)
           .where(
             and(
-              ilike(users.hometownCity, `%${city}%`),
+              or(...searchCities.map(searchCity => eq(users.hometownCity, searchCity))),
               eq(users.userType, 'business')
             )
           );
@@ -1080,14 +1085,16 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         travelPlansResult = await db
           .select({ count: count() })
           .from(travelPlans)
-          .where(ilike(travelPlans.destination, `%${city}%`));
+          .where(
+            or(...searchCities.map(searchCity => ilike(travelPlans.destination, `%${searchCity}%`)))
+          );
 
         currentTravelersResult = await db
           .select({ count: count() })
           .from(users)
           .where(
             and(
-              ilike(users.travelDestination, `%${city}%`),
+              or(...searchCities.map(searchCity => ilike(users.travelDestination, `%${searchCity}%`))),
               eq(users.isCurrentlyTraveling, true)
             )
           );
@@ -1095,7 +1102,9 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         eventsResult = await db
           .select({ count: count() })
           .from(events)
-          .where(ilike(events.city, `%${city}%`));
+          .where(
+            or(...searchCities.map(searchCity => ilike(events.city, `%${searchCity}%`)))
+          );
       }
 
       const localCount = localUsersResult[0]?.count || 0;
