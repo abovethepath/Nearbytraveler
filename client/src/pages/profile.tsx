@@ -2863,6 +2863,17 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     return 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
   };
 
+  // Check if user profile is incomplete and needs completion
+  const isProfileIncomplete = () => {
+    if (!user || !isOwnProfile) return false;
+    
+    const hasBasicInfo = user.bio && user.bio.trim().length > 0;
+    const hasInterests = user.interests && Array.isArray(user.interests) && user.interests.length >= 3;
+    const hasLocation = user.hometownCity && user.hometownState && user.hometownCountry;
+    
+    return !hasBasicInfo || !hasInterests || !hasLocation;
+  };
+
 
 
   // Add debug logging before render
@@ -2926,6 +2937,33 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           className="shadow-sm"
         />
       </div>
+
+      {/* Profile Completion Warning - Only show for incomplete own profiles */}
+      {isProfileIncomplete() && (
+        <div className="w-full bg-red-600 text-white px-4 py-3 mb-4">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-3 flex-1">
+                <div className="bg-white/20 rounded-full p-2 flex-shrink-0">
+                  <Zap className="w-5 h-5 text-white" />
+                </div>
+                <div className="min-w-0">
+                  <p className="font-bold text-base sm:text-lg">PLEASE FILL OUT PROFILE NOW TO MATCH WELL WITH OTHERS</p>
+                  <p className="text-red-100 text-xs sm:text-sm">Complete your bio, interests, and location to improve your compatibility with other travelers</p>
+                </div>
+              </div>
+              <Button
+                size="sm"
+                variant="secondary"
+                className="bg-white text-red-600 hover:bg-red-50 font-semibold flex-shrink-0 w-full sm:w-auto"
+                onClick={() => setShowEditModal(true)}
+              >
+                Complete Profile
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     
       {/* EXPANDED GRADIENT HEADER - MOBILE OPTIMIZED WITH RIGHT-ALIGNED PHOTO */}
       <div className={`w-full bg-gradient-to-r ${gradientOptions[selectedGradient]} p-4 sm:p-6`}>
