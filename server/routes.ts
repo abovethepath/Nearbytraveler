@@ -2164,9 +2164,9 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         const eventCount = (userData.events && Array.isArray(userData.events)) ? userData.events.length : 0;
         const totalSelections = interestCount + activityCount + eventCount;
 
-        if (totalSelections < 10) {
+        if (totalSelections < 3) {
           return res.status(400).json({ 
-            message: `Please select at least 10 items total from interests, activities, and events. You have selected ${totalSelections}.`,
+            message: `Please select at least 3 items total from interests, activities, and events. You have selected ${totalSelections}.`,
             field: "totalSelections"
           });
         }

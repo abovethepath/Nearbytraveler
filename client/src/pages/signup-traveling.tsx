@@ -426,6 +426,30 @@ export default function SignupTraveling() {
                   Please choose 3 from the list below to better match with others. Once inside you can add more city specific events and activities.
                 </p>
                 
+                {/* Select/Clear All buttons */}
+                <div className="flex gap-2 mb-4">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setFormData(prev => ({ ...prev, interests: [...MOST_POPULAR_INTERESTS] }))}
+                    className="text-xs font-medium"
+                    data-testid="button-select-all-interests"
+                  >
+                    Select All
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setFormData(prev => ({ ...prev, interests: [] }))}
+                    className="text-xs font-medium"
+                    data-testid="button-clear-all-interests"
+                  >
+                    Clear All
+                  </Button>
+                </div>
+                
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                   {MOST_POPULAR_INTERESTS.map((interest) => (
                     <Button
