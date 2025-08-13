@@ -334,7 +334,7 @@ export default function SignupTraveling() {
               <Button
                 type="submit"
                 disabled={isSubmitting || formData.interests.length < 3}
-                className="w-full text-lg py-4 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed font-bold text-white rounded-lg transition-all duration-200 hover:scale-105 disabled:hover:scale-100"
+                className="w-full text-lg py-4 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 disabled:bg-gray-400 disabled:cursor-not-allowed font-bold text-white rounded-lg transition-all duration-200 hover:scale-105 disabled:hover:scale-100"
                 data-testid="button-create-account"
               >
                 {isSubmitting ? "Creating Account..." : "Create My Account"}
