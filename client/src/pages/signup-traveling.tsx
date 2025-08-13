@@ -280,7 +280,7 @@ export default function SignupTraveling() {
               Complete Your Profile ✈️
             </CardTitle>
             <CardDescription className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed max-w-lg mx-auto">
-              Just a few quick details to get you started. You can add travel details and more to your profile after joining!
+              Just a few quick details to get you started. You can add more interests and activities and specific events to your profile after joining!
             </CardDescription>
           </CardHeader>
 
