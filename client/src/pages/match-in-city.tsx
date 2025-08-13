@@ -75,6 +75,8 @@ export default function MatchInCity() {
   const [selectedEvent, setSelectedEvent] = useState<any>(null);
   const [showEventModal, setShowEventModal] = useState(false);
   const [citiesLoading, setCitiesLoading] = useState(true);
+  const [searchingCity, setSearchingCity] = useState(false);
+  const [searchError, setSearchError] = useState('');
 
   // Fetch all cities on component mount
   useEffect(() => {
@@ -713,6 +715,38 @@ export default function MatchInCity() {
     }
   };
 
+  const handleCustomCitySearch = async (cityName: string) => {
+    setSearchingCity(true);
+    setSearchError('');
+    
+    try {
+      // Set the city immediately to show the city page
+      setSelectedCity(cityName);
+      setCitySearchTerm(''); // Clear after setting the city
+      
+      // Check if the city has any activities after a short delay
+      setTimeout(async () => {
+        try {
+          const response = await fetch(`/api/city-activities/${encodeURIComponent(cityName)}`);
+          if (response.ok) {
+            const activities = await response.json();
+            if (activities.length === 0) {
+              setSearchError(`No activities found for ${cityName}. AI might not have data for this location yet.`);
+            }
+          }
+        } catch (error) {
+          setSearchError(`Could not load data for ${cityName}. AI might not have information about this location.`);
+        } finally {
+          setSearchingCity(false);
+        }
+      }, 3000); // Give AI time to process
+      
+    } catch (error) {
+      setSearchError(`Unable to search for ${cityName}. Please try again or choose a different city.`);
+      setSearchingCity(false);
+    }
+  };
+
   console.log('🎯 RENDERING - selectedCity:', selectedCity);
   
   if (!selectedCity) {
@@ -873,9 +907,8 @@ export default function MatchInCity() {
                       onChange={(e) => setCitySearchTerm(e.target.value)}
                       className="pl-10 py-3 text-lg bg-white/20 border-white/30 text-white placeholder-white/50 focus:border-white/60"
                       onKeyDown={(e) => {
-                        if (e.key === 'Enter' && citySearchTerm.trim()) {
-                          setSelectedCity(citySearchTerm.trim());
-                          setCitySearchTerm('');
+                        if (e.key === 'Enter' && citySearchTerm.trim() && !searchingCity) {
+                          handleCustomCitySearch(citySearchTerm.trim());
                         }
                       }}
                     />
@@ -883,17 +916,44 @@ export default function MatchInCity() {
                   <div className="mt-3 text-center">
                     <Button 
                       onClick={() => {
-                        if (citySearchTerm.trim()) {
-                          setSelectedCity(citySearchTerm.trim());
-                          setCitySearchTerm('');
+                        if (citySearchTerm.trim() && !searchingCity) {
+                          handleCustomCitySearch(citySearchTerm.trim());
                         }
                       }}
-                      disabled={!citySearchTerm.trim()}
-                      className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold px-6 py-2"
+                      disabled={!citySearchTerm.trim() || searchingCity}
+                      className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold px-6 py-2 flex items-center gap-2"
                     >
-                      Search This City
+                      {searchingCity ? (
+                        <>
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                          Searching...
+                        </>
+                      ) : (
+                        'Search This City'
+                      )}
                     </Button>
                   </div>
+                  
+                  {/* Search Status Messages */}
+                  {searchingCity && (
+                    <div className="mt-4 p-4 bg-blue-500/20 border border-blue-400/30 rounded-lg">
+                      <div className="flex items-center gap-2 text-blue-200">
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-200"></div>
+                        <p className="text-sm font-medium">Searching for city data...</p>
+                      </div>
+                      <p className="text-xs text-blue-300 mt-1">AI is generating activities and events for {selectedCity}. This may take a few moments.</p>
+                    </div>
+                  )}
+                  
+                  {searchError && (
+                    <div className="mt-4 p-4 bg-yellow-500/20 border border-yellow-400/30 rounded-lg">
+                      <div className="text-yellow-200">
+                        <p className="text-sm font-medium">Limited Results Found</p>
+                        <p className="text-xs text-yellow-300 mt-1">{searchError}</p>
+                        <p className="text-xs text-yellow-300 mt-2">AI isn't always perfect at finding city data. You can still explore the city and add your own activities!</p>
+                      </div>
+                    </div>
+                  )}
                   </div>
                 </CardContent>
               </Card>
