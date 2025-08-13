@@ -70,6 +70,34 @@ export function PeopleDiscoveryWidget({
       retry: false
     });
 
+    // Fetch user data to get countries visited and references count
+    const { data: userData, isLoading: userDataLoading } = useQuery<User>({
+      queryKey: [`/api/users/${person.id}`],
+      enabled: !!person.id && !isLoading,
+      staleTime: Infinity,
+      gcTime: Infinity,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+      refetchInterval: false,
+      refetchIntervalInBackground: false,
+      refetchOnReconnect: false,
+      retry: false
+    });
+
+    // Fetch references count for this user
+    const { data: referencesData, isLoading: referencesLoading } = useQuery({
+      queryKey: [`/api/users/${person.id}/references`],
+      enabled: !!person.id && !isLoading,
+      staleTime: Infinity,
+      gcTime: Infinity,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+      refetchInterval: false,
+      refetchIntervalInBackground: false,
+      refetchOnReconnect: false,
+      retry: false
+    });
+
     // Don't show commonalities for the current user themselves
     if (person.id === currentUserId) {
       return (
@@ -119,7 +147,7 @@ export function PeopleDiscoveryWidget({
               {/* Line 3: Countries and references + ALWAYS hometown */}
               <div className="mb-2">
                 <p className="text-gray-500 dark:text-gray-500 text-xs truncate">
-                  0 countries ⭐ 0 references • Nearby Local in {person.location?.split(',')[0] || 'Hometown'}
+                  {(userData?.countriesVisited && Array.isArray(userData.countriesVisited) ? userData.countriesVisited.length : 0)} countries ⭐ {(referencesData && Array.isArray(referencesData) ? referencesData.length : 0)} references • Nearby Local in {person.location?.split(',')[0] || 'Hometown'}
                 </p>
               </div>
               
