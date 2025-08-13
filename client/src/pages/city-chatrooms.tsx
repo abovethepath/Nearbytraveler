@@ -11,6 +11,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { MessageCircle, Users, MapPin, UserPlus, Loader2, Lock, Plus } from "lucide-react";
+import { useLocation } from "wouter";
 
 interface CityChatroom {
   id: number;
@@ -28,6 +29,7 @@ interface CityChatroom {
 export default function CityChatroomsPage() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [, navigate] = useLocation();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [newChatroom, setNewChatroom] = useState({
     name: '',
@@ -302,7 +304,7 @@ export default function CityChatroomsPage() {
                 className="group cursor-pointer transform hover:scale-105 transition-all duration-300 overflow-hidden relative bg-white dark:bg-gray-800 shadow-lg hover:shadow-xl border-gray-200 dark:border-gray-700"
                 onClick={() => {
                   console.log('🔥 CHATROOM CARD CLICK: ID', chatroom.id, 'Name:', chatroom.name);
-                  window.location.href = `/simple-chatroom/${chatroom.id}`;
+                  navigate(`/simple-chatroom/${chatroom.id}`);
                 }}
               >
                 {/* Header with gradient background */}
