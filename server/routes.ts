@@ -3468,14 +3468,26 @@ Ready to start making real connections wherever you are?
 
       let eventsQuery = [];
       if (city && typeof city === 'string') {
-        // DISABLED: Metro consolidation per user request - search only the requested city
         const cityName = city.toString();
         if (process.env.NODE_ENV === 'development') console.log(`🎪 EVENTS: Getting events for city: ${cityName}`);
         
-        // Search only the requested city without metro consolidation
-        const searchCities = [cityName];
+        // FIXED: Apply metro consolidation for Los Angeles Metro specifically
+        let searchCities = [cityName];
         
-        if (process.env.NODE_ENV === 'development') console.log(`🌍 EVENTS: Searching single city:`, searchCities);
+        if (cityName.toLowerCase().includes('los angeles metro')) {
+          // For Los Angeles Metro, search all LA area cities
+          const LA_METRO_CITIES = [
+            'Los Angeles', 'Santa Monica', 'Venice', 'Venice Beach', 'El Segundo', 
+            'Manhattan Beach', 'Beverly Hills', 'West Hollywood', 'Pasadena', 
+            'Burbank', 'Glendale', 'Long Beach', 'Torrance', 'Inglewood', 
+            'Playa del Rey', 'Redondo Beach', 'Culver City', 'Marina del Rey', 
+            'Hermosa Beach', 'Hawthorne', 'Hollywood', 'Studio City'
+          ];
+          searchCities = LA_METRO_CITIES;
+          if (process.env.NODE_ENV === 'development') console.log(`🗺️ EVENTS METRO: Searching events in ${searchCities.length} LA metro cities:`, searchCities.slice(0, 10));
+        }
+        
+        if (process.env.NODE_ENV === 'development') console.log(`🌍 EVENTS: Searching cities:`, searchCities.slice(0, 5));
         
         // Search events in all relevant cities using pattern matching like map data
         // ENHANCED: Only return events in the next 6 weeks to include all upcoming events
