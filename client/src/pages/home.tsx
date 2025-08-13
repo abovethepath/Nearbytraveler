@@ -1216,9 +1216,9 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
 
-      {/* Hero Section with Static Background */}
+      {/* Hero Section with Animated Background */}
       <section 
-        className="relative overflow-hidden text-white dark:bg-gray-800"
+        className="relative overflow-hidden text-white dark:bg-gray-800 animate-fade-in-up"
         style={{
           backgroundImage: `url(${staticHeroImage})`,
           backgroundSize: 'cover',
@@ -1226,10 +1226,18 @@ export default function Home() {
           backgroundRepeat: 'no-repeat'
         }}
       >
-        <div className="absolute inset-0 bg-black/30 dark:bg-black/50"></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-16">
+        <div className="absolute inset-0 bg-gradient-to-br from-black/40 via-black/30 to-black/50 dark:from-black/60 dark:to-black/70"></div>
+        
+        {/* Floating background elements for visual interest */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute top-10 left-10 w-20 h-20 bg-blue-500/20 rounded-full animate-float" style={{animationDelay: '0s'}}></div>
+          <div className="absolute top-32 right-20 w-16 h-16 bg-orange-500/20 rounded-full animate-float" style={{animationDelay: '1s'}}></div>
+          <div className="absolute bottom-20 left-1/4 w-12 h-12 bg-purple-500/20 rounded-full animate-float" style={{animationDelay: '2s'}}></div>
+          <div className="absolute bottom-10 right-1/3 w-24 h-24 bg-green-500/15 rounded-full animate-float" style={{animationDelay: '0.5s'}}></div>
+        </div>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-16 animate-slide-in-left">
           <div className="text-center max-w-3xl mx-auto">
-            <h1 className="text-xl xs:text-2xl sm:text-4xl lg:text-6xl font-bold mb-6 leading-tight text-white text-center" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700', textShadow: '1px 1px 0 black, -1px 1px 0 black, 1px -1px 0 black, -1px -1px 0 black, 0 1px 0 black, 0 -1px 0 black, 1px 0 0 black, -1px 0 0 black'}}>
+            <h1 className="text-xl xs:text-2xl sm:text-4xl lg:text-6xl font-bold mb-6 leading-tight text-white text-center animate-zoom-in" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700', textShadow: '1px 1px 0 black, -1px 1px 0 black, 1px -1px 0 black, -1px -1px 0 black, 0 1px 0 black, 0 -1px 0 black, 1px 0 0 black, -1px 0 0 black'}}>
               <div className="leading-tight">
                 {effectiveUser?.userType === 'business' ? (
                   <>
@@ -1244,7 +1252,7 @@ export default function Home() {
                 )}
               </div>
             </h1>
-            <p className="text-xl lg:text-2xl mb-8 text-white leading-relaxed">
+            <p className="text-xl lg:text-2xl mb-8 text-white leading-relaxed animate-fade-in-up" style={{animationDelay: '0.3s'}}>
               {effectiveUser?.userType === 'business' ? (
                 'Reach customers through interest-based matching, business notifications, and location-targeted discovery. Grow your business by connecting with travelers and locals who love what you offer.'
               ) : (
@@ -1254,10 +1262,10 @@ export default function Home() {
 
             {/* Business-specific CTA buttons vs Traveler/Local CTAs */}
             {effectiveUser?.userType === 'business' ? (
-              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4 sm:px-0">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4 sm:px-0 animate-slide-in-right" style={{animationDelay: '0.6s'}}>
                 <Button 
                   size="lg" 
-                  className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-black px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg btn-bounce w-full sm:w-[200px] shadow-lg border border-blue-500"
+                  className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-black px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg btn-bounce w-full sm:w-[200px] shadow-lg border border-blue-500 transform hover:scale-105 transition-all duration-300 hover:shadow-2xl"
                   onClick={() => setLocation('/business-dashboard')}
                 >
                   <Store className="w-4 sm:w-5 h-4 sm:h-5 mr-2" />
@@ -1265,7 +1273,7 @@ export default function Home() {
                 </Button>
                 <Button 
                   size="lg"
-                  className="bg-gradient-to-r from-green-600 to-blue-500 hover:from-green-700 hover:to-blue-600 text-black px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg btn-bounce w-full sm:w-[200px] shadow-lg border border-green-500"
+                  className="bg-gradient-to-r from-green-600 to-blue-500 hover:from-green-700 hover:to-blue-600 text-black px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg btn-bounce w-full sm:w-[200px] shadow-lg border border-green-500 transform hover:scale-105 transition-all duration-300 hover:shadow-2xl"
                   onClick={() => {
                     setConnectModalMode('current');
                     setShowConnectModal(true);
@@ -1276,10 +1284,10 @@ export default function Home() {
                 </Button>
               </div>
             ) : (
-              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4 sm:px-0">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4 sm:px-0 animate-slide-in-right" style={{animationDelay: '0.6s'}}>
                 <Button 
                   size="lg" 
-                  className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-black px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg btn-bounce w-full sm:w-[200px] shadow-lg border border-blue-500"
+                  className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-black px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg btn-bounce w-full sm:w-[200px] shadow-lg border border-blue-500 transform hover:scale-105 transition-all duration-300 hover:shadow-2xl animate-float"
                   onClick={() => setLocation('/plan-trip')}
                 >
                   <Globe className="w-4 sm:w-5 h-4 sm:h-5 mr-2" />
@@ -1287,7 +1295,8 @@ export default function Home() {
                 </Button>
                 <Button 
                   size="lg"
-                  className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-black px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg btn-bounce w-full sm:w-[200px] shadow-lg border border-blue-500"
+                  className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-black px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg btn-bounce w-full sm:w-[200px] shadow-lg border border-blue-500 transform hover:scale-105 transition-all duration-300 hover:shadow-2xl animate-float"
+                  style={{animationDelay: '0.3s'}}
                   onClick={() => {
                     setConnectModalMode('hometown');
                     setShowConnectModal(true);
@@ -1298,10 +1307,11 @@ export default function Home() {
                 </Button>
                 <Button 
                   size="lg"
-                  className="bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-black px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg btn-bounce w-full sm:w-[200px] shadow-lg border border-purple-500"
+                  className="bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-black px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg btn-bounce w-full sm:w-[200px] shadow-lg border border-purple-500 transform hover:scale-105 transition-all duration-300 hover:shadow-2xl animate-float animate-gradient-shift animate-pulse-glow"
+                  style={{animationDelay: '0.6s'}}
                   onClick={() => setShowAdvancedFilters(true)}
                 >
-                  <Search className="w-4 sm:w-5 h-4 sm:h-5 mr-2" />
+                  <Search className="w-4 sm:w-5 h-4 sm:h-5 mr-2 animate-float-rotate" />
                   Advanced Search
                 </Button>
               </div>
@@ -2025,13 +2035,13 @@ export default function Home() {
           </div>
         )}
 
-        {/* Main Content - Responsive layout */}
-        <div className="max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4 lg:gap-8 px-2 sm:px-4 lg:px-8 mt-2 sm:mt-0">
+        {/* Main Content - Responsive layout with animations */}
+        <div className="max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4 lg:gap-8 px-2 sm:px-4 lg:px-8 mt-2 sm:mt-0 animate-fade-in-up" style={{animationDelay: '0.8s'}}>
           {/* Discover Feed - Full width on mobile, 2 columns on desktop */}
           <div className="col-span-1 lg:col-span-2 space-y-4 sm:space-y-8 min-w-0">
-            <div className="flex items-center justify-between" data-testid="discover-people-section">
+            <div className="flex items-center justify-between animate-slide-in-left" data-testid="discover-people-section" style={{animationDelay: '1s'}}>
               <div className="flex items-center gap-4">
-                <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white">
+                <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white animate-float">
                   {activeFilter === "travel-dates" 
                     ? `Travel Connections to ${user?.travelDestination}` 
                     : "Discover People"
@@ -2158,7 +2168,7 @@ export default function Home() {
                 ))}
               </div>
             ) : (
-              <>
+              <div className="animate-fade-in-up" style={{animationDelay: '1.2s'}}>
                 {/* Avatar-Focused People Discovery Widget - DIRECT API APPROACH */}
                 <PeopleDiscoveryWidget 
                   people={getSortedUsers(filteredUsers).slice(0, Math.min(displayLimit, getSortedUsers(filteredUsers).length)).map((user) => {
@@ -2188,11 +2198,11 @@ export default function Home() {
 
                 {/* Load More Button */}
                 {getSortedUsers(filteredUsers).length > displayLimit && (
-                  <div className="text-center mt-6">
+                  <div className="text-center mt-6 animate-fade-in-up">
                     <Button 
                       onClick={() => setDisplayLimit(prev => prev + 12)}
                       variant="outline"
-                      className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-2xl"
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-2xl transform hover:scale-105 transition-all duration-300 hover:shadow-lg animate-float"
                     >
                       Load More ({getSortedUsers(filteredUsers).length - displayLimit} remaining)
                     </Button>
@@ -2233,7 +2243,7 @@ export default function Home() {
                     </Button>
                   </div>
                 )}
-              </>
+              </div>
             )}
 
             {/* Business-Specific Widgets Section */}
@@ -2248,18 +2258,18 @@ export default function Home() {
             )}
 
             {/* Local Events Section */}
-            <div className="space-y-6">
+            <div className="space-y-6 animate-fade-in-up" style={{animationDelay: '1.6s'}}>
               <div className="flex items-center justify-between">
-                <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-purple-800 bg-clip-text text-transparent">
+                <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-purple-800 bg-clip-text text-transparent animate-float">
                   Local Events
                 </h2>
                 <Button 
                   variant="ghost" 
                   size="sm" 
-                  className="bg-gradient-to-r from-purple-500 to-orange-500 text-white hover:from-purple-600 hover:to-orange-600 transition-all duration-300 rounded-xl shadow-lg"
+                  className="bg-gradient-to-r from-purple-500 to-orange-500 text-white hover:from-purple-600 hover:to-orange-600 transition-all duration-300 rounded-xl shadow-lg animate-gradient-shift animate-pulse-glow transform hover:scale-105"
                   onClick={() => setLocation('/events')}
                 >
-                  <Calendar className="w-4 h-4 mr-2" />
+                  <Calendar className="w-4 h-4 mr-2 animate-float-rotate" />
                   View All
                 </Button>
               </div>
@@ -2417,15 +2427,15 @@ export default function Home() {
             </div>
 
             {/* Quick Meetups Section - Compact */}
-            <div className="space-y-3">
+            <div className="space-y-3 animate-slide-in-right" style={{animationDelay: '2s'}}>
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white animate-float">
                   Ready to Meet
                 </h3>
                 <Button 
                   variant="ghost" 
                   size="sm" 
-                  className="text-xs text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
+                  className="text-xs text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 transform hover:scale-105 transition-all duration-300"
                   onClick={() => setLocation('/quick-meetups')}
                 >
                   <Calendar className="w-3 h-3 mr-1" />
@@ -2480,56 +2490,62 @@ export default function Home() {
           {/* Right Sidebar - Widgets - Always visible on mobile and desktop */}
           <div className="col-span-1 lg:col-span-1 space-y-3 sm:space-y-6 min-w-0">
             {/* Weather Widget */}
-            <CurrentLocationWeatherWidget />
+            <div className="animate-slide-in-right" style={{animationDelay: '1.4s'}}>
+              <CurrentLocationWeatherWidget />
+            </div>
 
             {/* Messages Widget */}
-            <MessagesWidget userId={currentUserId} />
+            <div className="animate-slide-in-right" style={{animationDelay: '1.6s'}}>
+              <MessagesWidget userId={currentUserId} />
+            </div>
 
             {/* City Map Widget - Interactive map showing users, events, and businesses */}
-            {(() => {
-              // Priority 1: If user has active travel plans, show current travel destination
-              const activeTravelPlan = travelPlans?.find(plan => plan.status === 'active');
-              
-              if (activeTravelPlan) {
-                // Use structured fields if available, otherwise parse destination string
-                if (activeTravelPlan.destinationCity) {
+            <div className="animate-slide-in-right" style={{animationDelay: '1.8s'}}>
+              {(() => {
+                // Priority 1: If user has active travel plans, show current travel destination
+                const activeTravelPlan = travelPlans?.find(plan => plan.status === 'active');
+                
+                if (activeTravelPlan) {
+                  // Use structured fields if available, otherwise parse destination string
+                  if (activeTravelPlan.destinationCity) {
+                    return (
+                      <CityMap 
+                        city={activeTravelPlan.destinationCity} 
+                        state={activeTravelPlan.destinationState}
+                        country={activeTravelPlan.destinationCountry} 
+                      />
+                    );
+                  } else if (activeTravelPlan.destination) {
+                    // Parse destination string "City, State, Country" 
+                    const parts = activeTravelPlan.destination.split(', ');
+                    const city = parts[0];
+                    const state = parts.length > 2 ? parts[1] : undefined;
+                    const country = parts.length > 1 ? parts[parts.length - 1] : undefined;
+                    
+                    return (
+                      <CityMap 
+                        city={city} 
+                        state={state}
+                        country={country} 
+                      />
+                    );
+                  }
+                }
+                
+                // Priority 2: Fallback to hometown if no active travel
+                if (effectiveUser?.hometownCity && effectiveUser?.hometownCountry) {
                   return (
                     <CityMap 
-                      city={activeTravelPlan.destinationCity} 
-                      state={activeTravelPlan.destinationState}
-                      country={activeTravelPlan.destinationCountry} 
-                    />
-                  );
-                } else if (activeTravelPlan.destination) {
-                  // Parse destination string "City, State, Country" 
-                  const parts = activeTravelPlan.destination.split(', ');
-                  const city = parts[0];
-                  const state = parts.length > 2 ? parts[1] : undefined;
-                  const country = parts.length > 1 ? parts[parts.length - 1] : undefined;
-                  
-                  return (
-                    <CityMap 
-                      city={city} 
-                      state={state}
-                      country={country} 
+                      city={effectiveUser.hometownCity} 
+                      state={effectiveUser.hometownState}
+                      country={effectiveUser.hometownCountry} 
                     />
                   );
                 }
-              }
-              
-              // Priority 2: Fallback to hometown if no active travel
-              if (effectiveUser?.hometownCity && effectiveUser?.hometownCountry) {
-                return (
-                  <CityMap 
-                    city={effectiveUser.hometownCity} 
-                    state={effectiveUser.hometownState}
-                    country={effectiveUser.hometownCountry} 
-                  />
-                );
-              }
-              
-              return null;
-            })()}
+                
+                return null;
+              })()}
+            </div>
 
           </div>
         </div>
