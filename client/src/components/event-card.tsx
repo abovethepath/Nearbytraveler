@@ -111,9 +111,9 @@ export default function EventCard({ event, compact = false, featured = false }: 
       >
         <div className="flex items-start justify-between">
           <div className="flex-1">
-            <h4 className="font-medium text-gray-900 dark:text-white mb-1">{event.title}</h4>
-            <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">{event.description}</p>
-            <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 space-x-4">
+            <h4 className="font-medium text-gray-900 dark:text-white mb-1 text-crisp text-base md:text-lg">{event.title}</h4>
+            <p className="text-sm md:text-base text-gray-600 dark:text-gray-300 mb-2 text-crisp leading-relaxed">{event.description}</p>
+            <div className="flex items-center text-xs md:text-sm text-gray-500 dark:text-gray-400 space-x-4 text-crisp">
               <span>
                 <Calendar className="w-3 h-3 inline mr-1" />
                 {formatEventDate(event.date)}
@@ -156,26 +156,26 @@ export default function EventCard({ event, compact = false, featured = false }: 
               Featured
             </Badge>
           )}
-          <Badge className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm text-gray-900 font-medium">
+          <Badge className="absolute top-3 right-3 bg-white text-gray-900 font-medium text-crisp">
             {event.category}
           </Badge>
         </div>
       )}
       <CardContent className="p-6">
         <div className="flex items-start justify-between mb-3">
-          <h3 className="text-xl font-semibold text-gray-900 dark:text-white">{event.title}</h3>
+          <h3 className="text-lg md:text-xl font-semibold text-gray-900 dark:text-white text-crisp">{event.title}</h3>
         </div>
         
         {event.description && (
-          <p className="text-gray-600 dark:text-gray-300 mb-4 line-clamp-2">{event.description}</p>
+          <p className="text-base md:text-lg text-gray-600 dark:text-gray-300 mb-4 line-clamp-2 text-crisp leading-relaxed">{event.description}</p>
         )}
         
         <div className="space-y-2 mb-4">
-          <div className="flex items-center text-sm text-gray-600 dark:text-gray-300">
+          <div className="flex items-center text-sm md:text-base text-gray-600 dark:text-gray-300 text-crisp">
             <Calendar className="w-4 h-4 mr-2 text-travel-blue" />
             {formatEventDate(event.date)}
           </div>
-          <div className="flex items-center text-sm text-gray-600 dark:text-gray-300">
+          <div className="flex items-center text-sm md:text-base text-gray-600 dark:text-gray-300 text-crisp">
             <MapPin className="w-4 h-4 mr-2 text-travel-blue" />
             {event.location}
           </div>
@@ -184,31 +184,31 @@ export default function EventCard({ event, compact = false, featured = false }: 
         {/* Event detail tags - different from main category badge */}
         <div className="flex flex-wrap gap-2 mb-4">
           {event.costEstimate && (
-            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs md:text-sm font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 text-crisp">
               💰 {event.costEstimate}
             </span>
           )}
           
           {event.isSpontaneous && (
-            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">
+            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs md:text-sm font-medium bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200 text-crisp">
               ⚡ Last Minute
             </span>
           )}
           
           {event.isRecurring && (
-            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
+            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs md:text-sm font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200 text-crisp">
               🔄 Recurring
             </span>
           )}
           
           {event.urgency === 'urgent' && (
-            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
+            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs md:text-sm font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 text-crisp">
               🚨 Urgent
             </span>
           )}
           
           {event.maxParticipants && (
-            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs md:text-sm font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 text-crisp">
               👥 Max {event.maxParticipants}
             </span>
           )}
@@ -244,7 +244,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
             .map((tag: string, index: number) => (
               <span 
                 key={index}
-                className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200"
+                className="inline-flex items-center px-2 py-1 rounded-full text-xs md:text-sm font-medium bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200 text-crisp"
               >
                 {tag}
               </span>
@@ -252,7 +252,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
         </div>
 
         <div className="flex items-center justify-between">
-          <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
+          <div className="flex items-center text-sm md:text-base text-gray-500 dark:text-gray-400 text-crisp">
             <Users className="w-4 h-4 mr-1" />
             <span>{event.participantCount || 1} attending</span>
           </div>
@@ -264,13 +264,13 @@ export default function EventCard({ event, compact = false, featured = false }: 
                 e.stopPropagation();
                 setLocation(`/event-chat/${event.id}`);
               }}
-              className="text-sm px-3 py-1"
+              className="text-sm md:text-base px-3 py-1 text-crisp"
             >
               Open Chat
             </Button>
             <Button 
               size="sm" 
-              className="text-white btn-bounce border-0"
+              className="text-white btn-bounce border-0 text-crisp"
               onClick={(e) => {
                 e.stopPropagation();
                 handleJoinEvent();
