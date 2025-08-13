@@ -9,11 +9,11 @@ export default function ScrollingHeroGallery({ className = "" }: ScrollingHeroGa
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loadedImages, setLoadedImages] = useState<Set<number>>(new Set());
 
-  // Production hero images - waiting for user to provide 4 photos
+  // Production hero images - beach paraty, travelers around map, travelers sharing beer
   const heroImages = [
-    "/travelers coffee_1750995178947.png",
-    "/pexels-olly-2672979_1750959255667.jpg"
-    // TODO: User will provide 4 photos to replace these placeholder images
+    "/attached_assets/beach travel_1750958707105.jpg",
+    "/attached_assets/4 travelers around map in town_1750995541992.webp",
+    "/attached_assets/Travelers Sharing a Beer_1749576612655.png"
   ];
 
   // Preload all images to prevent loading delays
@@ -42,7 +42,7 @@ export default function ScrollingHeroGallery({ className = "" }: ScrollingHeroGa
       });
   }, []);
 
-  // Auto-rotate every 3 seconds for better visibility
+  // Auto-rotate every 20 seconds as requested by user
   useEffect(() => {
     console.log('📸 ScrollingHeroGallery: Initializing with images:', heroImages);
     console.log('📸 ScrollingHeroGallery: Total images:', heroImages.length);
@@ -63,7 +63,7 @@ export default function ScrollingHeroGallery({ className = "" }: ScrollingHeroGa
         console.log('📸 ScrollingHeroGallery: Rotating from', prevIndex, 'to', newIndex, 'showing:', heroImages[newIndex]);
         return newIndex;
       });
-    }, 3000); // 3 seconds for better visibility
+    }, 20000); // 20 seconds as requested by user
 
     return () => {
       console.log('📸 ScrollingHeroGallery: Cleaning up interval');
