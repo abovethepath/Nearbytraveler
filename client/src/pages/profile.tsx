@@ -3384,6 +3384,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       <span className="font-medium text-gray-600 dark:text-gray-400">Family Travel:</span>
                       <span className="ml-2 flex items-center gap-1">
                         <Users className="w-4 h-4" /> Traveling with children
+                        {(user as any).childrenAges && (
+                          <span className="text-sm text-gray-500 dark:text-gray-400">
+                            (Ages: {(user as any).childrenAges})
+                          </span>
+                        )}
                       </span>
                     </div>
                   )}
