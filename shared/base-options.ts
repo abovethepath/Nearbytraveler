@@ -22,7 +22,7 @@ export const MOST_POPULAR_INTERESTS = [
   "Meet Locals/Travelers",
   "Museums",
   "City Tours & Sightseeing",
-  "Historical Sites & Walking Tours",
+  "Historical / Walking Tours",
   "Architecture",
   "Art Galleries",
   "Local Hidden Gems",
