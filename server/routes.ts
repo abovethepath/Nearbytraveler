@@ -704,7 +704,6 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
 
         // US cities mapping
         const usCities: Record<string, { state: string, country: string }> = {
-          'Los Angeles Metro': { state: 'California', country: 'United States' },
           'Los Angeles': { state: 'California', country: 'United States' },
           'San Francisco': { state: 'California', country: 'United States' },
           'San Diego': { state: 'California', country: 'United States' },
@@ -891,129 +890,48 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
 
       let localUsersResult, businessUsersResult, travelPlansResult, currentTravelersResult, eventsResult;
 
-      if (city === 'Los Angeles' || city === 'Los Angeles Metro') {
-        // For Los Angeles city page, include ALL LA metro cities
-        const laMetroCities = [
-          'Playa del Rey', 'Los Angeles', 'Santa Monica', 'Venice', 'Venice Beach', 'El Segundo',
-          'Manhattan Beach', 'Beverly Hills', 'West Hollywood', 'Pasadena', 'Burbank',
-          'Glendale', 'Long Beach', 'Torrance', 'Inglewood', 'Compton', 'Downey',
-          'Pomona', 'Redondo Beach', 'Culver City', 'Marina del Rey', 'Hermosa Beach',
-          'Hawthorne', 'Gardena', 'Carson', 'Lakewood', 'Norwalk', 'Whittier',
-          'Montebello', 'East Los Angeles', 'Monterey Park', 'Alhambra', 'South Pasadena',
-          'San Fernando', 'North Hollywood', 'Hollywood', 'Studio City', 'Sherman Oaks',
-          'Encino', 'Reseda', 'Van Nuys', 'Northridge', 'Malibu', 'Pacific Palisades',
-          'Brentwood', 'Westwood', 'Century City', 'West LA', 'Koreatown', 'Mid-City',
-          'Miracle Mile', 'Los Feliz', 'Silver Lake', 'Echo Park', 'Downtown LA',
-          'Arts District', 'Little Tokyo', 'Chinatown', 'Boyle Heights', 'East LA',
-          'Highland Park', 'Eagle Rock', 'Atwater Village', 'Glassell Park',
-          'Mount Washington', 'Cypress Park', 'Sun Valley', 'Pacoima', 'Sylmar',
-          'Granada Hills', 'Porter Ranch', 'Chatsworth', 'Canoga Park', 'Woodland Hills',
-          'Tarzana', 'Panorama City', 'Mission Hills', 'Sepulveda', 'Arleta',
-          'San Pedro', 'Wilmington', 'Harbor City', 'Harbor Gateway', 'Watts',
-          'South LA', 'Crenshaw', 'Leimert Park', 'View Park', 'Baldwin Hills', 'Ladera Heights'
-        ];
+      // NO METRO CONSOLIDATION - SEARCH EXACT CITY ONLY
+      if (process.env.NODE_ENV === 'development') console.log(`🔍 CITY STATS: Searching exact city only: ${city}`);
+      
+      localUsersResult = await db
+        .select({ count: count() })
+        .from(users)
+        .where(
+          and(
+            eq(users.hometownCity, city),
+            eq(users.userType, 'local')
+          )
+        );
 
-        // Count locals from all LA metro cities
-        if (process.env.NODE_ENV === 'development') console.log(`🔍 CITY STATS DEBUG: Searching for local users in LA metro cities:`, laMetroCities.slice(0, 10));
-        
-        localUsersResult = await db
-          .select({ count: count() })
-          .from(users)
-          .where(
-            and(
-              or(
-                ...laMetroCities.map(cityName => eq(users.hometownCity, cityName))
-              ),
-              eq(users.userType, 'local')
-            )
-          );
-          
-        if (process.env.NODE_ENV === 'development') console.log(`🔍 CITY STATS DEBUG: Local users result:`, localUsersResult);
+      businessUsersResult = await db
+        .select({ count: count() })
+        .from(users)
+        .where(
+          and(
+            eq(users.hometownCity, city),
+            eq(users.userType, 'business')
+          )
+        );
 
-        businessUsersResult = await db
-          .select({ count: count() })
-          .from(users)
-          .where(
-            and(
-              or(
-                ...laMetroCities.map(cityName => eq(users.hometownCity, cityName))
-              ),
-              eq(users.userType, 'business')
-            )
-          );
+      travelPlansResult = await db
+        .select({ count: count() })
+        .from(travelPlans)
+        .where(ilike(travelPlans.destination, `%${city}%`));
 
-        travelPlansResult = await db
-          .select({ count: count() })
-          .from(travelPlans)
-          .where(
-            or(
-              ...laMetroCities.map(cityName => ilike(travelPlans.destination, `%${cityName}%`))
-            )
-          );
+      currentTravelersResult = await db
+        .select({ count: count() })
+        .from(users)
+        .where(
+          and(
+            ilike(users.travelDestination, `%${city}%`),
+            eq(users.isCurrentlyTraveling, true)
+          )
+        );
 
-        currentTravelersResult = await db
-          .select({ count: count() })
-          .from(users)
-          .where(
-            and(
-              or(
-                ...laMetroCities.map(cityName => ilike(users.travelDestination, `%${cityName}%`))
-              ),
-              eq(users.isCurrentlyTraveling, true)
-            )
-          );
-
-        eventsResult = await db
-          .select({ count: count() })
-          .from(events)
-          .where(
-            or(
-              ...laMetroCities.map(cityName => ilike(events.city, `%${cityName}%`))
-            )
-          );
-
-      } else {
-        // For other cities, use exact matching
-        localUsersResult = await db
-          .select({ count: count() })
-          .from(users)
-          .where(
-            and(
-              ilike(users.hometownCity, `%${city}%`),
-              eq(users.userType, 'local')
-            )
-          );
-
-        businessUsersResult = await db
-          .select({ count: count() })
-          .from(users)
-          .where(
-            and(
-              ilike(users.hometownCity, `%${city}%`),
-              eq(users.userType, 'business')
-            )
-          );
-
-        travelPlansResult = await db
-          .select({ count: count() })
-          .from(travelPlans)
-          .where(ilike(travelPlans.destination, `%${city}%`));
-
-        currentTravelersResult = await db
-          .select({ count: count() })
-          .from(users)
-          .where(
-            and(
-              ilike(users.travelDestination, `%${city}%`),
-              eq(users.isCurrentlyTraveling, true)
-            )
-          );
-
-        eventsResult = await db
-          .select({ count: count() })
-          .from(events)
-          .where(ilike(events.city, `%${city}%`));
-      }
+      eventsResult = await db
+        .select({ count: count() })
+        .from(events)
+        .where(ilike(events.city, `%${city}%`));
 
       const localCount = localUsersResult[0]?.count || 0;
       const businessCount = businessUsersResult[0]?.count || 0;
@@ -1213,63 +1131,22 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
     }
   });
 
-  // City users endpoint - get all users for a specific city page WITH METRO CONSOLIDATION
+  // City users endpoint - get all users for a specific city page NO METRO CONSOLIDATION
   app.get("/api/city/:city/users", async (req, res) => {
     try {
       const city = decodeURIComponent(req.params.city);
       const { state, country } = req.query;
       if (process.env.NODE_ENV === 'development') console.log(`🏙️ CITY USERS: Getting users for ${city}, ${state}, ${country}`);
       
-      // Apply metropolitan area consolidation FIRST
-      const searchState = (state as string) || 'California';  
-      const searchCountry = (country as string) || 'United States';
-      const consolidatedCity = consolidateToMetropolitanArea(city, searchState, searchCountry);
-      
-      if (process.env.NODE_ENV === 'development') console.log(`🌍 METRO CONSOLIDATION: ${city} → ${consolidatedCity}`);
-      
-      // Build comprehensive search with metro area
-      let searchLocation = consolidatedCity;
+      // NO METRO CONSOLIDATION - USE EXACT CITY NAME ONLY
+      let searchLocation = city;
       if (state) searchLocation += `, ${state}`;
       if (country) searchLocation += `, ${country}`;
       
-      if (process.env.NODE_ENV === 'development') console.log(`🏙️ CITY USERS: Searching with consolidated location: "${searchLocation}"`);
-      let users = await storage.searchUsersByLocationDirect(searchLocation);
+      if (process.env.NODE_ENV === 'development') console.log(`🏙️ CITY USERS: Searching exact location: "${searchLocation}"`);
+      const users = await storage.searchUsersByLocationDirect(searchLocation);
       
-      // If this is Los Angeles Metro, also search all LA metro cities explicitly
-      if (consolidatedCity === 'Los Angeles Metro' || city.toLowerCase().includes('los angeles')) {
-        if (process.env.NODE_ENV === 'development') console.log(`🌍 LA METRO: Searching all LA metropolitan cities`);
-        const laMetroCities = [
-          'Los Angeles Metro', 'Santa Monica', 'Venice', 'Beverly Hills', 'West Hollywood',
-          'Pasadena', 'Burbank', 'Glendale', 'Long Beach', 'Torrance', 'Inglewood',
-          'Playa del Rey', 'Redondo Beach', 'Culver City', 'Marina del Rey', 
-          'Hermosa Beach', 'Manhattan Beach', 'El Segundo', 'Hollywood',
-          'North Hollywood', 'Studio City', 'Sherman Oaks', 'Venice Beach'
-        ];
-        
-        const allMetroUsers = [];
-        const allUserIds = new Set(users.map(user => user.id));
-        
-        for (const metroCity of laMetroCities) {
-          if (metroCity !== consolidatedCity) {
-            const metroLocation = `${metroCity}, ${searchState}, ${searchCountry}`;
-            if (process.env.NODE_ENV === 'development') console.log(`🌍 LA METRO: Searching ${metroCity}`);
-            const metroUsers = await storage.searchUsersByLocationDirect(metroLocation);
-            
-            // Add unique users to the result
-            for (const user of metroUsers) {
-              if (!allUserIds.has(user.id)) {
-                allUserIds.add(user.id);
-                allMetroUsers.push(user);
-              }
-            }
-          }
-        }
-        
-        users = [...users, ...allMetroUsers];
-        if (process.env.NODE_ENV === 'development') console.log(`🌍 LA METRO: Combined ${users.length} users from Los Angeles Metro area`);
-      }
-      
-      if (process.env.NODE_ENV === 'development') console.log(`🏙️ CITY USERS: Final result - ${users.length} users for ${city} (with metro consolidation)`);
+      if (process.env.NODE_ENV === 'development') console.log(`🏙️ CITY USERS: Found ${users.length} users in ${city} (no consolidation)`);
       res.json(users);
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error fetching city users:", error);
@@ -1290,66 +1167,29 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       // Get current user ID from headers (set by frontend)
       const currentUserId = req.headers['x-user-id'] ? parseInt(req.headers['x-user-id'] as string || '0') : null;
 
-      // Apply global metropolitan area consolidation to search location
-      const searchLocation = location as string;
-      const locationParts = (typeof searchLocation === 'string' ? (typeof searchLocation === 'string' ? searchLocation.split(',') : []) : []).map(part => part.trim());
-      const [searchCity, searchState, searchCountry] = locationParts;
-      const consolidatedSearchCity = consolidateToMetropolitanArea(searchCity, searchState, searchCountry);
+      // NO METRO CONSOLIDATION - USE EXACT LOCATION
+      const finalSearchLocation = location as string;
       
-      // If searching for a metro area city, search for the main metropolitan city
-      let finalSearchLocation = searchLocation;
-      if (consolidatedSearchCity !== searchCity) {
-        finalSearchLocation = searchLocation.replace(searchCity, consolidatedSearchCity);
-        if (process.env.NODE_ENV === 'development') console.log(`🌍 METRO: Redirecting search from ${searchCity} to ${consolidatedSearchCity}`);
-      }
+      if (process.env.NODE_ENV === 'development') console.log(`🌍 SEARCH: Searching exact location: ${finalSearchLocation}`);
       
       // Use the working direct search method
       let users = await storage.searchUsersByLocationDirect(finalSearchLocation, userType as string);
-      
-      // If searching for a metropolitan area, also search for all cities in that metro area
-      if (consolidatedSearchCity !== searchCity) {
-        const allMetroUsers = [];
-        const allUserIds = new Set(users.map(user => user.id));
-        
-        for (const metroCity of getMetropolitanAreaCities(consolidatedSearchCity, searchState, searchCountry)) {
-          if (metroCity !== consolidatedSearchCity) {
-            const metroCityLocation = finalSearchLocation.replace(consolidatedSearchCity, metroCity);
-            const metroUsers = await storage.searchUsersByLocationDirect(metroCityLocation, userType as string);
-            
-            // Add only users we haven't seen yet
-            for (const user of metroUsers) {
-              if (!allUserIds.has(user.id)) {
-                allUserIds.add(user.id);
-                allMetroUsers.push(user);
-              }
-            }
-          }
-        }
-        
-        // Combine all metro area users while preserving their original city names
-        users = [...users, ...allMetroUsers];
-        if (process.env.NODE_ENV === 'development') console.log(`🌍 METRO: Combined ${users.length} users from all ${consolidatedSearchCity} metro cities`);
-        
-        // Keep original city names - users maintain their individual identities
-      }
 
-      // CRITICAL: Always include current user if they are from this location (hometown search)
+      // Include current user if they match the location (hometown search)
       if (currentUserId) {
         const currentUser = await storage.getUser(currentUserId);
-        if (currentUser) {
+        if (currentUser && !users.some(u => u.id === currentUserId)) {
           const userHometown = `${currentUser.hometownCity}, ${currentUser.hometownState}, ${currentUser.hometownCountry}`;
           const currentUserCity = currentUser.hometownCity || '';
-          const consolidatedUserCity = consolidateToMetropolitanArea(currentUserCity, currentUser.hometownState || '', currentUser.hometownCountry || '');
           
-          // Check if current user should be included in this search
+          // Check if current user should be included in this search (exact city match only)
           const shouldIncludeCurrentUser = 
-            (consolidatedSearchCity === consolidatedUserCity) ||
-            (userHometown.toLowerCase().includes(searchLocation.toLowerCase())) ||
-            (searchLocation.toLowerCase().includes(currentUserCity.toLowerCase()));
+            (userHometown.toLowerCase().includes(finalSearchLocation.toLowerCase())) ||
+            (finalSearchLocation.toLowerCase().includes(currentUserCity.toLowerCase()));
           
-          if (shouldIncludeCurrentUser && !users.some(u => u.id === currentUserId)) {
-            if (process.env.NODE_ENV === 'development') console.log(`👤 HOMETOWN SEARCH: Including current user ${currentUser.username} from ${currentUserCity} in ${searchLocation} results`);
-            users.unshift(currentUser); // Add current user at the beginning
+          if (shouldIncludeCurrentUser) {
+            if (process.env.NODE_ENV === 'development') console.log(`👤 HOMETOWN SEARCH: Including current user ${currentUser.username} from ${currentUserCity} in ${finalSearchLocation} results`);
+            users.unshift(currentUser);
           }
         }
       }
