@@ -62,12 +62,7 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
   });
 
-  // Fetch user's chatroom memberships
-  const { data: userChatrooms = [] } = useQuery({
-    queryKey: [`/api/users/${user.id}/chatrooms`],
-    enabled: !!user.id,
-    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
-  });
+
 
   // Check connection status between current user and this user
   const { data: connectionStatus, refetch: refetchConnectionStatus } = useQuery({
@@ -505,46 +500,7 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
             </div>
           )}
 
-          {/* User's City Chatrooms */}
-          {userChatrooms.length > 0 && (
-            <div className="mb-3">
-              <h4 className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-2 flex items-center gap-1">
-                <Users className="w-3 h-3" />
-                City Chat Rooms ({userChatrooms.length})
-              </h4>
-              <div className="space-y-1">
-                {userChatrooms.slice(0, 3).map((chatroom: any) => (
-                  <div 
-                    key={chatroom.id} 
-                    className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
-                    onClick={() => setLocation(`/simple-chatroom/${chatroom.id}`)}
-                  >
-                    <div className="flex-1 min-w-0">
-                      <div className="text-xs font-medium text-gray-800 dark:text-gray-200 truncate">
-                        {chatroom.name}
-                      </div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
-                        📍 {chatroom.city}
-                        {chatroom.role === 'admin' && (
-                          <span className="inline-flex items-center px-1 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                            Admin
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    <div className="text-xs text-gray-500 dark:text-gray-400">
-                      {chatroom.member_count} members
-                    </div>
-                  </div>
-                ))}
-                {userChatrooms.length > 3 && (
-                  <div className="text-xs text-gray-500 dark:text-gray-400 text-center py-1">
-                    +{userChatrooms.length - 3} more chatrooms
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
+
           
           <div className="flex gap-2 mt-auto">
             {(() => {
