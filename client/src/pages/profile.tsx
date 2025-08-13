@@ -4906,12 +4906,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   <div className="flex items-center justify-between">
                     <span className="text-gray-600 dark:text-gray-300 flex items-center gap-2">
                       <Shield className="w-4 h-4 text-blue-500" />
-                      Vouches
+                      <span className="hidden sm:inline">Vouches</span>
+                      <span className="sm:hidden">Vouches {(vouches?.length || 0) === 0 ? '• Get vouched by community' : ''}</span>
                     </span>
                     <span className="font-semibold text-blue-600 dark:text-blue-400">{vouches?.length || 0}</span>
                   </div>
                   {(vouches?.length || 0) === 0 && (
-                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1 ml-6">
+                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1 ml-6 hidden sm:block">
                       Get vouched by vouched community members who know you personally
                     </div>
                   )}
