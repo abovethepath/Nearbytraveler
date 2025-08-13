@@ -17,7 +17,7 @@ import { CityTravelTipsWidget } from "@/components/CityTravelTipsWidget";
 import { CityChatlroomsWidget } from "@/components/CityChatlroomsWidget";
 import { CityStatsWidget } from "@/components/CityStatsWidget";
 import { CityMap } from "@/components/CityMap";
-import { CityPhotoUploadWidget } from "@/components/CityPhotoUploadWidget";
+import { SecretExperiencesWidget } from "@/components/SecretExperiencesWidget";
 import { useAuth } from "@/App";
 import type { User, Event } from "@shared/schema";
 
@@ -121,110 +121,28 @@ export default function CityPage({ cityName }: CityPageProps) {
                    parsedCityName.toLowerCase() === 'santa monica' ||
                    decodedCityName.toLowerCase().includes('los angeles metro');
   
-  // Fetch uploaded city photos with cache control
-  const { data: cityPhotos, refetch: refetchPhotos, error: photosError, isLoading: photosLoading } = useQuery({
-    queryKey: ['/api/city-photos/all'], 
-    queryFn: async () => {
-      const response = await fetch(`/api/city-photos/all`, {
-        headers: {
-          'Cache-Control': 'no-cache',
-          'Pragma': 'no-cache'
-        }
-      });
-      if (!response.ok) throw new Error('Failed to fetch city photos');
-      return response.json();
-    },
-    staleTime: 0
-  });
+  // Removed flickering city photos functionality
 
-  // Listen for photo upload messages and refresh immediately
-  useEffect(() => {
-    const handlePhotoUpload = (event: MessageEvent) => {
-      if (event.data.type === 'PHOTO_UPLOADED') {
-        console.log('Photo upload detected, forcing refresh');
-        // Force immediate cache invalidation
-        queryClient.invalidateQueries({ queryKey: ['/api/city-photos/all'] });
-        queryClient.invalidateQueries({ queryKey: ['/api/city-photos'] });
-        // Force refetch
-        refetchPhotos();
-        // Force page refresh after delay
-        setTimeout(() => {
-          window.location.reload();
-        }, 1000);
-      }
-    };
-
-    window.addEventListener('message', handlePhotoUpload);
-    return () => window.removeEventListener('message', handlePhotoUpload);
-  }, [queryClient, refetchPhotos]);
-
-  // Get the display image - user uploaded photo takes priority over default
+  // Use static city images without flickering uploads
   const getDisplayImage = () => {
-    // For Los Angeles Metro, use the known good image
-    if (parsedCityName.toLowerCase().includes('los angeles')) {
-      // Check if we have uploaded photos first
-      if (cityPhotos && Array.isArray(cityPhotos)) {
-        const laPhoto = cityPhotos.find((photo: any) => 
-          photo.city && photo.city.toLowerCase().includes('los angeles')
-        );
-        if (laPhoto && (laPhoto.imageUrl || laPhoto.imageData)) {
-          const photoUrl = laPhoto.imageUrl || laPhoto.imageData;
-          // Apply cache busting if it's an uploaded asset
-          if (photoUrl.startsWith('/attached_assets/')) {
-            return `${photoUrl}?v=${Date.now()}&city=la`;
-          }
-          return photoUrl;
-        }
-      }
-      // Use the known LA photo with cache busting
-      return `/attached_assets/LA PHOTO_1750698856553.jpg?v=${Date.now()}&default=true`;
-    }
-    
-    // For other cities, try to find uploaded photos
-    if (cityPhotos && Array.isArray(cityPhotos)) {
-      const matchingPhoto = cityPhotos.find((photo: any) => {
-        if (!photo.city) return false;
-        return photo.city.toLowerCase() === parsedCityName.toLowerCase() ||
-               photo.city.toLowerCase().includes(parsedCityName.toLowerCase()) ||
-               parsedCityName.toLowerCase().includes(photo.city.toLowerCase());
-      });
-      
-      if (matchingPhoto && (matchingPhoto.imageUrl || matchingPhoto.imageData)) {
-        const photoUrl = matchingPhoto.imageUrl || matchingPhoto.imageData;
-        // Apply cache busting if it's an uploaded asset
-        if (photoUrl.startsWith('/attached_assets/')) {
-          return `${photoUrl}?v=${Date.now()}&city=${encodeURIComponent(parsedCityName)}`;
-        }
-        return photoUrl;
-      }
-    }
-    
-    // Fall back to default city image
     return getCityImage(parsedCityName);
-  };
-
-  // Get photographer username
-  const getPhotographerUsername = () => {
-    if (cityPhotos && Array.isArray(cityPhotos)) {
-      const matchingPhoto = cityPhotos.find((photo: any) => {
-        if (!photo.city) return false;
-        return photo.city.toLowerCase() === parsedCityName.toLowerCase() ||
-               photo.city.toLowerCase().includes(parsedCityName.toLowerCase());
-      });
-      
-      if (matchingPhoto) {
-        return matchingPhoto.photographerUsername || 'Community';
-      }
-    }
-    return 'Community';
   };
 
   // Fetch users for this city using metropolitan area consolidation
   const { data: users = [], isLoading: usersLoading } = useQuery({
     queryKey: ['/api/city', decodedCityName, 'users', filter, 'metro'],
     queryFn: async () => {
-      const cityName = decodedCityName.split(',')[0].trim();
-      const response = await fetch(`/api/city/${encodeURIComponent(cityName)}/users`);
+      const cityName = parsedCityName;
+      const stateName = parsedStateName;
+      const countryName = parsedCountryName;
+      
+      // Build query parameters for proper metro consolidation
+      const params = new URLSearchParams();
+      if (stateName) params.set('state', stateName);
+      if (countryName) params.set('country', countryName);
+      
+      const queryString = params.toString() ? `?${params.toString()}` : '';
+      const response = await fetch(`/api/city/${encodeURIComponent(cityName)}/users${queryString}`);
       if (!response.ok) throw new Error('Failed to fetch users');
       const allUsers = await response.json();
       
@@ -239,8 +157,17 @@ export default function CityPage({ cityName }: CityPageProps) {
   const { data: events = [], isLoading: eventsLoading } = useQuery({
     queryKey: ['/api/events', decodedCityName],
     queryFn: async () => {
-      const cityName = decodedCityName.split(',')[0].trim();
-      const response = await fetch(`/api/events?city=${encodeURIComponent(cityName)}`);
+      const cityName = parsedCityName;
+      const stateName = parsedStateName;
+      const countryName = parsedCountryName;
+      
+      // Build query parameters for proper metro consolidation
+      const params = new URLSearchParams();
+      params.set('city', cityName);
+      if (stateName) params.set('state', stateName);
+      if (countryName) params.set('country', countryName);
+      
+      const response = await fetch(`/api/events?${params.toString()}`);
       if (!response.ok) throw new Error('Failed to fetch events');
       return response.json();
     },
@@ -463,32 +390,7 @@ export default function CityPage({ cityName }: CityPageProps) {
         })()}
 
         {/* Upload Photo Section */}
-        {(() => {
-          // Check if we have an uploaded photo to show attribution
-          const hasUploadedPhoto = cityPhotos && Array.isArray(cityPhotos) && 
-            cityPhotos.some((photo: any) => 
-              photo.city && (
-                photo.city.toLowerCase() === parsedCityName.toLowerCase() ||
-                photo.city.toLowerCase().includes(parsedCityName.toLowerCase())
-              )
-            );
-
-          // Show photo attribution if photo exists
-          if (hasUploadedPhoto) {
-            const photographerUsername = getPhotographerUsername();
-            return (
-              <div className="flex justify-between items-center px-2 mb-4">
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Photo by: @{photographerUsername || 'Community'}
-                </p>
-              </div>
-            );
-          }
-          return null;
-        })()}
-        
-        {/* Always show upload widget for all users */}
-        <CityPhotoUploadWidget cityName={decodedCityName} />
+        {/* Removed flickering city photo upload widget */}
       </div>
 
       {/* Content */}
@@ -778,6 +680,9 @@ export default function CityPage({ cityName }: CityPageProps) {
                 </div>
                 <div className={isLAArea ? 'ring-2 ring-orange-200/50 rounded-xl p-1' : ''}>
                   <CityChatlroomsWidget city={parsedCityName} country={parsedCountryName} />
+                </div>
+                <div className={isLAArea ? 'ring-2 ring-orange-200/50 rounded-xl p-1' : ''}>
+                  <SecretExperiencesWidget city={parsedCityName} state={parsedStateName} country={parsedCountryName} />
                 </div>
                 <div className={isLAArea ? 'ring-2 ring-orange-200/50 rounded-xl p-1' : ''}>
                   <CityMap city={parsedCityName} country={parsedCountryName} />

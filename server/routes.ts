@@ -1312,18 +1312,24 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       if (process.env.NODE_ENV === 'development') console.log(`🏙️ CITY USERS: Searching with consolidated location: "${searchLocation}"`);
       let users = await storage.searchUsersByLocationDirect(searchLocation);
       
-      // If this is a metropolitan area, also search all metro cities explicitly
-      if (consolidatedCity !== city) {
-        if (process.env.NODE_ENV === 'development') console.log(`🌍 METRO: Searching all ${consolidatedCity} metropolitan cities`);
-        const metroCities = getMetropolitanAreaCities(consolidatedCity, searchState, searchCountry);
+      // ALWAYS search all metro cities for metropolitan areas (whether consolidated or requested directly)
+      const metroCities = getMetropolitanAreaCities(consolidatedCity, searchState, searchCountry);
+      if (metroCities.length > 1) { // If this is actually a metro area with multiple cities
+        if (process.env.NODE_ENV === 'development') console.log(`🌍 METRO: Searching all ${consolidatedCity} metropolitan cities: ${metroCities.join(', ')}`);
         
         const allMetroUsers = [];
         const allUserIds = new Set(users.map(user => user.id));
         
         for (const metroCity of metroCities) {
           if (metroCity !== consolidatedCity) {
-            const metroLocation = `${metroCity}, ${searchState}, ${searchCountry}`;
-            if (process.env.NODE_ENV === 'development') console.log(`🌍 METRO: Searching ${metroCity}`);
+            // Search with state and country for exact matching
+            const metroLocation = searchState && searchCountry 
+              ? `${metroCity}, ${searchState}, ${searchCountry}`
+              : searchState 
+                ? `${metroCity}, ${searchState}` 
+                : metroCity;
+                
+            if (process.env.NODE_ENV === 'development') console.log(`🌍 METRO: Searching ${metroCity} (${metroLocation})`);
             const metroUsers = await storage.searchUsersByLocationDirect(metroLocation);
             
             // Add unique users to the result
