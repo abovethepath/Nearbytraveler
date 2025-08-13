@@ -2406,16 +2406,32 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       const hasCurrentTravel = originalData.currentTravelCity && originalData.currentTravelCountry;
       const hasTravelDestination = originalData.travelDestination || (originalData.travelDestinationCity && originalData.travelDestinationCountry);
       const hasTravelDates = originalData.travelStartDate && originalData.travelEndDate;
-      const isTraveingUser = originalData.userType === 'current_traveler' || originalData.isCurrentlyTraveling;
+      const hasReturnDateOnly = originalData.travelReturnDate; // For simplified signup
+      const isTraveingUser = originalData.userType === 'traveler' || originalData.userType === 'current_traveler' || originalData.isCurrentlyTraveling;
 
-      if ((hasCurrentTravel || hasTravelDestination) && hasTravelDates && isTraveingUser) {
+      // Support both full travel dates and simplified return-date-only signup
+      if ((hasCurrentTravel || hasTravelDestination) && (hasTravelDates || hasReturnDateOnly) && isTraveingUser) {
 
         // CRITICAL: Date validation ONLY applies during signup for current travelers
         // Regular trip planning from Plan Trip page should allow future dates
         // This validation is ONLY for signup forms where users claim to be "currently traveling"
 
-        const startDate = new Date(originalData.travelStartDate);
-        const endDate = new Date(originalData.travelEndDate);
+        // Handle both full travel dates and simplified return-date-only signup
+        let startDate, endDate;
+        if (originalData.travelStartDate && originalData.travelEndDate) {
+          // Full travel dates provided
+          startDate = new Date(originalData.travelStartDate);
+          endDate = new Date(originalData.travelEndDate);
+        } else if (originalData.travelReturnDate) {
+          // Simplified signup - assume they're currently traveling, started recently
+          startDate = new Date(); // Today
+          endDate = new Date(originalData.travelReturnDate);
+        } else {
+          // Fallback - shouldn't reach here due to validation above
+          startDate = new Date();
+          endDate = new Date();
+        }
+
         const tomorrow = getTomorrowInUserTimezone(user.hometownCity, user.hometownState);
 
         // Only validate dates for signup - not for trip planning

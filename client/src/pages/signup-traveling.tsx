@@ -202,6 +202,9 @@ export default function SignupTraveling() {
           ? `${formData.currentCity}, ${formData.currentState}, ${formData.currentCountry}`
           : `${formData.currentCity}, ${formData.currentCountry}`,
         travelReturnDate: new Date(formData.travelReturnDate),
+        // Add travel dates for travel plan creation 
+        travelStartDate: new Date(), // Current travelers started today or recently
+        travelEndDate: new Date(formData.travelReturnDate),
         // Set empty arrays for fields that will be completed in profile
         activities: [],
         events: [],
