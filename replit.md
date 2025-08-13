@@ -66,6 +66,7 @@ Preferred communication style: Simple, everyday language.
 - **Metro Consolidation Restored for All Major Cities (Aug 2025)**: Restored complete metro consolidation system for all major metropolitan areas worldwide. Culver City → Los Angeles Metro, Playa del Rey → Los Angeles Metro, Greenhills TN → Nashville Metro. Added Nashville Metro area with all surrounding cities. All major cities now properly consolidate suburbs and surrounding areas into their main metropolitan area for unified city pages and user discovery.
 - **City Match Tab Enhancement (Aug 2025)**: Enhanced City Match tab with distinctive orange color theme including gradient backgrounds, subtle ring borders, enhanced typography, and direct routing to match-in-city page for better visual prominence.
 - **Color Accessibility Improvements (Aug 2025)**: Fixed green-on-green readability issues in "Things I Want to Do" section by changing event pills to purple and improving color contrast in City Match instructional cards with emerald color scheme and proper borders. Updated global CSS to change activity badges from green to purple for better readability on dark backgrounds.
+- **Username Length Constraints (Aug 2025)**: Implemented 6-13 character limit for all usernames with both frontend validation (Zod schema) and database constraints (varchar(13) + check constraint). Updated existing usernames to comply: 'nearbytraveler' → 'nearbytravlr', 'nearbytraveler30' → 'nearbytravl30'.
 
 ## External Dependencies
 
