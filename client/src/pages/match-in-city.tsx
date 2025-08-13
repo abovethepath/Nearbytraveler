@@ -743,54 +743,54 @@ export default function MatchInCity() {
             </div>
           </div>
 
-          {/* Featured Los Angeles Metro - FRONT AND CENTER 2X SIZE */}
+          {/* Featured Los Angeles Metro - HUGE FRONT AND CENTER */}
           {filteredCities.some(city => isLAAreaCity(city.city, city.state)) && (
-            <div className="mb-16">
-              {/* BETA City Header - Bigger */}
-              <div className="text-center mb-8">
-                <h2 className="text-5xl font-extrabold text-white mb-4">🌟 LOS ANGELES METRO</h2>
-                <p className="text-white/90 text-2xl font-semibold">Full Platform Features • Most Active City</p>
+            <div className="mb-20">
+              {/* MEGA City Header */}
+              <div className="text-center mb-12">
+                <h2 className="text-7xl font-black text-white mb-6 tracking-tight">🌟 LOS ANGELES METRO</h2>
+                <p className="text-white/90 text-3xl font-bold">Full Platform Features • Most Active City</p>
               </div>
               <div className="flex justify-center">
                 {filteredCities.filter(city => isLAAreaCity(city.city, city.state)).map((city, index) => {
                   return (
                     <Card
                       key={`featured-${city.city}-${city.state}-${index}`}
-                      className="group cursor-pointer transform hover:scale-105 transition-all duration-300 overflow-hidden relative bg-gradient-to-br from-orange-500/40 to-red-500/40 backdrop-blur-sm border-orange-400/80 ring-12 ring-orange-300/60 shadow-2xl shadow-orange-500/50 max-w-4xl w-full mx-auto"
+                      className="group cursor-pointer transform hover:scale-[1.02] transition-all duration-500 overflow-hidden relative bg-gradient-to-br from-orange-500/50 to-red-500/50 backdrop-blur-sm border-orange-400/90 ring-16 ring-orange-300/70 shadow-3xl shadow-orange-500/60 max-w-6xl w-full mx-auto"
                       onClick={() => {
                         setSelectedCity(city.city);
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                       }}
                     >
-                      <div className="relative h-80 overflow-hidden">
+                      <div className="relative h-96 overflow-hidden">
                         <div className="w-full h-full bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center">
-                          <MapPin className="w-24 h-24 text-white/60" />
+                          <MapPin className="w-32 h-32 text-white/70" />
                         </div>
                         <div className="absolute inset-0 bg-black/20" />
-                        <div className="absolute top-4 right-4">
-                          <Badge className="bg-gradient-to-r from-orange-500 to-red-500 text-white text-lg px-4 py-2 animate-pulse font-bold">
+                        <div className="absolute top-6 right-6">
+                          <Badge className="bg-gradient-to-r from-orange-500 to-red-500 text-white text-2xl px-6 py-3 animate-pulse font-black">
                             🌟 FEATURED CITY
                           </Badge>
                         </div>
-                        <div className="absolute top-4 left-4">
-                          <Badge className="bg-gradient-to-r from-green-500 to-blue-500 text-white text-lg px-4 py-2 font-bold">
+                        <div className="absolute top-6 left-6">
+                          <Badge className="bg-gradient-to-r from-green-500 to-blue-500 text-white text-2xl px-6 py-3 font-black">
                             All Features Active
                           </Badge>
                         </div>
                       </div>
-                      <CardContent className="p-10">
-                        <div className="flex items-center justify-center gap-4 mb-4">
-                          <MapPin className="w-8 h-8 text-orange-300" />
-                          <h3 className="font-extrabold text-5xl text-orange-100 drop-shadow-lg text-center">{city.city}</h3>
+                      <CardContent className="p-12">
+                        <div className="flex items-center justify-center gap-6 mb-6">
+                          <MapPin className="w-12 h-12 text-orange-300" />
+                          <h3 className="font-black text-6xl text-orange-100 drop-shadow-lg text-center">{city.city}</h3>
                         </div>
-                        <p className="text-2xl mb-8 text-orange-200/90 font-semibold text-center">
+                        <p className="text-3xl mb-10 text-orange-200/90 font-bold text-center">
                           {city.state && `${city.state}, `}{city.country}
                         </p>
-                        <div className="text-center mb-8">
-                          <p className="text-white/90 text-xl font-medium">Complete city matching • Active community • All features unlocked</p>
+                        <div className="text-center mb-10">
+                          <p className="text-white/90 text-2xl font-semibold">Complete city matching • Active community • All features unlocked</p>
                         </div>
                         <Button 
-                          className="w-full font-bold transition-all duration-300 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white shadow-xl text-2xl py-6 transform hover:scale-105"
+                          className="w-full font-black transition-all duration-300 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white shadow-2xl text-3xl py-8 transform hover:scale-105"
                           onClick={(e) => {
                             e.stopPropagation();
                             setSelectedCity(city.city);
@@ -806,14 +806,13 @@ export default function MatchInCity() {
             </div>
           )}
 
-          {/* Other Cities Grid - Smaller cards for contrast */}
+          {/* Other Cities Grid - Bigger cards */}
           {filteredCities.filter(city => !isLAAreaCity(city.city, city.state)).length > 0 && (
             <div className="mb-8">
-              <div className="text-center mb-6">
-                <h3 className="text-2xl font-semibold text-white/70 mb-2">Other Cities</h3>
-                <p className="text-white/50 text-sm">Basic features available</p>
+              <div className="text-center mb-8">
+                <h3 className="text-4xl font-bold text-white mb-4">Other Cities</h3>
               </div>
-              <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
                 {filteredCities.filter(city => !isLAAreaCity(city.city, city.state)).map((city, index) => (
                   <Card
                     key={`other-${city.city}-${city.state}-${index}`}
@@ -823,20 +822,22 @@ export default function MatchInCity() {
                       window.scrollTo({ top: 0, behavior: 'smooth' });
                     }}
                   >
-                    <div className="relative h-16 overflow-hidden">
+                    <div className="relative h-32 overflow-hidden">
                       <div className={`w-full h-full bg-gradient-to-br ${city.gradient} flex items-center justify-center`}>
-                        <MapPin className="w-6 h-6 text-white/60" />
+                        <MapPin className="w-12 h-12 text-white/60" />
                       </div>
                       <div className="absolute inset-0 bg-black/20" />
                     </div>
-                    <CardContent className="p-2">
-                      <div className="flex items-center gap-1 mb-1">
-                        <MapPin className="w-3 h-3 text-white/80" />
-                        <h3 className="font-medium text-xs text-white truncate">{city.city}</h3>
+                    <CardContent className="p-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <MapPin className="w-4 h-4 text-white/80" />
+                        <h3 className="font-semibold text-lg text-white truncate">{city.city}</h3>
                       </div>
+                      <p className="text-sm text-white/60 mb-3 truncate">
+                        {city.state && `${city.state}, `}{city.country}
+                      </p>
                       <Button 
-                        size="sm"
-                        className="w-full text-xs bg-blue-500 hover:bg-blue-600 text-white py-1"
+                        className="w-full text-sm bg-blue-500 hover:bg-blue-600 text-white py-2"
                         onClick={(e) => {
                           e.stopPropagation();
                           setSelectedCity(city.city);
@@ -850,6 +851,49 @@ export default function MatchInCity() {
               </div>
             </div>
           )}
+
+          {/* Search for Other Cities Tab */}
+          <div className="mb-8">
+            <Card className="bg-white/10 backdrop-blur-sm border-white/20">
+              <CardContent className="p-6">
+                <div className="text-center mb-4">
+                  <h3 className="text-2xl font-bold text-white mb-2">🔍 Search Any City</h3>
+                  <p className="text-white/70">Don't see your city? Search for any city worldwide</p>
+                </div>
+                <div className="max-w-md mx-auto">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/60 w-5 h-5" />
+                    <Input
+                      placeholder="Type any city name (e.g., Tokyo, Paris, Sydney)..."
+                      value={citySearchTerm}
+                      onChange={(e) => setCitySearchTerm(e.target.value)}
+                      className="pl-10 py-3 text-lg bg-white/20 border-white/30 text-white placeholder-white/50 focus:border-white/60"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && citySearchTerm.trim()) {
+                          setSelectedCity(citySearchTerm.trim());
+                          setCitySearchTerm('');
+                        }
+                      }}
+                    />
+                  </div>
+                  <div className="mt-3 text-center">
+                    <Button 
+                      onClick={() => {
+                        if (citySearchTerm.trim()) {
+                          setSelectedCity(citySearchTerm.trim());
+                          setCitySearchTerm('');
+                        }
+                      }}
+                      disabled={!citySearchTerm.trim()}
+                      className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold px-6 py-2"
+                    >
+                      Search This City
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
 
         </div>
       </div>
