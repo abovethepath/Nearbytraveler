@@ -6121,10 +6121,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 type="button"
                 size="sm"
                 onClick={profileForm.handleSubmit(onSubmitProfile)}
-                disabled={profileFormMutation.isPending}
+                disabled={editProfile.isPending}
                 className="bg-blue-600 hover:bg-blue-700 text-white"
               >
-                {profileFormMutation.isPending ? "Saving..." : "Save"}
+                {editProfile.isPending ? "Saving..." : "Save"}
               </Button>
             </div>
           </DialogHeader>
