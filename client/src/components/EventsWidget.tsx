@@ -203,10 +203,10 @@ function EventsWidget({ userId }: EventsWidgetProps) {
       className="bg-gray-50 dark:bg-gray-800 cursor-pointer hover:shadow-lg transition-shadow border-gray-200 dark:border-gray-700"
       onClick={() => setLocation("/events")}
     >
-      <CardContent className="p-6">
+      <CardContent className="p-4 sm:p-6">
         <div className="flex items-center gap-2 mb-4">
           <Calendar className="w-5 h-5 text-blue-500" />
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Things I Want to Do</h3>
+          <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">Things I Want to Do</h3>
         </div>
         <div className="space-y-4">
           {relevantEvents.slice(0, 3).map((event: any) => (

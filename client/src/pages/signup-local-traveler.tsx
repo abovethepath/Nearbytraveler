@@ -431,9 +431,9 @@ export default function SignupLocalTraveler() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
         <Card className="shadow-2xl border-2 border-gray-200 dark:border-gray-700 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md">
-          <CardHeader className="text-center bg-gray-50 dark:bg-gray-800 rounded-t-lg pb-8">
+          <CardHeader className="text-center bg-gray-50 dark:bg-gray-800 rounded-t-lg pb-6 sm:pb-8 px-4 sm:px-6">
             <div className="flex justify-start mb-4">
               <Button
                 variant="outline"
@@ -445,28 +445,28 @@ export default function SignupLocalTraveler() {
                 Back
               </Button>
             </div>
-            <CardTitle className="text-4xl font-bold text-gray-900 dark:text-white mb-3">
+            <CardTitle className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-3">
               Complete Your Local Profile 🏠
             </CardTitle>
-            <CardDescription className="text-xl text-gray-700 dark:text-gray-300 font-medium">
+            <CardDescription className="text-base sm:text-lg lg:text-xl text-gray-700 dark:text-gray-300 font-medium">
               Connect and match with Nearby Locals and Nearby Travelers
             </CardDescription>
           </CardHeader>
 
-          <CardContent className="p-8 space-y-8">
-            <form onSubmit={handleSubmit} className="space-y-8">
+          <CardContent className="p-4 sm:p-6 lg:p-8 space-y-6 sm:space-y-8">
+            <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
 
               {/* Personal Information */}
               <div className="space-y-4">
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Personal Information</h3>
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">Personal Information</h3>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                   <div>
                     <Label className="text-gray-900 dark:text-white">Date of Birth *</Label>
                     <div className="text-sm text-blue-600 dark:text-blue-400 mb-2">
                       Can be hidden from public view later while still being used for matching
                     </div>
-                    <div className="grid grid-cols-3 gap-2">
+                    <div className="grid grid-cols-3 gap-2 sm:gap-3">
                       <div>
                         <Label className="text-xs text-gray-600 dark:text-gray-400">Month</Label>
                         <Select 
@@ -565,7 +565,7 @@ export default function SignupLocalTraveler() {
                   <div className="text-sm text-blue-600 dark:text-blue-400 mb-3">
                     {PRIVACY_NOTES.SEXUAL_PREFERENCE}
                   </div>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                     {SEXUAL_PREFERENCE_OPTIONS.map((preference) => (
                       <div key={preference} className="flex items-center space-x-2">
                         <Checkbox
