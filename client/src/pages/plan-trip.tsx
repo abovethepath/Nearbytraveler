@@ -845,17 +845,17 @@ export default function PlanTrip() {
                 </div>
 
                 {/* All Interests Section */}
-                <div className="bg-white dark:bg-gray-800 rounded-lg p-4 mt-4 border border-gray-200 dark:border-gray-600">
-                  <details className="group">
+                <div className="bg-blue-50 dark:bg-blue-900/10 rounded-lg p-4 mt-4 border border-blue-200 dark:border-blue-600">
+                  <details className="group" open>
                   <summary className="flex items-center justify-between cursor-pointer list-none mb-4">
-                    <h4 className="text-sm font-bold text-gray-700 dark:text-gray-300 flex items-center gap-2">
+                    <h4 className="text-sm font-bold text-blue-800 dark:text-blue-300 flex items-center gap-2">
                       <span className="text-base">✨</span> More Options ({ADDITIONAL_INTERESTS.length} available)
                     </h4>
-                    <div className="text-gray-400 group-open:rotate-180 transition-transform">
+                    <div className="text-blue-400 group-open:rotate-180 transition-transform">
                       <ChevronDown className="w-4 h-4" />
                     </div>
                   </summary>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 pt-4 border-t border-gray-200 dark:border-gray-600">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 pt-4 border-t border-blue-200 dark:border-blue-600">
                     {ADDITIONAL_INTERESTS.map((interest: string) => (
                       <Button
                         key={interest}
@@ -868,7 +868,7 @@ export default function PlanTrip() {
                             setTripPlan(prev => ({ ...prev, interests: [...prev.interests, interest] }));
                           }
                         }}
-                        className="h-auto py-2 px-3 text-sm font-medium transition-colors duration-200"
+                        className="h-auto py-2 px-3 text-sm font-medium transition-colors duration-200 bg-white dark:bg-gray-600 border-gray-200 dark:border-gray-500 hover:bg-blue-50 dark:hover:bg-blue-800"
                       >
                         {interest}
                       </Button>
@@ -889,7 +889,7 @@ export default function PlanTrip() {
                   <p className="text-sm text-gray-600 dark:text-gray-300">Tap the ones that sound fun!</p>
                 </div>
                 
-                <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
+                <div className="bg-white dark:bg-gray-700 rounded-lg p-4 border border-green-200 dark:border-green-600">
                   <div className="flex flex-wrap gap-2">
                     {getAllActivities().map((activity, index) => {
                       const displayText = activity.startsWith("**") && activity.endsWith("**") ? 
@@ -932,7 +932,7 @@ export default function PlanTrip() {
                   <p className="text-sm text-gray-600 dark:text-gray-300">Pick the vibes you're into!</p>
                 </div>
                 
-                <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-600 mb-4">
+                <div className="bg-white dark:bg-gray-700 rounded-lg p-4 border border-orange-200 dark:border-orange-600 mb-4">
                   <div className="flex flex-wrap gap-2">
                     {getAllEvents().map((event, index) => {
                       const isSelected = tripPlan.events.includes(event);
@@ -1065,10 +1065,14 @@ export default function PlanTrip() {
                   </Button>
                 )}
                 
-                <Button type="submit" className="w-full" disabled={createTravelPlan.isPending}>
+                <Button 
+                  type="submit" 
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors" 
+                  disabled={createTravelPlan.isPending}
+                >
                   {createTravelPlan.isPending ? 
-                    (isEditMode ? "Updating..." : "Creating...") : 
-                    (isEditMode ? "Update Trip Plan" : "Create Trip Plan")
+                    (isEditMode ? "Updating Trip..." : "Creating Trip...") : 
+                    (isEditMode ? "Update My Trip Plan" : "Create My Trip Plan")
                   }
                 </Button>
                 
