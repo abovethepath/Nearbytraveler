@@ -281,10 +281,10 @@ export default function SignupLocalTraveler() {
                 Back
               </Button>
             </div>
-            <CardTitle className="text-4xl font-bold text-gray-900 dark:text-white mb-3">
+            <CardTitle className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-3 text-crisp">
               Complete Your Local Profile 🏠
             </CardTitle>
-            <CardDescription className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed max-w-lg mx-auto">
+            <CardDescription className="text-base md:text-lg text-gray-600 dark:text-gray-300 leading-relaxed max-w-lg mx-auto text-crisp">
               Just a few quick details to get you started. You can add more to your profile after joining!
             </CardDescription>
           </CardHeader>
@@ -293,7 +293,7 @@ export default function SignupLocalTraveler() {
             <form onSubmit={handleSubmit} className="space-y-8">
               {/* Date of Birth */}
               <div className="space-y-3">
-                <Label htmlFor="dateOfBirth" className="text-base font-semibold text-gray-900 dark:text-white">
+                <Label htmlFor="dateOfBirth" className="text-base md:text-lg font-semibold text-gray-900 dark:text-white text-crisp">
                   Date of Birth * <span className="text-sm font-normal text-gray-500 dark:text-gray-400">(Can be hidden on profile)</span>
                 </Label>
                 <Input
@@ -311,7 +311,7 @@ export default function SignupLocalTraveler() {
 
               {/* Hometown Location */}
               <div className="space-y-4">
-                <Label className="text-base font-semibold text-gray-900 dark:text-white">
+                <Label className="text-base md:text-lg font-semibold text-gray-900 dark:text-white text-crisp">
                   Hometown Location *
                 </Label>
                 <SmartLocationInput
