@@ -753,65 +753,59 @@ export default function MatchInCity() {
                 </div>
               </div>
 
-              {/* Featured Los Angeles Metro - HUGE FRONT AND CENTER */}
+              {/* Featured Los Angeles Metro - FRONT AND CENTER (Same Size) */}
               {(filteredCities.some(city => isLAAreaCity(city.city, city.state)) || filteredCities.some(city => city.city.includes("Los Angeles Metro"))) && (
-            <div className="mb-20">
-              {/* MEGA City Header */}
-              <div className="text-center mb-12">
-                <h2 className="text-7xl font-black text-white mb-6 tracking-tight">🌟 LOS ANGELES METRO</h2>
-                <p className="text-white/90 text-3xl font-bold">Full Platform Features • Most Active City</p>
+            <div className="mb-12">
+              <div className="text-center mb-8">
+                <h2 className="text-4xl font-bold text-white mb-4">🌟 LOS ANGELES METRO</h2>
+                <p className="text-white/90 text-lg font-semibold">Full Platform Features • Most Active City</p>
               </div>
-              <div className="flex justify-center">
-                {filteredCities.filter(city => isLAAreaCity(city.city, city.state) || city.city.includes("Los Angeles Metro")).map((city, index) => {
-                  return (
+              <div className="flex justify-center mb-8">
+                <div className="grid grid-cols-1 max-w-sm">
+                  {filteredCities.filter(city => isLAAreaCity(city.city, city.state) || city.city.includes("Los Angeles Metro")).map((city, index) => (
                     <Card
                       key={`featured-${city.city}-${city.state}-${index}`}
-                      className="group cursor-pointer transform hover:scale-[1.02] transition-all duration-500 overflow-hidden relative bg-gradient-to-br from-orange-500/50 to-red-500/50 backdrop-blur-sm border-orange-400/90 ring-16 ring-orange-300/70 shadow-3xl shadow-orange-500/60 max-w-6xl w-full mx-auto"
+                      className="group cursor-pointer transform hover:scale-105 transition-all duration-300 overflow-hidden relative bg-gradient-to-br from-orange-500/40 to-red-500/40 backdrop-blur-sm border-orange-400/80 ring-4 ring-orange-300/60 shadow-xl shadow-orange-500/50"
                       onClick={() => {
                         setSelectedCity(city.city);
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                       }}
                     >
-                      <div className="relative h-96 overflow-hidden">
+                      <div className="relative h-32 overflow-hidden">
                         <div className="w-full h-full bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center">
-                          <MapPin className="w-32 h-32 text-white/70" />
+                          <MapPin className="w-12 h-12 text-white/60" />
                         </div>
                         <div className="absolute inset-0 bg-black/20" />
-                        <div className="absolute top-6 right-6">
-                          <Badge className="bg-gradient-to-r from-orange-500 to-red-500 text-white text-2xl px-6 py-3 animate-pulse font-black">
-                            🌟 FEATURED CITY
-                          </Badge>
-                        </div>
-                        <div className="absolute top-6 left-6">
-                          <Badge className="bg-gradient-to-r from-green-500 to-blue-500 text-white text-2xl px-6 py-3 font-black">
-                            All Features Active
+                        <div className="absolute top-2 right-2">
+                          <Badge className="bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs px-2 py-1 animate-pulse font-bold">
+                            🌟 FEATURED
                           </Badge>
                         </div>
                       </div>
-                      <CardContent className="p-12">
-                        <div className="flex items-center justify-center gap-6 mb-6">
-                          <MapPin className="w-12 h-12 text-orange-300" />
-                          <h3 className="font-black text-6xl text-orange-100 drop-shadow-lg text-center">{city.city}</h3>
+                      <CardContent className="p-4">
+                        <div className="flex items-center gap-2 mb-2">
+                          <MapPin className="w-4 h-4 text-orange-300" />
+                          <h3 className="font-semibold text-lg text-orange-100 truncate">{city.city}</h3>
                         </div>
-                        <p className="text-3xl mb-10 text-orange-200/90 font-bold text-center">
+                        <p className="text-sm text-orange-200/90 mb-3 truncate">
                           {city.state && `${city.state}, `}{city.country}
                         </p>
-                        <div className="text-center mb-10">
-                          <p className="text-white/90 text-2xl font-semibold">Complete city matching • Active community • All features unlocked</p>
+                        <div className="text-center mb-3">
+                          <p className="text-white/80 text-xs">All features active</p>
                         </div>
                         <Button 
-                          className="w-full font-black transition-all duration-300 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white shadow-2xl text-3xl py-8 transform hover:scale-105"
+                          className="w-full text-sm bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white py-2"
                           onClick={(e) => {
                             e.stopPropagation();
                             setSelectedCity(city.city);
                           }}
                         >
-                          🌟 Start Matching in Los Angeles Metro
+                          Explore LA Metro
                         </Button>
                       </CardContent>
                     </Card>
-                  );
-                })}
+                  ))}
+                </div>
               </div>
             </div>
               )}
