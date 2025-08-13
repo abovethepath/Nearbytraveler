@@ -95,8 +95,20 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
     queryKey: [`/api/travel-plans/user/${otherUserId}`]
   });
 
+  // Fetch direct compatibility data from the API (consistent with discover page)
+  const { data: compatibilityData, isLoading } = useQuery<{
+    totalCommonalities: number;
+    commonalities: string[];
+    sharedInterests: number;
+    sharedActivities: number;
+    sameCity: boolean;
+  }>({
+    queryKey: [`/api/compatibility/${currentUserId}/${otherUserId}`],
+    enabled: !!currentUserId && !!otherUserId && currentUserId !== otherUserId
+  });
+
   // Fetch matching data from the API (fallback)
-  const { data: allMatches, isLoading } = useQuery<MatchData[]>({
+  const { data: allMatches, isLoading: matchesLoading } = useQuery<MatchData[]>({
     queryKey: [`/api/users/${currentUserId}/matches`]
   });
 
@@ -495,7 +507,9 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
               <span style={{ color: 'white !important' }}>{commonalities.compatibilityPercentage}% Match</span>
             </Badge>
             <Badge className="bg-blue-500 text-white shadow-md border-blue-600 text-sm px-2 py-1 font-medium">
-              <span style={{ color: 'white !important' }}>{commonalities.totalCount} Things</span>
+              <span style={{ color: 'white !important' }}>
+                {compatibilityData?.totalCommonalities ?? commonalities.totalCount} Things
+              </span>
             </Badge>
           </div>
         </div>
