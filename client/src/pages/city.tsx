@@ -667,13 +667,13 @@ export default function CityPage({ cityName }: CityPageProps) {
                   <CityStatsWidget city={parsedCityName} country={parsedCountryName} />
                 </div>
                 <div className={isLAArea ? 'ring-2 ring-orange-200/50 rounded-xl p-1' : ''}>
+                  <SecretExperiencesWidget city={parsedCityName} state={parsedStateName} country={parsedCountryName} />
+                </div>
+                <div className={isLAArea ? 'ring-2 ring-orange-200/50 rounded-xl p-1' : ''}>
                   <CityTravelTipsWidget city={parsedCityName} country={parsedCountryName} />
                 </div>
                 <div className={isLAArea ? 'ring-2 ring-orange-200/50 rounded-xl p-1' : ''}>
                   <CityChatlroomsWidget city={parsedCityName} country={parsedCountryName} />
-                </div>
-                <div className={isLAArea ? 'ring-2 ring-orange-200/50 rounded-xl p-1' : ''}>
-                  <SecretExperiencesWidget city={parsedCityName} state={parsedStateName} country={parsedCountryName} />
                 </div>
                 <div className={isLAArea ? 'ring-2 ring-orange-200/50 rounded-xl p-1' : ''}>
                   <CityMap city={parsedCityName} country={parsedCountryName} />
