@@ -73,8 +73,57 @@ export default function SimpleChatroomPage() {
   const currentUserId = Number(currentUser?.id || 0);
   
   console.log('🔑 CHATROOM: Current user data:', { currentUser: currentUser?.username || 'null', currentUserId });
-  
-  // Early error handling for invalid chatroom ID
+
+  // Check access permission first - MUST come before any conditional returns
+  const { data: accessCheck, isLoading: accessLoading, error: accessError } = useQuery({
+    queryKey: [`/api/simple-chatrooms/${chatroomId}/access-check`],
+    queryFn: async () => {
+      console.log('🔍 CHATROOM: Checking access for chatroom ID:', chatroomId, 'user ID:', currentUserId);
+      const response = await fetch(`/api/simple-chatrooms/${chatroomId}/access-check`, {
+        headers: {
+          'x-user-id': String(currentUserId)
+        },
+        credentials: 'include'
+      });
+      console.log('🔍 CHATROOM: Access check response status:', response.status);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const result = await response.json();
+      console.log('✅ CHATROOM: Access check result:', result);
+      return result;
+    },
+    enabled: !!(currentUserId && chatroomId && !isNaN(chatroomId)),
+  });
+
+  // Get chatroom details
+  const { data: chatroom } = useQuery<Chatroom>({
+    queryKey: [`/api/simple-chatrooms/${chatroomId}`],
+    enabled: !!(currentUserId && chatroomId && !isNaN(chatroomId)),
+  });
+
+  // Get messages
+  const { data: messages = [], isLoading } = useQuery<ChatMessage[]>({
+    queryKey: [`/api/simple-chatrooms/${chatroomId}/messages`],
+    enabled: !!(currentUserId && chatroomId && !isNaN(chatroomId) && accessCheck?.hasAccess),
+    refetchInterval: 1000, // Refresh messages every second
+  });
+
+  // Get member count
+  const { data: memberCountResp } = useQuery<{memberCount: number}>({
+    queryKey: [`/api/simple-chatrooms/${chatroomId}/members/count`],
+    enabled: !!(currentUserId && chatroomId && !isNaN(chatroomId)),
+    refetchInterval: 5000, // Refresh count every 5 seconds
+  });
+
+  // Get members list
+  const { data: members = [] } = useQuery<ChatMember[]>({
+    queryKey: [`/api/simple-chatrooms/${chatroomId}/members`],
+    enabled: !!(currentUserId && chatroomId && !isNaN(chatroomId) && accessCheck?.hasAccess),
+    refetchInterval: 10000, // Refresh members every 10 seconds
+  });
+
+  // Early error handling for invalid chatroom ID - MOVED AFTER HOOKS
   if (isNaN(chatroomId) || chatroomId <= 0) {
     console.error('❌ CHATROOM: Invalid chatroom ID:', chatroomId);
     return (
@@ -91,7 +140,7 @@ export default function SimpleChatroomPage() {
     );
   }
   
-  // Early error handling for missing user
+  // Early error handling for missing user - MOVED AFTER HOOKS  
   if (!currentUser || !currentUserId) {
     console.error('❌ CHATROOM: No authenticated user found');
     return (
@@ -160,69 +209,7 @@ export default function SimpleChatroomPage() {
     }
   }
 
-  // Check access permission first
-  const { data: accessCheck, isLoading: accessLoading, error: accessError } = useQuery({
-    queryKey: [`/api/simple-chatrooms/${chatroomId}/access-check`],
-    queryFn: async () => {
-      console.log('🔍 CHATROOM: Checking access for chatroom ID:', chatroomId, 'user ID:', currentUserId);
-      const response = await fetch(`/api/simple-chatrooms/${chatroomId}/access-check`, {
-        headers: {
-          'x-user-id': String(currentUserId)
-        },
-        credentials: 'include'
-      });
-      console.log('🔍 CHATROOM: Access check response status:', response.status);
-      if (!response.ok) {
-        const error = await response.text();
-        console.error('❌ CHATROOM: Access check failed:', error);
-        throw new Error('Access check failed');
-      }
-      const result = await response.json();
-      console.log('✅ CHATROOM: Access check result:', result);
-      return result;
-    },
-    enabled: !!chatroomId && !!currentUserId,
-    staleTime: 0,
-    gcTime: 0,
-    retry: false
-  });
-
-  // Fetch chatroom details only if access is granted
-  const { data: chatroom } = useQuery<Chatroom>({
-    queryKey: [`/api/simple-chatrooms/${chatroomId}`],
-    enabled: !!chatroomId && accessCheck?.hasAccess,
-    staleTime: 0, // No caching
-    gcTime: 0  // Clear cache immediately
-  });
-
-  // Fetch messages only if access is granted  
-  const { data: messages = [], isLoading } = useQuery<ChatMessage[]>({
-    queryKey: [`/api/simple-chatrooms/${chatroomId}/messages`],
-    refetchInterval: accessCheck?.hasAccess ? 2500 : false,
-    refetchOnWindowFocus: false,
-    enabled: !!chatroomId && accessCheck?.hasAccess,
-    staleTime: 0, // No caching
-    gcTime: 0  // Clear cache immediately
-  });
-
-  // Fetch member count only if access is granted
-  const { data: memberCountResp } = useQuery<{memberCount: number}>({
-    queryKey: [`/api/simple-chatrooms/${chatroomId}/members/count`],
-    refetchInterval: accessCheck?.hasAccess ? 5000 : false,
-    enabled: !!chatroomId && accessCheck?.hasAccess,
-    staleTime: 0, // No caching
-    gcTime: 0  // Clear cache immediately
-  });
   const memberCount = memberCountResp?.memberCount ?? 0;
-
-  // Fetch member list with avatars only if access is granted
-  const { data: members = [] } = useQuery<ChatMember[]>({
-    queryKey: [`/api/simple-chatrooms/${chatroomId}/members`],
-    refetchInterval: accessCheck?.hasAccess ? 10000 : false,
-    enabled: !!chatroomId && accessCheck?.hasAccess,
-    staleTime: 0,
-    gcTime: 0
-  });
 
   // Send message mutation
   const sendMessageMutation = useMutation({
@@ -255,24 +242,62 @@ export default function SimpleChatroomPage() {
         description: error.message || "Failed to send message",
         variant: "destructive",
       });
-    }
+    },
   });
 
-  const handleSendMessage = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!messageText.trim()) return;
-    sendMessageMutation.mutate(messageText);
-  };
+  // Request access mutation
+  const requestAccessMutation = useMutation({
+    mutationFn: async (message?: string) => {
+      const response = await fetch(`/api/simple-chatrooms/${chatroomId}/request-access`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-user-id": String(currentUserId)
+        },
+        credentials: "include",
+        body: JSON.stringify({ message: message || "" }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || "Failed to request access");
+      }
+
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/simple-chatrooms/${chatroomId}/access-check`] });
+      toast({
+        title: "Access requested",
+        description: "Your request has been sent to the organizer",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to request access",
+        variant: "destructive",
+      });
+    },
+  });
 
   // Auto scroll to bottom when new messages arrive
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Auto scroll to top when component first loads to show header and input
+  // Auto-join public rooms
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }, []);
+    if (accessCheck?.isPublic && !accessCheck?.hasAccess && currentUserId) {
+      joinRoom();
+    }
+  }, [accessCheck, currentUserId]);
+
+  const handleSendMessage = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!messageText.trim()) return;
+    sendMessageMutation.mutate(messageText);
+  };
 
   // Add comprehensive debug logging for access state
   console.log('🔍 CHATROOM: Access state:', {
@@ -313,39 +338,7 @@ export default function SimpleChatroomPage() {
     );
   }
 
-  // Request access mutation
-  const requestAccessMutation = useMutation({
-    mutationFn: async (message?: string) => {
-      const response = await fetch(`/api/simple-chatrooms/${chatroomId}/request-access`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-user-id': String(currentUserId)
-        },
-        credentials: 'include',
-        body: JSON.stringify({ message: message || '' })
-      });
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Failed to request access');
-      }
-      return response.json();
-    },
-    onSuccess: () => {
-      toast({
-        title: "Access Requested",
-        description: "Your request has been submitted and is pending approval",
-      });
-      queryClient.invalidateQueries({ queryKey: [`/api/simple-chatrooms/${chatroomId}/access-check`] });
-    },
-    onError: (error: any) => {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive"
-      });
-    }
-  });
+
 
   // Show access control screen if user doesn't have permission
   if (accessError || (accessCheck && !accessCheck.hasAccess)) {
