@@ -6402,9 +6402,9 @@ export class DatabaseStorage implements IStorage {
 
   async getSecretLocalExperiencesByCity(city: string, state: string | null, country: string | null): Promise<any[]> {
     try {
-      console.log('getSecretLocalExperiencesByCity called with:', { city, state, country });
+      console.log('🔥 SECRET ACTIVITIES: Now pulling from user.secretActivities field - LIVE PROFILE DATA!', { city, state, country });
       
-      // FIXED: Query the actual secret_local_experiences table instead of user profiles
+      // COMPLETELY REWRITTEN: Pull from users.secretActivities field so profile changes immediately show on city pages
       let experiences = [];
       
       // Metro consolidation function - matches the backend logic
@@ -6441,6 +6441,26 @@ export class DatabaseStorage implements IStorage {
           console.log(`🌍 SECRET METRO CONSOLIDATION: ${city} → Los Angeles Metro`);
           return 'Los Angeles';
         }
+
+        // Nashville Metro consolidation
+        const NASHVILLE_METRO_CITIES = [
+          'Nashville', 'Brentwood', 'Franklin', 'Murfreesboro', 'Hendersonville', 
+          'Gallatin', 'Lebanon', 'Mount Juliet', 'Goodlettsville', 'White House',
+          'Springfield', 'Clarksville', 'Smyrna', 'La Vergne', 'Antioch',
+          'Hermitage', 'Old Hickory', 'Madison', 'Belle Meade', 'Forest Hills',
+          'Oak Hill', 'Berry Hill', 'Lakewood', 'Bellevue', 'Green Hills',
+          'Music Row', 'The Gulch', 'Downtown Nashville', 'East Nashville',
+          'West Nashville', 'South Nashville', 'North Nashville', 'Greenhills'
+        ];
+        
+        const isNashvilleMetro = NASHVILLE_METRO_CITIES.some(metroCity => 
+          metroCity.toLowerCase() === city.toLowerCase()
+        );
+        
+        if (isNashvilleMetro) {
+          console.log(`🌍 SECRET METRO CONSOLIDATION: ${city} → Nashville Metro`);
+          return 'Nashville';
+        }
         
         return city;
       };
@@ -6448,103 +6468,95 @@ export class DatabaseStorage implements IStorage {
       // Consolidate metro areas first
       const consolidatedCity = consolidateToMetroArea(city);
       
-      // For Los Angeles metro, search all LA metro experiences (city_page_id = 1)
+      // Query users whose hometown matches this city and have secret activities
+      const conditions = [];
+      
       if (consolidatedCity.toLowerCase() === 'los angeles') {
-        console.log(`🌍 SECRET ACTIVITIES: Searching secret_local_experiences table for Los Angeles (city_page_id=1)`);
+        // For LA metro, search all LA metro cities
+        const LA_METRO_CITIES = [
+          'Los Angeles', 'Santa Monica', 'Venice', 'Venice Beach', 'El Segundo', 
+          'Manhattan Beach', 'Beverly Hills', 'West Hollywood', 'Pasadena', 
+          'Burbank', 'Glendale', 'Long Beach', 'Torrance', 'Inglewood', 
+          'Compton', 'Downey', 'Pomona', 'Playa del Rey', 'Redondo Beach',
+          'Culver City', 'Marina del Rey', 'Hermosa Beach', 'Hawthorne',
+          'Gardena', 'Carson', 'Lakewood', 'Norwalk', 'Whittier', 'Montebello',
+          'East Los Angeles', 'Monterey Park', 'Alhambra', 'South Pasadena',
+          'San Fernando', 'North Hollywood', 'Hollywood', 'Studio City',
+          'Sherman Oaks', 'Encino', 'Reseda', 'Van Nuys', 'Northridge',
+          'Malibu', 'Pacific Palisades', 'Brentwood', 'Westwood', 'Century City',
+          'West LA', 'Koreatown', 'Mid-City', 'Miracle Mile', 'Los Feliz',
+          'Silver Lake', 'Echo Park', 'Downtown LA', 'Arts District', 'Little Tokyo',
+          'Chinatown', 'Boyle Heights', 'East LA', 'Highland Park', 'Eagle Rock',
+          'Atwater Village', 'Glassell Park', 'Mount Washington', 'Cypress Park',
+          'Sun Valley', 'Pacoima', 'Sylmar', 'Granada Hills', 'Porter Ranch',
+          'Chatsworth', 'Canoga Park', 'Woodland Hills', 'Tarzana', 'Panorama City',
+          'Mission Hills', 'Sepulveda', 'Arleta', 'San Pedro', 'Wilmington',
+          'Harbor City', 'Harbor Gateway', 'Watts', 'South LA', 'Crenshaw',
+          'Leimert Park', 'View Park', 'Baldwin Hills', 'Ladera Heights'
+        ];
         
-        experiences = await db.select({
-          id: secretLocalExperiences.id,
-          experience: secretLocalExperiences.experience,
-          description: secretLocalExperiences.description,
-          category: secretLocalExperiences.category,
-          likes: secretLocalExperiences.likes,
-          createdAt: secretLocalExperiences.createdAt,
-          contributorId: secretLocalExperiences.contributorId,
-          username: users.username,
-          name: users.name
-        })
-        .from(secretLocalExperiences)
-        .leftJoin(users, eq(secretLocalExperiences.contributorId, users.id))
-        .where(
-          and(
-            eq(secretLocalExperiences.cityPageId, 3), // Los Angeles Metro city page
-            eq(secretLocalExperiences.isActive, true)
-          )
-        )
-        .orderBy(desc(secretLocalExperiences.likes), desc(secretLocalExperiences.createdAt));
+        conditions.push(or(...LA_METRO_CITIES.map(cityName => eq(users.hometownCity, cityName))));
+        
+      } else if (consolidatedCity.toLowerCase() === 'nashville') {
+        // For Nashville metro, search all Nashville metro cities
+        const NASHVILLE_METRO_CITIES = [
+          'Nashville', 'Brentwood', 'Franklin', 'Murfreesboro', 'Hendersonville', 
+          'Gallatin', 'Lebanon', 'Mount Juliet', 'Goodlettsville', 'White House',
+          'Springfield', 'Clarksville', 'Smyrna', 'La Vergne', 'Antioch',
+          'Hermitage', 'Old Hickory', 'Madison', 'Belle Meade', 'Forest Hills',
+          'Oak Hill', 'Berry Hill', 'Lakewood', 'Bellevue', 'Green Hills',
+          'Music Row', 'The Gulch', 'Downtown Nashville', 'East Nashville',
+          'West Nashville', 'South Nashville', 'North Nashville', 'Greenhills'
+        ];
+        
+        conditions.push(or(...NASHVILLE_METRO_CITIES.map(cityName => eq(users.hometownCity, cityName))));
         
       } else {
-        // For other cities, find the city page first with better matching
-        console.log(`🔍 SECRET ACTIVITIES: Searching for city page for ${city}`);
-        
-        let cityPage = await db.select()
-          .from(cityPages)
-          .where(eq(cityPages.city, city))
-          .limit(1);
-          
-        // If exact match fails, try pattern matching
-        if (cityPage.length === 0) {
-          cityPage = await db.select()
-            .from(cityPages)
-            .where(ilike(cityPages.city, `%${city}%`))
-            .limit(1);
-        }
-        
-        // Special handling for Nashville Metro
-        if (cityPage.length === 0 && city === 'Nashville Metro') {
-          cityPage = await db.select()
-            .from(cityPages)
-            .where(eq(cityPages.city, 'Nashville Metro'))
-            .limit(1);
-        }
-        
-        if (cityPage.length > 0) {
-          const cityPageId = cityPage[0].id;
-          console.log(`🔍 SECRET ACTIVITIES: Found city page ID ${cityPageId} for ${city}`);
-          
-          experiences = await db.select({
-            id: secretLocalExperiences.id,
-            experience: secretLocalExperiences.experience,
-            description: secretLocalExperiences.description,
-            category: secretLocalExperiences.category,
-            likes: secretLocalExperiences.likes,
-            createdAt: secretLocalExperiences.createdAt,
-            contributorId: secretLocalExperiences.contributorId,
-            username: users.username,
-            name: users.name
-          })
-          .from(secretLocalExperiences)
-          .leftJoin(users, eq(secretLocalExperiences.contributorId, users.id))
-          .where(
-            and(
-              eq(secretLocalExperiences.cityPageId, cityPageId),
-              eq(secretLocalExperiences.isActive, true)
-            )
-          )
-          .orderBy(desc(secretLocalExperiences.likes), desc(secretLocalExperiences.createdAt));
-        }
+        // For other cities, match the city name
+        conditions.push(ilike(users.hometownCity, `%${city}%`));
       }
-
-      // Format experiences for frontend
-      const formattedExperiences = experiences.map(exp => ({
-        id: exp.id,
-        experience: exp.experience,
-        description: exp.description,
-        category: exp.category,
-        likes: exp.likes,
-        createdAt: exp.createdAt,
-        username: exp.username || 'Anonymous',
+      
+      // Only get users with non-empty secret activities
+      conditions.push(isNotNull(users.secretActivities));
+      conditions.push(ne(users.secretActivities, ''));
+      
+      console.log(`🔥 SECRET ACTIVITIES: Querying users table for ${consolidatedCity} with ${conditions.length} conditions`);
+      
+      const usersWithSecrets = await db.select({
+        id: users.id,
+        username: users.username,
+        name: users.name,
+        secretActivities: users.secretActivities,
+        hometownCity: users.hometownCity,
+        hometownState: users.hometownState,
+        createdAt: users.createdAt
+      })
+      .from(users)
+      .where(and(...conditions))
+      .orderBy(desc(users.createdAt));
+      
+      console.log(`🔥 SECRET ACTIVITIES: Found ${usersWithSecrets.length} users with secret activities for ${city}`);
+      
+      // Format user secret activities as experiences
+      experiences = usersWithSecrets.map((user, index) => ({
+        id: user.id * 1000 + index, // Create unique ID by combining user ID with index
+        experience: user.secretActivities,
+        description: `A local secret from ${user.hometownCity}`,
+        category: 'local-secret',
+        likes: 1, // Default like from the contributor
+        createdAt: user.createdAt,
+        username: user.username || 'Anonymous',
         contributor: {
-          id: exp.contributorId,
-          username: exp.username || 'Anonymous',
-          name: exp.name || 'Anonymous'
+          id: user.id,
+          username: user.username || 'Anonymous', 
+          name: user.name || 'Anonymous'
         }
-      }));
+      })).filter(exp => exp.experience && exp.experience.trim().length > 0);
 
-      console.log('Returning experiences:', formattedExperiences.length);
-      return formattedExperiences;
+      console.log(`🔥 SECRET ACTIVITIES LIVE: Returning ${experiences.length} live experiences from user profiles!`);
+      return experiences;
     } catch (error) {
-      console.error('Error getting secret experiences by city:', error);
+      console.error('Error getting secret experiences by city from user profiles:', error);
       return [];
     }
   }
