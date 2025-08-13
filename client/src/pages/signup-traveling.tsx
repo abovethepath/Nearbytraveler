@@ -249,14 +249,12 @@ export default function SignupTraveling() {
         
         toast({
           title: "Account created successfully!",
-          description: "Welcome to Nearby Traveler!",
+          description: "Setting up your travel profile...",
           variant: "default",
         });
 
-        // Navigate to welcome page
-        setTimeout(() => {
-          setLocation('/welcome');
-        }, 1000);
+        // Navigate immediately to welcome page while profile builds in background
+        setLocation('/welcome');
       } else {
         console.error('❌ Registration failed:', data.message);
         toast({

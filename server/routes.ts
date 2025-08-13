@@ -2461,19 +2461,21 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
 
           if (process.env.NODE_ENV === 'development') console.log("CREATING TRAVEL PLAN:", { tripLocation, userId: user.id });
 
+          // Parse travel destination to get city, state, country for travel plan
+          const destinationParts = tripLocation.split(', ');
           const tripPlanData = {
             userId: user.id,
             destination: tripLocation,
-            destinationCity: originalData.currentTravelCity || originalData.travelDestinationCity,
-            destinationState: originalData.currentTravelState || originalData.travelDestinationState,
-            destinationCountry: originalData.currentTravelCountry || originalData.travelDestinationCountry,
-            startDate: new Date(originalData.travelStartDate),
-            endDate: new Date(originalData.travelEndDate),
+            destinationCity: destinationParts[0] || originalData.currentCity,
+            destinationState: destinationParts[1] || originalData.currentState,
+            destinationCountry: destinationParts[2] || destinationParts[1] || originalData.currentCountry,
+            startDate: startDate, // Use computed start date
+            endDate: endDate,     // Use computed end date
             interests: userData.interests || [],
             activities: userData.activities || [],
             events: userData.events || [],
             travelStyle: userData.travelStyle || [],
-            status: 'planned'
+            status: 'active' // Set to 'active' since they're currently traveling
           };
 
           const createdTripPlan = await storage.createTravelPlan(tripPlanData);
@@ -2483,7 +2485,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           await TravelStatusService.updateUserTravelStatus(user.id);
 
           // CRITICAL: Generate AI content for travel destination (only if needed)
-          const destinationParts = tripLocation.split(', ');
+          // Use existing destinationParts from travel plan creation above
           const travelCity = destinationParts[0];
           const travelState = destinationParts[1];
           const travelCountry = destinationParts[2] || destinationParts[1];

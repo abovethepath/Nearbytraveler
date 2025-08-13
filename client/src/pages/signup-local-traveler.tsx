@@ -225,14 +225,12 @@ export default function SignupLocalTraveler() {
         
         toast({
           title: "Account created successfully!",
-          description: "Welcome to Nearby Traveler!",
+          description: "Setting up your local profile...",
           variant: "default",
         });
 
-        // Navigate to welcome page
-        setTimeout(() => {
-          setLocation('/welcome');
-        }, 1000);
+        // Navigate immediately to welcome page while profile builds in background
+        setLocation('/welcome');
       } else {
         console.error('❌ Registration failed:', data.message);
         toast({
