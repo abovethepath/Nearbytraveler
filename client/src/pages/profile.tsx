@@ -722,7 +722,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         gender: z.string().optional(),
         sexualPreference: z.array(z.string()).optional(),
         sexualPreferenceVisible: z.boolean().default(false),
-        travelingWithChildren: z.boolean().default(false),
+        travelingWithChildren: z.boolean().optional(),
         childrenAges: z.string().max(100, "Children ages must be 100 characters or less").optional(),
         isVeteran: z.boolean().default(false),
         isActiveDuty: z.boolean().default(false),
