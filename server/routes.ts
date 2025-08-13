@@ -168,8 +168,8 @@ async function geocodeAddress(address: string): Promise<{ lat: number; lng: numb
   }
 }
 
-// GLOBAL METROPOLITAN AREA CONSOLIDATION SYSTEM
-// Comprehensive mapping of metropolitan areas worldwide
+// METRO CONSOLIDATION DISABLED PER USER REQUEST
+// User wants only user-created chatrooms, no automatic metro consolidations
 
 interface MetropolitanArea {
   mainCity: string;
@@ -178,8 +178,11 @@ interface MetropolitanArea {
   cities: string[];
 }
 
+// DISABLED: No automatic metro consolidation
 const GLOBAL_METROPOLITAN_AREAS: MetropolitanArea[] = [
-  // Los Angeles Metropolitan Area
+  // All metro consolidation disabled - users can create their own chatrooms
+  /*
+  // Los Angeles Metropolitan Area - DISABLED
   {
     mainCity: 'Los Angeles Metro',
     state: 'California',
@@ -206,6 +209,7 @@ const GLOBAL_METROPOLITAN_AREAS: MetropolitanArea[] = [
       'Leimert Park', 'View Park', 'Baldwin Hills', 'Ladera Heights'
     ]
   },
+  */
   
   // New York Metropolitan Area
   {
@@ -355,65 +359,27 @@ const GLOBAL_METROPOLITAN_AREAS: MetropolitanArea[] = [
   }
 ];
 
-// Global metropolitan area consolidation function
+// DISABLED: Metro consolidation functions - per user request
 function consolidateToMetropolitanArea(city: string, state?: string, country?: string): string {
-  if (!city) return city;
-  
-  // Find matching metropolitan area
-  for (const metro of GLOBAL_METROPOLITAN_AREAS) {
-    // Check if this city belongs to this metropolitan area
-    const cityMatch = metro.cities.some(metroCity => 
-      metroCity.toLowerCase() === city.toLowerCase()
-    );
-    
-    if (cityMatch) {
-      // Additional validation for state/country if provided
-      if (state && metro.state && metro.state.toLowerCase() !== state.toLowerCase()) {
-        continue;
-      }
-      if (country && metro.country.toLowerCase() !== country.toLowerCase()) {
-        continue;
-      }
-      
-      if (process.env.NODE_ENV === 'development') console.log(`🌍 METRO CONSOLIDATION: ${city} → ${metro.mainCity}`);
-      return metro.mainCity;
-    }
-  }
-  
-  // Return original city if no metropolitan area found
-  return city;
+  // DISABLED: Return original city without consolidation
+  return city || '';
 }
 
-// Get all cities in a metropolitan area
+// DISABLED: Get all cities in a metropolitan area
 function getMetropolitanAreaCities(mainCity: string, state?: string, country?: string): string[] {
-  for (const metro of GLOBAL_METROPOLITAN_AREAS) {
-    if (metro.mainCity.toLowerCase() === mainCity.toLowerCase()) {
-      // Additional validation for state/country if provided
-      if (state && metro.state && metro.state.toLowerCase() !== state.toLowerCase()) {
-        continue;
-      }
-      if (country && metro.country.toLowerCase() !== country.toLowerCase()) {
-        continue;
-      }
-      
-      return metro.cities;
-    }
-  }
-  
-  // Return just the main city if no metropolitan area found
+  // DISABLED: Return just the single city
   return [mainCity];
 }
 
-// Legacy functions for backwards compatibility
+// DISABLED: Legacy functions for backwards compatibility  
 function consolidateToLAMetro(city: string, state?: string): string {
-  return consolidateToMetropolitanArea(city, state, 'United States');
+  // DISABLED: Return original city without consolidation
+  return city || '';
 }
 
 function getLAMetroCities(): string[] {
-  const laMetro = GLOBAL_METROPOLITAN_AREAS.find(metro => 
-    metro.mainCity === 'Los Angeles Metro' && metro.country === 'United States'
-  );
-  return laMetro ? laMetro.cities : [];
+  // DISABLED: Return empty array - no more LA metro consolidation
+  return [];
 }
 
 // Instagram posting helper functions
