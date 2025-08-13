@@ -179,8 +179,7 @@ function DiscoverPaused() {
                 onClick={() => setLocation(`/city/${encodeURIComponent(city.city)}`)}
               >
                 <div className="relative h-48 overflow-hidden">
-                  <div className={`w-full h-full bg-gradient-to-br ${getCityGradient(city.city, index + 1)} flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
-                    <MapPin className="w-16 h-16 text-white/60" />
+                  <div className={`w-full h-full bg-gradient-to-br ${getCityGradient(city.city, index + 1)} group-hover:scale-110 transition-transform duration-300`}>
                   </div>
                   <div className="absolute inset-0 bg-black/30" />
 
