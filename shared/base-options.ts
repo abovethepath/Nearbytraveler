@@ -45,7 +45,7 @@ export const MOST_POPULAR_INTERESTS = [
   "Boat & Water Tours",
   "Off the Path Adventures",
   "Festivals & Events",
-  "Wine Tastings & Vineyards"
+  "Wine & Vineyards"
 ];
 
 // Additional interests - organized by similarity
