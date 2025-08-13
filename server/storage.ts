@@ -6471,7 +6471,7 @@ export class DatabaseStorage implements IStorage {
       // Query users whose hometown matches this city and have secret activities
       const conditions = [];
       
-      if (consolidatedCity.toLowerCase() === 'los angeles') {
+      if (city.toLowerCase() === 'los angeles metro') {
         // For LA metro, search all LA metro cities
         const LA_METRO_CITIES = [
           'Los Angeles', 'Santa Monica', 'Venice', 'Venice Beach', 'El Segundo', 
@@ -6497,7 +6497,7 @@ export class DatabaseStorage implements IStorage {
         
         conditions.push(or(...LA_METRO_CITIES.map(cityName => eq(users.hometownCity, cityName))));
         
-      } else if (consolidatedCity.toLowerCase() === 'nashville') {
+      } else if (city.toLowerCase() === 'nashville metro') {
         // For Nashville metro, search all Nashville metro cities
         const NASHVILLE_METRO_CITIES = [
           'Nashville', 'Nashville Metro', 'Brentwood', 'Franklin', 'Murfreesboro', 'Hendersonville', 
@@ -6520,7 +6520,7 @@ export class DatabaseStorage implements IStorage {
       conditions.push(isNotNull(users.secretActivities));
       conditions.push(ne(users.secretActivities, ''));
       
-      console.log(`🔥 SECRET ACTIVITIES: Querying users table for ${consolidatedCity} with ${conditions.length} conditions`);
+
       
       const usersWithSecrets = await db.select({
         id: users.id,
