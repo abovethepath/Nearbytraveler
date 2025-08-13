@@ -46,6 +46,7 @@ export const users = pgTable("users", {
   languagesSpoken: text("languages_spoken").array(), // Languages they speak
   travelStyle: text("travel_style").array(), // Travel styles: solo, budget, luxury, adventure, etc.
   travelingWithChildren: boolean("traveling_with_children").default(false), // Whether user is traveling with children
+  childrenAges: text("children_ages"), // Ages of children when traveling (e.g., "5, 8, 12")
   coverPhoto: text("cover_photo"), // Cover photo for profile
   secretActivities: text("secret_activities"), // Secret things they would do if closest friends came to town
   

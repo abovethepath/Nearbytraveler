@@ -722,6 +722,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         gender: z.string().optional(),
         sexualPreference: z.array(z.string()).optional(),
         sexualPreferenceVisible: z.boolean().default(false),
+        travelingWithChildren: z.boolean().default(false),
+        childrenAges: z.string().max(100, "Children ages must be 100 characters or less").optional(),
         isVeteran: z.boolean().default(false),
         isActiveDuty: z.boolean().default(false),
       });
@@ -1147,6 +1149,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       sexualPreferenceVisible: false,
       travelStyle: [],
       travelingWithChildren: false,
+      childrenAges: "",
       isVeteran: false,
       isActiveDuty: false,
     },
@@ -1204,6 +1207,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           sexualPreferenceVisible: user.sexualPreferenceVisible !== undefined ? user.sexualPreferenceVisible : false,
           travelStyle: user.travelStyle || [],
           travelingWithChildren: user.travelingWithChildren !== undefined ? user.travelingWithChildren : false,
+          childrenAges: (user as any).childrenAges || "",
           isVeteran: user.isVeteran !== undefined ? user.isVeteran : false,
           isActiveDuty: user.isActiveDuty !== undefined ? user.isActiveDuty : false,
         });
@@ -2641,6 +2645,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             sexualPreferenceVisible: updatedUser.sexualPreferenceVisible !== undefined ? updatedUser.sexualPreferenceVisible : false,
             travelStyle: updatedUser.travelStyle || [],
             travelingWithChildren: updatedUser.travelingWithChildren !== undefined ? updatedUser.travelingWithChildren : false,
+            childrenAges: (updatedUser as any).childrenAges || "",
             isVeteran: updatedUser.isVeteran !== undefined ? updatedUser.isVeteran : false,
             isActiveDuty: updatedUser.isActiveDuty !== undefined ? updatedUser.isActiveDuty : false,
           });
@@ -6254,28 +6259,55 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
               {/* Family Travel Field */}
               {user?.userType !== 'business' && (
-                <FormField
-                  control={profileForm.control}
-                  name="travelingWithChildren"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                      <div className="space-y-0.5">
-                        <FormLabel className="text-base">
-                          Traveling with children
-                        </FormLabel>
-                        <div className="text-sm text-muted-foreground">
-                          Show that you're traveling with children to connect with other families
+                <div className="space-y-4">
+                  <FormField
+                    control={profileForm.control}
+                    name="travelingWithChildren"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                        <div className="space-y-0.5">
+                          <FormLabel className="text-base">
+                            Traveling with children
+                          </FormLabel>
+                          <div className="text-sm text-muted-foreground">
+                            Show that you're traveling with children to connect with other families
+                          </div>
                         </div>
-                      </div>
-                      <FormControl>
-                        <Switch
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      </FormControl>
-                    </FormItem>
+                        <FormControl>
+                          <Switch
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  
+                  {/* Children Ages Field - Only show when traveling with children toggle is on */}
+                  {profileForm.watch("travelingWithChildren") && (
+                    <FormField
+                      control={profileForm.control}
+                      name="childrenAges"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Children's Ages</FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              placeholder="e.g., 5, 8, 12"
+                              className="w-full"
+                              maxLength={100}
+                            />
+                          </FormControl>
+                          <div className="text-xs text-muted-foreground">
+                            Enter your children's ages separated by commas (e.g., "3, 7, 10")
+                          </div>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   )}
-                />
+                </div>
               )}
 
               <div className="space-y-4">
