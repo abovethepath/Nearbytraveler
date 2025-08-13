@@ -913,21 +913,21 @@ input, textarea, select, button, label, span, div, p, h1, h2, h3, h4, h5, h6 {
   border-color: rgb(30 64 175) !important; /* blue-800 */
 }
 
-/* Activities Color Scheme - Green */
+/* Activities Color Scheme - Purple (Changed from green for better accessibility) */
 .activity-badge,
 .badge-activity,
 [data-type="activity"] {
-  background-color: rgb(220 252 231) !important; /* green-100 */
-  color: rgb(22 101 52) !important; /* green-800 */
-  border-color: rgb(134 239 172) !important; /* green-300 */
+  background-color: rgb(243 232 255) !important; /* purple-100 */
+  color: rgb(88 28 135) !important; /* purple-800 */
+  border-color: rgb(196 181 253) !important; /* purple-300 */
 }
 
 .dark .activity-badge,
 .dark .badge-activity,
 .dark [data-type="activity"] {
-  background-color: rgb(20 83 45) !important; /* green-900 */
-  color: rgb(134 239 172) !important; /* green-300 */
-  border-color: rgb(22 101 52) !important; /* green-800 */
+  background-color: rgb(76 29 149) !important; /* purple-900 */
+  color: rgb(196 181 253) !important; /* purple-300 */
+  border-color: rgb(88 28 135) !important; /* purple-800 */
 }
 
 /* Events Color Scheme - Purple */
@@ -962,16 +962,16 @@ div[class*="blue"]:not([class*="orange"]),
   border-color: rgb(147 197 253) !important; /* blue-300 */
 }
 
-/* ACTIVITIES - GREEN COLOR SCHEME */
+/* ACTIVITIES - PURPLE COLOR SCHEME (Changed from green for better contrast) */
 .bg-green-100,
 .text-green-800,
 span[class*="green"]:not([class*="orange"]),
 div[class*="green"]:not([class*="orange"]),
 *[data-category="activity"],
 *[data-type="activities"] {
-  background-color: rgb(220 252 231) !important; /* green-100 */
-  color: rgb(22 101 52) !important; /* green-800 */
-  border-color: rgb(134 239 172) !important; /* green-300 */
+  background-color: rgb(243 232 255) !important; /* purple-100 */
+  color: rgb(88 28 135) !important; /* purple-800 */
+  border-color: rgb(196 181 253) !important; /* purple-300 */
 }
 
 /* EVENTS - PURPLE COLOR SCHEME */
@@ -1004,9 +1004,9 @@ div[class*="purple"]:not([class*="orange"]),
 .dark div[class*="green"]:not([class*="orange"]),
 .dark *[data-category="activity"],
 .dark *[data-type="activities"] {
-  background-color: rgb(20 83 45) !important; /* green-900 */
-  color: rgb(134 239 172) !important; /* green-300 */
-  border-color: rgb(22 101 52) !important; /* green-800 */
+  background-color: rgb(76 29 149) !important; /* purple-900 */
+  color: rgb(196 181 253) !important; /* purple-300 */
+  border-color: rgb(88 28 135) !important; /* purple-800 */
 }
 
 .dark .bg-purple-100,
