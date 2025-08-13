@@ -122,24 +122,47 @@ button, input {
   letter-spacing: -0.006em;
 }
 
-/* CRITICAL: Global mobile text improvement overrides */
+/* CRITICAL: Universal text rendering fixes for all screen sizes */
+* {
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+  text-rendering: optimizeLegibility !important;
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11' !important;
+}
+
+/* Force crisp text on ALL elements universally */
+*, *::before, *::after {
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+  text-rendering: optimizeLegibility !important;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+}
+
+/* Universal form element fixes */
+input, textarea, select, button, label, span, div, p, h1, h2, h3, h4, h5, h6 {
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+  text-rendering: optimizeLegibility !important;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11' !important;
+  letter-spacing: -0.006em !important;
+}
+
+/* Enhanced form styling for all screen sizes */
+.form-input, input[type="text"], input[type="email"], input[type="password"], input[type="date"], input[type="select"] {
+  font-size: 16px !important;
+  padding: 0.75rem !important;
+  border-radius: 0.375rem !important;
+  border: 1px solid #d1d5db !important;
+  font-weight: 500 !important;
+  letter-spacing: -0.006em !important;
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+  text-rendering: optimizeLegibility !important;
+}
+
+/* Enhanced mobile-specific optimizations */
 @media (max-width: 768px) {
-  * {
-    -webkit-font-smoothing: antialiased !important;
-    -moz-osx-font-smoothing: grayscale !important;
-    text-rendering: optimizeLegibility !important;
-    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11' !important;
-  }
-  
-  /* Force crisp text on all form elements */
-  input, textarea, select, button, label {
-    -webkit-font-smoothing: antialiased !important;
-    -moz-osx-font-smoothing: grayscale !important;
-    text-rendering: optimizeLegibility !important;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
-    letter-spacing: -0.006em !important;
-  }
-  
   /* Mobile responsive text sizing with crisp rendering */
   .text-xs { font-size: 0.75rem !important; line-height: 1.25 !important; }
   .text-sm { font-size: 0.875rem !important; line-height: 1.35 !important; }
@@ -147,16 +170,6 @@ button, input {
   .text-lg { font-size: 1.125rem !important; line-height: 1.5 !important; }
   .text-xl { font-size: 1.25rem !important; line-height: 1.4 !important; }
   .text-2xl { font-size: 1.5rem !important; line-height: 1.3 !important; }
-  
-  /* Enhanced mobile form styling */
-  .form-input, input[type="text"], input[type="email"], input[type="password"], input[type="date"] {
-    font-size: 16px !important; /* Prevents iOS zoom */
-    padding: 0.75rem !important;
-    border-radius: 0.375rem !important;
-    border: 1px solid #d1d5db !important;
-    font-weight: 500 !important;
-    letter-spacing: -0.006em !important;
-  }
 }
 
 /* Mobile-specific text improvements */

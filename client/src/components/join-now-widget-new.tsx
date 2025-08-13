@@ -270,7 +270,7 @@ export default function JoinNowWidgetNew() {
                   onChange={(e) => handleUsernameChange(e.target.value)}
                   placeholder="Choose username"
                   required
-                  className={`pr-10 ${
+                  className={`pr-10 text-base py-3 text-crisp font-medium ${
                     usernameAvailable === true ? 'border-green-500' : 
                     usernameAvailable === false ? 'border-red-500' : ''
                   }`}
@@ -302,19 +302,20 @@ export default function JoinNowWidgetNew() {
             </div>
 
             <div>
-              <Label htmlFor="email" className="text-gray-900 dark:text-white">Email *</Label>
+              <Label htmlFor="email" className="text-base md:text-lg font-medium text-gray-900 dark:text-white text-crisp">Email *</Label>
               <Input
                 id="email"
                 type="email"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 placeholder="your@email.com"
+                className="text-base py-3 text-crisp font-medium"
                 required
               />
             </div>
             
             <div>
-              <Label htmlFor="confirmEmail" className="text-gray-900 dark:text-white">Confirm Email *</Label>
+              <Label htmlFor="confirmEmail" className="text-base md:text-lg font-medium text-gray-900 dark:text-white text-crisp">Confirm Email *</Label>
               <div className="relative">
                 <Input
                   id="confirmEmail"
@@ -323,7 +324,7 @@ export default function JoinNowWidgetNew() {
                   onChange={(e) => setFormData({ ...formData, confirmEmail: e.target.value })}
                   placeholder="Confirm your email"
                   required
-                  className={`pr-10 ${
+                  className={`pr-10 text-base py-3 text-crisp font-medium ${
                     formData.confirmEmail && formData.email ? (
                       formData.email === formData.confirmEmail ? 'border-green-500' : 'border-red-500'
                     ) : ''
@@ -348,7 +349,7 @@ export default function JoinNowWidgetNew() {
             </div>
             
             <div>
-              <Label htmlFor="password" className="text-gray-900 dark:text-white">Password * (min 8 characters)</Label>
+              <Label htmlFor="password" className="text-base md:text-lg font-medium text-gray-900 dark:text-white text-crisp">Password * (min 8 characters)</Label>
               <div className="relative">
                 <Input
                   id="password"
@@ -357,7 +358,7 @@ export default function JoinNowWidgetNew() {
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   placeholder="Create password"
                   required
-                  className={`pr-10 ${
+                  className={`pr-10 text-base py-3 text-crisp font-medium ${
                     formData.password && formData.password.length >= 8 ? 'border-green-500' : 
                     formData.password && formData.password.length < 8 ? 'border-yellow-500' : ''
                   }`}
@@ -381,7 +382,7 @@ export default function JoinNowWidgetNew() {
             </div>
             
             <div>
-              <Label htmlFor="confirmPassword" className="text-gray-900 dark:text-white">Confirm Password *</Label>
+              <Label htmlFor="confirmPassword" className="text-base md:text-lg font-medium text-gray-900 dark:text-white text-crisp">Confirm Password *</Label>
               <div className="relative">
                 <Input
                   id="confirmPassword"
@@ -390,7 +391,7 @@ export default function JoinNowWidgetNew() {
                   onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                   placeholder="Confirm password"
                   required
-                  className={`pr-10 ${
+                  className={`pr-10 text-base py-3 text-crisp font-medium ${
                     formData.confirmPassword && formData.password ? (
                       formData.password === formData.confirmPassword ? 'border-green-500' : 'border-red-500'
                     ) : ''
@@ -418,7 +419,7 @@ export default function JoinNowWidgetNew() {
           <div className="mt-8 pt-4 space-y-3">
             <div
               onClick={handleCreateAccount}
-              className="join-page-gradient-button w-full py-3 px-4 rounded-md font-bold text-center cursor-pointer select-none"
+              className="join-page-gradient-button w-full py-3 px-4 rounded-md font-bold text-center cursor-pointer select-none text-base md:text-lg text-crisp"
             >
               Create Account & Continue
             </div>
