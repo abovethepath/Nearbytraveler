@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { MessageCircle, Users, ExternalLink } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useLocation } from "wouter";
 interface CityChatlroomsWidgetProps {
   city: string;
   state?: string;
@@ -13,6 +14,7 @@ interface CityChatlroomsWidgetProps {
 
 export function CityChatlroomsWidget({ city, state, country }: CityChatlroomsWidgetProps) {
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
   // Removed authentication requirement - chatrooms are now publicly accessible
 
   // Fetch chatrooms for this city with forced refresh
@@ -83,21 +85,13 @@ export function CityChatlroomsWidget({ city, state, country }: CityChatlroomsWid
     .slice(0, 2);
 
   const handleJoinChatroom = (chatroomId: number, chatroomName: string) => {
-    // Show clean toast message instead of browser alert
-    toast({
-      title: "Beta Feature",
-      description: "Chatrooms not available in Beta",
-      variant: "default"
-    });
+    // Navigate directly to the chatroom
+    setLocation(`/chatroom/${chatroomId}`);
   };
 
   const viewAllChatrooms = () => {
-    // Show clean toast message instead of browser alert
-    toast({
-      title: "Beta Feature", 
-      description: "Chatrooms not available in Beta",
-      variant: "default"
-    });
+    // Navigate to city-specific chatrooms page  
+    setLocation(`/city-chatrooms/${encodeURIComponent(city)}`);
   };
 
   return (
