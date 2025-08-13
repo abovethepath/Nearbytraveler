@@ -11219,6 +11219,12 @@ Ready to start making real connections wherever you are?
           commonalities.push(`Both ${pref.charAt(0).toUpperCase() + pref.slice(1)}`)
         );
       }
+
+      // 9. Family travel compatibility - CRITICAL for matching families!
+      if (currentUser[0].travelingWithChildren && otherUser[0].travelingWithChildren) {
+        totalCommonalities += 2; // Higher weight for family travel matching
+        commonalities.push("Both traveling with children");
+      }
       
       if (process.env.NODE_ENV === 'development') console.log(`✅ COMPATIBILITY: Found ${totalCommonalities} commonalities between users ${currentUserId} and ${otherUserId}`);
       

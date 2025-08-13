@@ -1146,6 +1146,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       sexualPreference: [],
       sexualPreferenceVisible: false,
       travelStyle: [],
+      travelingWithChildren: false,
       isVeteran: false,
       isActiveDuty: false,
     },
@@ -1202,6 +1203,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           sexualPreference: user.sexualPreference || [],
           sexualPreferenceVisible: user.sexualPreferenceVisible || false,
           travelStyle: user.travelStyle || [],
+          travelingWithChildren: user.travelingWithChildren || false,
           isVeteran: user.isVeteran || false,
           isActiveDuty: user.isActiveDuty || false,
         });
@@ -3346,6 +3348,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     <div>
                       <span className="font-medium text-gray-600 dark:text-gray-400">Age:</span>
                       <span className="ml-2">{calculateAge(user.dateOfBirth)} years old</span>
+                    </div>
+                  )}
+                  {user.userType !== 'business' && user.travelingWithChildren && (
+                    <div>
+                      <span className="font-medium text-gray-600 dark:text-gray-400">Family Travel:</span>
+                      <span className="ml-2 text-purple-600 font-semibold flex items-center gap-1">
+                        👨‍👩‍👧‍👦 Traveling with children
+                      </span>
                     </div>
                   )}
 
