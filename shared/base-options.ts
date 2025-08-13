@@ -41,7 +41,7 @@ export const MOST_POPULAR_INTERESTS = [
   
   // Health/Fitness sixth
   "Hiking & Nature",
-  "Beach Activities and Parties",
+  "Beach Activities",
   "Boat & Water Tours",
   "Off the Path Adventures",
   "Festivals & Events",
