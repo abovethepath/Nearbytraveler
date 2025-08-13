@@ -6624,12 +6624,19 @@ Ready to start making real connections wherever you are?
       if (process.env.NODE_ENV === 'development') console.log('POST /api/photo-albums - Creating travel memory');
       if (process.env.NODE_ENV === 'development') console.log('Request body:', req.body);
 
-      const { userId, title, description, date, startDate, endDate, location, photoIds, isPublic } = req.body;
+      const { userId, title, description, startDate, endDate, location, photoIds, isPublic } = req.body;
 
       // Validate required fields
       if (!userId || !title || !photoIds || photoIds.length === 0) {
         return res.status(400).json({ 
           message: "Missing required fields: userId, title, photoIds" 
+        });
+      }
+
+      // Ensure we have at least startDate
+      if (!startDate) {
+        return res.status(400).json({ 
+          message: "Start date is required for travel memories" 
         });
       }
 
@@ -6661,7 +6668,6 @@ Ready to start making real connections wherever you are?
         userId: parseInt(userId.toString() || '0'),
         title: title.trim(),
         description: description?.trim() || '',
-        date: date || new Date().toISOString().split('T')[0],
         startDate: startDate ? new Date(startDate) : null,
         endDate: endDate ? new Date(endDate) : null,
         location: location?.trim() || '',
@@ -6697,10 +6703,10 @@ Ready to start making real connections wherever you are?
         return res.status(400).json({ message: "Invalid album ID" });
       }
 
-      const { title, description, location, date, startDate, endDate, isPublic } = req.body;
+      const { title, description, location, startDate, endDate, isPublic } = req.body;
 
       // Validate at least one field is provided
-      if (!title && !description && !location && !date && !startDate && !endDate && isPublic === undefined) {
+      if (!title && !description && !location && !startDate && !endDate && isPublic === undefined) {
         return res.status(400).json({ 
           message: "At least one field must be provided for update" 
         });
@@ -6710,7 +6716,6 @@ Ready to start making real connections wherever you are?
       if (title) updateData.title = title.trim();
       if (description !== undefined) updateData.description = description.trim();
       if (location !== undefined) updateData.location = location.trim();
-      if (date) updateData.date = date;
       if (startDate !== undefined) updateData.startDate = startDate ? new Date(startDate) : null;
       if (endDate !== undefined) updateData.endDate = endDate ? new Date(endDate) : null;
       if (isPublic !== undefined) updateData.isPublic = isPublic;

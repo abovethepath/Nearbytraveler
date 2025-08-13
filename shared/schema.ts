@@ -622,9 +622,8 @@ export const photoAlbums = pgTable("photo_albums", {
   userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   title: text("title").notNull(),
   description: text("description"),
-  date: text("date").notNull(), // Date of the album/trip (keeping for backward compatibility)
-  startDate: timestamp("start_date"), // Optional start date for trips/albums
-  endDate: timestamp("end_date"), // Optional end date for trips/albums
+  startDate: timestamp("start_date"), // Start date for trips/albums
+  endDate: timestamp("end_date"), // End date for trips/albums  
   location: text("location"),
   photos: text("photos").array().notNull(), // Array of photo URLs
   coverPhoto: text("cover_photo"), // Main photo for the album

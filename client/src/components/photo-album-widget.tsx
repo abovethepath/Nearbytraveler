@@ -24,7 +24,8 @@ interface TravelMemory {
   userId: number;
   title: string;
   description: string;
-  date: string;
+  startDate: string | null;
+  endDate: string | null;
   location: string;
   photos: string[];
   coverPhoto?: string;
@@ -62,9 +63,8 @@ export function PhotoAlbumWidget({ userId, isOwnProfile = false }: TravelMemoryW
   const [newMemory, setNewMemory] = useState({
     title: '',
     description: '',
-    date: new Date().toISOString().split('T')[0],
-    startDate: '', // Optional start date for trips/albums
-    endDate: '', // Optional end date for trips/albums
+    startDate: new Date().toISOString().split('T')[0], // Trip start date
+    endDate: '', // Optional trip end date 
     location: '',
     photos: [] as File[],
     isPublic: true
@@ -192,8 +192,7 @@ export function PhotoAlbumWidget({ userId, isOwnProfile = false }: TravelMemoryW
       setNewMemory({
         title: '',
         description: '',
-        date: new Date().toISOString().split('T')[0],
-        startDate: '',
+        startDate: new Date().toISOString().split('T')[0],
         endDate: '',
         location: '',
         photos: [],
@@ -365,7 +364,8 @@ export function PhotoAlbumWidget({ userId, isOwnProfile = false }: TravelMemoryW
         userId: userId,
         title: newMemory.title.trim(),
         description: newMemory.description.trim(),
-        date: newMemory.date,
+        startDate: newMemory.startDate,
+        endDate: newMemory.endDate || null,
         location: newMemory.location.trim(),
         photoIds: photoIds, // Send photo IDs instead of full data
         isPublic: newMemory.isPublic
@@ -511,7 +511,8 @@ export function PhotoAlbumWidget({ userId, isOwnProfile = false }: TravelMemoryW
                 )}
                 <div className="flex items-center text-sm text-gray-500 dark:text-gray-400 mb-2">
                   <Calendar className="w-3 h-3 mr-1" />
-                  {new Date(memory.date).toLocaleDateString()}
+                  {memory.startDate ? new Date(memory.startDate).toLocaleDateString() : 'No date'}
+                  {memory.endDate && ` - ${new Date(memory.endDate).toLocaleDateString()}`}
                 </div>
                 {memory.description && (
                   <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2">
@@ -562,35 +563,7 @@ export function PhotoAlbumWidget({ userId, isOwnProfile = false }: TravelMemoryW
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                Date
-              </label>
-              <Input
-                type="date"
-                value={newMemory.date}
-                onChange={(e) => setNewMemory(prev => ({ ...prev, date: e.target.value }))}
-                className="border-gray-300 dark:border-gray-600"
-                min="1900-01-01"
-                max="2099-12-31"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                Location
-              </label>
-              <Input
-                value={newMemory.location}
-                onChange={(e) => setNewMemory(prev => ({ ...prev, location: e.target.value }))}
-                placeholder="Paris, France"
-                className="border-gray-300 dark:border-gray-600"
-              />
-            </div>
-          </div>
-
-          {/* Optional Trip Duration */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                Trip Start Date (Optional)
+                Trip Start Date
               </label>
               <Input
                 type="date"
@@ -599,7 +572,6 @@ export function PhotoAlbumWidget({ userId, isOwnProfile = false }: TravelMemoryW
                 className="border-gray-300 dark:border-gray-600"
                 min="1900-01-01"
                 max="2099-12-31"
-                placeholder="When did this trip start?"
               />
             </div>
             <div>
@@ -613,9 +585,20 @@ export function PhotoAlbumWidget({ userId, isOwnProfile = false }: TravelMemoryW
                 className="border-gray-300 dark:border-gray-600"
                 min="1900-01-01"
                 max="2099-12-31"
-                placeholder="When did this trip end?"
               />
             </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+              Location
+            </label>
+            <Input
+              value={newMemory.location}
+              onChange={(e) => setNewMemory(prev => ({ ...prev, location: e.target.value }))}
+              placeholder="Paris, France"
+              className="border-gray-300 dark:border-gray-600"
+            />
           </div>
 
           {/* Photo Upload Section */}
@@ -1149,7 +1132,8 @@ export function PhotoAlbumWidget({ userId, isOwnProfile = false }: TravelMemoryW
                 )}
                 <span className="flex items-center gap-1">
                   <Calendar className="w-3 h-3" />
-                  {new Date(selectedAlbum.date).toLocaleDateString()}
+                  {selectedAlbum.startDate ? new Date(selectedAlbum.startDate).toLocaleDateString() : 'No date'}
+                  {selectedAlbum.endDate && ` - ${new Date(selectedAlbum.endDate).toLocaleDateString()}`}
                 </span>
                 <span>{selectedAlbum.photos.length} photos</span>
               </div>
@@ -1299,19 +1283,9 @@ export function PhotoAlbumWidget({ userId, isOwnProfile = false }: TravelMemoryW
                 />
               </div>
 
-              <div>
-                <label className="block text-sm font-medium mb-2">Date</label>
-                <Input
-                  type="date"
-                  value={editingAlbum.date}
-                  onChange={(e) => setEditingAlbum({...editingAlbum, date: e.target.value})}
-                />
-              </div>
-
-              {/* Optional Trip Duration */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-2">Trip Start Date (Optional)</label>
+                  <label className="block text-sm font-medium mb-2">Trip Start Date</label>
                   <Input
                     type="date"
                     value={editingAlbum.startDate || ''}
@@ -1364,7 +1338,6 @@ export function PhotoAlbumWidget({ userId, isOwnProfile = false }: TravelMemoryW
                           title: editingAlbum.title,
                           description: editingAlbum.description,
                           location: editingAlbum.location,
-                          date: editingAlbum.date,
                           startDate: editingAlbum.startDate || null,
                           endDate: editingAlbum.endDate || null,
                           isPublic: editingAlbum.isPublic
