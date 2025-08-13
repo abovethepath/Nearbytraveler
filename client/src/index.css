@@ -1108,7 +1108,7 @@ span:contains("Historical") {
   border-color: rgb(30 64 175) !important;
 }
 
-/* ULTIMATE PROTECTION - ACTIVITIES MUST ALWAYS BE GREEN */
+/* ULTIMATE PROTECTION - ACTIVITIES MUST ALWAYS BE PURPLE FOR BETTER READABILITY */
 *[class*="bg-green"],
 *[data-category="activity"],
 span:contains("Bar Hopping"),
@@ -1117,18 +1117,18 @@ span:contains("Beach Activities"),
 span:contains("Camping"),
 span:contains("City Tours"),
 span:contains("Cycling") {
-  background-color: rgb(220 252 231) !important;
-  color: rgb(22 101 52) !important;
-  border-color: rgb(134 239 172) !important;
+  background-color: rgb(139 92 246) !important; /* purple-500 */
+  color: rgb(255 255 255) !important; /* white text */
+  border-color: rgb(124 58 237) !important; /* purple-600 */
 }
 
 .dark *[class*="bg-green"],
 .dark *[data-category="activity"],
 .dark span:contains("Bar Hopping"),
 .dark span:contains("Walking Tours") {
-  background-color: rgb(20 83 45) !important;
-  color: rgb(134 239 172) !important;
-  border-color: rgb(22 101 52) !important;
+  background-color: rgb(139 92 246) !important; /* purple-500 */
+  color: rgb(255 255 255) !important; /* white text */
+  border-color: rgb(124 58 237) !important; /* purple-600 */
 }
 
 /* ULTIMATE PROTECTION - EVENTS MUST ALWAYS BE PURPLE */
@@ -1423,8 +1423,8 @@ button:has(> svg + :is(*):contains("Available")):hover,
 }
 
 .user-card .bg-green-50 {
-  background-color: rgb(240 253 244) !important;
-  color: rgb(21 128 61) !important;
+  background-color: rgb(243 232 255) !important; /* purple-50 */
+  color: rgb(88 28 135) !important; /* purple-800 */
 }
 
 .user-card .bg-purple-50 {
@@ -1450,8 +1450,8 @@ button:has(> svg + :is(*):contains("Available")):hover,
   }
 
   .user-card .bg-green-50 {
-    background-color: rgb(20 83 45) !important;
-    color: rgb(134 239 172) !important;
+    background-color: rgb(88 28 135) !important; /* purple-800 */
+    color: rgb(196 181 253) !important; /* purple-300 */
   }
 
   .user-card .bg-purple-50 {

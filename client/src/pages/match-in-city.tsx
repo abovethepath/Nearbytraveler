@@ -1149,19 +1149,19 @@ export default function MatchInCity() {
         </div>
 
         {/* My Personal Selections Section */}
-        <Card className="mb-6 bg-green-900/20 backdrop-blur-sm border-green-500/30">
+        <Card className="mb-6 bg-white/10 backdrop-blur-sm border-white/20">
           <CardHeader>
-            <CardTitle className="text-green-400 flex items-center gap-2">
+            <CardTitle className="text-white flex items-center gap-2">
               <Heart className="w-5 h-5" />
-              Things I Want to Do in {selectedCity}
+              My Selected Activities in {selectedCity}
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-green-100 text-sm mb-3">
-              These are YOUR selected activities and events that appear on your profile and help others find you:
+            <div className="text-white/80 text-sm mb-3">
+              Activities you've selected that appear on your profile:
             </div>
             {userActivities.length === 0 && userEvents.length === 0 ? (
-              <p className="text-green-300/60 text-sm italic">Click blue activities and events above to add them to your personal list!</p>
+              <p className="text-white/60 text-sm italic">Click blue activities above to add them to your list!</p>
             ) : (
               <div className="flex flex-wrap gap-2">
                 {/* User Activities */}
@@ -1172,7 +1172,7 @@ export default function MatchInCity() {
                   return (
                     <div
                       key={`activity-${userActivity.id}`}
-                      className="relative group px-3 py-1 rounded-lg text-sm font-medium bg-gradient-to-r from-green-500 to-green-600 text-white border border-green-400/20 shadow-sm"
+                      className="relative group px-3 py-1 rounded-lg text-sm font-medium bg-purple-600 hover:bg-purple-700 text-white border border-purple-400/30 shadow-sm"
                     >
                       <span>{globalActivity.activityName}</span>
                       <button
@@ -1196,7 +1196,7 @@ export default function MatchInCity() {
                     return (
                       <div
                         key={`event-${userEvent.id}`}
-                        className="relative group px-3 py-1 rounded-lg text-sm font-medium bg-gradient-to-r from-green-500 to-green-600 text-white border border-green-400/20 shadow-sm"
+                        className="relative group px-3 py-1 rounded-lg text-sm font-medium bg-purple-600 hover:bg-purple-700 text-white border border-purple-400/30 shadow-sm"
                       >
                         <span>📅 {userEvent.eventtitle || userEvent.eventTitle || (userEvent.eventId ? `Event ${userEvent.eventId}` : "Saved Event")}</span>
                         <button
@@ -1227,7 +1227,7 @@ export default function MatchInCity() {
                   return (
                     <div
                       key={`event-${userEvent.id}`}
-                      className="relative group px-3 py-1 rounded-lg text-sm font-medium bg-gradient-to-r from-green-500 to-green-600 text-white border border-green-400/20 shadow-sm"
+                      className="relative group px-3 py-1 rounded-lg text-sm font-medium bg-purple-600 hover:bg-purple-700 text-white border border-purple-400/30 shadow-sm"
                     >
                       <span>📅 {globalEvent.title}</span>
                       <button
