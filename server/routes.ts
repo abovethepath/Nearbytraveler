@@ -940,10 +940,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
               businessCount,
               eventCount,
               description: `Discover ${cityName}`,
-              highlights: [`${localCount} locals`, `${travelerCount} travelers`, `${businessCount} businesses`, `${eventCount} events`],
-              hasSecretExperiences: true,
-              hasChatRooms: true,
-              hasPhotos: true
+              highlights: [`${localCount} locals`, `${travelerCount} travelers`, `${businessCount} businesses`, `${eventCount} events`]
             };
           } catch (error: any) {
             if (process.env.NODE_ENV === 'development') console.error(`Error processing city ${cityName}:`, error);
@@ -956,10 +953,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
               businessCount: 0,
               eventCount: 0,
               description: `Discover ${cityName}`,
-              highlights: ['0 locals', '0 travelers', '0 events'],
-              hasSecretExperiences: true,
-              hasChatRooms: true,
-              hasPhotos: true
+              highlights: ['0 locals', '0 travelers', '0 events']
             };
           }
         })

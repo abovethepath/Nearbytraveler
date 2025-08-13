@@ -21,9 +21,6 @@ interface CityStats {
   description?: string;
   imageUrl?: string;
   highlights?: string[];
-  hasSecretExperiences?: boolean;
-  hasChatRooms?: boolean;
-  hasPhotos?: boolean;
 }
 
 export default function DiscoverPage() {
@@ -183,16 +180,16 @@ function DiscoverPaused() {
                   </div>
                   <div className="absolute inset-0 bg-black/30" />
 
-                  {/* Highlight badges */}
+                  {/* Activity badges showing actual meaningful data */}
                   <div className="absolute top-3 right-3 space-y-1">
-                    {city.hasSecretExperiences && (
+                    {city.eventCount > 5 && (
                       <Badge className="bg-purple-500 text-white block">
-                        🤫 Secret Spots
+                        🎉 Active Events
                       </Badge>
                     )}
-                    {city.hasChatRooms && (
+                    {(city.localCount + city.travelerCount) > 10 && (
                       <Badge className="bg-blue-500 text-white block">
-                        💬 Chat
+                        👥 Active Community
                       </Badge>
                     )}
                   </div>
