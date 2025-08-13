@@ -60,12 +60,12 @@ export default function Welcome() {
   ];
 
   const nextSteps = [
-    "Complete your profile with detailed interests, activities, and events",
-    "Add your travel plans and destinations",
-    "Visit the City Match page for city-specific activities and events tailored to your destination",
-    "Upload photos to showcase your personality",
-    "Start connecting with nearby locals and travelers",
-    "Explore AND Create events and activities in your area"
+    "Complete your profile: Add your photo, bio, gender, sexual preference, activities, events, and languages",
+    "Set your travel plans and current destinations", 
+    "Upload photos to showcase your personality and travel experiences",
+    "Visit the City Match page for location-specific activities and events tailored to your destination",
+    "Start connecting with nearby locals and travelers who share your interests",
+    "Create and join meetups, events, and activities in your area"
   ];
 
   return (
@@ -105,7 +105,7 @@ export default function Welcome() {
               <div className="grid md:grid-cols-2 gap-4 text-left">
                 <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
                   <h4 className="font-semibold text-blue-800 dark:text-blue-300 mb-2">Complete Your Profile</h4>
-                  <p className="text-sm text-blue-700 dark:text-blue-400">Add detailed interests, activities, and upload photos. Visit City Match page for city-specific activities and events.</p>
+                  <p className="text-sm text-blue-700 dark:text-blue-400">Add your photo, bio, gender, sexual preference, activities, events, languages, and military status. Visit City Match page for location-specific recommendations.</p>
                 </div>
                 <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4">
                   <h4 className="font-semibold text-green-800 dark:text-green-300 mb-2">Add Travel Plans</h4>
