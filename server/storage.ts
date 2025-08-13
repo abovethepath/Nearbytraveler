@@ -6467,7 +6467,7 @@ export class DatabaseStorage implements IStorage {
         .leftJoin(users, eq(secretLocalExperiences.contributorId, users.id))
         .where(
           and(
-            eq(secretLocalExperiences.cityPageId, 56), // Los Angeles city page
+            eq(secretLocalExperiences.cityPageId, 3), // Los Angeles Metro city page
             eq(secretLocalExperiences.isActive, true)
           )
         )
