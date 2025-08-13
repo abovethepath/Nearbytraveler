@@ -51,7 +51,7 @@ import BusinessNotifications from "@/components/BusinessNotifications";
 import { QuickMeetupWidget } from "@/components/QuickMeetupWidget";
 import CityMap from "@/components/CityMap";
 import PeopleDiscoveryWidget from "@/components/PeopleDiscoveryWidget";
-import ScrollingHeroGallery from "@/components/ScrollingHeroGallery";
+
 
 // Import centralized constants for consistency
 import { GENDER_OPTIONS, SEXUAL_PREFERENCE_OPTIONS, PRIVACY_NOTES } from "@/lib/formConstants";
@@ -1222,7 +1222,7 @@ export default function Home() {
         className="relative overflow-hidden text-white bg-gradient-to-br from-blue-600 to-purple-700 dark:from-gray-800 dark:to-gray-900 animate-fade-in-up"
         style={{ minHeight: '500px' }}
       >
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-16 animate-slide-in-left">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-20 animate-slide-in-left">
           <div className="text-center max-w-3xl mx-auto">
             <h1 className="text-xl xs:text-2xl sm:text-4xl lg:text-6xl font-bold mb-6 leading-tight text-white text-center animate-zoom-in" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700', textShadow: '1px 1px 0 black, -1px 1px 0 black, 1px -1px 0 black, -1px -1px 0 black, 0 1px 0 black, 0 -1px 0 black, 1px 0 0 black, -1px 0 0 black'}}>
               <div className="leading-tight">
