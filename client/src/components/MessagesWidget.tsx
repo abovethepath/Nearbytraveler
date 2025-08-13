@@ -47,54 +47,28 @@ function MessagesWidget({ userId }: MessagesWidgetProps) {
             View Connection Requests
           </Button>
         </div>
-        <div className="space-y-3 max-h-64 overflow-y-auto">
+        <div className="flex flex-wrap gap-2">
           {messages
             .filter(message => message.senderId !== message.receiverId) // Filter out self-messages
-            .slice(0, 5) // Show more messages (up to 5)
+            .slice(0, 8) // Show up to 8 message bubbles
             .map((message, index) => {
               const otherUserId = message.senderId === userId ? message.receiverId : message.senderId;
               const otherUser = users.find(u => u.id === otherUserId);
               const isFromMe = message.senderId === userId;
             
             return (
-              <div
+              <button
                 key={message.id || index} 
                 onClick={() => setLocation("/messages")}
-                className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg p-3 transition-all duration-200 border border-gray-100 dark:border-gray-600"
-              >
-                {/* Message Header */}
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center space-x-2">
-                    <div className={`w-2 h-2 rounded-full ${isFromMe ? 'bg-blue-500' : 'bg-green-500'}`}></div>
-                    <span className="text-xs font-medium text-gray-600 dark:text-gray-300">
-                      {isFromMe ? `To: ${otherUser?.username || "Unknown"}` : `From: ${otherUser?.username || "Unknown"}`}
-                    </span>
-                  </div>
-                  {message.createdAt && (
-                    <span className="text-xs text-gray-400 dark:text-gray-500">
-                      {new Date(message.createdAt).toLocaleDateString()}
-                    </span>
-                  )}
-                </div>
-                
-                {/* Message Content Bubble */}
-                <div className={`p-3 rounded-lg max-w-full ${
+                title={`${isFromMe ? 'To' : 'From'}: ${otherUser?.username || 'Unknown'}`}
+                className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-200 hover:scale-110 ${
                   isFromMe 
-                    ? 'bg-blue-500 text-white ml-4' 
-                    : 'bg-gray-100 dark:bg-gray-600 text-gray-900 dark:text-white mr-4'
-                }`}>
-                  <p className="text-sm leading-relaxed break-words">
-                    {message.content}
-                  </p>
-                </div>
-                
-                {/* Message Status */}
-                <div className="mt-2 text-right">
-                  <span className="text-xs text-gray-400 dark:text-gray-500">
-                    Click to view conversation
-                  </span>
-                </div>
-              </div>
+                    ? 'bg-blue-500 hover:bg-blue-600 text-white' 
+                    : 'bg-green-500 hover:bg-green-600 text-white'
+                }`}
+              >
+                {(otherUser?.username?.[0] || '?').toUpperCase()}
+              </button>
             );
             })}
           {messages.filter(message => message.senderId !== message.receiverId).length === 0 && (
