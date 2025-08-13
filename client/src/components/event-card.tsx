@@ -148,7 +148,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
           <ImageLoader
             src={event.imageUrl}
             alt={event.title}
-            className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+            className="w-full h-full object-cover transition-opacity duration-300 hover:opacity-90"
             loading="lazy"
           />
           {featured && (

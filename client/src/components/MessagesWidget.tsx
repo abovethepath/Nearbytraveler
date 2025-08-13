@@ -26,7 +26,7 @@ function MessagesWidget({ userId }: MessagesWidgetProps) {
 
   return (
     <Card 
-      className="bg-white dark:bg-gray-800 cursor-pointer hover:shadow-lg transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] border-gray-200 dark:border-gray-700"
+      className="bg-white dark:bg-gray-800 cursor-pointer hover:shadow-lg transition-shadow duration-300 border-gray-200 dark:border-gray-700"
       onClick={() => setLocation("/messages")}
     >
       <CardContent className="p-6">
@@ -38,7 +38,7 @@ function MessagesWidget({ userId }: MessagesWidgetProps) {
           <Button 
             variant="outline" 
             size="sm" 
-            className="bg-blue-600 hover:bg-blue-700 text-white border-0 hover:scale-105 active:scale-95 transition-transform"
+            className="bg-blue-600 hover:bg-blue-700 text-white border-0 transition-colors"
             onClick={(e) => {
               e.stopPropagation();
               setLocation("/requests");

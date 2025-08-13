@@ -274,7 +274,7 @@ export function ContextualBusinessRecommendations({ userId, limit = 8 }: Context
                     </span>
                     <Button 
                       size="sm" 
-                      className="h-6 px-2 text-xs hover:scale-105 active:scale-95 transition-transform bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white border-0"
+                      className="h-6 px-2 text-xs transition-colors bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white border-0"
                       onClick={(e) => {
                         e.stopPropagation();
                         window.open(`/deals?businessId=${recommendation.businessId}`, '_blank');

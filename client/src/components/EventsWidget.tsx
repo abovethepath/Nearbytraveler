@@ -346,7 +346,7 @@ function EventsWidget({ userId }: EventsWidgetProps) {
                   e.stopPropagation();
                   setLocation("/events/create");
                 }}
-                className="bg-gradient-to-r from-blue-500 to-orange-500 text-white hover:from-blue-600 hover:to-orange-600 border-0 hover:scale-105 active:scale-95 transition-transform"
+                className="bg-gradient-to-r from-blue-500 to-orange-500 text-white hover:from-blue-600 hover:to-orange-600 border-0 transition-colors"
               >
                 Create Event
               </Button>

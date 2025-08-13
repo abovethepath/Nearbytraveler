@@ -215,7 +215,7 @@ export default function Welcome() {
                 <Button 
                   onClick={handleEnterApp}
                   size="lg"
-                  className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 px-12 py-4 w-full text-xl shadow-2xl transform hover:scale-105 transition-all duration-300 border-2 border-white/20 nearby-traveler-btn-text-v2"
+                  className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 px-12 py-4 w-full text-xl shadow-2xl transition-colors duration-300 border-2 border-white/20 nearby-traveler-btn-text-v2"
                 >
                   🌟 Enter Nearby Traveler
                 </Button>

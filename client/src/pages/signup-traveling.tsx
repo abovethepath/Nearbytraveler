@@ -433,7 +433,7 @@ export default function SignupTraveling() {
                       type="button"
                       variant={formData.interests.includes(interest) ? "default" : "outline"}
                       onClick={() => toggleInterest(interest)}
-                      className="h-auto py-3 px-4 text-sm md:text-base font-medium transition-all duration-200 hover:scale-105 text-crisp"
+                      className="h-auto py-3 px-4 text-sm md:text-base font-medium transition-colors duration-200 text-crisp"
                       data-testid={`button-interest-${interest.toLowerCase().replace(/\s+/g, '-')}`}
                     >
                       {interest}
@@ -445,7 +445,7 @@ export default function SignupTraveling() {
               <Button
                 type="submit"
                 disabled={isSubmitting || formData.interests.length < 3 || !formData.hometownCity || !formData.currentCity || !formData.travelReturnDate}
-                className="w-full text-lg md:text-xl py-4 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 disabled:bg-gray-400 disabled:cursor-not-allowed font-bold text-white rounded-lg transition-all duration-200 hover:scale-105 disabled:hover:scale-100 text-crisp"
+                className="w-full text-lg md:text-xl py-4 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 disabled:bg-gray-400 disabled:cursor-not-allowed font-bold text-white rounded-lg transition-colors duration-200 text-crisp"
                 data-testid="button-create-account"
               >
                 {isSubmitting ? "Creating Account..." : "Create My Account"}
