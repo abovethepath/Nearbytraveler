@@ -237,11 +237,22 @@ export default function SimpleChatroomPage() {
       queryClient.invalidateQueries({ queryKey: [`/api/simple-chatrooms/${chatroomId}/messages`] });
     },
     onError: (error: any) => {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to send message",
-        variant: "destructive",
-      });
+      // Handle specific membership error
+      if (error.message?.includes("must be a member")) {
+        toast({
+          title: "Membership Required",
+          description: "You need to join this chatroom before sending messages. Joining now...",
+          variant: "destructive",
+        });
+        // Automatically attempt to join the chatroom
+        setTimeout(() => joinRoom(), 1000);
+      } else {
+        toast({
+          title: "Error",
+          description: error.message || "Failed to send message",
+          variant: "destructive",
+        });
+      }
     },
   });
 

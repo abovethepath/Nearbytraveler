@@ -11479,20 +11479,37 @@ Ready to start making real connections wherever you are?
   app.post('/api/simple-chatrooms/:id/messages', async (req, res) => {
     try {
       const chatroomId = parseInt(req.params.id);
-      const userId = req.headers['x-user-id'];
+      const userId = parseInt(req.headers['x-user-id'] as string);
       const { content } = req.body;
       
       if (!userId || !content?.trim()) {
         return res.status(400).json({ error: 'Missing required fields' });
       }
 
+      // SECURITY: Check if user is a member of the chatroom before allowing message sending
+      const [membership] = await db.select()
+        .from(chatroomMembers)
+        .where(and(
+          eq(chatroomMembers.chatroomId, chatroomId),
+          eq(chatroomMembers.userId, userId)
+        ))
+        .limit(1);
+
+      if (!membership) {
+        console.log(`🚫 SECURITY: User ${userId} attempted to send message in chatroom ${chatroomId} without membership`);
+        return res.status(403).json({ 
+          error: 'You must be a member of this chatroom to send messages. Please join the chatroom first.',
+          requiresMembership: true 
+        });
+      }
+
       const [message] = await db.insert(chatroomMessages).values({
         chatroomId,
-        senderId: parseInt(userId as string),
+        senderId: userId,
         content: content.trim()
       }).returning();
 
-      console.log(`🔥 SIMPLE CHATROOM: Created message ${message.id} in room ${chatroomId}`);
+      console.log(`🔥 SIMPLE CHATROOM: User ${userId} (member) created message ${message.id} in room ${chatroomId}`);
       res.json(message);
     } catch (error) {
       console.error('Error creating message:', error);
