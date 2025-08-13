@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft } from "lucide-react";
 import { AuthContext } from "@/App";
 import { authStorage } from "@/lib/auth";
+import { SmartLocationInput } from "@/components/SmartLocationInput";
 import { MOST_POPULAR_INTERESTS } from "../../../shared/base-options";
 import { calculateAge, validateDateInput, getDateInputConstraints } from "@/lib/ageUtils";
 
@@ -61,7 +62,13 @@ export default function SignupTraveling() {
     // Top Choices - minimum 3 required
     interests: [] as string[],
     // Traveler specific
-    isCurrentlyTraveling: true
+    isCurrentlyTraveling: true,
+    // Travel destination fields - REQUIRED for chatrooms and city pages
+    currentCity: "",
+    currentState: "",
+    currentCountry: "",
+    travelDestination: "",
+    travelReturnDate: ""
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -122,6 +129,8 @@ export default function SignupTraveling() {
       if (!finalFormData.username) missingFields.push("Username");
       if (!finalFormData.name) missingFields.push("Full Name");
       if (!formData.dateOfBirth) missingFields.push("Date of Birth");
+      if (!formData.currentCity) missingFields.push("Travel Destination");
+      if (!formData.currentCountry) missingFields.push("Travel Country");
 
       if (missingFields.length > 0) {
         toast({
@@ -168,6 +177,17 @@ export default function SignupTraveling() {
         name: finalFormData.name.trim(),
         dateOfBirth: new Date(formData.dateOfBirth),
         interests: formData.interests,
+        // Travel destination - CRITICAL for chatrooms and city pages
+        currentCity: formData.currentCity,
+        currentState: formData.currentState,
+        currentCountry: formData.currentCountry,
+        travelDestination: formData.currentState 
+          ? `${formData.currentCity}, ${formData.currentState}, ${formData.currentCountry}`
+          : `${formData.currentCity}, ${formData.currentCountry}`,
+        location: formData.currentState 
+          ? `${formData.currentCity}, ${formData.currentState}, ${formData.currentCountry}`
+          : `${formData.currentCity}, ${formData.currentCountry}`,
+        travelReturnDate: formData.travelReturnDate ? new Date(formData.travelReturnDate) : null,
         // Set empty arrays for fields that will be completed in profile
         activities: [],
         events: [],
@@ -179,11 +199,6 @@ export default function SignupTraveling() {
         hometownCity: '',
         hometownState: '',
         hometownCountry: '',
-        location: '',
-        travelDestination: '',
-        currentCity: '',
-        currentState: '',
-        currentCountry: '',
         isVeteran: false,
         isActiveDuty: false,
         travelingWithChildren: false
@@ -304,6 +319,56 @@ export default function SignupTraveling() {
                 />
               </div>
 
+              {/* Travel Destination - CRITICAL for chatrooms and city pages */}
+              <div className="space-y-4">
+                <Label className="text-base md:text-lg font-semibold text-gray-900 dark:text-white text-crisp">
+                  Where are you traveling to? *
+                </Label>
+                <SmartLocationInput
+                  onLocationSelect={(location) => {
+                    console.log('📍 Travel destination selected:', location);
+                    setFormData(prev => ({
+                      ...prev,
+                      currentCity: location.city,
+                      currentState: location.state || '',
+                      currentCountry: location.country
+                    }));
+                  }}
+                  placeholder="Enter destination city (e.g., Los Angeles, CA, USA)"
+                  className="text-base py-3 text-crisp font-medium"
+                  data-testid="input-travel-destination"
+                />
+                
+                {formData.currentCity && (
+                  <div className="mt-2 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                    <p className="text-sm text-blue-800 dark:text-blue-200" data-testid="text-selected-destination">
+                      <strong>Traveling to:</strong> {formData.currentCity}
+                      {formData.currentState && `, ${formData.currentState}`}
+                      {formData.currentCountry && `, ${formData.currentCountry}`}
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Return Date */}
+              <div className="space-y-3">
+                <Label htmlFor="returnDate" className="text-base md:text-lg font-semibold text-gray-900 dark:text-white text-crisp">
+                  Return Date <span className="text-sm font-normal text-gray-500 dark:text-gray-400">(Optional)</span>
+                </Label>
+                <Input
+                  id="returnDate"
+                  type="date"
+                  value={formData.travelReturnDate}
+                  onChange={(e) => setFormData(prev => ({ ...prev, travelReturnDate: e.target.value }))}
+                  min={new Date().toISOString().split('T')[0]}
+                  className="text-base py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg focus:border-blue-500 dark:focus:border-blue-400 text-crisp font-medium"
+                  data-testid="input-return-date"
+                />
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Let others know when you're returning home
+                </p>
+              </div>
+
               {/* Top Choices - Simplified */}
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
@@ -336,7 +401,7 @@ export default function SignupTraveling() {
 
               <Button
                 type="submit"
-                disabled={isSubmitting || formData.interests.length < 3}
+                disabled={isSubmitting || formData.interests.length < 3 || !formData.currentCity}
                 className="w-full text-lg md:text-xl py-4 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 disabled:bg-gray-400 disabled:cursor-not-allowed font-bold text-white rounded-lg transition-all duration-200 hover:scale-105 disabled:hover:scale-100 text-crisp"
                 data-testid="button-create-account"
               >
