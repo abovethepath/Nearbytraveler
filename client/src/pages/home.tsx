@@ -1219,12 +1219,20 @@ export default function Home() {
 
       {/* Hero Section with Scrolling Photo Gallery */}
       <section 
-        className="relative overflow-hidden text-white bg-gradient-to-br from-blue-600 to-purple-700 dark:from-gray-800 dark:to-gray-900 animate-fade-in-up"
-        style={{ minHeight: '500px' }}
+        className="relative overflow-hidden text-white"
+        style={{ 
+          minHeight: '500px',
+          backgroundImage: 'url("/attached_assets/beach travel_1754973619241.jpg")',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        }}
       >
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-20 animate-slide-in-left">
+        {/* Dark overlay for text readability */}
+        <div className="absolute inset-0 bg-gradient-to-br from-black/40 via-black/30 to-black/50"></div>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-20">
           <div className="text-center max-w-3xl mx-auto">
-            <h1 className="text-xl xs:text-2xl sm:text-4xl lg:text-6xl font-bold mb-6 leading-tight text-white text-center animate-zoom-in" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700', textShadow: '1px 1px 0 black, -1px 1px 0 black, 1px -1px 0 black, -1px -1px 0 black, 0 1px 0 black, 0 -1px 0 black, 1px 0 0 black, -1px 0 0 black'}}>
+            <h1 className="text-xl xs:text-2xl sm:text-4xl lg:text-6xl font-bold mb-6 leading-tight text-white text-center" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700', textShadow: '2px 2px 4px rgba(0,0,0,0.8)'}}>
               <div className="leading-tight">
                 {effectiveUser?.userType === 'business' ? (
                   <>
@@ -1239,7 +1247,7 @@ export default function Home() {
                 )}
               </div>
             </h1>
-            <p className="text-xl lg:text-2xl mb-8 text-white leading-relaxed animate-fade-in-up" style={{animationDelay: '0.3s'}}>
+            <p className="text-xl lg:text-2xl mb-8 text-white leading-relaxed">
               {effectiveUser?.userType === 'business' ? (
                 'Reach customers through interest-based matching, business notifications, and location-targeted discovery. Grow your business by connecting with travelers and locals who love what you offer.'
               ) : (
@@ -1249,7 +1257,7 @@ export default function Home() {
 
             {/* Business-specific CTA buttons vs Traveler/Local CTAs */}
             {effectiveUser?.userType === 'business' ? (
-              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4 sm:px-0 animate-slide-in-right" style={{animationDelay: '0.6s'}}>
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4 sm:px-0">
                 <Button 
                   size="lg" 
                   className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-black px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg btn-bounce w-full sm:w-[200px] shadow-lg border border-blue-500 transform hover:scale-105 transition-all duration-300 hover:shadow-2xl"
@@ -1271,10 +1279,10 @@ export default function Home() {
                 </Button>
               </div>
             ) : (
-              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4 sm:px-0 animate-slide-in-right" style={{animationDelay: '0.6s'}}>
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4 sm:px-0">
                 <Button 
                   size="lg" 
-                  className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-black px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg btn-bounce w-full sm:w-[200px] shadow-lg border border-blue-500 transform hover:scale-105 transition-all duration-300 hover:shadow-2xl animate-float"
+                  className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-black px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg w-full sm:w-[200px] shadow-lg border border-blue-500 transition-colors duration-200"
                   onClick={() => setLocation('/plan-trip')}
                 >
                   <Globe className="w-4 sm:w-5 h-4 sm:h-5 mr-2" />
@@ -1282,8 +1290,7 @@ export default function Home() {
                 </Button>
                 <Button 
                   size="lg"
-                  className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-black px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg btn-bounce w-full sm:w-[200px] shadow-lg border border-blue-500 transform hover:scale-105 transition-all duration-300 hover:shadow-2xl animate-float"
-                  style={{animationDelay: '0.3s'}}
+                  className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-black px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg w-full sm:w-[200px] shadow-lg border border-blue-500 transition-colors duration-200"
                   onClick={() => {
                     setConnectModalMode('hometown');
                     setShowConnectModal(true);
@@ -1294,11 +1301,10 @@ export default function Home() {
                 </Button>
                 <Button 
                   size="lg"
-                  className="bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-black px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg btn-bounce w-full sm:w-[200px] shadow-lg border border-purple-500 transform hover:scale-105 transition-all duration-300 hover:shadow-2xl animate-float animate-gradient-shift animate-pulse-glow"
-                  style={{animationDelay: '0.6s'}}
+                  className="bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-black px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg w-full sm:w-[200px] shadow-lg border border-purple-500 transition-colors duration-200"
                   onClick={() => setShowAdvancedFilters(true)}
                 >
-                  <Search className="w-4 sm:w-5 h-4 sm:h-5 mr-2 animate-float-rotate" />
+                  <Search className="w-4 sm:w-5 h-4 sm:h-5 mr-2" />
                   Advanced Search
                 </Button>
               </div>
