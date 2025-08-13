@@ -832,20 +832,50 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
 
       // DISABLED: Metro consolidation per user request - show original cities
       const rawCities = uniqueCitiesQuery.rows.map((row: any) => row.city);
-      const actualCities = [...new Set(rawCities)]; // Remove duplicates without consolidation
+      // ENABLED: Metro consolidation for all cities
+      const consolidatedCityMap = new Map<string, string[]>();
+      const consolidatedCityNames = new Set<string>();
+
+      // Process each city and consolidate to metro areas
+      for (const cityName of rawCities) {
+        const cityData = getCityCountry(cityName);
+        const consolidatedCity = consolidateToMetropolitanArea(cityName, cityData.state, cityData.country);
+        
+        if (!consolidatedCityMap.has(consolidatedCity)) {
+          consolidatedCityMap.set(consolidatedCity, []);
+        }
+        consolidatedCityMap.get(consolidatedCity)!.push(cityName);
+        consolidatedCityNames.add(consolidatedCity);
+      }
+
+      if (process.env.NODE_ENV === 'development') {
+        console.log('🌍 METRO CONSOLIDATION: Consolidated city mapping:');
+        for (const [metro, cities] of consolidatedCityMap.entries()) {
+          if (cities.length > 1) {
+            console.log(`  ${metro}: ${cities.join(', ')}`);
+          }
+        }
+      }
+
+      const actualCities = [...consolidatedCityNames]; // Use consolidated cities
 
       const citiesWithStats = await Promise.all(
         actualCities.map(async (cityName: string) => {
           try {
             let localUsersResult, businessUsersResult, travelPlansResult, currentTravelersResult, eventsResult;
 
-            // DISABLED: Metro consolidation - use individual city matching for all cities
+            // Get all original cities that consolidated to this metro area
+            const originalCities = consolidatedCityMap.get(cityName) || [cityName];
+
+            // ENABLED: Metro consolidation - search all cities in the metro area
             localUsersResult = await db
               .select({ count: count() })
               .from(users)
               .where(
                 and(
-                  eq(users.hometownCity, cityName),
+                  or(
+                    ...originalCities.map(origCity => eq(users.hometownCity, origCity))
+                  ),
                   eq(users.userType, 'local')
                 )
               );
@@ -855,22 +885,31 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
               .from(users)
               .where(
                 and(
-                  eq(users.hometownCity, cityName),
+                  or(
+                    ...originalCities.map(origCity => eq(users.hometownCity, origCity))
+                  ),
                   eq(users.userType, 'business')
                 )
               );
 
+            // For travel plans and current travelers, search across all original cities
             travelPlansResult = await db
               .select({ count: count() })
               .from(travelPlans)
-              .where(ilike(travelPlans.destination, `%${cityName}%`));
+              .where(
+                or(
+                  ...originalCities.map(origCity => ilike(travelPlans.destination, `%${origCity}%`))
+                )
+              );
 
             currentTravelersResult = await db
               .select({ count: count() })
               .from(users)
               .where(
                 and(
-                  ilike(users.travelDestination, `%${cityName}%`),
+                  or(
+                    ...originalCities.map(origCity => ilike(users.travelDestination, `%${origCity}%`))
+                  ),
                   eq(users.isCurrentlyTraveling, true)
                 )
               );
@@ -878,7 +917,11 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
             eventsResult = await db
               .select({ count: count() })
               .from(events)
-              .where(ilike(events.city, `%${cityName}%`));
+              .where(
+                or(
+                  ...originalCities.map(origCity => ilike(events.city, `%${origCity}%`))
+                )
+              );
 
             const localCount = localUsersResult[0]?.count || 0;
             const businessCount = businessUsersResult[0]?.count || 0;
