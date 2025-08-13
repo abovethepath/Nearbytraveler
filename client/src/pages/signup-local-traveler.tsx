@@ -294,7 +294,7 @@ export default function SignupLocalTraveler() {
               {/* Date of Birth */}
               <div className="space-y-3">
                 <Label htmlFor="dateOfBirth" className="text-base font-semibold text-gray-900 dark:text-white">
-                  Date of Birth *
+                  Date of Birth * <span className="text-sm font-normal text-gray-500 dark:text-gray-400">(Can be hidden on profile)</span>
                 </Label>
                 <Input
                   id="dateOfBirth"
