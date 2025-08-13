@@ -10,10 +10,11 @@ export default function ScrollingHeroGallery({ className = "" }: ScrollingHeroGa
   const [loadedImages, setLoadedImages] = useState<Set<number>>(new Set());
 
   // Production hero images - beach paraty, travelers around map, travelers sharing beer
+  // Force cache refresh by adding timestamp to image URLs
   const heroImages = [
-    "/attached_assets/attached_assets/beach%20travel_1750958707105.jpg",
-    "/attached_assets/attached_assets/4%20travelers%20around%20map%20in%20town_1750995541992.webp", 
-    "/attached_assets/attached_assets/Travelers%20Sharing%20a%20Beer_1749576612655.png"
+    "/attached_assets/attached_assets/beach%20travel_1750958707105.jpg?v=" + Date.now(),
+    "/attached_assets/attached_assets/4%20travelers%20around%20map%20in%20town_1750995541992.webp?v=" + Date.now(), 
+    "/attached_assets/attached_assets/Travelers%20Sharing%20a%20Beer_1749576612655.png?v=" + Date.now()
   ];
 
   // Preload all images to prevent loading delays
