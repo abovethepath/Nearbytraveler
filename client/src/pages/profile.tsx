@@ -6275,21 +6275,21 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     control={profileForm.control}
                     name="travelingWithChildren"
                     render={({ field }) => (
-                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                        <div className="space-y-0.5">
-                          <FormLabel className="text-base">
+                      <FormItem className="flex flex-row items-start space-x-3 rounded-lg border p-4">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                        <div className="space-y-1 leading-none">
+                          <FormLabel className="text-base cursor-pointer">
                             Traveling with children
                           </FormLabel>
                           <div className="text-sm text-muted-foreground">
                             Show that you're traveling with children to connect with other families
                           </div>
                         </div>
-                        <FormControl>
-                          <Switch
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                          />
-                        </FormControl>
                       </FormItem>
                     )}
                   />
