@@ -251,12 +251,13 @@ export default function EventCard({ event, compact = false, featured = false }: 
             ))}
         </div>
 
-        <div className="flex items-center justify-between">
+        {/* Improved responsive layout for bottom section */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div className="flex items-center text-sm md:text-base text-gray-500 dark:text-gray-400 text-crisp">
             <Users className="w-4 h-4 mr-1" />
             <span>{event.participantCount || 1} attending</span>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-shrink-0">
             <Button 
               size="sm" 
               variant="outline"
@@ -264,13 +265,13 @@ export default function EventCard({ event, compact = false, featured = false }: 
                 e.stopPropagation();
                 setLocation(`/event-chat/${event.id}`);
               }}
-              className="text-sm md:text-base px-3 py-1 text-crisp"
+              className="text-xs sm:text-sm px-2 sm:px-3 py-1.5 text-crisp whitespace-nowrap"
             >
               Open Chat
             </Button>
             <Button 
               size="sm" 
-              className="text-white btn-bounce border-0 text-crisp"
+              className="text-white btn-bounce border-0 text-crisp flex-shrink-0"
               onClick={(e) => {
                 e.stopPropagation();
                 handleJoinEvent();
@@ -282,7 +283,9 @@ export default function EventCard({ event, compact = false, featured = false }: 
                 color: 'white !important'
               }}
             >
-              {joinEventMutation.isPending ? "Joining..." : "Join Event"}
+              <span className="text-xs sm:text-sm px-1 whitespace-nowrap">
+                {joinEventMutation.isPending ? "Joining..." : "Join Event"}
+              </span>
             </Button>
           </div>
         </div>
