@@ -1219,14 +1219,9 @@ export default function Home() {
 
       {/* Hero Section with Scrolling Photo Gallery */}
       <section 
-        className="relative overflow-hidden text-white dark:bg-gray-800 animate-fade-in-up"
-        style={{ minHeight: '600px' }}
+        className="relative overflow-hidden text-white bg-gradient-to-br from-blue-600 to-purple-700 dark:from-gray-800 dark:to-gray-900 animate-fade-in-up"
+        style={{ minHeight: '500px' }}
       >
-        {/* Scrolling Photo Gallery Background */}
-        <ScrollingHeroGallery className="absolute inset-0" />
-        
-        {/* Dark overlay for text readability */}
-        <div className="absolute inset-0 bg-gradient-to-br from-black/40 via-black/30 to-black/50 dark:from-black/60 dark:to-black/70"></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-16 animate-slide-in-left">
           <div className="text-center max-w-3xl mx-auto">
             <h1 className="text-xl xs:text-2xl sm:text-4xl lg:text-6xl font-bold mb-6 leading-tight text-white text-center animate-zoom-in" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700', textShadow: '1px 1px 0 black, -1px 1px 0 black, 1px -1px 0 black, -1px -1px 0 black, 0 1px 0 black, 0 -1px 0 black, 1px 0 0 black, -1px 0 0 black'}}>
