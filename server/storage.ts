@@ -6444,7 +6444,7 @@ export class DatabaseStorage implements IStorage {
 
         // Nashville Metro consolidation
         const NASHVILLE_METRO_CITIES = [
-          'Nashville', 'Brentwood', 'Franklin', 'Murfreesboro', 'Hendersonville', 
+          'Nashville', 'Nashville Metro', 'Brentwood', 'Franklin', 'Murfreesboro', 'Hendersonville', 
           'Gallatin', 'Lebanon', 'Mount Juliet', 'Goodlettsville', 'White House',
           'Springfield', 'Clarksville', 'Smyrna', 'La Vergne', 'Antioch',
           'Hermitage', 'Old Hickory', 'Madison', 'Belle Meade', 'Forest Hills',
@@ -6500,7 +6500,7 @@ export class DatabaseStorage implements IStorage {
       } else if (consolidatedCity.toLowerCase() === 'nashville') {
         // For Nashville metro, search all Nashville metro cities
         const NASHVILLE_METRO_CITIES = [
-          'Nashville', 'Brentwood', 'Franklin', 'Murfreesboro', 'Hendersonville', 
+          'Nashville', 'Nashville Metro', 'Brentwood', 'Franklin', 'Murfreesboro', 'Hendersonville', 
           'Gallatin', 'Lebanon', 'Mount Juliet', 'Goodlettsville', 'White House',
           'Springfield', 'Clarksville', 'Smyrna', 'La Vergne', 'Antioch',
           'Hermitage', 'Old Hickory', 'Madison', 'Belle Meade', 'Forest Hills',
@@ -6535,7 +6535,7 @@ export class DatabaseStorage implements IStorage {
       .where(and(...conditions))
       .orderBy(desc(users.createdAt));
       
-      console.log(`🔥 SECRET ACTIVITIES: Found ${usersWithSecrets.length} users with secret activities for ${city}`);
+      console.log(`🔥 SECRET ACTIVITIES: Found ${usersWithSecrets.length} users with secret activities for ${consolidatedCity} (originally searched: ${city})`);
       
       // Format user secret activities as experiences
       experiences = usersWithSecrets.map((user, index) => ({
