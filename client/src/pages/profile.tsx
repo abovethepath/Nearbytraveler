@@ -4873,7 +4873,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </div>
                   {(vouches?.length || 0) === 0 && (
                     <div className="text-xs text-gray-500 dark:text-gray-400 mt-1 ml-6">
-                      Get trusted by community members who know you personally
+                      Get vouched by community members who know you personally
                     </div>
                   )}
                 </CardContent>
