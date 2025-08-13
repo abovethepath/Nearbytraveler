@@ -277,7 +277,7 @@ export default function SignupTraveling() {
               </Button>
             </div>
             <CardTitle className="text-4xl font-bold text-gray-900 dark:text-white mb-3">
-              Complete Your Traveler Profile ✈️
+              Complete Your Profile ✈️
             </CardTitle>
             <CardDescription className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed max-w-lg mx-auto">
               Just a few quick details to get you started. You can add travel details and more to your profile after joining!
