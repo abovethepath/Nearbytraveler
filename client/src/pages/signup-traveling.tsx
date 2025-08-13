@@ -329,31 +329,6 @@ export default function SignupTraveling() {
                     </Button>
                   ))}
                 </div>
-
-                {formData.interests.length > 0 && (
-                  <div className="mt-4 p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
-                    <h4 className="font-medium text-green-800 dark:text-green-200 mb-2">Selected Top Choices:</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {formData.interests.map((interest) => (
-                        <span
-                          key={interest}
-                          className="inline-flex items-center px-3 py-1 bg-green-100 dark:bg-green-800 text-green-800 dark:text-green-200 rounded-full text-sm font-medium"
-                          data-testid={`tag-selected-interest-${interest.toLowerCase().replace(/\s+/g, '-')}`}
-                        >
-                          {interest}
-                          <button
-                            type="button"
-                            onClick={() => toggleInterest(interest)}
-                            className="ml-2 text-green-600 dark:text-green-300 hover:text-green-800 dark:hover:text-green-100"
-                            data-testid={`button-remove-interest-${interest.toLowerCase().replace(/\s+/g, '-')}`}
-                          >
-                            ×
-                          </button>
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
               </div>
 
               <Button
