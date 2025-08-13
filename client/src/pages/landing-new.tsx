@@ -59,42 +59,42 @@ export default function Landing() {
 
   return (
     <div className="bg-gray-50 dark:bg-gray-900 font-sans" key="landing-v2-no-copy-button">
-      {/* Sticky CTA - Responsive positioning */}
-      <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50">
+      {/* Sticky CTA - Always Visible on All Devices */}
+      <div className="fixed bottom-6 right-6 z-50">
         <Button
           onClick={() => setLocation('/join')}
           size="lg"
-          className="bg-orange-500 hover:bg-orange-600 text-black font-black px-6 py-3 sm:px-8 sm:py-4 rounded-xl sm:rounded-2xl shadow-2xl transform transition-all duration-200 hover:scale-105 border-2 sm:border-3 border-white text-sm sm:text-base"
+          className="bg-orange-500 hover:bg-orange-600 text-black font-black px-8 py-4 rounded-2xl shadow-2xl transform transition-all duration-200 hover:scale-105 border-3 border-white"
           style={{
-            boxShadow: '0 8px 25px rgba(0,0,0,0.3), 0 0 0 2px rgba(255,255,255,0.9)',
+            boxShadow: '0 12px 35px rgba(0,0,0,0.4), 0 0 0 3px rgba(255,255,255,0.9)',
             animation: 'gentle-pulse 2.5s ease-in-out infinite',
           }}
         >
-          <span className="hidden sm:inline">JOIN NOW</span>
-          <span className="sm:hidden">JOIN</span>
+          JOIN NOW
         </Button>
       </div>
       
-      {/* Top sticky bar for maximum visibility - Mobile responsive */}
-      <div className="fixed top-0 left-0 right-0 bg-orange-500 text-black py-2 sm:py-3 px-2 sm:px-4 z-40 shadow-lg">
+      {/* Top sticky bar for maximum visibility */}
+      <div className="fixed top-0 left-0 right-0 bg-orange-500 text-black py-3 px-4 z-40 shadow-lg">
         <div className="flex items-center justify-between max-w-6xl mx-auto">
-          <div className="flex-1 text-center pr-2">
-            <span className="font-bold text-sm sm:text-lg">🔥 <span className="hidden sm:inline">Connect with Locals and Travelers TODAY - </span>Sign Up Now!</span>
+          <div className="flex-1 text-center">
+            <span className="font-bold text-lg">🔥 Connect with Locals and Travelers TODAY - Sign Up Now!</span>
           </div>
           <Button
             onClick={() => setLocation('/join')}
-            className="bg-black text-orange-400 font-bold px-3 sm:px-6 py-1 sm:py-2 rounded-lg hover:bg-gray-800 text-xs sm:text-sm"
+            className="bg-black text-orange-400 font-bold px-6 py-2 rounded-lg hover:bg-gray-800 ml-4"
           >
-            <span className="hidden sm:inline">SIGN UP NOW</span>
-            <span className="sm:hidden">SIGN UP</span>
+            SIGN UP NOW
           </Button>
         </div>
       </div>
 
-      {/* Landing Navbar with BETA badge - Responsive top padding for sticky bar */}
-      <div className="pt-12 sm:pt-16">
-        <LandingNavbar />
-      </div>
+      {/* Landing Navbar with BETA badge - ensure it's visible on mobile */}
+      <header className="sticky top-12 z-[55] bg-white/95 dark:bg-gray-900/95 backdrop-blur supports-[backdrop-filter]:bg-white/70 dark:supports-[backdrop-filter]:bg-gray-900/70">
+        <div className="pt-2">
+          <LandingNavbar />
+        </div>
+      </header>
       
 
 
@@ -116,42 +116,41 @@ export default function Landing() {
               <div className="sm:pb-16 md:pb-20 lg:pb-28 xl:pb-32">
                 <main className="mt-4 mx-auto max-w-full sm:mt-6 md:mt-8 lg:mt-10 xl:mt-12">
                   <div className="text-center">
-                    <div className="max-w-4xl mx-auto px-4 sm:px-6">
-                      <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl tracking-tight">
-                        <span className="block text-white font-black mb-2 sm:mb-4" style={{fontFamily: '"Inter", sans-serif'}}>Skip the tourist traps.</span>
+                    <div className="max-w-4xl mx-auto">
+                      <h1 className="text-4xl tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
+                        <span className="block text-white font-black" style={{fontFamily: '"Inter", sans-serif'}}>Skip the tourist traps.</span>
                         <span className="block text-orange-400 font-black" style={{fontFamily: '"Inter", sans-serif'}}>Meet locals and other Nearby Travelers right now, today!!!</span>
                       </h1>
                       
-                      {/* Personal credibility as founder - Mobile responsive */}
-                      <div className="mt-6 sm:mt-8 p-4 sm:p-6 bg-black/40 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-white/20 animate-zoom-in" style={{animationDelay: '0.3s'}}>
-                        <p className="text-lg sm:text-xl text-white leading-relaxed">
+                      {/* Personal credibility as founder */}
+                      <div className="mt-8 p-6 bg-black/40 backdrop-blur-sm rounded-2xl border border-white/20 animate-zoom-in" style={{animationDelay: '0.3s'}}>
+                        <p className="text-xl text-white leading-relaxed">
                           <span className="text-orange-300 font-bold">"Over 15 years I hosted and toured 400+ travelers from 30+ countries as a local.</span>
                           <span className="text-white"> Now I built Nearby Traveler to do exactly that - meet real locals and real travelers while creating amazing new travel adventures."</span>
                         </p>
                         <div className="mt-4 text-center">
-                          <p className="text-white font-bold text-base sm:text-lg">— Aaron, Founder</p>
-                          <p className="text-orange-200 text-xs sm:text-sm">400+ travelers hosted • 30+ countries • 15 years</p>
+                          <p className="text-white font-bold text-lg">— Aaron, Founder</p>
+                          <p className="text-orange-200 text-sm">400+ travelers hosted • 30+ countries • 15 years</p>
                         </div>
                       </div>
                     </div>
                     
-                    {/* Primary signup CTA - Mobile responsive */}
-                    <div className="mt-8 sm:mt-12 mb-6 sm:mb-8 px-4 sm:px-0">
+                    {/* Primary signup CTA */}
+                    <div className="mt-12 mb-8">
                       <Button
                         onClick={() => setLocation('/join')}
                         size="lg"
-                        className="bg-orange-500 hover:bg-orange-600 text-black font-black text-lg sm:text-xl md:text-2xl px-8 sm:px-12 md:px-16 py-4 sm:py-5 md:py-6 rounded-xl sm:rounded-2xl shadow-2xl transform transition-all duration-200 hover:scale-105 border-3 sm:border-4 border-white w-full sm:w-auto"
+                        className="bg-orange-500 hover:bg-orange-600 text-black font-black text-2xl px-16 py-6 rounded-2xl shadow-2xl transform transition-all duration-200 hover:scale-105 border-4 border-white"
                         style={{
-                          fontSize: 'clamp(1.2rem, 4vw, 1.8rem)',
-                          minHeight: '60px',
-                          boxShadow: '0 10px 30px rgba(0,0,0,0.4), 0 0 0 3px rgba(255,255,255,0.9)',
+                          fontSize: '1.8rem',
+                          minHeight: '80px',
+                          boxShadow: '0 15px 40px rgba(0,0,0,0.4), 0 0 0 4px rgba(255,255,255,0.9)',
                           animation: 'gentle-pulse 2.5s ease-in-out infinite',
                         }}
                       >
-                        <span className="hidden sm:inline">JOIN NEARBY TRAVELER NOW!!!</span>
-                        <span className="sm:hidden">JOIN NOW!!!</span>
+                        JOIN NEARBY TRAVELER NOW!!!
                       </Button>
-                      <p className="text-white mt-3 text-base sm:text-lg font-semibold">Join the travel community • Connect today</p>
+                      <p className="text-white mt-3 text-lg font-semibold">Join the travel community • Connect today</p>
                     </div>
 
                   </div>
@@ -169,17 +168,17 @@ export default function Landing() {
       {/* Live Events - Lu.ma style */}
       <div className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-8 sm:mb-12 animate-slide-in-left px-4 sm:px-0">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-gray-900 mb-4">
+          <div className="text-center mb-12 animate-slide-in-left">
+            <h2 className="text-4xl font-black text-gray-900 mb-4">
               Connect with Locals and other Travelers
             </h2>
-            <p className="text-lg sm:text-xl text-gray-600">
+            <p className="text-xl text-gray-600">
               Real people. Real experiences. Zero tourist traps.
             </p>
           </div>
           
-          {/* Event Cards - Mobile responsive grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 sm:gap-6">
+          {/* Event Cards - Modern Lu.ma style */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
 
             {/* Beach Bonfire Event Card */}
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-2xl transform transition-all duration-300 flex flex-col">
@@ -759,6 +758,8 @@ export default function Landing() {
         </div>
       </div>
 
+      {/* Extra bottom padding so content is not hidden behind mobile bottom nav */}
+      <div className="h-20 md:h-0" />
       <Footer />
     </div>
   );

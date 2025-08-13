@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useLocation } from "wouter";
-import { Home, MapPin, Plus, MessageCircle, User, Users, Calendar, Search, X } from "lucide-react";
+import { Home, Plus, MessageCircle, User, Calendar, Search, X } from "lucide-react";
 import { AuthContext } from "@/App";
 
 export function MobileBottomNav() {
@@ -8,44 +8,18 @@ export function MobileBottomNav() {
   const [showActionMenu, setShowActionMenu] = useState(false);
   const { user } = React.useContext(AuthContext);
 
+  // Four primary destinations for authenticated users
   const navItems = [
-    { 
-      icon: Home, 
-      label: "Home", 
-      path: "/",
-      onClick: () => {
-        console.log('🏠 MOBILE BOTTOM NAV: Home clicked');
-        setLocation('/');
-      }
-    },
-    { icon: Search, label: "Discover", path: "/discover" },
-    { 
-      icon: MessageCircle, 
-      label: "Chat Rooms", 
-      path: "/city-chatrooms",
-      onClick: () => {
-        console.log('💬 MOBILE BOTTOM NAV: Chat Rooms clicked');
-        setLocation('/city-chatrooms');
-      }
-    },
-    { icon: Calendar, label: "Events", path: "/events" },
-    { 
-      icon: User, 
-      label: "Profile", 
-      path: user ? `/profile/${user.id}` : "/profile",
-      onClick: () => {
-        console.log('👤 MOBILE BOTTOM NAV: Profile clicked');
-        const profilePath = user?.id ? `/profile/${user.id}` : '/profile';
-        setLocation(profilePath);
-      }
-    },
+    { icon: Home, label: "Home", path: "/" },
+    { icon: Search, label: "Search", path: "/discover" },
+    { icon: MessageCircle, label: "Messages", path: "/messages" },
+    { icon: User, label: "Profile", path: user ? `/profile/${user.id}` : "/profile" },
   ];
 
   const actionMenuItems = [
     { label: "Create Event", path: "/create-event", icon: Calendar },
-    { label: "Create Trip", path: "/plan-trip", icon: MapPin },
-    { label: "Create Quick Meetup", path: "/quick-meetups", icon: Users },
-    { label: "Create Chat Room", path: "/city-chatrooms", icon: MessageCircle },
+    { label: "Create Trip", path: "/plan-trip", icon: Calendar },
+    { label: "Create Quick Meetup", path: "/quick-meetups", icon: MessageCircle },
   ];
 
   return (
@@ -95,57 +69,49 @@ export function MobileBottomNav() {
 
       {/* Bottom Navigation */}
       <div 
-        className="mobile-bottom-nav fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 shadow-lg md:hidden" 
-        style={{ 
-          position: 'fixed', 
-          zIndex: 9999,
-          width: '100vw',
-          height: '72px',
-          bottom: '0px',
-          display: 'block'
-        }}
+        className="mobile-bottom-nav fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 shadow-lg md:hidden"
+        style={{ position: 'fixed', zIndex: 9999, width: '100vw', height: '72px', bottom: '0px', display: 'block' }}
       >
-        <div className="flex items-center justify-around h-18 px-2">
-          {navItems.map((item, index) => {
-            const isActive = location === item.path || 
-              (item.path === "/" && location === "/") ||
-              (item.path.startsWith("/profile") && location.startsWith("/profile")) ||
-              (item.path === "/city-chatrooms" && (location === "/city-chatrooms" || location.startsWith("/city-chatrooms/")));
-
+        <div className="relative h-full flex items-center justify-between px-4">
+          {/* Left two items */}
+          {navItems.slice(0, 2).map((item) => {
+            const isActive = location === item.path || (item.path === '/' && location === '/');
             const Icon = item.icon;
-
             return (
               <button
-                key={item.path || index}
-                onClick={() => {
-                  if (item.onClick) {
-                    item.onClick();
-                  } else {
-                    console.log(`🎯 MOBILE BOTTOM NAV: Navigating to ${item.path}`);
-                    // Ensure we have a valid path
-                    if (item.path && item.path !== '#') {
-                      setLocation(item.path);
-                    }
-                  }
-                }}
-                className="flex flex-col items-center justify-center min-w-0 flex-1 py-1"
+                key={item.path}
+                onClick={() => setLocation(item.path)}
+                className="flex flex-col items-center justify-center min-w-0 flex-1"
+                aria-label={item.label}
               >
-                <Icon 
-                  className={`w-6 h-6 mb-1 ${
-                    isActive 
-                      ? "text-blue-500" 
-                      : "text-gray-400 dark:text-gray-500"
-                  }`} 
-                />
-                <span 
-                  className={`text-xs font-medium ${
-                    isActive 
-                      ? "text-blue-500" 
-                      : "text-gray-400 dark:text-gray-500"
-                  }`}
-                >
-                  {item.label}
-                </span>
+                <Icon className={`w-6 h-6 mb-1 ${isActive ? 'text-orange-500' : 'text-gray-400 dark:text-gray-500'}`} />
+                <span className={`text-xs font-medium ${isActive ? 'text-orange-500' : 'text-gray-500 dark:text-gray-500'}`}>{item.label}</span>
+              </button>
+            );
+          })}
+
+          {/* Center create button */}
+          <button
+            onClick={() => setShowActionMenu(true)}
+            aria-label="Create"
+            className="absolute left-1/2 -translate-x-1/2 -top-4 w-14 h-14 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-xl flex items-center justify-center"
+          >
+            <Plus className="w-7 h-7 text-orange-500" />
+          </button>
+
+          {/* Right two items */}
+          {navItems.slice(2).map((item) => {
+            const isActive = location === item.path || (item.path.startsWith('/profile') && location.startsWith('/profile'));
+            const Icon = item.icon;
+            return (
+              <button
+                key={item.path}
+                onClick={() => setLocation(item.path)}
+                className="flex flex-col items-center justify-center min-w-0 flex-1"
+                aria-label={item.label}
+              >
+                <Icon className={`w-6 h-6 mb-1 ${isActive ? 'text-orange-500' : 'text-gray-400 dark:text-gray-500'}`} />
+                <span className={`text-xs font-medium ${isActive ? 'text-orange-500' : 'text-gray-500 dark:text-gray-500'}`}>{item.label}</span>
               </button>
             );
           })}

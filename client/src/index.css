@@ -309,8 +309,8 @@ body {
     }
   }
 
-    /* Ensure main content has proper spacing for mobile nav */
-    main {
+    /* Ensure main content has proper spacing for mobile nav (scoped) */
+    .main-with-bottom-nav {
       padding-top: 64px !important;
       padding-bottom: 72px !important;
     }
@@ -345,8 +345,8 @@ body {
     border-top: 1px solid #e5e7eb;
   }
 
-  /* Content spacing for mobile nav */
-  main {
+  /* Content spacing for mobile nav (scoped) */
+  .main-with-bottom-nav {
     padding-bottom: 80px;
   }
   .mobile-action-button {
@@ -560,8 +560,8 @@ body {
 
 /* MOBILE NAVIGATION SPACING AND VISIBILITY */
 @media (max-width: 768px) {
-  /* Add bottom padding to pages to accommodate mobile nav */
-  main, .main-content, body {
+  /* Add bottom padding to pages to accommodate mobile nav (scoped, not body-wide) */
+  .main-with-bottom-nav, .main-with-bottom-nav .main-content {
     padding-top: 64px !important; /* Space for top nav */
     padding-bottom: 80px !important; /* Space for bottom nav */
   }

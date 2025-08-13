@@ -4,7 +4,7 @@ import { Link } from "wouter";
 export default function Footer() {
   return (
     <footer className="bg-gray-900 text-white border-t border-gray-700 dark:border-gray-600">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 md:py-4">
         {/* Main footer content */}
         <div className="flex flex-col lg:flex-row lg:items-center gap-6">
           
@@ -53,7 +53,7 @@ export default function Footer() {
         </div>
 
         {/* Bottom Border */}
-        <div className="border-t border-gray-800 mt-4 pt-2 flex flex-col sm:flex-row justify-between items-center">
+        <div className="border-t border-gray-800 mt-2 pt-2 flex flex-col sm:flex-row justify-between items-center">
           <p className="text-gray-400 text-sm">
             © 2025 Nearby Traveler, Inc. All rights reserved.
           </p>

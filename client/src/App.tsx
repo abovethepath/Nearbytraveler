@@ -315,11 +315,11 @@ function Router() {
               login: (userData: User, token?: string) => { setUser(userData); },
               isAuthenticated: true
             }}>
-              <div className="min-h-screen w-full max-w-full flex flex-col bg-background text-foreground overflow-x-hidden">
+          <div className="min-h-screen w-full max-w-full flex flex-col bg-background text-foreground overflow-x-hidden">
                 <div className="md:hidden">
                   <MobileTopNav />
                 </div>
-                <main className="flex-1 w-full max-w-full pt-16 pb-24 md:pt-0 md:pb-0 overflow-x-hidden">
+            <main className="flex-1 w-full max-w-full pt-16 pb-24 md:pt-0 md:pb-0 overflow-x-hidden main-with-bottom-nav">
                   <Home />
                 </main>
                 <div className="md:hidden">
@@ -932,7 +932,7 @@ function Router() {
               null
             )}
 
-            <main className="flex-1 w-full max-w-full pt-16 pb-24 md:pt-0 md:pb-0 overflow-x-hidden">
+            <main className="flex-1 w-full max-w-full pt-16 pb-24 md:pt-0 md:pb-0 overflow-x-hidden main-with-bottom-nav">
               <div className="w-full max-w-full overflow-x-hidden">
                 {renderPage()}
               </div>

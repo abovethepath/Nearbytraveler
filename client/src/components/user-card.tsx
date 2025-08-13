@@ -253,7 +253,7 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
         {/* Cover Photo Header - Only show if user has a real cover photo */}
         {user.coverPhoto ? (
           <div 
-            className="relative h-24 sm:h-32 bg-cover bg-center"
+            className="relative h-32 bg-cover bg-center"
             style={{
               backgroundImage: `url('${user.coverPhoto}')`,
               backgroundSize: 'cover',
@@ -261,7 +261,7 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
             }}
           >
             <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
-            <div className="absolute -bottom-6 sm:-bottom-8 left-4 sm:left-6">
+            <div className="absolute -bottom-8 left-6">
               <SimpleAvatar 
                 user={user} 
                 size="lg" 
@@ -271,8 +271,8 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
           </div>
         ) : (
           /* No cover photo - clean header with just avatar */
-          <div className="relative h-12 sm:h-16 bg-gradient-to-r from-blue-500 to-purple-600">
-            <div className="absolute -bottom-6 sm:-bottom-8 left-4 sm:left-6">
+          <div className="relative h-16 bg-gradient-to-r from-blue-500 to-purple-600">
+            <div className="absolute -bottom-8 left-6">
               <SimpleAvatar 
                 user={user} 
                 size="lg" 
@@ -282,10 +282,10 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
           </div>
         )}
       
-      <CardContent className="p-4 sm:p-6 pt-8 sm:pt-10">
+      <CardContent className="p-6 pt-10">
         <div className="space-y-3">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white truncate">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white truncate">
               {user.username}
             </h3>
           </div>
