@@ -987,11 +987,17 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       
       if (process.env.NODE_ENV === 'development') console.log(`🔍 CITY STATS: ${city} consolidated to ${consolidatedCity}`);
       
-      if (consolidatedCity !== city) {
-        // For metropolitan areas, search all metro cities
-        const metroCities = getMetropolitanAreaCities(consolidatedCity, state as string, country as string);
+      if (consolidatedCity !== city || city.includes('Los Angeles Metro')) {
+        // For metropolitan areas (or specifically Los Angeles Metro), search all metro cities
+        let metroCities;
+        if (city.includes('Los Angeles Metro')) {
+          // Force Los Angeles Metro consolidation
+          metroCities = getMetropolitanAreaCities('Los Angeles Metro', 'California', 'United States');
+        } else {
+          metroCities = getMetropolitanAreaCities(consolidatedCity, state as string, country as string);
+        }
         
-        if (process.env.NODE_ENV === 'development') console.log(`🔍 CITY STATS DEBUG: Searching for local users in ${consolidatedCity} metro cities:`, metroCities.slice(0, 10));
+        if (process.env.NODE_ENV === 'development') console.log(`🔍 CITY STATS DEBUG: Searching for local users in ${city} metro cities:`, metroCities.slice(0, 10));
         
         localUsersResult = await db
           .select({ count: count() })
