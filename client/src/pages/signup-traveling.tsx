@@ -137,6 +137,7 @@ export default function SignupTraveling() {
       if (!formData.hometownCountry) missingFields.push("Hometown Country");
       if (!formData.currentCity) missingFields.push("Travel Destination");
       if (!formData.currentCountry) missingFields.push("Travel Country");
+      if (!formData.travelReturnDate) missingFields.push("Return Date");
 
       if (missingFields.length > 0) {
         toast({
@@ -200,7 +201,7 @@ export default function SignupTraveling() {
         travelDestination: formData.currentState 
           ? `${formData.currentCity}, ${formData.currentState}, ${formData.currentCountry}`
           : `${formData.currentCity}, ${formData.currentCountry}`,
-        travelReturnDate: formData.travelReturnDate ? new Date(formData.travelReturnDate) : null,
+        travelReturnDate: new Date(formData.travelReturnDate),
         // Set empty arrays for fields that will be completed in profile
         activities: [],
         events: [],
@@ -394,7 +395,7 @@ export default function SignupTraveling() {
               {/* Return Date */}
               <div className="space-y-3">
                 <Label htmlFor="returnDate" className="text-base md:text-lg font-semibold text-gray-900 dark:text-white text-crisp">
-                  Return Date <span className="text-sm font-normal text-gray-500 dark:text-gray-400">(Optional)</span>
+                  Return Date *
                 </Label>
                 <Input
                   id="returnDate"
@@ -404,6 +405,7 @@ export default function SignupTraveling() {
                   min={new Date().toISOString().split('T')[0]}
                   className="text-base py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg focus:border-blue-500 dark:focus:border-blue-400 text-crisp font-medium"
                   data-testid="input-return-date"
+                  required
                 />
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   Let others know when you're returning home
@@ -442,7 +444,7 @@ export default function SignupTraveling() {
 
               <Button
                 type="submit"
-                disabled={isSubmitting || formData.interests.length < 3 || !formData.hometownCity || !formData.currentCity}
+                disabled={isSubmitting || formData.interests.length < 3 || !formData.hometownCity || !formData.currentCity || !formData.travelReturnDate}
                 className="w-full text-lg md:text-xl py-4 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 disabled:bg-gray-400 disabled:cursor-not-allowed font-bold text-white rounded-lg transition-all duration-200 hover:scale-105 disabled:hover:scale-100 text-crisp"
                 data-testid="button-create-account"
               >
