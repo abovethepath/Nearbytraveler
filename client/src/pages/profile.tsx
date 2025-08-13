@@ -3353,8 +3353,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   {user.userType !== 'business' && user.travelingWithChildren && (
                     <div>
                       <span className="font-medium text-gray-600 dark:text-gray-400">Family Travel:</span>
-                      <span className="ml-2 text-purple-600 font-semibold flex items-center gap-1">
-                        👨‍👩‍👧‍👦 Traveling with children
+                      <span className="ml-2 flex items-center gap-1">
+                        <Users className="w-4 h-4" /> Traveling with children
                       </span>
                     </div>
                   )}
