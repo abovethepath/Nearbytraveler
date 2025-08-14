@@ -9218,50 +9218,51 @@ export class DatabaseStorage implements IStorage {
       return [];
     }
   }
-  // CRITICAL: Create business user (was missing!)
+  // CRITICAL: Create business user (FIXED FIELD MAPPING!)
   async createBusinessUser(businessData: any): Promise<any> {
     try {
       console.log("🏢 STORAGE: Creating business user with data:", businessData);
+      console.log("🏢 STORAGE: Available fields in businessData:", Object.keys(businessData));
       
-      // Create the business user account
+      // Create the business user account with CORRECT database field names
       const [newUser] = await db.insert(users).values({
         username: businessData.username,
         email: businessData.email,
         password: businessData.password, // In real app, this should be hashed
-        name: businessData.businessName, // Use business name as the user's name
+        name: businessData.business_name || businessData.businessName, // Use business name as the user's name
         userType: 'business',
         hometownCity: businessData.city,
         hometownState: businessData.state,
         hometownCountry: businessData.country,
-        profileImageUrl: null,
-        joinedAt: new Date(),
-        auraPoints: 0,
+        location: businessData.city && businessData.state ? `${businessData.city}, ${businessData.state}` : null,
+        hometown: businessData.city && businessData.state && businessData.country ? `${businessData.city}, ${businessData.state}, ${businessData.country}` : null,
         isCurrentlyTraveling: false,
         
-        // Business-specific fields
-        businessName: businessData.businessName,
-        businessType: businessData.businessType,
-        businessPhone: businessData.businessPhone,
-        businessDescription: businessData.businessDescription || null,
-        businessWebsite: businessData.businessWebsite || null,
-        streetAddress: businessData.streetAddress,
-        zipCode: businessData.zipCode,
-        contactPersonName: businessData.contactPersonName,
-        contactPersonTitle: businessData.contactPersonTitle,
-        contactPersonEmail: businessData.contactPersonEmail,
-        contactPersonPhone: businessData.contactPersonPhone,
-        yearEstablished: businessData.yearEstablished,
-        employeeCount: businessData.employeeCount,
-        veteranOwned: businessData.veteranOwned || false,
-        activeDutyOwned: businessData.activeDutyOwned || false,
+        // Business-specific fields with CORRECT database column names
+        business_name: businessData.business_name || businessData.businessName,
+        business_type: businessData.business_type || businessData.businessType,
+        business_description: businessData.business_description || businessData.businessDescription || null,
+        website: businessData.website || businessData.businessWebsite || null,
+        street_address: businessData.street_address || businessData.streetAddress,
+        zipcode: businessData.zipcode || businessData.zipCode,
+        phone: businessData.phone || businessData.businessPhone,
         interests: businessData.interests || [],
         activities: businessData.activities || []
       }).returning();
 
       console.log("🏢 STORAGE: Business user created successfully with ID:", newUser.id);
+      console.log("🏢 STORAGE: Business data stored:", {
+        business_name: newUser.business_name,
+        business_type: newUser.business_type,
+        business_description: newUser.business_description,
+        city: newUser.city,
+        state: newUser.state,
+        country: newUser.country
+      });
       return newUser;
     } catch (error) {
       console.error("🏢 STORAGE ERROR: Failed to create business user:", error);
+      console.error("🏢 STORAGE ERROR: Full error details:", error.message);
       throw new Error(`Business registration failed: ${error.message}`);
     }
   }
