@@ -66,18 +66,23 @@ export default function TravelersLanding() {
                   <div className="text-center">
                     <div className="max-w-4xl mx-auto">
                       <h1 className="text-4xl tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
-                        <span className="block text-white font-black" style={{fontFamily: '"Inter", sans-serif'}}>Nearby Traveler For Travelers</span>
+                        <span className="block text-white font-black" style={{fontFamily: '"Inter", sans-serif'}}>Travel like a local.</span>
+                        <span className="block font-black" style={{fontFamily: '"Inter", sans-serif'}}>
+                          <span className="text-orange-400">Skip the tourist traps and </span>
+                          <span className="text-blue-400" style={{border: 'none', outline: 'none', boxShadow: 'none'}}>connect with real locals</span>
+                          <span className="text-orange-400"> today!</span>
+                        </span>
                       </h1>
                       
-                      {/* Founder credibility section */}
+                      {/* Traveler value proposition */}
                       <div className="mt-8 p-6 bg-black/40 backdrop-blur-sm rounded-2xl border border-white/20 animate-zoom-in" style={{animationDelay: '0.3s'}}>
                         <p className="text-xl text-white leading-relaxed">
-                          <span className="text-orange-300 font-bold">"I've traveled to 40+ countries and hosted 400+ travelers.</span>
-                          <span className="text-white"> I built Nearby Traveler because I know what real travelers want - authentic local connections, not tourist traps."</span>
+                          <span className="text-orange-300 font-bold">"Skip the crowded tourist spots and overpriced restaurants.</span>
+                          <span className="text-white"> Connect with real locals who'll show you the hidden gems, secret bars, and authentic experiences that make travel unforgettable."</span>
                         </p>
                         <div className="mt-4 text-center">
-                          <p className="text-white font-bold text-lg">— Aaron, Founder</p>
-                          <p className="text-orange-200 text-sm">400+ travelers hosted • 40+ countries • 15+ years</p>
+                          <p className="text-white font-bold text-lg">— Real Travelers, Real Experiences</p>
+                          <p className="text-orange-200 text-sm">Join thousands already exploring like locals worldwide</p>
                         </div>
                       </div>
                     </div>
