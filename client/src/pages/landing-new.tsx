@@ -574,11 +574,10 @@ export default function Landing() {
                     <span className="text-white text-3xl">🏠</span>
                   </div>
                   <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-4">
-                    Become a Local Ambassador
+                    Expand Your Social World
                   </h3>
                   <p className="text-gray-600 dark:text-gray-300 mb-8 leading-relaxed">
-                    Transform your city knowledge into unforgettable experiences. 
-                    Every event you create, every secret spot you share makes you the hero of someone's travel story.
+                    Meet locals who share your interests and build lasting friendships. From weekend adventures to casual hangouts, grow your circle locally and globally.
                   </p>
                   <Button 
                     onClick={() => setLocation('/join')}
