@@ -1158,10 +1158,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   // Update form values when user data changes (fresh from database)
   React.useEffect(() => {
     if (user && !userLoading) {
-      console.log('Updating profile form with fresh user data:', {
+      console.log('🔥 FORM INIT: Updating profile form with user data:', {
         hometownCity: user.hometownCity,
         hometownState: user.hometownState,
-        hometownCountry: user.hometownCountry
+        hometownCountry: user.hometownCountry,
+        travelingWithChildren: (user as any).travelingWithChildren,
+        travelingWithChildrenType: typeof (user as any).travelingWithChildren,
+        childrenAges: (user as any).childrenAges
       });
       
       // Initialize temp values for editing
@@ -1206,7 +1209,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           sexualPreference: user.sexualPreference || [],
           sexualPreferenceVisible: user.sexualPreferenceVisible !== undefined ? user.sexualPreferenceVisible : false,
           travelStyle: user.travelStyle || [],
-          travelingWithChildren: user.travelingWithChildren === true,
+          travelingWithChildren: !!(user as any).travelingWithChildren,
           childrenAges: (user as any).childrenAges || "",
           isVeteran: user.isVeteran !== undefined ? user.isVeteran : false,
           isActiveDuty: user.isActiveDuty !== undefined ? user.isActiveDuty : false,
