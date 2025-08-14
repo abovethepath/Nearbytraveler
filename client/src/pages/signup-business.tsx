@@ -278,7 +278,23 @@ export default function SignupBusiness() {
                     <p className="text-sm text-gray-600 dark:text-gray-400">
                       Account details from step 1 (automatically filled)
                     </p>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                      <FormField
+                        control={form.control}
+                        name="businessName"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Business Name</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Your Business Name" {...field} disabled className="bg-gray-100 dark:bg-gray-800" />
+                            </FormControl>
+                            <FormDescription>
+                              From step 1 registration
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
                       <FormField
                         control={form.control}
                         name="username"
@@ -331,45 +347,30 @@ export default function SignupBusiness() {
                     <Building className="w-5 h-5" />
                     Business Information
                   </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="businessName"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Business Name *</FormLabel>
+                  <FormField
+                    control={form.control}
+                    name="businessType"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Business Type *</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl>
-                            <Input placeholder="Your Business Name" {...field} />
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select business type" />
+                            </SelectTrigger>
                           </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="businessType"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Business Type *</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select business type" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {businessTypes.map((type) => (
-                                <SelectItem key={type} value={type}>
-                                  {type}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
+                          <SelectContent>
+                            {businessTypes.map((type) => (
+                              <SelectItem key={type} value={type}>
+                                {type}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                   
                   {/* Custom Business Type Field */}
                   {form.watch("businessType") === "Custom (specify below)" && (
