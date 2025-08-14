@@ -471,7 +471,18 @@ export class DatabaseStorage implements IStorage {
   // User methods
   async getUser(id: number): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.id, id));
-    return user || undefined;
+    if (!user) return undefined;
+    
+    // Convert PostgreSQL boolean strings to proper JavaScript booleans
+    return {
+      ...user,
+      travelingWithChildren: user.travelingWithChildren === true || user.travelingWithChildren === 't',
+      isVeteran: user.isVeteran === true || user.isVeteran === 't',
+      isActiveDuty: user.isActiveDuty === true || user.isActiveDuty === 't',
+      isCurrentlyTraveling: user.isCurrentlyTraveling === true || user.isCurrentlyTraveling === 't',
+      ageVisible: user.ageVisible === true || user.ageVisible === 't',
+      sexualPreferenceVisible: user.sexualPreferenceVisible === true || user.sexualPreferenceVisible === 't'
+    };
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
@@ -601,12 +612,23 @@ export class DatabaseStorage implements IStorage {
       .where(eq(users.id, id))
       .returning();
     
+    if (!user) return undefined;
+    
     // If secretActivities was updated, sync it to secretLocalExperiences table
     if (updates.secretActivities !== undefined && user) {
       await this.syncUserSecretExperience(user.id, updates.secretActivities, user.hometownCity, user.hometownState, user.hometownCountry);
     }
     
-    return user || undefined;
+    // Convert PostgreSQL boolean strings to proper JavaScript booleans
+    return {
+      ...user,
+      travelingWithChildren: user.travelingWithChildren === true || user.travelingWithChildren === 't',
+      isVeteran: user.isVeteran === true || user.isVeteran === 't',
+      isActiveDuty: user.isActiveDuty === true || user.isActiveDuty === 't',
+      isCurrentlyTraveling: user.isCurrentlyTraveling === true || user.isCurrentlyTraveling === 't',
+      ageVisible: user.ageVisible === true || user.ageVisible === 't',
+      sexualPreferenceVisible: user.sexualPreferenceVisible === true || user.sexualPreferenceVisible === 't'
+    };
   }
 
   async updateUserAura(userId: number, auraPoints: number): Promise<void> {
