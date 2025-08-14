@@ -59,6 +59,7 @@ export default function SignupLocalTraveler() {
     name: "",
     // Essential simplified fields
     dateOfBirth: "",
+    phoneNumber: "", // For event SMS notifications
     // Location fields - keep for locals
     hometownCountry: "",
     hometownCity: "",
@@ -174,6 +175,7 @@ export default function SignupLocalTraveler() {
         username: finalFormData.username.toLowerCase().trim(),
         name: finalFormData.name.trim(),
         dateOfBirth: new Date(formData.dateOfBirth),
+        phoneNumber: formData.phoneNumber.trim() || null,
         hometownCountry: formData.hometownCountry,
         hometownCity: formData.hometownCity,
         hometownState: formData.hometownState,
@@ -305,6 +307,25 @@ export default function SignupLocalTraveler() {
                   data-testid="input-date-of-birth"
                   required
                 />
+              </div>
+
+              {/* Phone Number for Event Notifications */}
+              <div className="space-y-3">
+                <Label htmlFor="phoneNumber" className="text-base md:text-lg font-semibold text-gray-900 dark:text-white text-crisp">
+                  Phone Number <span className="text-sm font-normal text-gray-500 dark:text-gray-400">(Optional - for event SMS notifications)</span>
+                </Label>
+                <Input
+                  id="phoneNumber"
+                  type="tel"
+                  value={formData.phoneNumber}
+                  onChange={(e) => setFormData(prev => ({ ...prev, phoneNumber: e.target.value }))}
+                  placeholder="(555) 123-4567"
+                  className="text-base py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg focus:border-blue-500 dark:focus:border-blue-400"
+                  data-testid="input-phone-number"
+                />
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Get text notifications when events you RSVP to are starting or have updates
+                </p>
               </div>
 
               {/* Hometown Location */}

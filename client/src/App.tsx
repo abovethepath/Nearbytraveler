@@ -65,6 +65,7 @@ import BusinessProfile from "@/pages/business-profile";
 import Deals from "@/pages/deals";
 import Settings from "@/pages/settings";
 import AdminSettings from "@/pages/admin-settings";
+import SMSTest from "@/pages/sms-test";
 import Welcome from "@/pages/welcome";
 import WelcomeBusiness from "@/pages/welcome-business";
 import Privacy from "@/pages/privacy";
@@ -797,6 +798,8 @@ function Router() {
         return <Settings />;
       case '/admin-settings':
         return <AdminSettings user={user} />;
+      case '/sms-test':
+        return <SMSTest />;
       case '/travel-blog':
         return <TravelBlog />;
       case '/travel-agent-dashboard':

@@ -22,6 +22,7 @@ import { db, withRetry } from "./db";
 import { eventReminderService } from "./services/eventReminderService";
 import { TravelMatchingService } from "./services/matching";
 import { businessProximityEngine } from "./businessProximityNotificationEngine";
+import { smsService } from "./services/smsService";
 
 import { 
   secretLocalExperienceLikes, 
@@ -3607,10 +3608,69 @@ Ready to start making real connections wherever you are?
       const participant = await storage.joinEvent(eventId, userId, notes);
       if (process.env.NODE_ENV === 'development') console.log(`🎪 EVENT JOIN: User ${userId} successfully joined event ${eventId}`);
       
+      // Send SMS notification if user has phone number
+      try {
+        const [user] = await db.select().from(users).where(eq(users.id, userId)).limit(1);
+        const [event] = await db.select().from(events).where(eq(events.id, eventId)).limit(1);
+        
+        if (user?.phoneNumber && event && smsService.isValidPhoneNumber(user.phoneNumber)) {
+          const eventDate = new Date(event.date).toLocaleDateString();
+          const eventTime = new Date(event.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+          
+          await smsService.sendEventRSVPConfirmation(user.phoneNumber, {
+            eventTitle: event.title,
+            eventTime: eventTime,
+            eventLocation: `${event.city}, ${event.state}`,
+            eventDate: eventDate,
+            userName: user.name
+          });
+          
+          if (process.env.NODE_ENV === 'development') console.log(`📱 SMS: RSVP confirmation sent to ${user.name} for event "${event.title}"`);
+        }
+      } catch (smsError: any) {
+        // Don't fail the event join if SMS fails
+        if (process.env.NODE_ENV === 'development') console.error(`📱 SMS: Failed to send RSVP confirmation:`, smsError);
+      }
+      
       return res.json({ success: true, participant });
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error joining event:", error);
       return res.status(500).json({ message: "Failed to join event" });
+    }
+  });
+
+  // SMS Test endpoint for admin testing
+  app.post("/api/sms/test", async (req, res) => {
+    try {
+      const { phoneNumber, eventTitle, userName, eventDate, eventTime, eventLocation } = req.body;
+      
+      if (!phoneNumber || !eventTitle || !userName) {
+        return res.status(400).json({ message: "Phone number, event title, and user name are required" });
+      }
+
+      if (!smsService.isValidPhoneNumber(phoneNumber)) {
+        return res.status(400).json({ message: "Invalid phone number format" });
+      }
+
+      if (process.env.NODE_ENV === 'development') console.log(`📱 SMS TEST: Sending test message to ${phoneNumber}`);
+      
+      const success = await smsService.sendEventRSVPConfirmation(phoneNumber, {
+        eventTitle,
+        eventTime: eventTime || "7:00 PM",
+        eventLocation: eventLocation || "Test Location, CA",
+        eventDate: eventDate || new Date().toLocaleDateString(),
+        userName
+      });
+
+      if (success) {
+        if (process.env.NODE_ENV === 'development') console.log(`📱 SMS TEST: Successfully sent test message`);
+        return res.json({ success: true, message: "Test SMS sent successfully" });
+      } else {
+        return res.status(500).json({ success: false, message: "Failed to send test SMS" });
+      }
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("SMS test error:", error);
+      return res.status(500).json({ success: false, message: "SMS test failed" });
     }
   });
 

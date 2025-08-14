@@ -29,6 +29,7 @@ export function setupQuickLoginFix(app) {
         email: userData.email,
         password: userData.password,
         dateOfBirth: userData.dateOfBirth ? new Date(userData.dateOfBirth) : null,
+        phoneNumber: userData.phoneNumber || null,
         userType: userData.userType || 'local',
         hometown: userData.hometown || `${userData.city}, ${userData.state}`,
         bio: userData.bio || '',
