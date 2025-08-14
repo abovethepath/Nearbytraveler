@@ -13,7 +13,7 @@ export default function BusinessLanding() {
 
       {/* Hero Section with Photo Background */}
       <section 
-        className="relative overflow-hidden text-white py-20 lg:py-32"
+        className="relative overflow-hidden text-white py-20 lg:py-32 border border-orange-400"
         style={{
           backgroundImage: `url(${businessHeaderPhoto})`,
           backgroundSize: 'cover',

@@ -11,7 +11,7 @@ export default function EventsLanding() {
       
       {/* Hero Section with Beach BBQ Photo */}
       <div className="relative">
-        <div className="relative h-[70vh] overflow-hidden">
+        <div className="relative h-[70vh] overflow-hidden border border-orange-400">
           <img 
             src={eventHeaderImage} 
             alt="Beach BBQ Party with Friends" 

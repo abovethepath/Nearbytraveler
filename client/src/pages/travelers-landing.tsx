@@ -11,7 +11,7 @@ export default function TravelersLanding() {
       
       {/* Hero Section */}
       <div className="relative">
-        <div className="relative h-[70vh] overflow-hidden">
+        <div className="relative h-[70vh] overflow-hidden border border-orange-400">
           <img 
             src={travelersHeaderImage} 
             alt="Travelers making connections and sharing experiences" 
