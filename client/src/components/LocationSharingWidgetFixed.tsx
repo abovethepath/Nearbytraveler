@@ -17,7 +17,12 @@ export function LocationSharingWidgetFixed() {
   const { toast } = useToast();
 
   // Debug logging
-  console.log('LocationSharingWidgetFixed user context:', { user: user ? { id: user.id, username: user.username } : null });
+  console.log('🔧 LocationSharingWidgetFixed rendered:', { 
+    hasUser: !!user, 
+    userId: user?.id, 
+    username: user?.username,
+    locationSharingEnabled: user?.locationSharingEnabled
+  });
 
   useEffect(() => {
     if (user?.locationSharingEnabled) {
