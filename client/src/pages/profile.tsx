@@ -6284,41 +6284,54 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 />
               )}
 
-              {/* Family Travel Field */}
+              {/* Family Travel Section - Rebuilt like Sexual Preferences */}
               {user?.userType !== 'business' && (
                 <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white border-b pb-2">
+                    Family Travel
+                  </h3>
+                  
                   <FormField
                     control={profileForm.control}
                     name="travelingWithChildren"
                     render={({ field }) => (
-                      <FormItem className="flex flex-row items-start space-x-3 rounded-lg border p-4">
+                      <FormItem>
+                        <FormLabel>Are you traveling with children?</FormLabel>
                         <FormControl>
-                          <Checkbox
-                            checked={!!field.value}
-                            onCheckedChange={(checked) => {
-                              const v = checked === true;     // coerce "indeterminate" -> boolean
-                              field.onChange(v);
-                              if (!v) {
-                                // Clear ages when unchecked so banner doesn't persist
-                                profileForm.setValue('childrenAges', '');
-                              }
-                            }}
-                          />
-                        </FormControl>
-                        <div className="space-y-1 leading-none">
-                          <FormLabel className="text-base cursor-pointer">
-                            Traveling with children
-                          </FormLabel>
-                          <div className="text-sm text-muted-foreground">
-                            Show that you're traveling with children to connect with other families
+                          <div className="space-y-2 border rounded-md p-3">
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="checkbox"
+                                id="traveling-with-children"
+                                checked={!!field.value}
+                                onChange={(e) => {
+                                  const checked = e.target.checked;
+                                  console.log('🔥 CHECKBOX CHANGED:', { oldValue: field.value, newValue: checked });
+                                  field.onChange(checked);
+                                  if (!checked) {
+                                    // Clear ages when unchecked
+                                    profileForm.setValue('childrenAges', '');
+                                    console.log('🔥 CHECKBOX: Cleared childrenAges because unchecked');
+                                  }
+                                }}
+                                className="h-4 w-4 border-gray-300 rounded text-purple-600 focus:ring-purple-500"
+                              />
+                              <label 
+                                htmlFor="traveling-with-children" 
+                                className="text-sm font-medium text-gray-700 dark:text-white cursor-pointer"
+                              >
+                                Yes, I'm traveling with children
+                              </label>
+                            </div>
                           </div>
-                        </div>
+                        </FormControl>
+                        <FormMessage />
                       </FormItem>
                     )}
                   />
-                  
-                  {/* Children Ages Field - Only show when traveling with children toggle is on */}
-                  {profileForm.watch("travelingWithChildren") && (
+
+                  {/* Children Ages Field - Only show if traveling with children is checked */}
+                  {profileForm.watch('travelingWithChildren') && (
                     <FormField
                       control={profileForm.control}
                       name="childrenAges"
@@ -6327,15 +6340,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           <FormLabel>Children's Ages</FormLabel>
                           <FormControl>
                             <Input
+                              placeholder="e.g., 3, 7, 12"
                               {...field}
-                              placeholder="e.g., 5, 8, 12"
-                              className="w-full"
-                              maxLength={100}
+                              className="dark:bg-gray-800 dark:border-gray-600 dark:text-white"
                             />
                           </FormControl>
-                          <div className="text-xs text-muted-foreground">
-                            Enter your children's ages separated by commas (e.g., "3, 7, 10")
-                          </div>
+                          <FormDescription>
+                            Enter the ages of your children (separated by commas)
+                          </FormDescription>
                           <FormMessage />
                         </FormItem>
                       )}
