@@ -79,7 +79,7 @@ export default function EventsLanding() {
                           size="lg"
                           className="bg-orange-500 hover:bg-orange-600 text-white font-bold text-xl px-12 py-6 rounded-2xl shadow-2xl transition-all duration-200 transform hover:scale-105 animate-pulse-glow"
                         >
-                          🎉 JOIN EVENTS NOW
+                          🎉 Join Nearby Traveler NOW!!!!
                         </Button>
                       </div>
                     </div>
