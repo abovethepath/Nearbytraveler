@@ -63,9 +63,15 @@ export default function LocalsLanding() {
                       {/* Local credibility/value proposition */}
                       <div className="mt-8 p-6 bg-black/40 backdrop-blur-sm rounded-2xl border border-white/20 animate-zoom-in" style={{animationDelay: '0.3s'}}>
                         <p className="text-xl text-white leading-relaxed">
-                          <span className="text-orange-300 font-bold">"Share your city's best-kept secrets and hidden gems.</span>
-                          <span className="text-white"> Connect with genuine travelers who want authentic local experiences, not tourist traps. Be the local friend you'd want to meet."</span>
+                          <span className="text-orange-300 font-bold">"I have friends spanning across the globe now"</span>
+                          <span className="text-white"> —Aaron, Founder</span>
                         </p>
+                        <div className="mt-6">
+                          <p className="text-lg text-white leading-relaxed">
+                            <span className="text-orange-300 font-bold">"Share your city's best-kept secrets and hidden gems.</span>
+                            <span className="text-white"> Connect with genuine travelers who want authentic local experiences, not tourist traps. Be the local friend you'd want to meet."</span>
+                          </p>
+                        </div>
                         <div className="mt-4 text-center">
                           <p className="text-white font-bold text-lg">— Real Locals, Real Connections</p>
                           <p className="text-orange-200 text-sm">Join others sharing authentic local experiences</p>
