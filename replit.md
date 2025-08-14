@@ -67,6 +67,7 @@ User request: Completely removed all photo functionality from city pages includi
 - **Username Constraints**: Implemented 6-14 character limit for usernames with frontend and database validation.
 - **Private Chat Approval System**: Implemented a public/private chatroom system where private chats require organizer approval, displaying with lock icons and distinctive styling.
 - **SMS Event Notifications**: Complete system for event RSVPs using Twilio, including phone number collection, RSVP confirmations, event reminders, cancellations, and updates.
+- **Business Location Fix**: Fixed critical issue where Santa Monica businesses were incorrectly defaulting to "Los Angeles" - now properly displays actual business city from the `city` field, with fallback to "Los Angeles Metro" only when necessary. This ensures businesses in Santa Monica, Venice, Beverly Hills, etc. show their actual city names.
 
 ## External Dependencies
 

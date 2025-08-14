@@ -86,6 +86,8 @@ export default function SignupBusiness() {
   
   // Debug: Log account data to see what fields are available
   console.log('Account data from sessionStorage:', accountData);
+  console.log('Business city from accountData:', accountData?.city);
+  console.log('Business name from accountData:', accountData?.name);
 
   // Function to get business GPS coordinates
   const getBusinessLocation = async () => {
@@ -140,7 +142,7 @@ export default function SignupBusiness() {
       veteranOwned: false,
       activeDutyOwned: false,
       streetAddress: "",
-      city: "",
+      city: accountData?.city || "",
       state: "",
       zipCode: "",
       country: "",
