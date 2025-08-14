@@ -437,15 +437,10 @@ function Router() {
 
 
 
-      // Allow access to auth and join pages without authentication
-      if (location === '/auth') {
-        console.log('Showing Auth page for unauthenticated user');
+      // Allow access to auth and join pages 
+      if (location === '/auth' || location === '/join') {
+        console.log('Showing Auth page');
         return <Auth />;
-      }
-
-      if (location === '/join') {
-        console.log('Showing Auth page (join mode) for unauthenticated user');
-        return <Auth />; // Auth component handles both login and signup
       }
 
       // Show landing page
@@ -569,26 +564,12 @@ function Router() {
         }
       }
 
-      // FINAL CHECK: Before showing landing, double-check if user is actually authenticated
-      // Skip home redirect for chatroom routes to prevent white screen flash
-      if (!location.includes('chatroom') && (localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || localStorage.getItem('auth_token'))) {
-        console.log('🔄 FINAL AUTH CHECK: User has auth data, redirecting to home instead of landing');
-        window.location.href = '/home';
+      // If user is authenticated but accessing auth page, redirect to appropriate page
+      if (location === '/auth' && user) {
+        console.log('🔄 Authenticated user on auth page, redirecting to home');
+        setLocation('/home');
         return null;
-      }
-
-      // MOBILE FIX: If user has authentication data, show home page instead of landing
-      // Skip home redirect for chatroom routes to prevent white screen flash
-      if (!location.includes('chatroom') && (localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || localStorage.getItem('auth_token'))) {
-        console.log('🔄 MOBILE FIX: User has auth data, redirecting to home instead of showing unknown route message');
-        window.location.href = '/home';
-        return null;
-      }
-
-      // MOBILE ROUTE FALLBACK: Check if this should go to authenticated section
-      // Skip home redirect for chatroom routes to prevent white screen flash
-      if (!location.includes('chatroom') && (hasUserInLocalStorage || hasTravelConnectUser || hasAuthToken)) {
-        console.log('🔄 MOBILE: User has auth data, redirecting to home');
+      }r has auth data, redirecting to home');
         setLocation('/');
         return null;
       }
