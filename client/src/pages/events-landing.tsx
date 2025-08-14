@@ -174,7 +174,7 @@ export default function EventsLanding() {
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transform transition-all duration-300 flex flex-col">
               <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-blue-400 to-purple-500">
                 <img 
-                  src="/beach travel_1754973619241.jpg" 
+                  src="/venice-beach-dance-party.png" 
                   alt="Venice Beach dance party event" 
                   className="w-full h-48 object-cover"
                 />
@@ -317,25 +317,25 @@ export default function EventsLanding() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <Button
                 onClick={() => setLocation('/join')}
-                className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-4 rounded-lg text-sm"
+                className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold py-3 px-4 rounded-full text-sm shadow-lg transform transition-all duration-200 hover:scale-105"
               >
                 🏖️ Beach Events
               </Button>
               <Button
                 onClick={() => setLocation('/join')}
-                className="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-4 rounded-lg text-sm"
+                className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 px-4 rounded-full text-sm shadow-lg transform transition-all duration-200 hover:scale-105"
               >
                 🍕 Food Tours
               </Button>
               <Button
                 onClick={() => setLocation('/join')}
-                className="bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-4 rounded-lg text-sm"
+                className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-bold py-3 px-4 rounded-full text-sm shadow-lg transform transition-all duration-200 hover:scale-105"
               >
                 🎵 Music Events
               </Button>
               <Button
                 onClick={() => setLocation('/join')}
-                className="bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 px-4 rounded-lg text-sm"
+                className="bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white font-bold py-3 px-4 rounded-full text-sm shadow-lg transform transition-all duration-200 hover:scale-105"
               >
                 🎪 Night Life
               </Button>
