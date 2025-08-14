@@ -22,7 +22,7 @@ import { Check, ChevronsUpDown } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { MapPin, Camera, Globe, Users, Calendar, Star, Settings, ArrowLeft, Upload, Edit, Edit2, Heart, MessageSquare, X, Plus, Eye, EyeOff, MessageCircle, ImageIcon, Minus, RotateCcw, Sparkles, Package, Trash2, Home, FileText, TrendingUp, MessageCircleMore, Share2, ChevronDown, Search, Zap, History, Clock, Wifi, Shield, ChevronRight } from "lucide-react";
+import { MapPin, Camera, Globe, Users, Calendar, Star, Settings, ArrowLeft, Upload, Edit, Edit2, Heart, MessageSquare, X, Plus, Eye, EyeOff, MessageCircle, ImageIcon, Minus, RotateCcw, Sparkles, Package, Trash2, Home, FileText, TrendingUp, MessageCircleMore, Share2, ChevronDown, Search, Zap, History, Clock, Wifi, Shield, ChevronRight, AlertCircle } from "lucide-react";
 import { compressPhotoAdaptive } from "@/utils/photoCompression";
 import { AdaptiveCompressionIndicator } from "@/components/adaptive-compression-indicator";
 import { UniversalBackButton } from "@/components/UniversalBackButton";
@@ -210,7 +210,7 @@ const getMetropolitanArea = (city: string, state: string, country: string): stri
 
 import { WhatYouHaveInCommon } from "@/components/what-you-have-in-common";
 
-import { LocationSharingWidgetFixed } from "@/components/LocationSharingWidgetFixed";
+// import { LocationSharingWidgetFixed } from "@/components/LocationSharingWidgetFixed";
 import { CustomerUploadedPhotos } from "@/components/customer-uploaded-photos";
 import BusinessEventsWidget from "@/components/business-events-widget";
 import ReferralWidget from "@/components/referral-widget";
@@ -5656,9 +5656,71 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             </Card>
 
             {/* Comprehensive Geolocation System - Enhanced location sharing for users, businesses, and events */}
-            {console.log('🔧 Profile: Checking if LocationSharingWidgetFixed should render:', { isOwnProfile, userId: user?.id })}
+            {console.log('🔧 Profile: Checking if location sharing should render:', { isOwnProfile, userId: user?.id })}
             {isOwnProfile && user && (
-              <LocationSharingWidgetFixed user={user} />
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <MapPin className="h-5 w-5" />
+                    Location Sharing
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      {user.locationSharingEnabled ? (
+                        <Eye className="h-4 w-4 text-green-600" />
+                      ) : (
+                        <EyeOff className="h-4 w-4 text-gray-400" />
+                      )}
+                      <span className="text-sm font-medium">
+                        Share location on city map
+                      </span>
+                    </div>
+                    <Switch
+                      checked={user.locationSharingEnabled || false}
+                      onCheckedChange={(enabled) => {
+                        console.log('🔧 DIRECT: Location sharing toggle clicked:', { enabled, userId: user.id });
+                        
+                        // Direct API call without mutation for immediate fix
+                        apiRequest('PUT', `/api/users/${user.id}`, {
+                          locationSharingEnabled: enabled
+                        }).then(() => {
+                          console.log('🔧 DIRECT: Location sharing updated successfully');
+                          queryClient.invalidateQueries({ queryKey: [`/api/users/${user.id}`] });
+                          toast({
+                            title: "Location sharing updated",
+                            description: "Your location sharing preference has been saved",
+                          });
+                        }).catch((error) => {
+                          console.error('🔧 DIRECT: Error updating location sharing:', error);
+                          toast({
+                            title: "Error", 
+                            description: "Failed to update location sharing",
+                            variant: "destructive",
+                          });
+                        });
+                      }}
+                      data-testid="location-sharing-toggle"
+                    />
+                  </div>
+
+                  {user.locationSharingEnabled && (
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                        <AlertCircle className="h-4 w-4" />
+                        <span>Your location will be visible to other users on the city map</span>
+                      </div>
+                    </div>
+                  )}
+
+                  {!user.locationSharingEnabled && (
+                    <div className="text-sm text-gray-500 dark:text-gray-400">
+                      Enable location sharing to appear on city maps and help other travelers find you
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
             )}
 
             {/* Business Referral Program Widget */}
