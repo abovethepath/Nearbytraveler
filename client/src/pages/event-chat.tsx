@@ -65,6 +65,11 @@ export default function EventChat() {
       setCurrentUser(JSON.parse(userStr));
     }
   }, []);
+  
+  // Scroll to top when entering event chat
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [eventId]);
 
   // Fetch event details
   const { data: event, isLoading: eventLoading } = useQuery<Event>({

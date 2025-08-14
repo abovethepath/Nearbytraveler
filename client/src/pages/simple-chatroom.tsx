@@ -73,6 +73,11 @@ export default function SimpleChatroomPage() {
   const currentUserId = Number(currentUser?.id || 0);
   
   console.log('🔑 CHATROOM: Current user data:', { currentUser: currentUser?.username || 'null', currentUserId });
+  
+  // Scroll to top when entering chatroom
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [chatroomId]); // Re-run when chatroom ID changes
 
   // Check access permission first - MUST come before any conditional returns
   const { data: accessCheck, isLoading: accessLoading, error: accessError } = useQuery({

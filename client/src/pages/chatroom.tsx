@@ -53,6 +53,11 @@ export default function ChatroomPage() {
   };
   
   const currentUser = getCurrentUser();
+  
+  // Scroll to top when entering chatroom
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [chatroomId]);
 
   // Fetch chatroom details
   const { data: chatroomArray } = useQuery<ChatroomDetails[]>({

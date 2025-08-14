@@ -77,6 +77,11 @@ function QuickMeetupChat() {
       setCurrentUser(JSON.parse(userStr));
     }
   }, []);
+  
+  // Scroll to top when entering quick meetup chat
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [meetupId]);
 
   // Fetch meetup details
   const { data: meetup, isLoading: meetupLoading } = useQuery<QuickMeetup>({
