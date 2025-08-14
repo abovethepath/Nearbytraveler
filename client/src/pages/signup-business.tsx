@@ -83,6 +83,9 @@ export default function SignupBusiness() {
   };
 
   const accountData = getAccountData();
+  
+  // Debug: Log account data to see what fields are available
+  console.log('Account data from sessionStorage:', accountData);
 
   // Function to get business GPS coordinates
   const getBusinessLocation = async () => {
@@ -132,7 +135,7 @@ export default function SignupBusiness() {
       businessType: "",
       customBusinessType: "",
       businessPhone: "",
-      businessDescription: "",
+      businessDescription: accountData?.businessDescription || "",
       businessWebsite: "",
       veteranOwned: false,
       activeDutyOwned: false,
@@ -256,7 +259,7 @@ export default function SignupBusiness() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
-        <Card className="border border-gray-200 dark:border-gray-700 shadow-lg">
+        <Card className="border border-gray-200 dark:border-gray-700 shadow-lg bg-white dark:bg-gray-800">
           <CardHeader className="text-center">
             <Building className="w-12 h-12 mx-auto text-blue-600 mb-4" />
             <CardTitle className="text-3xl">Register Your Business</CardTitle>
@@ -419,23 +422,16 @@ export default function SignupBusiness() {
                     )}
                   />
                   
-                  <FormField
-                    control={form.control}
-                    name="businessDescription"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Business Description & Services</FormLabel>
-                        <FormControl>
-                          <Textarea 
-                            placeholder="Describe your business, services offered, what you specialize in, and what makes you unique..." 
-                            className="min-h-[100px]"
-                            {...field} 
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  {/* Business Description already collected in step 1, showing read-only for confirmation */}
+                  {accountData?.businessDescription && (
+                    <div className="space-y-2 bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
+                      <FormLabel className="text-sm font-medium">Business Description ✓</FormLabel>
+                      <div className="text-sm text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 p-3 rounded border">
+                        {accountData.businessDescription}
+                      </div>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">From step 1 registration</p>
+                    </div>
+                  )}
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <FormField
