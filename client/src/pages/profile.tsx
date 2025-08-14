@@ -3602,7 +3602,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     {isOwnProfile && (
                       <Button 
                         size="sm" 
-                        onClick={() => setShowCreateDeal(true)}
+                        onClick={() => {
+                          console.log('🔥 CREATE OFFER clicked, setting showCreateDeal to true');
+                          setShowCreateDeal(true);
+                        }}
                         className="bg-gradient-to-r from-green-500 to-blue-500 text-white border-0 hover:from-green-600 hover:to-blue-600"
                       >
                         <Plus className="w-3 h-3 mr-1" />
@@ -4903,7 +4906,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   city={user?.hometownCity ?? ''} 
                   profileUserId={user?.id} 
                   showCreateForm={showCreateDeal}
-                  onCloseCreateForm={() => setShowCreateDeal(false)}
+                  onCloseCreateForm={() => {
+                    console.log('🔥 CLOSING create deal form');
+                    setShowCreateDeal(false);
+                  }}
                 />
               </div>
             )}

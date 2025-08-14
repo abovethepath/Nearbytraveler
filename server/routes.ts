@@ -6454,40 +6454,10 @@ Questions? Just reply to this message. Welcome aboard!
         conditions.push(eq(quickDeals.city, city as string));
       }
 
+      // First, let's get just the quick deals without the join to debug
       const allDeals = await db
-        .select({
-          id: quickDeals.id,
-          businessId: quickDeals.businessId,
-          title: quickDeals.title,
-          description: quickDeals.description,
-          dealType: quickDeals.dealType,
-          category: quickDeals.category,
-          location: quickDeals.location,
-          street: quickDeals.street,
-          city: quickDeals.city,
-          state: quickDeals.state,
-          country: quickDeals.country,
-          discountAmount: quickDeals.discountAmount,
-          originalPrice: quickDeals.originalPrice,
-          salePrice: quickDeals.salePrice,
-          validFrom: quickDeals.validFrom,
-          validUntil: quickDeals.validUntil,
-          maxRedemptions: quickDeals.maxRedemptions,
-          currentRedemptions: quickDeals.currentRedemptions,
-          requiresReservation: quickDeals.requiresReservation,
-          dealCode: quickDeals.dealCode,
-          terms: quickDeals.terms,
-          availability: quickDeals.availability,
-          isActive: quickDeals.isActive,
-          createdAt: quickDeals.createdAt,
-          businessName: users.business_name,
-          businessDescription: users.business_description,
-          businessPhone: users.phone_number,
-          businessEmail: users.email,
-          businessImage: users.profileImage,
-        })
+        .select()
         .from(quickDeals)
-        .leftJoin(users, eq(quickDeals.businessId, users.id))
         .where(and(...conditions))
         .orderBy(desc(quickDeals.createdAt));
 

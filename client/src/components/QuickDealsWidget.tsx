@@ -35,6 +35,15 @@ export function QuickDealsWidget({ city, profileUserId, showCreateForm: external
   const { user } = useAuth();
   const [internalShowCreateForm, setInternalShowCreateForm] = useState(false);
   const showCreateForm = externalShowCreateForm || internalShowCreateForm;
+  
+  // Debug logging
+  React.useEffect(() => {
+    console.log('🔥 QuickDealsWidget state update:', {
+      externalShowCreateForm,
+      internalShowCreateForm,
+      finalShowCreateForm: showCreateForm
+    });
+  }, [externalShowCreateForm, internalShowCreateForm, showCreateForm]);
   const [expandedDeal, setExpandedDeal] = useState<number | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
