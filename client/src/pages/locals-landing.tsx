@@ -97,33 +97,33 @@ export default function LocalsLanding() {
           {/* Local Experience Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
             
-            {/* Hidden Gems Tour */}
+            {/* Venice Beach Dance Party */}
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-2xl transform transition-all duration-300 flex flex-col">
               <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-blue-400 to-purple-500">
                 <img 
-                  src="/image_1754973365104.png" 
-                  alt="Local hidden gems experience" 
+                  src="/beach travel_1754973619241.jpg" 
+                  alt="Venice Beach dance party experience" 
                   className="w-full h-48 object-cover"
                 />
               </div>
               <div className="p-6 flex flex-col flex-grow">
                 <div className="mb-3">
-                  <h3 className="font-bold text-gray-900 mb-1">Hidden Gems Walking Tour</h3>
-                  <p className="text-sm text-gray-600">Share your secret neighborhood spots</p>
+                  <h3 className="font-bold text-gray-900 mb-1">Venice Beach Dance Party</h3>
+                  <p className="text-sm text-gray-600">Sunset dancing on the famous boardwalk</p>
                 </div>
                 
                 <div className="flex flex-wrap gap-2 mb-3">
-                  <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs font-medium">Local Host</span>
-                  <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-medium">Walking</span>
-                  <span className="bg-purple-100 text-purple-700 px-2 py-1 rounded-full text-xs font-medium">Culture</span>
+                  <span className="bg-orange-100 text-orange-700 px-2 py-1 rounded-full text-xs font-medium">Free</span>
+                  <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs font-medium">Beach</span>
+                  <span className="bg-purple-100 text-purple-700 px-2 py-1 rounded-full text-xs font-medium">Dancing</span>
                 </div>
                 
-                <p className="text-gray-700 text-sm mb-4 flex-grow">Show travelers the REAL city - those amazing spots only locals know about. Build friendships while sharing your favorite places.</p>
+                <p className="text-gray-700 text-sm mb-4 flex-grow">Join locals dancing to live music at Venice Beach boardwalk. Experience the authentic LA beach culture with sunset vibes and great people.</p>
                 <Button 
                   onClick={() => setLocation('/join')}
                   className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-bold mt-auto"
                 >
-                  START HOSTING
+                  JOIN THE PARTY
                 </Button>
               </div>
             </div>
