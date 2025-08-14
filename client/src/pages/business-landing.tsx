@@ -310,12 +310,13 @@ export default function BusinessLanding() {
               <h2 className="text-3xl font-bold mb-4">Simple Business Pricing</h2>
               <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 mb-6">
                 <div className="text-5xl font-black text-white mb-2">$50</div>
-                <div className="text-xl text-white/90 mb-4">per month</div>
+                <div className="text-xl text-white/90 mb-2">per month</div>
+                <div className="text-2xl font-bold text-orange-200 mb-4">+ $100 Sign Up Fee</div>
                 <div className="bg-green-500 text-white font-bold py-2 px-6 rounded-full text-lg mb-4 inline-block">
                   🎉 FREE DURING BETA
                 </div>
                 <div className="text-white/80 mb-6">
-                  <p>✅ Unlimited business offers</p>
+                  <p>✅ Business offers and promotions</p>
                   <p>✅ Event hosting capabilities</p>
                   <p>✅ Direct messaging with customers</p>
                   <p>✅ Analytics dashboard</p>
