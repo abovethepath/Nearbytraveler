@@ -296,20 +296,13 @@ export default function EventsLanding() {
             <p className="text-xl mb-8 opacity-90">Join others already creating unforgettable experiences together.</p>
             
             {/* Primary CTA Row */}
-            <div className="space-y-4 sm:space-y-0 sm:flex sm:gap-4 sm:justify-center mb-8">
+            <div className="mb-8 flex justify-center">
               <Button
                 onClick={() => setLocation('/join')}
                 size="lg"
-                className="bg-white text-blue-600 hover:bg-gray-100 font-bold text-lg px-8 py-4 rounded-full shadow-lg transition-all duration-200 transform hover:scale-105 w-full sm:w-auto"
+                className="bg-white text-blue-600 hover:bg-gray-100 font-bold text-lg px-8 py-4 rounded-full shadow-lg transition-all duration-200 transform hover:scale-105"
               >
-                🚀 Join Event Community
-              </Button>
-              <Button
-                onClick={() => setLocation('/join')}
-                size="lg"
-                className="border-2 border-white text-white hover:bg-white hover:text-blue-600 font-bold text-lg px-8 py-4 rounded-full transition-all duration-200 transform hover:scale-105 w-full sm:w-auto"
-              >
-                🎉 Create Your Event
+                🎯 Join Nearby Traveler Today!!!
               </Button>
             </div>
             
