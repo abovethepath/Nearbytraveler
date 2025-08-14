@@ -43,7 +43,12 @@ export default function Messages() {
 
   // Debug: Log messages data
   React.useEffect(() => {
-    console.log('Messages data updated:', (messages as any[])?.length || 0, 'messages');
+    const messagesArray = messages as any[];
+    console.log('Messages data updated:', messagesArray?.length || 0, 'messages');
+    if (messagesArray && messagesArray.length > 0) {
+      console.log('📧 All messages:', messagesArray);
+      console.log('📧 Message senders/receivers:', messagesArray.map((m: any) => ({ senderId: m.senderId, receiverId: m.receiverId, content: m.content?.substring(0, 50) })));
+    }
   }, [messages]);
 
   // Initialize WebSocket connection and instant messaging
@@ -252,9 +257,23 @@ export default function Messages() {
     }
   };
 
+  // Debug: Log conversations
+  React.useEffect(() => {
+    console.log('📋 Conversations built:', conversations.length);
+    conversations.forEach((conv: any) => {
+      console.log(`📋 Conv: ${conv.username} (ID: ${conv.userId}) - ${conv.lastMessage?.substring(0, 30)}`);
+    });
+  }, [conversations]);
+
   const selectedUser = selectedConversation 
     ? conversations.find((conv: any) => conv.userId === selectedConversation)
     : null;
+
+  // Debug: Log selected conversation state
+  React.useEffect(() => {
+    console.log('🎯 Selected conversation changed:', selectedConversation);
+    console.log('🎯 Selected user:', selectedUser?.username || 'None');
+  }, [selectedConversation, selectedUser]);
 
   // Enhanced authentication check with emergency recovery
   if (!user) {
@@ -327,7 +346,10 @@ export default function Messages() {
                   className={`p-4 border-b border-gray-700 cursor-pointer hover:bg-gray-700 ${
                     selectedConversation === conv.userId ? 'bg-gray-700' : ''
                   }`}
-                  onClick={() => setSelectedConversation(conv.userId)}
+                  onClick={() => {
+                    console.log('🔥 CONVERSATION CLICKED:', conv.username, 'ID:', conv.userId);
+                    setSelectedConversation(conv.userId);
+                  }}
                 >
                   <div className="flex items-center gap-3">
                     <div 
