@@ -1158,13 +1158,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   // Update form values when user data changes (fresh from database)
   React.useEffect(() => {
     if (user && !userLoading) {
-      console.log('🔥 FORM INIT: Updating profile form with user data:', {
+      console.log('Updating profile form with fresh user data:', {
         hometownCity: user.hometownCity,
         hometownState: user.hometownState,
-        hometownCountry: user.hometownCountry,
-        travelingWithChildren: (user as any).travelingWithChildren,
-        travelingWithChildrenType: typeof (user as any).travelingWithChildren,
-        childrenAges: (user as any).childrenAges
+        hometownCountry: user.hometownCountry
       });
       
       // Initialize temp values for editing
@@ -1198,7 +1195,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         });
       } else {
         const travelingWithChildrenValue = !!(user as any).travelingWithChildren;
-        console.log('🔥 FORM RESET: Setting travelingWithChildren to:', travelingWithChildrenValue, 'from user value:', (user as any).travelingWithChildren);
         
         profileForm.reset({
           bio: user.bio || "",
@@ -1218,10 +1214,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           isActiveDuty: user.isActiveDuty !== undefined ? user.isActiveDuty : false,
         });
         
-        // Force set the value after reset
+        // Force set the value after reset to ensure React Hook Form properly registers it
         setTimeout(() => {
           profileForm.setValue('travelingWithChildren', travelingWithChildrenValue);
-          console.log('🔥 FORCE SET: Set travelingWithChildren to:', travelingWithChildrenValue, 'current form value:', profileForm.getValues('travelingWithChildren'));
         }, 100);
       }
     }
@@ -6298,9 +6293,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
               {/* Family Travel Section - Rebuilt like Sexual Preferences */}
               {user?.userType !== 'business' && (
-                <div className="space-y-4 bg-orange-50 dark:bg-orange-900/20 p-4 rounded-lg border-2 border-orange-300">
-                  <h3 className="text-xl font-bold text-orange-800 dark:text-orange-200 border-b pb-2">
-                    🔥 FAMILY TRAVEL - DEBUG SECTION 🔥
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white border-b pb-2">
+                    Family Travel
                   </h3>
                   
                   <FormField
@@ -6318,21 +6313,15 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                 checked={!!field.value}
                                 onChange={(e) => {
                                   const checked = e.target.checked;
-                                  console.log('🔥 CHECKBOX CHANGED:', { oldValue: field.value, newValue: checked });
                                   field.onChange(checked);
                                   if (!checked) {
                                     // Clear ages when unchecked
                                     profileForm.setValue('childrenAges', '');
-                                    console.log('🔥 CHECKBOX: Cleared childrenAges because unchecked');
                                   }
                                 }}
                                 className="h-4 w-4 border-gray-300 rounded text-purple-600 focus:ring-purple-500"
                                 data-testid="checkbox-traveling-with-children"
                               />
-                              {/* Debug info - remove after testing */}
-                              <span className="text-xs text-gray-400 ml-2">
-                                (Debug: {String(field.value)} / {typeof field.value})
-                              </span>
                               <label 
                                 htmlFor="traveling-with-children" 
                                 className="text-sm font-medium text-gray-700 dark:text-white cursor-pointer"
