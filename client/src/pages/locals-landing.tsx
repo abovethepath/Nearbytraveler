@@ -51,7 +51,7 @@ export default function LocalsLanding() {
                         </p>
                         <div className="mt-4 text-center">
                           <p className="text-white font-bold text-lg">Be the Local You'd Want to Meet on your Trips</p>
-                          <p className="text-orange-200 text-sm">Share hidden gems • Build global friendships • Host amazing experiences</p>
+                          <p className="text-orange-200 text-sm">Share hidden gems • Build global friendships • Create amazing experiences</p>
                         </div>
                       </div>
                     </div>
@@ -115,7 +115,7 @@ export default function LocalsLanding() {
               <div className="bg-red-800 p-6 rounded-xl shadow-lg text-white">
                 <div className="text-4xl mb-4">🎉</div>
                 <h3 className="text-xl font-bold mb-3 text-white">Join or Host Events</h3>
-                <p className="text-white">Host events and activities you love doing in your city to meet like-minded locals and travelers.</p>
+                <p className="text-white">Create events and activities you love doing in your city to meet like-minded locals and travelers.</p>
               </div>
             </div>
           </div>
