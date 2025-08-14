@@ -41,32 +41,6 @@ body {
 *, *::before, *::after {
   box-sizing: border-box;
   max-width: 100%;
-  
-  /* NUCLEAR OPTION: Kill ALL mobile tap highlights globally */
-  -webkit-tap-highlight-color: transparent !important;
-  -webkit-focus-ring-color: transparent !important;
-  outline: none !important;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
-
-/* Allow text selection only where needed */
-p, h1, h2, h3, h4, h5, h6, span, div, input, textarea {
-  -webkit-user-select: text;
-  -moz-user-select: text;
-  -ms-user-select: text;
-  user-select: text;
-}
-
-/* KILL ALL BLUE HIGHLIGHTS AND BORDERS */
-span, div, p, h1, h2, h3, h4, h5, h6 {
-  -webkit-tap-highlight-color: transparent !important;
-  -webkit-touch-callout: none !important;
-  -webkit-user-select: none !important;
-  touch-action: manipulation !important;
-  pointer-events: auto !important;
 }
 
 /* ROOT CONTAINER FIXES */
