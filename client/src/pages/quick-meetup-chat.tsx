@@ -199,9 +199,7 @@ function QuickMeetupChat() {
       });
       
       // Scroll to bottom when user sends a message
-      setTimeout(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-      }, 100);
+      // Keep natural scroll position - don't auto-scroll to bottom
     },
     onError: (error) => {
       console.error('Failed to send message:', error);

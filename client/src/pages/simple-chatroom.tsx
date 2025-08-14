@@ -297,10 +297,15 @@ export default function SimpleChatroomPage() {
     },
   });
 
-  // Auto scroll to bottom when new messages arrive
+  // Keep scroll position at top when entering chatroom
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+    // Only scroll to top on initial load, not on new messages
+    if (messages && messages.length > 0) {
+      setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }, 100);
+    }
+  }, [chatroomId]); // Only trigger on chatroom change, not message updates
 
   // Auto-join public rooms
   useEffect(() => {

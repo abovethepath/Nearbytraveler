@@ -70,8 +70,7 @@ export default function Messages() {
         messageType: 'instant'
       }]);
       
-      // Auto-scroll to bottom
-      setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
+      // Keep natural scroll position
     };
 
     const handleTypingIndicator = (data: any) => {
@@ -91,10 +90,7 @@ export default function Messages() {
     };
   }, [user?.id]);
 
-  // Auto-scroll to bottom when messages change
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, instantMessages]);
+  // Keep natural scroll position - don't auto-scroll when messages update
 
   // Fetch all users for name lookup
   const { data: allUsers = [] } = useQuery({
