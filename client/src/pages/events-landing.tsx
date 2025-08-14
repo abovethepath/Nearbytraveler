@@ -71,6 +71,108 @@ export default function EventsLanding() {
           </div>
         </div>
         
+        {/* Sample Events Section */}
+        <div className="max-w-6xl mx-auto mb-16">
+          <h2 className="text-3xl sm:text-4xl font-bold mb-8 text-center text-gray-900 dark:text-white" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700'}}>
+            Upcoming Local Events & Experiences
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+            
+            {/* Venice Beach Dance Party */}
+            <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transform transition-all duration-300 flex flex-col">
+              <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-blue-400 to-purple-500">
+                <img 
+                  src="/beach travel_1754973619241.jpg" 
+                  alt="Venice Beach dance party event" 
+                  className="w-full h-48 object-cover"
+                />
+              </div>
+              <div className="p-6 flex flex-col flex-grow">
+                <div className="mb-3">
+                  <h3 className="font-bold text-gray-900 mb-1">Venice Beach Dance Party</h3>
+                  <p className="text-sm text-gray-600">Sunset dancing on the famous boardwalk</p>
+                </div>
+                
+                <div className="flex flex-wrap gap-2 mb-3">
+                  <span className="bg-orange-100 text-orange-700 px-2 py-1 rounded-full text-xs font-medium">Free</span>
+                  <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs font-medium">Beach</span>
+                  <span className="bg-purple-100 text-purple-700 px-2 py-1 rounded-full text-xs font-medium">Dancing</span>
+                </div>
+                
+                <p className="text-gray-700 text-sm mb-4 flex-grow">Join locals dancing to live music at Venice Beach boardwalk. Experience the authentic LA beach culture with sunset vibes and great people.</p>
+                <a
+                  href="/join"
+                  className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-bold py-2 px-4 rounded text-center transition duration-200"
+                >
+                  JOIN THE PARTY
+                </a>
+              </div>
+            </div>
+
+            {/* Food Adventure */}
+            <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transform transition-all duration-300 flex flex-col">
+              <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-orange-400 to-red-500">
+                <img 
+                  src="/beach travel_1754973619241.jpg" 
+                  alt="Local food experience event" 
+                  className="w-full h-48 object-cover"
+                />
+              </div>
+              <div className="p-6 flex flex-col flex-grow">
+                <div className="mb-3">
+                  <h3 className="font-bold text-gray-900 mb-1">Authentic Food Adventure</h3>
+                  <p className="text-sm text-gray-600">Discover your local's favorite eats</p>
+                </div>
+                
+                <div className="flex flex-wrap gap-2 mb-3">
+                  <span className="bg-orange-100 text-orange-700 px-2 py-1 rounded-full text-xs font-medium">Food</span>
+                  <span className="bg-red-100 text-red-700 px-2 py-1 rounded-full text-xs font-medium">Local Spots</span>
+                  <span className="bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full text-xs font-medium">Social</span>
+                </div>
+                
+                <p className="text-gray-700 text-sm mb-4 flex-grow">Experience authentic local restaurants and food spots. Taste the real flavors and stories of the city with friendly locals.</p>
+                <a
+                  href="/join"
+                  className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold py-2 px-4 rounded text-center transition duration-200"
+                >
+                  JOIN FOOD TOUR
+                </a>
+              </div>
+            </div>
+
+            {/* BBQ Event */}
+            <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transform transition-all duration-300 flex flex-col">
+              <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-green-400 to-teal-500">
+                <img 
+                  src="/travelers together hugging_1754971726997.avif" 
+                  alt="Beach BBQ event" 
+                  className="w-full h-48 object-cover"
+                />
+              </div>
+              <div className="p-6 flex flex-col flex-grow">
+                <div className="mb-3">
+                  <h3 className="font-bold text-gray-900 mb-1">Beach BBQ & Bonfire</h3>
+                  <p className="text-sm text-gray-600">Sunset BBQ with new friends</p>
+                </div>
+                
+                <div className="flex flex-wrap gap-2 mb-3">
+                  <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs font-medium">Beach</span>
+                  <span className="bg-orange-100 text-orange-700 px-2 py-1 rounded-full text-xs font-medium">BBQ</span>
+                  <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-medium">Social</span>
+                </div>
+                
+                <p className="text-gray-700 text-sm mb-4 flex-grow">Join our weekly beach BBQ gatherings. Meet amazing locals and travelers while enjoying great food and beautiful sunsets.</p>
+                <a
+                  href="/join"
+                  className="w-full bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white font-bold py-2 px-4 rounded text-center transition duration-200"
+                >
+                  JOIN BBQ
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Final CTA Section */}
         <div className="mt-16 bg-gradient-to-r from-blue-600 to-orange-600 text-white p-12 rounded-2xl shadow-2xl max-w-5xl mx-auto">
           <div className="text-center">

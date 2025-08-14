@@ -87,80 +87,18 @@ export default function LocalsLanding() {
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-12 animate-slide-in-left">
             <h2 className="text-4xl font-black text-gray-900 mb-4">
-              Join others or Host Amazing Local Experiences
+              Build Your Local Community & Welcome Travelers
             </h2>
             <p className="text-xl text-gray-600">
-              Real locals. Real experiences. Zero tourist nonsense.
+              Connect with neighbors. Welcome visitors. Share your city's best secrets.
             </p>
           </div>
           
-          {/* Local Experience Cards */}
+          {/* Local Connection Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
             
-            {/* Venice Beach Dance Party */}
-            <div className="bg-white rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-2xl transform transition-all duration-300 flex flex-col">
-              <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-blue-400 to-purple-500">
-                <img 
-                  src="/beach travel_1754973619241.jpg" 
-                  alt="Venice Beach dance party experience" 
-                  className="w-full h-48 object-cover"
-                />
-              </div>
-              <div className="p-6 flex flex-col flex-grow">
-                <div className="mb-3">
-                  <h3 className="font-bold text-gray-900 mb-1">Venice Beach Dance Party</h3>
-                  <p className="text-sm text-gray-600">Sunset dancing on the famous boardwalk</p>
-                </div>
-                
-                <div className="flex flex-wrap gap-2 mb-3">
-                  <span className="bg-orange-100 text-orange-700 px-2 py-1 rounded-full text-xs font-medium">Free</span>
-                  <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs font-medium">Beach</span>
-                  <span className="bg-purple-100 text-purple-700 px-2 py-1 rounded-full text-xs font-medium">Dancing</span>
-                </div>
-                
-                <p className="text-gray-700 text-sm mb-4 flex-grow">Join locals dancing to live music at Venice Beach boardwalk. Experience the authentic LA beach culture with sunset vibes and great people.</p>
-                <Button 
-                  onClick={() => setLocation('/join')}
-                  className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-bold mt-auto"
-                >
-                  JOIN THE PARTY
-                </Button>
-              </div>
-            </div>
-            
-            {/* Local Food Experience */}
-            <div className="bg-white rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-2xl transform transition-all duration-300 flex flex-col" style={{animationDelay: '0.2s'}}>
-              <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-orange-400 to-red-500">
-                <img 
-                  src="/beach travel_1754973619241.jpg" 
-                  alt="Local food experience" 
-                  className="w-full h-48 object-cover"
-                />
-              </div>
-              <div className="p-6 flex flex-col flex-grow">
-                <div className="mb-3">
-                  <h3 className="font-bold text-gray-900 mb-1">Authentic Food Adventure</h3>
-                  <p className="text-sm text-gray-600">Your favorite local eats & hangouts</p>
-                </div>
-                
-                <div className="flex flex-wrap gap-2 mb-3">
-                  <span className="bg-orange-100 text-orange-700 px-2 py-1 rounded-full text-xs font-medium">Food</span>
-                  <span className="bg-red-100 text-red-700 px-2 py-1 rounded-full text-xs font-medium">Local Spots</span>
-                  <span className="bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full text-xs font-medium">Social</span>
-                </div>
-                
-                <p className="text-gray-700 text-sm mb-4 flex-grow">Take travelers to your favorite local restaurants and food spots. Share the authentic flavors and stories of your city.</p>
-                <Button 
-                  onClick={() => setLocation('/join')}
-                  className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold mt-auto"
-                >
-                  HOST FOOD TOURS
-                </Button>
-              </div>
-            </div>
-            
             {/* Meet Fellow Locals */}
-            <div className="bg-white rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-2xl transform transition-all duration-300 flex flex-col" style={{animationDelay: '0.4s'}}>
+            <div className="bg-white rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-2xl transform transition-all duration-300 flex flex-col">
               <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-green-400 to-teal-500">
                 <img 
                   src="/travelers together hugging_1754971726997.avif" 
@@ -186,6 +124,68 @@ export default function LocalsLanding() {
                   className="w-full bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white font-bold mt-auto"
                 >
                   MEET LOCALS
+                </Button>
+              </div>
+            </div>
+
+            {/* Welcome Travelers */}
+            <div className="bg-white rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-2xl transform transition-all duration-300 flex flex-col" style={{animationDelay: '0.2s'}}>
+              <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-blue-400 to-purple-500">
+                <img 
+                  src="/beach travel_1754973619241.jpg" 
+                  alt="Welcome traveling visitors" 
+                  className="w-full h-48 object-cover"
+                />
+              </div>
+              <div className="p-6 flex flex-col flex-grow">
+                <div className="mb-3">
+                  <h3 className="font-bold text-gray-900 mb-1">Welcome Travelers</h3>
+                  <p className="text-sm text-gray-600">Be the friendly face of your city</p>
+                </div>
+                
+                <div className="flex flex-wrap gap-2 mb-3">
+                  <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs font-medium">Host</span>
+                  <span className="bg-purple-100 text-purple-700 px-2 py-1 rounded-full text-xs font-medium">Culture</span>
+                  <span className="bg-indigo-100 text-indigo-700 px-2 py-1 rounded-full text-xs font-medium">Friendship</span>
+                </div>
+                
+                <p className="text-gray-700 text-sm mb-4 flex-grow">Meet amazing travelers visiting your city. Share local insights, show them around, and build friendships that span the globe.</p>
+                <Button 
+                  onClick={() => setLocation('/join')}
+                  className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-bold mt-auto"
+                >
+                  WELCOME VISITORS
+                </Button>
+              </div>
+            </div>
+
+            {/* Share Local Knowledge */}
+            <div className="bg-white rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-2xl transform transition-all duration-300 flex flex-col" style={{animationDelay: '0.4s'}}>
+              <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-orange-400 to-pink-500">
+                <img 
+                  src="/image_1754973365104.png" 
+                  alt="Share local knowledge and hidden gems" 
+                  className="w-full h-48 object-cover"
+                />
+              </div>
+              <div className="p-6 flex flex-col flex-grow">
+                <div className="mb-3">
+                  <h3 className="font-bold text-gray-900 mb-1">Share Your City Secrets</h3>
+                  <p className="text-sm text-gray-600">Show off your local expertise</p>
+                </div>
+                
+                <div className="flex flex-wrap gap-2 mb-3">
+                  <span className="bg-orange-100 text-orange-700 px-2 py-1 rounded-full text-xs font-medium">Local Expert</span>
+                  <span className="bg-pink-100 text-pink-700 px-2 py-1 rounded-full text-xs font-medium">Hidden Gems</span>
+                  <span className="bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full text-xs font-medium">Insider Tips</span>
+                </div>
+                
+                <p className="text-gray-700 text-sm mb-4 flex-grow">Share your favorite local spots, secret gems, and insider knowledge. Help others discover the real heart of your city.</p>
+                <Button 
+                  onClick={() => setLocation('/join')}
+                  className="w-full bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white font-bold mt-auto"
+                >
+                  SHARE SECRETS
                 </Button>
               </div>
             </div>
