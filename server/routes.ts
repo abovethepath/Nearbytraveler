@@ -6341,7 +6341,7 @@ Ready to start making real connections wherever you are?
       // Award aura points
       const photographer = await storage.getUserByUsername(photographerUsername);
       if (photographer) {
-        const auraAwarded = 15;
+        const auraAwarded = 1;
         const currentAura = photographer.aura || 0;
         await storage.updateUser(photographer.id, { 
           aura: currentAura + auraAwarded 
@@ -6353,8 +6353,8 @@ Ready to start making real connections wherever you are?
       res.json({ 
         success: true,
         photo,
-        auraAwarded: 15,
-        message: "Photo uploaded successfully! You earned 15 aura points."
+        auraAwarded: 1,
+        message: "Photo uploaded successfully! You earned 1 aura point."
       });
     } catch (error: any) {
       console.error("Error confirming upload:", error);
@@ -6416,8 +6416,8 @@ Ready to start making real connections wherever you are?
 
       const photo = await storage.createCityPhoto(photoData);
 
-      // Award aura points (15 points for photo upload)
-      const auraAwarded = 15;
+      // Award aura points (1 point for photo upload)
+      const auraAwarded = 1;
       const currentAura = photographer.aura || 0;
       await storage.updateUser(photographerId, { 
         aura: currentAura + auraAwarded 
@@ -6429,7 +6429,7 @@ Ready to start making real connections wherever you are?
         success: true,
         photo,
         auraAwarded,
-        message: `Photo uploaded successfully! You earned ${auraAwarded} aura points.`
+        message: `Photo uploaded successfully! You earned ${auraAwarded} aura point${auraAwarded === 1 ? '' : 's'}.`
       });
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error uploading city photo with aura:", error);
