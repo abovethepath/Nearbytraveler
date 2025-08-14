@@ -512,7 +512,7 @@ export default function Landing() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div className="space-y-8">
               <div>
-                <span className="inline-block px-6 py-3 bg-gradient-to-r from-blue-100 to-teal-100 text-blue-800 text-sm sm:text-base font-bold rounded-full mb-6 shadow-lg border-2 border-blue-200">
+                <span className="inline-block px-6 py-3 bg-gradient-to-r from-orange-100 to-red-100 text-orange-800 text-sm sm:text-base font-bold rounded-full mb-6 shadow-lg border-2 border-orange-200">
                   FOR LOCALS
                 </span>
                 <h2 className="text-4xl sm:text-5xl font-black text-gray-900 dark:text-white mb-6" style={{fontFamily: '"Open Sans", sans-serif'}}>
