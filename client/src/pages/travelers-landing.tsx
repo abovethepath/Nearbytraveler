@@ -240,7 +240,7 @@ export default function TravelersLanding() {
             <div className="bg-gradient-to-br from-cyan-700 to-cyan-800 sm:from-cyan-50 sm:to-cyan-100 dark:from-cyan-900/30 dark:to-cyan-800/30 dark:sm:from-cyan-900/30 dark:sm:to-cyan-800/30 p-6 rounded-xl shadow-lg border dark:border-cyan-700/50">
               <div className="text-4xl mb-4">📸</div>
               <h3 className="text-xl font-bold mb-3 text-white sm:!text-black dark:text-white">Travel Memories</h3>
-              <p className="text-white sm:!text-black dark:text-gray-300">Photo sharing with AI analysis, travel stories, and memory timeline to document your adventures.</p>
+              <p className="text-white sm:!text-black dark:text-gray-300">Photo sharing, travel stories, and memory timeline to document your adventures.</p>
             </div>
             <div className="bg-gradient-to-br from-emerald-700 to-emerald-800 sm:from-emerald-50 sm:to-emerald-100 dark:from-emerald-900/30 dark:to-emerald-800/30 dark:sm:from-emerald-900/30 dark:sm:to-emerald-800/30 p-6 rounded-xl shadow-lg border dark:border-emerald-700/50">
               <div className="text-4xl mb-4">🏆</div>
