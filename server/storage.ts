@@ -2850,7 +2850,7 @@ export class DatabaseStorage implements IStorage {
   async deleteUserReference(): Promise<any> { return true; }
   async createReferral(): Promise<any> { return {}; }
   async getUserReferrals(): Promise<any> { return []; }
-  async getReferralByCode(): Promise<any> { return undefined; }
+
   async updateReferralStatus(): Promise<any> { return undefined; }
   async generateReferralCode(): Promise<any> { return ""; }
   async getUserReputation(): Promise<any> { return undefined; }
