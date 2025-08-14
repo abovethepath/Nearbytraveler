@@ -58,8 +58,34 @@ export default function LocalsLanding() {
                       {/* Subhead */}
                       <div className="mt-8">
                         <p className="text-xl sm:text-2xl leading-relaxed max-w-3xl mx-auto">
-                          <span className="text-orange-300">Share your city's hidden gems</span>{' '}
-                          <span className="text-white">and connect with</span>{' '}
+                          <span
+                            className="
+                              text-orange-300
+                              outline-none focus:outline-none focus-visible:outline-none
+                              ring-0 focus:ring-0
+                              select-none selection:bg-transparent
+                              [-webkit-tap-highlight-color:transparent]
+                              [box-shadow:none]
+                              [text-decoration:none]
+                              pointer-events-none
+                            "
+                          >
+                            Share your city's hidden gems
+                          </span>{' '}
+                          <span
+                            className="
+                              text-white
+                              outline-none focus:outline-none focus-visible:outline-none
+                              ring-0 focus:ring-0
+                              select-none selection:bg-transparent
+                              [-webkit-tap-highlight-color:transparent]
+                              [box-shadow:none]
+                              [text-decoration:none]
+                              pointer-events-none
+                            "
+                          >
+                            and connect with
+                          </span>{' '}
                           <span
                             className="
                               text-blue-300
@@ -74,7 +100,20 @@ export default function LocalsLanding() {
                           >
                             travelers and like-minded locals
                           </span>{' '}
-                          <span className="text-black bg-orange-400 px-2 py-1 rounded">—today.</span>
+                          <span
+                            className="
+                              text-black bg-orange-400 px-2 py-1 rounded
+                              outline-none focus:outline-none focus-visible:outline-none
+                              ring-0 focus:ring-0
+                              select-none selection:bg-transparent
+                              [-webkit-tap-highlight-color:transparent]
+                              [box-shadow:none]
+                              [text-decoration:none]
+                              pointer-events-none
+                            "
+                          >
+                            —today.
+                          </span>
                         </p>
                       </div>
                     </div>
