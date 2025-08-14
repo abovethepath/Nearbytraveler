@@ -1206,7 +1206,15 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           sexualPreference: user.sexualPreference || [],
           sexualPreferenceVisible: user.sexualPreferenceVisible !== undefined ? user.sexualPreferenceVisible : false,
           travelStyle: user.travelStyle || [],
-          travelingWithChildren: Boolean(user.travelingWithChildren),
+          travelingWithChildren: (() => {
+            const value = Boolean(user.travelingWithChildren);
+            console.log('🚨 FORM RESET - Setting travelingWithChildren:', {
+              raw: user.travelingWithChildren,
+              converted: value,
+              type: typeof user.travelingWithChildren
+            });
+            return value;
+          })(),
           childrenAges: (user as any).childrenAges || "",
           isVeteran: user.isVeteran !== undefined ? user.isVeteran : false,
           isActiveDuty: user.isActiveDuty !== undefined ? user.isActiveDuty : false,
@@ -6278,8 +6286,22 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       <FormItem className="flex flex-row items-start space-x-3 rounded-lg border p-4">
                         <FormControl>
                           <Checkbox
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
+                            checked={(() => {
+                              console.log('🔲 CHECKBOX DEBUG:', {
+                                fieldValue: field.value,
+                                fieldValueType: typeof field.value,
+                                checked: !!field.value
+                              });
+                              return !!field.value;
+                            })()}
+                            onCheckedChange={(checked) => {
+                              console.log('🔲 CHECKBOX CHANGE:', {
+                                oldValue: field.value,
+                                newValue: checked,
+                                newValueType: typeof checked
+                              });
+                              field.onChange(checked);
+                            }}
                           />
                         </FormControl>
                         <div className="space-y-1 leading-none">
