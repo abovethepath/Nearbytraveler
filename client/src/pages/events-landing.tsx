@@ -53,17 +53,34 @@ export default function EventsLanding() {
                   <div className="text-center">
                     <div className="max-w-4xl mx-auto">
                       <h1 className="text-4xl tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
-                        <span className="block text-white font-black" style={{fontFamily: '"Inter", sans-serif'}}>Discover & Create Events</span>
+                        <span className="block text-white font-black" style={{fontFamily: '"Inter", sans-serif'}}>Epic Events.</span>
+                        <span className="block font-black" style={{fontFamily: '"Inter", sans-serif'}}>
+                          <span className="text-orange-400">Real connections. </span>
+                          <span className="text-blue-400" style={{border: 'none', outline: 'none', boxShadow: 'none'}}>Unforgettable experiences.</span>
+                        </span>
                       </h1>
                       
-                      {/* Subhead */}
-                      <div className="mt-8">
-                        <p className="text-xl sm:text-2xl leading-relaxed max-w-3xl mx-auto">
-                          <span className="text-orange-300">Host unforgettable gatherings</span>{' '}
-                          <span className="text-white">and</span>{' '}
-                          <span className="text-blue-300" style={{border: 'none', outline: 'none', boxShadow: 'none'}}>create lasting connections</span>{' '}
-                          <span className="text-black bg-orange-400 px-2 py-1 rounded">right now, today!!!</span>
+                      {/* Event value proposition */}
+                      <div className="mt-8 p-6 bg-black/40 backdrop-blur-sm rounded-2xl border border-white/20 animate-zoom-in" style={{animationDelay: '0.3s'}}>
+                        <p className="text-xl text-white leading-relaxed">
+                          <span className="text-orange-300 font-bold">"Join beach bonfires, rooftop parties, food tours, and adventures.</span>
+                          <span className="text-white"> Every event is a chance to meet amazing locals and travelers who become lifelong friends."</span>
                         </p>
+                        <div className="mt-4 text-center">
+                          <p className="text-white font-bold text-lg">— Your Community Awaits</p>
+                          <p className="text-orange-200 text-sm">From beach BBQs to secret speakeasies - join the fun today</p>
+                        </div>
+                      </div>
+                      
+                      {/* Hero CTA */}
+                      <div className="mt-8">
+                        <Button
+                          onClick={() => setLocation('/join')}
+                          size="lg"
+                          className="bg-orange-500 hover:bg-orange-600 text-white font-bold text-xl px-12 py-6 rounded-2xl shadow-2xl transition-all duration-200 transform hover:scale-105 animate-pulse-glow"
+                        >
+                          🎉 JOIN EVENTS NOW
+                        </Button>
                       </div>
                     </div>
                   </div>
@@ -74,7 +91,75 @@ export default function EventsLanding() {
         </div>
       </div>
 
+      {/* Sticky CTA Button - Fixed Bottom Right */}
+      <div className="fixed bottom-6 right-6 z-50">
+        <Button
+          onClick={() => setLocation('/join')}
+          className="bg-orange-500 hover:bg-orange-600 text-white font-bold px-6 py-4 rounded-full shadow-2xl transition-all duration-300 transform hover:scale-110 animate-pulse border-4 border-white"
+        >
+          🎪 JOIN EVENTS
+        </Button>
+      </div>
+
       <main className="flex-1 px-4 py-16">
+        
+        {/* Multiple CTA Section */}
+        <div className="max-w-6xl mx-auto mb-16">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold mb-6 text-gray-900 dark:text-white">Ready to Join the Fun?</h2>
+            <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">Choose your adventure and start making connections today!</p>
+            
+            {/* Primary CTA Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              <Button
+                onClick={() => setLocation('/join')}
+                className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-6 px-8 rounded-xl text-lg shadow-lg transform hover:scale-105 transition-all duration-200"
+              >
+                🌍 JOIN AS TRAVELER
+              </Button>
+              <Button
+                onClick={() => setLocation('/join')}
+                className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-6 px-8 rounded-xl text-lg shadow-lg transform hover:scale-105 transition-all duration-200"
+              >
+                🏠 JOIN AS LOCAL
+              </Button>
+              <Button
+                onClick={() => setLocation('/join')}
+                className="bg-green-500 hover:bg-green-600 text-white font-bold py-6 px-8 rounded-xl text-lg shadow-lg transform hover:scale-105 transition-all duration-200"
+              >
+                🎉 CREATE EVENT
+              </Button>
+            </div>
+            
+            {/* Secondary Action Buttons */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <Button
+                onClick={() => setLocation('/join')}
+                className="bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-4 rounded-lg text-sm"
+              >
+                🎪 Tonight's Events
+              </Button>
+              <Button
+                onClick={() => setLocation('/join')}
+                className="bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 px-4 rounded-lg text-sm"
+              >
+                🍕 Food Events
+              </Button>
+              <Button
+                onClick={() => setLocation('/join')}
+                className="bg-teal-500 hover:bg-teal-600 text-white font-bold py-3 px-4 rounded-lg text-sm"
+              >
+                🏖️ Beach Events
+              </Button>
+              <Button
+                onClick={() => setLocation('/join')}
+                className="bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-4 rounded-lg text-sm"
+              >
+                🎵 Music Events
+              </Button>
+            </div>
+          </div>
+        </div>
 
         
         {/* Sample Events Section */}
@@ -203,28 +288,56 @@ export default function EventsLanding() {
           </div>
         </div>
 
-        {/* Final CTA Section */}
-        <div className="mt-16 bg-gradient-to-r from-blue-600 to-orange-600 text-white p-12 rounded-2xl shadow-2xl max-w-5xl mx-auto">
-          <div className="text-center">
-            <h2 className="text-3xl sm:text-4xl font-bold mb-6" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700', WebkitTextStroke: '1px black', textShadow: '1px 1px 0px black, -1px -1px 0px black, 1px -1px 0px black, -1px 1px 0px black'}}>
-              Ready to Join and Create Local Events?
-            </h2>
-            <p className="text-lg sm:text-xl mb-8 max-w-3xl mx-auto">
-              Join thousands of travelers and locals creating unforgettable memories together. From beach bonfires to city adventures - your community awaits!
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a
-                href="/join"
-                className="px-10 py-4 bg-white text-blue-600 font-bold rounded-xl shadow-xl hover:scale-105 hover:shadow-2xl transition transform text-lg"
+        {/* Get Started Section - Enhanced with Multiple CTAs */}
+        <div className="bg-gradient-to-r from-orange-600 to-blue-600 text-white py-16 rounded-2xl shadow-2xl mb-16">
+          <div className="max-w-4xl mx-auto text-center px-6">
+            <h2 className="text-4xl font-bold mb-4">Ready to Make Epic Memories?</h2>
+            <p className="text-xl mb-8 opacity-90">Join thousands already creating unforgettable experiences together.</p>
+            
+            {/* Primary CTA Row */}
+            <div className="space-y-4 sm:space-y-0 sm:flex sm:gap-4 sm:justify-center mb-8">
+              <Button
+                onClick={() => setLocation('/join')}
+                size="lg"
+                className="bg-white text-blue-600 hover:bg-gray-100 font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition-all duration-200 transform hover:scale-105 w-full sm:w-auto"
               >
-                Join Nearby Traveler
-              </a>
-              <a
-                href="/auth"
-                className="px-10 py-4 border-2 border-white text-white font-bold rounded-xl shadow-xl hover:bg-white/20 backdrop-blur-sm transition text-lg"
+                🚀 Join Event Community
+              </Button>
+              <Button
+                onClick={() => setLocation('/join')}
+                size="lg"
+                className="border-2 border-white text-white hover:bg-white hover:text-blue-600 font-bold text-lg px-8 py-4 rounded-xl transition-all duration-200 transform hover:scale-105 w-full sm:w-auto"
               >
-                Sign In to Explore
-              </a>
+                🎉 Create Your Event
+              </Button>
+            </div>
+            
+            {/* Additional Action Buttons */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <Button
+                onClick={() => setLocation('/join')}
+                className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-4 rounded-lg text-sm"
+              >
+                🏖️ Beach Events
+              </Button>
+              <Button
+                onClick={() => setLocation('/join')}
+                className="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-4 rounded-lg text-sm"
+              >
+                🍕 Food Tours
+              </Button>
+              <Button
+                onClick={() => setLocation('/join')}
+                className="bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-4 rounded-lg text-sm"
+              >
+                🎵 Music Events
+              </Button>
+              <Button
+                onClick={() => setLocation('/join')}
+                className="bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 px-4 rounded-lg text-sm"
+              >
+                🎪 Night Life
+              </Button>
             </div>
           </div>
         </div>
