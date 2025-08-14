@@ -722,7 +722,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         gender: z.string().optional(),
         sexualPreference: z.array(z.string()).optional(),
         sexualPreferenceVisible: z.boolean().default(false),
-        travelingWithChildren: z.boolean(),
+        travelingWithChildren: z.boolean().default(false),
         childrenAges: z.string().max(100, "Children ages must be 100 characters or less").optional(),
         isVeteran: z.boolean().default(false),
         isActiveDuty: z.boolean().default(false),
@@ -1206,11 +1206,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           sexualPreference: user.sexualPreference || [],
           sexualPreferenceVisible: user.sexualPreferenceVisible !== undefined ? user.sexualPreferenceVisible : false,
           travelStyle: user.travelStyle || [],
-          travelingWithChildren: (() => {
-            const value = user.travelingWithChildren === true || user.travelingWithChildren === 't' || user.travelingWithChildren === 'true';
-            console.log('FORM INIT - travelingWithChildren:', { raw: user.travelingWithChildren, type: typeof user.travelingWithChildren, converted: value });
-            return value;
-          })(),
+          travelingWithChildren: user.travelingWithChildren === true,
           childrenAges: (user as any).childrenAges || "",
           isVeteran: user.isVeteran !== undefined ? user.isVeteran : false,
           isActiveDuty: user.isActiveDuty !== undefined ? user.isActiveDuty : false,
@@ -2648,11 +2644,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             sexualPreference: updatedUser.sexualPreference || [],
             sexualPreferenceVisible: updatedUser.sexualPreferenceVisible !== undefined ? updatedUser.sexualPreferenceVisible : false,
             travelStyle: updatedUser.travelStyle || [],
-            travelingWithChildren: (() => {
-              const value = updatedUser.travelingWithChildren === true || updatedUser.travelingWithChildren === 't' || updatedUser.travelingWithChildren === 'true';
-              console.log('FORM UPDATE - travelingWithChildren:', { raw: updatedUser.travelingWithChildren, type: typeof updatedUser.travelingWithChildren, converted: value });
-              return value;
-            })(),
+            travelingWithChildren: updatedUser.travelingWithChildren === true,
             childrenAges: (updatedUser as any).childrenAges || "",
             isVeteran: updatedUser.isVeteran !== undefined ? updatedUser.isVeteran : false,
             isActiveDuty: updatedUser.isActiveDuty !== undefined ? updatedUser.isActiveDuty : false,
@@ -6286,14 +6278,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       <FormItem className="flex flex-row items-start space-x-3 rounded-lg border p-4">
                         <FormControl>
                           <Checkbox
-                            checked={(() => {
-                              const isChecked = field.value === true || field.value === 't' || field.value === 'true';
-                              console.log('CHECKBOX STATE:', { fieldValue: field.value, type: typeof field.value, isChecked });
-                              return isChecked;
-                            })()}
+                            checked={field.value === true}
                             onCheckedChange={(checked) => {
-                              console.log('CHECKBOX CHANGED:', { oldValue: field.value, newValue: checked });
-                              field.onChange(Boolean(checked));
+                              console.log('CHECKBOX CHANGED:', { oldValue: field.value, newValue: checked, finalValue: checked === true });
+                              field.onChange(checked === true);
                             }}
                           />
                         </FormControl>
