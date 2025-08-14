@@ -52,10 +52,11 @@ export default function BusinessLanding() {
                   <div className="text-center">
                     <div className="max-w-4xl mx-auto">
                       <h1 className="text-4xl tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
-                        <span className="block text-white font-black" style={{fontFamily: '"Inter", sans-serif'}}>Grow your business.</span>
+                        <span className="block text-black font-black" style={{fontFamily: '"Inter", sans-serif'}}>Grow your business.</span>
                         <span className="block font-black" style={{fontFamily: '"Inter", sans-serif'}}>
-                          <span className="text-orange-400">Real customers. </span>
-                          <span className="text-white">Lasting growth.</span>
+                          <span className="text-orange-400">Real customers </span>
+                          <span style={{color: '#3b82f6'}}>with Nearby Travelers</span>
+                          <span className="text-black"> while connecting with other locals.</span>
                         </span>
                       </h1>
                       
