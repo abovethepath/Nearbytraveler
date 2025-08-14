@@ -87,7 +87,7 @@ export default function LocalsLanding() {
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-12 animate-slide-in-left">
             <h2 className="text-4xl font-black text-gray-900 mb-4">
-              Host Amazing Local Experiences
+              Join others or Host Amazing Local Experiences
             </h2>
             <p className="text-xl text-gray-600">
               Real locals. Real experiences. Zero tourist nonsense.
