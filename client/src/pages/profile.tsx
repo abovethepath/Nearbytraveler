@@ -722,7 +722,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         gender: z.string().optional(),
         sexualPreference: z.array(z.string()).optional(),
         sexualPreferenceVisible: z.boolean().default(false),
-        travelingWithChildren: z.boolean().optional(),
+        travelingWithChildren: z.boolean(),
         childrenAges: z.string().max(100, "Children ages must be 100 characters or less").optional(),
         isVeteran: z.boolean().default(false),
         isActiveDuty: z.boolean().default(false),
@@ -1206,15 +1206,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           sexualPreference: user.sexualPreference || [],
           sexualPreferenceVisible: user.sexualPreferenceVisible !== undefined ? user.sexualPreferenceVisible : false,
           travelStyle: user.travelStyle || [],
-          travelingWithChildren: (() => {
-            const value = Boolean(user.travelingWithChildren);
-            console.log('🚨 FORM RESET - Setting travelingWithChildren:', {
-              raw: user.travelingWithChildren,
-              converted: value,
-              type: typeof user.travelingWithChildren
-            });
-            return value;
-          })(),
+          travelingWithChildren: user.travelingWithChildren === true || user.travelingWithChildren === 't',
           childrenAges: (user as any).childrenAges || "",
           isVeteran: user.isVeteran !== undefined ? user.isVeteran : false,
           isActiveDuty: user.isActiveDuty !== undefined ? user.isActiveDuty : false,
@@ -2652,7 +2644,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             sexualPreference: updatedUser.sexualPreference || [],
             sexualPreferenceVisible: updatedUser.sexualPreferenceVisible !== undefined ? updatedUser.sexualPreferenceVisible : false,
             travelStyle: updatedUser.travelStyle || [],
-            travelingWithChildren: Boolean(updatedUser.travelingWithChildren),
+            travelingWithChildren: updatedUser.travelingWithChildren === true || updatedUser.travelingWithChildren === 't',
             childrenAges: (updatedUser as any).childrenAges || "",
             isVeteran: updatedUser.isVeteran !== undefined ? updatedUser.isVeteran : false,
             isActiveDuty: updatedUser.isActiveDuty !== undefined ? updatedUser.isActiveDuty : false,
@@ -6286,21 +6278,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       <FormItem className="flex flex-row items-start space-x-3 rounded-lg border p-4">
                         <FormControl>
                           <Checkbox
-                            checked={(() => {
-                              console.log('🔲 CHECKBOX DEBUG:', {
-                                fieldValue: field.value,
-                                fieldValueType: typeof field.value,
-                                checked: !!field.value
-                              });
-                              return !!field.value;
-                            })()}
+                            checked={field.value === true}
                             onCheckedChange={(checked) => {
-                              console.log('🔲 CHECKBOX CHANGE:', {
-                                oldValue: field.value,
-                                newValue: checked,
-                                newValueType: typeof checked
-                              });
-                              field.onChange(checked);
+                              field.onChange(checked === true);
                             }}
                           />
                         </FormControl>
