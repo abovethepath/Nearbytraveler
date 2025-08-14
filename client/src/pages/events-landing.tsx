@@ -205,7 +205,7 @@ export default function EventsLanding() {
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transform transition-all duration-300 flex flex-col">
               <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-orange-400 to-red-500">
                 <img 
-                  src="/beach travel_1754973619241.jpg" 
+                  src="@assets/image_1755184474137.png" 
                   alt="Local food experience event" 
                   className="w-full h-48 object-cover"
                 />
