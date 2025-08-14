@@ -128,7 +128,7 @@ export default function Landing() {
                       <div className="mt-8 p-6 bg-black/40 backdrop-blur-sm rounded-2xl border border-white/20 animate-zoom-in" style={{animationDelay: '0.3s'}}>
                         <p className="text-xl text-white leading-relaxed">
                           <span className="text-orange-300 font-bold">"For over 15 years I've hosted and toured 400+ travelers from over 40 countries as a local.</span>
-                          <span className="text-white"> I built Nearby Traveler to do exactly that - meet real locals and real travelers while creating amazing new travel adventures."</span>
+                          <span className="text-white"> I built Nearby Traveler to do exactly that - meet real locals and real travelers while creating amazing new travel adventures and expanding my social circle of friends."</span>
                         </p>
                         <div className="mt-4 text-center">
                           <p className="text-white font-bold text-lg">— Aaron, Founder</p>
