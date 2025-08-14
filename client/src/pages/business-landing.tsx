@@ -54,7 +54,7 @@ export default function BusinessLanding() {
                       <h1 className="text-4xl tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
                         <span className="block text-white font-black" style={{fontFamily: '"Inter", sans-serif'}}>Grow your business.</span>
                         <span className="block font-black" style={{fontFamily: '"Inter", sans-serif'}}>
-                          <span className="text-orange-400">Reach real customers. </span>
+                          <span className="text-orange-400">Real customers. </span>
                           <span
                             className="
                               text-blue-400
@@ -67,7 +67,7 @@ export default function BusinessLanding() {
                               pointer-events-none
                             "
                           >
-                            Build lasting relationships.
+                            Lasting growth.
                           </span>
                         </span>
                       </h1>
