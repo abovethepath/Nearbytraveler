@@ -23,6 +23,35 @@ import { AuthContext } from "@/App";
 import { authStorage } from "@/lib/auth";
 import InstantDealCreator from "@/components/InstantDealCreator";
 
+// Helper function to extract city from street address
+function extractCityFromAddress(address: string | null | undefined): string {
+  if (!address) return "";
+  
+  // Common patterns for extracting city from business addresses
+  const cityPatterns = [
+    /Santa Monica/i,
+    /Venice/i,
+    /Beverly Hills/i,
+    /West Hollywood/i,
+    /Hollywood/i,
+    /Los Angeles/i,
+    /Manhattan Beach/i,
+    /Hermosa Beach/i,
+    /Redondo Beach/i,
+    /Culver City/i,
+    /Marina del Rey/i,
+    /Playa del Rey/i
+  ];
+  
+  for (const pattern of cityPatterns) {
+    if (pattern.test(address)) {
+      return pattern.source.replace(/[\/\\^$*+?.()|[\]{}]/g, '').replace(/i$/, '');
+    }
+  }
+  
+  return "";
+}
+
 const CATEGORIES = [
   // FOOD & DINING (matching food interests/activities)
   "Restaurant", "Casual Restaurant", "Local Hotspot", "Speakeasy", "Cafe", "Bar", 
@@ -293,9 +322,9 @@ export default function BusinessDashboard() {
       discountCode: "",
       targetAudience: ["both"],
       streetAddress: currentUser?.streetAddress || "",
-      city: currentUser?.businessCity || currentUser?.hometownCity || "",
-      state: currentUser?.businessState || currentUser?.hometownState || "",
-      country: currentUser?.businessCountry || currentUser?.hometownCountry || "United States",
+      city: extractCityFromAddress(currentUser?.streetAddress) || currentUser?.hometownCity || "",
+      state: currentUser?.hometownState || "",
+      country: currentUser?.hometownCountry || "United States",
       zipCode: currentUser?.zipCode || "",
       validFrom: "",
       validUntil: "",
@@ -522,7 +551,7 @@ export default function BusinessDashboard() {
     const isCustomCategory = !CATEGORIES.includes(offer.category) || offer.category === 'Custom';
 
     form.reset({
-      title: editingOffer.title, // Keep original title for editing
+      title: offer.title, // FIX: Use offer.title, not editingOffer.title
       description: offer.description,
       category: isCustomCategory ? 'Custom' : offer.category,
       customCategory: isCustomCategory ? offer.category : "",
@@ -1003,10 +1032,9 @@ export default function BusinessDashboard() {
                             <Input 
                               type="date" 
                               {...field} 
-                              disabled={!!editingOffer}
                               min="1000-01-01"
                               max="9999-12-31"
-                              className="dark:[color-scheme:dark] dark:text-white disabled:opacity-50 disabled:cursor-not-allowed calendar-white-icon"
+                              className="dark:[color-scheme:dark] dark:text-white calendar-white-icon"
                             />
                           </FormControl>
                           {editingOffer ? (
@@ -1032,10 +1060,9 @@ export default function BusinessDashboard() {
                             <Input 
                               type="date" 
                               {...field} 
-                              disabled={!!editingOffer}
                               min="1000-01-01"
                               max="9999-12-31"
-                              className="dark:[color-scheme:dark] dark:text-white disabled:opacity-50 disabled:cursor-not-allowed calendar-white-icon"
+                              className="dark:[color-scheme:dark] dark:text-white calendar-white-icon"
                             />
                           </FormControl>
                           {editingOffer ? (
