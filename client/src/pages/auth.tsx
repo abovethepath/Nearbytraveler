@@ -67,10 +67,10 @@ export default function Auth() {
         console.log('Login response user object:', user);
         if (user?.userType === 'business' || user?.user?.userType === 'business') {
           console.log('Redirecting business user to business welcome page');
-          window.location.href = "/welcome-business";
+          setLocation("/welcome-business");
         } else {
           console.log('Redirecting to traveler/local welcome page');
-          window.location.href = "/welcome";
+          setLocation("/welcome");
         }
         return;
       } else {
@@ -182,19 +182,13 @@ export default function Auth() {
                 </div>
 
                 <div className="mt-8 pt-4 space-y-3">
-                  <div
-                    onClick={(!isLoading && email && password) ? handleLogin : undefined}
-                    className={`login-page-gradient-button w-full py-3 px-4 rounded-md font-bold text-center select-none text-base md:text-lg text-crisp ${
-                      (!isLoading && email && password) ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'
-                    }`}
-                    style={{
-                      pointerEvents: (!isLoading && email && password) ? 'auto' : 'none'
-                    }}
+                  <Button
+                    onClick={handleLogin}
+                    disabled={isLoading || !email || !password}
+                    className="login-page-gradient-button w-full py-3 px-4 rounded-md font-bold text-center select-none text-base md:text-lg text-crisp"
                   >
                     {isLoading ? "Signing In..." : "Sign In"}
-                  </div>
-
-
+                  </Button>
                 </div>
 
                 <div className="text-center space-y-2">
