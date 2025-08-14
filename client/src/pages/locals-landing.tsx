@@ -118,7 +118,7 @@ export default function LocalsLanding() {
       <div className="py-16 bg-gray-50">
         <div className="max-w-6xl mx-auto px-4 text-center mb-16">
           <h2 className="text-3xl sm:text-4xl font-bold mb-8 text-gray-900" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700'}}>
-            Why Locals Love These Features
+            Why Locals Love Nearby Traveler
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <div className="bg-blue-600 p-6 rounded-xl shadow-lg text-white">
