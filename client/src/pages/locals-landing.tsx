@@ -11,7 +11,20 @@ export default function LocalsLanding() {
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900">
       
-
+      {/* Orange announcement banner */}
+      <div className="fixed top-0 left-0 right-0 z-[60] bg-orange-500 text-black py-2 px-4">
+        <div className="flex items-center justify-center max-w-6xl mx-auto">
+          <div className="flex-1 text-center">
+            <span className="font-bold text-lg">🔥 Connect with Locals and Travelers TODAY - Sign Up Now!</span>
+          </div>
+          <Button
+            onClick={() => setLocation('/join')}
+            className="bg-black text-orange-400 font-bold px-6 py-2 rounded-lg hover:bg-gray-800 ml-4"
+          >
+            SIGN UP NOW
+          </Button>
+        </div>
+      </div>
 
       {/* Landing Navbar */}
       <header className="sticky top-12 z-[55] bg-white/95 dark:bg-gray-900/95 backdrop-blur supports-[backdrop-filter]:bg-white/70 dark:supports-[backdrop-filter]:bg-gray-900/70">

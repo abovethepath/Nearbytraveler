@@ -1,13 +1,38 @@
 
 import React from "react";
+import { Button } from "@/components/ui/button";
+import { useLocation } from "wouter";
 import LandingNavbar from "@/components/landing-navbar";
 import Footer from "@/components/footer";
 const eventHeaderImage = "/event page bbq party_1753299541268.png";
 
 export default function EventsLanding() {
+  const [, setLocation] = useLocation();
+
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900">
-      <LandingNavbar />
+      
+      {/* Orange announcement banner */}
+      <div className="fixed top-0 left-0 right-0 z-[60] bg-orange-500 text-black py-2 px-4">
+        <div className="flex items-center justify-center max-w-6xl mx-auto">
+          <div className="flex-1 text-center">
+            <span className="font-bold text-lg">🔥 Connect with Locals and Travelers TODAY - Sign Up Now!</span>
+          </div>
+          <Button
+            onClick={() => setLocation('/join')}
+            className="bg-black text-orange-400 font-bold px-6 py-2 rounded-lg hover:bg-gray-800 ml-4"
+          >
+            SIGN UP NOW
+          </Button>
+        </div>
+      </div>
+
+      {/* Landing Navbar */}
+      <header className="sticky top-12 z-[55] bg-white/95 dark:bg-gray-900/95 backdrop-blur supports-[backdrop-filter]:bg-white/70 dark:supports-[backdrop-filter]:bg-gray-900/70">
+        <div className="pt-2">
+          <LandingNavbar />
+        </div>
+      </header>
       
       {/* HERO SECTION */}
       <div className="relative">
