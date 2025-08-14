@@ -193,7 +193,18 @@ app.use((req, res, next) => {
   
   console.log("Minimal routes registered successfully");
 
-  // Setup vite after routes are registered
+  // CRITICAL: Import and register all main API routes BEFORE Vite setup
+  try {
+    console.log("Loading main API routes from routes.ts...");
+    const { registerRoutes } = await import('./routes.js');
+    await registerRoutes(app, httpServerWithWebSocket);
+    console.log("✅ Main API routes registered successfully");
+  } catch (error) {
+    console.error("❌ CRITICAL: Failed to register main API routes:", error);
+    process.exit(1);
+  }
+
+  // Setup vite after ALL routes are registered
   if (app.get("env") === "development") {
     await setupVite(app, server);
   } else {
