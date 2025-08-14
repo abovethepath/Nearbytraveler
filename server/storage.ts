@@ -9229,23 +9229,23 @@ export class DatabaseStorage implements IStorage {
         username: businessData.username,
         email: businessData.email,
         password: businessData.password, // In real app, this should be hashed
-        name: businessData.business_name || businessData.businessName, // Use business name as the user's name
+        name: businessData.businessName || businessData.name, // Use business name as the user's name
         userType: 'business',
         hometownCity: businessData.city,
-        hometownState: businessData.state,
-        hometownCountry: businessData.country,
-        location: businessData.city && businessData.state ? `${businessData.city}, ${businessData.state}` : null,
-        hometown: businessData.city && businessData.state && businessData.country ? `${businessData.city}, ${businessData.state}, ${businessData.country}` : null,
+        hometownState: businessData.state || 'California',
+        hometownCountry: businessData.country || 'United States',
+        location: businessData.city ? `${businessData.city}, California` : null,
+        hometown: businessData.city ? `${businessData.city}, California, United States` : null,
         isCurrentlyTraveling: false,
         
         // Business-specific fields with CORRECT database column names
-        business_name: businessData.business_name || businessData.businessName,
-        business_type: businessData.business_type || businessData.businessType,
-        business_description: businessData.business_description || businessData.businessDescription || null,
-        website: businessData.website || businessData.businessWebsite || null,
-        street_address: businessData.street_address || businessData.streetAddress,
-        zipcode: businessData.zipcode || businessData.zipCode,
-        phone: businessData.phone || businessData.businessPhone,
+        business_name: businessData.businessName || businessData.business_name,
+        business_type: businessData.businessType || businessData.business_type,
+        business_description: businessData.businessDescription || businessData.business_description || null,
+        website: businessData.businessWebsite || businessData.website || null,
+        streetAddress: businessData.streetAddress || businessData.street_address,
+        zipCode: businessData.zipCode || businessData.zipcode,
+        phoneNumber: businessData.businessPhone || businessData.phone,
         interests: businessData.interests || [],
         activities: businessData.activities || []
       }).returning();
