@@ -1196,6 +1196,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           websiteUrl: (user as any).website_url || (user as any).websiteUrl || (user as any).website || "",
           isVeteran: Boolean((user as any).is_veteran || user.isVeteran),
           isActiveDuty: Boolean((user as any).is_active_duty || user.isActiveDuty),
+          interests: user.interests || [],
+          activities: user.activities || [],
+          events: user.events || [],
+          customInterests: (user as any).customInterests || (user as any).custom_interests || "",
+          customActivities: (user as any).customActivities || (user as any).custom_activities || "",
+          customEvents: (user as any).customEvents || (user as any).custom_events || "",
         });
       } else {
         const travelingWithChildrenValue = !!(user as any).travelingWithChildren;
@@ -1216,6 +1222,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           childrenAges: (user as any).childrenAges || "",
           isVeteran: user.isVeteran !== undefined ? user.isVeteran : false,
           isActiveDuty: user.isActiveDuty !== undefined ? user.isActiveDuty : false,
+          interests: user.interests || [],
+          activities: user.activities || [],
+          events: user.events || [],
+          customInterests: (user as any).customInterests || (user as any).custom_interests || "",
+          customActivities: (user as any).customActivities || (user as any).custom_activities || "",
+          customEvents: (user as any).customEvents || (user as any).custom_events || "",
         });
         
         // Force set the value after reset to ensure React Hook Form properly registers it
@@ -6050,6 +6062,35 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     </div>
                   ))}
                 </div>
+                
+                {/* Custom Interests Input */}
+                <div className="mt-3">
+                  <Label className="text-xs font-medium mb-1 block text-gray-600">
+                    Add Custom Interests (comma-separated)
+                  </Label>
+                  <FormField
+                    control={form.control}
+                    name="customInterests"
+                    render={({ field }) => (
+                      <Input
+                        placeholder="e.g., Photography, Rock Climbing, Local Cuisine"
+                        value={field.value || ''}
+                        onChange={(e) => {
+                          field.onChange(e.target.value);
+                          // Auto-add to interests array when user types
+                          const customInterests = e.target.value.split(',').map(item => item.trim()).filter(item => item);
+                          const existingInterests = form.getValues('interests') || [];
+                          const currentCustom = existingInterests.filter(interest => !getAllInterests().includes(interest));
+                          const newInterests = [...existingInterests.filter(interest => getAllInterests().includes(interest)), ...customInterests];
+                          if (JSON.stringify(newInterests.sort()) !== JSON.stringify(existingInterests.sort())) {
+                            form.setValue('interests', newInterests);
+                          }
+                        }}
+                        className="text-xs"
+                      />
+                    )}
+                  />
+                </div>
               </div>
 
               {/* Activities Section */}
@@ -6091,6 +6132,34 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     );
                   })}
                 </div>
+                
+                {/* Custom Activities Input */}
+                <div className="mt-3">
+                  <Label className="text-xs font-medium mb-1 block text-gray-600">
+                    Add Custom Activities (comma-separated)
+                  </Label>
+                  <FormField
+                    control={form.control}
+                    name="customActivities"
+                    render={({ field }) => (
+                      <Input
+                        placeholder="e.g., Surfing Lessons, Wine Tasting, Museum Tours"
+                        value={field.value || ''}
+                        onChange={(e) => {
+                          field.onChange(e.target.value);
+                          // Auto-add to activities array when user types
+                          const customActivities = e.target.value.split(',').map(item => item.trim()).filter(item => item);
+                          const existingActivities = form.getValues('activities') || [];
+                          const newActivities = [...existingActivities.filter(activity => getAllActivities().includes(activity)), ...customActivities];
+                          if (JSON.stringify(newActivities.sort()) !== JSON.stringify(existingActivities.sort())) {
+                            form.setValue('activities', newActivities);
+                          }
+                        }}
+                        className="text-xs"
+                      />
+                    )}
+                  />
+                </div>
               </div>
 
               {/* Events Section */}
@@ -6128,9 +6197,35 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     </div>
                   ))}
                 </div>
+                
+                {/* Custom Events Input */}
+                <div className="mt-3">
+                  <Label className="text-xs font-medium mb-1 block text-gray-600">
+                    Add Custom Events (comma-separated)
+                  </Label>
+                  <FormField
+                    control={form.control}
+                    name="customEvents"
+                    render={({ field }) => (
+                      <Input
+                        placeholder="e.g., Jazz Festival, Food Market, Art Exhibition"
+                        value={field.value || ''}
+                        onChange={(e) => {
+                          field.onChange(e.target.value);
+                          // Auto-add to events array when user types
+                          const customEvents = e.target.value.split(',').map(item => item.trim()).filter(item => item);
+                          const existingEvents = form.getValues('events') || [];
+                          const newEvents = [...existingEvents.filter(event => getAllEvents().includes(event)), ...customEvents];
+                          if (JSON.stringify(newEvents.sort()) !== JSON.stringify(existingEvents.sort())) {
+                            form.setValue('events', newEvents);
+                          }
+                        }}
+                        className="text-xs"
+                      />
+                    )}
+                  />
+                </div>
               </div>
-
-
 
               {/* Accommodation */}
               <div>
@@ -6701,6 +6796,215 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </div>
                 </div>
               )}
+
+              {/* Profile Interests, Activities, and Events Section - For ALL users */}
+              <div className="space-y-6">
+                <div className="border-t pt-4">
+                  <h3 className="text-lg font-semibold mb-4 text-orange-600">Local Interests, Activities & Events</h3>
+                  <div className="text-sm text-gray-600 mb-4 p-3 bg-orange-50 rounded border">
+                    <strong>Tell others about your interests!</strong> Select from the options below and add your own custom entries to help others connect with you based on shared interests.
+                  </div>
+                  
+                  {/* Main Profile Interests Section */}
+                  <div className="mb-6">
+                    <Label className="text-sm font-medium mb-2 block">
+                      <span className="text-orange-600">🌟 My Local Interests</span>
+                    </Label>
+                    
+                    <div className="grid grid-cols-4 gap-1 border rounded-lg p-3 bg-orange-50">
+                      {getAllInterests().map((interest, index) => (
+                        <div key={`profile-interest-${index}`} className="flex items-center space-x-1">
+                          <FormField
+                            control={profileForm.control}
+                            name="interests"
+                            render={({ field }) => (
+                              <Checkbox
+                                id={`profile-interest-${interest}`}
+                                checked={field.value?.includes(interest) || false}
+                                onCheckedChange={(checked) => {
+                                  if (checked) {
+                                    field.onChange([...(field.value || []), interest]);
+                                  } else {
+                                    field.onChange(field.value?.filter(i => i !== interest));
+                                  }
+                                }}
+                              />
+                            )}
+                          />
+                          <Label 
+                            htmlFor={`profile-interest-${interest}`} 
+                            className="text-xs cursor-pointer leading-tight font-medium"
+                          >
+                            {interest}
+                          </Label>
+                        </div>
+                      ))}
+                    </div>
+                    
+                    {/* Custom Interests Input */}
+                    <div className="mt-3">
+                      <Label className="text-xs font-medium mb-1 block text-gray-600">
+                        Add Custom Interests (comma-separated)
+                      </Label>
+                      <FormField
+                        control={profileForm.control}
+                        name="customInterests"
+                        render={({ field }) => (
+                          <Input
+                            placeholder="e.g., Photography, Rock Climbing, Local Cuisine, Art History"
+                            value={field.value || ''}
+                            onChange={(e) => {
+                              field.onChange(e.target.value);
+                              // Auto-add to interests array when user types
+                              const customInterests = e.target.value.split(',').map(item => item.trim()).filter(item => item);
+                              const existingInterests = profileForm.getValues('interests') || [];
+                              const newInterests = [...existingInterests.filter(interest => getAllInterests().includes(interest)), ...customInterests];
+                              if (JSON.stringify(newInterests.sort()) !== JSON.stringify(existingInterests.sort())) {
+                                profileForm.setValue('interests', newInterests);
+                              }
+                            }}
+                            className="text-xs"
+                          />
+                        )}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Main Profile Activities Section */}
+                  <div className="mb-6">
+                    <Label className="text-sm font-medium mb-2 block">
+                      <span className="text-green-600">🏃‍♂️ Activities I Enjoy</span>
+                    </Label>
+                    
+                    <div className="grid grid-cols-4 gap-1 border rounded-lg p-3 bg-green-50">
+                      {getAllActivities().map((activity, index) => {
+                        const displayText = activity.startsWith("**") && activity.endsWith("**") ? 
+                          activity.slice(2, -2) : activity;
+                        return (
+                          <div key={`profile-activity-${index}`} className="flex items-center space-x-1">
+                            <FormField
+                              control={profileForm.control}
+                              name="activities"
+                              render={({ field }) => (
+                                <Checkbox
+                                  id={`profile-activity-${activity}`}
+                                  checked={field.value?.includes(activity) || false}
+                                  onCheckedChange={(checked) => {
+                                    if (checked) {
+                                      field.onChange([...(field.value || []), activity]);
+                                    } else {
+                                      field.onChange(field.value?.filter(a => a !== activity));
+                                    }
+                                  }}
+                                />
+                              )}
+                            />
+                            <Label 
+                              htmlFor={`profile-activity-${activity}`} 
+                              className="text-xs cursor-pointer leading-tight font-medium"
+                            >
+                              {displayText}
+                            </Label>
+                          </div>
+                        );
+                      })}
+                    </div>
+                    
+                    {/* Custom Activities Input */}
+                    <div className="mt-3">
+                      <Label className="text-xs font-medium mb-1 block text-gray-600">
+                        Add Custom Activities (comma-separated)
+                      </Label>
+                      <FormField
+                        control={profileForm.control}
+                        name="customActivities"
+                        render={({ field }) => (
+                          <Input
+                            placeholder="e.g., Surfing Lessons, Wine Tasting, Museum Tours, Rock Concerts"
+                            value={field.value || ''}
+                            onChange={(e) => {
+                              field.onChange(e.target.value);
+                              // Auto-add to activities array when user types
+                              const customActivities = e.target.value.split(',').map(item => item.trim()).filter(item => item);
+                              const existingActivities = profileForm.getValues('activities') || [];
+                              const newActivities = [...existingActivities.filter(activity => getAllActivities().includes(activity)), ...customActivities];
+                              if (JSON.stringify(newActivities.sort()) !== JSON.stringify(existingActivities.sort())) {
+                                profileForm.setValue('activities', newActivities);
+                              }
+                            }}
+                            className="text-xs"
+                          />
+                        )}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Main Profile Events Section */}
+                  <div className="mb-6">
+                    <Label className="text-sm font-medium mb-2 block">
+                      <span className="text-blue-600">🎪 Events I Like to Attend</span>
+                    </Label>
+                    
+                    <div className="grid grid-cols-4 gap-1 border rounded-lg p-3 bg-blue-50">
+                      {getAllEvents().map((event, index) => (
+                        <div key={`profile-event-${index}`} className="flex items-center space-x-1">
+                          <FormField
+                            control={profileForm.control}
+                            name="events"
+                            render={({ field }) => (
+                              <Checkbox
+                                id={`profile-event-${event}`}
+                                checked={field.value?.includes(event) || false}
+                                onCheckedChange={(checked) => {
+                                  if (checked) {
+                                    field.onChange([...(field.value || []), event]);
+                                  } else {
+                                    field.onChange(field.value?.filter(e => e !== event));
+                                  }
+                                }}
+                              />
+                            )}
+                          />
+                          <Label 
+                            htmlFor={`profile-event-${event}`} 
+                            className="text-xs cursor-pointer leading-tight font-medium"
+                          >
+                            {event}
+                          </Label>
+                        </div>
+                      ))}
+                    </div>
+                    
+                    {/* Custom Events Input */}
+                    <div className="mt-3">
+                      <Label className="text-xs font-medium mb-1 block text-gray-600">
+                        Add Custom Events (comma-separated)
+                      </Label>
+                      <FormField
+                        control={profileForm.control}
+                        name="customEvents"
+                        render={({ field }) => (
+                          <Input
+                            placeholder="e.g., Jazz Festival, Food Market, Art Exhibition, Tech Conferences"
+                            value={field.value || ''}
+                            onChange={(e) => {
+                              field.onChange(e.target.value);
+                              // Auto-add to events array when user types
+                              const customEvents = e.target.value.split(',').map(item => item.trim()).filter(item => item);
+                              const existingEvents = profileForm.getValues('events') || [];
+                              const newEvents = [...existingEvents.filter(event => getAllEvents().includes(event)), ...customEvents];
+                              if (JSON.stringify(newEvents.sort()) !== JSON.stringify(existingEvents.sort())) {
+                                profileForm.setValue('events', newEvents);
+                              }
+                            }}
+                            className="text-xs"
+                          />
+                        )}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
 
               {/* Military Status Section - Only show for non-business users */}
               {user?.userType !== 'business' && (

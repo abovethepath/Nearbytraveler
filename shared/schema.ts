@@ -19,6 +19,7 @@ export const users = pgTable("users", {
   isMetroUser: boolean("is_metro_user").default(false), // Whether they confirmed metro area recognition
   profileImage: text("profile_image"),
   interests: text("interests").array(),
+  customInterests: text("custom_interests"), // User's custom interests as comma-separated string
   dateOfBirth: timestamp("date_of_birth"),
   age: integer("age"), // Computed from dateOfBirth
   ageVisible: boolean("age_visible").default(true),
@@ -39,7 +40,9 @@ export const users = pgTable("users", {
   
   // UNIFIED FIELDS - New approach: Single fields for all contexts
   activities: text("activities").array(), // All user activities (replaces localActivities + defaultTravelActivities)
+  customActivities: text("custom_activities"), // User's custom activities as comma-separated string
   events: text("events").array(), // All user events (replaces localEvents + defaultTravelEvents)
+  customEvents: text("custom_events"), // User's custom events as comma-separated string
   
   // Default travel preferences that persist across all trips
   defaultTravelInterests: text("default_travel_interests").array(), // User's preferred interests for all trips
