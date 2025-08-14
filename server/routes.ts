@@ -2529,34 +2529,37 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
             senderId: nearbytravelerUser.id,
             receiverId: user.id,
             content: user.userType === 'business' 
-              ? `Hello @${user.username},
+              ? `Welcome to Nearby Traveler! 🏢
 
-Welcome to Nearby Traveler! We created this platform to help businesses like yours connect with travelers and locals who are genuinely interested in what you offer. 
+Hi ${user.name || user.username}! We're excited to have your business join our platform. Nearby Traveler connects local businesses with travelers and locals who are genuinely interested in authentic experiences.
 
-What you'll find here are tools designed specifically for building authentic customer relationships based on shared interests and location. You can create special offers and flash sales that reach people when they're actually in your area, host events that showcase your business, and get notified when potential customers with interests matching your services are nearby.
+Getting Started:
+• Complete your business profile with photos and details
+• Create special offers for travelers visiting your area  
+• Post events to attract customers
+• Use our analytics to track engagement
 
-Our interactive map helps travelers discover your business naturally, while our messaging system lets you build real connections with customers before they even walk through your door. The vouching system helps establish trust, and our detailed analytics show you exactly how your offers are performing.
+Your business is now visible to travelers searching for experiences in ${user.hometownCity}. When people with interests matching your services visit your area, you'll get notified automatically.
 
-Think of it as your direct line to engaged customers who are actively looking for experiences like yours, whether they're locals exploring their own city or travelers seeking authentic local gems.
+Questions? Just reply to this message. Welcome aboard!
 
-Ready to start connecting with customers who actually want to find you?
+- The Nearby Traveler Team`
+              : `Welcome to Nearby Traveler! ✈️
 
-- Aaron`
-              : `Hello @${user.username},
+Hi ${user.name || user.username}! We're thrilled you've joined our community of travelers and locals in ${user.hometownCity}.
 
-Welcome to Nearby Traveler! We created this site for travelers and locals to meet each other based on shared interests and commonalities, making every journey more meaningful and every hometown more exciting to explore.
+Here's how to get the most out of your experience:
+• Complete your profile to find better matches
+• Join your local chatrooms (Welcome Newcomers & Let's Meet Up)
+• Browse events and meetups happening near you
+• Connect with people who share your interests
+• Create travel plans when you're visiting new places
 
-What you'll find here are real people who share your passions - whether you're seeking adventure, cultural experiences, nightlife, family-friendly activities, or simply great conversation over coffee. Our city pages showcase authentic local experiences recommended by actual residents, while our smart search helps you find exactly the type of people you're hoping to connect with.
+Your hometown is ${user.hometownCity} - we've automatically added you to the local community chatrooms where you can meet other travelers and locals.
 
-You can create travel memory albums to document your adventures, plan detailed itineraries with input from locals at your destinations, and join spontaneous meetups happening right now. The interactive map shows you interesting people, events, and hidden gems around you, while our messaging system lets you build genuine connections before meeting in person.
+Ready to start connecting? Questions? Just reply anytime!
 
-Our vouching network helps you trust the community, and whether you're traveling somewhere new or exploring your own backyard, you'll always find people who get excited about the same things you do.
-
-Think of it as your social compass for discovering the human side of every place you visit.
-
-Ready to start making real connections wherever you are?
-
-- Aaron`
+- The Nearby Traveler Team`
           });
 
           if (process.env.NODE_ENV === 'development') console.log(`✓ Auto-connected new user ${user.username} (ID: ${user.id}) to nearbytraveler with welcome message`);
