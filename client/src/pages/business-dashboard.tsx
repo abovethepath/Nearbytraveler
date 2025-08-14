@@ -587,6 +587,29 @@ export default function BusinessDashboard() {
           <SubscriptionStatus />
         </div>
 
+        {/* Big CREATE A NEW DEAL CTA */}
+        <div className="mb-8">
+          <div className="bg-gradient-to-r from-orange-500 to-blue-600 rounded-2xl p-6 text-white shadow-xl">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="text-center sm:text-left">
+                <h2 className="text-xl sm:text-2xl font-bold mb-2">Ready to Attract New Customers?</h2>
+                <p className="text-orange-100 text-sm sm:text-base">
+                  Create an exclusive deal for travelers and locals in your area
+                </p>
+              </div>
+              <Button
+                onClick={() => setIsCreateDialogOpen(true)}
+                className="bg-white text-orange-600 hover:bg-orange-50 font-bold text-lg px-8 py-4 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-200"
+                size="lg"
+                data-testid="create-deal-cta"
+              >
+                <span className="text-2xl mr-2">🎯</span>
+                CREATE A NEW DEAL
+              </Button>
+            </div>
+          </div>
+        </div>
+
         {/* Analytics Cards */}
         {analytics && (
           <div className="grid grid-cols-1 md:grid-cols-6 gap-6 mb-8">

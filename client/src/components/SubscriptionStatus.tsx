@@ -155,7 +155,7 @@ export function SubscriptionStatus() {
   const needsAction = subscriptionStatus?.needsSubscription || subscriptionStatus?.needsPayment;
 
   return (
-    <Card className={needsAction ? "border-orange-200 bg-orange-50" : ""}>
+    <Card className={needsAction ? "border-orange-200 bg-orange-50" : ""} style={{ transition: 'none' }}>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <CreditCard className="h-5 w-5" />
