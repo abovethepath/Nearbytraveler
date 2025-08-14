@@ -113,6 +113,7 @@ export default function Messages() {
           location: connectedUser.hometownCity || connectedUser.location,
           lastMessage: '', // Don't show message preview in connections list
           lastMessageTime: connection.createdAt,
+          unreadCount: 0, // Initialize unread count
         });
       }
     });
@@ -132,16 +133,24 @@ export default function Messages() {
       }
     }
 
-    // Update with latest messages
+    // Update with latest messages and count unread
     (messages as any[]).forEach((message: any) => {
       const otherUserId = message.senderId === user?.id ? message.receiverId : message.senderId;
       if (otherUserId !== user?.id) {
         const existing = conversationMap.get(otherUserId);
+        // Count unread messages (messages received by current user that aren't read)
+        const unreadCount = (messages as any[]).filter((m: any) => 
+          m.senderId === otherUserId && 
+          m.receiverId === user?.id && 
+          !m.isRead
+        ).length;
+        
         if (existing) {
           conversationMap.set(otherUserId, {
             ...existing,
             lastMessage: message.content,
             lastMessageTime: message.createdAt,
+            unreadCount: unreadCount,
           });
         } else {
           const otherUser = (allUsers as any[]).find((u: any) => u.id === otherUserId);
@@ -152,6 +161,7 @@ export default function Messages() {
             location: otherUser?.hometownCity || otherUser?.location || 'Unknown',
             lastMessage: message.content,
             lastMessageTime: message.createdAt,
+            unreadCount: unreadCount,
           });
         }
       }
@@ -324,6 +334,15 @@ export default function Messages() {
           />
         </div>
 
+        {/* Instructional text */}
+        {conversations.length > 0 && (
+          <div className="p-3 bg-gray-700/50 border-b border-gray-700">
+            <p className="text-xs text-gray-400 text-center">
+              Click on a name to open messages
+            </p>
+          </div>
+        )}
+
         <div className="flex-1 overflow-y-auto">
           {conversations.length === 0 ? (
             <div className="p-4 text-center text-gray-500">
@@ -366,9 +385,16 @@ export default function Messages() {
                       </Avatar>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-white truncate">
-                        {conv.username}
-                      </h3>
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-semibold text-white truncate">
+                          {conv.username}
+                        </h3>
+                        {conv.unreadCount > 0 && (
+                          <div className="bg-red-500 text-white text-xs rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
+                            {conv.unreadCount > 99 ? '99+' : conv.unreadCount}
+                          </div>
+                        )}
+                      </div>
 
                       <div className="text-xs text-gray-500">
                         {conv.location}
