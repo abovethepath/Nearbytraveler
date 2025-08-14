@@ -105,7 +105,7 @@ export default function Landing() {
           <div className="relative bg-gray-800 dark:bg-gray-900 pb-32 overflow-hidden min-h-[600px]">
             <div className="absolute inset-0 h-full min-h-[600px]">
               <img
-                src="/attached_assets/travelers together hugging_1754971726997.avif"
+                src="/travelers together hugging_1754971726997.avif"
                 alt="Travel experience"
                 className="w-full h-full object-cover"
                 style={{ objectPosition: 'center 70%' }}
@@ -216,7 +216,7 @@ export default function Landing() {
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-2xl transform transition-all duration-300 flex flex-col" style={{animationDelay: '0.2s'}}>
               <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-yellow-400 to-orange-500">
                 <img 
-                  src="/attached_assets/image_1754973365104.png" 
+                  src="/image_1754973365104.png" 
                   alt="Authentic taco stand with vintage neon sign" 
                   className="w-full h-48 object-cover"
                 />
@@ -248,7 +248,7 @@ export default function Landing() {
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-2xl transform transition-all duration-300 flex flex-col" style={{animationDelay: '0.3s'}}>
               <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-blue-500 to-indigo-600">
                 <img 
-                  src="/attached_assets/image_1754974796221.png" 
+                  src="/image_1754974796221.png" 
                   alt="Hollywood Sign at sunrise with mountain views" 
                   className="w-full h-48 object-cover"
                 />
@@ -280,7 +280,7 @@ export default function Landing() {
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-2xl transform transition-all duration-300 flex flex-col" style={{animationDelay: '0.4s'}}>
               <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-amber-500 to-orange-600">
                 <img 
-                  src="/attached_assets/image_1754975666980.png" 
+                  src="/image_1754975666980.png" 
                   alt="Jameson's Pub exterior with green storefront and traditional Irish pub atmosphere" 
                   className="w-full h-48 object-cover"
                 />
