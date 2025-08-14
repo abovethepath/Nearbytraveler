@@ -24,9 +24,17 @@ export default function TravelersLanding() {
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold mb-6 text-white" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700'}}>
                 Nearby Traveler For Travelers
               </h1>
-              <p className="text-lg sm:text-xl lg:text-2xl mb-8 max-w-3xl mx-auto text-white">
-                Discover hidden gems, connect with locals who share your interests, and experience authentic culture. Skip the tourist traps and explore like a local.
+              <p className="text-lg sm:text-xl lg:text-2xl mb-6 max-w-3xl mx-auto text-white">
+                Discover hidden gems, connect with locals who share your interests, and experience authentic culture.
               </p>
+              <div className="mt-6 text-center">
+                <p className="text-sm sm:text-base font-bold">
+                  <span className="text-orange-300">Skip the tourist traps</span>{' '}
+                  <span className="text-white">and</span>{' '}
+                  <span className="text-blue-300">explore like a local</span>{' '}
+                  <span className="text-black bg-orange-400 px-2 py-1 rounded">right now!</span>
+                </p>
+              </div>
             </div>
           </div>
         </div>
