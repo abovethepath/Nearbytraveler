@@ -1,7 +1,7 @@
 import React from "react";
 import LandingNavbar from "@/components/landing-navbar";
 import Footer from "@/components/footer";
-const travelersHeaderImage = "/travel photo group map_1750993025212.jpeg";
+const travelersHeaderImage = "/attached_assets/travelers together hugging_1754971726997.avif";
 
 export default function TravelersLanding() {
 
