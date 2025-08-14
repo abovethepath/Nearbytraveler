@@ -14,6 +14,9 @@ export const users = pgTable("users", {
   hometownCity: text("hometown_city"),
   hometownState: text("hometown_state"),
   hometownCountry: text("hometown_country"),
+  // METRO AREA CONSOLIDATION FIELDS
+  metroArea: text("metro_area"), // The metro area they belong to (e.g., "Los Angeles Metro")
+  isMetroUser: boolean("is_metro_user").default(false), // Whether they confirmed metro area recognition
   profileImage: text("profile_image"),
   interests: text("interests").array(),
   dateOfBirth: timestamp("date_of_birth"),

@@ -11,6 +11,7 @@ import { authStorage } from "@/lib/auth";
 import { ArrowLeft } from "lucide-react";
 import { calculateAge, validateDateInput, getDateInputConstraints } from "@/lib/ageUtils";
 import { MOST_POPULAR_INTERESTS } from "../../../shared/base-options";
+import { detectMetroArea, type MetroAreaDetection } from "../../../shared/metro-areas";
 
 // Age validation utility
 const validateAge = (dateOfBirth: string): { isValid: boolean; message?: string } => {
@@ -67,10 +68,15 @@ export default function SignupLocalTraveler() {
     // Top Choices - minimum 3 required
     interests: [] as string[],
     // Current travel status - local users are typically not currently traveling
-    isCurrentlyTraveling: false
+    isCurrentlyTraveling: false,
+    // METRO AREA FIELDS
+    metroArea: "",
+    isMetroUser: false
   });
 
   const [isLoading, setIsLoading] = useState(false);
+  const [metroDetection, setMetroDetection] = useState<MetroAreaDetection | null>(null);
+  const [showMetroConfirmation, setShowMetroConfirmation] = useState(false);
 
   // Load account data from sessionStorage on component mount
   useEffect(() => {
@@ -336,12 +342,26 @@ export default function SignupLocalTraveler() {
                 <SmartLocationInput
                   onLocationSelect={(location) => {
                     console.log('📍 Location selected:', location);
+                    
+                    // METRO AREA DETECTION - Check if this city is part of a metro area
+                    const detection = detectMetroArea(location.city);
+                    console.log('🌍 Metro area detection:', detection);
+                    
                     setFormData(prev => ({
                       ...prev,
                       hometownCity: location.city,
                       hometownState: location.state || '',
                       hometownCountry: location.country
                     }));
+                    
+                    // If it's a metro city, show confirmation
+                    if (detection.isMetroCity) {
+                      setMetroDetection(detection);
+                      setShowMetroConfirmation(true);
+                    } else {
+                      setMetroDetection(null);
+                      setShowMetroConfirmation(false);
+                    }
                   }}
                   placeholder="Enter your hometown (e.g., New York, NY, USA)"
                   className="text-base py-3"
@@ -355,6 +375,58 @@ export default function SignupLocalTraveler() {
                       {formData.hometownState && `, ${formData.hometownState}`}
                       {formData.hometownCountry && `, ${formData.hometownCountry}`}
                     </p>
+                  </div>
+                )}
+
+                {/* METRO AREA CONFIRMATION */}
+                {showMetroConfirmation && metroDetection && (
+                  <div className="mt-4 p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-200 dark:border-orange-800">
+                    <h4 className="font-semibold text-orange-800 dark:text-orange-200 mb-2">
+                      🌍 Metro Area Recognition
+                    </h4>
+                    <p className="text-sm text-orange-700 dark:text-orange-300 mb-3">
+                      We detected that <strong>{metroDetection.specificCity}</strong> is part of the <strong>{metroDetection.metroAreaName}</strong> area. 
+                      Would you like to be recognized as both your specific city AND the metro area? This helps you connect with more people in your region.
+                    </p>
+                    <div className="flex gap-3">
+                      <Button
+                        type="button"
+                        size="sm"
+                        onClick={() => {
+                          setFormData(prev => ({
+                            ...prev,
+                            metroArea: metroDetection.metroAreaName!,
+                            isMetroUser: true
+                          }));
+                          setShowMetroConfirmation(false);
+                          toast({
+                            title: "Metro Area Added",
+                            description: `You'll be recognized as both ${metroDetection.specificCity} and ${metroDetection.metroAreaName}`
+                          });
+                        }}
+                        className="bg-orange-600 hover:bg-orange-700 text-white"
+                        data-testid="button-confirm-metro"
+                      >
+                        Yes, include metro area
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setFormData(prev => ({
+                            ...prev,
+                            metroArea: "",
+                            isMetroUser: false
+                          }));
+                          setShowMetroConfirmation(false);
+                        }}
+                        className="border-orange-300 text-orange-700 hover:bg-orange-100 dark:border-orange-600 dark:text-orange-300"
+                        data-testid="button-decline-metro"
+                      >
+                        No, just my city
+                      </Button>
+                    </div>
                   </div>
                 )}
               </div>
