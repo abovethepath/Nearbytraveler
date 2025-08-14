@@ -68,7 +68,7 @@ export default function LocalsLanding() {
                       >
                         JOIN AS A LOCAL
                       </Button>
-                      <p className="mt-3 text-base sm:text-lg font-semibold px-2">
+                      <p className="mt-6 text-sm sm:text-base font-medium px-2">
                         <span className="text-orange-300">Share your city</span>{' '}
                         <span className="text-white">•</span>{' '}
                         <span className="text-blue-300">Connect today</span>{' '}
