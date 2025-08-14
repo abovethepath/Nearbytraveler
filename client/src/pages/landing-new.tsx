@@ -643,7 +643,7 @@ export default function Landing() {
                     </div>
                     <h3 className="font-black text-slate-800 dark:text-slate-100 text-lg">Local-Led Events</h3>
                   </div>
-                  <p className="text-slate-700 dark:text-slate-200 text-base font-semibold">Join authentic experiences crafted by locals</p>
+                  <p className="text-slate-700 dark:text-slate-200 text-base font-semibold">Join authentic experiences crafted by locals and joined by all. Beach Bonfires, Dance Parties, House Parties, and more....</p>
                 </div>
                 
                 <div className="bg-gradient-to-br from-emerald-100 to-emerald-200 dark:bg-gradient-to-br dark:from-emerald-800 dark:to-emerald-700 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-red-300 dark:border-red-600">
