@@ -35,7 +35,7 @@ export default function TravelersLanding() {
       
       {/* HERO SECTION */}
       <div className="relative">
-        <div className="bg-gray-800 dark:bg-gray-900">
+        <div className="bg-gray-800 dark:bg-gray-900 border-4 border-orange-500 shadow-lg">
           <div className="relative bg-gray-800 dark:bg-gray-900 pb-32 overflow-hidden min-h-[600px]">
             <div className="absolute inset-0 h-full min-h-[600px]">
               <img
