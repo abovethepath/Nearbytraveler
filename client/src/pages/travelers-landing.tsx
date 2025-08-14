@@ -83,7 +83,7 @@ export default function TravelersLanding() {
                         </p>
                         <div className="mt-4 text-center">
                           <p className="text-white font-bold text-lg">— Real Travelers, Real Experiences</p>
-                          <p className="text-orange-200 text-sm">Join thousands already exploring like locals worldwide</p>
+                          <p className="text-orange-200 text-sm">Join others already exploring like locals worldwide</p>
                         </div>
                       </div>
                     </div>
