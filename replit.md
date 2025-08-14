@@ -69,6 +69,7 @@ User request: Completely removed all photo functionality from city pages includi
 - **SMS Event Notifications**: Complete system for event RSVPs using Twilio, including phone number collection, RSVP confirmations, event reminders, cancellations, and updates.
 - **Business Location Fix**: Fixed critical issue where Santa Monica businesses were incorrectly defaulting to "Los Angeles" - now properly displays actual business city from the `city` field, with fallback to "Los Angeles Metro" only when necessary. This ensures businesses in Santa Monica, Venice, Beverly Hills, etc. show their actual city names.
 - **Business Welcome Message Fix**: Fixed critical systematic issue where business users weren't receiving automatic welcome messages from @nearbytraveler. Root cause was `/api/business-signup` endpoint bypassing welcome message logic. Added automatic welcome message + connection logic to business signup endpoint and profile completion as backup. All future business signups now automatically receive proper onboarding experience.
+- **Custom Text Entry System**: Implemented comprehensive custom text input capabilities allowing all users to enter personalized interests, activities, and events beyond predefined options. Added custom_interests, custom_activities, and custom_events database fields with comma-separated format support. Available in both travel plan editing and main profile editing forms for all user types (travelers, locals, business users). Custom entries automatically sync to main arrays for seamless integration.
 
 ## External Dependencies
 
