@@ -529,7 +529,7 @@ export default function Landing() {
                     <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg flex items-center justify-center mr-3 shadow-md">
                       <span className="text-white text-lg font-bold">🎉</span>
                     </div>
-                    <h3 className="font-black text-blue-900 dark:text-blue-100 text-lg">Host Epic Events</h3>
+                    <h3 className="font-black text-blue-900 dark:text-blue-100 text-lg">Create Fun Hangouts</h3>
                   </div>
                   <p className="text-blue-800 dark:text-blue-200 text-base font-semibold">Beach BBQs, hiking adventures, cultural deep-dives</p>
                 </div>
@@ -539,7 +539,7 @@ export default function Landing() {
                     <div className="w-12 h-12 bg-gradient-to-r from-teal-500 to-teal-600 rounded-lg flex items-center justify-center mr-3 shadow-md">
                       <span className="text-white text-lg font-bold">💎</span>
                     </div>
-                    <h3 className="font-black text-teal-900 dark:text-teal-100 text-lg">Share Hidden Gems</h3>
+                    <h3 className="font-black text-teal-900 dark:text-teal-100 text-lg">Show Off Your Spots</h3>
                   </div>
                   <p className="text-teal-800 dark:text-teal-200 text-base font-semibold">Your secret spots become legendary discoveries</p>
                 </div>
@@ -549,7 +549,7 @@ export default function Landing() {
                     <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg flex items-center justify-center mr-3 shadow-md">
                       <span className="text-white text-lg font-bold">🤝</span>
                     </div>
-                    <h3 className="font-black text-purple-900 dark:text-purple-100 text-lg">Build Connections</h3>
+                    <h3 className="font-black text-purple-900 dark:text-purple-100 text-lg">Expand Your Circle</h3>
                   </div>
                   <p className="text-purple-800 dark:text-purple-200 text-base font-semibold">Welcome travelers, connect with fellow locals</p>
                 </div>
@@ -559,7 +559,7 @@ export default function Landing() {
                     <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg flex items-center justify-center mr-3 shadow-md">
                       <span className="text-white text-lg font-bold">🌟</span>
                     </div>
-                    <h3 className="font-black text-orange-900 dark:text-orange-100 text-lg">Create Community</h3>
+                    <h3 className="font-black text-orange-900 dark:text-orange-100 text-lg">Find Your Tribe</h3>
                   </div>
                   <p className="text-orange-800 dark:text-orange-200 text-base font-semibold">Turn strangers into lifelong friends</p>
                 </div>
