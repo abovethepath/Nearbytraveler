@@ -5682,12 +5682,20 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       onCheckedChange={(enabled) => {
                         console.log('🔧 DIRECT: Location sharing toggle clicked:', { enabled, userId: user.id });
                         
-                        // Direct API call without mutation for immediate fix
+                        // Direct API call with immediate UI update
                         apiRequest('PUT', `/api/users/${user.id}`, {
                           locationSharingEnabled: enabled
                         }).then(() => {
                           console.log('🔧 DIRECT: Location sharing updated successfully');
+                          
+                          // Force immediate cache invalidation and refetch
                           queryClient.invalidateQueries({ queryKey: [`/api/users/${user.id}`] });
+                          queryClient.invalidateQueries({ queryKey: ['/api/users', user.id] });
+                          queryClient.refetchQueries({ queryKey: [`/api/users/${user.id}`] });
+                          
+                          // Force page reload to show immediate effect
+                          window.location.reload();
+                          
                           toast({
                             title: "Location sharing updated",
                             description: "Your location sharing preference has been saved",
