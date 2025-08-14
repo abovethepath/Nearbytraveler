@@ -248,20 +248,30 @@ export default function JoinNowWidgetNew() {
           )}
           <div className="space-y-3">
             <div>
-              <Label htmlFor="name" className="text-base md:text-lg font-medium text-gray-900 dark:text-white text-crisp">Full Name *</Label>
+              <Label htmlFor="name" className="text-base md:text-lg font-medium text-gray-900 dark:text-white text-crisp">
+                {userType === 'business' ? 'Business Name *' : 'Full Name *'}
+              </Label>
               <Input
                 id="name"
                 type="text"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="Your full name"
+                placeholder={userType === 'business' ? 'Your business name (e.g., "Joe's Pizza" or "LA Tours")' : 'Your full name'}
                 className="text-base py-3 text-crisp font-medium"
                 required
               />
+              {userType === 'business' && (
+                <p className="text-sm text-gray-600 mt-1">This is how your business will appear to customers</p>
+              )}
             </div>
 
             <div>
-              <Label htmlFor="username" className="text-base md:text-lg font-medium text-gray-900 dark:text-white text-crisp">Username * (min 6 characters)</Label>
+              <Label htmlFor="username" className="text-base md:text-lg font-medium text-gray-900 dark:text-white text-crisp">
+                {userType === 'business' ? 'Personal Username * (min 6 characters)' : 'Username * (min 6 characters)'}
+              </Label>
+              {userType === 'business' && (
+                <p className="text-sm text-gray-600 mb-2">Your personal username for logging in and account management</p>
+              )}
               <div className="relative">
                 <Input
                   id="username"
