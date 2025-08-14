@@ -3082,7 +3082,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   <MapPin className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
                   <span className="text-sm sm:text-base font-medium flex-1">
                     {user.userType === 'business' 
-                      ? `Nearby Business in ${user.hometownCity || 'Los Angeles'}`
+                      ? `Nearby Business in ${(user as any).city || user.hometownCity || 'Los Angeles'}`
                       : (() => {
                           // Check for active travel plans first
                           if (travelPlans && travelPlans.length > 0) {
