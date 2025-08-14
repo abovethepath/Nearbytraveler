@@ -24,11 +24,16 @@ export function LocationSharingWidget() {
 
   const updateLocationMutation = useMutation({
     mutationFn: async (data: { latitude: number; longitude: number; locationSharingEnabled: boolean }) => {
-      return apiRequest('POST', `/api/users/${user?.id}/location`, data);
+      if (!user?.id) {
+        throw new Error('User ID not available for location update');
+      }
+      return apiRequest('POST', `/api/users/${user.id}/location`, data);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`/api/users/${user?.id}`] });
-      queryClient.invalidateQueries({ queryKey: ['/api/users', user?.id] });
+      if (user?.id) {
+        queryClient.invalidateQueries({ queryKey: [`/api/users/${user.id}`] });
+        queryClient.invalidateQueries({ queryKey: ['/api/users', user.id] });
+      }
       toast({
         title: "Location updated",
         description: "Your location sharing preferences have been saved",
