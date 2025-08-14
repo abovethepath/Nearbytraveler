@@ -6391,172 +6391,288 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           </DialogHeader>
           <Form {...profileForm}>
             <form onSubmit={profileForm.handleSubmit(onSubmitProfile)} className="space-y-6">
-              {user?.userType === 'business' && (
-                <FormField
-                  control={profileForm.control}
-                  name="businessName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Business Name</FormLabel>
-                      <FormControl>
-                        <Input 
-                          {...field} 
-                          placeholder="Enter your business name..."
-                          maxLength={100}
-                        />
-                      </FormControl>
-                      <div className="text-xs text-gray-500 text-right">
-                        {field.value?.length || 0}/100 characters
-                      </div>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )}
-              
+              {/* Business Profile Fields */}
               {user?.userType === 'business' ? (
-                <FormField
-                  control={profileForm.control}
-                  name="businessDescription"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Business Description</FormLabel>
-                      <FormControl>
-                        <Textarea 
-                          {...field} 
-                          placeholder="Describe your business, services, and what makes you special..."
-                          className="min-h-[100px] resize-none"
-                          maxLength={1000}
-                        />
-                      </FormControl>
-                      <div className="text-xs text-gray-500 text-right">
-                        {field.value?.length || 0}/1000 characters
-                      </div>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              ) : (
-                <FormField
-                  control={profileForm.control}
-                  name="bio"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Bio</FormLabel>
-                      <FormControl>
-                        <Textarea 
-                          {...field} 
-                          placeholder="Tell us about yourself..."
-                          className="min-h-[100px] resize-none"
-                          maxLength={1000}
-                        />
-                      </FormControl>
-                      <div className="text-xs text-gray-500 text-right">
-                        {field.value?.length || 0}/1000 characters {(field.value?.length || 0) < 30 && '(minimum 30 required)'}
-                      </div>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )}
-
-              {user?.userType !== 'business' && (
-                <FormField
-                  control={profileForm.control}
-                  name="secretActivities"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>If I could list a few Secret Local things in my hometown I would say they are...</FormLabel>
-                      <FormControl>
-                        <Textarea 
-                          {...field} 
-                          placeholder="Fill this out for others to see secret activities, hidden gems, local spots, or insider tips that only locals know about. Example: There's a hidden waterfall behind the old mill that locals love, or try the secret menu at Joe's Diner..."
-                          className="min-h-[80px] resize-none"
-                          maxLength={500}
-                        />
-                      </FormControl>
-                      <div className="text-xs text-gray-500 text-right">
-                        {field.value?.length || 0}/500 characters
-                      </div>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )}
-
-              {/* Family Travel Section - Rebuilt like Sexual Preferences */}
-              {user?.userType !== 'business' && (
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white border-b pb-2">
-                    Family Travel
-                  </h3>
-                  
+                <div className="space-y-6">
                   <FormField
                     control={profileForm.control}
-                    name="travelingWithChildren"
+                    name="businessName"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Are you traveling with children?</FormLabel>
+                        <FormLabel>Business Name</FormLabel>
                         <FormControl>
-                          <div className="space-y-2 border rounded-md p-3">
-                            <div className="flex items-center space-x-2">
-                              <input
-                                type="checkbox"
-                                id="traveling-with-children"
-                                checked={!!field.value}
-                                onChange={(e) => {
-                                  const checked = e.target.checked;
-                                  field.onChange(checked);
-                                  if (!checked) {
-                                    // Clear ages when unchecked
-                                    profileForm.setValue('childrenAges', '');
-                                  }
-                                }}
-                                className="h-4 w-4 border-gray-300 rounded text-purple-600 focus:ring-purple-500"
-                                data-testid="checkbox-traveling-with-children"
-                              />
-                              <label 
-                                htmlFor="traveling-with-children" 
-                                className="text-sm font-medium text-gray-700 dark:text-white cursor-pointer"
-                              >
-                                Yes, I'm traveling with children
-                              </label>
-                            </div>
-                          </div>
+                          <Input 
+                            {...field} 
+                            placeholder="Enter your business name..."
+                            maxLength={100}
+                          />
+                        </FormControl>
+                        <div className="text-xs text-gray-500 text-right">
+                          {field.value?.length || 0}/100 characters
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={profileForm.control}
+                    name="businessDescription"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Business Description</FormLabel>
+                        <FormControl>
+                          <Textarea 
+                            {...field} 
+                            placeholder="Describe your business, services, and what makes you special..."
+                            className="min-h-[100px] resize-none"
+                            maxLength={1000}
+                          />
+                        </FormControl>
+                        <div className="text-xs text-gray-500 text-right">
+                          {field.value?.length || 0}/1000 characters
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={profileForm.control}
+                    name="businessType"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Business Type</FormLabel>
+                        <FormControl>
+                          <Input 
+                            {...field} 
+                            placeholder="e.g., Restaurant, Hotel, Tour Company..."
+                            maxLength={50}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
 
-                  {/* Children Ages Field - Only show if traveling with children is checked */}
-                  {profileForm.watch('travelingWithChildren') && (
+                  <FormField
+                    control={profileForm.control}
+                    name="phoneNumber"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Phone Number</FormLabel>
+                        <FormControl>
+                          <Input 
+                            {...field} 
+                            placeholder="(555) 123-4567"
+                            type="tel"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={profileForm.control}
+                    name="websiteUrl"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Website URL</FormLabel>
+                        <FormControl>
+                          <Input 
+                            {...field} 
+                            placeholder="https://yourwebsite.com"
+                            type="url"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white border-b pb-2">
+                      Business Location
+                    </h3>
+                    
                     <FormField
                       control={profileForm.control}
-                      name="childrenAges"
+                      name="streetAddress"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Children's Ages</FormLabel>
+                          <FormLabel>Street Address</FormLabel>
                           <FormControl>
-                            <Input
-                              placeholder="e.g., 3, 7, 12"
-                              {...field}
-                              className="dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+                            <Input 
+                              {...field} 
+                              placeholder="123 Main Street"
                             />
                           </FormControl>
-                          <FormDescription>
-                            Enter the ages of your children (separated by commas)
-                          </FormDescription>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
-                  )}
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <FormField
+                        control={profileForm.control}
+                        name="location"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>City</FormLabel>
+                            <FormControl>
+                              <Input 
+                                {...field} 
+                                placeholder="City"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={profileForm.control}
+                        name="zipCode"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>ZIP Code</FormLabel>
+                            <FormControl>
+                              <Input 
+                                {...field} 
+                                placeholder="12345"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                /* Traveler Profile Fields */
+                <div className="space-y-6">
+                  <FormField
+                    control={profileForm.control}
+                    name="bio"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Bio</FormLabel>
+                        <FormControl>
+                          <Textarea 
+                            {...field} 
+                            placeholder="Tell us about yourself..."
+                            className="min-h-[100px] resize-none"
+                            maxLength={1000}
+                          />
+                        </FormControl>
+                        <div className="text-xs text-gray-500 text-right">
+                          {field.value?.length || 0}/1000 characters {(field.value?.length || 0) < 30 && '(minimum 30 required)'}
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={profileForm.control}
+                    name="secretActivities"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>If I could list a few Secret Local things in my hometown I would say they are...</FormLabel>
+                        <FormControl>
+                          <Textarea 
+                            {...field} 
+                            placeholder="Fill this out for others to see secret activities, hidden gems, local spots, or insider tips that only locals know about. Example: There's a hidden waterfall behind the old mill that locals love, or try the secret menu at Joe's Diner..."
+                            className="min-h-[80px] resize-none"
+                            maxLength={500}
+                          />
+                        </FormControl>
+                        <div className="text-xs text-gray-500 text-right">
+                          {field.value?.length || 0}/500 characters
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Family Travel Section */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white border-b pb-2">
+                      Family Travel
+                    </h3>
+                    
+                    <FormField
+                      control={profileForm.control}
+                      name="travelingWithChildren"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Are you traveling with children?</FormLabel>
+                          <FormControl>
+                            <div className="space-y-2 border rounded-md p-3">
+                              <div className="flex items-center space-x-2">
+                                <input
+                                  type="checkbox"
+                                  id="traveling-with-children"
+                                  checked={!!field.value}
+                                  onChange={(e) => {
+                                    const checked = e.target.checked;
+                                    field.onChange(checked);
+                                    if (!checked) {
+                                      // Clear ages when unchecked
+                                      profileForm.setValue('childrenAges', '');
+                                    }
+                                  }}
+                                  className="h-4 w-4 border-gray-300 rounded text-purple-600 focus:ring-purple-500"
+                                  data-testid="checkbox-traveling-with-children"
+                                />
+                                <label 
+                                  htmlFor="traveling-with-children" 
+                                  className="text-sm font-medium text-gray-700 dark:text-white cursor-pointer"
+                                >
+                                  Yes, I'm traveling with children
+                                </label>
+                              </div>
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    {/* Children Ages Field - Only show if traveling with children is checked */}
+                    {profileForm.watch('travelingWithChildren') && (
+                      <FormField
+                        control={profileForm.control}
+                        name="childrenAges"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Children's Ages</FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder="e.g., 3, 7, 12"
+                                {...field}
+                                className="dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+                              />
+                            </FormControl>
+                            <FormDescription>
+                              Enter the ages of your children (separated by commas)
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    )}
+                  </div>
                 </div>
               )}
 
+              {/* Location Section - Different for Business vs Traveler */}
               <div className="space-y-4">
-                <FormLabel>Hometown Location ** ONLY CHANGE IF YOU MOVE **</FormLabel>
+                <FormLabel>
+                  {user?.userType === 'business' ? 'Business Location' : 'Hometown Location ** ONLY CHANGE IF YOU MOVE **'}
+                </FormLabel>
                 <SmartLocationInput
                   city={profileForm.watch('hometownCity') || ''}
                   state={profileForm.watch('hometownState') || ''}
@@ -6568,9 +6684,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   }}
                   required={false}
                   placeholder={{
-                    country: "Select your hometown country",
-                    state: "Select your hometown state/region", 
-                    city: "Select your hometown city"
+                    country: user?.userType === 'business' ? "Select your business country" : "Select your hometown country",
+                    state: user?.userType === 'business' ? "Select your business state/region" : "Select your hometown state/region", 
+                    city: user?.userType === 'business' ? "Select your business city" : "Select your hometown city"
                   }}
                 />
               </div>
