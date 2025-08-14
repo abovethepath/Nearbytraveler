@@ -31,9 +31,10 @@ interface NewDeal {
   availability: string;
 }
 
-export function QuickDealsWidget({ city, profileUserId }: { city?: string; profileUserId?: number }) {
+export function QuickDealsWidget({ city, profileUserId, showCreateForm: externalShowCreateForm, onCloseCreateForm }: { city?: string; profileUserId?: number; showCreateForm?: boolean; onCloseCreateForm?: () => void }) {
   const { user } = useAuth();
-  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [internalShowCreateForm, setInternalShowCreateForm] = useState(false);
+  const showCreateForm = externalShowCreateForm || internalShowCreateForm;
   const [expandedDeal, setExpandedDeal] = useState<number | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -95,7 +96,8 @@ export function QuickDealsWidget({ city, profileUserId }: { city?: string; profi
         title: "Deal Created!",
         description: "Your quick deal is now live and visible to customers."
       });
-      setShowCreateForm(false);
+      setInternalShowCreateForm(false);
+      if (onCloseCreateForm) onCloseCreateForm();
       setNewDeal({
         title: '',
         description: '',
@@ -217,7 +219,7 @@ export function QuickDealsWidget({ city, profileUserId }: { city?: string; profi
             Quick Deal Now
           </h3>
           <Button
-            onClick={() => setShowCreateForm(!showCreateForm)}
+            onClick={() => setInternalShowCreateForm(!showCreateForm)}
             size="sm"
             variant="outline"
             className="flex items-center gap-1"
@@ -336,7 +338,10 @@ export function QuickDealsWidget({ city, profileUserId }: { city?: string; profi
                 <div className="flex gap-2">
                   <Button
                     variant="outline"
-                    onClick={() => setShowCreateForm(false)}
+                    onClick={() => {
+                      setInternalShowCreateForm(false);
+                      if (onCloseCreateForm) onCloseCreateForm();
+                    }}
                     data-testid="button-cancel-deal"
                   >
                     Cancel

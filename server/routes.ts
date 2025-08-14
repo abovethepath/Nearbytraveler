@@ -6480,19 +6480,16 @@ Questions? Just reply to this message. Welcome aboard!
           availability: quickDeals.availability,
           isActive: quickDeals.isActive,
           createdAt: quickDeals.createdAt,
-          businessName: users.businessName,
-          businessDescription: users.businessDescription,
-          businessPhone: users.businessPhone,
-          businessEmail: users.businessEmail,
-          businessImage: users.businessImage,
+          businessName: users.business_name,
+          businessDescription: users.business_description,
+          businessPhone: users.phone_number,
+          businessEmail: users.email,
+          businessImage: users.profileImage,
         })
         .from(quickDeals)
         .leftJoin(users, eq(quickDeals.businessId, users.id))
         .where(and(...conditions))
-        .orderBy(
-          sql`CASE WHEN ${quickDeals.validUntil} > NOW() THEN 1 ELSE 2 END ASC`,
-          desc(quickDeals.createdAt)
-        );
+        .orderBy(desc(quickDeals.createdAt));
 
       const activeDeals = allDeals.filter(deal => {
         const validUntil = new Date(deal.validUntil);

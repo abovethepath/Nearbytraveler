@@ -527,6 +527,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const [isEditMode, setIsEditMode] = useState(false);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [editingTravelPlan, setEditingTravelPlan] = useState<TravelPlan | null>(null);
+  const [showCreateDeal, setShowCreateDeal] = useState(false);
   const [deletingTravelPlan, setDeletingTravelPlan] = useState<TravelPlan | null>(null);
   const [selectedTravelPlan, setSelectedTravelPlan] = useState<TravelPlan | null>(null);
   const [showTravelPlanDetails, setShowTravelPlanDetails] = useState(false);
@@ -3601,7 +3602,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     {isOwnProfile && (
                       <Button 
                         size="sm" 
-                        onClick={() => setLocation('/deals')}
+                        onClick={() => setShowCreateDeal(true)}
                         className="bg-gradient-to-r from-green-500 to-blue-500 text-white border-0 hover:from-green-600 hover:to-blue-600"
                       >
                         <Plus className="w-3 h-3 mr-1" />
@@ -4898,7 +4899,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             {/* Quick Deals Widget for Business Users */}
             {isOwnProfile && user?.userType === 'business' && (
               <div className="mt-6">
-                <QuickDealsWidget city={user?.hometownCity ?? ''} profileUserId={user?.id} />
+                <QuickDealsWidget 
+                  city={user?.hometownCity ?? ''} 
+                  profileUserId={user?.id} 
+                  showCreateForm={showCreateDeal}
+                  onCloseCreateForm={() => setShowCreateDeal(false)}
+                />
               </div>
             )}
 
