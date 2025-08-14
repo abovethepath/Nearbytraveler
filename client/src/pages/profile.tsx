@@ -2585,7 +2585,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   // Profile edit mutation
   const editProfile = useMutation({
     mutationFn: async (data: z.infer<typeof dynamicProfileSchema>) => {
-      console.log('Profile edit data being sent:', data);
+      console.log('🔥 MUTATION: Profile edit data being sent:', data);
+      console.log('🔥 MUTATION: travelingWithChildren in data:', data.travelingWithChildren, 'will become:', !!data.travelingWithChildren);
       
       // Ensure boolean fields are explicitly included (don't drop false values)
       const payload = {
@@ -2597,7 +2598,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         isActiveDuty: !!data.isActiveDuty,
       };
       
-      console.log('Profile payload with explicit booleans:', payload);
+      console.log('🔥 MUTATION: Profile payload with explicit booleans:', payload);
+      console.log('🔥 MUTATION: Final travelingWithChildren value being sent:', payload.travelingWithChildren);
       const response = await apiRequest('PUT', `/api/users/${effectiveUserId}`, payload);
       if (!response.ok) {
         const errorText = await response.text();
@@ -2689,12 +2691,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   });
 
   const onSubmitProfile = (data: z.infer<typeof dynamicProfileSchema>) => {
-    console.log('onSubmitProfile called with data:', data);
+    console.log('🔥 FORM SUBMIT: Raw form data:', data);
+    console.log('🔥 FORM SUBMIT: travelingWithChildren value:', data.travelingWithChildren, 'type:', typeof data.travelingWithChildren);
     console.log('Form validation errors:', profileForm.formState.errors);
     
     // Clear children ages if traveling with children is turned off
     if (!data.travelingWithChildren) {
       data.childrenAges = "";
+      console.log('🔥 FORM SUBMIT: Cleared childrenAges because travelingWithChildren is false');
     }
     
     // Send dateOfBirth as string - server will handle conversion to Date
