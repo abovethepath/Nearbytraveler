@@ -51,7 +51,11 @@ export default function LocalsLanding() {
                         </p>
                         <div className="mt-4 text-center">
                           <p className="text-white font-bold text-lg">Be the Local You'd Want to Meet on your Trips</p>
-                          <p className="text-orange-200 text-sm">Share your city's secrets. Meet incredible travelers and locals right now, today!!!</p>
+                          <p className="text-sm font-bold">
+                            <span className="text-orange-300">Share your city's secrets.</span>{' '}
+                            <span className="text-blue-300">Meet incredible travelers</span>{' '}
+                            <span className="text-black bg-orange-400 px-2 py-1 rounded">and locals right now, today!!!</span>
+                          </p>
                         </div>
                       </div>
                     </div>
