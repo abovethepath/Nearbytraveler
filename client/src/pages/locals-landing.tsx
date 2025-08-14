@@ -131,7 +131,7 @@ export default function LocalsLanding() {
                 animation: 'gentle-pulse 3s ease-in-out infinite',
               }}
             >
-              START HOSTING EXPERIENCES TODAY
+JOIN THE COMMUNITY TODAY
             </Button>
             <p className="text-gray-600 mt-3 text-lg">Join thousands of locals building global friendships</p>
           </div>
