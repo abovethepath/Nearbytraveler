@@ -205,7 +205,7 @@ export default function EventsLanding() {
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transform transition-all duration-300 flex flex-col">
               <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-orange-400 to-red-500">
                 <img 
-                  src="@assets/image_1755184474137.png" 
+                  src="/authentic-food-adventure.png" 
                   alt="Local food experience event" 
                   className="w-full h-48 object-cover"
                 />
@@ -236,7 +236,7 @@ export default function EventsLanding() {
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transform transition-all duration-300 flex flex-col">
               <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-green-400 to-teal-500">
                 <img 
-                  src="@assets/image_1755184314865.png" 
+                  src="/beach-bbq-bonfire.png" 
                   alt="Beach BBQ event" 
                   className="w-full h-48 object-cover"
                 />
