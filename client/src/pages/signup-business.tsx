@@ -235,8 +235,8 @@ export default function SignupBusiness() {
       // Clear sessionStorage account data since signup is complete
       sessionStorage.removeItem('accountData');
       
-      // Redirect to business welcome page to explain features and setup
-      window.location.href = '/welcome-business';
+      // Immediate redirect to prevent page flash
+      setLocation('/welcome-business');
     },
     onError: (error: Error) => {
       toast({
@@ -424,16 +424,26 @@ export default function SignupBusiness() {
                     )}
                   />
                   
-                  {/* Business Description already collected in step 1, showing read-only for confirmation */}
-                  {accountData?.businessDescription && (
-                    <div className="space-y-2 bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
-                      <FormLabel className="text-sm font-medium">Business Description ✓</FormLabel>
-                      <div className="text-sm text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 p-3 rounded border">
-                        {accountData.businessDescription}
-                      </div>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">From step 1 registration</p>
-                    </div>
-                  )}
+                  <FormField
+                    control={form.control}
+                    name="businessDescription"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Business Description *</FormLabel>
+                        <FormControl>
+                          <Textarea 
+                            placeholder="Tell travelers about your business, what makes you special, and what experiences you offer..."
+                            {...field} 
+                            className="min-h-[100px]"
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          Describe your business to attract travelers and locals
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <FormField
