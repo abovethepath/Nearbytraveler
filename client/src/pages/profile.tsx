@@ -1180,18 +1180,20 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       if (user.userType === 'business') {
         profileForm.reset({
           bio: user.bio || "",
-          businessName: (user as any).businessName || "",
+          businessName: (user as any).business_name || (user as any).businessName || "",
           hometownCity: user.hometownCity || "",
           hometownState: user.hometownState || "",
           hometownCountry: user.hometownCountry || "",
           travelStyle: user.travelStyle || [],
-          businessDescription: (user as any).businessDescription || "",
-          businessType: (user as any).businessType || "",
+          businessDescription: (user as any).business_description || (user as any).businessDescription || "",
+          businessType: (user as any).business_type || (user as any).businessType || "",
           location: user.location || "",
           streetAddress: (user as any).streetAddress || "",
           zipCode: (user as any).zipCode || "",
           phoneNumber: (user as any).phoneNumber || "",
-          websiteUrl: (user as any).websiteUrl || "",
+          websiteUrl: (user as any).websiteUrl || (user as any).website || "",
+          isVeteran: (user as any).is_veteran || user.isVeteran || false,
+          isActiveDuty: (user as any).is_active_duty || user.isActiveDuty || false,
         });
       } else {
         const travelingWithChildrenValue = !!(user as any).travelingWithChildren;
@@ -1313,7 +1315,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     if (user) {
       profileForm.reset({
         bio: user.bio || "",
-        ...(user?.userType === 'business' ? { businessName: (user as any).businessName || "" } : {}),
+        ...(user?.userType === 'business' ? { 
+          businessName: (user as any).business_name || (user as any).businessName || "",
+          businessDescription: (user as any).business_description || (user as any).businessDescription || "",
+        } : {}),
         hometownCity: user.hometownCity || "",
         hometownState: user.hometownState || "",
         hometownCountry: user.hometownCountry || "",
@@ -1324,8 +1329,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         sexualPreference: Array.isArray(user.sexualPreference) ? user.sexualPreference : (user.sexualPreference ? [user.sexualPreference] : []),
         sexualPreferenceVisible: user.sexualPreferenceVisible || false,
         travelStyle: Array.isArray(user.travelStyle) ? user.travelStyle : [],
-        isVeteran: user.isVeteran || false,
-        isActiveDuty: user.isActiveDuty || false,
+        isVeteran: (user as any).is_veteran || user.isVeteran || false,
+        isActiveDuty: (user as any).is_active_duty || user.isActiveDuty || false,
         // Business contact fields - only for business users
         ...(user?.userType === 'business' ? {
           streetAddress: (user as any).streetAddress || "",
