@@ -637,34 +637,34 @@ export default function Landing() {
               </div>
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="bg-gradient-to-br from-orange-50 to-orange-100 dark:bg-gradient-to-br dark:from-orange-900/30 dark:to-orange-800/20 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-orange-200 dark:border-orange-700">
+                <div className="bg-gradient-to-br from-slate-100 to-slate-200 dark:bg-gradient-to-br dark:from-slate-800 dark:to-slate-700 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-orange-300 dark:border-orange-600">
                   <div className="flex items-center mb-3">
                     <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg flex items-center justify-center mr-3 shadow-md">
                       <span className="text-white text-lg font-bold">🎯</span>
                     </div>
-                    <h3 className="font-black text-orange-900 dark:text-orange-100 text-lg">Local-Led Events</h3>
+                    <h3 className="font-black text-slate-800 dark:text-slate-100 text-lg">Local-Led Events</h3>
                   </div>
-                  <p className="text-orange-800 dark:text-orange-200 text-base font-semibold">Join authentic experiences crafted by locals</p>
+                  <p className="text-slate-700 dark:text-slate-200 text-base font-semibold">Join authentic experiences crafted by locals</p>
                 </div>
                 
-                <div className="bg-gradient-to-br from-red-50 to-red-100 dark:bg-gradient-to-br dark:from-red-900/30 dark:to-red-800/20 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-red-200 dark:border-red-700">
+                <div className="bg-gradient-to-br from-emerald-100 to-emerald-200 dark:bg-gradient-to-br dark:from-emerald-800 dark:to-emerald-700 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-red-300 dark:border-red-600">
                   <div className="flex items-center mb-3">
                     <div className="w-12 h-12 bg-gradient-to-r from-red-500 to-red-600 rounded-lg flex items-center justify-center mr-3 shadow-md">
                       <span className="text-white text-lg font-bold">🗺️</span>
                     </div>
-                    <h3 className="font-black text-red-900 dark:text-red-100 text-lg">Hidden Gems</h3>
+                    <h3 className="font-black text-emerald-800 dark:text-emerald-100 text-lg">Hidden Gems</h3>
                   </div>
-                  <p className="text-red-800 dark:text-red-200 text-base font-semibold">Discover spots that tourists never find</p>
+                  <p className="text-emerald-700 dark:text-emerald-200 text-base font-semibold">Discover spots that tourists never find</p>
                 </div>
                 
-                <div className="bg-gradient-to-br from-pink-50 to-pink-100 dark:bg-gradient-to-br dark:from-pink-900/30 dark:to-pink-800/20 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-pink-200 dark:border-pink-700">
+                <div className="bg-gradient-to-br from-blue-100 to-blue-200 dark:bg-gradient-to-br dark:from-blue-800 dark:to-blue-700 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-pink-300 dark:border-pink-600">
                   <div className="flex items-center mb-3">
                     <div className="w-12 h-12 bg-gradient-to-r from-pink-500 to-pink-600 rounded-lg flex items-center justify-center mr-3 shadow-md">
                       <span className="text-white text-lg font-bold">👥</span>
                     </div>
-                    <h3 className="font-black text-pink-900 dark:text-pink-100 text-lg">Travel Buddies</h3>
+                    <h3 className="font-black text-blue-800 dark:text-blue-100 text-lg">Travel Buddies</h3>
                   </div>
-                  <p className="text-pink-800 dark:text-pink-200 text-base font-semibold">Meet travelers with your dates and interests</p>
+                  <p className="text-blue-700 dark:text-blue-200 text-base font-semibold">Meet travelers with your dates and interests</p>
                 </div>
                 
                 <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:bg-gradient-to-br dark:from-purple-900/30 dark:to-purple-800/20 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-purple-200 dark:border-purple-700">
