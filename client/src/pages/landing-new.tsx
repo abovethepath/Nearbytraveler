@@ -577,7 +577,7 @@ export default function Landing() {
                     Expand Your Social World
                   </h3>
                   <p className="text-gray-600 dark:text-gray-300 mb-8 leading-relaxed">
-                    Meet locals who share your interests and build lasting friendships. From weekend adventures to casual hangouts, grow your circle locally and globally.
+                    Meet locals and Nearby Travelers who share your interests and build lasting friendships. From weekend adventures to casual hangouts, grow your circle locally and globally.
                   </p>
                   <Button 
                     onClick={() => setLocation('/join')}
