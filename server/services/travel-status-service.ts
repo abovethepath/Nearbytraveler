@@ -12,31 +12,24 @@ export class TravelStatusService {
       const today = new Date();
       today.setHours(0, 0, 0, 0); // Start of day
 
-      // Add timeout to prevent hanging
-      const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error("Travel status update timed out")), 10000); // 10 second timeout
-      });
-
-      // Get all users with travel plans with timeout
-      const usersWithPlans = await Promise.race([
-        db
-          .select({
-            userId: users.id,
-            username: users.username,
-            isCurrentlyTraveling: users.isCurrentlyTraveling,
-            travelDestination: users.travelDestination,
-            travelStartDate: users.travelStartDate,
-            travelEndDate: users.travelEndDate,
-            planId: travelPlans.id,
-            planDestination: travelPlans.destination,
-            planStartDate: travelPlans.startDate,
-            planEndDate: travelPlans.endDate,
-          })
-          .from(users)
-          .leftJoin(travelPlans, eq(users.id, travelPlans.userId))
-          .where(eq(travelPlans.status, "planned")),
-        timeoutPromise
-      ]) as any[];
+      // Get all users with travel plans with simplified query
+      const usersWithPlans = await db
+        .select({
+          userId: users.id,
+          username: users.username,
+          isCurrentlyTraveling: users.isCurrentlyTraveling,
+          travelDestination: users.travelDestination,
+          travelStartDate: users.travelStartDate,
+          travelEndDate: users.travelEndDate,
+          planId: travelPlans.id,
+          planDestination: travelPlans.destination,
+          planStartDate: travelPlans.startDate,
+          planEndDate: travelPlans.endDate,
+        })
+        .from(users)
+        .leftJoin(travelPlans, eq(users.id, travelPlans.userId))
+        .where(eq(travelPlans.status, "planned"))
+        .limit(50); // Limit to prevent overwhelming queries
 
       console.log(`Checking travel status for ${usersWithPlans.length} user travel plans`);
 

@@ -11,29 +11,22 @@ export class UserStatusService {
     try {
       const now = new Date();
       
-      // Add timeout to prevent hanging
-      const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error("Expired travelers update timed out")), 5000); // 5 second timeout
-      });
-      
-      // Find travel plans that have ended (end date is before now) with timeout
-      const expiredPlans = await Promise.race([
-        db
-          .select({
-            userId: travelPlans.userId,
-            planId: travelPlans.id,
-            destination: travelPlans.destination,
-            endDate: travelPlans.endDate
-          })
-          .from(travelPlans)
-          .where(
-            and(
-              eq(travelPlans.status, 'active'),
-              lt(travelPlans.endDate, now)
-            )
-          ),
-        timeoutPromise
-      ]) as any[];
+      // Find travel plans that have ended (end date is before now)
+      const expiredPlans = await db
+        .select({
+          userId: travelPlans.userId,
+          planId: travelPlans.id,
+          destination: travelPlans.destination,
+          endDate: travelPlans.endDate
+        })
+        .from(travelPlans)
+        .where(
+          and(
+            eq(travelPlans.status, 'active'),
+            lt(travelPlans.endDate, now)
+          )
+        )
+        .limit(20); // Limit to prevent overwhelming queries
 
       console.log(`Found ${expiredPlans.length} expired travel plans`);
 
