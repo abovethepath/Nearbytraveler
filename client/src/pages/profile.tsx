@@ -225,7 +225,7 @@ import { getAllInterests, getAllActivities, getAllEvents, getAllLanguages, valid
 const REFERENCE_TYPES = [
   { value: "general", label: "General" },
   { value: "travel_buddy", label: "Travel Buddy" },
-  { value: "local_guide", label: "Local Guide" },
+  { value: "local_host", label: "Local Host" },
   { value: "event_companion", label: "Event Companion" },
   { value: "host", label: "Host" },
   { value: "guest", label: "Guest" }

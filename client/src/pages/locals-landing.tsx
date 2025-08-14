@@ -50,7 +50,7 @@ export default function LocalsLanding() {
                           <span className="text-white"> Connect with travelers and locals who love exploring authentic experiences just like you do."</span>
                         </p>
                         <div className="mt-4 text-center">
-                          <p className="text-white font-bold text-lg">— Be the Local Guide You'd Want to Meet</p>
+                          <p className="text-white font-bold text-lg">Be the Local You'd Want to Meet on your Trips</p>
                           <p className="text-white text-sm">Share hidden gems • Build global friendships • Host amazing experiences</p>
                         </div>
                       </div>
@@ -113,7 +113,7 @@ export default function LocalsLanding() {
                 </div>
                 
                 <div className="flex flex-wrap gap-2 mb-3">
-                  <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs font-medium">Local Guide</span>
+                  <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs font-medium">Local Host</span>
                   <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-medium">Walking</span>
                   <span className="bg-purple-100 text-purple-700 px-2 py-1 rounded-full text-xs font-medium">Culture</span>
                 </div>
