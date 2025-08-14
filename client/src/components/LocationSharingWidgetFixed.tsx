@@ -3,13 +3,21 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { MapPin, Navigation, AlertCircle, Eye, EyeOff } from 'lucide-react';
-import { useAuth } from '@/App';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 
-export function LocationSharingWidgetFixed() {
-  const { user } = useAuth();
+interface User {
+  id: number;
+  username: string;
+  locationSharingEnabled?: boolean;
+}
+
+interface LocationSharingWidgetFixedProps {
+  user: User;
+}
+
+export function LocationSharingWidgetFixed({ user }: LocationSharingWidgetFixedProps) {
   const [locationSharing, setLocationSharing] = useState(false);
   const [currentLocation, setCurrentLocation] = useState<{latitude: number, longitude: number} | null>(null);
   const [isGettingLocation, setIsGettingLocation] = useState(false);
@@ -19,13 +27,13 @@ export function LocationSharingWidgetFixed() {
   // Debug logging
   console.log('🔧 LocationSharingWidgetFixed rendered:', { 
     hasUser: !!user, 
-    userId: user?.id, 
-    username: user?.username,
-    locationSharingEnabled: user?.locationSharingEnabled
+    userId: user.id, 
+    username: user.username,
+    locationSharingEnabled: user.locationSharingEnabled
   });
 
   useEffect(() => {
-    if (user?.locationSharingEnabled) {
+    if (user.locationSharingEnabled) {
       setLocationSharing(true);
     }
   }, [user]);
@@ -33,10 +41,7 @@ export function LocationSharingWidgetFixed() {
   // Update the user's locationSharingEnabled field directly
   const updateLocationSharingMutation = useMutation({
     mutationFn: async (enabled: boolean) => {
-      console.log('updateLocationSharingMutation called with:', { enabled, userId: user?.id });
-      if (!user?.id) {
-        throw new Error('User ID not available');
-      }
+      console.log('updateLocationSharingMutation called with:', { enabled, userId: user.id });
       const url = `/api/users/${user.id}`;
       console.log('Making API call to:', url);
       return apiRequest('PUT', url, {
@@ -45,10 +50,8 @@ export function LocationSharingWidgetFixed() {
     },
     onSuccess: () => {
       console.log('Location sharing preference updated successfully');
-      if (user?.id) {
-        queryClient.invalidateQueries({ queryKey: [`/api/users/${user.id}`] });
-        queryClient.invalidateQueries({ queryKey: ['/api/users', user.id] });
-      }
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${user.id}`] });
+      queryClient.invalidateQueries({ queryKey: ['/api/users', user.id] });
       toast({
         title: "Location sharing updated",
         description: "Your location sharing preference has been saved",
@@ -66,20 +69,15 @@ export function LocationSharingWidgetFixed() {
 
   const updateLocationMutation = useMutation({
     mutationFn: async (data: { latitude: number; longitude: number; locationSharingEnabled: boolean }) => {
-      console.log('updateLocationMutation called with:', { data, userId: user?.id });
-      if (!user?.id) {
-        throw new Error('User ID not available for location update');
-      }
+      console.log('updateLocationMutation called with:', { data, userId: user.id });
       const url = `/api/users/${user.id}/location`;
       console.log('Making location API call to:', url);
       return apiRequest('POST', url, data);
     },
     onSuccess: () => {
       console.log('Location updated successfully');
-      if (user?.id) {
-        queryClient.invalidateQueries({ queryKey: [`/api/users/${user.id}`] });
-        queryClient.invalidateQueries({ queryKey: ['/api/users', user.id] });
-      }
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${user.id}`] });
+      queryClient.invalidateQueries({ queryKey: ['/api/users', user.id] });
       toast({
         title: "Location updated",
         description: "Your location sharing preferences have been saved",
@@ -151,18 +149,8 @@ export function LocationSharingWidgetFixed() {
   };
 
   const handleLocationSharingToggle = (enabled: boolean) => {
-    console.log('handleLocationSharingToggle called:', { enabled, userId: user?.id });
+    console.log('handleLocationSharingToggle called:', { enabled, userId: user.id });
     
-    if (!user?.id) {
-      console.error('No user ID available for location sharing toggle');
-      toast({
-        title: "Error",
-        description: "User authentication required to update location sharing",
-        variant: "destructive",
-      });
-      return;
-    }
-
     console.log('User ID confirmed, proceeding with toggle:', user.id);
     setLocationSharing(enabled);
     

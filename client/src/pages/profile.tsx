@@ -5657,8 +5657,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
             {/* Comprehensive Geolocation System - Enhanced location sharing for users, businesses, and events */}
             {console.log('🔧 Profile: Checking if LocationSharingWidgetFixed should render:', { isOwnProfile, userId: user?.id })}
-            {isOwnProfile && (
-              <LocationSharingWidgetFixed />
+            {isOwnProfile && user && (
+              <LocationSharingWidgetFixed user={user} />
             )}
 
             {/* Business Referral Program Widget */}
