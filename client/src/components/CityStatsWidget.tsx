@@ -25,6 +25,7 @@ export function CityStatsWidget({ city, state, country, onOpenModal }: CityStats
       const params = new URLSearchParams();
       if (state) params.append('state', state);
       if (country) params.append('country', country);
+      else params.append('country', 'United States'); // Always include country parameter
       
       const url = `/api/city-stats/${city}?${params.toString()}`;
       const response = await fetch(url);
@@ -73,7 +74,7 @@ export function CityStatsWidget({ city, state, country, onOpenModal }: CityStats
   } : {
     city: city,
     state: state || '',
-    country: country,
+    country: country || 'United States', // Default country to prevent empty values
     localCount: 0,
     travelerCount: 0,
     businessCount: 0,

@@ -1056,7 +1056,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       const cityStats = {
         city: city,
         state: state || '',
-        country: country || '',
+        country: country || 'United States', // Default to United States instead of empty string
         localCount,
         travelerCount,
         businessCount,
