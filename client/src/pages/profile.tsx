@@ -6298,9 +6298,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
               {/* Family Travel Section - Rebuilt like Sexual Preferences */}
               {user?.userType !== 'business' && (
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white border-b pb-2">
-                    Family Travel
+                <div className="space-y-4 bg-orange-50 dark:bg-orange-900/20 p-4 rounded-lg border-2 border-orange-300">
+                  <h3 className="text-xl font-bold text-orange-800 dark:text-orange-200 border-b pb-2">
+                    🔥 FAMILY TRAVEL - DEBUG SECTION 🔥
                   </h3>
                   
                   <FormField
