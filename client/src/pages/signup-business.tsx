@@ -888,21 +888,23 @@ export default function SignupBusiness() {
                   </div>
                 </div>
 
-                <div className="flex gap-4">
+                <div className="flex gap-4 pt-4">
                   <Button
                     type="button"
                     variant="outline"
-                    onClick={() => setLocation('/auth')}
-                    className="flex-1 py-4 text-lg"
+                    onClick={() => setLocation('/join')}
+                    className="flex-1 py-4 text-lg border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800"
+                    data-testid="button-back"
                   >
-                    Back
+                    ← Back to Join
                   </Button>
                   <Button
                     type="submit"
-                    className="flex-1 py-4 text-lg"
+                    className="flex-1 py-4 text-lg bg-blue-600 hover:bg-blue-700"
                     disabled={isLoading || signupMutation.isPending}
+                    data-testid="button-register"
                   >
-                    {isLoading || signupMutation.isPending ? "Creating Business Account..." : "Register Business Account"}
+                    {isLoading || signupMutation.isPending ? "Creating Business Account..." : "Complete Registration"}
                   </Button>
                 </div>
               </form>
