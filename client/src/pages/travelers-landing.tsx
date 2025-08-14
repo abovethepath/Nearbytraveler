@@ -69,18 +69,7 @@ export default function TravelersLanding() {
                         <span className="block text-white font-black" style={{fontFamily: '"Inter", sans-serif'}}>Travel like a local.</span>
                         <span className="block font-black" style={{fontFamily: '"Inter", sans-serif'}}>
                           <span className="text-orange-400">Skip the tourist traps and </span>
-                          <span
-                            className="
-                              text-blue-400
-                              outline-none focus:outline-none focus-visible:outline-none
-                              ring-0 focus:ring-0
-                              select-none selection:bg-transparent
-                              [-webkit-tap-highlight-color:transparent]
-                              [box-shadow:none]
-                              [text-decoration:none]
-                              pointer-events-none
-                            "
-                          >
+                          <span className="text-white">
                             connect with real locals
                           </span>
                           <span className="text-orange-400"> today!</span>
