@@ -182,6 +182,15 @@ app.use((req, res, next) => {
     res.json({ message: "Server is running", timestamp: new Date().toISOString() });
   });
   
+  // Add quick login fix
+  try {
+    const { setupQuickLoginFix } = await import('./quick-login-fix.js');
+    setupQuickLoginFix(app);
+    console.log("Quick login fix registered successfully");
+  } catch (error) {
+    console.error("Failed to register quick login fix:", error);
+  }
+  
   console.log("Minimal routes registered successfully");
 
   // Setup vite after routes are registered
