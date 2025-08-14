@@ -209,6 +209,47 @@ export default function LocalsLanding() {
         </div>
       </div>
 
+      {/* Why Locals Love These Features */}
+      <div className="py-16 bg-gray-50">
+        <div className="max-w-6xl mx-auto px-4 text-center mb-16">
+          <h2 className="text-3xl sm:text-4xl font-bold mb-8 text-gray-900" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700'}}>
+            Why Locals Love These Features
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-xl shadow-lg">
+              <div className="text-4xl mb-4">🏖️</div>
+              <h3 className="text-xl font-bold mb-3 text-gray-900">Beach Bonfires & BBQs</h3>
+              <p className="text-gray-700">Host or join amazing beach gatherings, sunset BBQs, and campfire sessions just like the one above!</p>
+            </div>
+            <div className="bg-gradient-to-br from-orange-50 to-orange-100 p-6 rounded-xl shadow-lg">
+              <div className="text-4xl mb-4">⚡</div>
+              <h3 className="text-xl font-bold mb-3 text-gray-900">Instant Meetups</h3>
+              <p className="text-gray-700">Create spontaneous "meet now" events for instant connections when you're in a new city.</p>
+            </div>
+            <div className="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-xl shadow-lg">
+              <div className="text-4xl mb-4">🗺️</div>
+              <h3 className="text-xl font-bold mb-3 text-gray-900">Hidden Gems</h3>
+              <p className="text-gray-700">Discover secret local spots and authentic experiences that guidebooks never mention.</p>
+            </div>
+            <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-xl shadow-lg">
+              <div className="text-4xl mb-4">🤝</div>
+              <h3 className="text-xl font-bold mb-3 text-gray-900">Local Connections</h3>
+              <p className="text-gray-700">Build lasting friendships with locals who share your interests and travel style.</p>
+            </div>
+            <div className="bg-gradient-to-br from-pink-50 to-pink-100 p-6 rounded-xl shadow-lg">
+              <div className="text-4xl mb-4">🎉</div>
+              <h3 className="text-xl font-bold mb-3 text-gray-900">Host Events</h3>
+              <p className="text-gray-700">Host events and activities you love doing in your city to meet like-minded locals and travelers.</p>
+            </div>
+            <div className="bg-gradient-to-br from-teal-50 to-teal-100 p-6 rounded-xl shadow-lg">
+              <div className="text-4xl mb-4">🌟</div>
+              <h3 className="text-xl font-bold mb-3 text-gray-900">Authentic Culture</h3>
+              <p className="text-gray-700">Experience authentic local culture through community-organized events and gatherings.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Why Locals Love It - Modern Cards */}
       <div className="py-16 bg-gray-50">
         <div className="max-w-6xl mx-auto px-4">
