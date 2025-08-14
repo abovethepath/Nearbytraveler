@@ -128,7 +128,7 @@ export default function SignupBusiness() {
       username: accountData?.username || "",
       email: accountData?.email || "",
       password: accountData?.password || "",
-      businessName: "",
+      businessName: accountData?.name || "",
       businessType: "",
       customBusinessType: "",
       businessPhone: "",
@@ -256,7 +256,7 @@ export default function SignupBusiness() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
-        <Card>
+        <Card className="border border-gray-200 dark:border-gray-700 shadow-lg">
           <CardHeader className="text-center">
             <Building className="w-12 h-12 mx-auto text-blue-600 mb-4" />
             <CardTitle className="text-3xl">Register Your Business</CardTitle>
