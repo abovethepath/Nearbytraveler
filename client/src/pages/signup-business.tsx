@@ -47,7 +47,7 @@ const businessSignupSchema = z.object({
   contactPersonPhone: z.string().min(1, "Contact person phone is required"),
   
   // Additional Business Details
-  yearEstablished: z.string().min(4, "Please enter valid year"),
+  yearEstablished: z.string().min(1, "Year established is required"),
   employeeCount: z.string().optional(),
 
   
@@ -447,7 +447,7 @@ export default function SignupBusiness() {
                               type="number" 
                               min="1900" 
                               max="2025" 
-                              placeholder="2020" 
+                              placeholder="e.g. 2020" 
                               {...field} 
                             />
                           </FormControl>
@@ -693,7 +693,7 @@ export default function SignupBusiness() {
                         <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
                           Enable Proximity Notifications
                         </h4>
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                        <p className="text-sm text-gray-800 dark:text-gray-200 mb-4">
                           Allow us to capture your business location so travelers nearby can discover your services and receive targeted notifications.
                         </p>
                         <Button
@@ -753,10 +753,10 @@ export default function SignupBusiness() {
                             />
                           </FormControl>
                           <div className="space-y-1 leading-none">
-                            <FormLabel className="font-medium">
+                            <FormLabel className="font-medium text-gray-900 dark:text-white">
                               Enable Proximity Notifications to Travelers
                             </FormLabel>
-                            <FormDescription className="text-sm">
+                            <FormDescription className="text-sm text-gray-700 dark:text-gray-300">
                               Allow nearby travelers (within 7 miles) to receive notifications about your business based on their interests and your offerings. This helps drive foot traffic and customer discovery.
                             </FormDescription>
                           </div>
