@@ -2634,11 +2634,26 @@ Ready to start connecting? Questions? Just reply anytime!
         updates.childrenAges = null;
       }
 
+      // Check if this is the first time profile is being completed (bio, interests filled out)
+      let isFirstProfileCompletion = false;
+      if (updates.bio && updates.interests && updates.interests.length >= 3) {
+        const currentUser = await storage.getUserById(userId);
+        if (currentUser && (!currentUser.bio || !currentUser.interests || currentUser.interests.length < 3)) {
+          isFirstProfileCompletion = true;
+        }
+      }
+
       // Update user in database
       const updatedUser = await storage.updateUser(userId, updates);
 
       if (!updatedUser) {
         return res.status(404).json({ message: "User not found" });
+      }
+
+      // Award aura for first profile completion
+      if (isFirstProfileCompletion) {
+        await awardAuraPoints(userId, 1, 'completing profile');
+        if (process.env.NODE_ENV === 'development') console.log(`✨ AURA: Awarded 1 point to user ${userId} for completing profile`);
       }
 
       // Remove password from response
