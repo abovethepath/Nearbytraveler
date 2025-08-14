@@ -102,19 +102,16 @@ export function getSearchableCities(cityName: string): string[] {
 
 /**
  * Determines the effective city name for routing/display purposes
- * Metro cities should be displayed as their metro area for consistency
+ * FIXED: Now preserves user's specific city and only uses metro for backend matching
  */
 export function getEffectiveCityName(userCity: string, userMetroArea?: string | null, userIsMetroUser?: boolean): string {
   if (userIsMetroUser && userMetroArea) {
-    return userMetroArea; // Show metro area for metro users
+    return userMetroArea; // Show metro area ONLY for users who explicitly chose metro
   }
   
-  const detection = detectMetroArea(userCity);
-  if (detection.isMetroCity) {
-    return detection.metroAreaName!; // Metro precedence for routing
-  }
-  
-  return userCity; // Regular city users show their specific city
+  // CRITICAL FIX: Always preserve the user's specific city name
+  // Metro area detection is for backend matching only, NOT display
+  return userCity; // Always show user's specific city (Santa Monica, Playa del Rey, etc.)
 }
 
 /**
