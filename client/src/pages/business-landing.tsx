@@ -225,80 +225,52 @@ export default function BusinessLanding() {
             </div>
           </div>
 
-          {/* Business Types */}
-          <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-xl">
-            <h3 className="text-2xl font-bold mb-6 text-center text-gray-900 dark:text-white">Perfect for All Types of Businesses</h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-              <div>
-                <div className="text-2xl mb-2">🍽️</div>
-                <p className="font-medium text-gray-700 dark:text-gray-300">Restaurants & Cafes</p>
+          {/* Get Started Section - Consolidated */}
+          <div className="bg-gradient-to-r from-orange-600 to-blue-600 text-white py-16 rounded-2xl shadow-2xl">
+            <div className="max-w-4xl mx-auto text-center px-6">
+              <h2 className="text-4xl font-bold mb-4">Ready to Grow Your Business?</h2>
+              <p className="text-xl mb-8 opacity-90">Join thousands of businesses already connecting with travelers and locals.</p>
+              
+              {/* Primary CTA Row */}
+              <div className="space-y-4 sm:space-y-0 sm:flex sm:gap-4 sm:justify-center mb-12">
+                <Button
+                  onClick={() => setLocation('/join')}
+                  size="lg"
+                  className="bg-white text-blue-600 hover:bg-gray-100 font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition-all duration-200 transform hover:scale-105 w-full sm:w-auto"
+                >
+                  🚀 Join Business Network
+                </Button>
+                <Button
+                  onClick={() => setLocation('/join')}
+                  size="lg"
+                  className="border-2 border-white text-white hover:bg-white hover:text-blue-600 font-bold text-lg px-8 py-4 rounded-xl transition-all duration-200 transform hover:scale-105 w-full sm:w-auto"
+                >
+                  📈 Start Free Trial
+                </Button>
               </div>
-              <div>
-                <div className="text-2xl mb-2">🏨</div>
-                <p className="font-medium text-gray-700 dark:text-gray-300">Hotels & Lodging</p>
+              
+              {/* Business Types */}
+              <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl">
+                <h3 className="text-xl font-bold mb-4 text-white">Perfect for All Business Types</h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="flex flex-col items-center">
+                    <div className="text-3xl mb-2">🍽️</div>
+                    <p className="text-white/90 font-medium">Restaurants</p>
+                  </div>
+                  <div className="flex flex-col items-center">
+                    <div className="text-3xl mb-2">🏨</div>
+                    <p className="text-white/90 font-medium">Hotels</p>
+                  </div>
+                  <div className="flex flex-col items-center">
+                    <div className="text-3xl mb-2">🎨</div>
+                    <p className="text-white/90 font-medium">Tours</p>
+                  </div>
+                  <div className="flex flex-col items-center">
+                    <div className="text-3xl mb-2">🛍️</div>
+                    <p className="text-white/90 font-medium">Retail</p>
+                  </div>
+                </div>
               </div>
-              <div>
-                <div className="text-2xl mb-2">🎨</div>
-                <p className="font-medium text-gray-700 dark:text-gray-300">Tours & Activities</p>
-              </div>
-              <div>
-                <div className="text-2xl mb-2">🛍️</div>
-                <p className="font-medium text-gray-700 dark:text-gray-300">Retail & Shopping</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Get Started Section - Enhanced with Multiple CTAs */}
-        <div className="bg-gradient-to-r from-orange-600 to-blue-600 text-white py-16 rounded-2xl shadow-2xl mb-16">
-          <div className="max-w-4xl mx-auto text-center px-6">
-            <h2 className="text-4xl font-bold mb-4">Ready to Grow Your Business?</h2>
-            <p className="text-xl mb-8 opacity-90">Join thousands of businesses already connecting with travelers and locals.</p>
-            
-            {/* Primary CTA Row */}
-            <div className="space-y-4 sm:space-y-0 sm:flex sm:gap-4 sm:justify-center mb-8">
-              <Button
-                onClick={() => setLocation('/join')}
-                size="lg"
-                className="bg-white text-blue-600 hover:bg-gray-100 font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition-all duration-200 transform hover:scale-105 w-full sm:w-auto"
-              >
-                🚀 Join Business Network
-              </Button>
-              <Button
-                onClick={() => setLocation('/join')}
-                size="lg"
-                className="border-2 border-white text-white hover:bg-white hover:text-blue-600 font-bold text-lg px-8 py-4 rounded-xl transition-all duration-200 transform hover:scale-105 w-full sm:w-auto"
-              >
-                📈 Start Free Trial
-              </Button>
-            </div>
-            
-            {/* Additional Action Buttons */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <Button
-                onClick={() => setLocation('/join')}
-                className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-4 rounded-lg text-sm"
-              >
-                🍽️ Restaurants
-              </Button>
-              <Button
-                onClick={() => setLocation('/join')}
-                className="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-4 rounded-lg text-sm"
-              >
-                🏨 Hotels
-              </Button>
-              <Button
-                onClick={() => setLocation('/join')}
-                className="bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-4 rounded-lg text-sm"
-              >
-                🎨 Tours
-              </Button>
-              <Button
-                onClick={() => setLocation('/join')}
-                className="bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 px-4 rounded-lg text-sm"
-              >
-                🛍️ Retail
-              </Button>
             </div>
           </div>
         </div>
