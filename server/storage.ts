@@ -2848,10 +2848,7 @@ export class DatabaseStorage implements IStorage {
   async getUserReferencesGiven(): Promise<any> { return []; }
 
   async deleteUserReference(): Promise<any> { return true; }
-  async createReferral(): Promise<any> { return {}; }
-  async getUserReferrals(): Promise<any> { return []; }
 
-  async updateReferralStatus(): Promise<any> { return undefined; }
   async generateReferralCode(): Promise<any> { return ""; }
   async getUserReputation(): Promise<any> { return undefined; }
   async updateUserReputation(): Promise<any> { return {}; }
@@ -3078,7 +3075,6 @@ export class DatabaseStorage implements IStorage {
 
   async updateTravelMemory(): Promise<any> { return undefined; }
   async deleteTravelMemory(): Promise<any> { return true; }
-  async getPublicTravelMemories(): Promise<any> { return []; }
   async getTravelMemoriesByDestination(): Promise<any> { return []; }
   async likeTravelMemory(memoryId: number, userId: number): Promise<{ success: boolean, action: 'liked' | 'unliked' }> {
     try {
@@ -4362,24 +4358,6 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Geolocation and proximity methods implementation
-  async updateUserLocation(userId: number, latitude: number, longitude: number): Promise<User | undefined> {
-    try {
-      const [updatedUser] = await db
-        .update(users)
-        .set({
-          currentLatitude: latitude,
-          currentLongitude: longitude,
-          lastLocationUpdate: new Date(),
-        })
-        .where(eq(users.id, userId))
-        .returning();
-      
-      return updatedUser;
-    } catch (error) {
-      console.error('Error updating user location:', error);
-      return undefined;
-    }
-  }
 
   async enableLocationSharing(userId: number): Promise<User | undefined> {
     try {
