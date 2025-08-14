@@ -56,7 +56,20 @@ export default function EventsLanding() {
                         <span className="block text-white font-black" style={{fontFamily: '"Inter", sans-serif'}}>Epic Events.</span>
                         <span className="block font-black" style={{fontFamily: '"Inter", sans-serif'}}>
                           <span className="text-orange-400">Real connections. </span>
-                          <span className="text-blue-400" style={{border: 'none', outline: 'none', boxShadow: 'none'}}>Unforgettable experiences.</span>
+                          <span
+                            className="
+                              text-blue-400
+                              outline-none focus:outline-none focus-visible:outline-none
+                              ring-0 focus:ring-0
+                              select-none selection:bg-transparent
+                              [-webkit-tap-highlight-color:transparent]
+                              [box-shadow:none]
+                              [text-decoration:none]
+                              pointer-events-none
+                            "
+                          >
+                            Unforgettable experiences.
+                          </span>
                         </span>
                       </h1>
                       

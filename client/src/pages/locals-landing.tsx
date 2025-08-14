@@ -60,7 +60,20 @@ export default function LocalsLanding() {
                         <p className="text-xl sm:text-2xl leading-relaxed max-w-3xl mx-auto">
                           <span className="text-orange-300">Share your city's hidden gems</span>{' '}
                           <span className="text-white">and connect with</span>{' '}
-                          <span className="text-blue-300" style={{border: 'none', outline: 'none', boxShadow: 'none'}}>travelers and like-minded locals</span>{' '}
+                          <span
+                            className="
+                              text-blue-300
+                              outline-none focus:outline-none focus-visible:outline-none
+                              ring-0 focus:ring-0
+                              select-none selection:bg-transparent
+                              [-webkit-tap-highlight-color:transparent]
+                              [box-shadow:none]
+                              [text-decoration:none]
+                              pointer-events-none
+                            "
+                          >
+                            travelers and like-minded locals
+                          </span>{' '}
                           <span className="text-black bg-orange-400 px-2 py-1 rounded">—today.</span>
                         </p>
                       </div>
