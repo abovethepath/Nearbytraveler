@@ -6318,7 +6318,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                   }
                                 }}
                                 className="h-4 w-4 border-gray-300 rounded text-purple-600 focus:ring-purple-500"
+                                data-testid="checkbox-traveling-with-children"
                               />
+                              {/* Debug info - remove after testing */}
+                              <span className="text-xs text-gray-400 ml-2">
+                                (Debug: {String(!!field.value)})
+                              </span>
                               <label 
                                 htmlFor="traveling-with-children" 
                                 className="text-sm font-medium text-gray-700 dark:text-white cursor-pointer"
