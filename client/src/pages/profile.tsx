@@ -65,6 +65,7 @@ const AUSTRALIAN_STATES = [
 
 import WorldMap from "@/components/world-map";
 import { QuickMeetupWidget } from "@/components/QuickMeetupWidget";
+import { QuickDealsWidget } from "@/components/QuickDealsWidget";
 import TravelItinerary from "@/components/travel-itinerary";
 import { ThingsIWantToDoSection } from "@/components/ThingsIWantToDoSection";
 
@@ -4889,6 +4890,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             {isOwnProfile && user?.userType !== 'business' && (
               <div className="mt-6">
                 <QuickMeetupWidget city={user?.hometownCity ?? ''} profileUserId={user?.id} />
+              </div>
+            )}
+
+            {/* Quick Deals Widget for Business Users */}
+            {isOwnProfile && user?.userType === 'business' && (
+              <div className="mt-6">
+                <QuickDealsWidget city={user?.hometownCity ?? ''} profileUserId={user?.id} />
               </div>
             )}
 

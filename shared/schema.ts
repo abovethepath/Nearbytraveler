@@ -908,6 +908,49 @@ export const insertMoodEntrySchema = createInsertSchema(moodEntries);
 export type MoodEntry = typeof moodEntries.$inferSelect;
 export type InsertMoodEntry = z.infer<typeof insertMoodEntrySchema>;
 
+// Quick Deals - Business equivalent of quick meetups for promotions/offers
+export const quickDeals = pgTable("quick_deals", {
+  id: serial("id").primaryKey(),
+  businessId: integer("business_id").notNull().references(() => users.id), // Business user ID
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  dealType: text("deal_type").notNull(), // 'discount', 'bogo', 'happy_hour', 'special_offer', 'flash_sale'
+  category: text("category").notNull(), // 'food', 'drinks', 'shopping', 'services', 'entertainment'
+  location: text("location").notNull(), // Business address
+  street: text("street"), // Street address
+  city: text("city").notNull(),
+  state: text("state"),
+  country: text("country").notNull(),
+  zipcode: text("zipcode"),
+  discountAmount: text("discount_amount"), // "20%", "$5 off", "Buy 1 Get 1"
+  originalPrice: text("original_price"),
+  salePrice: text("sale_price"),
+  validFrom: timestamp("valid_from").notNull(), // When deal starts
+  validUntil: timestamp("valid_until").notNull(), // When deal expires
+  maxRedemptions: integer("max_redemptions").default(100), // Limit how many can use it
+  currentRedemptions: integer("current_redemptions").default(0),
+  requiresReservation: boolean("requires_reservation").default(false),
+  dealCode: text("deal_code"), // Promo code if needed
+  terms: text("terms"), // Terms and conditions
+  availability: text("availability").notNull(), // "now", "today", "weekend", "week"
+  isActive: boolean("is_active").notNull().default(true),
+  autoExpire: boolean("auto_expire").notNull().default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Track users who claimed/redeemed quick deals
+export const quickDealRedemptions = pgTable("quick_deal_redemptions", {
+  id: serial("id").primaryKey(),
+  dealId: integer("deal_id").notNull().references(() => quickDeals.id, { onDelete: "cascade" }),
+  userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  status: text("status").notNull().default("claimed"), // 'claimed', 'redeemed', 'expired'
+  claimedAt: timestamp("claimed_at").defaultNow(),
+  redeemedAt: timestamp("redeemed_at"),
+  notes: text("notes"), // User notes or special requests
+}, (table) => [
+  unique().on(table.dealId, table.userId), // One redemption per user per deal
+]);
+
 // City Activities - City-specific activities that users can be interested in
 export const cityActivities = pgTable("city_activities", {
   id: serial("id").primaryKey(),
@@ -2245,5 +2288,23 @@ export type MeetupChatroom = typeof meetupChatrooms.$inferSelect;
 export type InsertMeetupChatroom = z.infer<typeof insertMeetupChatroomSchema>;
 export type MeetupChatroomMessage = typeof meetupChatroomMessages.$inferSelect;
 export type InsertMeetupChatroomMessage = z.infer<typeof insertMeetupChatroomMessageSchema>;
+
+// Quick Deals insert schemas
+export const insertQuickDealSchema = createInsertSchema(quickDeals).omit({
+  id: true,
+  currentRedemptions: true,
+  createdAt: true,
+});
+
+export const insertQuickDealRedemptionSchema = createInsertSchema(quickDealRedemptions).omit({
+  id: true,
+  claimedAt: true,
+});
+
+// Quick Deals types  
+export type QuickDeal = typeof quickDeals.$inferSelect;
+export type InsertQuickDeal = z.infer<typeof insertQuickDealSchema>;
+export type QuickDealRedemption = typeof quickDealRedemptions.$inferSelect;
+export type InsertQuickDealRedemption = z.infer<typeof insertQuickDealRedemptionSchema>;
 
 

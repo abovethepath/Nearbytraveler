@@ -34,7 +34,9 @@ import {
   quickMeetupParticipants, 
   instagramPosts, 
   events, 
-  quickMeetups, 
+  quickMeetups,
+  quickDeals,
+  quickDealRedemptions, 
   cityPhotos,
   citychatrooms,
   chatroomMembers,
@@ -6354,6 +6356,239 @@ Questions? Just reply to this message. Welcome aboard!
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error fetching expired meetups:", error);
       return res.status(500).json({ message: "Failed to fetch expired meetups" });
+    }
+  });
+
+  // ===== QUICK DEALS API ROUTES =====
+  
+  // CREATE quick deal endpoint
+  app.post("/api/quick-deals", async (req, res) => {
+    try {
+      const userId = req.headers['x-user-id'];
+      if (!userId) {
+        return res.status(401).json({ message: "User ID required" });
+      }
+
+      const dealData = {
+        ...req.body,
+        businessId: parseInt(userId as string || '0')
+      };
+
+      if (process.env.NODE_ENV === 'development') console.log(`🛍️ CREATING QUICK DEAL: ${dealData.title} by business ${userId}`);
+      
+      const [newDeal] = await db
+        .insert(quickDeals)
+        .values(dealData)
+        .returning();
+      
+      if (process.env.NODE_ENV === 'development') console.log(`✅ QUICK DEAL CREATED: ID ${newDeal.id}, expires at ${newDeal.validUntil}`);
+      
+      res.json(newDeal);
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error creating quick deal:", error);
+      res.status(500).json({ message: "Failed to create quick deal" });
+    }
+  });
+
+  // GET quick deals endpoint
+  app.get("/api/quick-deals", async (req, res) => {
+    try {
+      const { city, businessId } = req.query;
+      const now = new Date();
+
+      if (process.env.NODE_ENV === 'development') console.log(`🛍️ QUICK DEALS: Fetching deals, active first`);
+
+      // Build conditions array
+      const conditions = [eq(quickDeals.isActive, true)];
+
+      // Add businessId filtering if specified (for business profile)
+      if (businessId && typeof businessId === 'string') {
+        const targetBusinessId = parseInt(businessId as string);
+        if (!isNaN(targetBusinessId)) {
+          conditions.push(eq(quickDeals.businessId, targetBusinessId));
+        }
+      }
+
+      // Add city filtering if specified
+      if (city && typeof city === 'string') {
+        conditions.push(eq(quickDeals.city, city as string));
+      }
+
+      const allDeals = await db
+        .select({
+          id: quickDeals.id,
+          businessId: quickDeals.businessId,
+          title: quickDeals.title,
+          description: quickDeals.description,
+          dealType: quickDeals.dealType,
+          category: quickDeals.category,
+          location: quickDeals.location,
+          street: quickDeals.street,
+          city: quickDeals.city,
+          state: quickDeals.state,
+          country: quickDeals.country,
+          discountAmount: quickDeals.discountAmount,
+          originalPrice: quickDeals.originalPrice,
+          salePrice: quickDeals.salePrice,
+          validFrom: quickDeals.validFrom,
+          validUntil: quickDeals.validUntil,
+          maxRedemptions: quickDeals.maxRedemptions,
+          currentRedemptions: quickDeals.currentRedemptions,
+          requiresReservation: quickDeals.requiresReservation,
+          dealCode: quickDeals.dealCode,
+          terms: quickDeals.terms,
+          availability: quickDeals.availability,
+          isActive: quickDeals.isActive,
+          createdAt: quickDeals.createdAt,
+          businessName: users.businessName,
+          businessDescription: users.businessDescription,
+          businessPhone: users.businessPhone,
+          businessEmail: users.businessEmail,
+          businessImage: users.businessImage,
+        })
+        .from(quickDeals)
+        .leftJoin(users, eq(quickDeals.businessId, users.id))
+        .where(and(...conditions))
+        .orderBy(
+          sql`CASE WHEN ${quickDeals.validUntil} > NOW() THEN 1 ELSE 2 END ASC`,
+          desc(quickDeals.createdAt)
+        );
+
+      const activeDeals = allDeals.filter(deal => {
+        const validUntil = new Date(deal.validUntil);
+        return deal.isActive && validUntil > now && (deal.currentRedemptions || 0) < (deal.maxRedemptions || 100);
+      });
+
+      const expiredDeals = allDeals.filter(deal => {
+        const validUntil = new Date(deal.validUntil);
+        return !deal.isActive || validUntil <= now || (deal.currentRedemptions || 0) >= (deal.maxRedemptions || 100);
+      });
+
+      const sortedDeals = [...activeDeals, ...expiredDeals];
+
+      if (process.env.NODE_ENV === 'development') console.log(`🛍️ QUICK DEALS: Found ${activeDeals.length} active + ${expiredDeals.length} expired = ${sortedDeals.length} total deals`);
+
+      res.json(sortedDeals);
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error fetching quick deals:", error);
+      res.status(500).json({ message: "Failed to fetch deals" });
+    }
+  });
+
+  // DELETE quick deal endpoint
+  app.delete("/api/quick-deals/:id", async (req, res) => {
+    try {
+      const dealId = parseInt(req.params.id || '0');
+      const userId = req.headers['x-user-id'];
+      
+      if (!userId) {
+        return res.status(401).json({ message: "User ID required" });
+      }
+
+      // Get the deal to verify ownership
+      const [existingDeal] = await db
+        .select()
+        .from(quickDeals)
+        .where(eq(quickDeals.id, dealId))
+        .limit(1);
+
+      if (!existingDeal) {
+        return res.status(404).json({ message: "Deal not found" });
+      }
+
+      // Check if user is the business owner
+      if (existingDeal.businessId !== parseInt(userId as string || '0')) {
+        return res.status(403).json({ message: "Only the business can delete this deal" });
+      }
+
+      if (process.env.NODE_ENV === 'development') console.log(`🗑️ DELETING DEAL ${dealId} for business ${userId}`);
+
+      await db
+        .delete(quickDeals)
+        .where(eq(quickDeals.id, dealId));
+
+      if (process.env.NODE_ENV === 'development') console.log(`✅ DEAL DELETED: ID ${dealId}`);
+      return res.json({ 
+        success: true, 
+        message: "Deal deleted successfully"
+      });
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error deleting quick deal:", error);
+      return res.status(500).json({ message: "Failed to delete deal" });
+    }
+  });
+
+  // CLAIM/REDEEM quick deal endpoint
+  app.post("/api/quick-deals/:id/claim", async (req, res) => {
+    try {
+      const dealId = parseInt(req.params.id || '0');
+      const userId = req.headers['x-user-id'];
+      const { notes } = req.body;
+      
+      if (!userId) {
+        return res.status(401).json({ message: "User ID required" });
+      }
+
+      // Get the deal to verify it exists and is active
+      const [deal] = await db
+        .select()
+        .from(quickDeals)
+        .where(eq(quickDeals.id, dealId))
+        .limit(1);
+
+      if (!deal) {
+        return res.status(404).json({ message: "Deal not found" });
+      }
+
+      if (!deal.isActive || new Date(deal.validUntil) <= new Date()) {
+        return res.status(400).json({ message: "Deal has expired" });
+      }
+
+      if ((deal.currentRedemptions || 0) >= (deal.maxRedemptions || 100)) {
+        return res.status(400).json({ message: "Deal has reached maximum redemptions" });
+      }
+
+      // Check if user already claimed this deal
+      const [existingRedemption] = await db
+        .select()
+        .from(quickDealRedemptions)
+        .where(and(
+          eq(quickDealRedemptions.dealId, dealId),
+          eq(quickDealRedemptions.userId, parseInt(userId as string || '0'))
+        ))
+        .limit(1);
+
+      if (existingRedemption) {
+        return res.status(400).json({ message: "You have already claimed this deal" });
+      }
+
+      // Create redemption record
+      await db
+        .insert(quickDealRedemptions)
+        .values({
+          dealId: dealId,
+          userId: parseInt(userId as string || '0'),
+          status: 'claimed',
+          notes: notes || null
+        });
+
+      // Increment current redemptions
+      await db
+        .update(quickDeals)
+        .set({ 
+          currentRedemptions: (deal.currentRedemptions || 0) + 1 
+        })
+        .where(eq(quickDeals.id, dealId));
+
+      if (process.env.NODE_ENV === 'development') console.log(`🎟️ DEAL CLAIMED: ID ${dealId} by user ${userId}`);
+      
+      res.json({ 
+        success: true, 
+        message: "Deal claimed successfully" 
+      });
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error claiming quick deal:", error);
+      res.status(500).json({ message: "Failed to claim deal" });
     }
   });
 
