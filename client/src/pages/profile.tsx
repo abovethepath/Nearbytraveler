@@ -2586,7 +2586,19 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const editProfile = useMutation({
     mutationFn: async (data: z.infer<typeof dynamicProfileSchema>) => {
       console.log('Profile edit data being sent:', data);
-      const response = await apiRequest('PUT', `/api/users/${effectiveUserId}`, data);
+      
+      // Ensure boolean fields are explicitly included (don't drop false values)
+      const payload = {
+        ...data,
+        travelingWithChildren: !!data.travelingWithChildren,
+        ageVisible: !!data.ageVisible,
+        sexualPreferenceVisible: !!data.sexualPreferenceVisible,
+        isVeteran: !!data.isVeteran,
+        isActiveDuty: !!data.isActiveDuty,
+      };
+      
+      console.log('Profile payload with explicit booleans:', payload);
+      const response = await apiRequest('PUT', `/api/users/${effectiveUserId}`, payload);
       if (!response.ok) {
         const errorText = await response.text();
         console.error('Profile edit error response:', errorText);
@@ -6278,10 +6290,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       <FormItem className="flex flex-row items-start space-x-3 rounded-lg border p-4">
                         <FormControl>
                           <Checkbox
-                            checked={field.value === true}
+                            checked={!!field.value}
                             onCheckedChange={(checked) => {
-                              console.log('CHECKBOX CHANGED:', { oldValue: field.value, newValue: checked, finalValue: checked === true });
-                              field.onChange(checked === true);
+                              const v = checked === true;     // coerce "indeterminate" -> boolean
+                              field.onChange(v);
+                              if (!v) {
+                                // Clear ages when unchecked so banner doesn't persist
+                                profileForm.setValue('childrenAges', '');
+                              }
                             }}
                           />
                         </FormControl>

@@ -473,15 +473,17 @@ export class DatabaseStorage implements IStorage {
     const [user] = await db.select().from(users).where(eq(users.id, id));
     if (!user) return undefined;
     
-    // Convert PostgreSQL boolean strings to proper JavaScript booleans
+    // Convert PostgreSQL boolean strings to proper JavaScript booleans using consistent helper
+    const asBool = (v: any) => v === true || v === 't' || v === 'true' || v === 1;
+    
     return {
       ...user,
-      travelingWithChildren: user.travelingWithChildren === true || user.travelingWithChildren === 't',
-      isVeteran: user.isVeteran === true || user.isVeteran === 't',
-      isActiveDuty: user.isActiveDuty === true || user.isActiveDuty === 't',
-      isCurrentlyTraveling: user.isCurrentlyTraveling === true || user.isCurrentlyTraveling === 't',
-      ageVisible: user.ageVisible === true || user.ageVisible === 't',
-      sexualPreferenceVisible: user.sexualPreferenceVisible === true || user.sexualPreferenceVisible === 't'
+      travelingWithChildren: asBool(user.travelingWithChildren),
+      isVeteran: asBool(user.isVeteran),
+      isActiveDuty: asBool(user.isActiveDuty),
+      isCurrentlyTraveling: asBool(user.isCurrentlyTraveling),
+      ageVisible: asBool(user.ageVisible),
+      sexualPreferenceVisible: asBool(user.sexualPreferenceVisible)
     };
   }
 
@@ -605,29 +607,78 @@ export class DatabaseStorage implements IStorage {
     return updatedUser;
   }
 
-  async updateUser(id: number, updates: Partial<User>): Promise<User | undefined> {
+  async updateUser(id: number, data: Partial<User>): Promise<User | undefined> {
+    const actualUpdates: Partial<typeof users.$inferInsert> = {};
+
+    // Use 'in' checks so false values are written (don't ignore them)
+    if ('travelingWithChildren' in data) {
+      actualUpdates.travelingWithChildren = !!(data as any).travelingWithChildren;
+      
+      // Optional: if unchecked, also clear any ages so the banner doesn't stick
+      if (!actualUpdates.travelingWithChildren) {
+        actualUpdates.childrenAges = null;
+      }
+    }
+    
+    if ('ageVisible' in data) {
+      actualUpdates.ageVisible = !!(data as any).ageVisible;
+    }
+    
+    if ('sexualPreferenceVisible' in data) {
+      actualUpdates.sexualPreferenceVisible = !!(data as any).sexualPreferenceVisible;
+    }
+    
+    if ('isVeteran' in data) {
+      actualUpdates.isVeteran = !!(data as any).isVeteran;
+    }
+    
+    if ('isActiveDuty' in data) {
+      actualUpdates.isActiveDuty = !!(data as any).isActiveDuty;
+    }
+    
+    if ('isCurrentlyTraveling' in data) {
+      actualUpdates.isCurrentlyTraveling = !!(data as any).isCurrentlyTraveling;
+    }
+
+    // Copy all other fields as-is
+    const otherFields = Object.keys(data).filter(key => 
+      !['travelingWithChildren', 'ageVisible', 'sexualPreferenceVisible', 'isVeteran', 'isActiveDuty', 'isCurrentlyTraveling'].includes(key)
+    );
+    
+    for (const field of otherFields) {
+      (actualUpdates as any)[field] = (data as any)[field];
+    }
+    
+    console.log('🔧 STORAGE UPDATE: Boolean updates being applied:', {
+      travelingWithChildren: 'travelingWithChildren' in data ? actualUpdates.travelingWithChildren : 'not updated',
+      ageVisible: 'ageVisible' in data ? actualUpdates.ageVisible : 'not updated',
+      otherFieldsCount: otherFields.length
+    });
+
     const [user] = await db
       .update(users)
-      .set(updates)
+      .set(actualUpdates)
       .where(eq(users.id, id))
       .returning();
     
     if (!user) return undefined;
     
     // If secretActivities was updated, sync it to secretLocalExperiences table
-    if (updates.secretActivities !== undefined && user) {
-      await this.syncUserSecretExperience(user.id, updates.secretActivities, user.hometownCity, user.hometownState, user.hometownCountry);
+    if (data.secretActivities !== undefined && user) {
+      await this.syncUserSecretExperience(user.id, data.secretActivities, user.hometownCity, user.hometownState, user.hometownCountry);
     }
     
     // Convert PostgreSQL boolean strings to proper JavaScript booleans
+    const asBool = (v: any) => v === true || v === 't' || v === 'true' || v === 1;
+    
     return {
       ...user,
-      travelingWithChildren: user.travelingWithChildren === true || user.travelingWithChildren === 't',
-      isVeteran: user.isVeteran === true || user.isVeteran === 't',
-      isActiveDuty: user.isActiveDuty === true || user.isActiveDuty === 't',
-      isCurrentlyTraveling: user.isCurrentlyTraveling === true || user.isCurrentlyTraveling === 't',
-      ageVisible: user.ageVisible === true || user.ageVisible === 't',
-      sexualPreferenceVisible: user.sexualPreferenceVisible === true || user.sexualPreferenceVisible === 't'
+      travelingWithChildren: asBool(user.travelingWithChildren),
+      isVeteran: asBool(user.isVeteran),
+      isActiveDuty: asBool(user.isActiveDuty),
+      isCurrentlyTraveling: asBool(user.isCurrentlyTraveling),
+      ageVisible: asBool(user.ageVisible),
+      sexualPreferenceVisible: asBool(user.sexualPreferenceVisible)
     };
   }
 

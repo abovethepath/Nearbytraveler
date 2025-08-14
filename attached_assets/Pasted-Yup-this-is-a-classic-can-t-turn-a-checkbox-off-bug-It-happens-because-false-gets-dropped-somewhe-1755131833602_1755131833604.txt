@@ -1,0 +1,123 @@
+Yup—this is a classic “can’t turn a checkbox off” bug. It happens because false gets dropped somewhere (client payload building or server update), so the DB keeps true. Then when you reload, the profile still shows “Traveling with children,” while the form renders the box unchecked (because the form default reset didn’t get the new value).
+
+Here’s a tight fix pack you can paste in. You don’t need to change the DB schema.
+
+1) Frontend: make sure you actually send false
+A) Checkbox wiring (keep boolean, clear ages when unchecked)
+<Checkbox
+  checked={!!field.value}
+  onCheckedChange={(checked) => {
+    const v = checked === true;     // coerce "indeterminate" -> boolean
+    field.onChange(v);
+    if (!v) {
+      // Optional: if you show a "Traveling with children" banner when ages exist,
+      // clear the ages when unchecked so the banner doesn’t persist.
+      profileForm.setValue('childrenAges', []);
+    }
+  }}
+/>
+
+B) Don’t “compact” away false in your submit
+
+If you have any helper like compact(obj) or pickTruthy that filters falsy values, it will remove false. Replace it with a version that only drops undefined and null.
+
+// before (BAD – drops false)
+const clean = Object.fromEntries(Object.entries(values).filter(([, v]) => v));
+
+// after (GOOD – keeps false)
+const clean = Object.fromEntries(
+  Object.entries(values).filter(([, v]) => v !== undefined && v !== null)
+);
+
+
+And ensure you explicitly include the boolean:
+
+const payload = {
+  ...clean,
+  travelingWithChildren: !!values.travelingWithChildren,
+};
+await api.post('/api/profile', payload);
+
+C) After save, refetch the user
+
+Make sure you invalidate/refetch so the UI and banner match the new value:
+
+await mutation.mutateAsync(payload);
+queryClient.invalidateQueries({ queryKey: ['/api/me'] });
+
+2) Backend: accept false (don’t ignore it)
+
+Most bugs here come from update code like:
+
+// BAD: this skips false
+if (data.travelingWithChildren) {
+  updates.travelingWithChildren = data.travelingWithChildren;
+}
+
+
+Change to “presence” checks so false is written:
+
+// server/storage.ts (or wherever you update the user)
+export async function updateUser(id: number, data: Partial<User>) {
+  const updates: Partial<typeof users.$inferInsert> = {};
+
+  if ('travelingWithChildren' in data) {
+    updates.travelingWithChildren = !!(data as any).travelingWithChildren;
+
+    // Optional: if unchecked, also clear any ages so the banner doesn’t stick
+    if (!updates.travelingWithChildren) {
+      updates.childrenAges = []; // or null, depending on your schema
+    }
+  }
+
+  // ...repeat this `'in'` pattern for any other booleans you have
+
+  await db.update(users).set(updates).where(eq(users.id, id));
+  const [fresh] = await db.select().from(users).where(eq(users.id, id));
+  return fresh;
+}
+
+
+Key idea: use 'field' in data, not if (data.field). That lets you write false.
+
+3) Normalize booleans on read (you’re mostly doing this already)
+
+Your getUser conversion is fine, but make it symmetric and resilient:
+
+const asBool = (v: any) => v === true || v === 't' || v === 'true' || v === 1;
+
+return {
+  ...user,
+  travelingWithChildren: asBool(user.travelingWithChildren),
+  isVeteran: asBool(user.isVeteran),
+  isActiveDuty: asBool(user.isActiveDuty),
+  isCurrentlyTraveling: asBool(user.isCurrentlyTraveling),
+  ageVisible: asBool(user.ageVisible),
+  sexualPreferenceVisible: asBool(user.sexualPreferenceVisible),
+};
+
+4) Make the banner/text use the same boolean (not ages length)
+
+If your profile “badge” currently renders off childrenAges.length > 0, it will keep saying “Traveling with children” even when the box is unchecked. Tie it to the boolean (and optionally clear ages when unchecked, as above).
+
+{user.travelingWithChildren && (
+  <Badge>Traveling with children</Badge>
+)}
+
+Quick test (no guessing)
+
+Check the box, enter ages, Save.
+
+Reload page → box should be checked, banner shows.
+
+Uncheck the box, Save.
+
+Reload page → box is unchecked, banner gone.
+
+If banner persists, verify the display uses the boolean, not ages.
+
+Look at your Network tab on Save → confirm request JSON includes "travelingWithChildren": false when you uncheck.
+
+Watch server logs to confirm your update handler actually sets the column.
+
+If you paste your profile save handler (client submit code) and the user update function on the server, I’ll mark the exact lines where false is being dropped and give you a one-line fix.
