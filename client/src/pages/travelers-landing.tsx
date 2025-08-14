@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
 import LandingNavbar from "@/components/landing-navbar";
 import Footer from "@/components/footer";
+import backgroundImage from "@assets/image_1755178154302.png";
 const travelersHeaderImage = "/attached_assets/travelers together hugging_1754971726997.avif";
 
 export default function TravelersLanding() {
@@ -53,8 +54,8 @@ export default function TravelersLanding() {
           <div className="relative bg-gray-800 dark:bg-gray-900 pb-32 overflow-hidden min-h-[600px]">
             <div className="absolute inset-0 h-full min-h-[600px]">
               <img
-                src={travelersHeaderImage}
-                alt="Travelers making connections and sharing experiences"
+                src={backgroundImage}
+                alt="People connecting and celebrating together on a beach at sunset"
                 className="w-full h-full object-cover"
                 style={{ objectPosition: 'center 70%' }}
               />
