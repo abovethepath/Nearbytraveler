@@ -68,6 +68,7 @@ User request: Completely removed all photo functionality from city pages includi
 - **Private Chat Approval System**: Implemented a public/private chatroom system where private chats require organizer approval, displaying with lock icons and distinctive styling.
 - **SMS Event Notifications**: Complete system for event RSVPs using Twilio, including phone number collection, RSVP confirmations, event reminders, cancellations, and updates.
 - **Business Location Fix**: Fixed critical issue where Santa Monica businesses were incorrectly defaulting to "Los Angeles" - now properly displays actual business city from the `city` field, with fallback to "Los Angeles Metro" only when necessary. This ensures businesses in Santa Monica, Venice, Beverly Hills, etc. show their actual city names.
+- **Business Welcome Message Fix**: Fixed critical systematic issue where business users weren't receiving automatic welcome messages from @nearbytraveler. Root cause was `/api/business-signup` endpoint bypassing welcome message logic. Added automatic welcome message + connection logic to business signup endpoint and profile completion as backup. All future business signups now automatically receive proper onboarding experience.
 
 ## External Dependencies
 

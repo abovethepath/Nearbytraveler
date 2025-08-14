@@ -2539,7 +2539,7 @@ Getting Started:
 • Post events to attract customers
 • Use our analytics to track engagement
 
-Your business is now visible to travelers searching for experiences in ${user.hometownCity}. When people with interests matching your services visit your area, you'll get notified automatically.
+Your business is now visible to travelers searching for experiences in ${user.hometownCity}.
 
 Questions? Just reply to this message. Welcome aboard!
 
@@ -2789,7 +2789,7 @@ Getting Started:
 • Post events to attract customers
 • Use our analytics to track engagement
 
-Your business is now visible to travelers searching for experiences in ${updatedUser.hometownCity || 'your area'}. When people with interests matching your services visit your area, you'll get notified automatically.
+Your business is now visible to travelers searching for experiences in ${updatedUser.hometownCity || 'your area'}.
 
 Questions? Just reply to this message. Welcome aboard!
 
@@ -10397,7 +10397,7 @@ Getting Started:
 • Post events to attract customers
 • Use our analytics to track engagement
 
-Your business is now visible to travelers searching for experiences in ${result.hometownCity || 'your area'}. When people with interests matching your services visit your area, you'll get notified automatically.
+Your business is now visible to travelers searching for experiences in ${result.hometownCity || 'your area'}.
 
 Questions? Just reply to this message. Welcome aboard!
 
