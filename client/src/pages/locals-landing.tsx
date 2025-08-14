@@ -39,24 +39,14 @@ export default function LocalsLanding() {
                   <div className="text-center">
                     <div className="max-w-4xl mx-auto">
                       <h1 className="text-4xl tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
-                        <span className="block text-white font-black" style={{fontFamily: '"Inter", sans-serif'}}>Share your city's secrets.</span>
-                        <span className="block text-white font-black" style={{fontFamily: '"Inter", sans-serif'}}>Meet incredible travelers and locals right now, today!!!</span>
+                        <span className="block text-white font-black" style={{fontFamily: '"Inter", sans-serif'}}>Be the local you'd want to meet</span>
                       </h1>
                       
-                      {/* Local Benefits */}
-                      <div className="mt-8 p-6 bg-black/40 backdrop-blur-sm rounded-2xl animate-zoom-in" style={{animationDelay: '0.3s'}}>
-                        <p className="text-xl text-white leading-relaxed">
-                          <span className="text-orange-300 font-bold">"Share your city's hidden gems and build incredible friendships.</span>
-                          <span className="text-white"> Connect with travelers and locals who love exploring authentic experiences just like you do."</span>
+                      {/* Subhead */}
+                      <div className="mt-8">
+                        <p className="text-xl sm:text-2xl text-white leading-relaxed max-w-3xl mx-auto">
+                          Share your city's hidden gems and connect with travelers and like-minded locals—today.
                         </p>
-                        <div className="mt-4 text-center">
-                          <p className="text-white font-bold text-lg">Be the Local You'd Want to Meet on your Trips</p>
-                          <p className="text-sm font-bold">
-                            <span className="text-orange-300">Share your city's secrets.</span>{' '}
-                            <span className="text-blue-300">Meet incredible travelers</span>{' '}
-                            <span className="text-black bg-orange-400 px-2 py-1 rounded">and locals right now, today!!!</span>
-                          </p>
-                        </div>
                       </div>
                     </div>
                     
@@ -73,7 +63,7 @@ export default function LocalsLanding() {
                           animation: 'gentle-pulse 2.5s ease-in-out infinite',
                         }}
                       >
-                        JOIN AS A LOCAL NOW!!!
+                        JOIN AS A LOCAL
                       </Button>
                       <p className="text-white mt-3 text-base sm:text-lg font-semibold px-2">Share your city • Connect today • Build friendships</p>
                     </div>
