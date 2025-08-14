@@ -292,7 +292,7 @@ export default function EventsLanding() {
         {/* Get Started Section - Enhanced with Multiple CTAs */}
         <div className="bg-gradient-to-r from-orange-600 to-blue-600 text-white py-16 rounded-2xl shadow-2xl mb-16">
           <div className="max-w-4xl mx-auto text-center px-6">
-            <h2 className="text-4xl font-bold mb-4">Ready to Join Events Only Nearby Traveler Community Knows About?</h2>
+            <h2 className="text-4xl font-bold mb-4">Ready to Join Events Only The Nearby Traveler Community Knows About?</h2>
             <p className="text-xl mb-8 opacity-90">Join others already creating unforgettable experiences together.</p>
             
             {/* Primary CTA Row */}
