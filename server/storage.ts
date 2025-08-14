@@ -1,4 +1,4 @@
-import { db } from "./db";
+import { db, pool } from "./db";
 import { users, connections, messages, events, eventParticipants, travelPlans, tripItineraries, itineraryItems, sharedItineraries, notifications, blockedUsers, travelMemories, travelMemoryLikes, travelMemoryComments, userPhotos, userReferences, referrals, proximityNotifications, customLocationActivities, cityActivities, userCustomActivities, userCityInterests, cityLandmarks, landmarkRatings, secretLocalExperiences, secretLocalExperienceLikes, secretExperienceLikes, cityPages, citychatrooms, chatroomMembers, chatroomMessages, chatroomAccessRequests, chatroomInvitations, meetupChatrooms, meetupChatroomMessages, businessOffers, businessOfferRedemptions, businessReferrals, businessLocations, businessInterestNotifications, businessCustomerPhotos, cityPhotos, travelBlogPosts, travelBlogLikes, travelBlogComments, instagramPosts, quickMeetups, quickMeetupParticipants, quickMeetupTemplates, userNotificationSettings, businessSubscriptions, photoAlbums, externalEventInterests, vouches, vouchCredits, type User, type InsertUser, type Connection, type InsertConnection, type Message, type InsertMessage, type Event, type InsertEvent, type EventParticipant, type EventParticipantWithUser, type TravelPlan, type InsertTravelPlan, type TripItinerary, type InsertTripItinerary, type ItineraryItem, type InsertItineraryItem, type SharedItinerary, type InsertSharedItinerary, type Notification, type InsertNotification, type UserReference, type Referral, type InsertReferral, type ProximityNotification, type InsertProximityNotification, type CityLandmark, type InsertCityLandmark, type LandmarkRating, type InsertLandmarkRating, type SecretLocalExperience, type InsertSecretLocalExperience, type ChatroomInvitation, type InsertChatroomInvitation, type BusinessOffer, type InsertBusinessOffer, type BusinessOfferRedemption, type InsertBusinessOfferRedemption, type BusinessLocation, type InsertBusinessLocation, type BusinessInterestNotification, type InsertBusinessInterestNotification, type BusinessCustomerPhoto, type InsertBusinessCustomerPhoto, type CityPhoto, type InsertCityPhoto, type TravelBlogPost, type InsertTravelBlogPost, type TravelBlogLike, type InsertTravelBlogLike, type TravelBlogComment, type InsertTravelBlogComment, type InstagramPost, type InsertInstagramPost, type QuickMeetupTemplate, type InsertQuickMeetupTemplate, type UserNotificationSettings, type InsertUserNotificationSettings, type BusinessSubscription, type InsertBusinessSubscription, type PhotoAlbum, type InsertPhotoAlbum, type ExternalEventInterest, type InsertExternalEventInterest, type Vouch, type VouchCredits, type VouchWithUsers } from "@shared/schema";
 import { eq, and, or, ilike, gte, desc, avg, count, sql, isNotNull, ne, lte, lt, gt, asc, like, inArray, getTableColumns, isNull } from "drizzle-orm";
 import { promises as fs } from 'fs';
@@ -608,78 +608,107 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateUser(id: number, data: Partial<User>): Promise<User | undefined> {
-    const actualUpdates: Partial<typeof users.$inferInsert> = {};
-
-    // Use 'in' checks so false values are written (don't ignore them)
-    if ('travelingWithChildren' in data) {
-      actualUpdates.travelingWithChildren = !!(data as any).travelingWithChildren;
+    try {
+      // Clean the data and ensure we're working with the right types
+      const cleanData: any = {};
       
-      // Optional: if unchecked, also clear any ages so the banner doesn't stick
-      if (!actualUpdates.travelingWithChildren) {
-        actualUpdates.childrenAges = null;
+      // Handle boolean fields explicitly 
+      if ('travelingWithChildren' in data) {
+        cleanData.travelingWithChildren = Boolean(data.travelingWithChildren);
+        if (!cleanData.travelingWithChildren) {
+          cleanData.childrenAges = null;
+        }
       }
-    }
-    
-    if ('ageVisible' in data) {
-      actualUpdates.ageVisible = !!(data as any).ageVisible;
-    }
-    
-    if ('sexualPreferenceVisible' in data) {
-      actualUpdates.sexualPreferenceVisible = !!(data as any).sexualPreferenceVisible;
-    }
-    
-    if ('isVeteran' in data) {
-      actualUpdates.isVeteran = !!(data as any).isVeteran;
-    }
-    
-    if ('isActiveDuty' in data) {
-      actualUpdates.isActiveDuty = !!(data as any).isActiveDuty;
-    }
-    
-    if ('isCurrentlyTraveling' in data) {
-      actualUpdates.isCurrentlyTraveling = !!(data as any).isCurrentlyTraveling;
-    }
+      
+      if ('ageVisible' in data) {
+        cleanData.ageVisible = Boolean(data.ageVisible);
+      }
+      
+      if ('sexualPreferenceVisible' in data) {
+        cleanData.sexualPreferenceVisible = Boolean(data.sexualPreferenceVisible);
+      }
+      
+      if ('isVeteran' in data) {
+        cleanData.isVeteran = Boolean(data.isVeteran);
+      }
+      
+      if ('isActiveDuty' in data) {
+        cleanData.isActiveDuty = Boolean(data.isActiveDuty);
+      }
+      
+      if ('isCurrentlyTraveling' in data) {
+        cleanData.isCurrentlyTraveling = Boolean(data.isCurrentlyTraveling);
+      }
 
-    // Copy all other fields as-is
-    const otherFields = Object.keys(data).filter(key => 
-      !['travelingWithChildren', 'ageVisible', 'sexualPreferenceVisible', 'isVeteran', 'isActiveDuty', 'isCurrentlyTraveling'].includes(key)
-    );
-    
-    for (const field of otherFields) {
-      (actualUpdates as any)[field] = (data as any)[field];
-    }
-    
-    console.log('🔧 STORAGE UPDATE: Boolean updates being applied:', {
-      travelingWithChildren: 'travelingWithChildren' in data ? actualUpdates.travelingWithChildren : 'not updated',
-      ageVisible: 'ageVisible' in data ? actualUpdates.ageVisible : 'not updated',
-      otherFieldsCount: otherFields.length
-    });
+      // Copy other fields (non-boolean)
+      const booleanFields = ['travelingWithChildren', 'ageVisible', 'sexualPreferenceVisible', 'isVeteran', 'isActiveDuty', 'isCurrentlyTraveling'];
+      for (const [key, value] of Object.entries(data)) {
+        if (!booleanFields.includes(key) && value !== undefined) {
+          cleanData[key] = value;
+        }
+      }
+      
+      console.log('🔧 STORAGE UPDATE: Applying clean data update:', {
+        userId: id,
+        fieldCount: Object.keys(cleanData).length,
+        fields: Object.keys(cleanData)
+      });
 
-    const [user] = await db
-      .update(users)
-      .set(actualUpdates)
-      .where(eq(users.id, id))
-      .returning();
-    
-    if (!user) return undefined;
-    
-    // If secretActivities was updated, sync it to secretLocalExperiences table
-    if (data.secretActivities !== undefined && user) {
-      await this.syncUserSecretExperience(user.id, data.secretActivities, user.hometownCity, user.hometownState, user.hometownCountry);
+      // TEMPORARY FIX: Use direct pool query to bypass Drizzle ORM issue
+      if (Object.keys(cleanData).length === 0) {
+        console.log('🔧 STORAGE UPDATE: No fields to update');
+        return await this.getUserById(id);
+      }
+
+      // Build the SQL update statement manually
+      const setClause = Object.keys(cleanData)
+        .map((key, index) => `"${key}" = $${index + 2}`)
+        .join(', ');
+      
+      const values = [id, ...Object.values(cleanData)];
+      
+      const sqlQuery = `
+        UPDATE users 
+        SET ${setClause}
+        WHERE id = $1
+        RETURNING *
+      `;
+      
+      console.log('🔧 STORAGE UPDATE: Executing SQL:', sqlQuery);
+      console.log('🔧 STORAGE UPDATE: With values:', values);
+      
+      // Use direct pool query instead of Drizzle
+      const result = await pool.query(sqlQuery, values);
+      const user = result.rows[0] as any;
+      
+      if (!user) {
+        console.log('🔧 STORAGE UPDATE: No user found with ID:', id);
+        return undefined;
+      }
+      
+      console.log('🔧 STORAGE UPDATE: Successfully updated user:', user.id);
+      
+      // Handle secret activities sync if needed
+      if (data.secretActivities !== undefined && user) {
+        await this.syncUserSecretExperience(user.id, data.secretActivities, user.hometownCity, user.hometownState, user.hometownCountry);
+      }
+      
+      // Convert PostgreSQL boolean strings to proper JavaScript booleans
+      const asBool = (v: any) => v === true || v === 't' || v === 'true' || v === 1;
+      
+      return {
+        ...user,
+        travelingWithChildren: asBool(user.travelingWithChildren),
+        isVeteran: asBool(user.isVeteran),
+        isActiveDuty: asBool(user.isActiveDuty),
+        isCurrentlyTraveling: asBool(user.isCurrentlyTraveling),
+        ageVisible: asBool(user.ageVisible),
+        sexualPreferenceVisible: asBool(user.sexualPreferenceVisible)
+      };
+    } catch (error) {
+      console.error('🔧 STORAGE UPDATE ERROR:', error);
+      throw error;
     }
-    
-    // Convert PostgreSQL boolean strings to proper JavaScript booleans
-    const asBool = (v: any) => v === true || v === 't' || v === 'true' || v === 1;
-    
-    return {
-      ...user,
-      travelingWithChildren: asBool(user.travelingWithChildren),
-      isVeteran: asBool(user.isVeteran),
-      isActiveDuty: asBool(user.isActiveDuty),
-      isCurrentlyTraveling: asBool(user.isCurrentlyTraveling),
-      ageVisible: asBool(user.ageVisible),
-      sexualPreferenceVisible: asBool(user.sexualPreferenceVisible)
-    };
   }
 
   async updateUserAura(userId: number, auraPoints: number): Promise<void> {
@@ -2420,19 +2449,11 @@ export class DatabaseStorage implements IStorage {
   }
 
   async searchUsers(search: string, city?: string): Promise<User[]> {
-    let query = db.select().from(users).where(
-      or(
-        ilike(users.name, `%${search}%`),
-        ilike(users.username, `%${search}%`),
-        ilike(users.bio, `%${search}%`)
-      )
-    );
-
     if (city) {
       // Normalize city search term for NYC aliases
       const normalizedCity = this.normalizeLocationForSearch(city);
       
-      query = query.where(
+      const query = db.select().from(users).where(
         and(
           or(
             ilike(users.name, `%${search}%`),
@@ -2445,7 +2466,16 @@ export class DatabaseStorage implements IStorage {
           )
         )
       );
+      return await query;
     }
+
+    const query = db.select().from(users).where(
+      or(
+        ilike(users.name, `%${search}%`),
+        ilike(users.username, `%${search}%`),
+        ilike(users.bio, `%${search}%`)
+      )
+    );
 
     return await query;
   }
