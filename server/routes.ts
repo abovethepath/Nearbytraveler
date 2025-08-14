@@ -7627,12 +7627,18 @@ Questions? Just reply to this message. Welcome aboard!
         mapBusinesses = await db.select({
           id: users.id,
           businessName: users.businessName,
-          streetAddress: users.streetAddress
+          streetAddress: users.streetAddress,
+          latitude: users.currentLatitude,
+          longitude: users.currentLongitude,
+          category: users.businessType
         })
         .from(users)
         .where(
           and(
             eq(users.userType, 'business'),
+            eq(users.locationSharingEnabled, true),
+            isNotNull(users.currentLatitude),
+            isNotNull(users.currentLongitude),
             or(...businessConditions)
           )
         );
