@@ -11,35 +11,45 @@ export default function BusinessLanding() {
       {/* Landing Navbar with Logo */}
       <LandingNavbar />
 
-      {/* Hero Section with Photo Background */}
-      <section 
-        className="relative overflow-hidden text-white py-20 lg:py-32 border-4 border-orange-500 shadow-lg"
-        style={{
-          backgroundImage: `url(${businessHeaderPhoto})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-          filter: 'brightness(1.3)'
-        }}
-      >
-        <div className="absolute inset-0 bg-black/30"></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center pt-16">
-          <h1 className="text-4xl lg:text-6xl font-extrabold mb-6 text-white" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700'}}>
-            Nearby Traveler for Businesses
-          </h1>
-          <p className="text-xl lg:text-2xl max-w-3xl mx-auto mb-6 text-white">
-            Connect with travelers and locals who are actively exploring your area and looking for authentic experiences
-          </p>
-          <div className="mt-4 text-center">
-            <p className="text-white font-bold text-lg">Grow Your Business with Authentic Connections</p>
-            <p className="text-sm font-bold">
-              <span className="text-orange-300">Reach real customers.</span>{' '}
-              <span className="text-blue-300">Build lasting relationships</span>{' '}
-              <span className="text-black bg-orange-400 px-2 py-1 rounded">and grow your business today!!!</span>
-            </p>
+      {/* HERO SECTION */}
+      <div className="relative">
+        <div className="bg-gray-800 dark:bg-gray-900 border-4 border-orange-500 shadow-lg">
+          <div className="relative bg-gray-800 dark:bg-gray-900 pb-32 overflow-hidden min-h-[600px]">
+            <div className="absolute inset-0 h-full min-h-[600px]">
+              <img
+                src={businessHeaderPhoto}
+                alt="Business connections and partnerships"
+                className="w-full h-full object-cover"
+                style={{ objectPosition: 'center 70%' }}
+              />
+              <div className="absolute inset-0 bg-gray-800/70 dark:bg-gray-800/40 mix-blend-multiply" aria-hidden="true" />
+            </div>
+            <div className="relative">
+              <div className="sm:pb-16 md:pb-20 lg:pb-28 xl:pb-32">
+                <main className="mt-16 mx-auto max-w-full sm:mt-20 md:mt-24 lg:mt-28 xl:mt-32">
+                  <div className="text-center">
+                    <div className="max-w-4xl mx-auto">
+                      <h1 className="text-4xl tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
+                        <span className="block text-white font-black" style={{fontFamily: '"Inter", sans-serif'}}>Nearby Traveler for Businesses</span>
+                      </h1>
+                      
+                      {/* Subhead */}
+                      <div className="mt-8">
+                        <p className="text-xl sm:text-2xl leading-relaxed max-w-3xl mx-auto">
+                          <span className="text-orange-300">Reach real customers</span>{' '}
+                          <span className="text-white">and</span>{' '}
+                          <span className="text-blue-300">build lasting relationships</span>{' '}
+                          <span className="text-black bg-orange-400 px-2 py-1 rounded">today!</span>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </main>
+              </div>
+            </div>
           </div>
         </div>
-      </section>
+      </div>
 
       <main className="flex-1 flex flex-col items-center justify-center text-center px-4">
 

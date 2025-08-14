@@ -9,30 +9,40 @@ export default function EventsLanding() {
     <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900">
       <LandingNavbar />
       
-      {/* Hero Section with Beach BBQ Photo */}
+      {/* HERO SECTION */}
       <div className="relative">
-        <div className="relative h-[70vh] overflow-hidden border-4 border-orange-500 shadow-lg">
-          <img 
-            src={eventHeaderImage} 
-            alt="Beach BBQ Party with Friends" 
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-black/40" />
-          <div className="absolute inset-0 flex items-center justify-center pt-16">
-            <div className="text-center text-white px-4 max-w-4xl">
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold mb-6 text-white" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700'}}>
-                Discover & Create Events
-              </h1>
-              <p className="text-lg sm:text-xl lg:text-2xl mb-6 max-w-3xl mx-auto text-white">
-                Host unforgettable gatherings, join local meetups, and create lasting connections. From beach bonfires to city adventures - your next amazing experience awaits!
-              </p>
-              <div className="mt-4 text-center">
-                <p className="text-white font-bold text-lg">Join Epic Events & Create Amazing Memories</p>
-                <p className="text-sm font-bold">
-                  <span className="text-orange-300">Discover incredible events.</span>{' '}
-                  <span className="text-blue-300">Meet amazing people</span>{' '}
-                  <span className="text-black bg-orange-400 px-2 py-1 rounded">right now, today!!!</span>
-                </p>
+        <div className="bg-gray-800 dark:bg-gray-900 border-4 border-orange-500 shadow-lg">
+          <div className="relative bg-gray-800 dark:bg-gray-900 pb-32 overflow-hidden min-h-[600px]">
+            <div className="absolute inset-0 h-full min-h-[600px]">
+              <img
+                src={eventHeaderImage}
+                alt="Beach BBQ Party with Friends"
+                className="w-full h-full object-cover"
+                style={{ objectPosition: 'center 70%' }}
+              />
+              <div className="absolute inset-0 bg-gray-800/70 dark:bg-gray-800/40 mix-blend-multiply" aria-hidden="true" />
+            </div>
+            <div className="relative">
+              <div className="sm:pb-16 md:pb-20 lg:pb-28 xl:pb-32">
+                <main className="mt-16 mx-auto max-w-full sm:mt-20 md:mt-24 lg:mt-28 xl:mt-32">
+                  <div className="text-center">
+                    <div className="max-w-4xl mx-auto">
+                      <h1 className="text-4xl tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
+                        <span className="block text-white font-black" style={{fontFamily: '"Inter", sans-serif'}}>Discover & Create Events</span>
+                      </h1>
+                      
+                      {/* Subhead */}
+                      <div className="mt-8">
+                        <p className="text-xl sm:text-2xl leading-relaxed max-w-3xl mx-auto">
+                          <span className="text-orange-300">Host unforgettable gatherings</span>{' '}
+                          <span className="text-white">and</span>{' '}
+                          <span className="text-blue-300">create lasting connections</span>{' '}
+                          <span className="text-black bg-orange-400 px-2 py-1 rounded">right now, today!!!</span>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </main>
               </div>
             </div>
           </div>

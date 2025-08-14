@@ -9,31 +9,40 @@ export default function TravelersLanding() {
     <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900">
       <LandingNavbar />
       
-      {/* Hero Section */}
+      {/* HERO SECTION */}
       <div className="relative">
-        <div className="relative h-[70vh] overflow-hidden border-4 border-orange-500 shadow-lg">
-          <img 
-            src={travelersHeaderImage} 
-            alt="Travelers making connections and sharing experiences" 
-            className="w-full h-full object-cover"
-
-          />
-          <div className="absolute inset-0 bg-black/40" />
-          <div className="absolute inset-0 flex items-center justify-center pt-16">
-            <div className="text-center text-white px-4 max-w-4xl">
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold mb-6 text-white" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700'}}>
-                Nearby Traveler For Travelers
-              </h1>
-              <p className="text-lg sm:text-xl lg:text-2xl mb-6 max-w-3xl mx-auto text-white">
-                Discover hidden gems, connect with locals who share your interests, and experience authentic culture.
-              </p>
-              <div className="mt-6 text-center">
-                <p className="text-sm sm:text-base font-bold">
-                  <span className="text-orange-300">Skip the tourist traps</span>{' '}
-                  <span className="text-white">and</span>{' '}
-                  <span className="text-blue-300">explore like a local</span>{' '}
-                  <span className="text-black bg-orange-400 px-2 py-1 rounded">right now!</span>
-                </p>
+        <div className="bg-gray-800 dark:bg-gray-900 border-4 border-orange-500 shadow-lg">
+          <div className="relative bg-gray-800 dark:bg-gray-900 pb-32 overflow-hidden min-h-[600px]">
+            <div className="absolute inset-0 h-full min-h-[600px]">
+              <img
+                src={travelersHeaderImage}
+                alt="Travelers making connections and sharing experiences"
+                className="w-full h-full object-cover"
+                style={{ objectPosition: 'center 70%' }}
+              />
+              <div className="absolute inset-0 bg-gray-800/70 dark:bg-gray-800/40 mix-blend-multiply" aria-hidden="true" />
+            </div>
+            <div className="relative">
+              <div className="sm:pb-16 md:pb-20 lg:pb-28 xl:pb-32">
+                <main className="mt-16 mx-auto max-w-full sm:mt-20 md:mt-24 lg:mt-28 xl:mt-32">
+                  <div className="text-center">
+                    <div className="max-w-4xl mx-auto">
+                      <h1 className="text-4xl tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
+                        <span className="block text-white font-black" style={{fontFamily: '"Inter", sans-serif'}}>Nearby Traveler For Travelers</span>
+                      </h1>
+                      
+                      {/* Subhead */}
+                      <div className="mt-8">
+                        <p className="text-xl sm:text-2xl leading-relaxed max-w-3xl mx-auto">
+                          <span className="text-orange-300">Skip the tourist traps</span>{' '}
+                          <span className="text-white">and</span>{' '}
+                          <span className="text-blue-300">explore like a local</span>{' '}
+                          <span className="text-black bg-orange-400 px-2 py-1 rounded">right now!</span>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </main>
               </div>
             </div>
           </div>
