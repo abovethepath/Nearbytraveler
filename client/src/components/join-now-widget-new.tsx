@@ -256,7 +256,7 @@ export default function JoinNowWidgetNew() {
                 type="text"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder={userType === 'business' ? 'Your business name (e.g., "Joe's Pizza" or "LA Tours")' : 'Your full name'}
+                placeholder={userType === 'business' ? "Your business name (e.g., Joe's Pizza or LA Tours)" : 'Your full name'}
                 className="text-base py-3 text-crisp font-medium"
                 required
               />

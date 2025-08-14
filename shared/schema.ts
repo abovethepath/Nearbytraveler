@@ -280,7 +280,7 @@ export const chatroomMessages = pgTable("chatroom_messages", {
   senderId: integer("sender_id").notNull().references(() => users.id),
   content: text("content").notNull(),
   messageType: text("message_type").default("text"), // 'text', 'image', 'system'
-  replyToId: integer("reply_to_id").references(() => chatroomMessages.id), // For threaded replies
+  replyToId: integer("reply_to_id"), // Will be set up with self-reference later
   isEdited: boolean("is_edited").default(false),
   editedAt: timestamp("edited_at"),
   createdAt: timestamp("created_at").defaultNow(),
