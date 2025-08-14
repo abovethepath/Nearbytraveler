@@ -93,10 +93,7 @@ export default function Welcome() {
                   <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                   Hometown location
                 </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  Travel destination & return date
-                </div>
+
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                   3 top interests for matching
