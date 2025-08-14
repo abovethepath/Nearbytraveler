@@ -60,7 +60,7 @@ export default function BusinessLanding() {
                         <p className="text-xl sm:text-2xl leading-relaxed max-w-3xl mx-auto">
                           <span className="text-orange-300">Reach real customers</span>{' '}
                           <span className="text-white">and</span>{' '}
-                          <span className="text-blue-300">build lasting relationships</span>{' '}
+                          <span className="text-blue-300" style={{border: 'none', outline: 'none', boxShadow: 'none'}}>build lasting relationships</span>{' '}
                           <span className="text-black bg-orange-400 px-2 py-1 rounded">today!</span>
                         </p>
                       </div>

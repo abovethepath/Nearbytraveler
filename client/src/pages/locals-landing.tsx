@@ -60,7 +60,7 @@ export default function LocalsLanding() {
                         <p className="text-xl sm:text-2xl leading-relaxed max-w-3xl mx-auto">
                           <span className="text-orange-300">Share your city's hidden gems</span>{' '}
                           <span className="text-white">and connect with</span>{' '}
-                          <span className="text-blue-300">travelers and like-minded locals</span>{' '}
+                          <span className="text-blue-300" style={{border: 'none', outline: 'none', boxShadow: 'none'}}>travelers and like-minded locals</span>{' '}
                           <span className="text-black bg-orange-400 px-2 py-1 rounded">—today.</span>
                         </p>
                       </div>
@@ -84,7 +84,7 @@ export default function LocalsLanding() {
                       <p className="mt-6 text-sm sm:text-base font-medium px-2">
                         <span className="text-orange-300">Share your city</span>{' '}
                         <span className="text-white">•</span>{' '}
-                        <span className="text-blue-300">Connect today</span>{' '}
+                        <span className="text-blue-300" style={{border: 'none', outline: 'none', boxShadow: 'none'}}>Connect today</span>{' '}
                         <span className="text-white">•</span>{' '}
                         <span className="text-orange-300">Build friendships</span>
                       </p>
