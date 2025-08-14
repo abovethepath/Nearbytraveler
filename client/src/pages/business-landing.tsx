@@ -232,18 +232,11 @@ export default function BusinessLanding() {
               <p className="text-xl mb-8 opacity-90">Join thousands of businesses already connecting with travelers and locals.</p>
               
               {/* Primary CTA Row */}
-              <div className="space-y-4 sm:space-y-0 sm:flex sm:gap-4 sm:justify-center mb-12">
+              <div className="mb-12 flex justify-center">
                 <Button
                   onClick={() => setLocation('/join')}
                   size="lg"
-                  className="bg-white text-blue-600 hover:bg-gray-100 font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition-all duration-200 transform hover:scale-105 w-full sm:w-auto"
-                >
-                  🚀 Join Business Network
-                </Button>
-                <Button
-                  onClick={() => setLocation('/join')}
-                  size="lg"
-                  className="border-2 border-white text-white hover:bg-white hover:text-blue-600 font-bold text-lg px-8 py-4 rounded-xl transition-all duration-200 transform hover:scale-105 w-full sm:w-auto"
+                  className="border-2 border-white text-white hover:bg-white hover:text-blue-600 font-bold text-lg px-8 py-4 rounded-xl transition-all duration-200 transform hover:scale-105"
                 >
                   📈 Start Free Trial
                 </Button>
