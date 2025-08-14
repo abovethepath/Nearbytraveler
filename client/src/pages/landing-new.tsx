@@ -637,44 +637,44 @@ export default function Landing() {
               </div>
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-orange-100 dark:border-orange-800">
+                <div className="bg-gradient-to-br from-orange-50 to-orange-100 dark:bg-gradient-to-br dark:from-orange-900/30 dark:to-orange-800/20 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-orange-200 dark:border-orange-700">
                   <div className="flex items-center mb-3">
-                    <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg flex items-center justify-center mr-3">
-                      <span className="text-white text-sm font-bold">🎯</span>
+                    <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg flex items-center justify-center mr-3 shadow-md">
+                      <span className="text-white text-lg font-bold">🎯</span>
                     </div>
-                    <h3 className="font-black text-gray-900 dark:text-white">Local-Led Events</h3>
+                    <h3 className="font-black text-orange-900 dark:text-orange-100 text-lg">Local-Led Events</h3>
                   </div>
-                  <p className="text-gray-600 dark:text-gray-300 text-sm">Join authentic experiences crafted by locals</p>
+                  <p className="text-orange-800 dark:text-orange-200 text-base font-semibold">Join authentic experiences crafted by locals</p>
                 </div>
                 
-                <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-red-100 dark:border-red-800">
+                <div className="bg-gradient-to-br from-red-50 to-red-100 dark:bg-gradient-to-br dark:from-red-900/30 dark:to-red-800/20 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-red-200 dark:border-red-700">
                   <div className="flex items-center mb-3">
-                    <div className="w-10 h-10 bg-gradient-to-r from-red-500 to-red-600 rounded-lg flex items-center justify-center mr-3">
-                      <span className="text-white text-sm font-bold">🗺️</span>
+                    <div className="w-12 h-12 bg-gradient-to-r from-red-500 to-red-600 rounded-lg flex items-center justify-center mr-3 shadow-md">
+                      <span className="text-white text-lg font-bold">🗺️</span>
                     </div>
-                    <h3 className="font-black text-gray-900 dark:text-white">Hidden Gems</h3>
+                    <h3 className="font-black text-red-900 dark:text-red-100 text-lg">Hidden Gems</h3>
                   </div>
-                  <p className="text-gray-600 dark:text-gray-300 text-sm">Discover spots that tourists never find</p>
+                  <p className="text-red-800 dark:text-red-200 text-base font-semibold">Discover spots that tourists never find</p>
                 </div>
                 
-                <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-pink-100 dark:border-pink-800">
+                <div className="bg-gradient-to-br from-pink-50 to-pink-100 dark:bg-gradient-to-br dark:from-pink-900/30 dark:to-pink-800/20 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-pink-200 dark:border-pink-700">
                   <div className="flex items-center mb-3">
-                    <div className="w-10 h-10 bg-gradient-to-r from-pink-500 to-pink-600 rounded-lg flex items-center justify-center mr-3">
-                      <span className="text-white text-sm font-bold">👥</span>
+                    <div className="w-12 h-12 bg-gradient-to-r from-pink-500 to-pink-600 rounded-lg flex items-center justify-center mr-3 shadow-md">
+                      <span className="text-white text-lg font-bold">👥</span>
                     </div>
-                    <h3 className="font-black text-gray-900 dark:text-white">Travel Buddies</h3>
+                    <h3 className="font-black text-pink-900 dark:text-pink-100 text-lg">Travel Buddies</h3>
                   </div>
-                  <p className="text-gray-600 dark:text-gray-300 text-sm">Meet travelers with your dates and interests</p>
+                  <p className="text-pink-800 dark:text-pink-200 text-base font-semibold">Meet travelers with your dates and interests</p>
                 </div>
                 
-                <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-purple-100 dark:border-purple-800">
+                <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:bg-gradient-to-br dark:from-purple-900/30 dark:to-purple-800/20 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-purple-200 dark:border-purple-700">
                   <div className="flex items-center mb-3">
-                    <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg flex items-center justify-center mr-3">
-                      <span className="text-white text-sm font-bold">💡</span>
+                    <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg flex items-center justify-center mr-3 shadow-md">
+                      <span className="text-white text-lg font-bold">💡</span>
                     </div>
-                    <h3 className="font-black text-gray-900 dark:text-white">Insider Tips</h3>
+                    <h3 className="font-black text-purple-900 dark:text-purple-100 text-lg">Insider Tips</h3>
                   </div>
-                  <p className="text-gray-600 dark:text-gray-300 text-sm">Get secrets that guidebooks can't provide</p>
+                  <p className="text-purple-800 dark:text-purple-200 text-base font-semibold">Get secrets that guidebooks can't provide</p>
                 </div>
               </div>
             </div>
