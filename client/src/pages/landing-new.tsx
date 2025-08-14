@@ -628,11 +628,10 @@ export default function Landing() {
                   FOR TRAVELERS
                 </span>
                 <h2 className="text-4xl sm:text-5xl font-black text-gray-900 dark:text-white mb-6" style={{fontFamily: '"Open Sans", sans-serif'}}>
-                  🌍 Travel Like a <span className="bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">Local Insider</span>
+                  🌍 Travel Like <span className="bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">You Live There</span>
                 </h2>
                 <p className="text-xl text-gray-600 dark:text-gray-300 leading-relaxed">
-                  Forget the crowds and clichés. Discover destinations through the eyes of locals 
-                  and connect with fellow adventurers who get your travel vibe.
+                  Skip the crowds and clichés. Connect with locals who'll show you their city's soul and fellow travelers who get your wanderlust.
                 </p>
               </div>
               
@@ -652,9 +651,9 @@ export default function Landing() {
                     <div className="w-12 h-12 bg-gradient-to-r from-red-500 to-red-600 rounded-lg flex items-center justify-center mr-3 shadow-md">
                       <span className="text-white text-lg font-bold">🗺️</span>
                     </div>
-                    <h3 className="font-black text-emerald-800 dark:text-emerald-100 text-lg">Hidden Gems</h3>
+                    <h3 className="font-black text-emerald-800 dark:text-emerald-100 text-lg">Secret Spots</h3>
                   </div>
-                  <p className="text-emerald-700 dark:text-emerald-200 text-base font-semibold">Discover spots that tourists never find</p>
+                  <p className="text-emerald-700 dark:text-emerald-200 text-base font-semibold">Discover places locals actually go - the hole-in-the-wall restaurants, rooftop views, and neighborhoods tourists never find</p>
                 </div>
                 
                 <div className="bg-gradient-to-br from-blue-100 to-blue-200 dark:bg-gradient-to-br dark:from-blue-800 dark:to-blue-700 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-pink-300 dark:border-pink-600">
@@ -672,9 +671,9 @@ export default function Landing() {
                     <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg flex items-center justify-center mr-3 shadow-md">
                       <span className="text-white text-lg font-bold">💡</span>
                     </div>
-                    <h3 className="font-black text-purple-900 dark:text-purple-100 text-lg">Insider Tips</h3>
+                    <h3 className="font-black text-purple-900 dark:text-purple-100 text-lg">Local Intel</h3>
                   </div>
-                  <p className="text-purple-800 dark:text-purple-200 text-base font-semibold">Get secrets that guidebooks can't provide</p>
+                  <p className="text-purple-800 dark:text-purple-200 text-base font-semibold">Get the real scoop: which subway line to avoid, where locals eat breakfast, and what tourists waste money on</p>
                 </div>
               </div>
             </div>
