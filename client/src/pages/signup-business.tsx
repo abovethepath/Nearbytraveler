@@ -676,7 +676,7 @@ export default function SignupBusiness() {
 
                   <div className="space-y-4">
                     {!locationCaptured ? (
-                      <div className="text-center p-6 border-2 border-dashed border-orange-300 dark:border-orange-600 rounded-lg">
+                      <div className="text-center p-6 border-2 border-dashed border-orange-300 dark:border-orange-600 rounded-lg bg-white dark:bg-gray-800">
                         <Navigation className="w-12 h-12 text-orange-500 mx-auto mb-4" />
                         <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
                           Enable Proximity Notifications
@@ -753,11 +753,7 @@ export default function SignupBusiness() {
                     />
                   </div>
 
-                  <div className="bg-yellow-100 dark:bg-yellow-900/30 p-4 rounded-lg">
-                    <p className="text-sm text-gray-700 dark:text-gray-300">
-                      <strong>🚀 Marketing Boost:</strong> Businesses with location enabled receive 3x more customer inquiries from nearby travelers looking for local experiences and services.
-                    </p>
-                  </div>
+
                 </div>
 
                 {/* Business Interests & Activities Section */}
