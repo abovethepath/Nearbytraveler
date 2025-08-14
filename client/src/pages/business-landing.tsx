@@ -329,7 +329,6 @@ export default function BusinessLanding() {
               >
                 🚀 Start FREE Beta Now
               </Button>
-              <p className="text-white/70 mt-4 text-sm">No credit card required • Cancel anytime • Full access during beta</p>
             </div>
           </div>
         </div>
