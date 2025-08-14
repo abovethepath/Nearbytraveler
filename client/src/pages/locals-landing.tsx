@@ -55,17 +55,7 @@ export default function LocalsLanding() {
                         <span className="block text-white font-black" style={{fontFamily: '"Inter", sans-serif'}}>Be the local you'd want to meet.</span>
                         <span className="block font-black" style={{fontFamily: '"Inter", sans-serif'}}>
                           <span className="text-orange-400">Share hidden gems. </span>
-                          <span 
-                            className="text-blue-400" 
-                            style={{
-                              textShadow: 'none',
-                              WebkitTextStroke: 'none',
-                              outline: 'none',
-                              border: 'none'
-                            }}
-                          >
-                            Connect locals.
-                          </span>
+                          <span className="text-blue-400">Connect locals.</span>
                         </span>
                       </h1>
                     </div>
