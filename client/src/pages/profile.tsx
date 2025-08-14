@@ -1197,6 +1197,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           websiteUrl: (user as any).websiteUrl || "",
         });
       } else {
+        const travelingWithChildrenValue = !!(user as any).travelingWithChildren;
+        console.log('🔥 FORM RESET: Setting travelingWithChildren to:', travelingWithChildrenValue, 'from user value:', (user as any).travelingWithChildren);
+        
         profileForm.reset({
           bio: user.bio || "",
           secretActivities: user.secretActivities || "",
@@ -1209,11 +1212,17 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           sexualPreference: user.sexualPreference || [],
           sexualPreferenceVisible: user.sexualPreferenceVisible !== undefined ? user.sexualPreferenceVisible : false,
           travelStyle: user.travelStyle || [],
-          travelingWithChildren: !!(user as any).travelingWithChildren,
+          travelingWithChildren: travelingWithChildrenValue,
           childrenAges: (user as any).childrenAges || "",
           isVeteran: user.isVeteran !== undefined ? user.isVeteran : false,
           isActiveDuty: user.isActiveDuty !== undefined ? user.isActiveDuty : false,
         });
+        
+        // Force set the value after reset
+        setTimeout(() => {
+          profileForm.setValue('travelingWithChildren', travelingWithChildrenValue);
+          console.log('🔥 FORCE SET: Set travelingWithChildren to:', travelingWithChildrenValue, 'current form value:', profileForm.getValues('travelingWithChildren'));
+        }, 100);
       }
     }
   }, [user, userLoading, profileForm]);
@@ -6322,7 +6331,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               />
                               {/* Debug info - remove after testing */}
                               <span className="text-xs text-gray-400 ml-2">
-                                (Debug: {String(!!field.value)})
+                                (Debug: {String(field.value)} / {typeof field.value})
                               </span>
                               <label 
                                 htmlFor="traveling-with-children" 
