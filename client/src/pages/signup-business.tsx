@@ -265,6 +265,19 @@ export default function SignupBusiness() {
             </CardDescription>
           </CardHeader>
           <CardContent>
+            {/* Back Button */}
+            <div className="mb-6">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setLocation('/join')}
+                className="flex items-center gap-2 px-4 py-2 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800"
+                data-testid="button-back-top"
+              >
+                ← Back to Join
+              </Button>
+            </div>
+            
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                 
@@ -677,7 +690,7 @@ export default function SignupBusiness() {
 
                   <div className="space-y-4">
                     {!locationCaptured ? (
-                      <div className="text-center p-6 border-2 border-dashed border-orange-300 dark:border-orange-600 rounded-lg bg-white dark:bg-gray-800">
+                      <div className="text-center p-6 border-2 border-dashed border-orange-300 dark:border-orange-600 rounded-lg bg-gray-50 dark:bg-gray-800">
                         <Navigation className="w-12 h-12 text-orange-500 mx-auto mb-4" />
                         <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
                           Enable Proximity Notifications
