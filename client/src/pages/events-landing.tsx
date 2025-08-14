@@ -53,7 +53,7 @@ export default function EventsLanding() {
                   <div className="text-center">
                     <div className="max-w-4xl mx-auto">
                       <h1 className="text-4xl tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
-                        <span className="block text-black font-black" style={{fontFamily: '"Inter", sans-serif'}}>Join User Created Events</span>
+                        <span className="block text-white font-black" style={{fontFamily: '"Inter", sans-serif'}}>Join User Created Events</span>
                         <span className="block font-black" style={{fontFamily: '"Inter", sans-serif'}}>
                           <span className="text-orange-400">and Make Real Connections </span>
                           <span style={{color: '#3b82f6'}}>with Nearby Travelers, </span>
