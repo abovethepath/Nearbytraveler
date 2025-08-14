@@ -19,7 +19,7 @@ export default function BusinessLanding() {
           </div>
           <Button
             onClick={() => setLocation('/join')}
-            className="bg-black text-orange-400 font-bold px-6 py-2 rounded-lg hover:bg-gray-800 ml-4"
+            className="bg-black text-orange-400 font-bold px-6 py-2 rounded-2xl hover:bg-gray-800 ml-4"
           >
             SIGN UP NOW
           </Button>
@@ -113,19 +113,19 @@ export default function BusinessLanding() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
               <Button
                 onClick={() => setLocation('/join')}
-                className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-6 px-8 rounded-xl text-lg shadow-lg transform hover:scale-105 transition-all duration-200"
+                className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-6 px-8 rounded-2xl text-lg shadow-lg transform hover:scale-105 transition-all duration-200"
               >
                 🏢 JOIN AS BUSINESS
               </Button>
               <Button
                 onClick={() => setLocation('/join')}
-                className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-6 px-8 rounded-xl text-lg shadow-lg transform hover:scale-105 transition-all duration-200"
+                className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-6 px-8 rounded-2xl text-lg shadow-lg transform hover:scale-105 transition-all duration-200"
               >
                 📈 CREATE OFFERS
               </Button>
               <Button
                 onClick={() => setLocation('/join')}
-                className="bg-green-500 hover:bg-green-600 text-white font-bold py-6 px-8 rounded-xl text-lg shadow-lg transform hover:scale-105 transition-all duration-200"
+                className="bg-green-500 hover:bg-green-600 text-white font-bold py-6 px-8 rounded-2xl text-lg shadow-lg transform hover:scale-105 transition-all duration-200"
               >
                 🎉 HOST EVENTS
               </Button>
@@ -135,25 +135,25 @@ export default function BusinessLanding() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <Button
                 onClick={() => setLocation('/join')}
-                className="bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-4 rounded-lg text-sm"
+                className="bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-4 rounded-2xl text-sm"
               >
                 🍽️ Restaurants
               </Button>
               <Button
                 onClick={() => setLocation('/join')}
-                className="bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 px-4 rounded-lg text-sm"
+                className="bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 px-4 rounded-2xl text-sm"
               >
                 🏨 Hotels
               </Button>
               <Button
                 onClick={() => setLocation('/join')}
-                className="bg-teal-500 hover:bg-teal-600 text-white font-bold py-3 px-4 rounded-lg text-sm"
+                className="bg-teal-500 hover:bg-teal-600 text-white font-bold py-3 px-4 rounded-2xl text-sm"
               >
                 🎨 Tours
               </Button>
               <Button
                 onClick={() => setLocation('/join')}
-                className="bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-4 rounded-lg text-sm"
+                className="bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-4 rounded-2xl text-sm"
               >
                 🛍️ Retail
               </Button>
@@ -208,17 +208,17 @@ export default function BusinessLanding() {
             What Makes Nearby Traveler Special for Business
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-            <div className="bg-orange-600 p-6 rounded-xl shadow-lg text-white">
+            <div className="bg-orange-600 p-6 rounded-2xl shadow-lg text-white">
               <div className="text-4xl mb-4">🎯</div>
               <h3 className="text-xl font-bold mb-3 text-white">Target Real Customers</h3>
               <p className="text-white">Reach travelers and locals actively seeking authentic experiences in your area. No fake engagement - real people, real connections.</p>
             </div>
-            <div className="bg-teal-600 p-6 rounded-xl shadow-lg text-white">
+            <div className="bg-teal-600 p-6 rounded-2xl shadow-lg text-white">
               <div className="text-4xl mb-4">🚀</div>
               <h3 className="text-xl font-bold mb-3 text-white">Instant Growth</h3>
               <p className="text-white">Create time-limited offers and events that attract both tourists and locals. See immediate results from your marketing efforts.</p>
             </div>
-            <div className="bg-orange-700 p-6 rounded-xl shadow-lg text-white">
+            <div className="bg-orange-700 p-6 rounded-2xl shadow-lg text-white">
               <div className="text-4xl mb-4">📊</div>
               <h3 className="text-xl font-bold mb-3 text-white">Smart Analytics</h3>
               <p className="text-white">Access detailed insights about customer engagement and offer performance. Make data-driven decisions to grow your business.</p>
@@ -236,14 +236,14 @@ export default function BusinessLanding() {
                 <Button
                   onClick={() => setLocation('/join')}
                   size="lg"
-                  className="border-2 border-white text-white hover:bg-white hover:text-blue-600 font-bold text-lg px-8 py-4 rounded-xl transition-all duration-200 transform hover:scale-105"
+                  className="border-2 border-white text-white hover:bg-white hover:text-blue-600 font-bold text-lg px-8 py-4 rounded-2xl transition-all duration-200 transform hover:scale-105"
                 >
                   📈 Start Free Trial
                 </Button>
               </div>
               
               {/* Business Types */}
-              <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl">
+              <div className="bg-white/10 backdrop-blur-sm p-6 rounded-2xl">
                 <h3 className="text-xl font-bold mb-4 text-white">Perfect for All Business Types</h3>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div className="flex flex-col items-center">
@@ -273,7 +273,7 @@ export default function BusinessLanding() {
           <div className="bg-gradient-to-r from-orange-500 to-blue-600 text-white p-8 rounded-2xl shadow-2xl border-4 border-white">
             <div className="text-center">
               <h2 className="text-3xl font-bold mb-4">Simple Business Pricing</h2>
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 mb-6">
+              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 mb-6">
                 <div className="text-5xl font-black text-white mb-2">$50</div>
                 <div className="text-xl text-white/90 mb-2">per month</div>
                 <div className="text-2xl font-bold text-orange-200 mb-4">+ $100 Sign Up Fee</div>
@@ -290,7 +290,7 @@ export default function BusinessLanding() {
               </div>
               <Button
                 onClick={() => setLocation('/join')}
-                className="bg-white text-blue-600 hover:bg-gray-100 font-bold text-xl px-12 py-4 rounded-xl shadow-lg transition-all duration-200 transform hover:scale-105"
+                className="bg-white text-blue-600 hover:bg-gray-100 font-bold text-xl px-12 py-4 rounded-2xl shadow-lg transition-all duration-200 transform hover:scale-105"
               >
                 🚀 Start FREE Beta Now
               </Button>
