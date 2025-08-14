@@ -2734,6 +2734,76 @@ Questions? Just reply to this message. Welcome aboard!
       if (isFirstProfileCompletion) {
         await awardAuraPoints(userId, 1, 'completing profile');
         if (process.env.NODE_ENV === 'development') console.log(`✨ AURA: Awarded 1 point to user ${userId} for completing profile`);
+
+        // CRITICAL: Check if business user needs welcome message from @nearbytraveler
+        if (updatedUser.userType === 'business') {
+          try {
+            const nearbytravelerUser = await storage.getUserByUsername('nearbytraveler');
+            if (nearbytravelerUser) {
+              // Check if connection already exists
+              const existingConnection = await db
+                .select()
+                .from(connections)
+                .where(
+                  and(
+                    eq(connections.requesterId, nearbytravelerUser.id),
+                    eq(connections.receiverId, userId)
+                  )
+                )
+                .limit(1);
+
+              // Check if welcome message already exists
+              const existingMessage = await db
+                .select()
+                .from(messages)
+                .where(
+                  and(
+                    eq(messages.senderId, nearbytravelerUser.id),
+                    eq(messages.receiverId, userId)
+                  )
+                )
+                .limit(1);
+
+              // Only create connection and welcome message if they don't exist
+              if (existingConnection.length === 0 && existingMessage.length === 0) {
+                // Create connection
+                await db
+                  .insert(connections)
+                  .values({
+                    requesterId: nearbytravelerUser.id,
+                    receiverId: userId,
+                    status: 'accepted'
+                  });
+
+                // Create welcome message
+                await storage.createMessage({
+                  senderId: nearbytravelerUser.id,
+                  receiverId: userId,
+                  content: `Welcome to Nearby Traveler! 🏢
+
+Hi ${updatedUser.name || updatedUser.username}! We're excited to have your business join our platform. Nearby Traveler connects local businesses with travelers and locals who are genuinely interested in authentic experiences.
+
+Getting Started:
+• Complete your business profile with photos and details
+• Create special offers for travelers visiting your area  
+• Post events to attract customers
+• Use our analytics to track engagement
+
+Your business is now visible to travelers searching for experiences in ${updatedUser.hometownCity || 'your area'}. When people with interests matching your services visit your area, you'll get notified automatically.
+
+Questions? Just reply to this message. Welcome aboard!
+
+- The Nearby Traveler Team`
+                });
+
+                if (process.env.NODE_ENV === 'development') console.log(`✓ PROFILE COMPLETION: Sent welcome message to business user ${updatedUser.username} (ID: ${userId})`);
+              }
+            }
+          } catch (welcomeError) {
+            if (process.env.NODE_ENV === 'development') console.error("Failed to send welcome message during profile completion:", welcomeError);
+            // Don't fail profile update if welcome message fails
+          }
+        }
       }
 
       // Remove password from response
@@ -10298,6 +10368,48 @@ Questions? Just reply to this message. Welcome aboard!
       const result = await storage.createBusinessUser(businessData);
       
       if (process.env.NODE_ENV === 'development') console.log("🏢 BUSINESS SIGNUP: Registration successful", result.id);
+
+      // AUTOMATICALLY CONNECT NEW BUSINESS USER TO NEARBYTRAVELER WITH WELCOME MESSAGE
+      try {
+        const nearbytravelerUser = await storage.getUserByUsername('nearbytraveler');
+        if (nearbytravelerUser && result.username !== 'nearbytraveler') {
+          // Create automatic connection between new business user and nearbytraveler
+          const connectionResult = await db
+            .insert(connections)
+            .values({
+              requesterId: parseInt(nearbytravelerUser.id.toString() || '0'),
+              receiverId: parseInt(result.id.toString() || '0'),
+              status: 'accepted'
+            })
+            .returning();
+
+          // Create welcome message from nearbytraveler to the new business user
+          await storage.createMessage({
+            senderId: nearbytravelerUser.id,
+            receiverId: result.id,
+            content: `Welcome to Nearby Traveler! 🏢
+
+Hi ${result.name || result.username}! We're excited to have your business join our platform. Nearby Traveler connects local businesses with travelers and locals who are genuinely interested in authentic experiences.
+
+Getting Started:
+• Complete your business profile with photos and details
+• Create special offers for travelers visiting your area  
+• Post events to attract customers
+• Use our analytics to track engagement
+
+Your business is now visible to travelers searching for experiences in ${result.hometownCity || 'your area'}. When people with interests matching your services visit your area, you'll get notified automatically.
+
+Questions? Just reply to this message. Welcome aboard!
+
+- The Nearby Traveler Team`
+          });
+
+          if (process.env.NODE_ENV === 'development') console.log(`✓ Auto-connected new business user ${result.username} (ID: ${result.id}) to nearbytraveler with welcome message`);
+        }
+      } catch (autoConnectError) {
+        if (process.env.NODE_ENV === 'development') console.error("Failed to auto-connect new business user to nearbytraveler:", autoConnectError);
+        // Don't fail registration if auto-connection fails
+      }
       
       res.status(201).json({
         message: "Business registration successful",
