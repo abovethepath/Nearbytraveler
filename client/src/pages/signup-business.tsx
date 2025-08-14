@@ -693,7 +693,7 @@ export default function SignupBusiness() {
                         <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
                           Enable Proximity Notifications
                         </h4>
-                        <p className="text-sm text-gray-900 dark:text-gray-100 mb-4 font-medium">
+                        <p className="text-sm text-gray-800 dark:text-gray-200 mb-4 font-semibold">
                           Allow us to capture your business location so travelers nearby can discover your services and receive targeted notifications.
                         </p>
                         <Button
@@ -756,7 +756,7 @@ export default function SignupBusiness() {
                             <FormLabel className="font-medium text-gray-900 dark:text-white">
                               Enable Proximity Notifications to Travelers
                             </FormLabel>
-                            <FormDescription className="text-sm text-gray-900 dark:text-gray-100 font-medium">
+                            <FormDescription className="text-sm text-gray-800 dark:text-gray-200 font-semibold">
                               Allow nearby travelers (within 7 miles) to receive notifications about your business based on their interests and your offerings. This helps drive foot traffic and customer discovery.
                             </FormDescription>
                           </div>
