@@ -577,7 +577,7 @@ export default function Landing() {
                   </h3>
                   <p className="text-gray-600 dark:text-gray-300 mb-8 leading-relaxed">
                     Transform your city knowledge into unforgettable experiences. 
-                    Every event you host, every secret spot you share makes you the hero of someone's travel story.
+                    Every event you create, every secret spot you share makes you the hero of someone's travel story.
                   </p>
                   <Button 
                     onClick={() => setLocation('/join')}
