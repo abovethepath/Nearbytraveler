@@ -128,38 +128,38 @@ export default function BusinessLanding() {
       {/* Footer */}
       <footer className="bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+            <div className="col-span-1 sm:col-span-2 lg:col-span-1">
               <div className="flex items-center space-x-2 mb-4">
                 <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full"></div>
-                <span className="text-xl font-bold text-gray-900 dark:text-white">Nearby Traveler</span>
+                <span className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">Nearby Traveler</span>
               </div>
-              <p className="text-gray-600 dark:text-gray-400">
+              <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 leading-relaxed">
                 Connecting travelers and locals worldwide through authentic experiences.
               </p>
             </div>
             <div>
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-4">For Businesses</h3>
-              <ul className="space-y-2 text-gray-600 dark:text-gray-400">
-                <li><Link href="/business-registration">Register Business</Link></li>
-                <li><Link href="/business-dashboard">Dashboard</Link></li>
-                <li><Link href="/business-offers">Business Offers</Link></li>
+              <h3 className="font-semibold text-gray-900 dark:text-white mb-3 text-sm sm:text-base">For Businesses</h3>
+              <ul className="space-y-1 sm:space-y-2 text-gray-600 dark:text-gray-400">
+                <li><a href="/business-registration" className="text-xs sm:text-sm hover:text-gray-900 dark:hover:text-white transition-colors">Register Business</a></li>
+                <li><a href="/business-dashboard" className="text-xs sm:text-sm hover:text-gray-900 dark:hover:text-white transition-colors">Dashboard</a></li>
+                <li><a href="/business-offers" className="text-xs sm:text-sm hover:text-gray-900 dark:hover:text-white transition-colors">Business Offers</a></li>
               </ul>
             </div>
             <div>
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-4">Support</h3>
-              <ul className="space-y-2 text-gray-600 dark:text-gray-400">
-                <li><Link href="/about">About</Link></li>
-                <li><Link href="/terms">Terms</Link></li>
-                <li><Link href="/privacy">Privacy</Link></li>
+              <h3 className="font-semibold text-gray-900 dark:text-white mb-3 text-sm sm:text-base">Support</h3>
+              <ul className="space-y-1 sm:space-y-2 text-gray-600 dark:text-gray-400">
+                <li><a href="/about" className="text-xs sm:text-sm hover:text-gray-900 dark:hover:text-white transition-colors">About</a></li>
+                <li><a href="/terms" className="text-xs sm:text-sm hover:text-gray-900 dark:hover:text-white transition-colors">Terms</a></li>
+                <li><a href="/privacy" className="text-xs sm:text-sm hover:text-gray-900 dark:hover:text-white transition-colors">Privacy</a></li>
               </ul>
             </div>
             <div>
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-4">Connect</h3>
-              <ul className="space-y-2 text-gray-600 dark:text-gray-400">
-                <li><Link href="/auth">Sign In</Link></li>
-                <li><Link href="/signup-business">Join as Business</Link></li>
-                <li><Link href="/events-landing">Events</Link></li>
+              <h3 className="font-semibold text-gray-900 dark:text-white mb-3 text-sm sm:text-base">Connect</h3>
+              <ul className="space-y-1 sm:space-y-2 text-gray-600 dark:text-gray-400">
+                <li><a href="/auth" className="text-xs sm:text-sm hover:text-gray-900 dark:hover:text-white transition-colors">Sign In</a></li>
+                <li><a href="/signup-business" className="text-xs sm:text-sm hover:text-gray-900 dark:hover:text-white transition-colors">Join as Business</a></li>
+                <li><a href="/events-landing" className="text-xs sm:text-sm hover:text-gray-900 dark:hover:text-white transition-colors">Events</a></li>
               </ul>
             </div>
           </div>
