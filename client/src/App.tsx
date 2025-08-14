@@ -660,6 +660,29 @@ function Router() {
       if (!cityName || cityName.trim() === '') {
         return <NotFound />;
       }
+      
+      // METROPOLITAN AREA CONSOLIDATION - Redirect LA suburbs to "Los Angeles Metro"
+      const LA_METRO_CITIES = [
+        'Santa Monica', 'Venice', 'Venice Beach', 'El Segundo', 'Manhattan Beach', 
+        'Beverly Hills', 'West Hollywood', 'Pasadena', 'Burbank', 'Glendale', 
+        'Long Beach', 'Torrance', 'Inglewood', 'Culver City', 'Marina del Rey',
+        'Hermosa Beach', 'Redondo Beach', 'Hawthorne', 'Hollywood', 'Studio City',
+        'Sherman Oaks', 'Encino', 'Van Nuys', 'Northridge', 'Malibu',
+        'Pacific Palisades', 'Brentwood', 'Westwood', 'Century City'
+      ];
+      
+      // Check if this is a LA metro city that should be consolidated
+      const isLAMetroCity = LA_METRO_CITIES.some(metroCity => 
+        cityName.toLowerCase() === metroCity.toLowerCase() ||
+        cityName.toLowerCase().includes(metroCity.toLowerCase())
+      );
+      
+      if (isLAMetroCity) {
+        console.log(`🌍 METRO CONSOLIDATION: ${cityName} → Los Angeles Metro (preventing separate suburb pages)`);
+        setLocation('/city/Los Angeles Metro');
+        return null;
+      }
+      
       return <CityPage cityName={cityName} />;
     }
 
