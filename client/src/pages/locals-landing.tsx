@@ -219,7 +219,7 @@ JOIN THE COMMUNITY TODAY
                 animation: 'gentle-pulse 2.5s ease-in-out infinite',
               }}
             >
-              BECOME A LOCAL HOST NOW
+BECOME A NEARBY LOCAL NOW
             </Button>
             <p className="text-gray-600 mt-4 text-lg">Free to join • Start hosting today • Build amazing friendships</p>
           </div>
