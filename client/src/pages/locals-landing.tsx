@@ -11,20 +11,7 @@ export default function LocalsLanding() {
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900">
       
-      {/* Top sticky bar for maximum visibility - Blue theme for locals */}
-      <div className="fixed top-0 left-0 right-0 bg-blue-500 text-white py-3 px-4 z-40 shadow-lg">
-        <div className="flex items-center justify-between max-w-6xl mx-auto">
-          <div className="flex-1 text-center">
-            <span className="font-bold text-lg">🏠 Share Your City with Travelers & Locals - Join Now!</span>
-          </div>
-          <Button
-            onClick={() => setLocation('/join')}
-            className="bg-white text-blue-600 font-bold px-6 py-2 rounded-lg hover:bg-gray-100 ml-4"
-          >
-            JOIN AS LOCAL
-          </Button>
-        </div>
-      </div>
+
 
       {/* Landing Navbar */}
       <header className="sticky top-12 z-[55] bg-white/95 dark:bg-gray-900/95 backdrop-blur supports-[backdrop-filter]:bg-white/70 dark:supports-[backdrop-filter]:bg-gray-900/70">
