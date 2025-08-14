@@ -312,7 +312,7 @@ export default function SignupLocalTraveler() {
               {/* Phone Number for Event Notifications */}
               <div className="space-y-3">
                 <Label htmlFor="phoneNumber" className="text-base md:text-lg font-semibold text-gray-900 dark:text-white text-crisp">
-                  Phone Number <span className="text-sm font-normal text-gray-500 dark:text-gray-400">(Optional - for event SMS notifications)</span>
+                  Phone Number <span className="text-sm font-normal text-gray-500 dark:text-gray-400">(Optional - for event SMS notifications, not in beta)</span>
                 </Label>
                 <Input
                   id="phoneNumber"
