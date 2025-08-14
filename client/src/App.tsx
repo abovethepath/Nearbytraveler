@@ -661,7 +661,8 @@ function Router() {
         return <NotFound />;
       }
       
-      // METROPOLITAN AREA CONSOLIDATION - Redirect LA suburbs to "Los Angeles Metro"
+      // METROPOLITAN AREA CONSOLIDATION - Only redirect if user is explicitly accessing a city page
+      // This prevents business users from being forced to city pages when they want to stay on profile
       const LA_METRO_CITIES = [
         'Santa Monica', 'Venice', 'Venice Beach', 'El Segundo', 'Manhattan Beach', 
         'Beverly Hills', 'West Hollywood', 'Pasadena', 'Burbank', 'Glendale', 
@@ -871,6 +872,14 @@ function Router() {
           }
         }
 
+        // BUSINESS USER FIX: Prevent automatic redirects for business users
+        // They should stay on their intended routes (profile, dashboard, etc.)
+        if (user?.userType === 'business') {
+          console.log('🏢 BUSINESS USER: Unknown route detected, redirecting to profile instead of home');
+          setLocation(`/profile/${user.id}`);
+          return null;
+        }
+        
         // MOBILE FIX: If unknown route but user is authenticated, redirect to home
         console.log('🚫 UNKNOWN ROUTE FOR AUTHENTICATED USER:', location);
         console.log('🔄 MOBILE: Redirecting unknown authenticated route to home');
