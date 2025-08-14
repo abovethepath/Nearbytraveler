@@ -114,7 +114,7 @@ export default function LocalsLanding() {
               </div>
               <div className="bg-red-800 p-6 rounded-xl shadow-lg text-white">
                 <div className="text-4xl mb-4">🎉</div>
-                <h3 className="text-xl font-bold mb-3 text-white">Host Events</h3>
+                <h3 className="text-xl font-bold mb-3 text-white">Join or Host Events</h3>
                 <p className="text-white">Host events and activities you love doing in your city to meet like-minded locals and travelers.</p>
               </div>
             </div>
