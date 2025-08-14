@@ -105,7 +105,7 @@ export default function LocalsLanding() {
               <div className="bg-blue-600 p-6 rounded-xl shadow-lg text-white">
                 <div className="text-4xl mb-4">🏖️</div>
                 <h3 className="text-xl font-bold mb-3 text-white">Beach Bonfires & BBQs</h3>
-                <p className="text-white">Host or join amazing beach gatherings, sunset BBQs, and campfire sessions just like the one above!</p>
+                <p className="text-white">Host or join amazing events such as beach gatherings, sunset BBQs, campfire hikes, bar crawls, and all social gatherings nearby.</p>
               </div>
               <div className="bg-purple-700 p-6 rounded-xl shadow-lg text-white">
                 <div className="text-4xl mb-4">🤝</div>
