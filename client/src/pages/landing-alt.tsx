@@ -141,16 +141,16 @@ export default function LandingAlt() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-8">
-        <div className="max-w-6xl mx-auto px-6 text-center">
-          <div className="flex items-center justify-center space-x-2 mb-4">
-            <Globe className="w-6 h-6 text-cyan-400" />
-            <span className="text-xl font-bold">
+      <footer className="bg-gray-900 text-white py-6 sm:py-8">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 text-center">
+          <div className="flex items-center justify-center space-x-2 mb-3 sm:mb-4">
+            <Globe className="w-5 h-5 sm:w-6 sm:h-6 text-cyan-400" />
+            <span className="text-lg sm:text-xl font-bold">
               <span className="text-cyan-400">Nearby</span>
               <span className="text-orange-400">Traveler</span>
             </span>
           </div>
-          <p className="text-gray-400">Connecting travelers worldwide</p>
+          <p className="text-gray-400 text-sm sm:text-base">Connecting travelers worldwide</p>
         </div>
       </footer>
     </div>
