@@ -3015,7 +3015,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 size="sm"
                 variant="secondary"
                 className="bg-white text-red-600 hover:bg-red-50 font-semibold flex-shrink-0 w-full sm:w-auto"
-                onClick={() => setShowEditModal(true)}
+                onClick={() => setIsEditMode(true)}
               >
                 Complete Profile
               </Button>
