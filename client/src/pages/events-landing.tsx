@@ -222,7 +222,7 @@ export default function EventsLanding() {
                   <span className="bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full text-xs font-medium">Social</span>
                 </div>
                 
-                <p className="text-gray-700 text-sm mb-4 flex-grow">Experience authentic local restaurants and food spots. Taste the real flavors and stories of the city with friendly locals.</p>
+                <p className="text-gray-700 text-sm mb-4 flex-grow">Join Locals as they plan meals at awesome hidden food spots like top tacos for a buck, korean bbq, from ethepian to korean and where to find the best burgers in town.</p>
                 <a
                   href="/join"
                   className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold py-2 px-4 rounded text-center transition duration-200"
