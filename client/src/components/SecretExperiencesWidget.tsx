@@ -115,7 +115,7 @@ export function SecretExperiencesWidget({ city, state, country }: SecretExperien
                 <p className={`text-gray-800 dark:text-white font-medium leading-relaxed ${
                   shouldTruncate && !isExpanded ? 'line-clamp-2' : ''
                 }`}>
-                  "{experience.experience}"
+                  {experience.experience}
                 </p>
                 {shouldTruncate && (
                   <button 
