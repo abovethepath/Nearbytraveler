@@ -56,7 +56,7 @@ export default function EventsLanding() {
                         <span className="block text-white font-black" style={{fontFamily: '"Inter", sans-serif'}}>Epic Events.</span>
                         <span className="block font-black" style={{fontFamily: '"Inter", sans-serif'}}>
                           <span className="text-orange-400">Real connections. </span>
-                          <span className="text-blue-400">Unforgettable experiences.</span>
+                          <span className="text-white">Unforgettable experiences.</span>
                         </span>
                       </h1>
                       

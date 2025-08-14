@@ -55,7 +55,7 @@ export default function BusinessLanding() {
                         <span className="block text-white font-black" style={{fontFamily: '"Inter", sans-serif'}}>Grow your business.</span>
                         <span className="block font-black" style={{fontFamily: '"Inter", sans-serif'}}>
                           <span className="text-orange-400">Real customers. </span>
-                          <span className="text-blue-400">Lasting growth.</span>
+                          <span className="text-white">Lasting growth.</span>
                         </span>
                       </h1>
                       

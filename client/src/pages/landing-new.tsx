@@ -121,7 +121,7 @@ export default function Landing() {
                         <span className="block text-white font-black" style={{fontFamily: '"Inter", sans-serif'}}>Skip the tourist traps.</span>
                         <span className="block font-black" style={{fontFamily: '"Inter", sans-serif'}}>
                           <span className="text-orange-400">Meet locals and other </span>
-                          <span className="text-blue-400">Nearby Travelers</span>
+                          <span className="text-white">Nearby Travelers</span>
                           <span className="text-orange-400"> right now, today!!!</span>
                         </span>
                       </h1>
