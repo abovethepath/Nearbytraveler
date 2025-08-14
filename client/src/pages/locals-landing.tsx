@@ -44,8 +44,11 @@ export default function LocalsLanding() {
                       
                       {/* Subhead */}
                       <div className="mt-8">
-                        <p className="text-xl sm:text-2xl text-white leading-relaxed max-w-3xl mx-auto">
-                          Share your city's hidden gems and connect with travelers and like-minded locals—today.
+                        <p className="text-xl sm:text-2xl leading-relaxed max-w-3xl mx-auto">
+                          <span className="text-orange-300">Share your city's hidden gems</span>{' '}
+                          <span className="text-white">and connect with</span>{' '}
+                          <span className="text-blue-300">travelers and like-minded locals</span>{' '}
+                          <span className="text-black bg-orange-400 px-2 py-1 rounded">—today.</span>
                         </p>
                       </div>
                     </div>
@@ -55,7 +58,7 @@ export default function LocalsLanding() {
                       <Button
                         onClick={() => setLocation('/join')}
                         size="lg"
-                        className="bg-blue-500 hover:bg-blue-600 text-white font-black text-lg sm:text-xl md:text-2xl px-6 sm:px-12 md:px-16 py-4 sm:py-5 md:py-6 rounded-2xl shadow-xl transition-colors duration-200 border-2 sm:border-4 border-white w-full max-w-lg mx-auto"
+                        className="bg-gradient-to-r from-orange-500 to-blue-500 hover:from-orange-600 hover:to-blue-600 text-white font-black text-lg sm:text-xl md:text-2xl px-6 sm:px-12 md:px-16 py-4 sm:py-5 md:py-6 rounded-2xl shadow-xl transition-all duration-200 border-2 sm:border-4 border-white w-full max-w-lg mx-auto"
                         style={{
                           fontSize: 'clamp(1.1rem, 3.5vw, 1.8rem)',
                           minHeight: 'clamp(60px, 12vw, 80px)',
@@ -65,7 +68,13 @@ export default function LocalsLanding() {
                       >
                         JOIN AS A LOCAL
                       </Button>
-                      <p className="text-white mt-3 text-base sm:text-lg font-semibold px-2">Share your city • Connect today • Build friendships</p>
+                      <p className="mt-3 text-base sm:text-lg font-semibold px-2">
+                        <span className="text-orange-300">Share your city</span>{' '}
+                        <span className="text-white">•</span>{' '}
+                        <span className="text-blue-300">Connect today</span>{' '}
+                        <span className="text-white">•</span>{' '}
+                        <span className="text-orange-300">Build friendships</span>
+                      </p>
                     </div>
 
                   </div>
