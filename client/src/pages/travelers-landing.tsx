@@ -9,7 +9,21 @@ export default function TravelersLanding() {
   const [, setLocation] = useLocation();
 
   return (
-    <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900">
+    <div className="bg-gray-50 dark:bg-gray-900 font-sans" key="travelers-landing-v2">
+      {/* Sticky CTA - Always Visible on All Devices */}
+      <div className="fixed bottom-6 right-6 z-50">
+        <Button
+          onClick={() => setLocation('/join')}
+          size="lg"
+          className="bg-orange-500 hover:bg-orange-600 text-black font-black px-8 py-4 rounded-2xl shadow-2xl transition-colors duration-200 border-3 border-white"
+          style={{
+            boxShadow: '0 12px 35px rgba(0,0,0,0.4), 0 0 0 3px rgba(255,255,255,0.9)',
+            animation: 'gentle-pulse 2.5s ease-in-out infinite',
+          }}
+        >
+          JOIN NOW
+        </Button>
+      </div>
       
       {/* Orange announcement banner */}
       <div className="fixed top-0 left-0 right-0 z-[60] bg-orange-500 text-black py-3 px-4 shadow-lg">
@@ -55,20 +69,112 @@ export default function TravelersLanding() {
                         <span className="block text-white font-black" style={{fontFamily: '"Inter", sans-serif'}}>Nearby Traveler For Travelers</span>
                       </h1>
                       
-                      {/* Subhead */}
-                      <div className="mt-8">
-                        <p className="text-xl sm:text-2xl leading-relaxed max-w-3xl mx-auto">
-                          <span className="text-orange-300">Skip the tourist traps</span>{' '}
-                          <span className="text-white">and</span>{' '}
-                          <span className="text-blue-300" style={{border: 'none', outline: 'none', boxShadow: 'none'}}>explore like a local</span>{' '}
-                          <span className="text-black bg-orange-400 px-2 py-1 rounded">right now!</span>
+                      {/* Founder credibility section */}
+                      <div className="mt-8 p-6 bg-black/40 backdrop-blur-sm rounded-2xl border border-white/20 animate-zoom-in" style={{animationDelay: '0.3s'}}>
+                        <p className="text-xl text-white leading-relaxed">
+                          <span className="text-orange-300 font-bold">"I've traveled to 40+ countries and hosted 400+ travelers.</span>
+                          <span className="text-white"> I built Nearby Traveler because I know what real travelers want - authentic local connections, not tourist traps."</span>
                         </p>
+                        <div className="mt-4 text-center">
+                          <p className="text-white font-bold text-lg">— Aaron, Founder</p>
+                          <p className="text-orange-200 text-sm">400+ travelers hosted • 40+ countries • 15+ years</p>
+                        </div>
                       </div>
                     </div>
+                    
+                    {/* Primary signup CTA */}
+                    <div className="mt-12 mb-8 px-4">
+                      <Button
+                        onClick={() => setLocation('/join')}
+                        size="lg"
+                        className="bg-orange-500 hover:bg-orange-600 text-black font-black text-lg sm:text-xl md:text-2xl px-6 sm:px-12 md:px-16 py-4 sm:py-5 md:py-6 rounded-2xl shadow-xl transition-colors duration-200 border-2 sm:border-4 border-white w-full max-w-lg mx-auto"
+                        style={{
+                          fontSize: 'clamp(1.1rem, 3.5vw, 1.8rem)',
+                          minHeight: 'clamp(60px, 12vw, 80px)',
+                          boxShadow: '0 8px 30px rgba(0,0,0,0.3), 0 0 0 2px rgba(255,255,255,0.9)',
+                          animation: 'gentle-pulse 2.5s ease-in-out infinite',
+                        }}
+                      >
+                        JOIN NEARBY TRAVELER NOW!!!
+                      </Button>
+                      <p className="text-white mt-3 text-base sm:text-lg font-semibold px-2">Join the travel community • Connect today</p>
+                    </div>
+
                   </div>
                 </main>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Multiple CTAs Section */}
+      <div className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-black text-gray-900 mb-4">
+              Connect with Locals and other Travelers
+            </h2>
+            <p className="text-xl text-gray-600">
+              Real people. Real experiences. Zero tourist traps.
+            </p>
+          </div>
+          
+          {/* CTA Button Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+            <Button
+              onClick={() => setLocation('/join')}
+              size="lg"
+              className="bg-orange-500 hover:bg-orange-600 text-black font-black text-lg px-8 py-6 rounded-2xl shadow-xl transition-colors duration-200 h-auto"
+            >
+              <div className="text-center">
+                <div className="text-2xl mb-2">🌍</div>
+                <div>JOIN AS TRAVELER</div>
+                <div className="text-sm font-normal mt-1">Connect worldwide</div>
+              </div>
+            </Button>
+            
+            <Button
+              onClick={() => setLocation('/join')}
+              size="lg"
+              className="bg-blue-500 hover:bg-blue-600 text-white font-black text-lg px-8 py-6 rounded-2xl shadow-xl transition-colors duration-200 h-auto"
+            >
+              <div className="text-center">
+                <div className="text-2xl mb-2">📱</div>
+                <div>START CHATTING</div>
+                <div className="text-sm font-normal mt-1">Message locals now</div>
+              </div>
+            </Button>
+            
+            <Button
+              onClick={() => setLocation('/join')}
+              size="lg"
+              className="bg-green-500 hover:bg-green-600 text-white font-black text-lg px-8 py-6 rounded-2xl shadow-xl transition-colors duration-200 h-auto"
+            >
+              <div className="text-center">
+                <div className="text-2xl mb-2">⚡</div>
+                <div>MEET TODAY</div>
+                <div className="text-sm font-normal mt-1">Instant meetups</div>
+              </div>
+            </Button>
+          </div>
+          
+          {/* Secondary Action Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <Button
+              onClick={() => setLocation('/join')}
+              size="lg"
+              className="bg-purple-500 hover:bg-purple-600 text-white font-bold px-8 py-4 rounded-xl"
+            >
+              🗺️ Find Hidden Gems
+            </Button>
+            <Button
+              onClick={() => setLocation('/join')}
+              size="lg"
+              className="bg-pink-500 hover:bg-pink-600 text-white font-bold px-8 py-4 rounded-xl"
+            >
+              🤝 Make Local Friends
+            </Button>
           </div>
         </div>
       </div>
@@ -212,28 +318,56 @@ export default function TravelersLanding() {
           </div>
         </div>
         
-        {/* Final CTA Section */}
-        <div className="mt-16 bg-gradient-to-r from-orange-600 to-blue-600 text-white p-12 rounded-2xl shadow-2xl max-w-5xl mx-auto">
-          <div className="text-center">
-            <h2 className="text-3xl sm:text-4xl font-bold mb-6 text-white" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700'}}>
-              Ready for Authentic Travel?
-            </h2>
-            <p className="text-lg sm:text-xl mb-8 max-w-3xl mx-auto">
-              Join millions of travelers discovering the world through local eyes. Your next adventure with real connections awaits.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a
-                href="/join"
-                className="px-10 py-4 bg-white text-orange-600 font-bold rounded-xl shadow-xl hover:scale-105 hover:shadow-2xl transition transform text-lg"
+        {/* Get Started Section - Enhanced with Multiple CTAs */}
+        <div className="bg-gradient-to-r from-orange-600 to-blue-600 text-white py-16 rounded-2xl shadow-2xl mb-16">
+          <div className="max-w-4xl mx-auto text-center px-6">
+            <h2 className="text-4xl font-bold mb-4">Ready to Explore Like a Local?</h2>
+            <p className="text-xl mb-8 opacity-90">Join thousands of travelers already making authentic connections worldwide.</p>
+            
+            {/* Primary CTA Row */}
+            <div className="space-y-4 sm:space-y-0 sm:flex sm:gap-4 sm:justify-center mb-8">
+              <Button
+                onClick={() => setLocation('/join')}
+                size="lg"
+                className="bg-white text-blue-600 hover:bg-gray-100 font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition-all duration-200 transform hover:scale-105 w-full sm:w-auto"
               >
-                Sign up as a Traveler
-              </a>
-              <a
-                href="/auth"
-                className="px-10 py-4 border-2 border-white text-white font-bold rounded-xl shadow-xl hover:bg-white/20 backdrop-blur-sm transition text-lg"
+                🚀 Join Nearby Traveler
+              </Button>
+              <Button
+                onClick={() => setLocation('/join')}
+                size="lg"
+                className="border-2 border-white text-white hover:bg-white hover:text-blue-600 font-bold text-lg px-8 py-4 rounded-xl transition-all duration-200 transform hover:scale-105 w-full sm:w-auto"
               >
-                Sign In to Explore
-              </a>
+                🗺️ Start Exploring Now
+              </Button>
+            </div>
+            
+            {/* Additional Action Buttons */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <Button
+                onClick={() => setLocation('/join')}
+                className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-4 rounded-lg text-sm"
+              >
+                💬 Chat Rooms
+              </Button>
+              <Button
+                onClick={() => setLocation('/join')}
+                className="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-4 rounded-lg text-sm"
+              >
+                📅 Events
+              </Button>
+              <Button
+                onClick={() => setLocation('/join')}
+                className="bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-4 rounded-lg text-sm"
+              >
+                🎯 Matches
+              </Button>
+              <Button
+                onClick={() => setLocation('/join')}
+                className="bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 px-4 rounded-lg text-sm"
+              >
+                🌟 Experiences
+              </Button>
             </div>
           </div>
         </div>
