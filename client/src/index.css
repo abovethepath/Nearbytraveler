@@ -303,6 +303,15 @@ input, textarea, select, button, label, span, div, p, h1, h2, h3, h4, h5, h6 {
 
 
 
+/* REMOVE BLUE BORDERS FROM TEXT ELEMENTS */
+.text-blue-400, .text-blue-300, .text-blue-500, .text-blue-600, 
+span[class*="text-blue"], div[class*="text-blue"], p[class*="text-blue"] {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  text-decoration: none !important;
+}
+
 /* SAFE AREA SUPPORT FOR MOBILE APPS */
 .safe-area-pt {
   padding-top: env(safe-area-inset-top, 0px);
