@@ -53,18 +53,18 @@ export default function LocalsLanding() {
                     <div className="max-w-4xl mx-auto">
                       <h1 className="text-4xl tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
                         <span className="block text-white font-black" style={{fontFamily: '"Inter", sans-serif'}}>Share your city's secrets.</span>
-                        <span className="block text-blue-400 font-black" style={{fontFamily: '"Inter", sans-serif'}}>Meet incredible travelers and locals right now, today!!!</span>
+                        <span className="block text-white font-black" style={{fontFamily: '"Inter", sans-serif'}}>Meet incredible travelers and locals right now, today!!!</span>
                       </h1>
                       
                       {/* Local Benefits */}
                       <div className="mt-8 p-6 bg-black/40 backdrop-blur-sm rounded-2xl animate-zoom-in" style={{animationDelay: '0.3s'}}>
                         <p className="text-xl text-white leading-relaxed">
-                          <span className="text-blue-300 font-bold">"Turn your neighborhood knowledge into amazing friendships.</span>
+                          <span className="text-white font-bold">"Turn your neighborhood knowledge into amazing friendships.</span>
                           <span className="text-white"> Show travelers the REAL your city while meeting like-minded locals and creating unforgettable memories together."</span>
                         </p>
                         <div className="mt-4 text-center">
                           <p className="text-white font-bold text-lg">— Be the Local Guide You'd Want to Meet</p>
-                          <p className="text-blue-200 text-sm">Share hidden gems • Build global friendships • Host amazing experiences</p>
+                          <p className="text-white text-sm">Share hidden gems • Build global friendships • Host amazing experiences</p>
                         </div>
                       </div>
                     </div>
