@@ -27,6 +27,7 @@ export function LocationSharingWidget() {
       return apiRequest('POST', `/api/users/${user?.id}/location`, data);
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${user?.id}`] });
       queryClient.invalidateQueries({ queryKey: ['/api/users', user?.id] });
       toast({
         title: "Location updated",
@@ -38,6 +39,27 @@ export function LocationSharingWidget() {
       toast({
         title: "Error",
         description: "Failed to update location sharing",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Also update the user's locationSharingEnabled field directly
+  const updateLocationSharingMutation = useMutation({
+    mutationFn: async (enabled: boolean) => {
+      return apiRequest('PUT', `/api/users/${user?.id}`, {
+        locationSharingEnabled: enabled
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${user?.id}`] });
+      queryClient.invalidateQueries({ queryKey: ['/api/users', user?.id] });
+    },
+    onError: (error) => {
+      console.error('Error updating location sharing preference:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update location sharing preference",
         variant: "destructive",
       });
     },
@@ -100,6 +122,9 @@ export function LocationSharingWidget() {
 
   const handleLocationSharingToggle = (enabled: boolean) => {
     setLocationSharing(enabled);
+    
+    // Always update the user's locationSharingEnabled preference
+    updateLocationSharingMutation.mutate(enabled);
     
     if (enabled) {
       getCurrentLocation();
