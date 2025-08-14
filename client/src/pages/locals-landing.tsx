@@ -57,7 +57,7 @@ export default function LocalsLanding() {
                       </h1>
                       
                       {/* Local Benefits */}
-                      <div className="mt-8 p-6 bg-black/40 backdrop-blur-sm rounded-2xl border border-white/20 animate-zoom-in" style={{animationDelay: '0.3s'}}>
+                      <div className="mt-8 p-6 bg-black/40 backdrop-blur-sm rounded-2xl animate-zoom-in" style={{animationDelay: '0.3s'}}>
                         <p className="text-xl text-white leading-relaxed">
                           <span className="text-blue-300 font-bold">"Turn your neighborhood knowledge into amazing friendships.</span>
                           <span className="text-white"> Show travelers the REAL your city while meeting like-minded locals and creating unforgettable memories together."</span>
