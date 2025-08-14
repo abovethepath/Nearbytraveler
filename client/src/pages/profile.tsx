@@ -210,7 +210,7 @@ const getMetropolitanArea = (city: string, state: string, country: string): stri
 
 import { WhatYouHaveInCommon } from "@/components/what-you-have-in-common";
 
-import { LocationSharingWidget } from "@/components/LocationSharingWidget";
+import { LocationSharingWidgetFixed } from "@/components/LocationSharingWidgetFixed";
 import { CustomerUploadedPhotos } from "@/components/customer-uploaded-photos";
 import BusinessEventsWidget from "@/components/business-events-widget";
 import ReferralWidget from "@/components/referral-widget";
@@ -5657,7 +5657,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
             {/* Comprehensive Geolocation System - Enhanced location sharing for users, businesses, and events */}
             {isOwnProfile && (
-              <LocationSharingWidget />
+              <LocationSharingWidgetFixed />
             )}
 
             {/* Business Referral Program Widget */}
