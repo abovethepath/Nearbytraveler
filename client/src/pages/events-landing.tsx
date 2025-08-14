@@ -236,7 +236,7 @@ export default function EventsLanding() {
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transform transition-all duration-300 flex flex-col">
               <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-green-400 to-teal-500">
                 <img 
-                  src="/travelers together hugging_1754971726997.avif" 
+                  src="@assets/image_1755184314865.png" 
                   alt="Beach BBQ event" 
                   className="w-full h-48 object-cover"
                 />
@@ -253,7 +253,7 @@ export default function EventsLanding() {
                   <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-medium">Social</span>
                 </div>
                 
-                <p className="text-gray-700 text-sm mb-4 flex-grow">Join our weekly beach BBQ gatherings. Meet amazing locals and travelers while enjoying great food and beautiful sunsets.</p>
+                <p className="text-gray-700 text-sm mb-4 flex-grow">Join our monthly beach BBQ where we pass a guitar, sing songs, bring pot luck food and meet new friends. Sometimes we even jump in the ocean</p>
                 <a
                   href="/join"
                   className="w-full bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white font-bold py-2 px-4 rounded text-center transition duration-200"
