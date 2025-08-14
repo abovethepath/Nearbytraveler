@@ -12,7 +12,7 @@ export default function LocalsLanding() {
     <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900">
       
       {/* Orange announcement banner */}
-      <div className="fixed top-0 left-0 right-0 z-[60] bg-orange-500 text-black py-2 px-4">
+      <div className="fixed top-0 left-0 right-0 z-[60] bg-orange-500 text-black py-3 px-4 shadow-lg">
         <div className="flex items-center justify-center max-w-6xl mx-auto">
           <div className="flex-1 text-center">
             <span className="font-bold text-lg">🔥 Connect with Locals and Travelers TODAY - Sign Up Now!</span>
