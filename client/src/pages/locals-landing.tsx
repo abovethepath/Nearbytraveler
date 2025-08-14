@@ -46,12 +46,12 @@ export default function LocalsLanding() {
                       {/* Local Benefits */}
                       <div className="mt-8 p-6 bg-black/40 backdrop-blur-sm rounded-2xl animate-zoom-in" style={{animationDelay: '0.3s'}}>
                         <p className="text-xl text-white leading-relaxed">
-                          <span className="text-white font-bold">"Share your city's hidden gems and build incredible friendships.</span>
+                          <span className="text-orange-300 font-bold">"Share your city's hidden gems and build incredible friendships.</span>
                           <span className="text-white"> Connect with travelers and locals who love exploring authentic experiences just like you do."</span>
                         </p>
                         <div className="mt-4 text-center">
                           <p className="text-white font-bold text-lg">Be the Local You'd Want to Meet on your Trips</p>
-                          <p className="text-white text-sm">Share hidden gems • Build global friendships • Host amazing experiences</p>
+                          <p className="text-orange-200 text-sm">Share hidden gems • Build global friendships • Host amazing experiences</p>
                         </div>
                       </div>
                     </div>
