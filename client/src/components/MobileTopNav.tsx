@@ -53,21 +53,24 @@ export function MobileTopNav() {
     getUserData();
   }, [user]);
 
-  // Listen for profile updates
+  // Listen for profile updates including location changes
   useEffect(() => {
     const handleProfileUpdate = (event: any) => {
       console.log('📱 MobileTopNav: Profile updated, refreshing user data');
       if (event.detail && event.detail.username) {
         setCurrentUser(event.detail);
+        console.log('📱 MobileTopNav: Updated location:', event.detail.hometownCity, event.detail.hometownState, event.detail.hometownCountry);
       }
     };
 
     window.addEventListener('profilePhotoUpdated', handleProfileUpdate);
     window.addEventListener('userDataUpdated', handleProfileUpdate);
+    window.addEventListener('profileUpdated', handleProfileUpdate); // Add this to catch location updates
     
     return () => {
       window.removeEventListener('profilePhotoUpdated', handleProfileUpdate);
       window.removeEventListener('userDataUpdated', handleProfileUpdate);
+      window.removeEventListener('profileUpdated', handleProfileUpdate);
     };
   }, []);
 

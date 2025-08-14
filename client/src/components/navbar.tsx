@@ -130,6 +130,37 @@ function Navbar() {
     setIsMobileMenuOpen(false);
   }, [location]);
 
+  // Listen for profile updates to refresh user data
+  useEffect(() => {
+    const handleProfileUpdate = (event: any) => {
+      console.log('Navbar avatar refresh triggered:', event.type, event.detail?.id);
+      if (event.detail && event.detail.id) {
+        const updatedUser = event.detail;
+        
+        // Update direct user immediately
+        setDirectUser(updatedUser);
+        
+        // Update all storage systems  
+        if (setUser) setUser(updatedUser);
+        authStorage.setUser(updatedUser);
+        localStorage.setItem('travelconnect_user', JSON.stringify(updatedUser));
+        
+        console.log('🔄 Navbar: Using event user data directly');
+      }
+    };
+
+    // Listen for multiple event types to catch all profile updates
+    window.addEventListener('userDataUpdated', handleProfileUpdate);
+    window.addEventListener('profileUpdated', handleProfileUpdate);
+    window.addEventListener('profilePhotoUpdated', handleProfileUpdate);
+    
+    return () => {
+      window.removeEventListener('userDataUpdated', handleProfileUpdate);
+      window.removeEventListener('profileUpdated', handleProfileUpdate);
+      window.removeEventListener('profilePhotoUpdated', handleProfileUpdate);
+    };
+  }, [setUser]);
+
   // Clear oversized images and validate avatar data
   useEffect(() => {
     if (directUser) {

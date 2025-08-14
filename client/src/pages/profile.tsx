@@ -3163,7 +3163,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     <span className="font-medium">🌍 {countriesVisited?.length || 0} countries</span>
                     <span className="font-medium">⭐ {references?.length || 0} references</span>
                     <span className="font-medium">
-                      • Nearby Local in {user.hometownCity || 'Playa del Rey'}
+                      • Nearby Local in {user.hometownCity || user.location?.split(',')[0] || 'Location not set'}
                     </span>
                   </div>
                 )}
