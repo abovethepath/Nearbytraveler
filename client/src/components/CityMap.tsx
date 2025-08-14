@@ -191,6 +191,22 @@ export function CityMap({ city, state, country }: CityMapProps) {
 
       </CardHeader>
       <CardContent>
+        {/* Map Legend */}
+        <div className="mb-4 flex flex-wrap gap-4 text-sm">
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-blue-500 rounded-full border-2 border-white shadow-sm"></div>
+            <span className="text-gray-600 dark:text-gray-300">Users</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-green-500 rounded-full border-2 border-white shadow-sm"></div>
+            <span className="text-gray-600 dark:text-gray-300">Businesses</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-orange-500 rounded-full border-2 border-white shadow-sm"></div>
+            <span className="text-gray-600 dark:text-gray-300">Events</span>
+          </div>
+        </div>
+
         <InteractiveMap
           locations={locations}
           center={cityCenter}

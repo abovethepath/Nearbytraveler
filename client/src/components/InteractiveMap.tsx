@@ -45,8 +45,8 @@ const createColoredIcon = (color: string) => {
 
 // Create specific colored icons
 const UserIcon = createColoredIcon('#3B82F6'); // Blue for users
-const BusinessIcon = createColoredIcon('#F97316'); // Orange for businesses  
-const EventIcon = createColoredIcon('#10B981'); // Green for events
+const BusinessIcon = createColoredIcon('#10B981'); // Green for businesses  
+const EventIcon = createColoredIcon('#F97316'); // Orange for events
 
 // Fallback default icon
 const DefaultIcon = L.icon({
@@ -93,9 +93,9 @@ export function InteractiveMap({
     console.log('🎨 Getting marker icon for type:', type);
     switch (type) {
       case 'business':
-        return BusinessIcon; // Orange
+        return BusinessIcon; // Green
       case 'event':
-        return EventIcon; // Green
+        return EventIcon; // Orange
       case 'user':
       default:
         return UserIcon; // Blue
@@ -128,7 +128,7 @@ export function InteractiveMap({
             <Marker
               key={location.id}
               position={[location.lat, location.lng]}
-              icon={getMarkerIcon()}
+              icon={getMarkerIcon(location.type)}
             >
               <Popup>
                 <div className="p-2">
