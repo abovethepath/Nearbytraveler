@@ -52,17 +52,12 @@ export default function BusinessLanding() {
                   <div className="text-center">
                     <div className="max-w-4xl mx-auto">
                       <h1 className="text-4xl tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
-                        <span className="block text-white font-black" style={{fontFamily: '"Inter", sans-serif'}}>Nearby Traveler for Businesses</span>
-                      </h1>
-                      
-                      {/* Subhead */}
-                      <div className="mt-8">
-                        <p className="text-xl sm:text-2xl leading-relaxed max-w-3xl mx-auto">
-                          <span className="text-orange-300">Reach real customers</span>{' '}
-                          <span className="text-white">and</span>{' '}
+                        <span className="block text-white font-black" style={{fontFamily: '"Inter", sans-serif'}}>Grow your business.</span>
+                        <span className="block font-black" style={{fontFamily: '"Inter", sans-serif'}}>
+                          <span className="text-orange-400">Reach real customers. </span>
                           <span
                             className="
-                              text-blue-300
+                              text-blue-400
                               outline-none focus:outline-none focus-visible:outline-none
                               ring-0 focus:ring-0
                               select-none selection:bg-transparent
@@ -72,10 +67,32 @@ export default function BusinessLanding() {
                               pointer-events-none
                             "
                           >
-                            build lasting relationships
-                          </span>{' '}
-                          <span className="text-black bg-orange-400 px-2 py-1 rounded">today!</span>
+                            Build lasting relationships.
+                          </span>
+                        </span>
+                      </h1>
+                      
+                      {/* Business value proposition */}
+                      <div className="mt-8 p-6 bg-black/40 backdrop-blur-sm rounded-2xl border border-white/20 animate-zoom-in" style={{animationDelay: '0.3s'}}>
+                        <p className="text-xl text-white leading-relaxed">
+                          <span className="text-orange-300 font-bold">"Connect with travelers actively exploring your area and locals seeking authentic experiences.</span>
+                          <span className="text-white"> Create targeted offers, host events, and build a loyal customer base that recommends you to others."</span>
                         </p>
+                        <div className="mt-4 text-center">
+                          <p className="text-white font-bold text-lg">— Your Business Growth Partner</p>
+                          <p className="text-orange-200 text-sm">From restaurants to tours - grow your business with real connections</p>
+                        </div>
+                      </div>
+                      
+                      {/* Hero CTA */}
+                      <div className="mt-8">
+                        <Button
+                          onClick={() => setLocation('/join')}
+                          size="lg"
+                          className="bg-orange-500 hover:bg-orange-600 text-white font-bold text-xl px-12 py-6 rounded-2xl shadow-2xl transition-all duration-200 transform hover:scale-105 animate-pulse-glow"
+                        >
+                          🚀 Join Nearby Traveler NOW!!!!
+                        </Button>
                       </div>
                     </div>
                   </div>
@@ -86,7 +103,75 @@ export default function BusinessLanding() {
         </div>
       </div>
 
+      {/* Sticky CTA Button - Fixed Bottom Right */}
+      <div className="fixed bottom-6 right-6 z-50">
+        <Button
+          onClick={() => setLocation('/join')}
+          className="bg-orange-500 hover:bg-orange-600 text-white font-bold px-6 py-4 rounded-full shadow-2xl transition-all duration-300 transform hover:scale-110 animate-pulse border-4 border-white"
+        >
+          💼 JOIN BUSINESS
+        </Button>
+      </div>
+
       <main className="flex-1 flex flex-col items-center justify-center text-center px-4">
+        
+        {/* Multiple CTA Section */}
+        <div className="max-w-6xl mx-auto mb-16">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold mb-6 text-gray-900 dark:text-white">Ready to Grow Your Business?</h2>
+            <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">Choose how you want to connect with travelers and locals!</p>
+            
+            {/* Primary CTA Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              <Button
+                onClick={() => setLocation('/join')}
+                className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-6 px-8 rounded-xl text-lg shadow-lg transform hover:scale-105 transition-all duration-200"
+              >
+                🏢 JOIN AS BUSINESS
+              </Button>
+              <Button
+                onClick={() => setLocation('/join')}
+                className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-6 px-8 rounded-xl text-lg shadow-lg transform hover:scale-105 transition-all duration-200"
+              >
+                📈 CREATE OFFERS
+              </Button>
+              <Button
+                onClick={() => setLocation('/join')}
+                className="bg-green-500 hover:bg-green-600 text-white font-bold py-6 px-8 rounded-xl text-lg shadow-lg transform hover:scale-105 transition-all duration-200"
+              >
+                🎉 HOST EVENTS
+              </Button>
+            </div>
+            
+            {/* Secondary Action Buttons */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <Button
+                onClick={() => setLocation('/join')}
+                className="bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-4 rounded-lg text-sm"
+              >
+                🍽️ Restaurants
+              </Button>
+              <Button
+                onClick={() => setLocation('/join')}
+                className="bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 px-4 rounded-lg text-sm"
+              >
+                🏨 Hotels
+              </Button>
+              <Button
+                onClick={() => setLocation('/join')}
+                className="bg-teal-500 hover:bg-teal-600 text-white font-bold py-3 px-4 rounded-lg text-sm"
+              >
+                🎨 Tours
+              </Button>
+              <Button
+                onClick={() => setLocation('/join')}
+                className="bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-4 rounded-lg text-sm"
+              >
+                🛍️ Retail
+              </Button>
+            </div>
+          </div>
+        </div>
 
         <section className="mt-16 max-w-3xl mx-auto text-left">
           <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Why Join Nearby Traveler Business Network?</h2>
@@ -176,28 +261,57 @@ export default function BusinessLanding() {
           </div>
         </div>
 
-        {/* Pricing Section */}
-        <div className="mt-16 bg-gradient-to-r from-blue-500 to-orange-500 text-white p-8 rounded-lg shadow-xl max-w-4xl mx-auto">
-          <h2 className="text-3xl font-bold mb-4 text-white" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700'}}>Simple, Transparent Pricing</h2>
-          <div className="text-6xl font-bold mb-2">$50</div>
-          <div className="text-xl mb-4">per month + $100 sign-up fee</div>
-          <div className="text-3xl font-bold mb-6 bg-white bg-opacity-20 px-8 py-4 rounded-full inline-block">
-            Currently FREE during beta
-          </div>
-          <ul className="text-lg space-y-2 mb-6">
-            <li>✓ Monthly deal limits</li>
-            <li>✓ Event hosting capabilities</li>
-            <li>✓ Analytics dashboard</li>
-            <li>✓ Customer messaging</li>
-            <li>✓ Priority support</li>
-          </ul>
-          <div className="flex justify-center">
-            <a
-              href="/signup-business"
-              className="px-8 py-3 bg-blue-600 text-black font-bold rounded-lg shadow-lg hover:scale-105 transition"
-            >
-              Start Free Trial
-            </a>
+        {/* Get Started Section - Enhanced with Multiple CTAs */}
+        <div className="bg-gradient-to-r from-orange-600 to-blue-600 text-white py-16 rounded-2xl shadow-2xl mb-16">
+          <div className="max-w-4xl mx-auto text-center px-6">
+            <h2 className="text-4xl font-bold mb-4">Ready to Grow Your Business?</h2>
+            <p className="text-xl mb-8 opacity-90">Join thousands of businesses already connecting with travelers and locals.</p>
+            
+            {/* Primary CTA Row */}
+            <div className="space-y-4 sm:space-y-0 sm:flex sm:gap-4 sm:justify-center mb-8">
+              <Button
+                onClick={() => setLocation('/join')}
+                size="lg"
+                className="bg-white text-blue-600 hover:bg-gray-100 font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition-all duration-200 transform hover:scale-105 w-full sm:w-auto"
+              >
+                🚀 Join Business Network
+              </Button>
+              <Button
+                onClick={() => setLocation('/join')}
+                size="lg"
+                className="border-2 border-white text-white hover:bg-white hover:text-blue-600 font-bold text-lg px-8 py-4 rounded-xl transition-all duration-200 transform hover:scale-105 w-full sm:w-auto"
+              >
+                📈 Start Free Trial
+              </Button>
+            </div>
+            
+            {/* Additional Action Buttons */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <Button
+                onClick={() => setLocation('/join')}
+                className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-4 rounded-lg text-sm"
+              >
+                🍽️ Restaurants
+              </Button>
+              <Button
+                onClick={() => setLocation('/join')}
+                className="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-4 rounded-lg text-sm"
+              >
+                🏨 Hotels
+              </Button>
+              <Button
+                onClick={() => setLocation('/join')}
+                className="bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-4 rounded-lg text-sm"
+              >
+                🎨 Tours
+              </Button>
+              <Button
+                onClick={() => setLocation('/join')}
+                className="bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 px-4 rounded-lg text-sm"
+              >
+                🛍️ Retail
+              </Button>
+            </div>
           </div>
         </div>
       </main>
