@@ -2592,6 +2592,86 @@ Ready to start connecting? Questions? Just reply anytime!
   app.post("/api/register", handleRegistration);
   app.post("/api/auth/register", handleRegistration);
 
+  // MANUAL WELCOME MESSAGE ENDPOINT - for businesses that missed the automatic welcome
+  app.post("/api/send-manual-welcome/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId || '0');
+      const user = await storage.getUser(userId);
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Check if user is business and if they already have a message from nearbytraveler
+      if (user.userType !== 'business') {
+        return res.status(400).json({ message: "This endpoint is only for business users" });
+      }
+
+      const nearbytravelerUser = await storage.getUserByUsername('nearbytraveler');
+      if (!nearbytravelerUser) {
+        return res.status(404).json({ message: "Nearbytraveler user not found" });
+      }
+
+      // Check if connection already exists
+      let hasConnection = false;
+      try {
+        const existingConnection = await storage.getConnection(nearbytravelerUser.id, user.id);
+        hasConnection = !!existingConnection;
+      } catch (error) {
+        console.log("No existing connection found");
+      }
+
+      // Create connection if it doesn't exist
+      if (!hasConnection) {
+        try {
+          await db
+            .insert(connections)
+            .values({
+              requesterId: parseInt(nearbytravelerUser.id.toString() || '0'),
+              receiverId: parseInt(user.id.toString() || '0'),
+              status: 'accepted'
+            })
+            .returning();
+          console.log(`✓ Created connection between nearbytraveler and ${user.username}`);
+        } catch (connectionError) {
+          console.error("Error creating connection:", connectionError);
+        }
+      }
+
+      // Send the business welcome message
+      const welcomeMessage = await storage.createMessage({
+        senderId: nearbytravelerUser.id,
+        receiverId: user.id,
+        content: `Welcome to Nearby Traveler! 🏢
+
+Hi ${user.name || user.username}! We're excited to have your business join our platform. Nearby Traveler connects local businesses with travelers and locals who are genuinely interested in authentic experiences.
+
+Getting Started:
+• Complete your business profile with photos and details
+• Create special offers for travelers visiting your area  
+• Post events to attract customers
+• Use our analytics to track engagement
+
+Your business is now visible to travelers searching for experiences in ${user.hometownCity || user.hometown || 'your area'}. When people with interests matching your services visit your area, you'll get notified automatically.
+
+Questions? Just reply to this message. Welcome aboard!
+
+- The Nearby Traveler Team`
+      });
+
+      console.log(`✓ Manual welcome message sent to business user ${user.username} (ID: ${user.id})`);
+      
+      res.json({ 
+        success: true, 
+        message: "Welcome message sent successfully",
+        messageId: welcomeMessage.id 
+      });
+    } catch (error: any) {
+      console.error("Error sending manual welcome message:", error);
+      res.status(500).json({ message: "Failed to send welcome message", error: error.message });
+    }
+  });
+
   // CRITICAL: Get user by ID endpoint
   app.get("/api/users/:id", async (req, res) => {
     try {
