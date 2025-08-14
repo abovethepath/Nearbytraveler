@@ -261,7 +261,7 @@ export default function LocalsLanding() {
             </div>
             
             <div className="text-center">
-              <div className="bg-orange-500 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl">
+              <div className="bg-purple-500 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl">
                 <span className="text-3xl font-black text-white">2</span>
               </div>
               <h3 className="text-2xl font-bold mb-4 text-gray-900">Host Experiences</h3>
