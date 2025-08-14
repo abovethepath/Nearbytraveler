@@ -300,7 +300,7 @@ export default function EventsLanding() {
               <Button
                 onClick={() => setLocation('/join')}
                 size="lg"
-                className="bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white border-2 border-white font-bold text-lg px-8 py-4 rounded-full shadow-lg transition-all duration-200 transform hover:scale-105"
+                className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white border-2 border-white font-bold text-lg px-8 py-4 rounded-full shadow-lg transition-all duration-200 transform hover:scale-105"
               >
                 🎯 Join Nearby Traveler Today!!!
               </Button>
