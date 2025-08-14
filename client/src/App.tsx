@@ -569,9 +569,6 @@ function Router() {
         console.log('🔄 Authenticated user on auth page, redirecting to home');
         setLocation('/home');
         return null;
-      }r has auth data, redirecting to home');
-        setLocation('/');
-        return null;
       }
 
       // Default: show new landing page for unknown routes
