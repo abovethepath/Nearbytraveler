@@ -48,7 +48,7 @@ const businessSignupSchema = z.object({
   
   // Additional Business Details
   yearEstablished: z.string().min(4, "Please enter valid year"),
-  employeeCount: z.string().min(1, "Employee count is required"),
+  employeeCount: z.string().optional(),
 
   
   // Business Interests & Activities (for matching with users)
@@ -448,7 +448,7 @@ export default function SignupBusiness() {
                       name="employeeCount"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Number of Employees *</FormLabel>
+                          <FormLabel>Number of Employees (Optional)</FormLabel>
                           <Select onValueChange={field.onChange} defaultValue={field.value}>
                             <FormControl>
                               <SelectTrigger>
