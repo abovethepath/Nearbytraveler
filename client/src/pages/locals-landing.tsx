@@ -71,7 +71,7 @@ export default function LocalsLanding() {
                       <Button
                         onClick={() => setLocation('/join')}
                         size="lg"
-                        className="bg-gradient-to-r from-orange-500 to-blue-500 hover:from-orange-600 hover:to-blue-600 text-white font-black text-lg sm:text-xl md:text-2xl px-6 sm:px-12 md:px-16 py-4 sm:py-5 md:py-6 rounded-2xl shadow-xl transition-all duration-200 border-2 sm:border-4 border-white w-full max-w-lg mx-auto"
+                        className="bg-orange-500 hover:bg-orange-600 text-black font-black text-lg sm:text-xl md:text-2xl px-6 sm:px-12 md:px-16 py-4 sm:py-5 md:py-6 rounded-2xl shadow-xl transition-colors duration-200 border-2 sm:border-4 border-white w-full max-w-lg mx-auto"
                         style={{
                           fontSize: 'clamp(1.1rem, 3.5vw, 1.8rem)',
                           minHeight: 'clamp(60px, 12vw, 80px)',
@@ -79,15 +79,9 @@ export default function LocalsLanding() {
                           animation: 'gentle-pulse 2.5s ease-in-out infinite',
                         }}
                       >
-                        JOIN AS A LOCAL
+                        Join as a Nearby Local NOW!!!!
                       </Button>
-                      <p className="mt-6 text-sm sm:text-base font-medium px-2">
-                        <span className="text-orange-300">Share your city</span>{' '}
-                        <span className="text-white">•</span>{' '}
-                        <span className="text-blue-300" style={{border: 'none', outline: 'none', boxShadow: 'none'}}>Connect today</span>{' '}
-                        <span className="text-white">•</span>{' '}
-                        <span className="text-orange-300">Build friendships</span>
-                      </p>
+                      <p className="text-white mt-3 text-base sm:text-lg font-semibold px-2">Join the travel community • Connect today</p>
                     </div>
 
                   </div>
