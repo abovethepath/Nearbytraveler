@@ -32,26 +32,7 @@ export default function Welcome() {
     }
   };
 
-  const nextSteps = [
-    {
-      icon: <User className="h-5 w-5" />,
-      title: "Complete Your Profile",
-      description: "Add photo, bio, gender, sexual preference, and languages to help people find you",
-      action: "Go to Profile"
-    },
-    {
-      icon: <MapPin className="h-5 w-5" />,
-      title: "Set Travel Plans",
-      description: "Add more destinations and travel dates to connect with travelers",
-      action: "Add Travel Plans"
-    },
-    {
-      icon: <MessageSquare className="h-5 w-5" />,
-      title: "Join City Chatrooms", 
-      description: "Connect with locals and travelers in your hometown and destinations",
-      action: "Browse Chatrooms"
-    }
-  ];
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-slate-900 dark:to-gray-800">
@@ -136,47 +117,6 @@ export default function Welcome() {
             </CardContent>
           </Card>
         </div>
-
-        {/* Next Steps */}
-        <div className="max-w-3xl mx-auto mb-12">
-          <Card className="border-0 shadow-lg bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm">
-            <CardHeader className="text-center pb-4">
-              <CardTitle className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                What's Next?
-              </CardTitle>
-              <CardDescription className="text-base text-gray-600 dark:text-gray-300">
-                Three simple steps to start making connections
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-6">
-                {nextSteps.map((step, index) => (
-                  <div key={index} className="flex items-start gap-4 p-4 rounded-xl bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                    <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-r from-blue-500 to-orange-500 text-white rounded-full flex items-center justify-center font-bold">
-                      {index + 1}
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="font-semibold text-gray-900 dark:text-white mb-1 flex items-center gap-2">
-                        {step.icon}
-                        {step.title}
-                      </h4>
-                      <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">{step.description}</p>
-                      <Button 
-                        onClick={() => setLocation(index === 0 ? '/profile' : index === 1 ? '/travel-plans' : '/city-chatrooms')}
-                        variant="outline" 
-                        size="sm"
-                        className="text-xs"
-                      >
-                        {step.action}
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
 
 
         {/* Main Call to Action */}
