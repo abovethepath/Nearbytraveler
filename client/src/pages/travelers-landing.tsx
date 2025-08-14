@@ -71,7 +71,7 @@ export default function TravelersLanding() {
                         <span className="block font-black" style={{fontFamily: '"Inter", sans-serif'}}>
                           <span className="text-orange-400">Skip the tourist traps </span>
                           <span style={{color: '#3b82f6'}}>with Nearby Travelers</span>
-                          <span className="text-black"> while connecting with other locals.</span>
+                          <span className="text-white"> while connecting with other locals.</span>
                         </span>
                       </h1>
                       
