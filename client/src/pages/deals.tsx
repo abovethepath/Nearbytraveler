@@ -374,6 +374,24 @@ export default function Deals() {
           <p className="text-gray-600 dark:text-gray-300">
             Discover amazing deals from local businesses anywhere
           </p>
+          
+          {/* Business User - Create Deal Button */}
+          {effectiveUser?.userType === 'business' && (
+            <div className="mt-4 mb-6">
+              <Button 
+                onClick={() => setLocation('/business-offers')}
+                className="bg-orange-600 hover:bg-orange-700 text-white font-semibold px-6 py-3"
+                data-testid="button-create-deal"
+              >
+                <Store className="w-4 h-4 mr-2" />
+                Create New Deal
+              </Button>
+              <p className="text-sm text-gray-500 mt-2">
+                Manage your business deals and create new offers for customers
+              </p>
+            </div>
+          )}
+          
           <div className="flex justify-center gap-4 mt-4">
             <Badge variant="outline" className="flex items-center gap-1">
               <Store className="w-4 h-4" />
