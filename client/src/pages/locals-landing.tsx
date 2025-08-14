@@ -68,7 +68,7 @@ export default function LocalsLanding() {
                         </p>
                         <div className="mt-4 text-center">
                           <p className="text-white font-bold text-lg">— Real Locals, Real Connections</p>
-                          <p className="text-orange-200 text-sm">Join others sharing authentic local experiences worldwide</p>
+                          <p className="text-orange-200 text-sm">Join others sharing authentic local experiences</p>
                         </div>
                       </div>
                     </div>
