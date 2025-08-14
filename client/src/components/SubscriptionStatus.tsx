@@ -169,11 +169,11 @@ export function SubscriptionStatus() {
       <CardContent className="space-y-4">
         {/* Beta Trial Status */}
         {subscriptionStatus?.trialActive && subscriptionStatus?.status === 'beta_free' && (
-          <div className="flex items-center gap-2 p-3 bg-green-50 rounded-lg">
-            <CheckCircle className="h-4 w-4 text-green-600" />
+          <div className="flex items-center gap-2 p-4 bg-gradient-to-r from-green-100 to-emerald-100 dark:from-green-900/30 dark:to-emerald-900/30 rounded-lg border border-green-200 dark:border-green-700">
+            <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
             <div>
-              <p className="font-medium text-black">Beta Access - Free During Testing</p>
-              <p className="text-sm text-black">
+              <p className="font-medium text-green-800 dark:text-green-200">Beta Access - Free During Testing</p>
+              <p className="text-sm text-green-700 dark:text-green-300">
                 Full access to all business features while we're in beta
               </p>
             </div>
@@ -223,11 +223,11 @@ export function SubscriptionStatus() {
 
         {/* Free Mode Notice */}
         {subscriptionStatus?.freeMode && subscriptionStatus?.status !== 'canceled' && (
-          <div className="p-3 bg-green-50 rounded-lg border border-green-200">
-            <p className="text-sm text-black font-medium">
+          <div className="p-4 bg-gradient-to-r from-purple-50 to-violet-50 dark:from-purple-900/20 dark:to-violet-900/20 rounded-lg border border-purple-200 dark:border-purple-700">
+            <p className="text-sm text-purple-800 dark:text-purple-200 font-medium">
               Free Access Mode - Limited Time
             </p>
-            <p className="text-xs text-black mt-1">
+            <p className="text-xs text-purple-700 dark:text-purple-300 mt-1">
               You currently have free access to all business features. Upgrade to a paid subscription ($50/month + $100 sign-up fee) for guaranteed long-term access and priority support.
             </p>
           </div>
@@ -325,8 +325,10 @@ export function SubscriptionStatus() {
         </div>
 
         {/* Pricing Info */}
-        <div className="text-xs text-gray-500 dark:text-gray-400 pt-2 border-t dark:border-gray-700">
-          Business Plan: $50/month + $100 sign-up fee • Monthly deal limits • Priority support • Analytics dashboard
+        <div className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-200 dark:border-gray-700 mt-4">
+          <div className="text-xs text-gray-700 dark:text-gray-300 font-medium">
+            Business Plan: $50/month + $100 sign-up fee • Monthly deal limits • Priority support • Analytics dashboard
+          </div>
         </div>
       </CardContent>
     </Card>
