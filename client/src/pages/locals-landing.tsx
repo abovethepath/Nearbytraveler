@@ -22,7 +22,7 @@ export default function LocalsLanding() {
       
       {/* HERO SECTION */}
       <div className="relative">
-        <div className="bg-gray-800 dark:bg-gray-900 border border-white/30 dark:border-gray-300/20">
+        <div className="bg-gray-800 dark:bg-gray-900 border-4 border-orange-500 shadow-lg">
           <div className="relative bg-gray-800 dark:bg-gray-900 pb-32 overflow-hidden min-h-[600px]">
             <div className="absolute inset-0 h-full min-h-[600px]">
               <img
@@ -35,7 +35,7 @@ export default function LocalsLanding() {
             </div>
             <div className="relative">
               <div className="sm:pb-16 md:pb-20 lg:pb-28 xl:pb-32">
-                <main className="mt-4 mx-auto max-w-full sm:mt-6 md:mt-8 lg:mt-10 xl:mt-12">
+                <main className="mt-16 mx-auto max-w-full sm:mt-20 md:mt-24 lg:mt-28 xl:mt-32">
                   <div className="text-center">
                     <div className="max-w-4xl mx-auto">
                       <h1 className="text-4xl tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">

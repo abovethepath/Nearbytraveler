@@ -13,7 +13,7 @@ export default function BusinessLanding() {
 
       {/* Hero Section with Photo Background */}
       <section 
-        className="relative overflow-hidden text-white py-20 lg:py-32 border border-orange-400"
+        className="relative overflow-hidden text-white py-20 lg:py-32 border-4 border-orange-500 shadow-lg"
         style={{
           backgroundImage: `url(${businessHeaderPhoto})`,
           backgroundSize: 'cover',
@@ -23,7 +23,7 @@ export default function BusinessLanding() {
         }}
       >
         <div className="absolute inset-0 bg-black/30"></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center pt-16">
           <h1 className="text-4xl lg:text-6xl font-extrabold mb-6 text-white" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700'}}>
             Nearby Traveler for Businesses
           </h1>

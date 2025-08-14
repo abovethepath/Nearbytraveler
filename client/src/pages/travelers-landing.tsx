@@ -11,7 +11,7 @@ export default function TravelersLanding() {
       
       {/* Hero Section */}
       <div className="relative">
-        <div className="relative h-[70vh] overflow-hidden border border-orange-400">
+        <div className="relative h-[70vh] overflow-hidden border-4 border-orange-500 shadow-lg">
           <img 
             src={travelersHeaderImage} 
             alt="Travelers making connections and sharing experiences" 
@@ -19,7 +19,7 @@ export default function TravelersLanding() {
 
           />
           <div className="absolute inset-0 bg-black/40" />
-          <div className="absolute inset-0 flex items-center justify-center">
+          <div className="absolute inset-0 flex items-center justify-center pt-16">
             <div className="text-center text-white px-4 max-w-4xl">
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold mb-6 text-white" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700'}}>
                 Nearby Traveler For Travelers
