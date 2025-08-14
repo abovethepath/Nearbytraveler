@@ -238,7 +238,7 @@ JOIN THE COMMUNITY TODAY
             >
 BECOME A NEARBY LOCAL NOW
             </Button>
-            <p className="text-gray-600 mt-4 text-lg">Free to join • Start hosting today • Build amazing friendships</p>
+            <p className="text-gray-600 mt-4 text-lg">Free to join • Start connecting today • Build amazing friendships</p>
           </div>
         </div>
       </div>
