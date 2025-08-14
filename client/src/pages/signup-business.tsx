@@ -887,13 +887,23 @@ export default function SignupBusiness() {
                   </div>
                 </div>
 
-                <Button
-                  type="submit"
-                  className="w-full py-4 text-lg"
-                  disabled={isLoading || signupMutation.isPending}
-                >
-                  {isLoading || signupMutation.isPending ? "Creating Business Account..." : "Register Business Account"}
-                </Button>
+                <div className="flex gap-4">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setLocation('/auth')}
+                    className="flex-1 py-4 text-lg"
+                  >
+                    Back
+                  </Button>
+                  <Button
+                    type="submit"
+                    className="flex-1 py-4 text-lg"
+                    disabled={isLoading || signupMutation.isPending}
+                  >
+                    {isLoading || signupMutation.isPending ? "Creating Business Account..." : "Register Business Account"}
+                  </Button>
+                </div>
               </form>
             </Form>
           </CardContent>
