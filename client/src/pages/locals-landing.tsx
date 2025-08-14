@@ -177,9 +177,9 @@ JOIN THE COMMUNITY TODAY
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-black text-gray-900 mb-4">
-              Start Hosting in 3 Simple Steps
+              Join in 3 Simple Steps
             </h2>
-            <p className="text-xl text-gray-600">From signup to hosting amazing experiences in minutes</p>
+            <p className="text-xl text-gray-600">From sign up to creating experiences in minutes</p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
