@@ -516,11 +516,10 @@ export default function Landing() {
                   FOR LOCALS
                 </span>
                 <h2 className="text-4xl sm:text-5xl font-black text-gray-900 dark:text-white mb-6" style={{fontFamily: '"Open Sans", sans-serif'}}>
-                  🏠 Your City, <span className="bg-gradient-to-r from-blue-600 to-teal-600 bg-clip-text text-transparent">Your Stage</span>
+                  🏠 Your City, <span className="bg-gradient-to-r from-blue-600 to-teal-600 bg-clip-text text-transparent">Your Adventures</span>
                 </h2>
                 <p className="text-xl text-gray-600 dark:text-gray-300 leading-relaxed">
-                  You're not just a resident—you're the curator of unforgettable experiences. 
-                  Transform your local knowledge into magical moments for travelers and other locals.
+                  Turn your local knowledge into lasting friendships. Show off your favorite spots, join epic events, and build a social circle that spans the globe. Whether you're hosting travelers or exploring with fellow locals, every connection opens new doors.
                 </p>
               </div>
               
