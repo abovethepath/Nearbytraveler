@@ -1189,12 +1189,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           businessDescription: (user as any).business_description || (user as any).businessDescription || "",
           businessType: (user as any).business_type || (user as any).businessType || "",
           location: user.location || "",
-          streetAddress: (user as any).streetAddress || "",
-          zipCode: (user as any).zipCode || "",
-          phoneNumber: (user as any).phoneNumber || "",
-          websiteUrl: (user as any).websiteUrl || (user as any).website || "",
-          isVeteran: (user as any).is_veteran || user.isVeteran || false,
-          isActiveDuty: (user as any).is_active_duty || user.isActiveDuty || false,
+          streetAddress: (user as any).street_address || (user as any).streetAddress || "",
+          zipCode: (user as any).zip_code || (user as any).zipCode || "",
+          phoneNumber: (user as any).phone_number || (user as any).phoneNumber || "",
+          websiteUrl: (user as any).website_url || (user as any).websiteUrl || (user as any).website || "",
+          isVeteran: Boolean((user as any).is_veteran || user.isVeteran),
+          isActiveDuty: Boolean((user as any).is_active_duty || user.isActiveDuty),
         });
       } else {
         const travelingWithChildrenValue = !!(user as any).travelingWithChildren;
@@ -2604,9 +2604,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       // Ensure boolean fields are explicitly included (don't drop false values)
       const payload = {
         ...data,
-        travelingWithChildren: !!data.travelingWithChildren,
-        ageVisible: !!data.ageVisible,
-        sexualPreferenceVisible: !!data.sexualPreferenceVisible,
+        // Only include traveler fields if they exist in the data
+        ...(data.hasOwnProperty('travelingWithChildren') && { travelingWithChildren: !!data.travelingWithChildren }),
+        ...(data.hasOwnProperty('ageVisible') && { ageVisible: !!data.ageVisible }),
+        ...(data.hasOwnProperty('sexualPreferenceVisible') && { sexualPreferenceVisible: !!data.sexualPreferenceVisible }),
+        // Always include veteran status fields
         isVeteran: !!data.isVeteran,
         isActiveDuty: !!data.isActiveDuty,
       };
@@ -2705,12 +2707,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
   const onSubmitProfile = (data: z.infer<typeof dynamicProfileSchema>) => {
     console.log('🔥 FORM SUBMIT: Raw form data:', data);
-    console.log('🔥 FORM SUBMIT: travelingWithChildren value:', data.travelingWithChildren, 'type:', typeof data.travelingWithChildren);
+    console.log('🔥 FORM SUBMIT: User type is:', user?.userType);
     console.log('Form validation errors:', profileForm.formState.errors);
     
-    // Clear children ages if traveling with children is turned off
-    if (!data.travelingWithChildren) {
-      data.childrenAges = "";
+    // Clear children ages if traveling with children is turned off (only for non-business users)
+    if (user?.userType !== 'business' && 'travelingWithChildren' in data && !data.travelingWithChildren) {
+      (data as any).childrenAges = "";
       console.log('🔥 FORM SUBMIT: Cleared childrenAges because travelingWithChildren is false');
     }
     

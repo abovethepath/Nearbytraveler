@@ -2701,6 +2701,46 @@ Questions? Just reply to this message. Welcome aboard!
 
       if (process.env.NODE_ENV === 'development') console.log(`Updating user ${userId} with:`, Object.keys(updates));
 
+      // MAP BUSINESS FIELDS: Convert camelCase frontend fields to snake_case database fields
+      if (updates.businessName !== undefined) {
+        updates.business_name = updates.businessName;
+        delete updates.businessName;
+      }
+      if (updates.businessDescription !== undefined) {
+        updates.business_description = updates.businessDescription;
+        delete updates.businessDescription;
+      }
+      if (updates.businessType !== undefined) {
+        updates.business_type = updates.businessType;
+        delete updates.businessType;
+      }
+      if (updates.streetAddress !== undefined) {
+        updates.street_address = updates.streetAddress;
+        delete updates.streetAddress;
+      }
+      if (updates.zipCode !== undefined) {
+        updates.zip_code = updates.zipCode;
+        delete updates.zipCode;
+      }
+      if (updates.phoneNumber !== undefined) {
+        updates.phone_number = updates.phoneNumber;
+        delete updates.phoneNumber;
+      }
+      if (updates.websiteUrl !== undefined) {
+        updates.website_url = updates.websiteUrl;
+        delete updates.websiteUrl;
+      }
+      if (updates.isVeteran !== undefined) {
+        updates.is_veteran = updates.isVeteran;
+        delete updates.isVeteran;
+      }
+      if (updates.isActiveDuty !== undefined) {
+        updates.is_active_duty = updates.isActiveDuty;
+        delete updates.isActiveDuty;
+      }
+
+      if (process.env.NODE_ENV === 'development') console.log(`🏢 BUSINESS PROFILE: Mapped fields for user ${userId}:`, Object.keys(updates));
+
       // Convert dateOfBirth string to Date object if present
       if (updates.dateOfBirth && typeof updates.dateOfBirth === 'string') {
         try {
