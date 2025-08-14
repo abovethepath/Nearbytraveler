@@ -663,7 +663,7 @@ export default function Landing() {
                     </div>
                     <h3 className="font-black text-blue-800 dark:text-blue-100 text-lg">Travel Buddies</h3>
                   </div>
-                  <p className="text-blue-700 dark:text-blue-200 text-base font-semibold">Meet travelers with your dates and interests</p>
+                  <p className="text-blue-700 dark:text-blue-200 text-base font-semibold">Meet travelers and locals who share your commonalities, shared interests, activities and demographics. Find those visiting a city for the same reasons as you!</p>
                 </div>
                 
                 <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:bg-gradient-to-br dark:from-purple-900/30 dark:to-purple-800/20 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-purple-200 dark:border-purple-700">
