@@ -524,44 +524,44 @@ export default function Landing() {
               </div>
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:bg-gradient-to-br dark:from-blue-900/30 dark:to-blue-800/20 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-blue-200 dark:border-blue-700">
+                <div className="bg-gradient-to-br from-blue-700 to-blue-800 dark:bg-gradient-to-br dark:from-blue-900 dark:to-blue-800 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-blue-600 dark:border-blue-700">
                   <div className="flex items-center mb-3">
                     <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg flex items-center justify-center mr-3 shadow-md">
                       <span className="text-white text-lg font-bold">🎉</span>
                     </div>
-                    <h3 className="font-black text-blue-900 dark:text-blue-100 text-lg">Create Fun Hangouts</h3>
+                    <h3 className="font-black text-white text-lg">Create Fun Hangouts</h3>
                   </div>
-                  <p className="text-blue-800 dark:text-blue-200 text-base font-semibold">Beach BBQs, hiking adventures, cultural deep-dives</p>
+                  <p className="text-blue-100 text-base font-semibold">Beach BBQs, hiking adventures, cultural deep-dives</p>
                 </div>
                 
-                <div className="bg-gradient-to-br from-teal-50 to-teal-100 dark:bg-gradient-to-br dark:from-teal-900/30 dark:to-teal-800/20 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-teal-200 dark:border-teal-700">
+                <div className="bg-gradient-to-br from-teal-700 to-teal-800 dark:bg-gradient-to-br dark:from-teal-900 dark:to-teal-800 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-teal-600 dark:border-teal-700">
                   <div className="flex items-center mb-3">
                     <div className="w-12 h-12 bg-gradient-to-r from-teal-500 to-teal-600 rounded-lg flex items-center justify-center mr-3 shadow-md">
                       <span className="text-white text-lg font-bold">💎</span>
                     </div>
-                    <h3 className="font-black text-teal-900 dark:text-teal-100 text-lg">Show Off Your Spots</h3>
+                    <h3 className="font-black text-white text-lg">Show Off Your Spots</h3>
                   </div>
-                  <p className="text-teal-800 dark:text-teal-200 text-base font-semibold">Your secret spots become legendary discoveries</p>
+                  <p className="text-teal-100 text-base font-semibold">Your secret spots become legendary discoveries</p>
                 </div>
                 
-                <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:bg-gradient-to-br dark:from-purple-900/30 dark:to-purple-800/20 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-purple-200 dark:border-purple-700">
+                <div className="bg-gradient-to-br from-purple-700 to-purple-800 dark:bg-gradient-to-br dark:from-purple-900 dark:to-purple-800 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-purple-600 dark:border-purple-700">
                   <div className="flex items-center mb-3">
                     <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg flex items-center justify-center mr-3 shadow-md">
                       <span className="text-white text-lg font-bold">🤝</span>
                     </div>
-                    <h3 className="font-black text-purple-900 dark:text-purple-100 text-lg">Expand Your Circle</h3>
+                    <h3 className="font-black text-white text-lg">Expand Your Circle</h3>
                   </div>
-                  <p className="text-purple-800 dark:text-purple-200 text-base font-semibold">Welcome travelers, connect with fellow locals</p>
+                  <p className="text-purple-100 text-base font-semibold">Welcome travelers, connect with fellow locals</p>
                 </div>
                 
-                <div className="bg-gradient-to-br from-orange-50 to-orange-100 dark:bg-gradient-to-br dark:from-orange-900/30 dark:to-orange-800/20 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-orange-200 dark:border-orange-700">
+                <div className="bg-gradient-to-br from-orange-700 to-orange-800 dark:bg-gradient-to-br dark:from-orange-900 dark:to-orange-800 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-orange-600 dark:border-orange-700">
                   <div className="flex items-center mb-3">
                     <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg flex items-center justify-center mr-3 shadow-md">
                       <span className="text-white text-lg font-bold">🌟</span>
                     </div>
-                    <h3 className="font-black text-orange-900 dark:text-orange-100 text-lg">Find Your Tribe</h3>
+                    <h3 className="font-black text-white text-lg">Find Your Tribe</h3>
                   </div>
-                  <p className="text-orange-800 dark:text-orange-200 text-base font-semibold">Turn strangers into lifelong friends</p>
+                  <p className="text-orange-100 text-base font-semibold">Turn strangers into lifelong friends</p>
                 </div>
               </div>
             </div>
