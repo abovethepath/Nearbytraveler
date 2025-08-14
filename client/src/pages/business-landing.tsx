@@ -56,7 +56,7 @@ export default function BusinessLanding() {
                         <span className="block font-black" style={{fontFamily: '"Inter", sans-serif'}}>
                           <span className="text-orange-400">to Targeted Customers </span>
                           <span style={{color: '#3b82f6'}}>with Nearby Travelers </span>
-                          <span className="text-white">and Locals Showing Direct Interest in your Products and Services</span>
+                          <span className="text-white">and Locals Showing Direct Interest in Your Products and Services</span>
                         </span>
                       </h1>
                       

@@ -52,11 +52,11 @@ export default function LocalsLanding() {
                   <div className="text-center">
                     <div className="max-w-4xl mx-auto">
                       <h1 className="text-4xl tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
-                        <span className="block text-white font-black" style={{fontFamily: '"Inter", sans-serif'}}>Be the local you'd want to meet.</span>
+                        <span className="block text-white font-black" style={{fontFamily: '"Inter", sans-serif'}}>Be the Local You'd Want to Meet.</span>
                         <span className="block font-black" style={{fontFamily: '"Inter", sans-serif'}}>
-                          <span className="text-orange-400">Share your city's hidden gems </span>
+                          <span className="text-orange-400">Share Your City's Hidden Gems </span>
                           <span style={{color: '#3b82f6'}}>with Nearby Travelers</span>
-                          <span className="text-white"> and connect with like-minded locals</span>
+                          <span className="text-white"> and Connect with Like-Minded Locals</span>
                         </span>
                       </h1>
                       
