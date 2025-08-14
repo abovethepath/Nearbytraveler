@@ -23,9 +23,17 @@ export default function EventsLanding() {
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold mb-6 text-white" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700'}}>
                 Discover & Create Events
               </h1>
-              <p className="text-lg sm:text-xl lg:text-2xl mb-8 max-w-3xl mx-auto text-white">
+              <p className="text-lg sm:text-xl lg:text-2xl mb-6 max-w-3xl mx-auto text-white">
                 Host unforgettable gatherings, join local meetups, and create lasting connections. From beach bonfires to city adventures - your next amazing experience awaits!
               </p>
+              <div className="mt-4 text-center">
+                <p className="text-white font-bold text-lg">Join Epic Events & Create Amazing Memories</p>
+                <p className="text-sm font-bold">
+                  <span className="text-orange-300">Discover incredible events.</span>{' '}
+                  <span className="text-blue-300">Meet amazing people</span>{' '}
+                  <span className="text-black bg-orange-400 px-2 py-1 rounded">right now, today!!!</span>
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -132,6 +140,30 @@ export default function EventsLanding() {
                   JOIN BBQ
                 </a>
               </div>
+            </div>
+          </div>
+        </div>
+
+        {/* What Makes Events Special Section */}
+        <div className="mt-16 max-w-6xl mx-auto">
+          <h2 className="text-3xl sm:text-4xl font-bold mb-8 text-center text-gray-900 dark:text-white" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700'}}>
+            What Makes Our Events Special
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+            <div className="bg-orange-600 p-6 rounded-xl shadow-lg text-white">
+              <div className="text-4xl mb-4">🎪</div>
+              <h3 className="text-xl font-bold mb-3 text-white">Epic Experiences</h3>
+              <p className="text-white">From beach bonfires to rooftop parties - join unforgettable events created by passionate locals who know the best spots.</p>
+            </div>
+            <div className="bg-teal-600 p-6 rounded-xl shadow-lg text-white">
+              <div className="text-4xl mb-4">🌟</div>
+              <h3 className="text-xl font-bold mb-3 text-white">Instant Connections</h3>
+              <p className="text-white">Meet amazing travelers and locals who share your interests. Every event is a chance to make lifelong friendships.</p>
+            </div>
+            <div className="bg-orange-700 p-6 rounded-xl shadow-lg text-white">
+              <div className="text-4xl mb-4">📍</div>
+              <h3 className="text-xl font-bold mb-3 text-white">Local Secrets</h3>
+              <p className="text-white">Discover hidden gems and authentic experiences that tourists never find. Access the real side of every city.</p>
             </div>
           </div>
         </div>

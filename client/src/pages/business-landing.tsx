@@ -27,9 +27,17 @@ export default function BusinessLanding() {
           <h1 className="text-4xl lg:text-6xl font-extrabold mb-6 text-white" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700'}}>
             Nearby Traveler for Businesses
           </h1>
-          <p className="text-xl lg:text-2xl max-w-3xl mx-auto mb-8 text-white">
+          <p className="text-xl lg:text-2xl max-w-3xl mx-auto mb-6 text-white">
             Connect with travelers and locals who are actively exploring your area and looking for authentic experiences
           </p>
+          <div className="mt-4 text-center">
+            <p className="text-white font-bold text-lg">Grow Your Business with Authentic Connections</p>
+            <p className="text-sm font-bold">
+              <span className="text-orange-300">Reach real customers.</span>{' '}
+              <span className="text-blue-300">Build lasting relationships</span>{' '}
+              <span className="text-black bg-orange-400 px-2 py-1 rounded">and grow your business today!!!</span>
+            </p>
+          </div>
         </div>
       </section>
 
@@ -76,25 +84,49 @@ export default function BusinessLanding() {
           </div>
         </section>
 
-        {/* Business Types Section */}
-        <div className="mt-16 bg-white dark:bg-gray-800 p-8 rounded-lg shadow-xl max-w-4xl mx-auto">
-          <h2 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700'}}>Perfect for All Types of Businesses</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-            <div>
-              <div className="text-2xl mb-2">🍽️</div>
-              <p className="font-medium text-gray-700 dark:text-gray-300">Restaurants & Cafes</p>
+        {/* What Makes Business Special Section */}
+        <div className="mt-16 max-w-6xl mx-auto">
+          <h2 className="text-3xl sm:text-4xl font-bold mb-8 text-center text-gray-900 dark:text-white" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700'}}>
+            What Makes Nearby Traveler Special for Business
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+            <div className="bg-orange-600 p-6 rounded-xl shadow-lg text-white">
+              <div className="text-4xl mb-4">🎯</div>
+              <h3 className="text-xl font-bold mb-3 text-white">Target Real Customers</h3>
+              <p className="text-white">Reach travelers and locals actively seeking authentic experiences in your area. No fake engagement - real people, real connections.</p>
             </div>
-            <div>
-              <div className="text-2xl mb-2">🏨</div>
-              <p className="font-medium text-gray-700 dark:text-gray-300">Hotels & Lodging</p>
+            <div className="bg-teal-600 p-6 rounded-xl shadow-lg text-white">
+              <div className="text-4xl mb-4">🚀</div>
+              <h3 className="text-xl font-bold mb-3 text-white">Instant Growth</h3>
+              <p className="text-white">Create time-limited offers and events that attract both tourists and locals. See immediate results from your marketing efforts.</p>
             </div>
-            <div>
-              <div className="text-2xl mb-2">🎨</div>
-              <p className="font-medium text-gray-700 dark:text-gray-300">Tours & Activities</p>
+            <div className="bg-orange-700 p-6 rounded-xl shadow-lg text-white">
+              <div className="text-4xl mb-4">📊</div>
+              <h3 className="text-xl font-bold mb-3 text-white">Smart Analytics</h3>
+              <p className="text-white">Access detailed insights about customer engagement and offer performance. Make data-driven decisions to grow your business.</p>
             </div>
-            <div>
-              <div className="text-2xl mb-2">🛍️</div>
-              <p className="font-medium text-gray-700 dark:text-gray-300">Retail & Shopping</p>
+          </div>
+
+          {/* Business Types */}
+          <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-xl">
+            <h3 className="text-2xl font-bold mb-6 text-center text-gray-900 dark:text-white">Perfect for All Types of Businesses</h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+              <div>
+                <div className="text-2xl mb-2">🍽️</div>
+                <p className="font-medium text-gray-700 dark:text-gray-300">Restaurants & Cafes</p>
+              </div>
+              <div>
+                <div className="text-2xl mb-2">🏨</div>
+                <p className="font-medium text-gray-700 dark:text-gray-300">Hotels & Lodging</p>
+              </div>
+              <div>
+                <div className="text-2xl mb-2">🎨</div>
+                <p className="font-medium text-gray-700 dark:text-gray-300">Tours & Activities</p>
+              </div>
+              <div>
+                <div className="text-2xl mb-2">🛍️</div>
+                <p className="font-medium text-gray-700 dark:text-gray-300">Retail & Shopping</p>
+              </div>
             </div>
           </div>
         </div>
