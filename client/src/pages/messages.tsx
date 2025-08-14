@@ -111,7 +111,7 @@ export default function Messages() {
           username: connectedUser.username,
           profileImage: connectedUser.profileImage,
           location: connectedUser.hometownCity || connectedUser.location,
-          lastMessage: 'Connected - Start your conversation!',
+          lastMessage: '', // Don't show message preview in connections list
           lastMessageTime: connection.createdAt,
         });
       }
@@ -369,9 +369,7 @@ export default function Messages() {
                       <h3 className="font-semibold text-white truncate">
                         {conv.username}
                       </h3>
-                      <p className="text-sm text-gray-400 truncate">
-                        {conv.lastMessage}
-                      </p>
+
                       <div className="text-xs text-gray-500">
                         {conv.location}
                       </div>
@@ -551,9 +549,7 @@ export default function Messages() {
                         {connection.connectedUser.userType === 'traveler' ? ' ✈️ Traveling' : 
                          connection.connectedUser.userType === 'business' ? ' 🏢 Business' : ' 🏠 Local'}
                       </p>
-                      <p className="text-xs text-gray-500 mt-1">
-                        Welcome to Nearby Traveler! Discover amazing people, join events, and explore authentic local experiences. Connect with fellow travelers and locals to unlock the full potential of your journey!
-                      </p>
+
                     </div>
                   </div>
                   
