@@ -146,10 +146,10 @@ export default function Events() {
       }
       const data = await response.json();
       console.log('🔍 ALL EVENTS RESPONSE:', data.length, 'events');
-      console.log('🔍 Events with organizerId 3:', data.filter((e: any) => e.organizerId === 3));
+      console.log('🔍 Events with organizerId 22 (brunchbig):', data.filter((e: any) => e.organizerId === 22));
       return data;
     },
-    enabled: selectedTab === 'explore' && !!currentUser, // Only fetch when Community Events tab is active AND user logged in
+    enabled: !!currentUser, // Always fetch when user is logged in to show user events
     staleTime: 30000,
   });
 
