@@ -1321,7 +1321,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           bio: user.bio || "",
           businessName: user.businessName || "",
           businessDescription: user.businessDescription || "",
-          businessType: user.businessType || "",
+          businessType: user.businessType || user.business_type || "",
           hometownCity: user.hometownCity || "",
           hometownState: user.hometownState || "",
           hometownCountry: user.hometownCountry || "",
@@ -6625,7 +6625,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Business Type</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value ?? ''}>
+                        <Select onValueChange={field.onChange} value={field.value || ''}>
                           <FormControl>
                             <SelectTrigger>
                               <SelectValue placeholder="Select business type" />
