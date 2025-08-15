@@ -6342,7 +6342,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         setEditingActivities(false);
         setEditingEvents(false);
       }}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="w-[calc(100vw-16px)] max-w-[calc(100vw-16px)] md:max-w-4xl max-h-[85vh] md:max-h-[90vh] overflow-y-auto mx-2 md:mx-auto p-4 md:p-6 safe-area-inset-bottom">
           <DialogHeader>
             <DialogTitle>Edit Travel Plan</DialogTitle>
           </DialogHeader>
@@ -6704,7 +6704,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
       {/* Profile Edit Modal */}
       <Dialog open={isEditMode} onOpenChange={setIsEditMode}>
-        <DialogContent className="w-[calc(100vw-16px)] max-w-[calc(100vw-16px)] md:max-w-2xl max-h-[80vh] md:max-h-[90vh] overflow-y-auto mx-2 md:mx-auto p-3 md:p-6">
+        <DialogContent className="w-[calc(100vw-16px)] max-w-[calc(100vw-16px)] md:max-w-2xl max-h-[85vh] md:max-h-[90vh] overflow-y-auto mx-2 md:mx-auto p-4 md:p-6 safe-area-inset-bottom">
           <DialogHeader>
             <div className="flex items-center justify-between">
               <DialogTitle>Edit Profile</DialogTitle>

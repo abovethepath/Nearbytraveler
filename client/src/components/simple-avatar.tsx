@@ -84,12 +84,16 @@ export function SimpleAvatar({ user, size = 'md', className = '' }: SimpleAvatar
       profileImageLength: user.profileImage ? user.profileImage.length : 0
     });
 
-    // Force immediate image refresh - check for profile image
-    if (user.profileImage && user.profileImage.trim() !== '') {
+      // Enhanced image loading with fallback
+    if (user.profileImage && user.profileImage.trim() !== '' && user.profileImage.length > 10) {
       console.log('SimpleAvatar: Using profile image');
-      setCurrentImage(user.profileImage);
+      // Add timestamp to force refresh
+      const imageWithCache = user.profileImage.includes('?') 
+        ? `${user.profileImage}&t=${Date.now()}` 
+        : `${user.profileImage}?t=${Date.now()}`;
+      setCurrentImage(imageWithCache);
     } else {
-      console.log('SimpleAvatar: No profile image found, generating avatar for:', user.username);
+      console.log('SimpleAvatar: No valid profile image found, generating avatar for:', user.username);
       const generatedAvatar = generateAvatar(user.username, user.avatarColor);
       console.log('SimpleAvatar: Generated avatar:', generatedAvatar);
       setCurrentImage(generatedAvatar);

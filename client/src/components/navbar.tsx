@@ -400,18 +400,24 @@ function Navbar() {
                   Donate
                 </button>
 
-                {/* Mobile Menu Button */}
+                {/* Mobile Menu Button - Enhanced with better touch targets */}
                 <Button
                   variant="ghost"
-                  className="md:hidden h-10 w-10 p-0"
-                  onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                  className="md:hidden h-12 w-12 p-0 touch-manipulation"
+                  style={{ minHeight: '48px', minWidth: '48px' }}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Mobile menu clicked, current state:', isMobileMenuOpen);
+                    setIsMobileMenuOpen(!isMobileMenuOpen);
+                  }}
                   aria-label={isMobileMenuOpen ? "Close mobile menu" : "Open mobile menu"}
                   aria-expanded={isMobileMenuOpen}
                 >
                   {isMobileMenuOpen ? (
-                    <X className="h-6 w-6" />
+                    <X className="h-7 w-7" />
                   ) : (
-                    <Menu className="h-6 w-6" />
+                    <Menu className="h-7 w-7" />
                   )}
                 </Button>
               </div>
@@ -552,10 +558,10 @@ function Navbar() {
           </div>
         </div>
 
-        {/* Mobile Navigation Overlay */}
+        {/* Mobile Navigation Overlay - Enhanced for better mobile UX */}
         {isMobileMenuOpen && (
-          <div className="md:hidden absolute top-full left-0 w-full bg-white dark:bg-black border-b border-gray-200 dark:border-gray-800 z-40 shadow-lg">
-            <div className="px-4 py-6 space-y-4">
+          <div className="md:hidden fixed top-[80px] left-0 right-0 w-full bg-white dark:bg-black border-b border-gray-200 dark:border-gray-800 z-50 shadow-lg">
+            <div className="px-4 py-6 space-y-4 max-h-[calc(100vh-80px)] overflow-y-auto">
               {navItems.map((item) => (
                 <Link
                   key={item.path}
