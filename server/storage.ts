@@ -694,6 +694,11 @@ export class DatabaseStorage implements IStorage {
         dbCleanData[dbKey] = value;
       }
 
+      console.log('🔧 STORAGE UPDATE: Field mapping applied:', {
+        original: Object.keys(cleanData),
+        converted: Object.keys(dbCleanData)
+      });
+
       // Build the SQL update statement manually
       const setClause = Object.keys(dbCleanData)
         .map((key, index) => `"${key}" = $${index + 2}`)
