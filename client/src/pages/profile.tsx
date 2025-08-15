@@ -22,7 +22,7 @@ import { Check, ChevronsUpDown } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { MapPin, Camera, Globe, Users, Calendar, Star, Settings, ArrowLeft, Upload, Edit, Edit2, Heart, MessageSquare, X, Plus, Eye, EyeOff, MessageCircle, ImageIcon, Minus, RotateCcw, Sparkles, Package, Trash2, Home, FileText, TrendingUp, MessageCircleMore, Share2, ChevronDown, Search, Zap, History, Clock, Wifi, Shield, ChevronRight, AlertCircle } from "lucide-react";
+import { MapPin, Camera, Globe, Users, Calendar, Star, Settings, ArrowLeft, Upload, Edit, Edit2, Heart, MessageSquare, X, Plus, Eye, EyeOff, MessageCircle, ImageIcon, Minus, RotateCcw, Sparkles, Package, Trash2, Home, FileText, TrendingUp, MessageCircleMore, Share2, ChevronDown, Search, Zap, History, Clock, Wifi, Shield, ChevronRight, AlertCircle, Phone } from "lucide-react";
 import { compressPhotoAdaptive } from "@/utils/photoCompression";
 import { AdaptiveCompressionIndicator } from "@/components/adaptive-compression-indicator";
 import { UniversalBackButton } from "@/components/UniversalBackButton";
@@ -3243,12 +3243,78 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 </div>
               )}
 
-              {/* EXACTLY 3 LINES as requested - moved down */}
-              <div className="space-y-1 text-black w-full mt-2">
-                {/* Line 1: Username */}
-                <h1 className="text-xl sm:text-3xl font-bold text-black">@{user.username}</h1>
-                
-                {/* Line 2: Location/Status with pin icon - Allow full width */}
+              {/* Business Profile Clean Display */}
+              {user?.userType === 'business' ? (
+                <div className="space-y-2 text-black w-full mt-2">
+                  {/* Business Name - Prominent */}
+                  <h1 className="text-2xl sm:text-4xl font-bold text-black">
+                    {user.businessName || user.name || `@${user.username}`}
+                  </h1>
+                  
+                  {/* Nearby Business Label */}
+                  <div className="flex items-center gap-2 text-sm sm:text-base">
+                    <span className="bg-blue-600 text-white px-3 py-1 rounded-full font-semibold">
+                      Nearby Business
+                    </span>
+                    {user.businessType && (
+                      <span className="text-black/80">• {user.businessType}</span>
+                    )}
+                  </div>
+                  
+                  {/* Business Contact Info - Clean Grid */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-3 text-sm sm:text-base">
+                    {/* Address */}
+                    {(user.streetAddress || user.city) && (
+                      <div className="flex items-start gap-2">
+                        <MapPin className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                        <span className="text-black/90">
+                          {user.streetAddress && <>{user.streetAddress}<br /></>}
+                          {[user.city, user.state, user.zipCode].filter(Boolean).join(', ')}
+                        </span>
+                      </div>
+                    )}
+                    
+                    {/* Phone */}
+                    {user.phoneNumber && (
+                      <div className="flex items-center gap-2">
+                        <Phone className="w-4 h-4 text-blue-600 flex-shrink-0" />
+                        <a href={`tel:${user.phoneNumber}`} className="text-black/90 hover:text-blue-600 transition-colors">
+                          {user.phoneNumber}
+                        </a>
+                      </div>
+                    )}
+                    
+                    {/* Website */}
+                    {user.websiteUrl && (
+                      <div className="flex items-center gap-2">
+                        <Globe className="w-4 h-4 text-blue-600 flex-shrink-0" />
+                        <a 
+                          href={user.websiteUrl.startsWith('http') ? user.websiteUrl : `https://${user.websiteUrl}`} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="text-black/90 hover:text-blue-600 transition-colors truncate"
+                        >
+                          {user.websiteUrl.replace(/^https?:\/\//, '')}
+                        </a>
+                      </div>
+                    )}
+                    
+                    {/* Business Hours if available */}
+                    {user.businessHours && (
+                      <div className="flex items-center gap-2">
+                        <Clock className="w-4 h-4 text-blue-600 flex-shrink-0" />
+                        <span className="text-black/90">{user.businessHours}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                /* Regular User Display */
+                <div className="space-y-1 text-black w-full mt-2">
+                  {/* Line 1: Username */}
+                  <h1 className="text-xl sm:text-3xl font-bold text-black">@{user.username}</h1>
+                  
+                  {/* Line 2: Location/Status with pin icon - Allow full width */}
                 <div className="flex items-center gap-2 w-full">
                   <MapPin className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
                   <span className="text-sm sm:text-base font-medium flex-1">
@@ -3339,6 +3405,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </div>
                 )}
               </div>
+              )}
             </div>
 
             {/* Action Buttons - Different for own vs other profiles */}
@@ -3439,26 +3506,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 <CardTitle>About {user?.userType === 'business' ? (user?.businessName || user?.name || user?.username) : (user?.username || 'User')}</CardTitle>
               </CardHeader>
               <CardContent>
-                {/* Business Name Field for Business Users */}
-                {user?.userType === 'business' && (
-                  <div className="mb-4 p-4 bg-gradient-to-r from-blue-50 to-orange-50 dark:from-blue-900/20 dark:to-orange-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
-                    <div className="flex items-center justify-between mb-2">
-                      <h4 className="font-semibold text-blue-800 dark:text-blue-200">Business Name</h4>
-                      {isOwnProfile && (
-                        <Button size="sm" variant="outline" onClick={() => setIsEditMode(true)} className="bg-gradient-to-r from-blue-500 to-orange-500 text-white border-0 hover:from-blue-600 hover:to-orange-600">
-                          <Edit className="w-3 h-3" />
-                        </Button>
-                      )}
-                    </div>
-                    <p className="text-lg font-bold text-blue-900 dark:text-blue-100">
-                      {user?.businessName || 'Business name not set'}
-                    </p>
-                  </div>
-                )}
-                
-
-                
-                {/* Bio Section with Mobile-Friendly Edit Button */}
+                {/* Bio/Business Description Section with Mobile-Friendly Edit Button */}
                 <div className="mb-4">
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex-1">
