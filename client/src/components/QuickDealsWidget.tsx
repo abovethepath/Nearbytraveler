@@ -35,6 +35,12 @@ export function QuickDealsWidget({ city, profileUserId, showCreateForm: external
   const { user } = useAuth();
   const [internalShowCreateForm, setInternalShowCreateForm] = useState(false);
   const showCreateForm = externalShowCreateForm || internalShowCreateForm;
+  const [expandedDeal, setExpandedDeal] = useState<number | null>(null);
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  // Get user data like navbar does (authStorage is more reliable)
+  const actualUser = user || authStorage.getUser();
   
   // Debug logging
   React.useEffect(() => {
@@ -44,19 +50,24 @@ export function QuickDealsWidget({ city, profileUserId, showCreateForm: external
       finalShowCreateForm: showCreateForm
     });
   }, [externalShowCreateForm, internalShowCreateForm, showCreateForm]);
-  const [expandedDeal, setExpandedDeal] = useState<number | null>(null);
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
 
-  // Get user data like navbar does (authStorage is more reliable)
-  const actualUser = user || authStorage.getUser();
+  const [newDeal, setNewDeal] = useState<NewDeal>({
+    title: '',
+    description: '',
+    dealType: 'discount',
+    category: 'food',
+    discountAmount: '',
+    originalPrice: '',
+    salePrice: '',
+    validUntil: format(addDays(new Date(), 1), 'yyyy-MM-dd\'T\'HH:mm'),
+    maxRedemptions: 50,
+    requiresReservation: false,
+    dealCode: '',
+    terms: '',
+    availability: 'today'
+  });
 
-  // Only show for business users
-  if (actualUser?.userType !== 'business') {
-    return null;
-  }
-
-  // Fetch existing quick deals
+  // Fetch existing quick deals - must be called unconditionally before any returns
   const { data: quickDeals, isLoading } = useQuery({
     queryKey: ['/api/quick-deals', city, profileUserId],
     queryFn: async () => {
@@ -77,22 +88,7 @@ export function QuickDealsWidget({ city, profileUserId, showCreateForm: external
       return response.json();
     },
     refetchInterval: 30000, // Refresh every 30 seconds for real-time updates
-  });
-
-  const [newDeal, setNewDeal] = useState<NewDeal>({
-    title: '',
-    description: '',
-    dealType: 'discount',
-    category: 'food',
-    discountAmount: '',
-    originalPrice: '',
-    salePrice: '',
-    validUntil: format(addDays(new Date(), 1), 'yyyy-MM-dd\'T\'HH:mm'),
-    maxRedemptions: 50,
-    requiresReservation: false,
-    dealCode: '',
-    terms: '',
-    availability: 'today'
+    enabled: actualUser?.userType === 'business' // Only run query for business users
   });
 
   // Create deal mutation
@@ -218,6 +214,11 @@ export function QuickDealsWidget({ city, profileUserId, showCreateForm: external
     const validUntil = new Date(deal.validUntil);
     return !deal.isActive || validUntil <= now || (deal.currentRedemptions || 0) >= (deal.maxRedemptions || 100);
   }) || [];
+
+  // Only render for business users - AFTER all hooks have been called
+  if (actualUser?.userType !== 'business') {
+    return null;
+  }
 
   return (
     <Card className="w-full">
