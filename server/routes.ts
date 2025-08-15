@@ -10681,6 +10681,76 @@ Questions? Just reply to this message. Welcome aboard!
       
       const businessData = req.body;
       
+      // MAP FIELDS: Convert camelCase frontend fields to snake_case database fields
+      if (businessData.hometownCity !== undefined) {
+        businessData.hometown_city = businessData.hometownCity;
+        delete businessData.hometownCity;
+      }
+      if (businessData.hometownState !== undefined) {
+        businessData.hometown_state = businessData.hometownState;
+        delete businessData.hometownState;
+      }
+      if (businessData.hometownCountry !== undefined) {
+        businessData.hometown_country = businessData.hometownCountry;
+        delete businessData.hometownCountry;
+      }
+      if (businessData.travelStyle !== undefined) {
+        businessData.travel_style = businessData.travelStyle;
+        delete businessData.travelStyle;
+      }
+      if (businessData.businessName !== undefined) {
+        businessData.business_name = businessData.businessName;
+        delete businessData.businessName;
+      }
+      if (businessData.businessDescription !== undefined) {
+        businessData.business_description = businessData.businessDescription;
+        delete businessData.businessDescription;
+      }
+      if (businessData.businessType !== undefined) {
+        businessData.business_type = businessData.businessType;
+        delete businessData.businessType;
+      }
+      if (businessData.streetAddress !== undefined) {
+        businessData.street_address = businessData.streetAddress;
+        delete businessData.streetAddress;
+      }
+      if (businessData.zipCode !== undefined) {
+        businessData.zip_code = businessData.zipCode;
+        delete businessData.zipCode;
+      }
+      if (businessData.phoneNumber !== undefined) {
+        businessData.phone_number = businessData.phoneNumber;
+        delete businessData.phoneNumber;
+      }
+      if (businessData.websiteUrl !== undefined) {
+        businessData.website_url = businessData.websiteUrl;
+        delete businessData.websiteUrl;
+      }
+      if (businessData.isVeteran !== undefined) {
+        businessData.is_veteran = businessData.isVeteran;
+        delete businessData.isVeteran;
+      }
+      if (businessData.isActiveDuty !== undefined) {
+        businessData.is_active_duty = businessData.isActiveDuty;
+        delete businessData.isActiveDuty;
+      }
+      if (businessData.dateOfBirth !== undefined) {
+        businessData.date_of_birth = businessData.dateOfBirth;
+        delete businessData.dateOfBirth;
+      }
+      if (businessData.customInterests !== undefined) {
+        businessData.custom_interests = businessData.customInterests;
+        delete businessData.customInterests;
+      }
+      if (businessData.customActivities !== undefined) {
+        businessData.custom_activities = businessData.customActivities;
+        delete businessData.customActivities;
+      }
+      if (businessData.customEvents !== undefined) {
+        businessData.custom_events = businessData.customEvents;
+        delete businessData.customEvents;
+      }
+      
       // Create business user account
       const result = await storage.createBusinessUser(businessData);
       
