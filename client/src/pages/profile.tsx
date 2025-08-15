@@ -7262,12 +7262,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 </div>
               )}
 
-              {/* Profile Interests, Activities, and Events Section - For ALL users */}
+              {/* Profile Interests, Activities, and Events Section - For non-business users only */}
+              {user?.userType !== 'business' && (
               <div className="space-y-6">
                 <div className="border-t pt-4">
                   <h3 className="text-lg font-semibold mb-4 text-orange-600">Local Interests, Activities & Events</h3>
                   <div className="text-sm text-gray-600 mb-4 p-3 bg-orange-50 rounded border">
-                    <strong>Showcase what your business offers!</strong> Select relevant categories and add custom offerings to help travelers and locals discover and connect with your business.
+                    <strong>Tell us what you're interested in!</strong> Select categories that match your interests to connect with like-minded travelers and locals.
                   </div>
                   
                   {/* Main Profile Interests Section */}
@@ -7443,6 +7444,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </div>
                 </div>
               </div>
+              )}
 
               {/* Military Status Section - Only show for non-business users */}
               {user?.userType !== 'business' && (
