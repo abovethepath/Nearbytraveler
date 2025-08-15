@@ -1293,6 +1293,79 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     }
   }, [user, userLoading, profileForm]);
 
+  // Re-populate form when dialog opens to ensure latest data is shown
+  React.useEffect(() => {
+    if (isEditMode && user && !userLoading) {
+      console.log('🔥 Re-syncing form with updated user data');
+      
+      // For business users, extract and set custom fields
+      if (user.userType === 'business') {
+        const customInterests = (user.interests || [])
+          .filter((item: string) => !getAllInterests().includes(item))
+          .join(', ');
+        const customActivities = (user.activities || [])
+          .filter((item: string) => !getAllActivities().includes(item))
+          .join(', ');
+        const customEvents = (user.events || [])
+          .filter((item: string) => !getAllEvents().includes(item))
+          .join(', ');
+        
+        const predefinedInterests = (user.interests || [])
+          .filter((item: string) => getAllInterests().includes(item));
+        const predefinedActivities = (user.activities || [])
+          .filter((item: string) => getAllActivities().includes(item));
+        const predefinedEvents = (user.events || [])
+          .filter((item: string) => getAllEvents().includes(item));
+        
+        profileForm.reset({
+          bio: user.bio || "",
+          businessName: user.businessName || "",
+          businessDescription: user.businessDescription || "",
+          businessType: user.businessType || "",
+          hometownCity: user.hometownCity || "",
+          hometownState: user.hometownState || "",
+          hometownCountry: user.hometownCountry || "",
+          travelStyle: user.travelStyle || [],
+          city: user.city || "",
+          state: user.state || "",
+          country: user.country || "",
+          location: user.location || "",
+          streetAddress: user.streetAddress || "",
+          zipCode: user.zipCode || "",
+          phoneNumber: user.phoneNumber || "",
+          websiteUrl: user.websiteUrl || "",
+          interests: predefinedInterests,
+          activities: predefinedActivities,
+          events: predefinedEvents,
+          customInterests: customInterests || user.customInterests || "",
+          customActivities: customActivities || user.customActivities || "",
+          customEvents: customEvents || user.customEvents || "",
+          isVeteran: !!user.isVeteran,
+          isActiveDuty: !!user.isActiveDuty,
+        });
+      } else {
+        // For non-business users, reset with their data
+        profileForm.reset({
+          bio: user.bio || "",
+          secretActivities: user.secretActivities || "",
+          hometownCity: user.hometownCity || "",
+          hometownState: user.hometownState || "",
+          hometownCountry: user.hometownCountry || "",
+          dateOfBirth: user.dateOfBirth || "",
+          ageVisible: !!user.ageVisible,
+          gender: user.gender || "",
+          sexualPreference: user.sexualPreference || [],
+          sexualPreferenceVisible: !!user.sexualPreferenceVisible,
+          travelStyle: user.travelStyle || [],
+          travelingWithChildren: !!user.travelingWithChildren,
+          childrenAges: user.childrenAges || "",
+          isVeteran: !!user.isVeteran,
+          isActiveDuty: !!user.isActiveDuty,
+        });
+      }
+    }
+  }, [isEditMode, user, userLoading, profileForm]);
+
   // Form for editing references
   const editReferenceForm = useForm({
     defaultValues: {
@@ -6849,6 +6922,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           <Input
                             {...field}
                             placeholder="Add custom events separated by commas (e.g., jazz nights, food festivals)"
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault();
+                                profileForm.handleSubmit(onProfileSubmit)();
+                              }
+                            }}
                           />
                         </FormControl>
                         <FormDescription>
