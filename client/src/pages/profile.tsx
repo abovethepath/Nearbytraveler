@@ -3587,13 +3587,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       <span className="ml-2 capitalize">{user?.gender?.replace('-', ' ')}</span>
                     </div>
                   )}
-                  {user.isVeteran && (
+                  {/* Military Status for non-business users */}
+                  {user?.userType !== 'business' && user.isVeteran && (
                     <div>
                       <span className="font-medium text-gray-600">Military Status:</span>
                       <span className="ml-2 text-red-600 font-semibold">Veteran</span>
                     </div>
                   )}
-                  {user.isActiveDuty && (
+                  {user?.userType !== 'business' && user.isActiveDuty && (
                     <div>
                       <span className="font-medium text-gray-600">Military Status:</span>
                       <span className="ml-2 text-blue-600 font-semibold">Active Duty</span>
