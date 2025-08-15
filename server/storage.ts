@@ -648,10 +648,11 @@ export class DatabaseStorage implements IStorage {
         }
       }
       
-      console.log('🔧 STORAGE UPDATE: Applying clean data update:', {
+      console.log('🔧 STORAGE UPDATE v2: Applying clean data update:', {
         userId: id,
         fieldCount: Object.keys(cleanData).length,
-        fields: Object.keys(cleanData)
+        fields: Object.keys(cleanData),
+        timestamp: Date.now()
       });
 
       // TEMPORARY FIX: Use direct pool query to bypass Drizzle ORM issue
@@ -718,7 +719,7 @@ export class DatabaseStorage implements IStorage {
         converted: Object.keys(dbCleanData)
       });
 
-      // Build the SQL update statement manually
+      // Build the SQL update statement manually from MAPPED data
       const setClause = Object.keys(dbCleanData)
         .map((key, index) => `"${key}" = $${index + 2}`)
         .join(', ');
@@ -732,8 +733,9 @@ export class DatabaseStorage implements IStorage {
         RETURNING *
       `;
       
-      console.log('🔧 STORAGE UPDATE: Executing SQL:', sqlQuery);
-      console.log('🔧 STORAGE UPDATE: With values:', values);
+      console.log('🔧 STORAGE UPDATE v2: Executing SQL with mapped fields');
+      console.log('🔧 STORAGE UPDATE v2: SQL Query:', sqlQuery);
+      console.log('🔧 STORAGE UPDATE v2: With values:', values);
       
       // Use direct pool query instead of Drizzle
       const result = await pool.query(sqlQuery, values);
