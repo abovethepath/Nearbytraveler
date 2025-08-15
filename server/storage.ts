@@ -663,7 +663,7 @@ export class DatabaseStorage implements IStorage {
       // Field name mapping from camelCase to snake_case for database columns
       const fieldNameMap: Record<string, string> = {
         hometownCity: 'hometown_city',
-        hometownState: 'hometown_state',
+        hometownState: 'hometown_state', 
         hometownCountry: 'hometown_country',
         travelStyle: 'travel_style',
         dateOfBirth: 'date_of_birth',
@@ -683,6 +683,9 @@ export class DatabaseStorage implements IStorage {
         zipCode: 'zip_code',
         phoneNumber: 'phone_number',
         websiteUrl: 'website_url',
+        customInterests: 'custom_interests',
+        customActivities: 'custom_activities',
+        customEvents: 'custom_events',
         latitude: 'latitude',
         longitude: 'longitude'
       };
@@ -690,8 +693,13 @@ export class DatabaseStorage implements IStorage {
       // Convert field names to snake_case for database
       const dbCleanData: any = {};
       for (const [key, value] of Object.entries(cleanData)) {
-        const dbKey = fieldNameMap[key] || key;
-        dbCleanData[dbKey] = value;
+        // Skip if already snake_case (from route handler)
+        if (key.includes('_')) {
+          dbCleanData[key] = value;
+        } else {
+          const dbKey = fieldNameMap[key] || key;
+          dbCleanData[dbKey] = value;
+        }
       }
 
       console.log('🔧 STORAGE UPDATE: Field mapping applied:', {
