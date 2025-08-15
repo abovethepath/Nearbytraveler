@@ -6194,17 +6194,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       <Input
                         placeholder="e.g., Photography, Rock Climbing, Local Cuisine"
                         value={field.value || ''}
-                        onChange={(e) => {
-                          field.onChange(e.target.value);
-                          // Auto-add to interests array when user types
-                          const customInterests = e.target.value.split(',').map(item => item.trim()).filter(item => item);
-                          const existingInterests = form.getValues('interests') || [];
-                          const currentCustom = existingInterests.filter(interest => !getAllInterests().includes(interest));
-                          const newInterests = [...existingInterests.filter(interest => getAllInterests().includes(interest)), ...customInterests];
-                          if (JSON.stringify(newInterests.sort()) !== JSON.stringify(existingInterests.sort())) {
-                            form.setValue('interests', newInterests);
-                          }
-                        }}
+                        onChange={(e) => field.onChange(e.target.value)}
                         className="text-xs"
                       />
                     )}
@@ -6264,16 +6254,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       <Input
                         placeholder="e.g., Surfing Lessons, Wine Tasting, Museum Tours"
                         value={field.value || ''}
-                        onChange={(e) => {
-                          field.onChange(e.target.value);
-                          // Auto-add to activities array when user types
-                          const customActivities = e.target.value.split(',').map(item => item.trim()).filter(item => item);
-                          const existingActivities = form.getValues('activities') || [];
-                          const newActivities = [...existingActivities.filter(activity => getAllActivities().includes(activity)), ...customActivities];
-                          if (JSON.stringify(newActivities.sort()) !== JSON.stringify(existingActivities.sort())) {
-                            form.setValue('activities', newActivities);
-                          }
-                        }}
+                        onChange={(e) => field.onChange(e.target.value)}
                         className="text-xs"
                       />
                     )}
@@ -6329,16 +6310,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       <Input
                         placeholder="e.g., Jazz Festival, Food Market, Art Exhibition"
                         value={field.value || ''}
-                        onChange={(e) => {
-                          field.onChange(e.target.value);
-                          // Auto-add to events array when user types
-                          const customEvents = e.target.value.split(',').map(item => item.trim()).filter(item => item);
-                          const existingEvents = form.getValues('events') || [];
-                          const newEvents = [...existingEvents.filter(event => getAllEvents().includes(event)), ...customEvents];
-                          if (JSON.stringify(newEvents.sort()) !== JSON.stringify(existingEvents.sort())) {
-                            form.setValue('events', newEvents);
-                          }
-                        }}
+                        onChange={(e) => field.onChange(e.target.value)}
                         className="text-xs"
                       />
                     )}
@@ -7084,16 +7056,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           <Input
                             placeholder="e.g., Photography, Rock Climbing, Local Cuisine, Art History"
                             value={field.value || ''}
-                            onChange={(e) => {
-                              field.onChange(e.target.value);
-                              // Auto-add to interests array when user types
-                              const customInterests = e.target.value.split(',').map(item => item.trim()).filter(item => item);
-                              const existingInterests = profileForm.getValues('interests') || [];
-                              const newInterests = [...existingInterests.filter(interest => getAllInterests().includes(interest)), ...customInterests];
-                              if (JSON.stringify(newInterests.sort()) !== JSON.stringify(existingInterests.sort())) {
-                                profileForm.setValue('interests', newInterests);
-                              }
-                            }}
+                            onChange={(e) => field.onChange(e.target.value)}
                             className="text-xs"
                           />
                         )}
@@ -7153,16 +7116,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           <Input
                             placeholder="e.g., Surfing Lessons, Wine Tasting, Museum Tours, Rock Concerts"
                             value={field.value || ''}
-                            onChange={(e) => {
-                              field.onChange(e.target.value);
-                              // Auto-add to activities array when user types
-                              const customActivities = e.target.value.split(',').map(item => item.trim()).filter(item => item);
-                              const existingActivities = profileForm.getValues('activities') || [];
-                              const newActivities = [...existingActivities.filter(activity => getAllActivities().includes(activity)), ...customActivities];
-                              if (JSON.stringify(newActivities.sort()) !== JSON.stringify(existingActivities.sort())) {
-                                profileForm.setValue('activities', newActivities);
-                              }
-                            }}
+                            onChange={(e) => field.onChange(e.target.value)}
                             className="text-xs"
                           />
                         )}
@@ -7218,16 +7172,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           <Input
                             placeholder="e.g., Jazz Festival, Food Market, Art Exhibition, Tech Conferences"
                             value={field.value || ''}
-                            onChange={(e) => {
-                              field.onChange(e.target.value);
-                              // Auto-add to events array when user types
-                              const customEvents = e.target.value.split(',').map(item => item.trim()).filter(item => item);
-                              const existingEvents = profileForm.getValues('events') || [];
-                              const newEvents = [...existingEvents.filter(event => getAllEvents().includes(event)), ...customEvents];
-                              if (JSON.stringify(newEvents.sort()) !== JSON.stringify(existingEvents.sort())) {
-                                profileForm.setValue('events', newEvents);
-                              }
-                            }}
+                            onChange={(e) => field.onChange(e.target.value)}
                             className="text-xs"
                           />
                         )}

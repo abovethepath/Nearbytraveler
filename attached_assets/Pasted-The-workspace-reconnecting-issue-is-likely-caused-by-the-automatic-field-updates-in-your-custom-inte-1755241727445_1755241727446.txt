@@ -1,0 +1,66 @@
+The workspace reconnecting issue is likely caused by the automatic field updates in your custom interests/activities/events sections. This creates infinite re-renders and state updates.
+Immediate Fix - Remove Auto-Updates
+Replace the problematic onChange handlers with simple ones:
+jsx// For Custom Interests
+<FormField
+  control={profileForm.control}
+  name="customInterests"
+  render={({ field }) => (
+    <Input
+      placeholder="e.g., Photography Services, Local Tours, Art Classes"
+      value={field.value || ''}
+      onChange={(e) => field.onChange(e.target.value)} // Simple change only
+      className="text-xs"
+    />
+  )}
+/>
+
+// For Custom Activities  
+<FormField
+  control={profileForm.control}
+  name="customActivities"
+  render={({ field }) => (
+    <Input
+      placeholder="e.g., Cooking Classes, Wine Tasting, Guided Tours"
+      value={field.value || ''}
+      onChange={(e) => field.onChange(e.target.value)} // Simple change only
+      className="text-xs"
+    />
+  )}
+/>
+
+// For Custom Events
+<FormField
+  control={profileForm.control}
+  name="customEvents"
+  render={({ field }) => (
+    <Input
+      placeholder="e.g., Weekly Jazz Nights, Art Exhibitions, Food Festivals"
+      value={field.value || ''}
+      onChange={(e) => field.onChange(e.target.value)} // Simple change only
+      className="text-xs"
+    />
+  )}
+/>
+The Problem
+Your current code has this pattern that causes infinite loops:
+jsxonChange={(e) => {
+  field.onChange(e.target.value);
+  // This setValue triggers re-renders which trigger more onChange events
+  profileForm.setValue('interests', newInterests);
+}}
+Better Approach
+If you want to auto-merge custom fields, do it only on form submission:
+jsxconst onSubmitProfile = (data) => {
+  // Merge custom fields here instead of on every keystroke
+  const customInterests = data.customInterests?.split(',').map(s => s.trim()).filter(s => s) || [];
+  const allInterests = [...(data.interests || []), ...customInterests];
+  
+  const finalData = {
+    ...data,
+    interests: allInterests
+  };
+  
+  // Submit finalData
+};
+This should stop the reconnection issues and make your save button work properly.
