@@ -2717,6 +2717,24 @@ Questions? Just reply to this message. Welcome aboard!
 
       if (process.env.NODE_ENV === 'development') console.log(`Updating user ${userId} with:`, Object.keys(updates));
 
+      // MAP USER FIELDS: Convert camelCase frontend fields to snake_case database fields
+      if (updates.hometownCity !== undefined) {
+        updates.hometown_city = updates.hometownCity;
+        delete updates.hometownCity;
+      }
+      if (updates.hometownState !== undefined) {
+        updates.hometown_state = updates.hometownState;
+        delete updates.hometownState;
+      }
+      if (updates.hometownCountry !== undefined) {
+        updates.hometown_country = updates.hometownCountry;
+        delete updates.hometownCountry;
+      }
+      if (updates.travelStyle !== undefined) {
+        updates.travel_style = updates.travelStyle;
+        delete updates.travelStyle;
+      }
+
       // MAP BUSINESS FIELDS: Convert camelCase frontend fields to snake_case database fields
       if (updates.businessName !== undefined) {
         updates.business_name = updates.businessName;
