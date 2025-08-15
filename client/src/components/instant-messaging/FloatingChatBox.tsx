@@ -22,6 +22,30 @@ export function FloatingChatBox({ targetUser, onClose, onMinimize, isMinimized }
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const user = authStorage.getUser();
 
+  // Prevent self-messaging
+  if (user?.id === targetUser.id) {
+    return (
+      <div className="fixed bottom-4 right-4 w-80 h-32 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-xl z-50 flex flex-col">
+        <div className="flex items-center justify-between p-3 border-b border-gray-200 dark:border-gray-600 bg-orange-600 text-white rounded-t-lg">
+          <h3 className="font-semibold text-sm">Cannot Message Yourself</h3>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onClose}
+            className="text-white hover:bg-orange-700 p-1"
+          >
+            <X className="w-4 h-4" />
+          </Button>
+        </div>
+        <div className="flex-1 flex items-center justify-center p-3">
+          <p className="text-center text-gray-600 dark:text-gray-400 text-sm">
+            You cannot send messages to yourself. Try messaging other users instead!
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   // Fetch messages between current user and target user
   const { data: messages = [] } = useQuery({
     queryKey: [`/api/messages/${user?.id}`],
