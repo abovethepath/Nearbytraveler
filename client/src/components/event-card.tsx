@@ -156,9 +156,6 @@ export default function EventCard({ event, compact = false, featured = false }: 
               Featured
             </Badge>
           )}
-          <Badge className="absolute top-3 right-3 bg-white text-gray-900 font-medium text-crisp">
-            {event.category}
-          </Badge>
         </div>
       )}
       <CardContent className="p-6">
