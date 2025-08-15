@@ -692,17 +692,28 @@ export class DatabaseStorage implements IStorage {
 
       // Convert field names to snake_case for database
       const dbCleanData: any = {};
-      for (const [key, value] of Object.entries(cleanData)) {
-        // Skip if already snake_case (from route handler)
-        if (key.includes('_')) {
-          dbCleanData[key] = value;
-        } else {
-          const dbKey = fieldNameMap[key] || key;
-          dbCleanData[dbKey] = value;
+      
+      try {
+        console.log('🔧 STORAGE UPDATE: Starting field mapping...');
+        for (const [key, value] of Object.entries(cleanData)) {
+          // Skip if already snake_case (from route handler)
+          if (key.includes('_')) {
+            dbCleanData[key] = value;
+            console.log(`🔧 STORAGE UPDATE: Keeping snake_case field: ${key}`);
+          } else {
+            const dbKey = fieldNameMap[key] || key;
+            dbCleanData[dbKey] = value;
+            if (dbKey !== key) {
+              console.log(`🔧 STORAGE UPDATE: Mapped ${key} → ${dbKey}`);
+            }
+          }
         }
+      } catch (mappingError) {
+        console.error('🔧 STORAGE UPDATE: Field mapping error:', mappingError);
+        throw mappingError;
       }
 
-      console.log('🔧 STORAGE UPDATE: Field mapping applied:', {
+      console.log('🔧 STORAGE UPDATE: Field mapping completed:', {
         original: Object.keys(cleanData),
         converted: Object.keys(dbCleanData)
       });
