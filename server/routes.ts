@@ -3794,14 +3794,29 @@ Questions? Just reply to this message. Welcome aboard!
       // Create participant count lookup
       const participantCountMap = new Map(participantCounts.map(pc => [pc.eventId, pc.count]));
 
-      // Add participant counts to events
-      const eventsWithCounts = eventsQuery.map(event => ({
-        ...event,
-        participantCount: participantCountMap.get(event.id) || 0
-      }));
+      // ENHANCED: Add participant counts AND organizer information to events
+      const eventsWithCountsAndOrganizers = await Promise.all(
+        eventsQuery.map(async (event) => {
+          let organizer = null;
+          
+          // Only fetch organizer info for user-created events (organizerId > 0)
+          if (event.organizerId && event.organizerId > 0) {
+            const organizerUser = await storage.getUser(event.organizerId);
+            if (organizerUser) {
+              organizer = organizerUser.username; // Use username instead of business name
+            }
+          }
+          
+          return {
+            ...event,
+            participantCount: participantCountMap.get(event.id) || 0,
+            organizer: organizer // Add organizer username for display
+          };
+        })
+      );
 
-      if (process.env.NODE_ENV === 'development') console.log(`🎪 EVENTS: Enhanced ${eventsWithCounts.length} events with participant counts`);
-      return res.json(eventsWithCounts);
+      if (process.env.NODE_ENV === 'development') console.log(`🎪 EVENTS: Enhanced ${eventsWithCountsAndOrganizers.length} events with participant counts and organizer info`);
+      return res.json(eventsWithCountsAndOrganizers);
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error fetching events:", error);
       return res.status(500).json({ message: "Failed to fetch events" });
@@ -3819,19 +3834,29 @@ Questions? Just reply to this message. Welcome aboard!
         return res.status(404).json({ message: "Event not found" });
       }
 
-      // Add participant count
+      // Add participant count and organizer information
       const result = await db
         .select({ count: sql<number>`count(*)` })
         .from(eventParticipants)
         .where(eq(eventParticipants.eventId, eventId));
       
-      const eventWithCount = {
+      let organizer = null;
+      // Only fetch organizer info for user-created events (organizerId > 0)
+      if (event.organizerId && event.organizerId > 0) {
+        const organizerUser = await storage.getUser(event.organizerId);
+        if (organizerUser) {
+          organizer = organizerUser.username; // Use username instead of business name
+        }
+      }
+      
+      const eventWithCountAndOrganizer = {
         ...event,
-        participantCount: result[0]?.count || 0
+        participantCount: result[0]?.count || 0,
+        organizer: organizer // Add organizer username for display
       };
 
-      if (process.env.NODE_ENV === 'development') console.log(`🎪 EVENT DETAILS: Found event ${event.title} with ${eventWithCount.participantCount} participants`);
-      return res.json(eventWithCount);
+      if (process.env.NODE_ENV === 'development') console.log(`🎪 EVENT DETAILS: Found event ${event.title} with ${eventWithCountAndOrganizer.participantCount} participants, organizer: ${organizer}`);
+      return res.json(eventWithCountAndOrganizer);
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error fetching event details:", error);
       return res.status(500).json({ message: "Failed to fetch event details" });
