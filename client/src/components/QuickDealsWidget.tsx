@@ -6,7 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Zap, Clock, MapPin, Users, Coffee, Plus, DollarSign, Tag, Calendar, Percent } from 'lucide-react';
+import { Zap, Clock, MapPin, Users, Coffee, Plus, DollarSign, Tag, Calendar, Percent, Gift, Package, Trash2, ChevronDown } from 'lucide-react';
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
@@ -24,8 +24,7 @@ interface NewDeal {
   originalPrice: string;
   salePrice: string;
   validUntil: string;
-  maxRedemptions: number;
-  requiresReservation: boolean;
+  duration?: string;
   dealCode: string;
   terms: string;
   availability: string;
@@ -54,14 +53,13 @@ export function QuickDealsWidget({ city, profileUserId, showCreateForm: external
   const [newDeal, setNewDeal] = useState<NewDeal>({
     title: '',
     description: '',
-    dealType: 'discount',
-    category: 'food',
+    dealType: 'percentage',
+    category: 'Restaurant/Food Service',
     discountAmount: '',
     originalPrice: '',
     salePrice: '',
-    validUntil: format(addDays(new Date(), 1), 'yyyy-MM-dd\'T\'HH:mm'),
-    maxRedemptions: 50,
-    requiresReservation: false,
+    validUntil: format(addHours(new Date(), 1), 'yyyy-MM-dd\'T\'HH:mm'),
+    duration: '1',
     dealCode: '',
     terms: '',
     availability: 'today'
@@ -106,14 +104,13 @@ export function QuickDealsWidget({ city, profileUserId, showCreateForm: external
       setNewDeal({
         title: '',
         description: '',
-        dealType: 'discount',
-        category: 'food',
+        dealType: 'percentage',
+        category: 'Restaurant/Food Service',
         discountAmount: '',
         originalPrice: '',
         salePrice: '',
-        validUntil: format(addDays(new Date(), 1), 'yyyy-MM-dd\'T\'HH:mm'),
-        maxRedemptions: 50,
-        requiresReservation: false,
+        validUntil: format(addHours(new Date(), 1), 'yyyy-MM-dd\'T\'HH:mm'),
+        duration: '1',
         dealCode: '',
         terms: '',
         availability: 'today'
@@ -157,8 +154,8 @@ export function QuickDealsWidget({ city, profileUserId, showCreateForm: external
       salePrice: newDeal.salePrice || null,
       validFrom: new Date(),
       validUntil: new Date(newDeal.validUntil),
-      maxRedemptions: newDeal.maxRedemptions,
-      requiresReservation: newDeal.requiresReservation,
+      maxRedemptions: 100, // Default to 100 uses
+      requiresReservation: false, // Default to false
       dealCode: newDeal.dealCode || null,
       terms: newDeal.terms || null,
       availability: newDeal.availability,
@@ -195,11 +192,13 @@ export function QuickDealsWidget({ city, profileUserId, showCreateForm: external
 
   const getDealTypeIcon = (dealType: string) => {
     switch (dealType) {
-      case 'discount': return <Percent className="h-3 w-3" />;
+      case 'percentage': return <Percent className="h-3 w-3" />;
+      case 'dollar': return <DollarSign className="h-3 w-3" />;
       case 'bogo': return <Tag className="h-3 w-3" />;
+      case 'free_item': return <Gift className="h-3 w-3" />;
+      case 'combo': return <Package className="h-3 w-3" />;
       case 'happy_hour': return <Coffee className="h-3 w-3" />;
-      case 'flash_sale': return <Zap className="h-3 w-3" />;
-      default: return <DollarSign className="h-3 w-3" />;
+      default: return <Tag className="h-3 w-3" />;
     }
   };
 
@@ -277,7 +276,7 @@ export function QuickDealsWidget({ city, profileUserId, showCreateForm: external
                 />
               </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <div>
                   <label className="text-sm font-medium">Deal Type</label>
                   <Select value={newDeal.dealType} onValueChange={(value) => setNewDeal({ ...newDeal, dealType: value })}>
@@ -285,11 +284,12 @@ export function QuickDealsWidget({ city, profileUserId, showCreateForm: external
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="discount">Discount</SelectItem>
-                      <SelectItem value="bogo">BOGO</SelectItem>
+                      <SelectItem value="percentage">% Off</SelectItem>
+                      <SelectItem value="dollar">$ Off</SelectItem>
+                      <SelectItem value="bogo">Buy One Get One</SelectItem>
+                      <SelectItem value="free_item">Free Item</SelectItem>
+                      <SelectItem value="combo">Combo Deal</SelectItem>
                       <SelectItem value="happy_hour">Happy Hour</SelectItem>
-                      <SelectItem value="special_offer">Special Offer</SelectItem>
-                      <SelectItem value="flash_sale">Flash Sale</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -301,69 +301,64 @@ export function QuickDealsWidget({ city, profileUserId, showCreateForm: external
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="food">Food</SelectItem>
-                      <SelectItem value="drinks">Drinks</SelectItem>
-                      <SelectItem value="shopping">Shopping</SelectItem>
-                      <SelectItem value="services">Services</SelectItem>
-                      <SelectItem value="entertainment">Entertainment</SelectItem>
+                      <SelectItem value="Restaurant/Food Service">Food & Dining</SelectItem>
+                      <SelectItem value="Bar/Nightlife">Drinks & Nightlife</SelectItem>
+                      <SelectItem value="Coffee Shop/Cafe">Coffee & Cafe</SelectItem>
+                      <SelectItem value="Retail Store">Shopping</SelectItem>
+                      <SelectItem value="Entertainment Venue">Entertainment</SelectItem>
+                      <SelectItem value="Wellness/Spa Service">Wellness & Spa</SelectItem>
+                      <SelectItem value="Adventure/Outdoor Activity">Adventure & Tours</SelectItem>
+                      <SelectItem value="Other">Other Services</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium">Available Until</label>
-                  <Input
-                    type="datetime-local"
-                    value={newDeal.validUntil}
-                    onChange={(e) => setNewDeal({ ...newDeal, validUntil: e.target.value })}
-                    data-testid="input-valid-until"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-sm font-medium">Max Uses</label>
-                  <Input
-                    type="number"
-                    value={newDeal.maxRedemptions}
-                    onChange={(e) => setNewDeal({ ...newDeal, maxRedemptions: parseInt(e.target.value) || 50 })}
-                    placeholder="50"
-                    data-testid="input-max-redemptions"
-                  />
+                  <label className="text-sm font-medium">Active Duration</label>
+                  <Select 
+                    value={newDeal.duration || "1"} 
+                    onValueChange={(hours) => {
+                      const now = new Date();
+                      const validUntil = new Date(now.getTime() + parseInt(hours) * 60 * 60 * 1000);
+                      setNewDeal({ 
+                        ...newDeal, 
+                        duration: hours,
+                        validUntil: validUntil.toISOString().slice(0, 16)
+                      });
+                    }}
+                  >
+                    <SelectTrigger data-testid="select-deal-duration">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((hour) => (
+                        <SelectItem key={hour} value={hour.toString()}>
+                          {hour} {hour === 1 ? 'hour' : 'hours'}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
 
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <label className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      checked={newDeal.requiresReservation}
-                      onChange={(e) => setNewDeal({ ...newDeal, requiresReservation: e.target.checked })}
-                      data-testid="checkbox-requires-reservation"
-                    />
-                    <span className="text-sm">Requires Reservation</span>
-                  </label>
-                </div>
-
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      setInternalShowCreateForm(false);
-                      if (onCloseCreateForm) onCloseCreateForm();
-                    }}
-                    data-testid="button-cancel-deal"
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    onClick={handleCreateDeal}
-                    disabled={createDealMutation.isPending}
-                    data-testid="button-save-deal"
-                  >
-                    {createDealMutation.isPending ? 'Creating...' : 'Create Deal'}
-                  </Button>
-                </div>
+              <div className="flex justify-end gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setInternalShowCreateForm(false);
+                    if (onCloseCreateForm) onCloseCreateForm();
+                  }}
+                  data-testid="button-cancel-deal"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleCreateDeal}
+                  disabled={createDealMutation.isPending}
+                  data-testid="button-save-deal"
+                >
+                  {createDealMutation.isPending ? 'Creating...' : 'Create Deal'}
+                </Button>
               </div>
             </div>
           </div>
