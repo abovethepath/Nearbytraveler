@@ -39,6 +39,7 @@ import { COUNTRIES, CITIES_BY_COUNTRY } from "@/lib/locationData";
 import { SmartLocationInput } from "@/components/SmartLocationInput";
 import { calculateAge, formatDateOfBirthForInput, validateDateInput, getDateInputConstraints } from "@/lib/ageUtils";
 import { isTopChoiceInterest, getInterestStyle, getActivityStyle, getEventStyle } from "@/lib/topChoicesUtils";
+import { BUSINESS_TYPES } from "../../../shared/base-options";
 
 // State/Province arrays - consistent with signup forms
 const US_STATES = [
@@ -6440,13 +6441,20 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Business Type</FormLabel>
-                        <FormControl>
-                          <Input 
-                            {...field} 
-                            placeholder="e.g., Restaurant, Hotel, Tour Company..."
-                            maxLength={50}
-                          />
-                        </FormControl>
+                        <Select onValueChange={field.onChange} defaultValue={field.value ?? ''}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select business type" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent className="dark:bg-gray-800 dark:border-gray-600">
+                            {BUSINESS_TYPES.map((type) => (
+                              <SelectItem key={type} value={type} className="dark:text-white dark:hover:bg-gray-700">
+                                {type}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                         <FormMessage />
                       </FormItem>
                     )}
