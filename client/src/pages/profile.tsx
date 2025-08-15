@@ -6975,7 +6975,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 <div className="border-t pt-4">
                   <h3 className="text-lg font-semibold mb-4 text-orange-600">Local Interests, Activities & Events</h3>
                   <div className="text-sm text-gray-600 mb-4 p-3 bg-orange-50 rounded border">
-                    <strong>Tell others about your interests!</strong> Select from the options below and add your own custom entries to help others connect with you based on shared interests.
+                    <strong>Showcase what your business offers!</strong> Select relevant categories and add custom offerings to help travelers and locals discover and connect with your business.
                   </div>
                   
                   {/* Main Profile Interests Section */}
@@ -7269,6 +7269,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   type="submit" 
                   disabled={editProfile.isPending}
                   className="flex-1"
+                  onClick={() => {
+                    console.log('🔥 SAVE BUTTON CLICKED');
+                    console.log('🔥 Form errors:', profileForm.formState.errors);
+                    console.log('🔥 Form values:', profileForm.getValues());
+                    console.log('🔥 Form valid:', profileForm.formState.isValid);
+                  }}
                 >
                   {editProfile.isPending ? "Saving..." : "Save Changes"}
                 </Button>
