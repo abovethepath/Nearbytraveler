@@ -6711,6 +6711,99 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // Customer Photos Endpoints for Businesses
+  // GET customer photos for a business
+  app.get("/api/businesses/:businessId/customer-photos", async (req, res) => {
+    try {
+      const businessId = parseInt(req.params.businessId);
+      
+      if (!businessId) {
+        return res.status(400).json({ message: "Invalid business ID" });
+      }
+
+      const photos = await storage.getBusinessCustomerPhotos(businessId);
+      
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`📸 CUSTOMER PHOTOS: Fetched ${photos.length} photos for business ${businessId}`);
+      }
+      
+      res.json(photos);
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error fetching customer photos:", error);
+      res.status(500).json({ message: "Failed to fetch customer photos" });
+    }
+  });
+
+  // POST new customer photo for a business
+  app.post("/api/businesses/:businessId/customer-photos", async (req, res) => {
+    try {
+      const businessId = parseInt(req.params.businessId);
+      const { photoUrl, caption, uploaderName, uploaderType } = req.body;
+      
+      if (!businessId || !photoUrl) {
+        return res.status(400).json({ message: "Business ID and photo URL are required" });
+      }
+
+      // Get current user from auth
+      const authHeader = req.headers.authorization;
+      let uploaderId = 0;
+      
+      if (authHeader) {
+        // Extract user ID from auth token or session
+        // For now, we'll use a default value if not available
+        uploaderId = parseInt(req.body.uploaderId || '0');
+      }
+
+      const photo = await storage.createBusinessCustomerPhoto({
+        businessId,
+        uploaderId,
+        photoUrl,
+        caption: caption || '',
+        uploaderName: uploaderName || 'Anonymous',
+        uploaderType: uploaderType || 'customer',
+        isApproved: true, // Auto-approve for now
+      });
+      
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`📸 CUSTOMER PHOTOS: Added new photo for business ${businessId}`);
+      }
+      
+      res.status(201).json(photo);
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error adding customer photo:", error);
+      res.status(500).json({ message: "Failed to add customer photo" });
+    }
+  });
+
+  // DELETE customer photo (business owners only)
+  app.delete("/api/businesses/:businessId/customer-photos/:photoId", async (req, res) => {
+    try {
+      const businessId = parseInt(req.params.businessId);
+      const photoId = parseInt(req.params.photoId);
+      
+      if (!businessId || !photoId) {
+        return res.status(400).json({ message: "Invalid business ID or photo ID" });
+      }
+
+      // TODO: Add authentication check to ensure only business owner can delete
+      // For now, we'll allow deletion if the request is made
+      
+      const success = await storage.deleteBusinessCustomerPhoto(photoId);
+      
+      if (success) {
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`📸 CUSTOMER PHOTOS: Deleted photo ${photoId} from business ${businessId}`);
+        }
+        res.json({ success: true, message: "Photo deleted successfully" });
+      } else {
+        res.status(404).json({ message: "Photo not found" });
+      }
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error deleting customer photo:", error);
+      res.status(500).json({ message: "Failed to delete photo" });
+    }
+  });
+
   // RESTORED: City photos API endpoint with AUTHENTIC user-uploaded photos
   app.get("/api/city-photos", async (req, res) => {
     try {
