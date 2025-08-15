@@ -2609,11 +2609,15 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   // Profile edit mutation
   const editProfile = useMutation({
     mutationFn: async (data: z.infer<typeof dynamicProfileSchema>) => {
-      console.log('🔥 MUTATION: Profile edit data being sent:', data);
-      console.log('🔥 MUTATION: travelingWithChildren in data:', data.travelingWithChildren, 'will become:', !!data.travelingWithChildren);
+      console.log('🔥 BUSINESS SAVE: Data being sent:', data);
+      console.log('🔥 MUTATION: User type is:', user?.userType);
       
-      // Ensure boolean fields are explicitly included (don't drop false values)
-      const payload = {
+      // For business users, use simpler payload structure
+      const payload = user?.userType === 'business' ? {
+        ...data,
+        isVeteran: !!data.isVeteran,
+        isActiveDuty: !!data.isActiveDuty,
+      } : {
         ...data,
         // Only include traveler fields if they exist in the data
         ...((data as any).hasOwnProperty('travelingWithChildren') && { travelingWithChildren: !!(data as any).travelingWithChildren }),
@@ -2625,8 +2629,17 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       };
       
       console.log('🔥 MUTATION: Profile payload with explicit booleans:', payload);
-      console.log('🔥 MUTATION: Final travelingWithChildren value being sent:', payload.travelingWithChildren);
-      const response = await apiRequest('PUT', `/api/users/${effectiveUserId}`, payload);
+      
+      const response = await fetch(`/api/users/${effectiveUserId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-user-id': currentUser?.id?.toString(),
+          'x-user-type': user?.userType || 'traveler'
+        },
+        body: JSON.stringify(payload)
+      });
+      
       if (!response.ok) {
         const errorText = await response.text();
         console.error('Profile edit error response:', errorText);
@@ -2717,9 +2730,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   });
 
   const onSubmitProfile = (data: z.infer<typeof dynamicProfileSchema>) => {
-    console.log('🔥 FORM SUBMIT: Raw form data:', data);
+    console.log('🔥 BUSINESS FORM SUBMIT:', data);
     console.log('🔥 FORM SUBMIT: User type is:', user?.userType);
-    console.log('Form validation errors:', profileForm.formState.errors);
+    console.log('🔥 Form errors:', profileForm.formState.errors);
+    console.log('🔥 Form valid:', profileForm.formState.isValid);
     
     // Clear children ages if traveling with children is turned off (only for non-business users)
     if (user?.userType !== 'business' && 'travelingWithChildren' in data && !data.travelingWithChildren) {
