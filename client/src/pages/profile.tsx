@@ -6659,46 +6659,52 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       <FormItem>
                         <FormLabel>Interests</FormLabel>
                         <FormControl>
-                          <div className="space-y-2">
-                            <div className="flex flex-wrap gap-2 p-3 bg-gradient-to-r from-blue-50 to-orange-50 dark:from-blue-900/20 dark:to-orange-900/20 rounded-lg max-h-48 overflow-y-auto">
-                              {getAllInterests().map((interest) => {
-                                const isSelected = field.value?.includes(interest);
-                                return (
-                                  <button
-                                    key={interest}
-                                    type="button"
-                                    onClick={() => {
-                                      const newValue = isSelected
-                                        ? field.value?.filter((i: string) => i !== interest) || []
-                                        : [...(field.value || []), interest];
-                                      field.onChange(newValue);
-                                    }}
-                                    className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
-                                      isSelected
-                                        ? 'bg-green-600 text-white font-bold'
-                                        : 'bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-800 dark:text-blue-200'
-                                    }`}
-                                  >
-                                    {interest}
-                                  </button>
-                                );
-                              })}
-                            </div>
-                            <FormField
-                              control={profileForm.control}
-                              name="customInterests"
-                              render={({ field }) => (
-                                <FormControl>
-                                  <Input
-                                    {...field}
-                                    placeholder="Add custom interests separated by commas (e.g., ice cream, vintage cars)"
-                                    className="mt-2"
-                                  />
-                                </FormControl>
-                              )}
-                            />
+                          <div className="flex flex-wrap gap-2 p-3 bg-gradient-to-r from-blue-50 to-orange-50 dark:from-blue-900/20 dark:to-orange-900/20 rounded-lg max-h-48 overflow-y-auto">
+                            {getAllInterests().map((interest) => {
+                              const isSelected = field.value?.includes(interest);
+                              return (
+                                <button
+                                  key={interest}
+                                  type="button"
+                                  onClick={() => {
+                                    const newValue = isSelected
+                                      ? field.value?.filter((i: string) => i !== interest) || []
+                                      : [...(field.value || []), interest];
+                                    field.onChange(newValue);
+                                  }}
+                                  className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
+                                    isSelected
+                                      ? 'bg-green-600 text-white font-bold'
+                                      : 'bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-800 dark:text-blue-200'
+                                  }`}
+                                >
+                                  {interest}
+                                </button>
+                              );
+                            })}
                           </div>
                         </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Custom Interests Field */}
+                  <FormField
+                    control={profileForm.control}
+                    name="customInterests"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Custom Interests</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            placeholder="Add custom interests separated by commas (e.g., ice cream, vintage cars)"
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          Enter any interests not listed above, separated by commas
+                        </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -6712,46 +6718,52 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       <FormItem>
                         <FormLabel>Activities</FormLabel>
                         <FormControl>
-                          <div className="space-y-2">
-                            <div className="flex flex-wrap gap-2 p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg max-h-48 overflow-y-auto">
-                              {getAllActivities().map((activity) => {
-                                const isSelected = field.value?.includes(activity);
-                                return (
-                                  <button
-                                    key={activity}
-                                    type="button"
-                                    onClick={() => {
-                                      const newValue = isSelected
-                                        ? field.value?.filter((a: string) => a !== activity) || []
-                                        : [...(field.value || []), activity];
-                                      field.onChange(newValue);
-                                    }}
-                                    className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
-                                      isSelected
-                                        ? 'bg-green-600 text-white font-bold'
-                                        : 'bg-purple-100 text-purple-800 hover:bg-purple-200 dark:bg-purple-800 dark:text-purple-200'
-                                    }`}
-                                  >
-                                    {activity}
-                                  </button>
-                                );
-                              })}
-                            </div>
-                            <FormField
-                              control={profileForm.control}
-                              name="customActivities"
-                              render={({ field }) => (
-                                <FormControl>
-                                  <Input
-                                    {...field}
-                                    placeholder="Add custom activities separated by commas (e.g., pottery, dog walking)"
-                                    className="mt-2"
-                                  />
-                                </FormControl>
-                              )}
-                            />
+                          <div className="flex flex-wrap gap-2 p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg max-h-48 overflow-y-auto">
+                            {getAllActivities().map((activity) => {
+                              const isSelected = field.value?.includes(activity);
+                              return (
+                                <button
+                                  key={activity}
+                                  type="button"
+                                  onClick={() => {
+                                    const newValue = isSelected
+                                      ? field.value?.filter((a: string) => a !== activity) || []
+                                      : [...(field.value || []), activity];
+                                    field.onChange(newValue);
+                                  }}
+                                  className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
+                                    isSelected
+                                      ? 'bg-green-600 text-white font-bold'
+                                      : 'bg-purple-100 text-purple-800 hover:bg-purple-200 dark:bg-purple-800 dark:text-purple-200'
+                                  }`}
+                                >
+                                  {activity}
+                                </button>
+                              );
+                            })}
                           </div>
                         </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Custom Activities Field */}
+                  <FormField
+                    control={profileForm.control}
+                    name="customActivities"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Custom Activities</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            placeholder="Add custom activities separated by commas (e.g., pottery, dog walking)"
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          Enter any activities not listed above, separated by commas
+                        </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -6765,46 +6777,52 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       <FormItem>
                         <FormLabel>Events</FormLabel>
                         <FormControl>
-                          <div className="space-y-2">
-                            <div className="flex flex-wrap gap-2 p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg max-h-48 overflow-y-auto">
-                              {getAllEvents().map((event) => {
-                                const isSelected = field.value?.includes(event);
-                                return (
-                                  <button
-                                    key={event}
-                                    type="button"
-                                    onClick={() => {
-                                      const newValue = isSelected
-                                        ? field.value?.filter((e: string) => e !== event) || []
-                                        : [...(field.value || []), event];
-                                      field.onChange(newValue);
-                                    }}
-                                    className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
-                                      isSelected
-                                        ? 'bg-green-600 text-white font-bold'
-                                        : 'bg-orange-100 text-orange-800 hover:bg-orange-200 dark:bg-orange-800 dark:text-orange-200'
-                                    }`}
-                                  >
-                                    {event}
-                                  </button>
-                                );
-                              })}
-                            </div>
-                            <FormField
-                              control={profileForm.control}
-                              name="customEvents"
-                              render={({ field }) => (
-                                <FormControl>
-                                  <Input
-                                    {...field}
-                                    placeholder="Add custom events separated by commas (e.g., jazz nights, food festivals)"
-                                    className="mt-2"
-                                  />
-                                </FormControl>
-                              )}
-                            />
+                          <div className="flex flex-wrap gap-2 p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg max-h-48 overflow-y-auto">
+                            {getAllEvents().map((event) => {
+                              const isSelected = field.value?.includes(event);
+                              return (
+                                <button
+                                  key={event}
+                                  type="button"
+                                  onClick={() => {
+                                    const newValue = isSelected
+                                      ? field.value?.filter((e: string) => e !== event) || []
+                                      : [...(field.value || []), event];
+                                    field.onChange(newValue);
+                                  }}
+                                  className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
+                                    isSelected
+                                      ? 'bg-green-600 text-white font-bold'
+                                      : 'bg-orange-100 text-orange-800 hover:bg-orange-200 dark:bg-orange-800 dark:text-orange-200'
+                                  }`}
+                                >
+                                  {event}
+                                </button>
+                              );
+                            })}
                           </div>
                         </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Custom Events Field */}
+                  <FormField
+                    control={profileForm.control}
+                    name="customEvents"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Custom Events</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            placeholder="Add custom events separated by commas (e.g., jazz nights, food festivals)"
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          Enter any events not listed above, separated by commas
+                        </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
