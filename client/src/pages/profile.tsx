@@ -3737,7 +3737,58 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
             {/* What You Have in Common Section - MOVED TO ABOUT SECTION FOR BETTER VISIBILITY */}
 
-            {/* Local Interests, Activities & Events Section */}
+            {/* Business Interests & Activities Display - Simple read-only display for business users */}
+            {user?.userType === 'business' && (user?.interests?.length > 0 || user?.activities?.length > 0 || user?.events?.length > 0) && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Heart className="w-5 h-5 text-red-500" />
+                    Business Interests & Activities
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {user?.interests?.length > 0 && (
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Interests</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {user.interests.map((interest, index) => (
+                          <Badge key={`interest-${index}`} className="bg-blue-500 text-white">
+                            {interest}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {user?.activities?.length > 0 && (
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Activities</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {user.activities.map((activity, index) => (
+                          <Badge key={`activity-${index}`} className="bg-green-500 text-white">
+                            {activity}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {user?.events?.length > 0 && (
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Events</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {user.events.map((event, index) => (
+                          <Badge key={`event-${index}`} className="bg-purple-500 text-white">
+                            {event}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Local Interests, Activities & Events Section - For non-business users only */}
+            {user?.userType !== 'business' && (
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -4499,6 +4550,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 </div>
               </CardContent>
             </Card>
+            )}
 
 
             {/* Things I Want to Do Widget - Show for all non-business profiles */}
