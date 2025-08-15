@@ -118,7 +118,7 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
         street: event.street || "",
         city: event.city || "",
         state: event.state || "",
-        country: "United States", // Default country for events
+        country: event.country || "United States", // Use event's country or default
         zipcode: event.zipcode || "",
         location: event.location || "",
         startDate: startDateFormatted,
@@ -477,9 +477,11 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
       street: formData.street.trim(),
       city: formData.city.trim(),
       state: formData.state.trim(),
+      country: formData.country.trim(),
       zipcode: formData.zipcode.trim(),
       location: formData.location.trim(),
-      date: formData.startDate ? (() => {
+      date: (() => {
+        if (!formData.startDate) throw new Error("Start date is required");
         const parts = formData.startDate.split(/[T:-]/);
         return new Date(
           parseInt(parts[0]), // year
@@ -488,7 +490,7 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
           parseInt(parts[3]), // hour
           parseInt(parts[4]) // minute
         );
-      })() : undefined,
+      })(),
       endDate: formData.endDate ? (() => {
         const parts = formData.endDate.split(/[T:-]/);
         return new Date(

@@ -328,6 +328,7 @@ export const events = pgTable("events", {
   street: text("street").notNull(),
   city: text("city").notNull(),
   state: text("state").notNull(),
+  country: text("country").notNull().default("United States"),
   zipcode: text("zipcode").notNull(),
   location: text("location").notNull(), // Combined display address
   date: timestamp("date").notNull(),

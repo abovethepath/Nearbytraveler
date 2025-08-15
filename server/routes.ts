@@ -4047,6 +4047,7 @@ Questions? Just reply to this message. Welcome aboard!
       cleanEventData.street = eventData.street;
       cleanEventData.city = eventData.city;
       cleanEventData.state = eventData.state || '';
+      cleanEventData.country = eventData.country || 'United States';
       cleanEventData.zipcode = eventData.zipcode || '';
       // CRITICAL: Build location field properly without undefined values
       if (eventData.location && eventData.location !== 'undefined' && !eventData.location.includes('undefined')) {
@@ -4212,6 +4213,7 @@ Questions? Just reply to this message. Welcome aboard!
       if ((req.body as any).street !== undefined && (req.body as any).street !== null) updateData.street = (req.body as any).street?.trim();
       if ((req.body as any).city !== undefined && (req.body as any).city !== null) updateData.city = (req.body as any).city?.trim();
       if ((req.body as any).state !== undefined && (req.body as any).state !== null) updateData.state = (req.body as any).state?.trim();
+      if ((req.body as any).country !== undefined && (req.body as any).country !== null) updateData.country = (req.body as any).country?.trim();
       if ((req.body as any).zipcode !== undefined && (req.body as any).zipcode !== null) updateData.zipcode = (req.body as any).zipcode?.trim();
       if ((req.body as any).location !== undefined && (req.body as any).location !== null) updateData.location = (req.body as any).location?.trim();
       if ((req.body as any).date !== undefined && (req.body as any).date !== null) updateData.date = new Date((req.body as any).date);
