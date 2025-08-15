@@ -3,23 +3,21 @@
 // USED ACROSS: All signup pages, profile editing, trip planning, advanced search, matching algorithms
 // DO NOT CREATE SEPARATE LISTS - ALWAYS IMPORT FROM HERE
 
-// Most Popular interests for travelers and locals - organized in Aaron's preferred order
+// Most Popular interests for travelers and locals - reordered for business relevance
 export const MOST_POPULAR_INTERESTS = [
-  // Dating/Relationships first
-  "Single and Looking",
+  // Family/Kids first (very business-friendly)
+  "Family Activities",
   
-  // Party/Nightlife second
-  "Craft Beer & Breweries",
-  "Cocktail Bars",
-  "Happy Hour Deals",
-  "Nightlife & Dancing",
-  "Live Music Venues",
-  
-  // Touring/Cultural third
-  "Local Coffee Shops",
+  // Food/Dining second (major business category)
   "Local Food Specialties", 
-  "Photography",
-  "Meet Locals/Travelers",
+  "Cheap Eats",
+  "Fine Dining",
+  "Brunch Spots",
+  "Ethnic Cuisine",
+  "Food Tours / Trucks",
+  "Local Coffee Shops",
+  
+  // Cultural/Tourism third (tourism businesses)
   "Museums",
   "City Tours & Sightseeing",
   "Historical / Walking Tours",
@@ -28,24 +26,28 @@ export const MOST_POPULAR_INTERESTS = [
   "Local Hidden Gems",
   "Street Art",
   "Cultural Sites",
+  "Photography",
+  "Meet Locals/Travelers",
   
-  // Family fourth
-  "Family Activities",
+  // Entertainment/Activities fourth (entertainment businesses)
+  "Festivals & Events",
+  "Live Music Venues",
   
-  // Food fifth
-  "Cheap Eats",
-  "Fine Dining",
-  "Brunch Spots",
-  "Ethnic Cuisine",
-  "Food Tours / Trucks",
-  
-  // Health/Fitness sixth
+  // Health/Fitness fifth (wellness businesses)
   "Hiking & Nature",
   "Beach Activities",
   "Boat & Water Tours",
   "Off the Path Adventures",
-  "Festivals & Events",
-  "Wine & Vineyards"
+  
+  // Nightlife/Adult sixth (adult-oriented businesses)
+  "Craft Beer & Breweries",
+  "Cocktail Bars",
+  "Happy Hour Deals",
+  "Nightlife & Dancing",
+  "Wine & Vineyards",
+  
+  // Dating/Relationships last (less business-relevant)
+  "Single and Looking"
 ];
 
 // Additional interests - organized by similarity
