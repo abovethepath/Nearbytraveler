@@ -2752,6 +2752,31 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       console.log('🔥 FORM SUBMIT: Cleared childrenAges because travelingWithChildren is false');
     }
     
+    // Process custom text entries for business users
+    if (user?.userType === 'business') {
+      const formData = data as any;
+      
+      // Process custom interests
+      if (formData.customInterests) {
+        const customInterestsList = formData.customInterests.split(',').map((item: string) => item.trim()).filter((item: string) => item);
+        formData.interests = [...(formData.interests || []).filter((item: string) => getAllInterests().includes(item)), ...customInterestsList];
+      }
+      
+      // Process custom activities
+      if (formData.customActivities) {
+        const customActivitiesList = formData.customActivities.split(',').map((item: string) => item.trim()).filter((item: string) => item);
+        formData.activities = [...(formData.activities || []).filter((item: string) => getAllActivities().includes(item)), ...customActivitiesList];
+      }
+      
+      // Process custom events
+      if (formData.customEvents) {
+        const customEventsList = formData.customEvents.split(',').map((item: string) => item.trim()).filter((item: string) => item);
+        formData.events = [...(formData.events || []).filter((item: string) => getAllEvents().includes(item)), ...customEventsList];
+      }
+      
+      console.log('🔥 BUSINESS SUBMIT: Final data with custom fields processed:', formData);
+    }
+    
     // Send dateOfBirth as string - server will handle conversion to Date
     editProfile.mutate(data);
   };
