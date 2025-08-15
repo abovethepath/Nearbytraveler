@@ -2663,7 +2663,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         headers: {
           'Content-Type': 'application/json',
           'x-user-id': currentUser?.id?.toString(),
-          'x-user-type': user?.userType || 'traveler'
+          'x-user-type': 'business'
         },
         body: JSON.stringify(payload)
       });
@@ -2676,38 +2676,21 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       return response.json();
     },
     onSuccess: (updatedUser) => {
-      console.log('🔥 PROFILE UPDATE SUCCESS - Immediate cache refresh:', updatedUser);
-      console.log('🔥 Updated travelingWithChildren value:', updatedUser.travelingWithChildren);
+      console.log('✅ BUSINESS SAVE SUCCESS:', updatedUser);
       
-      // CRITICAL: Update ALL possible cache keys immediately
-      queryClient.setQueryData([`/api/users/${effectiveUserId}`, currentUser?.id], updatedUser);
+      // Update all caches
       queryClient.setQueryData([`/api/users/${effectiveUserId}`], updatedUser);
-      queryClient.setQueryData(['/api/users'], (oldData: any) => {
-        if (Array.isArray(oldData)) {
-          return oldData.map(u => u.id === updatedUser.id ? updatedUser : u);
-        }
-        return oldData;
-      });
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
       
-      // Update localStorage and auth context if editing own profile
-      if (isOwnProfile) {
-        console.log('🔥 Updating auth storage and context with new profile data');
-        authStorage.setUser(updatedUser);
-        
-        // CRITICAL: Update auth context state immediately
-        if (typeof setAuthUser === 'function') {
-          console.log('🔥 Calling setAuthUser with updated profile data');
-          setAuthUser(updatedUser);
-        }
-        
-        // Also update localStorage directly as backup
-        localStorage.setItem('travelconnect_user', JSON.stringify(updatedUser));
-        localStorage.setItem('user', JSON.stringify(updatedUser));
-        
-        // FORCE immediate UI refresh with state update
-        window.dispatchEvent(new CustomEvent('userDataUpdated', { detail: updatedUser }));
-        window.dispatchEvent(new CustomEvent('profileUpdated', { detail: updatedUser }));
+      // Update auth storage
+      authStorage.setUser(updatedUser);
+      if (typeof setAuthUser === 'function') {
+        setAuthUser(updatedUser);
       }
+      
+      // FORCE immediate UI refresh with state update
+      window.dispatchEvent(new CustomEvent('userDataUpdated', { detail: updatedUser }));
+      window.dispatchEvent(new CustomEvent('profileUpdated', { detail: updatedUser }));
       
       // CRITICAL: Reset form with updated values immediately to prevent toggle drift
       setTimeout(() => {
@@ -2742,16 +2725,16 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       queryClient.invalidateQueries({ queryKey: ["/api/users"] });
       
       toast({
-        title: "Profile updated",
-        description: "Your profile has been successfully updated.",
+        title: "Business profile updated",
+        description: "Your business profile has been successfully updated.",
       });
       setIsEditMode(false);
     },
     onError: (error) => {
-      console.error('Profile edit mutation error:', error);
+      console.error('Save failed:', error);
       toast({
-        title: "Update failed",
-        description: `Failed to update profile: ${error.message}`,
+        title: "Save failed",
+        description: `Failed to save: ${error.message}`,
         variant: "destructive",
       });
     },
