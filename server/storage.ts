@@ -660,12 +660,46 @@ export class DatabaseStorage implements IStorage {
         return await this.getUserById(id);
       }
 
+      // Field name mapping from camelCase to snake_case for database columns
+      const fieldNameMap: Record<string, string> = {
+        hometownCity: 'hometown_city',
+        hometownState: 'hometown_state',
+        hometownCountry: 'hometown_country',
+        travelStyle: 'travel_style',
+        dateOfBirth: 'date_of_birth',
+        ageVisible: 'age_visible',
+        sexualPreference: 'sexual_preference',
+        sexualPreferenceVisible: 'sexual_preference_visible',
+        travelingWithChildren: 'traveling_with_children',
+        childrenAges: 'children_ages',
+        isVeteran: 'is_veteran',
+        isActiveDuty: 'is_active_duty',
+        isCurrentlyTraveling: 'is_currently_traveling',
+        secretActivities: 'secret_activities',
+        businessName: 'business_name',
+        businessDescription: 'business_description',
+        businessType: 'business_type',
+        streetAddress: 'street_address',
+        zipCode: 'zip_code',
+        phoneNumber: 'phone_number',
+        websiteUrl: 'website_url',
+        latitude: 'latitude',
+        longitude: 'longitude'
+      };
+
+      // Convert field names to snake_case for database
+      const dbCleanData: any = {};
+      for (const [key, value] of Object.entries(cleanData)) {
+        const dbKey = fieldNameMap[key] || key;
+        dbCleanData[dbKey] = value;
+      }
+
       // Build the SQL update statement manually
-      const setClause = Object.keys(cleanData)
+      const setClause = Object.keys(dbCleanData)
         .map((key, index) => `"${key}" = $${index + 2}`)
         .join(', ');
       
-      const values = [id, ...Object.values(cleanData)];
+      const values = [id, ...Object.values(dbCleanData)];
       
       const sqlQuery = `
         UPDATE users 
