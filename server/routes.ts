@@ -3693,20 +3693,28 @@ Questions? Just reply to this message. Welcome aboard!
         const cityName = city.toString();
         if (process.env.NODE_ENV === 'development') console.log(`🎪 EVENTS: Getting events for city: ${cityName}`);
         
-        // FIXED: Apply metro consolidation for Los Angeles Metro specifically
+        // ENHANCED: Apply metro consolidation for ALL LA area cities
         let searchCities = [cityName];
         
-        if (cityName.toLowerCase().includes('los angeles metro')) {
-          // For Los Angeles Metro, search all LA area cities
-          const LA_METRO_CITIES = [
-            'Los Angeles', 'Santa Monica', 'Venice', 'Venice Beach', 'El Segundo', 
-            'Manhattan Beach', 'Beverly Hills', 'West Hollywood', 'Pasadena', 
-            'Burbank', 'Glendale', 'Long Beach', 'Torrance', 'Inglewood', 
-            'Playa del Rey', 'Redondo Beach', 'Culver City', 'Marina del Rey', 
-            'Hermosa Beach', 'Hawthorne', 'Hollywood', 'Studio City'
-          ];
+        const LA_METRO_CITIES = [
+          'Los Angeles', 'Santa Monica', 'Venice', 'Venice Beach', 'El Segundo', 
+          'Manhattan Beach', 'Beverly Hills', 'West Hollywood', 'Pasadena', 
+          'Burbank', 'Glendale', 'Long Beach', 'Torrance', 'Inglewood', 
+          'Playa del Rey', 'Redondo Beach', 'Culver City', 'Marina del Rey', 
+          'Hermosa Beach', 'Hawthorne', 'Hollywood', 'Studio City'
+        ];
+        
+        // Check if the cityName is ANY LA metro city or includes "los angeles metro"
+        const isLAMetroCity = cityName.toLowerCase().includes('los angeles metro') || 
+                             LA_METRO_CITIES.some(laCity => 
+                               cityName.toLowerCase().includes(laCity.toLowerCase()) ||
+                               laCity.toLowerCase().includes(cityName.toLowerCase())
+                             );
+        
+        if (isLAMetroCity) {
+          // For ANY LA area city, search ALL LA metro cities
           searchCities = LA_METRO_CITIES;
-          if (process.env.NODE_ENV === 'development') console.log(`🗺️ EVENTS METRO: Searching events in ${searchCities.length} LA metro cities:`, searchCities.slice(0, 10));
+          if (process.env.NODE_ENV === 'development') console.log(`🗺️ EVENTS METRO: ${cityName} is LA metro area - searching events in ${searchCities.length} LA metro cities:`, searchCities.slice(0, 10));
         }
         
         if (process.env.NODE_ENV === 'development') console.log(`🌍 EVENTS: Searching cities:`, searchCities.slice(0, 5));
