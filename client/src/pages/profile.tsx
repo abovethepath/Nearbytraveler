@@ -698,16 +698,17 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
   // Dynamic profile schema based on user type
   const getProfileFormSchema = (userType: string) => {
-    const baseSchema = z.object({
-      bio: z.string().min(30, "Bio must be at least 30 characters").max(1000, "Bio must be 1000 characters or less"),
-      hometownCity: z.string().optional(),
-      hometownState: z.string().optional(),
-      hometownCountry: z.string().optional(),
-      travelStyle: z.array(z.string()).optional(),
-    });
-
     if (userType === 'business') {
-      return baseSchema.extend({
+      // Business profiles have more lenient bio requirements
+      const businessSchema = z.object({
+        bio: z.string().min(10, "Bio must be at least 10 characters").max(1000, "Bio must be 1000 characters or less"),
+        hometownCity: z.string().optional(),
+        hometownState: z.string().optional(),
+        hometownCountry: z.string().optional(),
+        travelStyle: z.array(z.string()).optional(),
+      });
+      
+      return businessSchema.extend({
         businessName: z.string().max(100, "Business name must be 100 characters or less").optional(),
         businessDescription: z.string().optional(),
         businessType: z.string().optional(),
@@ -729,6 +730,15 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         isActiveDuty: z.boolean().default(false),
       });
     } else {
+      // Regular users have standard bio requirements
+      const baseSchema = z.object({
+        bio: z.string().min(30, "Bio must be at least 30 characters").max(1000, "Bio must be 1000 characters or less"),
+        hometownCity: z.string().optional(),
+        hometownState: z.string().optional(),
+        hometownCountry: z.string().optional(),
+        travelStyle: z.array(z.string()).optional(),
+      });
+      
       return baseSchema.extend({
         secretActivities: z.string().max(500, "Secret activities must be 500 characters or less").optional(),
         dateOfBirth: z.string().optional(),
