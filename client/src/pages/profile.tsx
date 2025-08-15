@@ -6429,7 +6429,15 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               <Button
                 type="button"
                 size="sm"
-                onClick={profileForm.handleSubmit(onSubmitProfile)}
+                onClick={() => {
+                  console.log('🔥 SAVE BUTTON CLICKED - Header');
+                  console.log('🔥 Form errors:', profileForm.formState.errors);
+                  console.log('🔥 Form values:', profileForm.getValues());
+                  console.log('🔥 Form valid:', profileForm.formState.isValid);
+                  profileForm.handleSubmit(onSubmitProfile, (errors) => {
+                    console.log('🔥 VALIDATION ERRORS:', errors);
+                  })();
+                }}
                 disabled={editProfile.isPending}
                 className="bg-blue-600 hover:bg-blue-700 text-white"
               >
