@@ -6787,7 +6787,20 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     name="customInterests"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Custom Interests</FormLabel>
+                        <FormLabel className="flex items-center justify-between">
+                          Custom Interests
+                          {field.value && (
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => profileForm.setValue('customInterests', '')}
+                              className="text-xs text-gray-500 hover:text-red-600"
+                            >
+                              Clear
+                            </Button>
+                          )}
+                        </FormLabel>
                         <FormControl>
                           <Input
                             {...field}
@@ -6852,7 +6865,20 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     name="customActivities"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Custom Activities</FormLabel>
+                        <FormLabel className="flex items-center justify-between">
+                          Custom Activities
+                          {field.value && (
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => profileForm.setValue('customActivities', '')}
+                              className="text-xs text-gray-500 hover:text-red-600"
+                            >
+                              Clear
+                            </Button>
+                          )}
+                        </FormLabel>
                         <FormControl>
                           <Input
                             {...field}
@@ -6917,7 +6943,20 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     name="customEvents"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Custom Events</FormLabel>
+                        <FormLabel className="flex items-center justify-between">
+                          Custom Events
+                          {field.value && (
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => profileForm.setValue('customEvents', '')}
+                              className="text-xs text-gray-500 hover:text-red-600"
+                            >
+                              Clear
+                            </Button>
+                          )}
+                        </FormLabel>
                         <FormControl>
                           <Input
                             {...field}
