@@ -6719,6 +6719,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           <Input
                             {...field}
                             placeholder="Add custom interests separated by commas (e.g., ice cream, vintage cars)"
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault();
+                                profileForm.handleSubmit(onProfileSubmit)();
+                              }
+                            }}
                           />
                         </FormControl>
                         <FormDescription>
@@ -6778,6 +6784,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           <Input
                             {...field}
                             placeholder="Add custom activities separated by commas (e.g., pottery, dog walking)"
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault();
+                                profileForm.handleSubmit(onProfileSubmit)();
+                              }
+                            }}
                           />
                         </FormControl>
                         <FormDescription>
