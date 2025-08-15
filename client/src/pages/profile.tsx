@@ -6687,12 +6687,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             <FormField
                               control={profileForm.control}
                               name="customInterests"
-                              render={({ field: customField }) => (
-                                <Input
-                                  {...customField}
-                                  placeholder="Add custom interests separated by commas"
-                                  className="mt-2"
-                                />
+                              render={({ field }) => (
+                                <FormControl>
+                                  <Input
+                                    {...field}
+                                    placeholder="Add custom interests separated by commas (e.g., ice cream, vintage cars)"
+                                    className="mt-2"
+                                  />
+                                </FormControl>
                               )}
                             />
                           </div>
@@ -6738,12 +6740,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             <FormField
                               control={profileForm.control}
                               name="customActivities"
-                              render={({ field: customField }) => (
-                                <Input
-                                  {...customField}
-                                  placeholder="Add custom activities separated by commas"
-                                  className="mt-2"
-                                />
+                              render={({ field }) => (
+                                <FormControl>
+                                  <Input
+                                    {...field}
+                                    placeholder="Add custom activities separated by commas (e.g., pottery, dog walking)"
+                                    className="mt-2"
+                                  />
+                                </FormControl>
                               )}
                             />
                           </div>
@@ -6789,12 +6793,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             <FormField
                               control={profileForm.control}
                               name="customEvents"
-                              render={({ field: customField }) => (
-                                <Input
-                                  {...customField}
-                                  placeholder="Add custom events separated by commas"
-                                  className="mt-2"
-                                />
+                              render={({ field }) => (
+                                <FormControl>
+                                  <Input
+                                    {...field}
+                                    placeholder="Add custom events separated by commas (e.g., jazz nights, food festivals)"
+                                    className="mt-2"
+                                  />
+                                </FormControl>
                               )}
                             />
                           </div>
