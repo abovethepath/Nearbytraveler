@@ -452,6 +452,26 @@ function Navbar() {
                     </DropdownMenuItem>
                   ))}
 
+                  {/* Business-specific navigation items */}
+                  {directUser?.userType === 'business' && (
+                    <>
+                      <DropdownMenuItem onClick={() => {
+                        setLocation('/events');
+                        setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
+                      }}>
+                        <span className="mr-2">📅</span>
+                        <span>My Events</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => {
+                        setLocation('/create-event');
+                        setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
+                      }}>
+                        <span className="mr-2">✨</span>
+                        <span>Create Event</span>
+                      </DropdownMenuItem>
+                    </>
+                  )}
+
                   {/* Additional navigation items for traveler/local users */}
                   {directUser?.userType !== 'business' && (
                     <>
