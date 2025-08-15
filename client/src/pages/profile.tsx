@@ -1213,6 +1213,25 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       
       // Reset form with user type-specific data
       if (user.userType === 'business') {
+        // Extract custom entries from the arrays (entries not in predefined lists)
+        const customInterests = (user.interests || [])
+          .filter((item: string) => !getAllInterests().includes(item))
+          .join(', ');
+        const customActivities = (user.activities || [])
+          .filter((item: string) => !getAllActivities().includes(item))
+          .join(', ');
+        const customEvents = (user.events || [])
+          .filter((item: string) => !getAllEvents().includes(item))
+          .join(', ');
+        
+        // Only include predefined entries in the checkbox arrays
+        const predefinedInterests = (user.interests || [])
+          .filter((item: string) => getAllInterests().includes(item));
+        const predefinedActivities = (user.activities || [])
+          .filter((item: string) => getAllActivities().includes(item));
+        const predefinedEvents = (user.events || [])
+          .filter((item: string) => getAllEvents().includes(item));
+        
         profileForm.reset({
           bio: user.bio || "",
           businessName: (user as any).business_name || (user as any).businessName || "",
@@ -1230,14 +1249,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           zipCode: (user as any).zip_code || (user as any).zipCode || "",
           phoneNumber: (user as any).phone_number || (user as any).phoneNumber || "",
           websiteUrl: (user as any).website_url || (user as any).websiteUrl || (user as any).website || "",
-          interests: user.interests || [],
-          activities: user.activities || [],
-          events: user.events || [],
+          interests: predefinedInterests,
+          activities: predefinedActivities,
+          events: predefinedEvents,
           isVeteran: Boolean((user as any).is_veteran || user.isVeteran),
           isActiveDuty: Boolean((user as any).is_active_duty || user.isActiveDuty),
-          customInterests: (user as any).customInterests || (user as any).custom_interests || "",
-          customActivities: (user as any).customActivities || (user as any).custom_activities || "",
-          customEvents: (user as any).customEvents || (user as any).custom_events || "",
+          customInterests: customInterests || (user as any).custom_interests || "",
+          customActivities: customActivities || (user as any).custom_activities || "",
+          customEvents: customEvents || (user as any).custom_events || "",
         });
       } else {
         const travelingWithChildrenValue = !!(user as any).travelingWithChildren;
@@ -6700,6 +6719,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           <Input
                             {...field}
                             placeholder="Add custom interests separated by commas (e.g., ice cream, vintage cars)"
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault();
+                                e.stopPropagation();
+                              }
+                            }}
                           />
                         </FormControl>
                         <FormDescription>
@@ -6759,6 +6784,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           <Input
                             {...field}
                             placeholder="Add custom activities separated by commas (e.g., pottery, dog walking)"
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault();
+                                e.stopPropagation();
+                              }
+                            }}
                           />
                         </FormControl>
                         <FormDescription>
@@ -6818,6 +6849,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           <Input
                             {...field}
                             placeholder="Add custom events separated by commas (e.g., jazz nights, food festivals)"
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault();
+                                e.stopPropagation();
+                              }
+                            }}
                           />
                         </FormControl>
                         <FormDescription>
