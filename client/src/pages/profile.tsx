@@ -5469,18 +5469,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               <CardContent>
                 {userConnections.length > 0 ? (
                   <div className="space-y-3">
-                    {userConnections.slice(0, connectionsDisplayCount).map((connection: any) => {
-                      console.log('🔗 Connection avatar data:', {
-                        connectionId: connection.id,
-                        connectedUser: connection.connectedUser ? {
-                          id: connection.connectedUser.id,
-                          username: connection.connectedUser.username,
-                          hasProfileImage: !!connection.connectedUser.profileImage,
-                          profileImageLength: connection.connectedUser.profileImage?.length
-                        } : 'NO CONNECTED USER'
-                      });
-                      
-                      return (
+                    {userConnections.slice(0, connectionsDisplayCount).map((connection: any) => (
                         <div key={connection.id} className="flex items-center justify-between">
                           <div 
                             className="flex items-center gap-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg p-2 -m-2 transition-colors flex-1"
@@ -5507,8 +5496,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           View
                         </Button>
                       </div>
-                    );
-                    })}
+                    ))}
                     
                     {/* Load More / Load Less buttons */}
                     {userConnections.length > 3 && (
