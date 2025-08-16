@@ -67,76 +67,39 @@ export function SimpleAvatar({ user, size = 'md', className = '' }: SimpleAvatar
     return `https://ui-avatars.com/api/?name=${firstLetter}&background=${backgroundColor}&color=fff&size=150`;
   };
 
-  // Update image when user changes or force refresh
+  // Update image when user changes or force refresh - STABLE VERSION
   useEffect(() => {
     if (!user) {
-      console.log('SimpleAvatar: No user provided');
       setCurrentImage(null);
       return;
     }
 
-    console.log('🖼️ SimpleAvatar: User data updated:', { 
-      id: user.id, 
-      username: user.username, 
-      usernameType: typeof user.username,
-      profileImage: user.profileImage ? `HAS IMAGE (${user.profileImage.substring(0, 50)}...)` : 'NO IMAGE',
-      forceRefreshCount: forceRefresh,
-      profileImageLength: user.profileImage ? user.profileImage.length : 0
-    });
-
-      // Enhanced image loading with fallback
+    // Stable image assignment without excessive logging to prevent blinking
     if (user.profileImage && user.profileImage.trim() !== '' && user.profileImage.length > 10) {
-      console.log('SimpleAvatar: Using profile image');
-      // Add timestamp to force refresh
-      const imageWithCache = user.profileImage.includes('?') 
-        ? `${user.profileImage}&t=${Date.now()}` 
-        : `${user.profileImage}?t=${Date.now()}`;
-      setCurrentImage(imageWithCache);
+      // Use profile image without cache busting to prevent constant reloads
+      setCurrentImage(user.profileImage);
     } else {
-      console.log('SimpleAvatar: No valid profile image found, generating avatar for:', user.username);
+      // Generate stable avatar without timestamp changes
       const generatedAvatar = generateAvatar(user.username, user.avatarColor);
-      console.log('SimpleAvatar: Generated avatar:', generatedAvatar);
       setCurrentImage(generatedAvatar);
     }
-  }, [user?.id, user?.username, user?.profileImage, forceRefresh]);
+  }, [user?.id, user?.username, user?.profileImage]);
 
-  // Listen for avatar refresh events with throttling to prevent excessive reloads
+  // Minimal refresh handling to prevent blinking
   useEffect(() => {
-    let refreshTimeout: NodeJS.Timeout | null = null;
-    
     const handleRefresh = (event: any) => {
-      console.log('🎯 SimpleAvatar: Refresh event received:', event.type);
-      
-      // Only refresh for critical profile-related events, throttle others
-      if (event.type === 'profilePhotoUpdated' || event.type === 'avatarRefresh') {
-        console.log('🎯 SimpleAvatar: Critical refresh event - updating immediately');
+      // Only refresh for actual profile photo updates
+      if (event.type === 'profilePhotoUpdated' && event.detail?.userId === user?.id) {
         setForceRefresh(prev => prev + 1);
-      } else {
-        // Throttle other refresh events to prevent excessive reloading
-        if (refreshTimeout) {
-          clearTimeout(refreshTimeout);
-        }
-        
-        refreshTimeout = setTimeout(() => {
-          console.log('🎯 SimpleAvatar: Throttled refresh event processed');
-          setForceRefresh(prev => prev + 1);
-          refreshTimeout = null;
-        }, 2000); // 2 second throttle
       }
     };
 
-    // Only listen to essential refresh events 
-    window.addEventListener('avatarRefresh', handleRefresh);
     window.addEventListener('profilePhotoUpdated', handleRefresh);
     
     return () => {
-      if (refreshTimeout) {
-        clearTimeout(refreshTimeout);
-      }
-      window.removeEventListener('avatarRefresh', handleRefresh);
       window.removeEventListener('profilePhotoUpdated', handleRefresh);
     };
-  }, []);
+  }, [user?.id]);
 
   if (!user || !currentImage) {
     return (
