@@ -127,7 +127,7 @@ export default function Home() {
   };
   const [eventsDisplayCount, setEventsDisplayCount] = useState(3);
   const [businessesDisplayCount, setBusinessesDisplayCount] = useState(3);
-  const [displayLimit, setDisplayLimit] = useState(6);
+  const [displayLimit, setDisplayLimit] = useState(8);
   const [filters, setFilters] = useState({
     gender: [] as string[],
     sexualPreference: [] as string[],
@@ -2216,7 +2216,7 @@ export default function Home() {
                 )}
 
                 {/* Load Less Button */}
-                {displayLimit > 6 && (
+                {displayLimit > 8 && (
                   <div className="text-center mt-6">
                     <Button
                       variant="outline"
