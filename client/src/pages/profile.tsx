@@ -6720,27 +6720,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     )}
                   />
 
-                  <FormField
-                    control={profileForm.control}
-                    name="businessDescription"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Business Description</FormLabel>
-                        <FormControl>
-                          <Textarea 
-                            {...field} 
-                            placeholder="Describe your business, services, and what makes you special..."
-                            className="min-h-[100px] resize-none"
-                            maxLength={1000}
-                          />
-                        </FormControl>
-                        <div className="text-xs text-gray-500 text-right">
-                          {field.value?.length || 0}/1000 characters
-                        </div>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+
 
                   <FormField
                     control={profileForm.control}
