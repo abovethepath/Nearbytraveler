@@ -4809,13 +4809,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               console.log('🔧 BUSINESS SAVING DATA:', editFormData);
                               
                               // Separate predefined vs custom entries for proper database storage
-                              const predefinedInterests = INTERESTS_OPTIONS.filter(opt => editFormData.interests.includes(opt));
-                              const predefinedActivities = ACTIVITIES_OPTIONS.filter(opt => editFormData.activities.includes(opt));
-                              const predefinedEvents = EVENTS_OPTIONS.filter(opt => editFormData.events.includes(opt));
+                              const predefinedInterests = getAllInterests().filter(opt => editFormData.interests.includes(opt));
+                              const predefinedActivities = getAllActivities().filter(opt => editFormData.activities.includes(opt));
+                              const predefinedEvents = getAllEvents().filter(opt => editFormData.events.includes(opt));
                               
-                              const customInterests = editFormData.interests.filter(int => !INTERESTS_OPTIONS.includes(int));
-                              const customActivities = editFormData.activities.filter(act => !ACTIVITIES_OPTIONS.includes(act));
-                              const customEvents = editFormData.events.filter(evt => !EVENTS_OPTIONS.includes(evt));
+                              const customInterests = editFormData.interests.filter(int => !getAllInterests().includes(int));
+                              const customActivities = editFormData.activities.filter(act => !getAllActivities().includes(act));
+                              const customEvents = editFormData.events.filter(evt => !getAllEvents().includes(evt));
                               
                               const saveData = {
                                 interests: predefinedInterests,
@@ -4828,20 +4828,45 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               
                               console.log('🔧 BUSINESS SAVE - Separated data:', saveData);
                               
-                              const response = await fetch(`/api/users/${user.id}`, {
+                              const response = await fetch(`/api/users/${effectiveUserId}`, {
                                 method: 'PUT',
-                                headers: { 'Content-Type': 'application/json' },
+                                headers: {
+                                  'Content-Type': 'application/json',
+                                  'x-user-data': JSON.stringify(user),
+                                  'x-user-id': effectiveUserId?.toString() || '',
+                                  'x-user-type': user?.userType || 'business'
+                                },
                                 body: JSON.stringify(saveData)
                               });
-                              if (!response.ok) throw new Error('Failed to save business preferences');
+                              
+                              if (!response.ok) {
+                                const errorText = await response.text();
+                                throw new Error(`Failed to save: ${errorText}`);
+                              }
+                              
                               // Refresh data
                               queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
                               // Close editing modes
                               setEditingInterests(false);
                               setEditingActivities(false);
                               setEditingEvents(false);
-                            } catch (error) {
+                              
+                              // Clear custom inputs
+                              setCustomInterestInput('');
+                              setCustomActivityInput('');
+                              setCustomEventInput('');
+                              
+                              toast({
+                                title: "Success!",
+                                description: "Business preferences saved successfully.",
+                              });
+                            } catch (error: any) {
                               console.error('Failed to update business preferences:', error);
+                              toast({
+                                title: "Error",
+                                description: error.message || "Failed to save business preferences. Please try again.",
+                                variant: "destructive",
+                              });
                             }
                           }}
                           disabled={false}
@@ -5085,6 +5110,84 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           </div>
                         </div>
                       </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Bottom Save Button for Business Preferences */}
+                {isOwnProfile && (editingInterests && editingActivities && editingEvents) && (
+                  <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border-t border-gray-200 dark:border-gray-600">
+                    <div className="flex justify-center">
+                      <Button 
+                        onClick={async () => {
+                          try {
+                            console.log('🔧 BUSINESS SAVING DATA (Bottom Button):', editFormData);
+                            
+                            // Separate predefined vs custom entries for proper database storage
+                            const predefinedInterests = getAllInterests().filter(opt => editFormData.interests.includes(opt));
+                            const predefinedActivities = getAllActivities().filter(opt => editFormData.activities.includes(opt));
+                            const predefinedEvents = getAllEvents().filter(opt => editFormData.events.includes(opt));
+                            
+                            const customInterests = editFormData.interests.filter(int => !getAllInterests().includes(int));
+                            const customActivities = editFormData.activities.filter(act => !getAllActivities().includes(act));
+                            const customEvents = editFormData.events.filter(evt => !getAllEvents().includes(evt));
+                            
+                            const saveData = {
+                              interests: predefinedInterests,
+                              activities: predefinedActivities, 
+                              events: predefinedEvents,
+                              customInterests: customInterests.join(', '),
+                              customActivities: customActivities.join(', '),
+                              customEvents: customEvents.join(', ')
+                            };
+                            
+                            const response = await fetch(`/api/users/${effectiveUserId}`, {
+                              method: 'PUT',
+                              headers: {
+                                'Content-Type': 'application/json',
+                                'x-user-data': JSON.stringify(user),
+                                'x-user-id': effectiveUserId?.toString() || '',
+                                'x-user-type': user?.userType || 'business'
+                              },
+                              body: JSON.stringify(saveData)
+                            });
+                            
+                            if (!response.ok) {
+                              const errorText = await response.text();
+                              throw new Error(`Failed to save: ${errorText}`);
+                            }
+                            
+                            // Update cache and UI
+                            queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
+                            
+                            // Close editing modes
+                            setEditingInterests(false);
+                            setEditingActivities(false);
+                            setEditingEvents(false);
+                            
+                            // Clear custom inputs
+                            setCustomInterestInput('');
+                            setCustomActivityInput('');
+                            setCustomEventInput('');
+                            
+                            toast({
+                              title: "Success!",
+                              description: "Business preferences saved successfully.",
+                            });
+                          } catch (error: any) {
+                            console.error('Failed to update business preferences:', error);
+                            toast({
+                              title: "Error",
+                              description: error.message || "Failed to save business preferences. Please try again.",
+                              variant: "destructive",
+                            });
+                          }
+                        }}
+                        className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 text-lg font-semibold"
+                        size="lg"
+                      >
+                        💾 Save Business Changes
+                      </Button>
                     </div>
                   </div>
                 )}
