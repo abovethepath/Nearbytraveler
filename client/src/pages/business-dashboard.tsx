@@ -199,6 +199,7 @@ export default function BusinessDashboard() {
   const [useCustomAddress, setUseCustomAddress] = useState(false);
   const [reuseDialogOpen, setReuseDialogOpen] = useState(false);
   const [reuseDealData, setReuseDealData] = useState<any>(null);
+  const [startingToday, setStartingToday] = useState(true);
 
   // Helper function to format discount text
   const getDiscountText = (offer: BusinessOffer) => {
@@ -349,7 +350,7 @@ export default function BusinessDashboard() {
       state: currentUser?.hometownState || "",
       country: currentUser?.hometownCountry || "United States",
       zipCode: currentUser?.zipCode || "",
-      validFrom: "",
+      validFrom: new Date().toISOString().split('T')[0], // Default to today
       validUntil: "",
       maxRedemptions: "",
       maxRedemptionsPerUser: "",
@@ -1053,6 +1054,35 @@ export default function BusinessDashboard() {
                     )}
                   </div>
 
+                  {/* Starting Today Checkbox */}
+                  {!editingOffer && (
+                    <div className="mb-4">
+                      <div className="flex items-center space-x-2">
+                        <Checkbox 
+                          id="startingToday"
+                          checked={startingToday}
+                          onCheckedChange={(checked) => {
+                            setStartingToday(checked as boolean);
+                            if (checked) {
+                              const today = new Date().toISOString().split('T')[0];
+                              form.setValue('validFrom', today);
+                            }
+                          }}
+                          className="border-gray-300 dark:border-gray-600"
+                        />
+                        <label 
+                          htmlFor="startingToday" 
+                          className="text-sm font-medium text-gray-900 dark:text-white cursor-pointer"
+                        >
+                          Starting Today (recommended)
+                        </label>
+                      </div>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        Automatically sets start date to today. Uncheck to choose a different start date.
+                      </p>
+                    </div>
+                  )}
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <FormField
                       control={form.control}
@@ -1064,14 +1094,21 @@ export default function BusinessDashboard() {
                             <Input 
                               type="date" 
                               {...field} 
+                              disabled={editingOffer || (!editingOffer && startingToday)}
                               min="1000-01-01"
                               max="9999-12-31"
-                              className="dark:[color-scheme:dark] dark:text-white calendar-white-icon"
+                              className={`dark:[color-scheme:dark] dark:text-white calendar-white-icon ${
+                                (editingOffer || (!editingOffer && startingToday)) ? 'opacity-50 cursor-not-allowed' : ''
+                              }`}
                             />
                           </FormControl>
                           {editingOffer ? (
                             <FormDescription className="text-orange-600 dark:text-orange-400 text-xs">
-                              Dates cannot be edited
+                              Dates cannot be edited after creation
+                            </FormDescription>
+                          ) : startingToday ? (
+                            <FormDescription className="text-green-600 dark:text-green-400 text-xs">
+                              ✓ Set to today's date
                             </FormDescription>
                           ) : (
                             <FormDescription className="text-amber-600 dark:text-amber-400 text-xs">
@@ -1092,14 +1129,17 @@ export default function BusinessDashboard() {
                             <Input 
                               type="date" 
                               {...field} 
+                              disabled={editingOffer}
                               min="1000-01-01"
                               max="9999-12-31"
-                              className="dark:[color-scheme:dark] dark:text-white calendar-white-icon"
+                              className={`dark:[color-scheme:dark] dark:text-white calendar-white-icon ${
+                                editingOffer ? 'opacity-50 cursor-not-allowed' : ''
+                              }`}
                             />
                           </FormControl>
                           {editingOffer ? (
                             <FormDescription className="text-orange-600 dark:text-orange-400 text-xs">
-                              Dates cannot be edited
+                              Dates cannot be edited after creation
                             </FormDescription>
                           ) : (
                             <FormDescription className="text-amber-600 dark:text-amber-400 text-xs">
