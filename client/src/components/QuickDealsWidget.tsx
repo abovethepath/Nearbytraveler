@@ -46,9 +46,18 @@ export function QuickDealsWidget({ city, profileUserId, showCreateForm: external
     console.log('🔥 QuickDealsWidget state update:', {
       externalShowCreateForm,
       internalShowCreateForm,
-      finalShowCreateForm: showCreateForm
+      finalShowCreateForm: showCreateForm,
+      userType: actualUser?.userType,
+      willRender: actualUser?.userType === 'business'
     });
   }, [externalShowCreateForm, internalShowCreateForm, showCreateForm]);
+
+  // Additional debug for external prop changes
+  React.useEffect(() => {
+    if (externalShowCreateForm) {
+      console.log('🎯 QuickDealsWidget: External showCreateForm is TRUE, form should be visible');
+    }
+  }, [externalShowCreateForm]);
 
   const [newDeal, setNewDeal] = useState<NewDeal>({
     title: '',
@@ -241,7 +250,7 @@ export function QuickDealsWidget({ city, profileUserId, showCreateForm: external
 
         {/* Create Deal Form */}
         {showCreateForm && (
-          <div className="border rounded-lg p-4 mb-4 bg-orange-50" data-testid="form-create-deal">
+          <div className="border-2 border-orange-500 rounded-lg p-4 mb-4 bg-orange-50 shadow-lg" data-testid="form-create-deal">
             <h4 className="font-medium mb-3">Create Quick Deal</h4>
             <div className="space-y-3">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
