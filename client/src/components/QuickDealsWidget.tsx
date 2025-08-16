@@ -250,12 +250,12 @@ export function QuickDealsWidget({ city, profileUserId, showCreateForm: external
 
         {/* Create Deal Form */}
         {showCreateForm && (
-          <div className="border-2 border-orange-500 rounded-lg p-4 mb-4 bg-orange-50 shadow-lg" data-testid="form-create-deal">
-            <h4 className="font-medium mb-3">Create Quick Deal</h4>
+          <div className="border-2 border-orange-500 rounded-lg p-4 mb-4 bg-orange-50 dark:bg-orange-950 shadow-lg" data-testid="form-create-deal">
+            <h4 className="font-medium mb-3 text-gray-900 dark:text-white">Create Quick Deal</h4>
             <div className="space-y-3">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-sm font-medium">Deal Title</label>
+                  <label className="text-sm font-medium text-gray-900 dark:text-white">Deal Title</label>
                   <Input
                     value={newDeal.title}
                     onChange={(e) => setNewDeal({ ...newDeal, title: e.target.value })}
@@ -264,7 +264,7 @@ export function QuickDealsWidget({ city, profileUserId, showCreateForm: external
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium">Discount Amount</label>
+                  <label className="text-sm font-medium text-gray-900 dark:text-white">Discount Amount</label>
                   <Input
                     value={newDeal.discountAmount}
                     onChange={(e) => setNewDeal({ ...newDeal, discountAmount: e.target.value })}
@@ -275,7 +275,7 @@ export function QuickDealsWidget({ city, profileUserId, showCreateForm: external
               </div>
 
               <div>
-                <label className="text-sm font-medium">Description</label>
+                <label className="text-sm font-medium text-gray-900 dark:text-white">Description</label>
                 <Textarea
                   value={newDeal.description}
                   onChange={(e) => setNewDeal({ ...newDeal, description: e.target.value })}
@@ -287,7 +287,7 @@ export function QuickDealsWidget({ city, profileUserId, showCreateForm: external
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <div>
-                  <label className="text-sm font-medium">Deal Type</label>
+                  <label className="text-sm font-medium text-gray-900 dark:text-white">Deal Type</label>
                   <Select value={newDeal.dealType} onValueChange={(value) => setNewDeal({ ...newDeal, dealType: value })}>
                     <SelectTrigger data-testid="select-deal-type">
                       <SelectValue />
@@ -304,7 +304,7 @@ export function QuickDealsWidget({ city, profileUserId, showCreateForm: external
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium">Category</label>
+                  <label className="text-sm font-medium text-gray-900 dark:text-white">Category</label>
                   <Select value={newDeal.category} onValueChange={(value) => setNewDeal({ ...newDeal, category: value })}>
                     <SelectTrigger data-testid="select-deal-category">
                       <SelectValue />
@@ -323,7 +323,7 @@ export function QuickDealsWidget({ city, profileUserId, showCreateForm: external
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium">Active Duration</label>
+                  <label className="text-sm font-medium text-gray-900 dark:text-white">Active Duration</label>
                   <Select 
                     value={newDeal.duration || "1"} 
                     onValueChange={(hours) => {
@@ -397,18 +397,18 @@ export function QuickDealsWidget({ city, profileUserId, showCreateForm: external
                 Active Deals ({activateDeals.length})
               </h4>
               {activateDeals.map((deal: QuickDeal) => (
-                <div key={deal.id} className="border rounded-lg p-3 bg-white" data-testid={`deal-card-${deal.id}`}>
+                <div key={deal.id} className="border rounded-lg p-3 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700" data-testid={`deal-card-${deal.id}`}>
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
-                        <h4 className="font-medium">{deal.title}</h4>
+                        <h4 className="font-medium text-gray-900 dark:text-white">{deal.title}</h4>
                         <Badge className={`text-xs ${getAvailabilityColor(deal.availability)}`}>
                           {getDealTypeIcon(deal.dealType)}
                           {deal.discountAmount}
                         </Badge>
                       </div>
-                      <p className="text-sm text-gray-600 mb-2">{deal.description}</p>
-                      <div className="flex items-center gap-4 text-xs text-gray-500">
+                      <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">{deal.description}</p>
+                      <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400">
                         <span className="flex items-center gap-1">
                           <Users className="h-3 w-3" />
                           {deal.currentRedemptions}/{deal.maxRedemptions} used
@@ -449,15 +449,15 @@ export function QuickDealsWidget({ city, profileUserId, showCreateForm: external
                 Expired Deals ({expiredDeals.length})
               </h4>
               {expiredDeals.slice(0, 3).map((deal: QuickDeal) => (
-                <div key={deal.id} className="border rounded-lg p-3 bg-gray-50 opacity-60" data-testid={`expired-deal-${deal.id}`}>
+                <div key={deal.id} className="border rounded-lg p-3 bg-gray-50 dark:bg-gray-800 opacity-60 border-gray-200 dark:border-gray-700" data-testid={`expired-deal-${deal.id}`}>
                   <div className="flex items-center gap-2 mb-1">
-                    <h4 className="font-medium text-gray-700">{deal.title}</h4>
+                    <h4 className="font-medium text-gray-700 dark:text-gray-300">{deal.title}</h4>
                     <Badge variant="secondary" className="text-xs">
                       Expired
                     </Badge>
                   </div>
-                  <p className="text-sm text-gray-500">{deal.description}</p>
-                  <div className="flex items-center gap-4 text-xs text-gray-400 mt-1">
+                  <p className="text-sm text-gray-500 dark:text-gray-400">{deal.description}</p>
+                  <div className="flex items-center gap-4 text-xs text-gray-400 dark:text-gray-500 mt-1">
                     <span>{deal.currentRedemptions}/{deal.maxRedemptions} used</span>
                     <span>Expired {format(new Date(deal.validUntil), 'MMM d')}</span>
                   </div>
