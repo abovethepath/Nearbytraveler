@@ -6641,11 +6641,21 @@ Questions? Just reply to this message. Welcome aboard!
       }
 
       // Ensure timestamp fields are properly converted to Date objects
+      // Handle dates without timezone info as local time, not UTC
       const dealData = {
         ...req.body,
         businessId,
         validFrom: req.body.validFrom ? new Date(req.body.validFrom) : new Date(),
-        validUntil: req.body.validUntil ? new Date(req.body.validUntil) : new Date(Date.now() + 60 * 60 * 1000) // Default 1 hour from now
+        validUntil: req.body.validUntil ? (() => {
+          const dateStr = req.body.validUntil;
+          // If date string has no timezone info, treat as local time by adding current timezone offset
+          if (dateStr && !dateStr.includes('Z') && !dateStr.includes('+') && !dateStr.includes('-', 10)) {
+            const localDate = new Date(dateStr);
+            const offsetMs = localDate.getTimezoneOffset() * 60 * 1000;
+            return new Date(localDate.getTime() - offsetMs);
+          }
+          return new Date(dateStr);
+        })() : new Date(Date.now() + 60 * 60 * 1000) // Default 1 hour from now
       };
 
       if (process.env.NODE_ENV === 'development') console.log(`🛍️ CREATING QUICK DEAL: ${dealData.title} by business ${userId}`);

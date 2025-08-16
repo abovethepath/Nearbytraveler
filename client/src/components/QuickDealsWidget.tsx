@@ -118,7 +118,7 @@ export function QuickDealsWidget({ city, profileUserId, showCreateForm: external
         discountAmount: '',
         originalPrice: '',
         salePrice: '',
-        validUntil: format(addHours(new Date(), 1), 'yyyy-MM-dd\'T\'HH:mm'),
+        validUntil: format(addHours(new Date(), 1), 'yyyy-MM-dd\'T\'HH:mm:ss.SSS\'Z\''),
         duration: '1',
         dealCode: '',
         terms: '',
@@ -376,7 +376,7 @@ export function QuickDealsWidget({ city, profileUserId, showCreateForm: external
                       setNewDeal({ 
                         ...newDeal, 
                         duration: hours,
-                        validUntil: validUntil.toISOString().slice(0, 16)
+                        validUntil: format(validUntil, 'yyyy-MM-dd\'T\'HH:mm')
                       });
                     }}
                   >
