@@ -1,5 +1,5 @@
 import { db, pool } from "./db";
-import { users, connections, messages, events, eventParticipants, travelPlans, tripItineraries, itineraryItems, sharedItineraries, notifications, blockedUsers, travelMemories, travelMemoryLikes, travelMemoryComments, userPhotos, userReferences, referrals, proximityNotifications, customLocationActivities, cityActivities, userCustomActivities, userCityInterests, cityLandmarks, landmarkRatings, secretLocalExperiences, secretLocalExperienceLikes, secretExperienceLikes, cityPages, citychatrooms, chatroomMembers, chatroomMessages, chatroomAccessRequests, chatroomInvitations, meetupChatrooms, meetupChatroomMessages, businessOffers, businessOfferRedemptions, businessReferrals, businessLocations, businessInterestNotifications, businessCustomerPhotos, cityPhotos, travelBlogPosts, travelBlogLikes, travelBlogComments, instagramPosts, quickMeetups, quickMeetupParticipants, quickMeetupTemplates, userNotificationSettings, businessSubscriptions, photoAlbums, externalEventInterests, vouches, vouchCredits, type User, type InsertUser, type Connection, type InsertConnection, type Message, type InsertMessage, type Event, type InsertEvent, type EventParticipant, type EventParticipantWithUser, type TravelPlan, type InsertTravelPlan, type TripItinerary, type InsertTripItinerary, type ItineraryItem, type InsertItineraryItem, type SharedItinerary, type InsertSharedItinerary, type Notification, type InsertNotification, type UserReference, type Referral, type InsertReferral, type ProximityNotification, type InsertProximityNotification, type CityLandmark, type InsertCityLandmark, type LandmarkRating, type InsertLandmarkRating, type SecretLocalExperience, type InsertSecretLocalExperience, type ChatroomInvitation, type InsertChatroomInvitation, type BusinessOffer, type InsertBusinessOffer, type BusinessOfferRedemption, type InsertBusinessOfferRedemption, type BusinessLocation, type InsertBusinessLocation, type BusinessInterestNotification, type InsertBusinessInterestNotification, type BusinessCustomerPhoto, type InsertBusinessCustomerPhoto, type CityPhoto, type InsertCityPhoto, type TravelBlogPost, type InsertTravelBlogPost, type TravelBlogLike, type InsertTravelBlogLike, type TravelBlogComment, type InsertTravelBlogComment, type InstagramPost, type InsertInstagramPost, type QuickMeetupTemplate, type InsertQuickMeetupTemplate, type UserNotificationSettings, type InsertUserNotificationSettings, type BusinessSubscription, type InsertBusinessSubscription, type PhotoAlbum, type InsertPhotoAlbum, type ExternalEventInterest, type InsertExternalEventInterest, type Vouch, type VouchCredits, type VouchWithUsers } from "@shared/schema";
+import { users, connections, messages, events, eventParticipants, travelPlans, tripItineraries, itineraryItems, sharedItineraries, notifications, blockedUsers, travelMemories, travelMemoryLikes, travelMemoryComments, userPhotos, userReferences, referrals, proximityNotifications, customLocationActivities, cityActivities, userCustomActivities, userCityInterests, cityLandmarks, landmarkRatings, secretLocalExperiences, secretLocalExperienceLikes, secretExperienceLikes, cityPages, citychatrooms, chatroomMembers, chatroomMessages, chatroomAccessRequests, chatroomInvitations, meetupChatrooms, meetupChatroomMessages, businessOffers, businessOfferRedemptions, businessReferrals, businessLocations, businessInterestNotifications, businessCustomerPhotos, cityPhotos, travelBlogPosts, travelBlogLikes, travelBlogComments, instagramPosts, quickMeetups, quickMeetupParticipants, quickMeetupTemplates, quickDeals, userNotificationSettings, businessSubscriptions, photoAlbums, externalEventInterests, vouches, vouchCredits, type User, type InsertUser, type Connection, type InsertConnection, type Message, type InsertMessage, type Event, type InsertEvent, type EventParticipant, type EventParticipantWithUser, type TravelPlan, type InsertTravelPlan, type TripItinerary, type InsertTripItinerary, type ItineraryItem, type InsertItineraryItem, type SharedItinerary, type InsertSharedItinerary, type Notification, type InsertNotification, type UserReference, type Referral, type InsertReferral, type ProximityNotification, type InsertProximityNotification, type CityLandmark, type InsertCityLandmark, type LandmarkRating, type InsertLandmarkRating, type SecretLocalExperience, type InsertSecretLocalExperience, type ChatroomInvitation, type InsertChatroomInvitation, type BusinessOffer, type InsertBusinessOffer, type BusinessOfferRedemption, type InsertBusinessOfferRedemption, type BusinessLocation, type InsertBusinessLocation, type BusinessInterestNotification, type InsertBusinessInterestNotification, type BusinessCustomerPhoto, type InsertBusinessCustomerPhoto, type CityPhoto, type InsertCityPhoto, type TravelBlogPost, type InsertTravelBlogPost, type TravelBlogLike, type InsertTravelBlogLike, type TravelBlogComment, type InsertTravelBlogComment, type InstagramPost, type InsertInstagramPost, type QuickMeetupTemplate, type InsertQuickMeetupTemplate, type UserNotificationSettings, type InsertUserNotificationSettings, type BusinessSubscription, type InsertBusinessSubscription, type PhotoAlbum, type InsertPhotoAlbum, type ExternalEventInterest, type InsertExternalEventInterest, type Vouch, type VouchCredits, type VouchWithUsers } from "@shared/schema";
 import { eq, and, or, ilike, gte, desc, avg, count, sql, isNotNull, ne, lte, lt, gt, asc, like, inArray, getTableColumns, isNull } from "drizzle-orm";
 import { promises as fs } from 'fs';
 import path from 'path';
@@ -4846,6 +4846,52 @@ export class DatabaseStorage implements IStorage {
   // Business location discovery methods
   async getBusinessesByLocation(city: string, state: string, country: string, category?: string): Promise<any[]> {
     try {
+      // Create subqueries to find businesses with active events or deals
+      const businessesWithEventsSubquery = db.select({
+        businessId: events.organizerId
+      })
+      .from(events)
+      .where(
+        and(
+          eq(events.isActive, true),
+          gte(events.date, new Date()) // Future or current events only
+        )
+      );
+
+      const businessesWithQuickDealsSubquery = db.select({
+        businessId: quickDeals.businessId
+      })
+      .from(quickDeals)
+      .where(
+        and(
+          eq(quickDeals.isActive, true),
+          gte(quickDeals.validUntil, new Date()) // Active deals that haven't expired
+        )
+      );
+
+      const businessesWithOffersSubquery = db.select({
+        businessId: businessOffers.businessId
+      })
+      .from(businessOffers)
+      .where(
+        and(
+          eq(businessOffers.isActive, true),
+          gte(businessOffers.validUntil, new Date()) // Active offers that haven't expired
+        )
+      );
+
+      // Apply location filters
+      const filters = [];
+      if (city) {
+        filters.push(ilike(users.city, `%${city}%`));
+      }
+      if (state) {
+        filters.push(ilike(users.state, `%${state}%`));
+      }
+      if (country) {
+        filters.push(ilike(users.country, `%${country}%`));
+      }
+
       let query = db
         .select({
           id: users.id,
@@ -4872,28 +4918,15 @@ export class DatabaseStorage implements IStorage {
         .from(users)
         .where(and(
           eq(users.userType, 'business'),
-          eq(users.isActive, true)
-        ));
-
-      // Apply location filters
-      const filters = [];
-      if (city) {
-        filters.push(ilike(users.city, `%${city}%`));
-      }
-      if (state) {
-        filters.push(ilike(users.state, `%${state}%`));
-      }
-      if (country) {
-        filters.push(ilike(users.country, `%${country}%`));
-      }
-
-      if (filters.length > 0) {
-        query = query.where(and(
-          eq(users.userType, 'business'),
           eq(users.isActive, true),
-          ...filters
+          // ONLY include businesses that have active events or deals
+          or(
+            inArray(users.id, businessesWithEventsSubquery),
+            inArray(users.id, businessesWithQuickDealsSubquery),
+            inArray(users.id, businessesWithOffersSubquery)
+          ),
+          ...(filters.length > 0 ? filters : [])
         ));
-      }
 
       const businesses = await query;
 

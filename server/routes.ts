@@ -7856,6 +7856,7 @@ Questions? Just reply to this message. Welcome aboard!
       }
 
       // Fetch businesses with location data for this city (including LA metro area)
+      // ONLY show businesses that have active events or deals
       let mapBusinesses = [];
       try {
         // Use same LA metro area logic for businesses
@@ -7869,6 +7870,40 @@ Questions? Just reply to this message. Welcome aboard!
         
         const businessConditions = businessCitiesToSearch.map(searchCity => 
           ilike(users.hometownCity, `%${searchCity}%`)
+        );
+
+        // Create subqueries to find businesses with active events or deals
+        const businessesWithEventsSubquery = db.select({
+          businessId: events.organizerId
+        })
+        .from(events)
+        .where(
+          and(
+            eq(events.isActive, true),
+            gte(events.date, new Date()) // Future or current events only
+          )
+        );
+
+        const businessesWithQuickDealsSubquery = db.select({
+          businessId: quickDeals.businessId
+        })
+        .from(quickDeals)
+        .where(
+          and(
+            eq(quickDeals.isActive, true),
+            gte(quickDeals.validUntil, new Date()) // Active deals that haven't expired
+          )
+        );
+
+        const businessesWithOffersSubquery = db.select({
+          businessId: businessOffers.businessId
+        })
+        .from(businessOffers)
+        .where(
+          and(
+            eq(businessOffers.isActive, true),
+            gte(businessOffers.validUntil, new Date()) // Active offers that haven't expired
+          )
         );
         
         mapBusinesses = await db.select({
@@ -7886,9 +7921,19 @@ Questions? Just reply to this message. Welcome aboard!
             eq(users.locationSharingEnabled, true),
             isNotNull(users.currentLatitude),
             isNotNull(users.currentLongitude),
-            or(...businessConditions)
+            or(...businessConditions),
+            // ONLY include businesses that have active events or deals
+            or(
+              inArray(users.id, businessesWithEventsSubquery),
+              inArray(users.id, businessesWithQuickDealsSubquery),
+              inArray(users.id, businessesWithOffersSubquery)
+            )
           )
         );
+
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`🗺️ BUSINESSES: Found ${mapBusinesses.length} businesses with active events/deals in ${businessCitiesToSearch.join(', ')}`);
+        }
       } catch (error: any) {
         if (process.env.NODE_ENV === 'development') console.error('Error fetching map businesses:', error);
         mapBusinesses = [];
