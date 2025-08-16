@@ -6843,6 +6843,61 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     />
                   </div>
 
+                  {/* Military Status for Business */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white border-b pb-2">
+                      Military Status
+                    </h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <FormField
+                        control={profileForm.control}
+                        name="isVeteran"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4">
+                            <FormControl>
+                              <input
+                                type="checkbox"
+                                checked={field.value || false}
+                                onChange={field.onChange}
+                                className="h-4 w-4"
+                              />
+                            </FormControl>
+                            <div className="space-y-1 leading-none">
+                              <FormLabel>Veteran Owned Business</FormLabel>
+                              <div className="text-sm text-gray-500 dark:text-gray-400">
+                                Check if your business is veteran-owned
+                              </div>
+                            </div>
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={profileForm.control}
+                        name="isActiveDuty"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4">
+                            <FormControl>
+                              <input
+                                type="checkbox"
+                                checked={field.value || false}
+                                onChange={field.onChange}
+                                className="h-4 w-4"
+                              />
+                            </FormControl>
+                            <div className="space-y-1 leading-none">
+                              <FormLabel>Active Duty Owned Business</FormLabel>
+                              <div className="text-sm text-gray-500 dark:text-gray-400">
+                                Check if your business is active duty-owned
+                              </div>
+                            </div>
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </div>
+
 
 
                   {/* Interests Field for Business Users */}
@@ -7393,125 +7448,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 />
               )}
 
-              {/* Business Contact Information - Only show for business users */}
-              {user?.userType === 'business' && (
-                <div className="space-y-4">
-                  <div className="border-t pt-4">
-                    <h3 className="text-lg font-semibold mb-3">Business Contact Information</h3>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <FormField
-                        control={profileForm.control}
-                        name="streetAddress"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Street Address</FormLabel>
-                            <FormControl>
-                              <Input {...field} placeholder="123 Main Street" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <FormField
-                        control={profileForm.control}
-                        name="zipCode"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>ZIP Code</FormLabel>
-                            <FormControl>
-                              <Input {...field} placeholder="10001" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <FormField
-                        control={profileForm.control}
-                        name="phoneNumber"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Phone Number</FormLabel>
-                            <FormControl>
-                              <Input {...field} placeholder="(555) 123-4567" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <FormField
-                        control={profileForm.control}
-                        name="websiteUrl"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Website URL</FormLabel>
-                            <FormControl>
-                              <Input {...field} placeholder="https://www.yourbusiness.com" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                    
-                    {/* Military Status for Business */}
-                    <div className="space-y-4 border-t pt-4 mt-4">
-                      <h4 className="font-semibold mb-3">Military Status</h4>
-                      
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <FormField
-                          control={profileForm.control}
-                          name="isVeteran"
-                          render={({ field }) => (
-                            <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4">
-                              <FormControl>
-                                <input
-                                  type="checkbox"
-                                  checked={field.value || false}
-                                  onChange={field.onChange}
-                                  className="h-4 w-4"
-                                />
-                              </FormControl>
-                              <div className="space-y-1 leading-none">
-                                <FormLabel>Veteran Owned Business</FormLabel>
-                                <div className="text-sm text-gray-500">
-                                  Check if your business is veteran-owned
-                                </div>
-                              </div>
-                            </FormItem>
-                          )}
-                        />
-                        
-                        <FormField
-                          control={profileForm.control}
-                          name="isActiveDuty"
-                          render={({ field }) => (
-                            <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4">
-                              <FormControl>
-                                <input
-                                  type="checkbox"
-                                  checked={field.value || false}
-                                  onChange={field.onChange}
-                                  className="h-4 w-4"
-                                />
-                              </FormControl>
-                              <div className="space-y-1 leading-none">
-                                <FormLabel>Active Duty Owned Business</FormLabel>
-                                <div className="text-sm text-gray-500">
-                                  Check if your business is active duty-owned
-                                </div>
-                              </div>
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
+
 
               {/* Profile Interests, Activities, and Events Section - For non-business users only */}
               {user?.userType !== 'business' && (
