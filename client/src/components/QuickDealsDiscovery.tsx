@@ -200,10 +200,12 @@ export function QuickDealsDiscovery({ userLocation }: QuickDealsDiscoveryProps) 
                     <span className="line-clamp-1">{deal.location}</span>
                   </div>
                   
-                  <div className="flex items-center gap-1">
-                    <Users className="w-3 h-3" />
-                    <span>{deal.currentRedemptions || 0}/{deal.maxRedemptions || 100} claimed</span>
-                  </div>
+                  {(deal as any).streetAddress && (
+                    <div className="flex items-center gap-1">
+                      <MapPin className="w-3 h-3" />
+                      <span className="line-clamp-1">{(deal as any).streetAddress}</span>
+                    </div>
+                  )}
 
                   {deal.category && (
                     <div className="flex items-center gap-1">
