@@ -21,7 +21,7 @@ export function SimpleAvatar({ user, size = 'md', className = '' }: SimpleAvatar
     sm: 'w-8 h-8 text-sm',
     md: 'w-10 h-10 text-base', 
     lg: 'w-12 h-12 text-lg',
-    xl: 'w-16 h-16 text-xl'
+    xl: 'w-full h-full text-xl'
   };
 
   // Generate colorful avatar based on username and user preferences

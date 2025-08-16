@@ -3201,12 +3201,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           <div className="flex flex-row items-start gap-4 sm:gap-6">
             {/* Profile Avatar - Left Side */}
             <div className="relative flex-shrink-0">
-              <Avatar className="w-20 h-20 sm:w-32 sm:h-32 md:w-40 md:h-40 border-4 border-white shadow-lg bg-white">
-                <AvatarImage src={user?.profileImage || ''} className="object-cover" />
-                <AvatarFallback className="text-lg sm:text-2xl md:text-4xl bg-gradient-to-br from-blue-600 to-orange-600 text-white">
-                  {(user?.username?.charAt(0) || user?.name?.charAt(0) || 'U').toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
+              <div className="w-20 h-20 sm:w-32 sm:h-32 md:w-40 md:h-40 border-4 border-white shadow-lg bg-white rounded-full overflow-hidden">
+                <SimpleAvatar 
+                  user={user} 
+                  size="xl" 
+                  className="w-full h-full border-0 shadow-none"
+                />
+              </div>
               {isOwnProfile && (
                 <>
                   <Button 
