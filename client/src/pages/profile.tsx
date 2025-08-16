@@ -3518,17 +3518,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         }
                       </p>
                     </div>
-                    {/* Bio Edit Button - Always visible on mobile for own profile */}
-                    {isOwnProfile && (
-                      <Button
-                        size="sm"
-                        onClick={() => setIsEditMode(true)}
-                        className="ml-3 bg-blue-600 hover:bg-blue-700 text-white border-0 flex-shrink-0"
-                      >
-                        <Edit className="w-3 h-3 mr-1" />
-                        Edit Bio
-                      </Button>
-                    )}
+
                   </div>
                 </div>
                 
