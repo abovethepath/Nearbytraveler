@@ -687,6 +687,7 @@ export class DatabaseStorage implements IStorage {
         customInterests: 'custom_interests',
         customActivities: 'custom_activities',
         customEvents: 'custom_events',
+        languagesSpoken: 'languages_spoken',
         latitude: 'latitude',
         longitude: 'longitude'
       };
