@@ -437,6 +437,18 @@ export default function BusinessDashboard() {
     },
   });
 
+  // Customer photos query for business
+  const { data: customerPhotos = [], isLoading: isCustomerPhotosLoading } = useQuery({
+    queryKey: [`/api/businesses/${currentUser?.id}/customer-photos`],
+    enabled: !!currentUser?.id && currentUser?.userType === 'business',
+    queryFn: async () => {
+      if (!currentUser?.id) return [];
+      const response = await fetch(`/api/businesses/${currentUser.id}/customer-photos`);
+      if (!response.ok) throw new Error('Failed to fetch customer photos');
+      return response.json();
+    }
+  });
+
   // Photo management queries with pagination to avoid 64MB limit
   const { data: userPhotos = [], isLoading: isPhotosLoading } = useQuery({
     queryKey: [`/api/users/${currentUser?.id}/photos`],
@@ -472,6 +484,7 @@ export default function BusinessDashboard() {
     },
   });
 
+  console.log('BusinessDashboard - CustomerPhotos data:', customerPhotos?.map(p => ({id: p.id, caption: p.caption, hasImage: !!(p.imageUrl || p.imageData)})), 'Length:', customerPhotos?.length, 'Loading:', isCustomerPhotosLoading);
   console.log('BusinessDashboard - UserPhotos data:', userPhotos?.map(p => ({id: p.id, caption: p.caption, hasImage: !!(p.imageUrl || p.imageData)})), 'Length:', userPhotos?.length, 'Loading:', isPhotosLoading);
   console.log('BusinessDashboard - Current user ID:', currentUser?.id);
 
@@ -1277,7 +1290,7 @@ export default function BusinessDashboard() {
             <TabsTrigger value="active">Active Deals ({offers.length})</TabsTrigger>
             <TabsTrigger value="events">Special Events ({businessEvents.length})</TabsTrigger>
             <TabsTrigger value="past">Past Deals ({pastOffers.length})</TabsTrigger>
-            <TabsTrigger value="photos">Customer Photos ({userPhotos?.length || 0})</TabsTrigger>
+            <TabsTrigger value="photos">Customer Photos ({customerPhotos?.length || 0})</TabsTrigger>
           </TabsList>
 
           <TabsContent value="active" className="mt-6">
@@ -1656,7 +1669,7 @@ export default function BusinessDashboard() {
 
           <TabsContent value="photos" className="mt-6">
             {/* Customer Photos Management */}
-            {isPhotosLoading ? (
+            {isCustomerPhotosLoading ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {[...Array(6)].map((_, i) => (
                   <Card key={i} className="animate-pulse">
@@ -1668,7 +1681,7 @@ export default function BusinessDashboard() {
                   </Card>
                 ))}
               </div>
-            ) : !userPhotos || userPhotos.length === 0 ? (
+            ) : !customerPhotos || customerPhotos.length === 0 ? (
               <Card>
                 <CardContent className="p-8 text-center">
                   <Camera className="h-12 w-12 mx-auto text-gray-400 mb-4" />
@@ -1712,7 +1725,7 @@ export default function BusinessDashboard() {
               </Card>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {userPhotos.map((photo: any) => (
+                {customerPhotos.map((photo: any) => (
                   <Card key={photo.id} className="overflow-hidden">
                     <div className="relative">
                       <img
