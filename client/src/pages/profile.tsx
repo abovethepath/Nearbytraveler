@@ -260,6 +260,27 @@ const createProfileSchema = (userType: string) => {
       businessDescription: z.string().optional(),
       businessType: z.string().optional(),
       location: z.string().optional(),
+      city: z.string().optional(),
+      state: z.string().optional(),
+      country: z.string().optional(),
+      streetAddress: z.string().optional(),
+      zipCode: z.string().optional(),
+      phoneNumber: z.string().optional(),
+      websiteUrl: z.string().optional(),
+      interests: z.array(z.string()).default([]),
+      activities: z.array(z.string()).default([]),
+      events: z.array(z.string()).default([]),
+      customInterests: z.string().optional(),
+      customActivities: z.string().optional(),
+      customEvents: z.string().optional(),
+      isVeteran: z.boolean().default(false),
+      isActiveDuty: z.boolean().default(false),
+      isMinorityOwned: z.boolean().default(false),
+      isFemaleOwned: z.boolean().default(false),
+      isLGBTQIAOwned: z.boolean().default(false),
+      showMinorityOwned: z.boolean().default(true),
+      showFemaleOwned: z.boolean().default(true),
+      showLGBTQIAOwned: z.boolean().default(true),
     });
   } else {
     return baseSchema.extend({
@@ -273,6 +294,9 @@ const createProfileSchema = (userType: string) => {
     });
   }
 };
+
+// Dynamic schema based on user type
+const getDynamicProfileSchema = (userType: string) => createProfileSchema(userType);
 
 // Default schema for compatibility
 const profileSchema = createProfileSchema('traveler');
@@ -1142,17 +1166,41 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
   // Get the current user type for schema selection
   const currentUserType = user?.userType || 'traveler';
-  const dynamicProfileSchema = getProfileFormSchema(currentUserType);
+  const dynamicProfileSchema = getDynamicProfileSchema(currentUserType);
   
   const profileForm = useForm<z.infer<typeof dynamicProfileSchema>>({
     resolver: zodResolver(dynamicProfileSchema),
     defaultValues: currentUserType === 'business' ? {
       bio: "",
       businessName: "",
+      businessDescription: "",
+      businessType: "",
+      location: "",
+      city: "",
+      state: "",
+      country: "",
       hometownCity: "",
       hometownState: "",
       hometownCountry: "",
+      streetAddress: "",
+      zipCode: "",
+      phoneNumber: "",
+      websiteUrl: "",
       travelStyle: [],
+      interests: [],
+      activities: [],
+      events: [],
+      customInterests: "",
+      customActivities: "",
+      customEvents: "",
+      isVeteran: false,
+      isActiveDuty: false,
+      isMinorityOwned: false,
+      isFemaleOwned: false,
+      isLGBTQIAOwned: false,
+      showMinorityOwned: true,
+      showFemaleOwned: true,
+      showLGBTQIAOwned: true,
       businessDescription: "",
       businessType: "",
       city: "",
