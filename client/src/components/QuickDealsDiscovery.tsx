@@ -109,6 +109,21 @@ export function QuickDealsDiscovery({ userLocation }: QuickDealsDiscoveryProps) 
     }
   };
 
+  // Format discount amount for display
+  const formatDiscountAmount = (discountAmount: string | null) => {
+    if (!discountAmount) return 'Special Deal';
+    
+    // Clean up common formatting issues
+    let formatted = discountAmount.trim();
+    
+    // Remove duplicate symbols and fix common issues
+    formatted = formatted.replace(/(%\$|%\s*\$|\$%)/gi, '$'); // Fix %$ to just $
+    formatted = formatted.replace(/(%.*%)/gi, (match) => match.replace(/%/g, '')); // Remove duplicate %
+    formatted = formatted.replace(/\s+/g, ' '); // Normalize spaces
+    
+    return formatted;
+  };
+
   const getAvailabilityColor = (availability: string) => {
     switch (availability) {
       case 'now': return 'bg-red-100 text-red-800 border-red-300 dark:bg-red-900 dark:text-red-200';
@@ -185,7 +200,7 @@ export function QuickDealsDiscovery({ userLocation }: QuickDealsDiscoveryProps) 
                     <h3 className="font-bold text-sm text-gray-900 dark:text-white line-clamp-1">{deal.title}</h3>
                     <Badge className={`text-xs ${getAvailabilityColor(deal.availability)}`}>
                       {getDealTypeIcon(deal.dealType)}
-                      {deal.discountAmount}
+                      {formatDiscountAmount(deal.discountAmount)}
                     </Badge>
                   </div>
                   
