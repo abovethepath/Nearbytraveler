@@ -5934,32 +5934,100 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       onCheckedChange={(enabled) => {
                         console.log('🔧 DIRECT: Location sharing toggle clicked:', { enabled, userId: user.id });
                         
-                        // Direct API call with immediate UI update
-                        apiRequest('PUT', `/api/users/${user.id}`, {
-                          locationSharingEnabled: enabled
-                        }).then(() => {
-                          console.log('🔧 DIRECT: Location sharing updated successfully');
+                        if (enabled) {
+                          // Request location permission first
+                          if (!navigator.geolocation) {
+                            toast({
+                              title: "Location not supported",
+                              description: "Your browser doesn't support location services",
+                              variant: "destructive",
+                            });
+                            return;
+                          }
                           
-                          // Force immediate cache invalidation and refetch
-                          queryClient.invalidateQueries({ queryKey: [`/api/users/${user.id}`] });
-                          queryClient.invalidateQueries({ queryKey: ['/api/users', user.id] });
-                          queryClient.refetchQueries({ queryKey: [`/api/users/${user.id}`] });
-                          
-                          // Force page reload to show immediate effect
-                          window.location.reload();
-                          
-                          toast({
-                            title: "Location sharing updated",
-                            description: "Your location sharing preference has been saved",
+                          // Get current location before enabling sharing
+                          navigator.geolocation.getCurrentPosition(
+                            (position) => {
+                              const { latitude, longitude } = position.coords;
+                              console.log('🔧 DIRECT: Got location:', { latitude, longitude });
+                              
+                              // Update location sharing with coordinates
+                              apiRequest('PUT', `/api/users/${user.id}`, {
+                                locationSharingEnabled: enabled,
+                                currentLatitude: latitude,
+                                currentLongitude: longitude
+                              }).then(() => {
+                                console.log('🔧 DIRECT: Location sharing updated successfully');
+                                
+                                // Invalidate cache without page reload
+                                queryClient.invalidateQueries({ queryKey: [`/api/users/${user.id}`] });
+                                queryClient.refetchQueries({ queryKey: [`/api/users/${user.id}`] });
+                                
+                                toast({
+                                  title: "Location sharing enabled",
+                                  description: "Your location is now visible on city maps",
+                                });
+                              }).catch((error) => {
+                                console.error('🔧 DIRECT: Error updating location sharing:', error);
+                                toast({
+                                  title: "Error", 
+                                  description: "Failed to update location sharing",
+                                  variant: "destructive",
+                                });
+                              });
+                            },
+                            (error) => {
+                              console.error('🔧 DIRECT: Location error:', error);
+                              let message = "Unable to get your location";
+                              
+                              switch (error.code) {
+                                case error.PERMISSION_DENIED:
+                                  message = "Location access denied. Please enable location permissions in your browser settings.";
+                                  break;
+                                case error.POSITION_UNAVAILABLE:
+                                  message = "Location information unavailable.";
+                                  break;
+                                case error.TIMEOUT:
+                                  message = "Location request timed out.";
+                                  break;
+                              }
+                              
+                              toast({
+                                title: "Location Error",
+                                description: message,
+                                variant: "destructive",
+                              });
+                            },
+                            {
+                              enableHighAccuracy: true,
+                              timeout: 10000,
+                              maximumAge: 300000 // 5 minutes
+                            }
+                          );
+                        } else {
+                          // Simply disable location sharing
+                          apiRequest('PUT', `/api/users/${user.id}`, {
+                            locationSharingEnabled: enabled
+                          }).then(() => {
+                            console.log('🔧 DIRECT: Location sharing disabled');
+                            
+                            // Invalidate cache without page reload
+                            queryClient.invalidateQueries({ queryKey: [`/api/users/${user.id}`] });
+                            queryClient.refetchQueries({ queryKey: [`/api/users/${user.id}`] });
+                            
+                            toast({
+                              title: "Location sharing disabled",
+                              description: "Your location is no longer visible on city maps",
+                            });
+                          }).catch((error) => {
+                            console.error('🔧 DIRECT: Error disabling location sharing:', error);
+                            toast({
+                              title: "Error", 
+                              description: "Failed to update location sharing",
+                              variant: "destructive",
+                            });
                           });
-                        }).catch((error) => {
-                          console.error('🔧 DIRECT: Error updating location sharing:', error);
-                          toast({
-                            title: "Error", 
-                            description: "Failed to update location sharing",
-                            variant: "destructive",
-                          });
-                        });
+                        }
                       }}
                       data-testid="location-sharing-toggle"
                     />
@@ -5971,6 +6039,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         <AlertCircle className="h-4 w-4" />
                         <span>Your location will be visible to other users on the city map</span>
                       </div>
+                      {user.currentLatitude && user.currentLongitude && (
+                        <div className="text-xs text-gray-500 bg-gray-50 dark:bg-gray-800 p-2 rounded">
+                          Current location: {user.currentLatitude.toFixed(4)}, {user.currentLongitude.toFixed(4)}
+                        </div>
+                      )}
                     </div>
                   )}
 
