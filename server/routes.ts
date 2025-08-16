@@ -54,8 +54,16 @@ import {
 } from "../shared/schema";
 import { sql, eq, or, count, and, ne, desc, gte, lte, lt, isNotNull, inArray, asc, ilike, like, isNull, gt } from "drizzle-orm";
 
-// City coordinates helper function
+// City coordinates helper function - FIXED coordinate lookup
 const getCityCoordinates = (city: string): [number, number] => {
+  // Ensure city is a string and handle edge cases
+  if (!city || typeof city !== 'string') {
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`🗺️ INVALID CITY: Received invalid city value: ${city} (type: ${typeof city})`);
+    }
+    return [34.0522, -118.2437]; // Default to LA
+  }
+
   const cityCoords: Record<string, [number, number]> = {
     'Los Angeles': [34.0522, -118.2437],
     'LA': [34.0522, -118.2437],
@@ -74,33 +82,51 @@ const getCityCoordinates = (city: string): [number, number] => {
     'Denver': [39.7392, -104.9903]
   };
   
+  // Clean the city name - trim whitespace and normalize
+  const cleanCity = city.trim();
+  
   // Debug logging
   if (process.env.NODE_ENV === 'development') {
-    console.log(`🗺️ LOOKUP: Searching for "${city}" in coordinates table`);
+    console.log(`🗺️ LOOKUP: Searching for "${cleanCity}" in coordinates table`);
   }
   
-  // First try exact match
-  if (cityCoords[city]) {
+  // First try exact match with cleaned city
+  if (cityCoords[cleanCity]) {
     if (process.env.NODE_ENV === 'development') {
-      console.log(`🗺️ FOUND: Exact match for "${city}": [${cityCoords[city][0]}, ${cityCoords[city][1]}]`);
+      console.log(`🗺️ FOUND: Exact match for "${cleanCity}": [${cityCoords[cleanCity][0]}, ${cityCoords[cleanCity][1]}]`);
     }
-    return cityCoords[city];
+    return cityCoords[cleanCity];
   }
   
   // Try case-insensitive match
-  const cityLower = city.toLowerCase();
+  const cityLower = cleanCity.toLowerCase();
   for (const [key, coords] of Object.entries(cityCoords)) {
     if (key.toLowerCase() === cityLower) {
       if (process.env.NODE_ENV === 'development') {
-        console.log(`🗺️ FOUND: Case-insensitive match for "${city}" -> "${key}": [${coords[0]}, ${coords[1]}]`);
+        console.log(`🗺️ FOUND: Case-insensitive match for "${cleanCity}" -> "${key}": [${coords[0]}, ${coords[1]}]`);
       }
       return coords;
     }
   }
+
+  // Try partial match for common variations
+  if (cityLower.includes('santa monica') || cityLower.includes('santa_monica')) {
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`🗺️ FOUND: Partial match for Santa Monica: [34.0195, -118.4912]`);
+    }
+    return [34.0195, -118.4912];
+  }
+  
+  if (cityLower.includes('los angeles') || cityLower.includes('la')) {
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`🗺️ FOUND: Partial match for Los Angeles: [34.0522, -118.2437]`);
+    }
+    return [34.0522, -118.2437];
+  }
   
   // Default to LA if not found
   if (process.env.NODE_ENV === 'development') {
-    console.log(`🗺️ NOT FOUND: No match for "${city}", using default LA coordinates`);
+    console.log(`🗺️ NOT FOUND: No match for "${cleanCity}", using default LA coordinates`);
   }
   return [34.0522, -118.2437];
 };
@@ -8060,7 +8086,20 @@ Questions? Just reply to this message. Welcome aboard!
           console.log(`🗺️ COORDS DEBUG: Looking up city "${city}" (type: ${typeof city})`);
         }
         
-        const cityCoords = getCityCoordinates(city as string);
+        // Get city coordinates with fallback for known cities
+        let cityCoords = getCityCoordinates(city as string);
+        
+        // Fallback for Santa Monica if getCityCoordinates fails
+        if (!cityCoords || cityCoords[0] === undefined || cityCoords[1] === undefined) {
+          if (city.toLowerCase().includes('santa monica')) {
+            cityCoords = [34.0195, -118.4912];
+          } else if (city.toLowerCase().includes('los angeles')) {
+            cityCoords = [34.0522, -118.2437];
+          } else {
+            cityCoords = [34.0522, -118.2437]; // Default to LA
+          }
+        }
+        
         const cityLatRange = [cityCoords[0] - 0.5, cityCoords[0] + 0.5]; // ~35 mile radius
         const cityLngRange = [cityCoords[1] - 0.5, cityCoords[1] + 0.5];
         
@@ -12959,6 +12998,7 @@ Questions? Just reply to this message. Welcome aboard!
       res.status(500).json({ error: error.message });
     }
   });
+
 
   return httpServer;
 }
