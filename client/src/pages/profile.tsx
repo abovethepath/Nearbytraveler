@@ -6733,18 +6733,18 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         control={profileForm.control}
                         name="isVeteran"
                         render={({ field }) => (
-                          <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4">
+                          <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors">
                             <FormControl>
                               <input
                                 type="checkbox"
                                 checked={field.value || false}
                                 onChange={field.onChange}
-                                className="h-4 w-4"
+                                className="h-4 w-4 rounded border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
                               />
                             </FormControl>
                             <div className="space-y-1 leading-none">
-                              <FormLabel>Veteran Owned Business</FormLabel>
-                              <div className="text-sm text-gray-500 dark:text-gray-400">
+                              <FormLabel className="text-gray-900 dark:text-gray-100 font-medium">Veteran Owned Business</FormLabel>
+                              <div className="text-sm text-gray-600 dark:text-gray-300">
                                 Check if your business is veteran-owned
                               </div>
                             </div>
@@ -6756,18 +6756,18 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         control={profileForm.control}
                         name="isActiveDuty"
                         render={({ field }) => (
-                          <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4">
+                          <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors">
                             <FormControl>
                               <input
                                 type="checkbox"
                                 checked={field.value || false}
                                 onChange={field.onChange}
-                                className="h-4 w-4"
+                                className="h-4 w-4 rounded border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
                               />
                             </FormControl>
                             <div className="space-y-1 leading-none">
-                              <FormLabel>Active Duty Owned Business</FormLabel>
-                              <div className="text-sm text-gray-500 dark:text-gray-400">
+                              <FormLabel className="text-gray-900 dark:text-gray-100 font-medium">Active Duty Owned Business</FormLabel>
+                              <div className="text-sm text-gray-600 dark:text-gray-300">
                                 Check if your business is active duty-owned
                               </div>
                             </div>
