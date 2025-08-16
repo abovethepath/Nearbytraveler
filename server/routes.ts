@@ -5923,13 +5923,13 @@ Questions? Just reply to this message. Welcome aboard!
 
       const businessId = parseInt(userId || '0');
       
-      // Get analytics for business deals
-      const totalOffers = await db
+      // Get analytics for business offers
+      const totalBusinessOffers = await db
         .select({ count: sql<number>`count(*)` })
         .from(businessOffers)
         .where(eq(businessOffers.businessId, businessId));
 
-      const activeOffers = await db
+      const activeBusinessOffers = await db
         .select({ count: sql<number>`count(*)` })
         .from(businessOffers)
         .where(and(
@@ -5938,9 +5938,32 @@ Questions? Just reply to this message. Welcome aboard!
           gt(businessOffers.validUntil, new Date())
         ));
 
+      // Get analytics for quick deals
+      const totalQuickDeals = await db
+        .select({ count: sql<number>`count(*)` })
+        .from(quickDeals)
+        .where(eq(quickDeals.businessId, businessId));
+
+      const activeQuickDeals = await db
+        .select({ count: sql<number>`count(*)` })
+        .from(quickDeals)
+        .where(and(
+          eq(quickDeals.businessId, businessId),
+          eq(quickDeals.isActive, true),
+          gt(quickDeals.validUntil, new Date())
+        ));
+
+      // Combine business offers and quick deals
+      const totalOffers = Number(totalBusinessOffers[0]?.count || 0) + Number(totalQuickDeals[0]?.count || 0);
+      const activeOffers = Number(activeBusinessOffers[0]?.count || 0) + Number(activeQuickDeals[0]?.count || 0);
+
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`📊 BUSINESS ANALYTICS: Business ${businessId} - Business Offers: ${activeBusinessOffers[0]?.count || 0} active, Quick Deals: ${activeQuickDeals[0]?.count || 0} active, Total Active: ${activeOffers}`);
+      }
+
       return res.json({
-        totalOffers: totalOffers[0]?.count || 0,
-        activeOffers: activeOffers[0]?.count || 0,
+        totalOffers: totalOffers,
+        activeOffers: activeOffers,
         totalViews: 0, // Placeholder for future implementation
         totalRedemptions: 0 // Placeholder for future implementation
       });
