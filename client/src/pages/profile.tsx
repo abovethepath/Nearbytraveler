@@ -7104,8 +7104,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
 
                   {/* Military Status for Business */}
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white border-b pb-2">
+                  <div className="space-y-4 bg-gray-50 dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-600 pb-2">
                       Military Status
                     </h3>
                     
@@ -7159,8 +7159,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </div>
 
                   {/* Diversity Business Ownership Categories */}
-                  <div className="space-y-4">
-                    <div className="border-b pb-2">
+                  <div className="space-y-4 bg-gray-50 dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700 mt-6">
+                    <div className="border-b border-gray-200 dark:border-gray-600 pb-2">
                       <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                         Diversity Business Ownership
                       </h3>
