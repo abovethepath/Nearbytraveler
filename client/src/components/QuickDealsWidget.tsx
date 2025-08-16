@@ -126,13 +126,23 @@ export function QuickDealsWidget({ city, profileUserId, showCreateForm: external
       });
       queryClient.invalidateQueries({ queryKey: ['/api/quick-deals'] });
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.error('Deal creation error:', error);
-      toast({
-        title: "Error",
-        description: "Failed to create deal. Please try again.",
-        variant: "destructive"
-      });
+      
+      // Handle monthly Quick Deal limit error specifically
+      if (error.message?.includes('Monthly Quick Deal limit reached')) {
+        toast({
+          title: "Monthly Quick Deal Limit Reached",
+          description: "You've reached your limit of 10 Quick Deals per month. Quick Deals don't count against your regular business offers.",
+          variant: "destructive"
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: "Failed to create deal. Please try again.",
+          variant: "destructive"
+        });
+      }
     }
   });
 

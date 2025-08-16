@@ -6609,10 +6609,41 @@ Questions? Just reply to this message. Welcome aboard!
         return res.status(401).json({ message: "User ID required" });
       }
 
+      const businessId = parseInt(userId as string || '0');
+      
+      // Check monthly Quick Deal limit (10 per month)
+      const now = new Date();
+      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+      const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
+      
+      const monthlyQuickDealsCount = await db
+        .select({ count: sql<number>`count(*)` })
+        .from(quickDeals)
+        .where(and(
+          eq(quickDeals.businessId, businessId),
+          gte(quickDeals.createdAt, startOfMonth),
+          lte(quickDeals.createdAt, endOfMonth)
+        ));
+      
+      const currentMonthCount = Number(monthlyQuickDealsCount[0]?.count || 0);
+      
+      if (currentMonthCount >= 10) {
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`🚫 QUICK DEAL LIMIT: Business ${businessId} has ${currentMonthCount}/10 Quick Deals this month`);
+        }
+        return res.status(400).json({ 
+          message: "Monthly Quick Deal limit reached (10 per month). Quick Deals don't count against your regular business offers."
+        });
+      }
+      
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`✅ QUICK DEAL LIMIT CHECK: Business ${businessId} has ${currentMonthCount}/10 Quick Deals this month`);
+      }
+
       // Ensure timestamp fields are properly converted to Date objects
       const dealData = {
         ...req.body,
-        businessId: parseInt(userId as string || '0'),
+        businessId,
         validFrom: req.body.validFrom ? new Date(req.body.validFrom) : new Date(),
         validUntil: req.body.validUntil ? new Date(req.body.validUntil) : new Date(Date.now() + 60 * 60 * 1000) // Default 1 hour from now
       };
