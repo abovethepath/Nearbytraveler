@@ -153,7 +153,7 @@ export default function BusinessNotifications({ businessId }: BusinessNotificati
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white">
           <Bell className="h-5 w-5" />
-          Real-Time Interest Matching
+          Interest Notifications
           {notifications.length > 0 && (
             <Badge variant="secondary">{notifications.length}</Badge>
           )}
@@ -162,16 +162,15 @@ export default function BusinessNotifications({ businessId }: BusinessNotificati
       <CardContent>
         <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'all' | 'unread')}>
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="unread">Unread</TabsTrigger>
-            <TabsTrigger value="all">All</TabsTrigger>
+            <TabsTrigger value="unread">Recent</TabsTrigger>
+            <TabsTrigger value="all">Archive</TabsTrigger>
           </TabsList>
           
           <TabsContent value={activeTab} className="mt-4">
             {notifications.length === 0 ? (
               <div className="text-center py-8 text-gray-500 dark:text-gray-400">
                 <Bell className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p className="text-gray-900 dark:text-white">No {activeTab === 'unread' ? 'unread ' : ''}notifications</p>
-                <p className="text-sm text-gray-600 dark:text-gray-300">You'll receive notifications when users with matching interests sign up or create travel plans.</p>
+                <p className="text-gray-900 dark:text-white">No {activeTab === 'unread' ? 'recent ' : ''}notifications</p>
               </div>
             ) : (
               <div className="space-y-4">

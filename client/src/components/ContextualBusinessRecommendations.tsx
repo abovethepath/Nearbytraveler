@@ -87,7 +87,7 @@ export function ContextualBusinessRecommendations({ userId, limit = 8 }: Context
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white">
             <Sparkles className="h-5 w-5" />
-            Contextual Business Recommendations
+            Business Recommendations
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -107,7 +107,7 @@ export function ContextualBusinessRecommendations({ userId, limit = 8 }: Context
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white">
             <Sparkles className="h-5 w-5" />
-            Contextual Business Recommendations
+            Business Recommendations
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -127,10 +127,7 @@ export function ContextualBusinessRecommendations({ userId, limit = 8 }: Context
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white">
             <Sparkles className="h-5 w-5" />
-            Contextual Business Recommendations
-            <Badge variant="outline" className="ml-auto">
-              AI-Powered
-            </Badge>
+            Business Recommendations
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -153,7 +150,7 @@ export function ContextualBusinessRecommendations({ userId, limit = 8 }: Context
           <Sparkles className="h-5 w-5" />
           Contextual Business Recommendations
           <Badge variant="outline" className="ml-auto">
-            AI-Powered • {data.meta.total} Results
+            {data.meta.total} Results
           </Badge>
         </CardTitle>
         <div className="text-sm text-gray-600 dark:text-gray-400">
