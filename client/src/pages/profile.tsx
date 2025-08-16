@@ -7370,7 +7370,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     control={profileForm.control}
                     name="ageVisible"
                     render={({ field }) => (
-                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
+                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-600">
                         <div className="space-y-0.5">
                           <FormLabel>Show Age</FormLabel>
                           <div className="text-sm text-gray-500">
@@ -7479,7 +7479,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   control={profileForm.control}
                   name="sexualPreferenceVisible"
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
+                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-600">
                       <div className="space-y-0.5">
                         <FormLabel>Show Sexual Preference</FormLabel>
                         <div className="text-sm text-gray-500 dark:text-gray-400">
@@ -7695,17 +7695,17 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               {/* Military Status Section */}
               <div className="space-y-4">
                 <div className="border-t pt-4">
-                  <h3 className="text-lg font-semibold mb-3">Military Status</h3>
+                  <h3 className="text-lg font-semibold mb-3 text-gray-900 dark:text-white">Military Status</h3>
                 
                 {/* Veteran Status */}
                 <FormField
                   control={profileForm.control}
                   name="isVeteran"
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
+                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-600">
                       <div className="space-y-0.5">
-                        <FormLabel>{user?.userType === 'business' ? 'Veteran Owned Business' : 'I am a Veteran'}</FormLabel>
-                        <div className="text-sm text-gray-500">
+                        <FormLabel className="text-gray-900 dark:text-white">{user?.userType === 'business' ? 'Veteran Owned Business' : 'I am a Veteran'}</FormLabel>
+                        <div className="text-sm text-gray-500 dark:text-gray-400">
                           {user?.userType === 'business' 
                             ? 'Check if your business is veteran-owned'
                             : 'Check if you have served in the military and are now a veteran'
@@ -7725,7 +7725,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               profileForm.setValue('isActiveDuty', false);
                             }
                           }}
-                          className={`flex items-center gap-2 ${field.value ? 'bg-red-100 border-red-300 text-red-700' : ''}`}
+                          className={`flex items-center gap-2 ${field.value ? 'bg-red-100 border-red-300 text-red-700 dark:bg-red-900/20 dark:border-red-600 dark:text-red-200' : 'dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200'}`}
                         >
                           {field.value ? '✓ Veteran' : 'Not Veteran'}
                         </Button>
@@ -7739,10 +7739,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   control={profileForm.control}
                   name="isActiveDuty"
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
+                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-600">
                       <div className="space-y-0.5">
-                        <FormLabel>{user?.userType === 'business' ? 'Active Duty Owned Business' : 'I am Active Duty'}</FormLabel>
-                        <div className="text-sm text-gray-500">
+                        <FormLabel className="text-gray-900 dark:text-white">{user?.userType === 'business' ? 'Active Duty Owned Business' : 'I am Active Duty'}</FormLabel>
+                        <div className="text-sm text-gray-500 dark:text-gray-400">
                           {user?.userType === 'business'
                             ? 'Check if your business is active duty-owned'
                             : 'Check if you are currently serving in the military on active duty'
@@ -7762,7 +7762,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               profileForm.setValue('isVeteran', false);
                             }
                           }}
-                          className={`flex items-center gap-2 ${field.value ? 'bg-blue-100 border-blue-300 text-blue-700 dark:bg-blue-900 dark:border-blue-600 dark:text-blue-200' : ''}`}
+                          className={`flex items-center gap-2 ${field.value ? 'bg-blue-100 border-blue-300 text-blue-700 dark:bg-blue-900/20 dark:border-blue-600 dark:text-blue-200' : 'dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200'}`}
                         >
                           {field.value ? '✓ Active Duty' : 'Not Active Duty'}
                         </Button>
@@ -7777,8 +7777,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             {user?.userType === 'business' && (
               <div className="space-y-4">
                 <div className="border-t pt-4">
-                  <h3 className="text-lg font-semibold mb-3">Diversity Business Ownership</h3>
-                  <div className="text-sm text-gray-600 mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                  <h3 className="text-lg font-semibold mb-3 text-gray-900 dark:text-white">Diversity Business Ownership</h3>
+                  <div className="text-sm text-gray-600 dark:text-gray-300 mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
                     These categories can be hidden from public view but will still appear in keyword searches to help customers find diverse businesses.
                   </div>
                 
@@ -7787,11 +7787,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   control={profileForm.control}
                   name="isMinorityOwned"
                   render={({ field }) => (
-                    <FormItem className="space-y-3 rounded-lg border p-4">
+                    <FormItem className="space-y-3 rounded-lg border p-4 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-600">
                       <div className="flex flex-row items-center justify-between">
                         <div className="space-y-0.5">
-                          <FormLabel>Minority Owned Business</FormLabel>
-                          <div className="text-sm text-gray-500">
+                          <FormLabel className="text-gray-900 dark:text-white">Minority Owned Business</FormLabel>
+                          <div className="text-sm text-gray-500 dark:text-gray-400">
                             Check if your business is minority-owned
                           </div>
                         </div>
@@ -7808,7 +7808,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         <FormField
                           control={profileForm.control}
                           name="showMinorityOwned"
-                          render={({ publicField }) => (
+                          render={({ field: publicField }) => (
                             <FormItem className="flex flex-row items-center space-x-3 space-y-0 ml-6">
                               <FormControl>
                                 <input
@@ -7819,7 +7819,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                 />
                               </FormControl>
                               <div className="space-y-1 leading-none">
-                                <FormLabel className="text-sm font-normal text-gray-600 dark:text-gray-400">
+                                <FormLabel className="text-sm font-normal text-gray-600 dark:text-gray-300">
                                   Show publicly (uncheck to hide but keep searchable)
                                 </FormLabel>
                               </div>
@@ -7836,11 +7836,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   control={profileForm.control}
                   name="isFemaleOwned"
                   render={({ field }) => (
-                    <FormItem className="space-y-3 rounded-lg border p-4">
+                    <FormItem className="space-y-3 rounded-lg border p-4 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-600">
                       <div className="flex flex-row items-center justify-between">
                         <div className="space-y-0.5">
-                          <FormLabel>Female Owned Business</FormLabel>
-                          <div className="text-sm text-gray-500">
+                          <FormLabel className="text-gray-900 dark:text-white">Female Owned Business</FormLabel>
+                          <div className="text-sm text-gray-500 dark:text-gray-400">
                             Check if your business is female-owned
                           </div>
                         </div>
@@ -7857,7 +7857,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         <FormField
                           control={profileForm.control}
                           name="showFemaleOwned"
-                          render={({ publicField }) => (
+                          render={({ field: publicField }) => (
                             <FormItem className="flex flex-row items-center space-x-3 space-y-0 ml-6">
                               <FormControl>
                                 <input
@@ -7868,7 +7868,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                 />
                               </FormControl>
                               <div className="space-y-1 leading-none">
-                                <FormLabel className="text-sm font-normal text-gray-600 dark:text-gray-400">
+                                <FormLabel className="text-sm font-normal text-gray-600 dark:text-gray-300">
                                   Show publicly (uncheck to hide but keep searchable)
                                 </FormLabel>
                               </div>
@@ -7885,11 +7885,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   control={profileForm.control}
                   name="isLGBTQIAOwned"
                   render={({ field }) => (
-                    <FormItem className="space-y-3 rounded-lg border p-4">
+                    <FormItem className="space-y-3 rounded-lg border p-4 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-600">
                       <div className="flex flex-row items-center justify-between">
                         <div className="space-y-0.5">
-                          <FormLabel>LGBTQIA+ Owned Business</FormLabel>
-                          <div className="text-sm text-gray-500">
+                          <FormLabel className="text-gray-900 dark:text-white">LGBTQIA+ Owned Business</FormLabel>
+                          <div className="text-sm text-gray-500 dark:text-gray-400">
                             Check if your business is LGBTQIA+ owned
                           </div>
                         </div>
@@ -7907,7 +7907,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         <FormField
                           control={profileForm.control}
                           name="showLGBTQIAOwned"
-                          render={({ publicField }) => (
+                          render={({ field: publicField }) => (
                             <FormItem className="flex flex-row items-center space-x-3 space-y-0 ml-6">
                               <FormControl>
                                 <input
@@ -7918,7 +7918,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                 />
                               </FormControl>
                               <div className="space-y-1 leading-none">
-                                <FormLabel className="text-sm font-normal text-gray-600 dark:text-gray-400">
+                                <FormLabel className="text-sm font-normal text-gray-600 dark:text-gray-300">
                                   Show publicly (uncheck to hide but keep searchable)
                                 </FormLabel>
                               </div>
@@ -7930,9 +7930,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   )}
                 />
 
-                <div className="mt-4 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border">
-                  <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Privacy & Search Information:</h4>
-                  <ul className="text-xs text-gray-600 dark:text-gray-400 space-y-1">
+                <div className="mt-4 p-3 bg-gray-100 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
+                  <h4 className="text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Privacy & Search Information:</h4>
+                  <ul className="text-xs text-gray-600 dark:text-gray-300 space-y-1">
                     <li>• Even if unchecked for public display, these categories remain searchable</li>
                     <li>• Customers can find your business using keywords like "minority owned", "female owned", etc.</li>
                   </ul>
