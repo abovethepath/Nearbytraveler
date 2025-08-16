@@ -5870,11 +5870,56 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
             {/* MOBILE-FRIENDLY RIGHT-SIDE WIDGETS SECTION */}
             
-
-
-
-
-
+            {/* Languages Widget - Top Priority for Customer Visibility */}
+            <Card className="hover:shadow-lg transition-all duration-200 border-2 border-blue-200 dark:border-blue-700 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20">
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-2">
+                    <Globe className="w-5 h-5 text-blue-600" />
+                    Languages I Speak
+                  </CardTitle>
+                  {isOwnProfile && !editingLanguages && (
+                    <Button size="sm" variant="outline" onClick={handleEditLanguages} className="border-blue-300 text-blue-700 hover:bg-blue-100 dark:border-blue-600 dark:text-blue-300">
+                      <Edit className="w-3 h-3" />
+                    </Button>
+                  )}
+                </div>
+              </CardHeader>
+              <CardContent>
+                {editingLanguages ? (
+                  <div className="space-y-3">
+                    <MultiSelect
+                      options={LANGUAGES_OPTIONS}
+                      selected={tempLanguages}
+                      onChange={setTempLanguages}
+                      placeholder="Select languages"
+                    />
+                    <div className="flex gap-2">
+                      <Button size="sm" onClick={handleSaveLanguages} disabled={updateLanguages.isPending} className="bg-blue-600 hover:bg-blue-700">
+                        {updateLanguages.isPending ? "Saving..." : "Save"}
+                      </Button>
+                      <Button size="sm" variant="outline" onClick={handleCancelLanguages}>
+                        Cancel
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    {user.languagesSpoken && user.languagesSpoken.length > 0 ? (
+                      <div className="flex flex-wrap gap-2">
+                        {user.languagesSpoken.map((language: string) => (
+                          <Badge key={language} className="bg-blue-600 text-white border-0 px-3 py-1.5 text-sm font-medium">
+                            {language}
+                          </Badge>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-gray-500 text-sm">No languages listed</p>
+                    )}
+                  </>
+                )}
+              </CardContent>
+            </Card>
 
             {/* References Widget */}
             {user?.id && (
@@ -6178,53 +6223,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               </Card>
             )}
 
-            {/* Languages */}
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle>Languages I Speak</CardTitle>
-                  {isOwnProfile && !editingLanguages && (
-                    <Button size="sm" variant="outline" onClick={handleEditLanguages}>
-                      <Edit className="w-3 h-3" />
-                    </Button>
-                  )}
-                </div>
-              </CardHeader>
-              <CardContent>
-                {editingLanguages ? (
-                  <div className="space-y-3">
-                    <MultiSelect
-                      options={LANGUAGES_OPTIONS}
-                      selected={tempLanguages}
-                      onChange={setTempLanguages}
-                      placeholder="Select languages"
-                    />
-                    <div className="flex gap-2">
-                      <Button size="sm" onClick={handleSaveLanguages} disabled={updateLanguages.isPending}>
-                        {updateLanguages.isPending ? "Saving..." : "Save"}
-                      </Button>
-                      <Button size="sm" variant="outline" onClick={handleCancelLanguages}>
-                        Cancel
-                      </Button>
-                    </div>
-                  </div>
-                ) : (
-                  <>
-                    {user.languagesSpoken && user.languagesSpoken.length > 0 ? (
-                      <div className="flex flex-wrap gap-2">
-                        {user.languagesSpoken.map((language: string) => (
-                          <Badge key={language} variant="secondary" className="text-sm">
-                            {language}
-                          </Badge>
-                        ))}
-                      </div>
-                    ) : (
-                      <p className="text-gray-500 text-sm">No languages listed</p>
-                    )}
-                  </>
-                )}
-              </CardContent>
-            </Card>
+
 
             {/* Comprehensive Geolocation System - Enhanced location sharing for users, businesses, and events */}
             {console.log('🔧 Profile: Checking if location sharing should render:', { isOwnProfile, userId: user?.id })}
