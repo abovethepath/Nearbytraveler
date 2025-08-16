@@ -5083,14 +5083,6 @@ export class DatabaseStorage implements IStorage {
       .orderBy(desc(businessCustomerPhotos.uploadedAt));
   }
 
-  async deleteBusinessCustomerPhoto(id: number): Promise<boolean> {
-    const result = await db
-      .delete(businessCustomerPhotos)
-      .where(eq(businessCustomerPhotos.id, id))
-      .returning();
-    return result.length > 0;
-  }
-
   async getReferralStats(userId: number): Promise<{
     totalReferrals: number;
     successfulReferrals: number;
@@ -5315,31 +5307,6 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  async getUserReferrals(userId: number): Promise<any[]> {
-    try {
-      const userReferrals = await db
-        .select({
-          id: referrals.id,
-          referralCode: referrals.referralCode,
-          referredEmail: referrals.referredEmail,
-          referredName: referrals.referredName,
-          status: referrals.status,
-          referralSource: referrals.referralSource,
-          completedAt: referrals.completedAt,
-          rewardEarned: referrals.rewardEarned,
-          rewardType: referrals.rewardType,
-          createdAt: referrals.createdAt
-        })
-        .from(referrals)
-        .where(eq(referrals.referrerId, userId))
-        .orderBy(desc(referrals.createdAt));
-
-      return userReferrals;
-    } catch (error) {
-      console.error('Error getting user referrals:', error);
-      return [];
-    }
-  }
 
   // Custom Location Activities Methods
   async createCustomLocationActivity(activity: any): Promise<any> {

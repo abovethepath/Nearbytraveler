@@ -791,7 +791,6 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           'Washington': { state: 'District of Columbia', country: 'United States' },
           'Boston': { state: 'Massachusetts', country: 'United States' },
           'El Paso': { state: 'Texas', country: 'United States' },
-          'Nashville': { state: 'Tennessee', country: 'United States' },
           'Detroit': { state: 'Michigan', country: 'United States' },
           'Oklahoma City': { state: 'Oklahoma', country: 'United States' },
           'Portland': { state: 'Oregon', country: 'United States' },
