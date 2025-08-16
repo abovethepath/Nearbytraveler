@@ -6425,7 +6425,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     <div className="space-y-3">
                       <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                         <AlertCircle className="h-4 w-4" />
-                        <span>Your location will be visible to other users on the city map</span>
+                        <span>
+                          Your location will be visible to other users on the city map
+                          {user.userType === 'business' && ' while you are running deals and events'}
+                        </span>
                       </div>
                       {user.currentLatitude && user.currentLongitude && (
                         <div className="text-xs text-gray-500 bg-gray-50 dark:bg-gray-800 p-2 rounded">
