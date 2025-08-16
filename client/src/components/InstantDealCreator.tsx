@@ -19,6 +19,7 @@ const instantDealSchema = z.object({
   description: z.string().min(10, "Description must be at least 10 characters"),
   discountType: z.enum(["percentage", "fixed_amount", "buy_one_get_one", "free_service", "free_item_with_purchase", "combo_deal", "other"]),
   discountValue: z.string().min(1, "Discount value is required"),
+  startDate: z.string().optional(),
   validFor: z.enum(["1", "2", "3", "4", "5", "8", "12", "24"], { required_error: "Please select validity period" }),
   maxRedemptions: z.string().optional(),
   targetAudience: z.enum(["locals", "travelers", "both"])
@@ -48,6 +49,7 @@ export default function InstantDealCreator({ businessId, businessName, businessL
       description: "",
       discountType: "percentage",
       discountValue: "",
+      startDate: new Date().toISOString().slice(0, 16),
       validFor: "2",
       maxRedemptions: "",
       targetAudience: "both"
@@ -56,8 +58,8 @@ export default function InstantDealCreator({ businessId, businessName, businessL
 
   const createInstantDealMutation = useMutation({
     mutationFn: async (data: InstantDealFormData) => {
-      const now = new Date();
-      const validUntil = new Date(now.getTime() + (parseInt(data.validFor) * 60 * 60 * 1000)); // Hours to milliseconds
+      const startTime = data.startDate ? new Date(data.startDate) : new Date();
+      const validUntil = new Date(startTime.getTime() + (parseInt(data.validFor) * 60 * 60 * 1000)); // Hours to milliseconds
       
       const dealData = {
         title: businessName ? `${businessName} - ${data.title}` : data.title,
@@ -69,7 +71,7 @@ export default function InstantDealCreator({ businessId, businessName, businessL
         city: businessLocation.city,
         state: businessLocation.state || "",
         country: businessLocation.country,
-        validFrom: now.toISOString(),
+        validFrom: startTime.toISOString(),
         validUntil: validUntil.toISOString(),
         maxRedemptions: data.maxRedemptions ? parseInt(data.maxRedemptions) : undefined,
         maxRedemptionsPerUser: 1, // Instant deals are typically once per customer
@@ -170,6 +172,24 @@ export default function InstantDealCreator({ businessId, businessName, businessL
                       {...field} 
                     />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="startDate"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Start Date & Time</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="datetime-local"
+                      {...field}
+                    />
+                  </FormControl>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Deal will become active at this time (leave current time for immediate activation)</p>
                   <FormMessage />
                 </FormItem>
               )}

@@ -23,6 +23,7 @@ interface NewDeal {
   discountAmount: string;
   originalPrice: string;
   salePrice: string;
+  startDate: string;
   validUntil: string;
   duration?: string;
   dealCode: string;
@@ -67,6 +68,7 @@ export function QuickDealsWidget({ city, profileUserId, showCreateForm: external
     discountAmount: '',
     originalPrice: '',
     salePrice: '',
+    startDate: format(new Date(), 'yyyy-MM-dd\'T\'HH:mm'),
     validUntil: format(addHours(new Date(), 1), 'yyyy-MM-dd\'T\'HH:mm'),
     duration: '1',
     dealCode: '',
@@ -118,7 +120,8 @@ export function QuickDealsWidget({ city, profileUserId, showCreateForm: external
         discountAmount: '',
         originalPrice: '',
         salePrice: '',
-        validUntil: format(addHours(new Date(), 1), 'yyyy-MM-dd\'T\'HH:mm:ss.SSS\'Z\''),
+        startDate: format(new Date(), 'yyyy-MM-dd\'T\'HH:mm'),
+        validUntil: format(addHours(new Date(), 1), 'yyyy-MM-dd\'T\'HH:mm'),
         duration: '1',
         dealCode: '',
         terms: '',
@@ -171,7 +174,7 @@ export function QuickDealsWidget({ city, profileUserId, showCreateForm: external
       discountAmount: newDeal.discountAmount,
       originalPrice: newDeal.originalPrice || null,
       salePrice: newDeal.salePrice || null,
-      validFrom: new Date(),
+      validFrom: new Date(newDeal.startDate),
       validUntil: new Date(newDeal.validUntil),
       maxRedemptions: newDeal.maxRedemptions ? parseInt(newDeal.maxRedemptions) : null, // No limit unless specified
       requiresReservation: false, // Default to false
@@ -367,12 +370,33 @@ export function QuickDealsWidget({ city, profileUserId, showCreateForm: external
                 </div>
 
                 <div>
+                  <label className="text-sm font-medium text-gray-900 dark:text-white">Start Date & Time</label>
+                  <Input
+                    type="datetime-local"
+                    value={newDeal.startDate}
+                    onChange={(e) => {
+                      const startDate = e.target.value;
+                      const duration = parseInt(newDeal.duration || '1');
+                      const startTime = new Date(startDate);
+                      const validUntil = new Date(startTime.getTime() + duration * 60 * 60 * 1000);
+                      setNewDeal({ 
+                        ...newDeal, 
+                        startDate,
+                        validUntil: format(validUntil, 'yyyy-MM-dd\'T\'HH:mm')
+                      });
+                    }}
+                    data-testid="input-start-date"
+                  />
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Deal will become active at this time</p>
+                </div>
+
+                <div>
                   <label className="text-sm font-medium text-gray-900 dark:text-white">Active Duration</label>
                   <Select 
                     value={newDeal.duration || "1"} 
                     onValueChange={(hours) => {
-                      const now = new Date();
-                      const validUntil = new Date(now.getTime() + parseInt(hours) * 60 * 60 * 1000);
+                      const startTime = new Date(newDeal.startDate);
+                      const validUntil = new Date(startTime.getTime() + parseInt(hours) * 60 * 60 * 1000);
                       setNewDeal({ 
                         ...newDeal, 
                         duration: hours,
@@ -384,9 +408,9 @@ export function QuickDealsWidget({ city, profileUserId, showCreateForm: external
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((hour) => (
+                      {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 24, 48, 72].map((hour) => (
                         <SelectItem key={hour} value={hour.toString()}>
-                          {hour} {hour === 1 ? 'hour' : 'hours'}
+                          {hour < 24 ? `${hour} ${hour === 1 ? 'hour' : 'hours'}` : `${hour / 24} ${hour === 24 ? 'day' : 'days'}`}
                         </SelectItem>
                       ))}
                     </SelectContent>
