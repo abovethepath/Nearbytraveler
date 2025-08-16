@@ -6561,9 +6561,12 @@ Questions? Just reply to this message. Welcome aboard!
         return res.status(401).json({ message: "User ID required" });
       }
 
+      // Ensure timestamp fields are properly converted to Date objects
       const dealData = {
         ...req.body,
-        businessId: parseInt(userId as string || '0')
+        businessId: parseInt(userId as string || '0'),
+        validFrom: req.body.validFrom ? new Date(req.body.validFrom) : new Date(),
+        validUntil: req.body.validUntil ? new Date(req.body.validUntil) : new Date(Date.now() + 60 * 60 * 1000) // Default 1 hour from now
       };
 
       if (process.env.NODE_ENV === 'development') console.log(`🛍️ CREATING QUICK DEAL: ${dealData.title} by business ${userId}`);
