@@ -17,7 +17,6 @@ import { Plus, Edit, Trash2, Eye, BarChart3, Calendar, DollarSign, Users, Trendi
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { SubscriptionStatus } from "@/components/SubscriptionStatus";
-import BusinessNotifications from "@/components/BusinessNotifications";
 import { SmartLocationInput } from "@/components/SmartLocationInput";
 import { AuthContext } from "@/App";
 import { authStorage } from "@/lib/auth";
@@ -714,10 +713,6 @@ export default function BusinessDashboard() {
           </div>
         )}
 
-        {/* Business Interest Notifications */}
-        <div className="mb-8">
-          <BusinessNotifications businessId={currentUser.id} />
-        </div>
 
         {/* Header with Create Buttons */}
         <div className="flex justify-between items-center mb-6">

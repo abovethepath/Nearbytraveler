@@ -46,8 +46,6 @@ import CurrentLocationWeatherWidget from "@/components/CurrentLocationWeatherWid
 import EnhancedDiscovery from "@/components/EnhancedDiscovery";
 
 import BusinessesGrid from "@/components/BusinessesGrid";
-import ContextualBusinessRecommendations from "@/components/ContextualBusinessRecommendations";
-import BusinessNotifications from "@/components/BusinessNotifications";
 import { QuickMeetupWidget } from "@/components/QuickMeetupWidget";
 import CityMap from "@/components/CityMap";
 import PeopleDiscoveryWidget from "@/components/PeopleDiscoveryWidget";
@@ -2239,16 +2237,6 @@ export default function Home() {
               </div>
             )}
 
-            {/* Business-Specific Widgets Section */}
-            {effectiveUser?.userType === 'business' && (
-              <div className="space-y-6">
-                {/* Business Interest Matching Notifications */}
-                <BusinessNotifications businessId={effectiveUser.id} />
-
-                {/* Contextual Business Recommendations */}
-                <ContextualBusinessRecommendations userId={effectiveUser.id} limit={5} />
-              </div>
-            )}
 
             {/* Local Events Section */}
             <div className="space-y-6">
