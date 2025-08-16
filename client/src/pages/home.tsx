@@ -47,6 +47,7 @@ import EnhancedDiscovery from "@/components/EnhancedDiscovery";
 
 import BusinessesGrid from "@/components/BusinessesGrid";
 import { QuickMeetupWidget } from "@/components/QuickMeetupWidget";
+import QuickDealsDiscovery from "@/components/QuickDealsDiscovery";
 import CityMap from "@/components/CityMap";
 import PeopleDiscoveryWidget from "@/components/PeopleDiscoveryWidget";
 
@@ -2422,6 +2423,17 @@ export default function Home() {
                 <QuickMeetupWidget />
               </div>
             )}
+
+            {/* Quick Deals Section - Flash Deals with Timers */}
+            <div className="space-y-6">
+              <QuickDealsDiscovery 
+                userLocation={{
+                  city: effectiveUser?.hometownCity || "",
+                  state: effectiveUser?.hometownState || "",
+                  country: effectiveUser?.hometownCountry || "United States"
+                }}
+              />
+            </div>
 
             {/* Discover Businesses Section */}
             <div className="space-y-6">
