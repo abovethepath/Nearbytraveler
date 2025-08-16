@@ -120,6 +120,7 @@ export default function Events() {
   console.log(`Events page: selectedLocation = ${selectedLocation}, userTravelPlans =`, userTravelPlans);
 
   const cityToQuery = getCityToQuery();
+  console.log(`🗺️ EVENTS PAGE: cityToQuery = "${cityToQuery}", selectedLocation = "${selectedLocation}"`);
 
   // Fetch events based on selected city with optimized loading
   const { data: events = [], isLoading, error } = useQuery<Event[]>({
@@ -147,6 +148,7 @@ export default function Events() {
       const data = await response.json();
       console.log('🔍 ALL EVENTS RESPONSE:', data.length, 'events');
       console.log('🔍 Events with organizerId 22 (brunchbig):', data.filter((e: any) => e.organizerId === 22));
+      console.log('🔍 All Santa Monica events:', data.filter((e: any) => e.city?.toLowerCase().includes('santa monica')));
       return data;
     },
     enabled: !!currentUser, // Always fetch when user is logged in to show user events
