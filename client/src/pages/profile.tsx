@@ -3802,11 +3802,53 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         setEditingInterests(true);
                         setEditingActivities(true);
                         setEditingEvents(true);
-                        // Initialize form data
+                        // Initialize form data with custom field support
+                        const userInterests = user?.interests || [];
+                        const userActivities = user?.activities || [];
+                        const userEvents = user?.events || [];
+                        
                         setEditFormData({
-                          interests: user?.interests || [],
-                          activities: user?.activities || [],
-                          events: user?.events || []
+                          interests: userInterests,
+                          activities: userActivities,
+                          events: userEvents
+                        });
+                        
+                        // Initialize custom fields from database or empty arrays
+                        const customInterests = user?.customInterests || "";
+                        const customActivities = user?.customActivities || "";
+                        const customEvents = user?.customEvents || "";
+                        
+                        // Parse custom fields (comma-separated) and add to arrays if not already present
+                        if (customInterests) {
+                          const parsed = customInterests.split(',').map(s => s.trim()).filter(s => s);
+                          parsed.forEach(item => {
+                            if (!userInterests.includes(item)) {
+                              userInterests.push(item);
+                            }
+                          });
+                        }
+                        if (customActivities) {
+                          const parsed = customActivities.split(',').map(s => s.trim()).filter(s => s);
+                          parsed.forEach(item => {
+                            if (!userActivities.includes(item)) {
+                              userActivities.push(item);
+                            }
+                          });
+                        }
+                        if (customEvents) {
+                          const parsed = customEvents.split(',').map(s => s.trim()).filter(s => s);
+                          parsed.forEach(item => {
+                            if (!userEvents.includes(item)) {
+                              userEvents.push(item);
+                            }
+                          });
+                        }
+                        
+                        // Update form data with combined arrays
+                        setEditFormData({
+                          interests: userInterests,
+                          activities: userActivities,
+                          events: userEvents
                         });
                       }}
                       className="bg-blue-600 hover:bg-blue-700 text-white"
@@ -4649,10 +4691,31 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           onClick={async () => {
                             try {
                               console.log('🔧 BUSINESS SAVING DATA:', editFormData);
+                              
+                              // Separate predefined vs custom entries for proper database storage
+                              const predefinedInterests = INTERESTS_OPTIONS.filter(opt => editFormData.interests.includes(opt));
+                              const predefinedActivities = ACTIVITIES_OPTIONS.filter(opt => editFormData.activities.includes(opt));
+                              const predefinedEvents = EVENTS_OPTIONS.filter(opt => editFormData.events.includes(opt));
+                              
+                              const customInterests = editFormData.interests.filter(int => !INTERESTS_OPTIONS.includes(int));
+                              const customActivities = editFormData.activities.filter(act => !ACTIVITIES_OPTIONS.includes(act));
+                              const customEvents = editFormData.events.filter(evt => !EVENTS_OPTIONS.includes(evt));
+                              
+                              const saveData = {
+                                interests: predefinedInterests,
+                                activities: predefinedActivities, 
+                                events: predefinedEvents,
+                                customInterests: customInterests.join(', '),
+                                customActivities: customActivities.join(', '),
+                                customEvents: customEvents.join(', ')
+                              };
+                              
+                              console.log('🔧 BUSINESS SAVE - Separated data:', saveData);
+                              
                               const response = await fetch(`/api/users/${user.id}`, {
                                 method: 'PUT',
                                 headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify(editFormData)
+                                body: JSON.stringify(saveData)
                               });
                               if (!response.ok) throw new Error('Failed to save business preferences');
                               // Refresh data
@@ -4721,6 +4784,46 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             );
                           })}
                         </div>
+                        
+                        {/* Custom Business Interests Input */}
+                        <div className="mt-3">
+                          <label className="text-xs font-medium mb-1 block text-gray-600 dark:text-gray-400">
+                            Add Custom Business Interests (hit Enter after each)
+                          </label>
+                          <div className="flex space-x-2">
+                            <Input
+                              placeholder="e.g., Sustainable Tourism, Local Partnerships"
+                              value={customInterestInput}
+                              onChange={(e) => setCustomInterestInput(e.target.value)}
+                              onKeyPress={(e) => {
+                                if (e.key === 'Enter') {
+                                  e.preventDefault();
+                                  const trimmed = customInterestInput.trim();
+                                  if (trimmed && !editFormData.interests.includes(trimmed)) {
+                                    setEditFormData({ ...editFormData, interests: [...editFormData.interests, trimmed] });
+                                    setCustomInterestInput('');
+                                  }
+                                }
+                              }}
+                              className="text-xs dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+                            />
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                const trimmed = customInterestInput.trim();
+                                if (trimmed && !editFormData.interests.includes(trimmed)) {
+                                  setEditFormData({ ...editFormData, interests: [...editFormData.interests, trimmed] });
+                                  setCustomInterestInput('');
+                                }
+                              }}
+                              className="h-8 px-2"
+                            >
+                              <Plus className="w-3 h-3" />
+                            </Button>
+                          </div>
+                        </div>
                       </div>
 
                       {/* Business Activities Section */}
@@ -4753,6 +4856,46 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             );
                           })}
                         </div>
+                        
+                        {/* Custom Business Activities Input */}
+                        <div className="mt-3">
+                          <label className="text-xs font-medium mb-1 block text-gray-600 dark:text-gray-400">
+                            Add Custom Business Activities (hit Enter after each)
+                          </label>
+                          <div className="flex space-x-2">
+                            <Input
+                              placeholder="e.g., Private Tours, Corporate Events"
+                              value={customActivityInput}
+                              onChange={(e) => setCustomActivityInput(e.target.value)}
+                              onKeyPress={(e) => {
+                                if (e.key === 'Enter') {
+                                  e.preventDefault();
+                                  const trimmed = customActivityInput.trim();
+                                  if (trimmed && !editFormData.activities.includes(trimmed)) {
+                                    setEditFormData({ ...editFormData, activities: [...editFormData.activities, trimmed] });
+                                    setCustomActivityInput('');
+                                  }
+                                }
+                              }}
+                              className="text-xs dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+                            />
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                const trimmed = customActivityInput.trim();
+                                if (trimmed && !editFormData.activities.includes(trimmed)) {
+                                  setEditFormData({ ...editFormData, activities: [...editFormData.activities, trimmed] });
+                                  setCustomActivityInput('');
+                                }
+                              }}
+                              className="h-8 px-2"
+                            >
+                              <Plus className="w-3 h-3" />
+                            </Button>
+                          </div>
+                        </div>
                       </div>
 
                       {/* Business Events Section */}
@@ -4784,6 +4927,46 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               </button>
                             );
                           })}
+                        </div>
+                        
+                        {/* Custom Business Events Input */}
+                        <div className="mt-3">
+                          <label className="text-xs font-medium mb-1 block text-gray-600 dark:text-gray-400">
+                            Add Custom Business Events (hit Enter after each)
+                          </label>
+                          <div className="flex space-x-2">
+                            <Input
+                              placeholder="e.g., Wine Tastings, Art Shows, Workshops"
+                              value={customEventInput}
+                              onChange={(e) => setCustomEventInput(e.target.value)}
+                              onKeyPress={(e) => {
+                                if (e.key === 'Enter') {
+                                  e.preventDefault();
+                                  const trimmed = customEventInput.trim();
+                                  if (trimmed && !editFormData.events.includes(trimmed)) {
+                                    setEditFormData({ ...editFormData, events: [...editFormData.events, trimmed] });
+                                    setCustomEventInput('');
+                                  }
+                                }
+                              }}
+                              className="text-xs dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+                            />
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                const trimmed = customEventInput.trim();
+                                if (trimmed && !editFormData.events.includes(trimmed)) {
+                                  setEditFormData({ ...editFormData, events: [...editFormData.events, trimmed] });
+                                  setCustomEventInput('');
+                                }
+                              }}
+                              className="h-8 px-2"
+                            >
+                              <Plus className="w-3 h-3" />
+                            </Button>
+                          </div>
                         </div>
                       </div>
                     </div>
