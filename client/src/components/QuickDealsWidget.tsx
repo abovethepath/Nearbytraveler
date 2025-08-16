@@ -173,7 +173,7 @@ export function QuickDealsWidget({ city, profileUserId, showCreateForm: external
       salePrice: newDeal.salePrice || null,
       validFrom: new Date(),
       validUntil: new Date(newDeal.validUntil),
-      maxRedemptions: 100, // Default to 100 uses
+      maxRedemptions: newDeal.maxRedemptions ? parseInt(newDeal.maxRedemptions) : null, // No limit unless specified
       requiresReservation: false, // Default to false
       dealCode: newDeal.dealCode || null,
       terms: newDeal.terms || null,
@@ -196,6 +196,27 @@ export function QuickDealsWidget({ city, profileUserId, showCreateForm: external
         description: "Your deal has been removed."
       });
       queryClient.invalidateQueries({ queryKey: ['/api/quick-deals'] });
+    }
+  });
+
+  // Toggle deal status mutation
+  const toggleDealMutation = useMutation({
+    mutationFn: async ({ dealId, isActive }: { dealId: number; isActive: boolean }) => {
+      return apiRequest('PUT', `/api/quick-deals/${dealId}`, { isActive });
+    },
+    onSuccess: (_, variables) => {
+      toast({
+        title: variables.isActive ? "Deal Resumed" : "Deal Paused",
+        description: variables.isActive ? "Your deal is now active again." : "Your deal has been paused."
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/quick-deals'] });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to update deal status.",
+        variant: "destructive"
+      });
     }
   });
 
@@ -224,13 +245,13 @@ export function QuickDealsWidget({ city, profileUserId, showCreateForm: external
   const activateDeals = quickDeals?.filter((deal: QuickDeal) => {
     const now = new Date();
     const validUntil = new Date(deal.validUntil);
-    return deal.isActive && validUntil > now && (deal.currentRedemptions || 0) < (deal.maxRedemptions || 100);
+    return deal.isActive && validUntil > now && (!deal.maxRedemptions || (deal.currentRedemptions || 0) < deal.maxRedemptions);
   }) || [];
 
   const expiredDeals = quickDeals?.filter((deal: QuickDeal) => {
     const now = new Date();
     const validUntil = new Date(deal.validUntil);
-    return !deal.isActive || validUntil <= now || (deal.currentRedemptions || 0) >= (deal.maxRedemptions || 100);
+    return !deal.isActive || validUntil <= now || (deal.maxRedemptions && (deal.currentRedemptions || 0) >= deal.maxRedemptions);
   }) || [];
 
   // Only render for business users - AFTER all hooks have been called
@@ -333,6 +354,19 @@ export function QuickDealsWidget({ city, profileUserId, showCreateForm: external
                 </div>
 
                 <div>
+                  <label className="text-sm font-medium text-gray-900 dark:text-white">Max Uses (Optional)</label>
+                  <Input
+                    type="number"
+                    placeholder="Unlimited (leave blank)"
+                    value={newDeal.maxRedemptions || ''}
+                    onChange={(e) => setNewDeal({ ...newDeal, maxRedemptions: e.target.value })}
+                    className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
+                    data-testid="input-max-redemptions"
+                  />
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Leave blank for unlimited uses</p>
+                </div>
+
+                <div>
                   <label className="text-sm font-medium text-gray-900 dark:text-white">Active Duration</label>
                   <Select 
                     value={newDeal.duration || "1"} 
@@ -421,7 +455,7 @@ export function QuickDealsWidget({ city, profileUserId, showCreateForm: external
                       <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400">
                         <span className="flex items-center gap-1">
                           <Users className="h-3 w-3" />
-                          {deal.currentRedemptions}/{deal.maxRedemptions} used
+                          {deal.currentRedemptions || 0}{deal.maxRedemptions ? `/${deal.maxRedemptions}` : ''} used
                         </span>
                         <span className="flex items-center gap-1">
                           <Clock className="h-3 w-3" />
@@ -435,16 +469,28 @@ export function QuickDealsWidget({ city, profileUserId, showCreateForm: external
                         )}
                       </div>
                     </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => deleteDealMutation.mutate(deal.id)}
-                      disabled={deleteDealMutation.isPending}
-                      className="text-red-600 hover:text-red-700"
-                      data-testid={`button-delete-deal-${deal.id}`}
-                    >
-                      Remove
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => toggleDealMutation.mutate({ dealId: deal.id, isActive: !deal.isActive })}
+                        disabled={toggleDealMutation.isPending}
+                        className={deal.isActive ? "text-orange-600 hover:text-orange-700" : "text-green-600 hover:text-green-700"}
+                        data-testid={`button-toggle-deal-${deal.id}`}
+                      >
+                        {deal.isActive ? 'Pause' : 'Resume'}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => deleteDealMutation.mutate(deal.id)}
+                        disabled={deleteDealMutation.isPending}
+                        className="text-red-600 hover:text-red-700"
+                        data-testid={`button-delete-deal-${deal.id}`}
+                      >
+                        Remove
+                      </Button>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -468,7 +514,7 @@ export function QuickDealsWidget({ city, profileUserId, showCreateForm: external
                   </div>
                   <p className="text-sm text-gray-500 dark:text-gray-400">{deal.description}</p>
                   <div className="flex items-center gap-4 text-xs text-gray-400 dark:text-gray-500 mt-1">
-                    <span>{deal.currentRedemptions}/{deal.maxRedemptions} used</span>
+                    <span>{deal.currentRedemptions || 0}{deal.maxRedemptions ? `/${deal.maxRedemptions}` : ''} used</span>
                     <span>Expired {format(new Date(deal.validUntil), 'MMM d')}</span>
                   </div>
                 </div>

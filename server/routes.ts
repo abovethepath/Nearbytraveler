@@ -6697,12 +6697,12 @@ Questions? Just reply to this message. Welcome aboard!
 
       const activeDeals = allDeals.filter(deal => {
         const validUntil = new Date(deal.validUntil);
-        return deal.isActive && validUntil > now && (deal.currentRedemptions || 0) < (deal.maxRedemptions || 100);
+        return deal.isActive && validUntil > now && (!deal.maxRedemptions || (deal.currentRedemptions || 0) < deal.maxRedemptions);
       });
 
       const expiredDeals = allDeals.filter(deal => {
         const validUntil = new Date(deal.validUntil);
-        return !deal.isActive || validUntil <= now || (deal.currentRedemptions || 0) >= (deal.maxRedemptions || 100);
+        return !deal.isActive || validUntil <= now || (deal.maxRedemptions && (deal.currentRedemptions || 0) >= deal.maxRedemptions);
       });
 
       const sortedDeals = [...activeDeals, ...expiredDeals];
@@ -6713,6 +6713,49 @@ Questions? Just reply to this message. Welcome aboard!
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error fetching quick deals:", error);
       res.status(500).json({ message: "Failed to fetch deals" });
+    }
+  });
+
+  // UPDATE quick deal endpoint
+  app.put("/api/quick-deals/:id", async (req, res) => {
+    try {
+      const dealId = parseInt(req.params.id || '0');
+      const userId = req.headers['x-user-id'];
+      
+      if (!userId) {
+        return res.status(401).json({ message: "User ID required" });
+      }
+
+      // Get the deal to verify ownership
+      const [existingDeal] = await db
+        .select()
+        .from(quickDeals)
+        .where(eq(quickDeals.id, dealId))
+        .limit(1);
+      
+      if (!existingDeal) {
+        return res.status(404).json({ message: "Deal not found" });
+      }
+      
+      if (existingDeal.businessId !== parseInt(userId as string || '0')) {
+        return res.status(403).json({ message: "Unauthorized - you can only update your own deals" });
+      }
+
+      // Update the deal with the provided fields
+      const [updatedDeal] = await db
+        .update(quickDeals)
+        .set(req.body)
+        .where(eq(quickDeals.id, dealId))
+        .returning();
+      
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`✅ QUICK DEAL UPDATED: ID ${dealId}, isActive: ${updatedDeal.isActive}`);
+      }
+      
+      res.json(updatedDeal);
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error updating quick deal:", error);
+      res.status(500).json({ message: "Failed to update quick deal" });
     }
   });
 
@@ -6785,7 +6828,7 @@ Questions? Just reply to this message. Welcome aboard!
         return res.status(400).json({ message: "Deal has expired" });
       }
 
-      if ((deal.currentRedemptions || 0) >= (deal.maxRedemptions || 100)) {
+      if (deal.maxRedemptions && (deal.currentRedemptions || 0) >= deal.maxRedemptions) {
         return res.status(400).json({ message: "Deal has reached maximum redemptions" });
       }
 
