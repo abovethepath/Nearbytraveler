@@ -2789,6 +2789,32 @@ Questions? Just reply to this message. Welcome aboard!
         delete updates.isActiveDuty;
       }
 
+      // MAP DIVERSITY OWNERSHIP FIELDS: Convert camelCase frontend fields to snake_case database fields
+      if (updates.isMinorityOwned !== undefined) {
+        updates.is_minority_owned = updates.isMinorityOwned;
+        delete updates.isMinorityOwned;
+      }
+      if (updates.isFemaleOwned !== undefined) {
+        updates.is_female_owned = updates.isFemaleOwned;
+        delete updates.isFemaleOwned;
+      }
+      if (updates.isLGBTQIAOwned !== undefined) {
+        updates.is_lgbtqia_owned = updates.isLGBTQIAOwned;
+        delete updates.isLGBTQIAOwned;
+      }
+      if (updates.showMinorityOwned !== undefined) {
+        updates.show_minority_owned = updates.showMinorityOwned;
+        delete updates.showMinorityOwned;
+      }
+      if (updates.showFemaleOwned !== undefined) {
+        updates.show_female_owned = updates.showFemaleOwned;
+        delete updates.showFemaleOwned;
+      }
+      if (updates.showLGBTQIAOwned !== undefined) {
+        updates.show_lgbtqia_owned = updates.showLGBTQIAOwned;
+        delete updates.showLGBTQIAOwned;
+      }
+
       if (process.env.NODE_ENV === 'development') console.log(`🏢 BUSINESS PROFILE: Mapped fields for user ${userId}:`, Object.keys(updates));
 
       // Convert dateOfBirth string to Date object if present
