@@ -6860,6 +6860,25 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         placeholder="e.g., Photography, Rock Climbing, Local Cuisine"
                         value={field.value || ''}
                         onChange={(e) => field.onChange(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            const value = field.value?.trim();
+                            if (value) {
+                              // Process custom interests by adding them to the interests array
+                              const customItems = value.split(',').map(item => item.trim()).filter(item => item);
+                              const currentInterests = form.getValues('interests') || [];
+                              const newInterests = [...currentInterests];
+                              customItems.forEach(item => {
+                                if (!newInterests.includes(item)) {
+                                  newInterests.push(item);
+                                }
+                              });
+                              form.setValue('interests', newInterests);
+                              field.onChange(''); // Clear the input
+                            }
+                          }
+                        }}
                         className="text-xs"
                       />
                     )}
@@ -6920,6 +6939,25 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         placeholder="e.g., Surfing Lessons, Wine Tasting, Museum Tours"
                         value={field.value || ''}
                         onChange={(e) => field.onChange(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            const value = field.value?.trim();
+                            if (value) {
+                              // Process custom activities by adding them to the activities array
+                              const customItems = value.split(',').map(item => item.trim()).filter(item => item);
+                              const currentActivities = form.getValues('activities') || [];
+                              const newActivities = [...currentActivities];
+                              customItems.forEach(item => {
+                                if (!newActivities.includes(item)) {
+                                  newActivities.push(item);
+                                }
+                              });
+                              form.setValue('activities', newActivities);
+                              field.onChange(''); // Clear the input
+                            }
+                          }
+                        }}
                         className="text-xs"
                       />
                     )}
@@ -6976,6 +7014,25 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         placeholder="e.g., Jazz Festival, Food Market, Art Exhibition"
                         value={field.value || ''}
                         onChange={(e) => field.onChange(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            const value = field.value?.trim();
+                            if (value) {
+                              // Process custom events by adding them to the events array
+                              const customItems = value.split(',').map(item => item.trim()).filter(item => item);
+                              const currentEvents = form.getValues('events') || [];
+                              const newEvents = [...currentEvents];
+                              customItems.forEach(item => {
+                                if (!newEvents.includes(item)) {
+                                  newEvents.push(item);
+                                }
+                              });
+                              form.setValue('events', newEvents);
+                              field.onChange(''); // Clear the input
+                            }
+                          }
+                        }}
                         className="text-xs"
                       />
                     )}
@@ -7614,6 +7671,25 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             placeholder="e.g., Photography, Rock Climbing, Local Cuisine, Art History"
                             value={field.value || ''}
                             onChange={(e) => field.onChange(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault();
+                                const value = field.value?.trim();
+                                if (value) {
+                                  // Process custom interests by adding them to the interests array
+                                  const customItems = value.split(',').map(item => item.trim()).filter(item => item);
+                                  const currentInterests = profileForm.getValues('interests') || [];
+                                  const newInterests = [...currentInterests];
+                                  customItems.forEach(item => {
+                                    if (!newInterests.includes(item)) {
+                                      newInterests.push(item);
+                                    }
+                                  });
+                                  profileForm.setValue('interests', newInterests);
+                                  field.onChange(''); // Clear the input
+                                }
+                              }
+                            }}
                             className="text-xs"
                           />
                         )}
@@ -7674,6 +7750,25 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             placeholder="e.g., Surfing Lessons, Wine Tasting, Museum Tours, Rock Concerts"
                             value={field.value || ''}
                             onChange={(e) => field.onChange(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault();
+                                const value = field.value?.trim();
+                                if (value) {
+                                  // Process custom activities by adding them to the activities array
+                                  const customItems = value.split(',').map(item => item.trim()).filter(item => item);
+                                  const currentActivities = profileForm.getValues('activities') || [];
+                                  const newActivities = [...currentActivities];
+                                  customItems.forEach(item => {
+                                    if (!newActivities.includes(item)) {
+                                      newActivities.push(item);
+                                    }
+                                  });
+                                  profileForm.setValue('activities', newActivities);
+                                  field.onChange(''); // Clear the input
+                                }
+                              }
+                            }}
                             className="text-xs"
                           />
                         )}
@@ -7730,6 +7825,25 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             placeholder="e.g., Jazz Festival, Food Market, Art Exhibition, Tech Conferences"
                             value={field.value || ''}
                             onChange={(e) => field.onChange(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault();
+                                const value = field.value?.trim();
+                                if (value) {
+                                  // Process custom events by adding them to the events array
+                                  const customItems = value.split(',').map(item => item.trim()).filter(item => item);
+                                  const currentEvents = profileForm.getValues('events') || [];
+                                  const newEvents = [...currentEvents];
+                                  customItems.forEach(item => {
+                                    if (!newEvents.includes(item)) {
+                                      newEvents.push(item);
+                                    }
+                                  });
+                                  profileForm.setValue('events', newEvents);
+                                  field.onChange(''); // Clear the input
+                                }
+                              }
+                            }}
                             className="text-xs"
                           />
                         )}
