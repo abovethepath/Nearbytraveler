@@ -19,45 +19,25 @@ import { getAllInterests, getAllActivities, getAllEvents, getAllLanguages, valid
 
 const businessSignupSchema = z.object({
   // Business Account Information
-  username: z.string().min(3, "Username must be at least 3 characters"),
+  username: z.string().min(6, "Username must be 6-14 characters").max(14, "Username must be 6-14 characters"),
   email: z.string().email("Please enter a valid email"),
   password: z.string().min(6, "Password must be at least 6 characters"),
   
-  // Business Information
+  // Essential Business Information Only
   businessName: z.string().min(1, "Business name is required"),
   businessType: z.string().min(1, "Business type is required"),
   customBusinessType: z.string().optional(),
   businessPhone: z.string().min(1, "Business phone number is required"),
-  veteranOwned: z.boolean().optional(),
-  activeDutyOwned: z.boolean().optional(),
-  businessDescription: z.string().optional(),
-  businessWebsite: z.string().url("Please enter a valid website URL").optional().or(z.literal("")),
   
-  // Full Business Address
-  streetAddress: z.string().min(1, "Street address is required"),
+  // Basic Location (City is required for metro area matching)
   city: z.string().min(1, "City is required"),
   state: z.string().min(1, "State/Province is required"),
-  zipCode: z.string().min(1, "ZIP/Postal code is required"),
   country: z.string().min(1, "Country is required"),
   
-  // Contact Person Information (Private - for admin use only)
-  contactPersonName: z.string().min(1, "Contact person name is required"),
-  contactPersonTitle: z.string().min(1, "Contact person title is required"),
-  contactPersonEmail: z.string().email("Please enter a valid contact email"),
-  contactPersonPhone: z.string().min(1, "Contact person phone is required"),
+  // Optional website
+  businessWebsite: z.string().url("Please enter a valid website URL").optional().or(z.literal("")),
   
-  // Additional Business Details
-  yearEstablished: z.string().min(1, "Year established is required"),
-  employeeCount: z.string().optional(),
-
-  
-  // Business Interests & Activities (for matching with users)
-  interests: z.array(z.string()).optional(),
-  activities: z.array(z.string()).optional(),
-  customInterests: z.string().optional(),
-  customActivities: z.string().optional(),
-  
-  // Geolocation for proximity notifications
+  // Location services for proximity features
   currentLatitude: z.number().optional(),
   currentLongitude: z.number().optional(),
   locationSharingEnabled: z.boolean().default(true),
@@ -137,26 +117,10 @@ export default function SignupBusiness() {
       businessType: "",
       customBusinessType: "",
       businessPhone: "",
-      businessDescription: accountData?.businessDescription || "",
       businessWebsite: "",
-      veteranOwned: false,
-      activeDutyOwned: false,
-      streetAddress: "",
       city: accountData?.city || "",
       state: "",
-      zipCode: "",
       country: "",
-      contactPersonName: "",
-      contactPersonTitle: "",
-      contactPersonEmail: "",
-      contactPersonPhone: "",
-      yearEstablished: "",
-      employeeCount: "",
-
-      interests: [],
-      activities: [],
-      customInterests: "",
-      customActivities: "",
       currentLatitude: undefined,
       currentLongitude: undefined,
       locationSharingEnabled: true,
@@ -176,27 +140,7 @@ export default function SignupBusiness() {
         processedData.businessType = data.customBusinessType;
       }
       
-      // Add custom interests to the interests array
-      if (data.customInterests) {
-        const customInterestsList = data.customInterests
-          .split(',')
-          .map(item => item.trim())
-          .filter(item => item.length > 0);
-        processedData.interests = [...(data.interests || []), ...customInterestsList];
-      }
-      
-      // Add custom activities to the activities array
-      if (data.customActivities) {
-        const customActivitiesList = data.customActivities
-          .split(',')
-          .map(item => item.trim())
-          .filter(item => item.length > 0);
-        processedData.activities = [...(data.activities || []), ...customActivitiesList];
-      }
-      
       // Remove the custom fields from the final data since they're now merged
-      delete processedData.customInterests;
-      delete processedData.customActivities;
       delete processedData.customBusinessType;
 
       const response = await fetch('/api/business-signup', {
@@ -235,8 +179,8 @@ export default function SignupBusiness() {
       // Clear sessionStorage account data since signup is complete
       sessionStorage.removeItem('accountData');
       
-      // Immediate redirect to prevent page flash
-      setLocation('/welcome-business');
+      // Immediate redirect to profile to complete setup
+      setLocation('/profile');
     },
     onError: (error: Error) => {
       toast({
@@ -266,7 +210,7 @@ export default function SignupBusiness() {
             <Building className="w-12 h-12 mx-auto text-blue-600 mb-4" />
             <CardTitle className="text-3xl">Register Your Business</CardTitle>
             <CardDescription className="text-lg">
-              Join Nearby Traveler's Business Network - Connect with travelers and locals
+              Quick signup - Complete your detailed business profile after registration
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -359,36 +303,61 @@ export default function SignupBusiness() {
                   </div>
                 )}
 
-                {/* Business Information Section */}
+                {/* Essential Business Information Section */}
                 <div className="space-y-4">
                   <h3 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center gap-2">
                     <Building className="w-5 h-5" />
-                    Business Information
+                    Essential Business Information
                   </h3>
-                  <FormField
-                    control={form.control}
-                    name="businessType"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Business Type *</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-700">
+                    <p className="text-sm text-blue-800 dark:text-blue-200">
+                      We only need basic information to get started. You can complete your detailed business profile (description, services, diversity categories, etc.) after registration.
+                    </p>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="businessType"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Business Type *</FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select business type" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {businessTypes.map((type) => (
+                                <SelectItem key={type} value={type}>
+                                  {type}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="businessPhone"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Business Phone Number *</FormLabel>
                           <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select business type" />
-                            </SelectTrigger>
+                            <Input placeholder="+1 (555) 123-4567" {...field} />
                           </FormControl>
-                          <SelectContent>
-                            {businessTypes.map((type) => (
-                              <SelectItem key={type} value={type}>
-                                {type}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                          <FormDescription>
+                            Public phone number for customer inquiries
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
                   
                   {/* Custom Business Type Field */}
                   {form.watch("businessType") === "Custom (specify below)" && (
@@ -406,23 +375,6 @@ export default function SignupBusiness() {
                       )}
                     />
                   )}
-                  
-                  <FormField
-                    control={form.control}
-                    name="businessPhone"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Business Phone Number *</FormLabel>
-                        <FormControl>
-                          <Input placeholder="+1 (555) 123-4567" {...field} />
-                        </FormControl>
-                        <FormDescription>
-                          Public phone number for customer inquiries
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
                   
                   <FormField
                     control={form.control}
