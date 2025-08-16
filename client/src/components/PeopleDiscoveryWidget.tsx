@@ -40,7 +40,7 @@ export function PeopleDiscoveryWidget({
   const [, setLocation] = useLocation();
   const { user: currentUser } = useContext(AuthContext);
   const currentUserId = propCurrentUserId || currentUser?.id;
-  const [displayCount, setDisplayCount] = React.useState(6); // Show 6 people initially (3x2 grid)
+  const [displayCount, setDisplayCount] = React.useState(8); // Show 8 people initially (2x4 grid)
 
   // Debug current user ID
   React.useEffect(() => {
