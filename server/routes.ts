@@ -6648,11 +6648,19 @@ Questions? Just reply to this message. Welcome aboard!
         validFrom: req.body.validFrom ? new Date(req.body.validFrom) : new Date(),
         validUntil: req.body.validUntil ? (() => {
           const dateStr = req.body.validUntil;
-          // If date string has no timezone info, treat as local time by adding current timezone offset
+          // If date string has no timezone info, treat as user's local time (PST)
           if (dateStr && !dateStr.includes('Z') && !dateStr.includes('+') && !dateStr.includes('-', 10)) {
+            // Parse the date string and assume it's PST (UTC-8)
             const localDate = new Date(dateStr);
-            const offsetMs = localDate.getTimezoneOffset() * 60 * 1000;
-            return new Date(localDate.getTime() - offsetMs);
+            // PST is UTC-8, so add 8 hours to convert PST time to UTC
+            const pstToUtcOffset = 8 * 60 * 60 * 1000; // 8 hours in milliseconds  
+            const utcDate = new Date(localDate.getTime() + pstToUtcOffset);
+            
+            if (process.env.NODE_ENV === 'development') {
+              console.log(`🕐 TIMEZONE DEBUG: "${dateStr}" interpreted as PST -> UTC: ${utcDate.toISOString()}`);
+            }
+            
+            return utcDate;
           }
           return new Date(dateStr);
         })() : new Date(Date.now() + 60 * 60 * 1000) // Default 1 hour from now
