@@ -3811,8 +3811,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       <Button 
                         size="sm" 
                         onClick={() => {
-                          console.log('🔥 CREATE OFFER clicked, setting showCreateDeal to true');
-                          setShowCreateDeal(true);
+                          console.log('🔥 CREATE OFFER clicked, navigating to business dashboard');
+                          setLocation('/business-dashboard');
                         }}
                         className="bg-gradient-to-r from-green-500 to-blue-500 text-white border-0 hover:from-green-600 hover:to-blue-600"
                       >
