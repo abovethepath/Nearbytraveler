@@ -2419,25 +2419,27 @@ export default function Home() {
               )}
             </div>
 
-            {/* Quick Meetups Section - Compact */}
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                  Ready to Meet
-                </h3>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="text-xs text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
-                  onClick={() => setLocation('/quick-meetups')}
-                >
-                  <Calendar className="w-3 h-3 mr-1" />
-                  View All
-                </Button>
-              </div>
+            {/* Quick Meetups Section - Only show for non-business users */}
+            {user?.userType !== 'business' && (
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                    Ready to Meet
+                  </h3>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="text-xs text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
+                    onClick={() => setLocation('/quick-meetups')}
+                  >
+                    <Calendar className="w-3 h-3 mr-1" />
+                    View All
+                  </Button>
+                </div>
 
-              <QuickMeetupWidget />
-            </div>
+                <QuickMeetupWidget />
+              </div>
+            )}
 
             {/* Discover Businesses Section */}
             <div className="space-y-6">
