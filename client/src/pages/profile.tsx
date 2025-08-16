@@ -3693,6 +3693,16 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       )}
                     </div>
                   )}
+                  
+                  {/* Edit Profile Button - Only show for own profile */}
+                  {isOwnProfile && (
+                    <div className="flex justify-end pt-4 border-t border-gray-200 dark:border-gray-700 mt-4">
+                      <Button size="sm" variant="outline" onClick={() => setIsEditMode(true)}>
+                        <Edit className="w-3 h-3 mr-2" />
+                        Edit Profile
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
