@@ -43,7 +43,7 @@ import Auth from "@/pages/auth";
 // import SignupLocal from "@/pages/signup-local"; // Removed broken file
 import SignupLocalTraveler from "@/pages/signup-local-traveler";
 import SignupTraveling from "@/pages/signup-traveling";
-import SignupBusiness from "@/pages/signup-business";
+import SignupBusinessSimple from "@/pages/signup-business-simple";
 import SignupSteps from "@/pages/signup-steps";
 import UnifiedSignup from "@/pages/unified-signup";
 import BusinessRegistration from "@/pages/business-registration";
@@ -511,8 +511,8 @@ function Router() {
         return <SignupTraveling />;
       }
       if (location === '/signup/business') {
-        console.log('Showing SignupBusiness for:', location);
-        return <SignupBusiness />;
+        console.log('Showing SignupBusinessSimple for:', location);
+        return <SignupBusinessSimple />;
       }
       // Allow access to legal pages without authentication
       if (location === '/privacy') {
@@ -725,7 +725,7 @@ function Router() {
       case '/signup':
         return <SignupLocalTraveler />;
       case '/signup/business':
-        return <SignupBusiness />;
+        return <SignupBusinessSimple />;
       case '/business-registration':
         return <BusinessRegistration />;
       case '/profile':

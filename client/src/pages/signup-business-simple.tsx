@@ -5,17 +5,15 @@ import { z } from "zod";
 import { useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { useLocation } from "wouter";
-import { Building, MapPin, User, Phone, Mail, Globe, Heart, Zap, Navigation } from "lucide-react";
+import { Building, MapPin, User, Zap } from "lucide-react";
 import { SmartLocationInput } from "@/components/SmartLocationInput";
-import { getAllInterests, getAllActivities, getAllEvents, getAllLanguages, validateSelections, BUSINESS_TYPES } from "../../../shared/base-options";
+import { BUSINESS_TYPES } from "../../../shared/base-options";
 
 const businessSignupSchema = z.object({
   // Business Account Information
@@ -45,7 +43,7 @@ const businessSignupSchema = z.object({
 
 type BusinessSignupData = z.infer<typeof businessSignupSchema>;
 
-export default function SignupBusiness() {
+export default function SignupBusinessSimple() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
@@ -63,11 +61,6 @@ export default function SignupBusiness() {
   };
 
   const accountData = getAccountData();
-  
-  // Debug: Log account data to see what fields are available
-  console.log('Account data from sessionStorage:', accountData);
-  console.log('Business city from accountData:', accountData?.city);
-  console.log('Business name from accountData:', accountData?.name);
 
   // Function to get business GPS coordinates
   const getBusinessLocation = async () => {
@@ -129,7 +122,7 @@ export default function SignupBusiness() {
 
   const signupMutation = useMutation({
     mutationFn: async (data: BusinessSignupData) => {
-      // Process custom interests and activities
+      // Process custom business type
       const processedData = { ...data };
       
       // CRITICAL: Add the required "name" field using business name for businesses
@@ -198,13 +191,9 @@ export default function SignupBusiness() {
 
   const businessTypes = BUSINESS_TYPES;
 
-  const employeeCounts = [
-    "1-5", "6-10", "11-25", "26-50", "51-100", "100+"
-  ];
-
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-3xl mx-auto">
         <Card className="border border-gray-200 dark:border-gray-700 shadow-lg bg-white dark:bg-gray-800">
           <CardHeader className="text-center">
             <Building className="w-12 h-12 mx-auto text-blue-600 mb-4" />
@@ -240,7 +229,7 @@ export default function SignupBusiness() {
                     <p className="text-sm text-gray-600 dark:text-gray-400">
                       Account details from step 1 (automatically filled)
                     </p>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <FormField
                         control={form.control}
                         name="businessName"
@@ -270,35 +259,6 @@ export default function SignupBusiness() {
                           </FormItem>
                         )}
                       />
-                      <FormField
-                        control={form.control}
-                        name="email"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Account Email</FormLabel>
-                            <FormControl>
-                              <Input type="email" placeholder="business@email.com" {...field} disabled className="bg-gray-100 dark:bg-gray-800" />
-                            </FormControl>
-                            <FormDescription>
-                              Email for account login and business contact
-                            </FormDescription>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="password"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Password</FormLabel>
-                            <FormControl>
-                              <Input type="password" value="••••••••" disabled className="bg-gray-100 dark:bg-gray-800" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
                     </div>
                   </div>
                 )}
@@ -309,11 +269,6 @@ export default function SignupBusiness() {
                     <Building className="w-5 h-5" />
                     Essential Business Information
                   </h3>
-                  <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-700">
-                    <p className="text-sm text-blue-800 dark:text-blue-200">
-                      We only need basic information to get started. You can complete your detailed business profile (description, services, diversity categories, etc.) after registration.
-                    </p>
-                  </div>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <FormField
@@ -375,27 +330,6 @@ export default function SignupBusiness() {
                       )}
                     />
                   )}
-                  
-                  <FormField
-                    control={form.control}
-                    name="businessDescription"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Business Description *</FormLabel>
-                        <FormControl>
-                          <Textarea 
-                            placeholder="Tell travelers about your business, what makes you special, and what experiences you offer..."
-                            {...field} 
-                            className="min-h-[100px]"
-                          />
-                        </FormControl>
-                        <FormDescription>
-                          Describe your business to attract travelers and locals
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
 
                   <FormField
                     control={form.control}
@@ -458,223 +392,64 @@ export default function SignupBusiness() {
                         size="sm"
                         variant={locationCaptured ? "default" : "outline"}
                         className={locationCaptured ? "bg-green-600 hover:bg-green-700" : ""}
-                        >
-                          {isGettingLocation ? (
-                            <>
-                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                              Getting Location...
-                            </>
-                          ) : (
-                            <>
-                              <Navigation className="w-4 h-4 mr-2" />
-                              Capture Business Location
-                            </>
-                          )}
-                        </Button>
-                      </div>
-                    ) : (
-                      <div className="text-center p-6 bg-green-50 dark:bg-green-900/20 border-2 border-green-300 dark:border-green-600 rounded-lg">
-                        <div className="text-green-600 dark:text-green-400 mb-4">
-                          ✅ Location Captured Successfully!
-                        </div>
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                          <strong>Coordinates:</strong> {form.watch('currentLatitude')?.toFixed(6)}, {form.watch('currentLongitude')?.toFixed(6)}
-                        </p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">
-                          Travelers within 7 miles will now be able to receive notifications about your business.
-                        </p>
-                        <Button
-                          type="button"
-                          onClick={getBusinessLocation}
-                          disabled={isGettingLocation}
-                          variant="outline"
-                          size="sm"
-                          className="mt-3 border-orange-500 text-orange-600 hover:bg-orange-50"
-                        >
-                          <Navigation className="w-4 h-4 mr-1" />
-                          Update Location
-                        </Button>
+                      >
+                        {locationCaptured ? "Location Captured ✓" : "Enable Location"}
+                      </Button>
+                    </div>
+                    {locationCaptured && (
+                      <div className="text-sm text-green-600 dark:text-green-400 font-medium">
+                        ✅ Location captured for proximity notifications
                       </div>
                     )}
-
-                    {/* Location Sharing Toggle */}
-                    <FormField
-                      control={form.control}
-                      name="locationSharingEnabled"
-                      render={({ field }) => (
-                        <FormItem className="flex flex-row items-start space-x-3 space-y-0 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                          <FormControl>
-                            <Checkbox
-                              checked={field.value}
-                              onCheckedChange={field.onChange}
-                            />
-                          </FormControl>
-                          <div className="space-y-1 leading-none">
-                            <FormLabel className="font-medium text-gray-900 dark:text-white">
-                              Enable Proximity Notifications to Travelers
-                            </FormLabel>
-                            <FormDescription className="text-sm text-gray-800 dark:text-gray-200 font-semibold">
-                              Allow nearby travelers (within 7 miles) to receive notifications about your business based on their interests and your offerings. This helps drive foot traffic and customer discovery.
-                            </FormDescription>
-                          </div>
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-
-                </div>
-
-                {/* Business Interests & Activities Section */}
-                <div className="space-y-6 bg-blue-50 dark:bg-blue-900/20 p-6 rounded-lg">
-                  <div>
-                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center gap-2 mb-2">
-                      <Heart className="w-5 h-5 text-red-500" />
-                      Business Interests & Target Audience
-                    </h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                      Select interests that match your business offerings. This helps us connect you with travelers and locals who are interested in what you provide. (No minimum required for businesses)
-                    </p>
-                  </div>
-
-                  {/* Interests Selection */}
-                  <div className="space-y-4">
-                    <h4 className="text-lg font-medium text-gray-900 dark:text-white">Business-Related Interests</h4>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
-                      {getAllInterests().map((interest) => (
-                        <button
-                          key={interest}
-                          type="button"
-                          onClick={() => {
-                            const currentInterests = form.getValues("interests") || [];
-                            if (currentInterests.includes(interest)) {
-                              form.setValue("interests", currentInterests.filter(i => i !== interest));
-                            } else {
-                              form.setValue("interests", [...currentInterests, interest]);
-                            }
-                          }}
-                          className={`px-3 py-2 rounded-md text-sm font-medium transition-all border ${
-                            (form.watch("interests") || []).includes(interest)
-                              ? 'bg-blue-600 text-white border-blue-600 font-bold transform scale-105'
-                              : 'bg-white text-gray-700 border-gray-200 hover:bg-blue-50 hover:border-blue-300'
-                          }`}
-                        >
-                          {interest}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Activities Selection */}
-                  <div className="space-y-4">
-                    <h4 className="text-lg font-medium text-gray-900 dark:text-white flex items-center gap-2">
-                      <Zap className="w-4 h-4 text-yellow-500" />
-                      Business Activities & Services
-                    </h4>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
-                      {getAllActivities().map((activity) => (
-                        <button
-                          key={activity}
-                          type="button"
-                          onClick={() => {
-                            const currentActivities = form.getValues("activities") || [];
-                            if (currentActivities.includes(activity)) {
-                              form.setValue("activities", currentActivities.filter(a => a !== activity));
-                            } else {
-                              form.setValue("activities", [...currentActivities, activity]);
-                            }
-                          }}
-                          className={`px-3 py-2 rounded-md text-sm font-medium transition-all border ${
-                            (form.watch("activities") || []).includes(activity)
-                              ? 'bg-green-600 text-white border-green-600 font-bold transform scale-105'
-                              : 'bg-white text-gray-700 border-gray-200 hover:bg-green-50 hover:border-green-300'
-                          }`}
-                        >
-                          {activity}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Custom Interests & Activities */}
-                  <div className="space-y-4 border-t pt-6">
-                    <h4 className="text-lg font-medium text-gray-900 dark:text-white">Custom Keywords</h4>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      Add custom interests and activities specific to your business. These help users find you through unique searches.
-                    </p>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <FormField
-                        control={form.control}
-                        name="customInterests"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Custom Interests</FormLabel>
-                            <FormControl>
-                              <Textarea 
-                                placeholder="e.g., sustainable travel, digital nomads, photography tours, wine tasting..."
-                                className="min-h-[80px]"
-                                {...field} 
-                              />
-                            </FormControl>
-                            <FormDescription>
-                              Separate multiple interests with commas
-                            </FormDescription>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <FormField
-                        control={form.control}
-                        name="customActivities"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Custom Activities</FormLabel>
-                            <FormControl>
-                              <Textarea 
-                                placeholder="e.g., rooftop dining, escape rooms, kayak rentals, cooking classes..."
-                                className="min-h-[80px]"
-                                {...field} 
-                              />
-                            </FormControl>
-                            <FormDescription>
-                              Separate multiple activities with commas
-                            </FormDescription>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="bg-yellow-100 dark:bg-yellow-900/30 p-4 rounded-lg">
-                    <p className="text-sm text-gray-700 dark:text-gray-300">
-                      <strong>💡 Tip:</strong> Select interests and activities that best represent what your business offers, plus add custom keywords. 
-                      This helps travelers and locals discover your business when they're looking for specific experiences or services.
-                    </p>
                   </div>
                 </div>
 
-                <div className="flex gap-4 pt-4">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setLocation('/join')}
-                    className="flex-1 py-4 text-lg border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800"
-                    data-testid="button-back"
-                  >
-                    ← Back to Join
-                  </Button>
-                  <Button
-                    type="submit"
-                    className="flex-1 py-4 text-lg bg-blue-600 hover:bg-blue-700"
-                    disabled={isLoading || signupMutation.isPending}
-                    data-testid="button-register"
-                  >
-                    {isLoading || signupMutation.isPending ? "Creating Business Account..." : "Complete Registration"}
-                  </Button>
+                {/* Profile Completion Notice */}
+                <div className="bg-gradient-to-r from-blue-50 to-orange-50 dark:from-blue-900/20 dark:to-orange-900/20 p-6 rounded-lg border-2 border-orange-200 dark:border-orange-700">
+                  <div className="flex items-start space-x-3">
+                    <Zap className="w-8 h-8 text-orange-500 mt-1" />
+                    <div>
+                      <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">🎯 Complete Your Profile to Match with Users!</h3>
+                      <p className="text-sm text-gray-800 dark:text-gray-200 font-medium mb-4">
+                        After registration, <strong>you MUST complete your business profile</strong> to start matching with travelers and locals:
+                      </p>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Essential for Matching:</h4>
+                          <ul className="text-sm text-gray-700 dark:text-gray-300 space-y-1 list-disc list-inside">
+                            <li><strong>Business Description</strong> - Tell your story</li>
+                            <li><strong>Interests & Activities</strong> - What you offer</li>
+                            <li><strong>Languages Spoken</strong> - For customer communication</li>
+                            <li><strong>Services & Specialties</strong> - Your unique offerings</li>
+                          </ul>
+                        </div>
+                        <div>
+                          <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Additional Features:</h4>
+                          <ul className="text-sm text-gray-700 dark:text-gray-300 space-y-1 list-disc list-inside">
+                            <li>Create events and deals</li>
+                            <li>Upload business photos</li>
+                            <li>Set diversity ownership categories</li>
+                            <li>Complete address and contact details</li>
+                          </ul>
+                        </div>
+                      </div>
+                      <div className="mt-4 p-3 bg-orange-100 dark:bg-orange-900/30 rounded-lg border border-orange-300 dark:border-orange-600">
+                        <p className="text-sm font-bold text-orange-800 dark:text-orange-200">
+                          ⚠️ Without a complete profile, travelers and locals won't be able to find or connect with your business!
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
+                
+                <Button 
+                  type="submit" 
+                  disabled={isLoading || signupMutation.isPending}
+                  className="w-full h-12 text-lg bg-blue-600 hover:bg-blue-700"
+                  data-testid="button-register-business"
+                >
+                  {isLoading || signupMutation.isPending ? "Creating Account..." : "Register Business"}
+                </Button>
               </form>
             </Form>
           </CardContent>
