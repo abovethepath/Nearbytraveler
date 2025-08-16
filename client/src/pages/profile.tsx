@@ -3604,14 +3604,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       </span>
                     </div>
                   )}
-                  <div className="flex items-center justify-between">
-                    <div></div>
-                    {isOwnProfile && (
-                      <Button size="sm" variant="outline" onClick={() => setIsEditMode(true)}>
-                        <Edit className="w-3 h-3" />
-                      </Button>
-                    )}
-                  </div>
+
                   {user.userType !== 'business' && user.ageVisible && user.dateOfBirth && (
                     <div>
                       <span className="font-medium text-gray-600 dark:text-gray-400">Age:</span>
@@ -4600,6 +4593,242 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 userId={effectiveUserId || 0}
                 isOwnProfile={isOwnProfile}
               />
+            )}
+
+            {/* Business Interests, Activities & Events Section - For business users only */}
+            {user?.userType === 'business' && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Heart className="w-5 h-5 text-orange-500" />
+                  Business Interests, Activities & Events
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Single Edit Button for All Business Preferences */}
+                {isOwnProfile && !editingInterests && !editingActivities && !editingEvents && (
+                  <div className="flex justify-center mb-4">
+                    <Button
+                      onClick={() => {
+                        // Open ALL editing modes at once for business users
+                        setEditingInterests(true);
+                        setEditingActivities(true);
+                        setEditingEvents(true);
+                        // Initialize form data with current user data
+                        setEditFormData({
+                          interests: user?.interests || [],
+                          activities: user?.activities || [],
+                          events: user?.events || []
+                        });
+                      }}
+                      className="bg-orange-600 hover:bg-orange-700 text-white"
+                    >
+                      <Edit className="w-4 h-4 mr-2" />
+                      Edit Business Preferences
+                    </Button>
+                  </div>
+                )}
+
+                {/* Display current business interests/activities/events when not editing */}
+                {(!editingInterests || !editingActivities || !editingEvents) && (
+                  <div className="space-y-4">
+                    {user?.interests?.length > 0 && (
+                      <div>
+                        <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Business Interests</h4>
+                        <div className="flex flex-wrap gap-2">
+                          {user.interests.map((interest, index) => (
+                            <Badge key={`interest-${index}`} className="bg-orange-500 text-white">
+                              {interest}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    {user?.activities?.length > 0 && (
+                      <div>
+                        <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Business Activities</h4>
+                        <div className="flex flex-wrap gap-2">
+                          {user.activities.map((activity, index) => (
+                            <Badge key={`activity-${index}`} className="bg-green-500 text-white">
+                              {activity}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    {user?.events?.length > 0 && (
+                      <div>
+                        <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Business Events</h4>
+                        <div className="flex flex-wrap gap-2">
+                          {user.events.map((event, index) => (
+                            <Badge key={`event-${index}`} className="bg-purple-500 text-white">
+                              {event}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    {(!user?.interests?.length && !user?.activities?.length && !user?.events?.length) && (
+                      <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                        <Heart className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+                        <p>Click "Edit Business Preferences" to add your business interests, activities, and events</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Business Edit Form - Reuse the same unified editing system */}
+                {isOwnProfile && (editingInterests && editingActivities && editingEvents) && (
+                  <div className="bg-orange-50 dark:bg-orange-900/20 p-4 rounded-lg border border-orange-200 dark:border-orange-600">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Edit Business Preferences</h3>
+                      <div className="flex gap-2">
+                        <Button 
+                          onClick={async () => {
+                            try {
+                              console.log('🔧 BUSINESS SAVING DATA:', editFormData);
+                              const response = await fetch(`/api/users/${user.id}`, {
+                                method: 'PUT',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(editFormData)
+                              });
+                              if (!response.ok) throw new Error('Failed to save business preferences');
+                              // Refresh data
+                              queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
+                              // Close editing modes
+                              setEditingInterests(false);
+                              setEditingActivities(false);
+                              setEditingEvents(false);
+                            } catch (error) {
+                              console.error('Failed to update business preferences:', error);
+                            }
+                          }}
+                          disabled={false}
+                          className="bg-green-600 hover:bg-green-700 text-white"
+                        >
+                          Save Business Changes
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          onClick={() => {
+                            // Cancel edits and close editing modes
+                            setEditingInterests(false);
+                            setEditingActivities(false);
+                            setEditingEvents(false);
+                            setEditFormData({
+                              interests: user?.interests || [],
+                              activities: user?.activities || [],
+                              events: user?.events || []
+                            });
+                          }}
+                        >
+                          Cancel
+                        </Button>
+                      </div>
+                    </div>
+                    
+                    {/* Reuse the same editing interface structure from non-business users */}
+                    <div className="space-y-6">
+                      {/* Business Interests Section */}
+                      <div>
+                        <h4 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white flex items-center gap-2">
+                          <Heart className="w-5 h-5 text-orange-500" />
+                          Business Interests
+                        </h4>
+                        <div className="flex flex-wrap gap-2 p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
+                          {getAllInterests().map((interest, index) => {
+                            const isSelected = editFormData.interests.includes(interest);
+                            return (
+                              <button
+                                key={`business-interest-${interest}-${index}`}
+                                type="button"
+                                onClick={() => {
+                                  const newInterests = isSelected
+                                    ? editFormData.interests.filter((i: string) => i !== interest)
+                                    : [...editFormData.interests, interest];
+                                  setEditFormData({ ...editFormData, interests: newInterests });
+                                }}
+                                className={`px-3 py-2 rounded-md text-sm font-medium transition-all ${
+                                  isSelected
+                                    ? 'bg-green-600 text-white font-bold transform scale-105'
+                                    : 'bg-orange-100 text-orange-800 hover:bg-orange-200 dark:bg-orange-800 dark:text-orange-200 dark:hover:bg-orange-700'
+                                }`}
+                              >
+                                {interest}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      {/* Business Activities Section */}
+                      <div>
+                        <h4 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white flex items-center gap-2">
+                          <Globe className="w-5 h-5 text-green-500" />
+                          Business Activities
+                        </h4>
+                        <div className="flex flex-wrap gap-2 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                          {getAllActivities().map((activity, index) => {
+                            const isSelected = editFormData.activities.includes(activity);
+                            return (
+                              <button
+                                key={`business-activity-${activity}-${index}`}
+                                type="button"
+                                onClick={() => {
+                                  const newActivities = isSelected
+                                    ? editFormData.activities.filter((a: string) => a !== activity)
+                                    : [...editFormData.activities, activity];
+                                  setEditFormData({ ...editFormData, activities: newActivities });
+                                }}
+                                className={`px-3 py-2 rounded-md text-sm font-medium transition-all ${
+                                  isSelected
+                                    ? 'bg-green-600 text-white font-bold transform scale-105'
+                                    : 'bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-800 dark:text-green-200 dark:hover:bg-green-700'
+                                }`}
+                              >
+                                {activity}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      {/* Business Events Section */}
+                      <div>
+                        <h4 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white flex items-center gap-2">
+                          <Calendar className="w-5 h-5 text-purple-500" />
+                          Business Events
+                        </h4>
+                        <div className="flex flex-wrap gap-2 p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                          {getAllEvents().map((event, index) => {
+                            const isSelected = editFormData.events.includes(event);
+                            return (
+                              <button
+                                key={`business-event-${event}-${index}`}
+                                type="button"
+                                onClick={() => {
+                                  const newEvents = isSelected
+                                    ? editFormData.events.filter((e: string) => e !== event)
+                                    : [...editFormData.events, event];
+                                  setEditFormData({ ...editFormData, events: newEvents });
+                                }}
+                                className={`px-3 py-2 rounded-md text-sm font-medium transition-all ${
+                                  isSelected
+                                    ? 'bg-green-600 text-white font-bold transform scale-105'
+                                    : 'bg-purple-100 text-purple-800 hover:bg-purple-200 dark:bg-purple-800 dark:text-purple-200 dark:hover:bg-purple-700'
+                                }`}
+                              >
+                                {event}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
             )}
 
             {/* Travel Plans - Hidden for business profiles */}
@@ -6787,7 +7016,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       <FormItem>
                         <FormLabel>Interests</FormLabel>
                         <FormControl>
-                          <div className="flex flex-wrap gap-2 p-3 bg-gradient-to-r from-blue-50 to-orange-50 dark:from-blue-900/20 dark:to-orange-900/20 rounded-lg max-h-48 overflow-y-auto">
+                          <div className="flex flex-wrap gap-2 p-3 bg-gradient-to-r from-blue-50 to-orange-50 dark:from-blue-900/20 dark:to-orange-900/20 rounded-lg">
                             {getAllInterests().map((interest) => {
                               const isSelected = field.value?.includes(interest);
                               return (
