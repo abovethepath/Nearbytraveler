@@ -3513,7 +3513,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     <div className="flex-1">
                       <p className="text-gray-900 dark:text-white leading-relaxed font-semibold">
                         {user?.userType === 'business' 
-                          ? (user?.businessDescription || user?.bio || "No business description available yet.")
+                          ? (user?.businessDescription || "No business description available yet.")
                           : (user?.bio || "No bio available yet.")
                         }
                       </p>
@@ -6843,28 +6843,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     />
                   </div>
 
-                  {/* Bio Field for Business Users */}
-                  <FormField
-                    control={profileForm.control}
-                    name="bio"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Bio</FormLabel>
-                        <FormControl>
-                          <Textarea 
-                            {...field} 
-                            placeholder="Tell us about yourself..."
-                            className="min-h-[100px] resize-none"
-                            maxLength={500}
-                          />
-                        </FormControl>
-                        <div className="text-xs text-gray-500 text-right">
-                          {field.value?.length || 0}/500 characters
-                        </div>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+
 
                   {/* Interests Field for Business Users */}
                   <FormField

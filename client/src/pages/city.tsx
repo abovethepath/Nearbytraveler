@@ -419,7 +419,7 @@ export default function CityPage({ cityName }: CityPageProps) {
                                   {(business as any).businessName || business.name || business.username}
                                 </h3>
                                 <p className="text-sm text-gray-600 dark:text-gray-300 mb-3 line-clamp-2">
-                                  {(business as any).businessDescription || business.bio || 'Local business serving the community'}
+                                  {(business as any).businessDescription || 'Local business serving the community'}
                                 </p>
                               </div>
                               <Badge variant="secondary" className="ml-2 text-xs bg-green-100 text-green-800">

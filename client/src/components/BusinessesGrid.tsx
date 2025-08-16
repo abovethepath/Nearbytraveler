@@ -165,7 +165,7 @@ export default function BusinessesGrid({ currentLocation, travelPlans = [] }: Bu
                   </Badge>
                 </div>
                 <p className="text-xs text-gray-600 dark:text-gray-300 line-clamp-2">
-                  {business.businessDescription || business.services || business.bio || 'Local business offering quality services'}
+                  {business.businessDescription || business.services || 'Local business offering quality services'}
                 </p>
               </div>
 

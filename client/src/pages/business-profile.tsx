@@ -30,7 +30,7 @@ export default function BusinessProfile() {
   const businessData = {
     id: user?.id || 1,
     name: user?.businessName || user?.name || "Business Profile",
-    bio: user?.bio || "Welcome to our business profile. We're excited to connect with travelers and locals!",
+    description: user?.businessDescription || "Welcome to our business profile. We're excited to connect with travelers and locals!",
     location: user?.businessLocation || `${user?.businessCity || ''}, ${user?.businessState || ''}, ${user?.businessCountry || ''}`.replace(/^,\s*|,\s*$/g, '') || "Location not specified",
     phone: user?.phoneNumber || "Phone not provided",
     website: user?.website || "Website not provided",
@@ -92,7 +92,7 @@ export default function BusinessProfile() {
                 )}
               </div>
               
-              <p className="text-lg text-gray-600 mb-4">{businessData.bio}</p>
+              <p className="text-lg text-gray-600 mb-4">{businessData.description}</p>
               
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-gray-600">
