@@ -6803,6 +6803,55 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // GET expired/past quick deals for history/reuse feature
+  app.get("/api/quick-deals/history/:businessId", async (req, res) => {
+    try {
+      const businessId = parseInt(req.params.businessId || '0');
+      const userId = req.headers['x-user-id'];
+      
+      if (!userId) {
+        return res.status(401).json({ message: "User ID required" });
+      }
+
+      // Verify user is the business owner
+      if (parseInt(userId as string || '0') !== businessId) {
+        return res.status(403).json({ message: "Unauthorized - you can only view your own deal history" });
+      }
+
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`📚 QUICK DEALS HISTORY: Fetching expired deals for business ${businessId}`);
+      }
+
+      // Get expired quick deals for this business (for reuse feature)
+      const now = new Date();
+      const expiredDeals = await db
+        .select()
+        .from(quickDeals)
+        .where(and(
+          eq(quickDeals.businessId, businessId),
+          or(
+            eq(quickDeals.isActive, false),
+            lt(quickDeals.validUntil, now),
+            and(
+              isNotNull(quickDeals.maxRedemptions),
+              gte(quickDeals.currentRedemptions, quickDeals.maxRedemptions)
+            )
+          )
+        ))
+        .orderBy(desc(quickDeals.createdAt))
+        .limit(20); // Limit to 20 most recent expired deals
+
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`📚 QUICK DEALS HISTORY: Found ${expiredDeals.length} expired deals for business ${businessId}`);
+      }
+
+      res.json(expiredDeals);
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error fetching quick deals history:", error);
+      res.status(500).json({ message: "Failed to fetch deal history" });
+    }
+  });
+
   // CLAIM/REDEEM quick deal endpoint
   app.post("/api/quick-deals/:id/claim", async (req, res) => {
     try {

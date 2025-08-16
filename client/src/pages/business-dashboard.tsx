@@ -197,6 +197,8 @@ export default function BusinessDashboard() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [viewingOffer, setViewingOffer] = useState<BusinessOffer | null>(null);
   const [useCustomAddress, setUseCustomAddress] = useState(false);
+  const [reuseDialogOpen, setReuseDialogOpen] = useState(false);
+  const [reuseDealData, setReuseDealData] = useState<any>(null);
 
   // Helper function to format discount text
   const getDiscountText = (offer: BusinessOffer) => {
@@ -306,6 +308,28 @@ export default function BusinessDashboard() {
     },
     enabled: !!storageUser?.id && storageUser?.userType === 'business',
     staleTime: 0,
+    refetchOnMount: true
+  });
+
+  // Fetch Quick Deals history
+  const { data: quickDealsHistory = [], isLoading: isQuickDealsHistoryLoading } = useQuery({
+    queryKey: [`/api/quick-deals/history/${storageUser?.id}`],
+    queryFn: async () => {
+      if (!storageUser?.id) return [];
+      const response = await fetch(`/api/quick-deals/history/${storageUser.id}`, {
+        headers: {
+          'x-user-id': storageUser.id.toString(),
+          'x-user-type': storageUser.userType || 'business'
+        }
+      });
+      if (!response.ok) {
+        if (response.status === 404) return [];
+        throw new Error('Failed to fetch Quick Deals history');
+      }
+      return response.json();
+    },
+    enabled: !!storageUser?.id && storageUser?.userType === 'business',
+    staleTime: 30000,
     refetchOnMount: true
   });
 
@@ -1286,8 +1310,9 @@ export default function BusinessDashboard() {
 
         {/* Business Dashboard Tabs */}
         <Tabs defaultValue="active" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="active">Active Deals ({offers.length})</TabsTrigger>
+            <TabsTrigger value="quickdeals">Quick Deals History ({quickDealsHistory.length})</TabsTrigger>
             <TabsTrigger value="events">Special Events ({businessEvents.length})</TabsTrigger>
             <TabsTrigger value="past">Past Deals ({pastOffers.length})</TabsTrigger>
             <TabsTrigger value="photos">Customer Photos ({customerPhotos?.length || 0})</TabsTrigger>
@@ -1442,6 +1467,90 @@ export default function BusinessDashboard() {
             ))}
           </div>
         )}
+          </TabsContent>
+
+          <TabsContent value="quickdeals" className="mt-6">
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Quick Deals History</h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Reuse your past Quick Deals by creating new ones with updated timing</p>
+                </div>
+              </div>
+
+              {isQuickDealsHistoryLoading ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {[1, 2, 3].map(i => (
+                    <div key={i} className="animate-pulse bg-gray-200 dark:bg-gray-700 h-48 rounded-lg"></div>
+                  ))}
+                </div>
+              ) : quickDealsHistory.length === 0 ? (
+                <Card className="p-8">
+                  <div className="text-center">
+                    <Clock className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+                    <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No Quick Deals History Yet</h3>
+                    <p className="text-gray-600 dark:text-gray-400 mb-4">Once your Quick Deals expire, they'll appear here for easy reuse.</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-500">Quick Deals are different from regular business offers - they're short-term flash deals that expire within hours.</p>
+                  </div>
+                </Card>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {quickDealsHistory.map((deal: any) => (
+                    <Card key={deal.id} className="hover:shadow-lg transition-all duration-200">
+                      <CardContent className="p-4">
+                        <div className="flex items-start justify-between mb-3">
+                          <div className="flex-1">
+                            <h4 className="font-semibold text-gray-900 dark:text-white text-sm mb-1">{deal.title}</h4>
+                            <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2">{deal.description}</p>
+                          </div>
+                          <Badge variant="outline" className="text-xs bg-red-50 text-red-700 border-red-200 dark:bg-red-900 dark:text-red-300">
+                            Expired
+                          </Badge>
+                        </div>
+                        
+                        <div className="space-y-2 text-xs text-gray-500 dark:text-gray-400">
+                          <div className="flex items-center gap-1">
+                            {getDiscountIcon(deal.discountType)}
+                            <span>{deal.discountValue}</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Clock className="w-3 h-3" />
+                            <span>Expired {new Date(deal.validUntil).toLocaleDateString()}</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Users className="w-3 h-3" />
+                            <span>{deal.currentRedemptions || 0} redemptions</span>
+                          </div>
+                        </div>
+
+                        <div className="mt-4 pt-3 border-t border-gray-200 dark:border-gray-700">
+                          <Button 
+                            size="sm" 
+                            className="w-full h-8 text-xs bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white border-0"
+                            onClick={() => {
+                              // Pre-fill form with expired deal data for reuse
+                              setReuseDialogOpen(true);
+                              setReuseDealData({
+                                title: deal.title,
+                                description: deal.description,
+                                discountType: deal.discountType,
+                                discountValue: deal.discountValue,
+                                category: deal.category,
+                                targetAudience: deal.targetAudience || ['both'],
+                                availability: deal.availability || 'now'
+                              });
+                            }}
+                          >
+                            <Zap className="w-3 h-3 mr-1" />
+                            Reuse Deal
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </div>
           </TabsContent>
 
           <TabsContent value="events" className="mt-6">
@@ -1900,6 +2009,210 @@ export default function BusinessDashboard() {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Quick Deal Reuse Dialog */}
+      <Dialog open={reuseDialogOpen} onOpenChange={setReuseDialogOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Zap className="h-5 w-5 text-orange-500" />
+              Reuse Quick Deal
+            </DialogTitle>
+            <DialogDescription>
+              Create a new Quick Deal based on this expired deal. You can modify the details and set new timing.
+            </DialogDescription>
+          </DialogHeader>
+          
+          {reuseDealData && (
+            <QuickDealReuseForm 
+              originalDeal={reuseDealData}
+              onClose={() => {
+                setReuseDialogOpen(false);
+                setReuseDealData(null);
+              }}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
+  );
+}
+
+// Quick Deal Reuse Form Component
+function QuickDealReuseForm({ originalDeal, onClose }: { originalDeal: any; onClose: () => void }) {
+  const { toast } = useToast();
+  const [formData, setFormData] = useState({
+    title: originalDeal?.title || '',
+    description: originalDeal?.description || '',
+    discountType: (originalDeal?.discountType || 'percentage') as const,
+    discountValue: originalDeal?.discountValue || '',
+    validFor: '2',
+    availability: (originalDeal?.availability || 'now') as const,
+  });
+
+  const createQuickDealMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const now = new Date();
+      const validUntil = new Date(now.getTime() + (parseInt(data.validFor) * 60 * 60 * 1000));
+      
+      const dealData = {
+        title: data.title,
+        description: data.description,
+        discountType: data.discountType,
+        discountValue: data.discountValue,
+        availability: data.availability,
+        dealType: data.discountType,
+        category: 'quick_deal',
+        validFrom: now.toISOString(),
+        validUntil: validUntil.toISOString(),
+        isActive: true,
+        currentRedemptions: 0
+      };
+
+      return apiRequest('POST', '/api/quick-deals', dealData);
+    },
+    onSuccess: () => {
+      toast({
+        title: "Quick Deal Created! ⚡",
+        description: "Your reused Quick Deal is now live.",
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/quick-deals'] });
+      onClose();
+    },
+    onError: (error) => {
+      toast({
+        title: "Error Creating Quick Deal",
+        description: error instanceof Error ? error.message : "Failed to create quick deal",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.title.trim() || !formData.description.trim() || !formData.discountValue.trim()) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in all required fields.",
+        variant: "destructive"
+      });
+      return;
+    }
+    createQuickDealMutation.mutate(formData);
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div>
+        <label className="block text-sm font-medium mb-1">Title *</label>
+        <Input
+          value={formData.title}
+          onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+          placeholder="Flash Sale - 20% Off"
+          required
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-1">Description *</label>
+        <Textarea
+          value={formData.description}
+          onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+          placeholder="Limited time offer..."
+          required
+          rows={3}
+        />
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium mb-1">Discount Type</label>
+          <Select 
+            value={formData.discountType} 
+            onValueChange={(value: any) => setFormData(prev => ({ ...prev, discountType: value }))}
+          >
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="percentage">Percentage Off</SelectItem>
+              <SelectItem value="fixed_amount">Fixed Amount Off</SelectItem>
+              <SelectItem value="buy_one_get_one">Buy One Get One</SelectItem>
+              <SelectItem value="free_service">Free Service</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-1">Discount Value *</label>
+          <Input
+            value={formData.discountValue}
+            onChange={(e) => setFormData(prev => ({ ...prev, discountValue: e.target.value }))}
+            placeholder="20% or $10"
+            required
+          />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium mb-1">Valid For</label>
+          <Select 
+            value={formData.validFor} 
+            onValueChange={(value) => setFormData(prev => ({ ...prev, validFor: value }))}
+          >
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="1">1 Hour</SelectItem>
+              <SelectItem value="2">2 Hours</SelectItem>
+              <SelectItem value="3">3 Hours</SelectItem>
+              <SelectItem value="4">4 Hours</SelectItem>
+              <SelectItem value="6">6 Hours</SelectItem>
+              <SelectItem value="8">8 Hours</SelectItem>
+              <SelectItem value="12">12 Hours</SelectItem>
+              <SelectItem value="24">24 Hours</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-1">Availability</label>
+          <Select 
+            value={formData.availability} 
+            onValueChange={(value: any) => setFormData(prev => ({ ...prev, availability: value }))}
+          >
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="now">Available Now</SelectItem>
+              <SelectItem value="today">Today Only</SelectItem>
+              <SelectItem value="weekend">This Weekend</SelectItem>
+              <SelectItem value="week">This Week</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      <div className="flex gap-3 pt-4">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onClose}
+          className="flex-1"
+        >
+          Cancel
+        </Button>
+        <Button
+          type="submit"
+          disabled={createQuickDealMutation.isPending}
+          className="flex-1 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white"
+        >
+          {createQuickDealMutation.isPending ? 'Creating...' : 'Create Quick Deal'}
+        </Button>
+      </div>
+    </form>
   );
 }
