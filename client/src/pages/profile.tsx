@@ -3915,10 +3915,31 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           onClick={async () => {
                             try {
                               console.log('🔧 SAVING DATA:', editFormData);
+                              
+                              // Separate predefined vs custom entries for proper database storage
+                              const predefinedInterests = INTERESTS_OPTIONS.filter(opt => editFormData.interests.includes(opt));
+                              const predefinedActivities = ACTIVITIES_OPTIONS.filter(opt => editFormData.activities.includes(opt));
+                              const predefinedEvents = EVENTS_OPTIONS.filter(opt => editFormData.events.includes(opt));
+                              
+                              const customInterests = editFormData.interests.filter(int => !INTERESTS_OPTIONS.includes(int));
+                              const customActivities = editFormData.activities.filter(act => !ACTIVITIES_OPTIONS.includes(act));
+                              const customEvents = editFormData.events.filter(evt => !EVENTS_OPTIONS.includes(evt));
+                              
+                              const saveData = {
+                                interests: predefinedInterests,
+                                activities: predefinedActivities, 
+                                events: predefinedEvents,
+                                customInterests: customInterests.join(', '),
+                                customActivities: customActivities.join(', '),
+                                customEvents: customEvents.join(', ')
+                              };
+                              
+                              console.log('🔧 SAVE - Separated data:', saveData);
+                              
                               const response = await fetch(`/api/users/${user.id}`, {
                                 method: 'PUT',
                                 headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify(editFormData)
+                                body: JSON.stringify(saveData)
                               });
                               if (!response.ok) throw new Error('Failed to save');
                               // Refresh data instead of page reload
@@ -3927,8 +3948,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               setEditingInterests(false);
                               setEditingActivities(false);
                               setEditingEvents(false);
+                              console.log('✅ Successfully saved user preferences');
                             } catch (error) {
-                              console.error('Failed to update preferences:', error);
+                              console.error('❌ Failed to update preferences:', error);
                             }
                           }}
                           disabled={false}
@@ -4247,8 +4269,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             if (e.key === 'Enter') {
                               e.preventDefault();
                               const trimmed = customInterestInput.trim();
-                              if (trimmed && !tempInterests.includes(trimmed)) {
-                                setTempInterests(prev => [...prev, trimmed]);
+                              if (trimmed && !editFormData.interests.includes(trimmed)) {
+                                setEditFormData(prev => ({ ...prev, interests: [...prev.interests, trimmed] }));
                                 setCustomInterestInput('');
                               }
                             }
@@ -4260,8 +4282,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           size="sm"
                           onClick={() => {
                             const trimmed = customInterestInput.trim();
-                            if (trimmed && !tempInterests.includes(trimmed)) {
-                              setTempInterests([...tempInterests, trimmed]);
+                            if (trimmed && !editFormData.interests.includes(trimmed)) {
+                              setEditFormData(prev => ({ ...prev, interests: [...prev.interests, trimmed] }));
                               setCustomInterestInput('');
                             }
                           }}
@@ -4401,8 +4423,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             if (e.key === 'Enter') {
                               e.preventDefault();
                               const trimmed = customActivityInput.trim();
-                              if (trimmed && !tempActivities.includes(trimmed)) {
-                                setTempActivities(prev => [...prev, trimmed]);
+                              if (trimmed && !editFormData.activities.includes(trimmed)) {
+                                setEditFormData(prev => ({ ...prev, activities: [...prev.activities, trimmed] }));
                                 setCustomActivityInput('');
                               }
                             }
@@ -4410,8 +4432,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         />
                         <Button type="button" onClick={() => {
                           const trimmed = customActivityInput.trim();
-                            if (trimmed && !tempActivities.includes(trimmed)) {
-                              setTempActivities([...tempActivities, trimmed]);
+                            if (trimmed && !editFormData.activities.includes(trimmed)) {
+                              setEditFormData(prev => ({ ...prev, activities: [...prev.activities, trimmed] }));
                               setCustomActivityInput('');
                             }
                           }} variant="outline">Add</Button>
@@ -4546,8 +4568,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             if (e.key === 'Enter') {
                               e.preventDefault();
                               const trimmed = customEventInput.trim();
-                              if (trimmed && !tempEvents.includes(trimmed)) {
-                                setTempEvents(prev => [...prev, trimmed]);
+                              if (trimmed && !editFormData.events.includes(trimmed)) {
+                                setEditFormData(prev => ({ ...prev, events: [...prev.events, trimmed] }));
                                 setCustomEventInput('');
                               }
                             }
@@ -4555,8 +4577,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         />
                         <Button type="button" onClick={() => {
                           const trimmed = customEventInput.trim();
-                            if (trimmed && !tempEvents.includes(trimmed)) {
-                              setTempEvents([...tempEvents, trimmed]);
+                            if (trimmed && !editFormData.events.includes(trimmed)) {
+                              setEditFormData(prev => ({ ...prev, events: [...prev.events, trimmed] }));
                               setCustomEventInput('');
                             }
                           }} variant="outline">Add</Button>
@@ -7104,235 +7126,24 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
 
 
-                  {/* Interests Field for Business Users */}
+                  {/* Business Description Field */}
                   <FormField
                     control={profileForm.control}
-                    name="interests"
+                    name="businessDescription"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Interests</FormLabel>
+                        <FormLabel>Business Description</FormLabel>
                         <FormControl>
-                          <div className="flex flex-wrap gap-2 p-3 bg-gradient-to-r from-blue-50 to-orange-50 dark:from-blue-900/20 dark:to-orange-900/20 rounded-lg">
-                            {getAllInterests().map((interest) => {
-                              const isSelected = field.value?.includes(interest);
-                              return (
-                                <button
-                                  key={interest}
-                                  type="button"
-                                  onClick={() => {
-                                    const newValue = isSelected
-                                      ? field.value?.filter((i: string) => i !== interest) || []
-                                      : [...(field.value || []), interest];
-                                    field.onChange(newValue);
-                                  }}
-                                  className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
-                                    isSelected
-                                      ? 'bg-green-600 text-white font-bold'
-                                      : 'bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-800 dark:text-blue-200'
-                                  }`}
-                                >
-                                  {interest}
-                                </button>
-                              );
-                            })}
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  {/* Custom Interests Field */}
-                  <FormField
-                    control={profileForm.control}
-                    name="customInterests"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="flex items-center justify-between">
-                          Custom Interests
-                          {field.value && (
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => profileForm.setValue('customInterests', '')}
-                              className="text-xs text-gray-500 hover:text-red-600"
-                            >
-                              Clear
-                            </Button>
-                          )}
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            {...field}
-                            placeholder="Add custom interests separated by commas (e.g., ice cream, vintage cars)"
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter') {
-                                e.preventDefault();
-                                profileForm.handleSubmit(onProfileSubmit)();
-                              }
-                            }}
+                          <Textarea 
+                            {...field} 
+                            placeholder="Describe your business and services..."
+                            className="min-h-[100px] resize-none"
+                            maxLength={1000}
                           />
                         </FormControl>
-                        <FormDescription>
-                          Enter any interests not listed above, separated by commas
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  {/* Activities Field for Business Users */}
-                  <FormField
-                    control={profileForm.control}
-                    name="activities"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Activities</FormLabel>
-                        <FormControl>
-                          <div className="flex flex-wrap gap-2 p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg max-h-48 overflow-y-auto">
-                            {getAllActivities().map((activity) => {
-                              const isSelected = field.value?.includes(activity);
-                              return (
-                                <button
-                                  key={activity}
-                                  type="button"
-                                  onClick={() => {
-                                    const newValue = isSelected
-                                      ? field.value?.filter((a: string) => a !== activity) || []
-                                      : [...(field.value || []), activity];
-                                    field.onChange(newValue);
-                                  }}
-                                  className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
-                                    isSelected
-                                      ? 'bg-green-600 text-white font-bold'
-                                      : 'bg-purple-100 text-purple-800 hover:bg-purple-200 dark:bg-purple-800 dark:text-purple-200'
-                                  }`}
-                                >
-                                  {activity}
-                                </button>
-                              );
-                            })}
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  {/* Custom Activities Field */}
-                  <FormField
-                    control={profileForm.control}
-                    name="customActivities"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="flex items-center justify-between">
-                          Custom Activities
-                          {field.value && (
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => profileForm.setValue('customActivities', '')}
-                              className="text-xs text-gray-500 hover:text-red-600"
-                            >
-                              Clear
-                            </Button>
-                          )}
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            {...field}
-                            placeholder="Add custom activities separated by commas (e.g., pottery, dog walking)"
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter') {
-                                e.preventDefault();
-                                profileForm.handleSubmit(onProfileSubmit)();
-                              }
-                            }}
-                          />
-                        </FormControl>
-                        <FormDescription>
-                          Enter any activities not listed above, separated by commas
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  {/* Events Field for Business Users */}
-                  <FormField
-                    control={profileForm.control}
-                    name="events"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Events</FormLabel>
-                        <FormControl>
-                          <div className="flex flex-wrap gap-2 p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg max-h-48 overflow-y-auto">
-                            {getAllEvents().map((event) => {
-                              const isSelected = field.value?.includes(event);
-                              return (
-                                <button
-                                  key={event}
-                                  type="button"
-                                  onClick={() => {
-                                    const newValue = isSelected
-                                      ? field.value?.filter((e: string) => e !== event) || []
-                                      : [...(field.value || []), event];
-                                    field.onChange(newValue);
-                                  }}
-                                  className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
-                                    isSelected
-                                      ? 'bg-green-600 text-white font-bold'
-                                      : 'bg-orange-100 text-orange-800 hover:bg-orange-200 dark:bg-orange-800 dark:text-orange-200'
-                                  }`}
-                                >
-                                  {event}
-                                </button>
-                              );
-                            })}
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  {/* Custom Events Field */}
-                  <FormField
-                    control={profileForm.control}
-                    name="customEvents"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="flex items-center justify-between">
-                          Custom Events
-                          {field.value && (
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => profileForm.setValue('customEvents', '')}
-                              className="text-xs text-gray-500 hover:text-red-600"
-                            >
-                              Clear
-                            </Button>
-                          )}
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            {...field}
-                            placeholder="Add custom events separated by commas (e.g., jazz nights, food festivals)"
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter') {
-                                e.preventDefault();
-                                profileForm.handleSubmit(onProfileSubmit)();
-                              }
-                            }}
-                          />
-                        </FormControl>
-                        <FormDescription>
-                          Enter any events not listed above, separated by commas
-                        </FormDescription>
+                        <div className="text-xs text-gray-500 text-right">
+                          {field.value?.length || 0}/1000 characters {(field.value?.length || 0) < 30 && '(minimum 30 required)'}
+                        </div>
                         <FormMessage />
                       </FormItem>
                     )}
