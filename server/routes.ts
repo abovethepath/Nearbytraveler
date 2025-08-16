@@ -3831,6 +3831,54 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // Get events created by a specific organizer (business user)
+  app.get("/api/events/organizer/:organizerId", async (req, res) => {
+    try {
+      const organizerId = parseInt(req.params.organizerId);
+      
+      if (!organizerId) {
+        return res.status(400).json({ message: "Invalid organizer ID" });
+      }
+
+      console.log(`🎪 PROFILE EVENTS: Getting all events for organizer ${organizerId}`);
+
+      // Get events created by this organizer
+      const organizerEvents = await db
+        .select()
+        .from(events)
+        .where(eq(events.organizerId, organizerId))
+        .orderBy(desc(events.date));
+
+      // Get participant counts for each event
+      const eventIds = organizerEvents.map(event => event.id);
+      const participantCounts = eventIds.length > 0 ? await db
+        .select({
+          eventId: eventParticipants.eventId,
+          count: sql<number>`count(*)`
+        })
+        .from(eventParticipants)
+        .where(inArray(eventParticipants.eventId, eventIds))
+        .groupBy(eventParticipants.eventId) : [];
+
+      // Create participant count lookup
+      const participantCountMap = new Map(participantCounts.map(pc => [pc.eventId, pc.count]));
+
+      // Add participant counts to events
+      const eventsWithCounts = organizerEvents.map(event => ({
+        ...event,
+        participantCount: participantCountMap.get(event.id) || 0
+      }));
+
+      console.log(`🎪 PROFILE EVENTS: Found ${eventsWithCounts.length} events for organizer ${organizerId}`);
+      console.log(`🎪 PROFILE EVENTS: Event details:`, eventsWithCounts.map(e => ({ id: e.id, title: e.title, date: e.date })));
+
+      return res.json(eventsWithCounts);
+    } catch (error: any) {
+      console.error("Error fetching organizer events:", error);
+      return res.status(500).json({ message: "Failed to fetch organizer events" });
+    }
+  });
+
   // CRITICAL: Get event details by ID
   app.get("/api/events/:id", async (req, res) => {
     try {
