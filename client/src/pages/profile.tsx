@@ -1342,6 +1342,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           customEvents: customEvents || user.customEvents || "",
           isVeteran: !!user.isVeteran,
           isActiveDuty: !!user.isActiveDuty,
+          isMinorityOwned: !!user.isMinorityOwned,
+          isFemaleOwned: !!user.isFemaleOwned,
+          isLGBTQIAOwned: !!user.isLGBTQIAOwned,
+          showMinorityOwned: user.showMinorityOwned !== false,
+          showFemaleOwned: user.showFemaleOwned !== false,
+          showLGBTQIAOwned: user.showLGBTQIAOwned !== false,
         });
       } else {
         // For non-business users, reset with their data
@@ -2747,6 +2753,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         ...data,
         isVeteran: !!data.isVeteran,
         isActiveDuty: !!data.isActiveDuty,
+        isMinorityOwned: !!data.isMinorityOwned,
+        isFemaleOwned: !!data.isFemaleOwned,
+        isLGBTQIAOwned: !!data.isLGBTQIAOwned,
+        showMinorityOwned: data.showMinorityOwned !== false,
+        showFemaleOwned: data.showFemaleOwned !== false,
+        showLGBTQIAOwned: data.showLGBTQIAOwned !== false,
       } : {
         ...data,
         // Only include traveler fields if they exist in the data
@@ -2756,6 +2768,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         // Always include veteran status fields
         isVeteran: !!data.isVeteran,
         isActiveDuty: !!data.isActiveDuty,
+        isMinorityOwned: !!data.isMinorityOwned,
+        isFemaleOwned: !!data.isFemaleOwned,
+        isLGBTQIAOwned: !!data.isLGBTQIAOwned,
+        showMinorityOwned: data.showMinorityOwned !== false,
+        showFemaleOwned: data.showFemaleOwned !== false,
+        showLGBTQIAOwned: data.showLGBTQIAOwned !== false,
       };
       
       console.log('🔥 MUTATION: Profile payload with explicit booleans:', payload);
@@ -2814,6 +2832,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             childrenAges: (updatedUser as any).childrenAges || "",
             isVeteran: updatedUser.isVeteran !== undefined ? updatedUser.isVeteran : false,
             isActiveDuty: updatedUser.isActiveDuty !== undefined ? updatedUser.isActiveDuty : false,
+            isMinorityOwned: updatedUser.isMinorityOwned !== undefined ? updatedUser.isMinorityOwned : false,
+            isFemaleOwned: updatedUser.isFemaleOwned !== undefined ? updatedUser.isFemaleOwned : false,
+            isLGBTQIAOwned: updatedUser.isLGBTQIAOwned !== undefined ? updatedUser.isLGBTQIAOwned : false,
+            showMinorityOwned: updatedUser.showMinorityOwned !== undefined ? updatedUser.showMinorityOwned : true,
+            showFemaleOwned: updatedUser.showFemaleOwned !== undefined ? updatedUser.showFemaleOwned : true,
+            showLGBTQIAOwned: updatedUser.showLGBTQIAOwned !== undefined ? updatedUser.showLGBTQIAOwned : true,
           });
         }
       }, 100);
@@ -3673,10 +3697,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
 
 
-                      {/* Military Status for Business */}
-                      {(user.isVeteran || user.isActiveDuty) && (
+                      {/* Business Ownership Categories */}
+                      {(user.isVeteran || user.isActiveDuty || (user.isMinorityOwned && user.showMinorityOwned) || (user.isFemaleOwned && user.showFemaleOwned) || (user.isLGBTQIAOwned && user.showLGBTQIAOwned)) && (
                         <div className="space-y-2 border-t pt-3 mt-3">
-                          <h5 className="font-medium text-gray-700">Military Status</h5>
+                          <h5 className="font-medium text-gray-700 dark:text-gray-300">Business Ownership</h5>
+                          
+                          {/* Military Status */}
                           {user.isVeteran && (
                             <div className="flex items-center gap-2">
                               <span className="text-green-600">✓</span>
@@ -3687,6 +3713,26 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             <div className="flex items-center gap-2">
                               <span className="text-blue-600">✓</span>
                               <span className="text-sm">Active Duty Owned Business</span>
+                            </div>
+                          )}
+                          
+                          {/* Diversity Categories */}
+                          {user.isMinorityOwned && user.showMinorityOwned && (
+                            <div className="flex items-center gap-2">
+                              <span className="text-purple-600">✓</span>
+                              <span className="text-sm">Minority Owned Business</span>
+                            </div>
+                          )}
+                          {user.isFemaleOwned && user.showFemaleOwned && (
+                            <div className="flex items-center gap-2">
+                              <span className="text-pink-600">✓</span>
+                              <span className="text-sm">Female Owned Business</span>
+                            </div>
+                          )}
+                          {user.isLGBTQIAOwned && user.showLGBTQIAOwned && (
+                            <div className="flex items-center gap-2">
+                              <span className="text-rainbow bg-gradient-to-r from-red-500 via-yellow-500 via-green-500 via-blue-500 to-purple-500 bg-clip-text text-transparent font-bold">✓</span>
+                              <span className="text-sm">LGBTQIA+ Owned Business</span>
                             </div>
                           )}
                         </div>
@@ -7113,7 +7159,147 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     </div>
                   </div>
 
-
+                  {/* Diversity Business Ownership Categories */}
+                  <div className="space-y-4">
+                    <div className="border-b pb-2">
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                        Diversity Business Ownership
+                      </h3>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                        These categories can be hidden from public view but will still appear in keyword searches to help customers find diverse businesses.
+                      </p>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 gap-4">
+                      <FormField
+                        control={profileForm.control}
+                        name="isMinorityOwned"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors">
+                            <FormControl>
+                              <input
+                                type="checkbox"
+                                checked={field.value || false}
+                                onChange={field.onChange}
+                                className="h-4 w-4 mt-1 rounded border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-purple-600 focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
+                              />
+                            </FormControl>
+                            <div className="space-y-1 leading-none flex-1">
+                              <FormLabel className="text-gray-900 dark:text-gray-100 font-medium">Minority Owned Business</FormLabel>
+                              <div className="text-sm text-gray-600 dark:text-gray-300">
+                                Check if your business is minority-owned
+                              </div>
+                              <FormField
+                                control={profileForm.control}
+                                name="showMinorityOwned"
+                                render={({ field: visibilityField }) => (
+                                  <div className="flex items-center space-x-2 mt-2">
+                                    <input
+                                      type="checkbox"
+                                      checked={visibilityField.value !== false}
+                                      onChange={(e) => visibilityField.onChange(e.target.checked)}
+                                      className="h-3 w-3 rounded border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-purple-600"
+                                    />
+                                    <span className="text-xs text-gray-500 dark:text-gray-400">Show publicly (uncheck to hide but keep searchable)</span>
+                                  </div>
+                                )}
+                              />
+                            </div>
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={profileForm.control}
+                        name="isFemaleOwned"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors">
+                            <FormControl>
+                              <input
+                                type="checkbox"
+                                checked={field.value || false}
+                                onChange={field.onChange}
+                                className="h-4 w-4 mt-1 rounded border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-pink-600 focus:ring-2 focus:ring-pink-500 dark:focus:ring-pink-400 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
+                              />
+                            </FormControl>
+                            <div className="space-y-1 leading-none flex-1">
+                              <FormLabel className="text-gray-900 dark:text-gray-100 font-medium">Female Owned Business</FormLabel>
+                              <div className="text-sm text-gray-600 dark:text-gray-300">
+                                Check if your business is female-owned
+                              </div>
+                              <FormField
+                                control={profileForm.control}
+                                name="showFemaleOwned"
+                                render={({ field: visibilityField }) => (
+                                  <div className="flex items-center space-x-2 mt-2">
+                                    <input
+                                      type="checkbox"
+                                      checked={visibilityField.value !== false}
+                                      onChange={(e) => visibilityField.onChange(e.target.checked)}
+                                      className="h-3 w-3 rounded border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-pink-600"
+                                    />
+                                    <span className="text-xs text-gray-500 dark:text-gray-400">Show publicly (uncheck to hide but keep searchable)</span>
+                                  </div>
+                                )}
+                              />
+                            </div>
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={profileForm.control}
+                        name="isLGBTQIAOwned"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors">
+                            <FormControl>
+                              <input
+                                type="checkbox"
+                                checked={field.value || false}
+                                onChange={field.onChange}
+                                className="h-4 w-4 mt-1 rounded border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-violet-600 focus:ring-2 focus:ring-violet-500 dark:focus:ring-violet-400 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
+                              />
+                            </FormControl>
+                            <div className="space-y-1 leading-none flex-1">
+                              <FormLabel className="text-gray-900 dark:text-gray-100 font-medium">LGBTQIA+ Owned Business</FormLabel>
+                              <div className="text-sm text-gray-600 dark:text-gray-300">
+                                Check if your business is LGBTQIA+ owned
+                              </div>
+                              <FormField
+                                control={profileForm.control}
+                                name="showLGBTQIAOwned"
+                                render={({ field: visibilityField }) => (
+                                  <div className="flex items-center space-x-2 mt-2">
+                                    <input
+                                      type="checkbox"
+                                      checked={visibilityField.value !== false}
+                                      onChange={(e) => visibilityField.onChange(e.target.checked)}
+                                      className="h-3 w-3 rounded border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-violet-600"
+                                    />
+                                    <span className="text-xs text-gray-500 dark:text-gray-400">Show publicly (uncheck to hide but keep searchable)</span>
+                                  </div>
+                                )}
+                              />
+                            </div>
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    
+                    <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg border border-blue-200 dark:border-blue-700">
+                      <div className="flex items-start space-x-2">
+                        <AlertCircle className="h-4 w-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+                        <div className="text-sm text-blue-800 dark:text-blue-200">
+                          <p className="font-medium mb-1">Privacy & Search Information:</p>
+                          <ul className="text-xs space-y-1">
+                            <li>• Even if unchecked for public display, these categories remain searchable</li>
+                            <li>• Customers can find your business using keywords like "minority owned", "female owned", "LGBTQIA owned"</li>
+                            <li>• This helps support diversity initiatives while respecting your privacy preferences</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
 
                   {/* Interests Field for Business Users */}
                   <FormField

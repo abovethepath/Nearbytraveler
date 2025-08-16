@@ -89,6 +89,16 @@ export const users = pgTable("users", {
   isVeteran: boolean("is_veteran").default(false),
   isActiveDuty: boolean("is_active_duty").default(false),
   
+  // Diversity Business Ownership Categories
+  isMinorityOwned: boolean("is_minority_owned").default(false),
+  isFemaleOwned: boolean("is_female_owned").default(false),
+  isLGBTQIAOwned: boolean("is_lgbtqia_owned").default(false),
+  
+  // Privacy settings for diversity categories
+  showMinorityOwned: boolean("show_minority_owned").default(true),
+  showFemaleOwned: boolean("show_female_owned").default(true),
+  showLGBTQIAOwned: boolean("show_lgbtqia_owned").default(true),
+  
   // Business subscription fields (for Stripe)
   stripeCustomerId: text("stripe_customer_id"),
   stripeSubscriptionId: text("stripe_subscription_id"),
