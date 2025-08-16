@@ -4103,6 +4103,30 @@ Questions? Just reply to this message. Welcome aboard!
         });
       }
 
+      // Check monthly event limit (4 events per month for businesses)
+      const organizerId = parseInt((req.body as any).organizerId);
+      const now = new Date();
+      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+      const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
+      
+      // Count events created by this business this month
+      const monthlyEventsCount = await db
+        .select({ count: sql<number>`count(*)` })
+        .from(events)
+        .where(and(
+          eq(events.organizerId, organizerId),
+          gte(events.createdAt, startOfMonth),
+          lte(events.createdAt, endOfMonth)
+        ));
+      
+      const eventsCount = Number(monthlyEventsCount[0]?.count || 0);
+      
+      if (eventsCount >= 4) {
+        return res.status(400).json({ 
+          message: `Monthly event limit reached (${eventsCount}/4 events this month). Businesses can create up to 4 events per month.`
+        });
+      }
+
       // Clean and prepare event data with proper date conversion
       const body = req.body as any;
       
