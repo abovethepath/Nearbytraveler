@@ -13,6 +13,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { MapPin, Calendar, ExternalLink, Percent, DollarSign, Gift, Clock, Phone, Globe, User, Plus, TrendingUp, BarChart3, Eye, Edit, Trash2, Building } from "lucide-react";
 
 import Navbar from "@/components/navbar";
+import QuickDealsDiscovery from "@/components/QuickDealsDiscovery";
 // MobileNav removed - using global mobile navigation
 
 interface BusinessOffer {
@@ -323,6 +324,17 @@ export default function BusinessOffers({ businessId, dealId }: BusinessOffersPro
             </div>
           </div>
         )}
+
+        {/* Quick Deals Section - Flash Deals with Timers */}
+        <div className="mb-8">
+          <QuickDealsDiscovery 
+            userLocation={{
+              city: nearbyCity || '',
+              state: userProfile?.hometownState || '',
+              country: userProfile?.hometownCountry || ''
+            }}
+          />
+        </div>
 
         {/* Filters */}
         <Card className="mb-6 sm:mb-8 w-full max-w-full">
