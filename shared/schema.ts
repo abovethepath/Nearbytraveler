@@ -115,7 +115,7 @@ export const users = pgTable("users", {
   pricingTier: text("pricing_tier").default("standard"), // 'standard', 'premium', 'enterprise', 'custom'
   
   // Deal limits for businesses to prevent spam
-  monthlyDealLimit: integer("monthly_deal_limit").default(5), // Default limit of 5 deals per month
+  monthlyDealLimit: integer("monthly_deal_limit").default(10), // Default limit of 10 total deals per month (Quick Deals + Regular Deals combined)
   currentMonthDeals: integer("current_month_deals").default(0), // Track current month's deals
   dealLimitResetDate: timestamp("deal_limit_reset_date"), // When to reset the counter
   

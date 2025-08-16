@@ -276,11 +276,15 @@ export default function BusinessDashboard() {
   const pastOffers = allOffers.filter(offer => new Date(offer.validUntil) < new Date());
 
   // Fetch analytics
-  const { data: analytics = { totalOffers: 0, totalViews: 0, totalRedemptions: 0, activeOffers: 0 }, refetch: refetchAnalytics } = useQuery<{
+  const { data: analytics = { totalOffers: 0, totalViews: 0, totalRedemptions: 0, activeOffers: 0, monthlyUsage: 0, monthlyLimit: 10, monthlyQuickDeals: 0, monthlyBusinessDeals: 0 }, refetch: refetchAnalytics } = useQuery<{
     totalOffers: number;
     totalViews: number;
     totalRedemptions: number;
     activeOffers: number;
+    monthlyUsage: number;
+    monthlyLimit: number;
+    monthlyQuickDeals: number;
+    monthlyBusinessDeals: number;
   }>({
     queryKey: ['/api/business-deals/analytics'],
     enabled: !!storageUser?.id && storageUser?.userType === 'business',

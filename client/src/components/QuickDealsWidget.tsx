@@ -129,11 +129,11 @@ export function QuickDealsWidget({ city, profileUserId, showCreateForm: external
     onError: (error: any) => {
       console.error('Deal creation error:', error);
       
-      // Handle monthly Quick Deal limit error specifically
-      if (error.message?.includes('Monthly Quick Deal limit reached')) {
+      // Handle monthly deal limit error specifically
+      if (error.message?.includes('Monthly deal limit reached')) {
         toast({
-          title: "Monthly Quick Deal Limit Reached",
-          description: "You've reached your limit of 10 Quick Deals per month. Quick Deals don't count against your regular business offers.",
+          title: "Monthly Deal Limit Reached",
+          description: error.message,
           variant: "destructive"
         });
       } else {
