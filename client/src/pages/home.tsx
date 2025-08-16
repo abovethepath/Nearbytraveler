@@ -2420,7 +2420,7 @@ export default function Home() {
             </div>
 
             {/* Quick Meetups Section - Only show for non-business users */}
-            {user?.userType !== 'business' && (
+            {user?.userType !== 'business' && effectiveUser?.userType !== 'business' && (
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
