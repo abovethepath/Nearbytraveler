@@ -25,7 +25,7 @@ export const pool = new Pool({
 });
 
 // Add connection event handlers
-pool.on('error', (err) => {
+pool.on('error', (err: any) => {
   console.error('Database pool error:', err);
 });
 

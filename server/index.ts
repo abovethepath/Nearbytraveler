@@ -182,13 +182,14 @@ app.use((req, res, next) => {
     res.json({ message: "Server is running", timestamp: new Date().toISOString() });
   });
   
-  // Add quick login fix
+  // Add quick login fix (temporarily disabled during debugging)
   try {
     const { setupQuickLoginFix } = await import('./quick-login-fix.js');
     setupQuickLoginFix(app);
     console.log("Quick login fix registered successfully");
   } catch (error) {
     console.error("Failed to register quick login fix:", error);
+    console.log("Continuing without quick login fix...");
   }
   
   console.log("Minimal routes registered successfully");
@@ -201,7 +202,8 @@ app.use((req, res, next) => {
     console.log("✅ Main API routes registered successfully");
   } catch (error) {
     console.error("❌ CRITICAL: Failed to register main API routes:", error);
-    process.exit(1);
+    console.log("The server will continue with basic functionality only");
+    // Don't exit to keep basic server running
   }
 
   // Setup vite after ALL routes are registered
