@@ -7881,82 +7881,254 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               </div>
               )}
 
-              {/* Military Status Section - Only show for non-business users */}
-              {user?.userType !== 'business' && (
-                <div className="space-y-4">
-                  <div className="border-t pt-4">
-                    <h3 className="text-lg font-semibold mb-3">Military Status</h3>
-                  
-                  {/* Veteran Status */}
-                  <FormField
-                    control={profileForm.control}
-                    name="isVeteran"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
-                        <div className="space-y-0.5">
-                          <FormLabel>I am a Veteran</FormLabel>
-                          <div className="text-sm text-gray-500">
-                            Check if you have served in the military and are now a veteran
-                          </div>
+              {/* Military Status Section */}
+              <div className="space-y-4">
+                <div className="border-t pt-4">
+                  <h3 className="text-lg font-semibold mb-3">Military Status</h3>
+                
+                {/* Veteran Status */}
+                <FormField
+                  control={profileForm.control}
+                  name="isVeteran"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
+                      <div className="space-y-0.5">
+                        <FormLabel>{user?.userType === 'business' ? 'Veteran Owned Business' : 'I am a Veteran'}</FormLabel>
+                        <div className="text-sm text-gray-500">
+                          {user?.userType === 'business' 
+                            ? 'Check if your business is veteran-owned'
+                            : 'Check if you have served in the military and are now a veteran'
+                          }
                         </div>
-                        <FormControl>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={() => {
-                              const newValue = !field.value;
-                              field.onChange(newValue);
-                              // If setting veteran to true, set active duty to false
-                              if (newValue) {
-                                profileForm.setValue('isActiveDuty', false);
-                              }
-                            }}
-                            className={`flex items-center gap-2 ${field.value ? 'bg-red-100 border-red-300 text-red-700' : ''}`}
-                          >
-                            {field.value ? '✓ Veteran' : 'Not Veteran'}
-                          </Button>
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
+                      </div>
+                      <FormControl>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            const newValue = !field.value;
+                            field.onChange(newValue);
+                            // If setting veteran to true, set active duty to false
+                            if (newValue) {
+                              profileForm.setValue('isActiveDuty', false);
+                            }
+                          }}
+                          className={`flex items-center gap-2 ${field.value ? 'bg-red-100 border-red-300 text-red-700' : ''}`}
+                        >
+                          {field.value ? '✓ Veteran' : 'Not Veteran'}
+                        </Button>
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
 
-                  {/* Active Duty Status */}
-                  <FormField
-                    control={profileForm.control}
-                    name="isActiveDuty"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
+                {/* Active Duty Status */}
+                <FormField
+                  control={profileForm.control}
+                  name="isActiveDuty"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
+                      <div className="space-y-0.5">
+                        <FormLabel>{user?.userType === 'business' ? 'Active Duty Owned Business' : 'I am Active Duty'}</FormLabel>
+                        <div className="text-sm text-gray-500">
+                          {user?.userType === 'business'
+                            ? 'Check if your business is active duty-owned'
+                            : 'Check if you are currently serving in the military on active duty'
+                          }
+                        </div>
+                      </div>
+                      <FormControl>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            const newValue = !field.value;
+                            field.onChange(newValue);
+                            // If setting active duty to true, set veteran to false
+                            if (newValue) {
+                              profileForm.setValue('isVeteran', false);
+                            }
+                          }}
+                          className={`flex items-center gap-2 ${field.value ? 'bg-blue-100 border-blue-300 text-blue-700 dark:bg-blue-900 dark:border-blue-600 dark:text-blue-200' : ''}`}
+                        >
+                          {field.value ? '✓ Active Duty' : 'Not Active Duty'}
+                        </Button>
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+
+            {/* Diversity Business Ownership - Only show for business users */}
+            {user?.userType === 'business' && (
+              <div className="space-y-4">
+                <div className="border-t pt-4">
+                  <h3 className="text-lg font-semibold mb-3">Diversity Business Ownership</h3>
+                  <div className="text-sm text-gray-600 mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                    These categories can be hidden from public view but will still appear in keyword searches to help customers find diverse businesses.
+                  </div>
+                
+                {/* Minority Owned Business */}
+                <FormField
+                  control={profileForm.control}
+                  name="isMinorityOwned"
+                  render={({ field }) => (
+                    <FormItem className="space-y-3 rounded-lg border p-4">
+                      <div className="flex flex-row items-center justify-between">
                         <div className="space-y-0.5">
-                          <FormLabel>I am Active Duty</FormLabel>
+                          <FormLabel>Minority Owned Business</FormLabel>
                           <div className="text-sm text-gray-500">
-                            Check if you are currently serving in the military on active duty
+                            Check if your business is minority-owned
                           </div>
                         </div>
                         <FormControl>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={() => {
-                              const newValue = !field.value;
-                              field.onChange(newValue);
-                              // If setting active duty to true, set veteran to false
-                              if (newValue) {
-                                profileForm.setValue('isVeteran', false);
-                              }
-                            }}
-                            className={`flex items-center gap-2 ${field.value ? 'bg-blue-100 border-blue-300 text-blue-700' : ''}`}
-                          >
-                            {field.value ? '✓ Active Duty' : 'Not Active Duty'}
-                          </Button>
+                          <input
+                            type="checkbox"
+                            checked={field.value}
+                            onChange={(e) => field.onChange(e.target.checked)}
+                            className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                          />
                         </FormControl>
-                      </FormItem>
-                    )}
-                  />
+                      </div>
+                      {field.value && (
+                        <FormField
+                          control={profileForm.control}
+                          name="showMinorityOwned"
+                          render={({ publicField }) => (
+                            <FormItem className="flex flex-row items-center space-x-3 space-y-0 ml-6">
+                              <FormControl>
+                                <input
+                                  type="checkbox"
+                                  checked={publicField.value}
+                                  onChange={(e) => publicField.onChange(e.target.checked)}
+                                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                />
+                              </FormControl>
+                              <div className="space-y-1 leading-none">
+                                <FormLabel className="text-sm font-normal text-gray-600 dark:text-gray-400">
+                                  Show publicly (uncheck to hide but keep searchable)
+                                </FormLabel>
+                              </div>
+                            </FormItem>
+                          )}
+                        />
+                      )}
+                    </FormItem>
+                  )}
+                />
+
+                {/* Female Owned Business */}
+                <FormField
+                  control={profileForm.control}
+                  name="isFemaleOwned"
+                  render={({ field }) => (
+                    <FormItem className="space-y-3 rounded-lg border p-4">
+                      <div className="flex flex-row items-center justify-between">
+                        <div className="space-y-0.5">
+                          <FormLabel>Female Owned Business</FormLabel>
+                          <div className="text-sm text-gray-500">
+                            Check if your business is female-owned
+                          </div>
+                        </div>
+                        <FormControl>
+                          <input
+                            type="checkbox"
+                            checked={field.value}
+                            onChange={(e) => field.onChange(e.target.checked)}
+                            className="h-4 w-4 text-pink-600 focus:ring-pink-500 border-gray-300 rounded"
+                          />
+                        </FormControl>
+                      </div>
+                      {field.value && (
+                        <FormField
+                          control={profileForm.control}
+                          name="showFemaleOwned"
+                          render={({ publicField }) => (
+                            <FormItem className="flex flex-row items-center space-x-3 space-y-0 ml-6">
+                              <FormControl>
+                                <input
+                                  type="checkbox"
+                                  checked={publicField.value}
+                                  onChange={(e) => publicField.onChange(e.target.checked)}
+                                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                />
+                              </FormControl>
+                              <div className="space-y-1 leading-none">
+                                <FormLabel className="text-sm font-normal text-gray-600 dark:text-gray-400">
+                                  Show publicly (uncheck to hide but keep searchable)
+                                </FormLabel>
+                              </div>
+                            </FormItem>
+                          )}
+                        />
+                      )}
+                    </FormItem>
+                  )}
+                />
+
+                {/* LGBTQIA+ Owned Business */}
+                <FormField
+                  control={profileForm.control}
+                  name="isLGBTQIAOwned"
+                  render={({ field }) => (
+                    <FormItem className="space-y-3 rounded-lg border p-4">
+                      <div className="flex flex-row items-center justify-between">
+                        <div className="space-y-0.5">
+                          <FormLabel>LGBTQIA+ Owned Business</FormLabel>
+                          <div className="text-sm text-gray-500">
+                            Check if your business is LGBTQIA+ owned
+                          </div>
+                        </div>
+                        <FormControl>
+                          <input
+                            type="checkbox"
+                            checked={field.value}
+                            onChange={(e) => field.onChange(e.target.checked)}
+                            className="h-4 w-4 text-rainbow border-gray-300 rounded"
+                            style={{ accentColor: '#8B5CF6' }}
+                          />
+                        </FormControl>
+                      </div>
+                      {field.value && (
+                        <FormField
+                          control={profileForm.control}
+                          name="showLGBTQIAOwned"
+                          render={({ publicField }) => (
+                            <FormItem className="flex flex-row items-center space-x-3 space-y-0 ml-6">
+                              <FormControl>
+                                <input
+                                  type="checkbox"
+                                  checked={publicField.value}
+                                  onChange={(e) => publicField.onChange(e.target.checked)}
+                                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                />
+                              </FormControl>
+                              <div className="space-y-1 leading-none">
+                                <FormLabel className="text-sm font-normal text-gray-600 dark:text-gray-400">
+                                  Show publicly (uncheck to hide but keep searchable)
+                                </FormLabel>
+                              </div>
+                            </FormItem>
+                          )}
+                        />
+                      )}
+                    </FormItem>
+                  )}
+                />
+
+                <div className="mt-4 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border">
+                  <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Privacy & Search Information:</h4>
+                  <ul className="text-xs text-gray-600 dark:text-gray-400 space-y-1">
+                    <li>• Even if unchecked for public display, these categories remain searchable</li>
+                    <li>• Customers can find your business using keywords like "minority owned", "female owned", etc.</li>
+                  </ul>
                 </div>
               </div>
-              )}
+            </div>
+            )}
 
               <div className="flex gap-2 pt-4">
                 <Button 
