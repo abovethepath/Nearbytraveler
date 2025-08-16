@@ -4153,6 +4153,15 @@ Questions? Just reply to this message. Welcome aboard!
       // Award 2 aura points for creating an event
       await awardAuraPoints(newEvent.organizerId, 2, 'creating an event');
       
+      // AUTOMATICALLY ADD CREATOR AS EVENT ATTENDEE - Organizers should always attend their own events
+      try {
+        await storage.joinEvent(newEvent.id, newEvent.organizerId);
+        if (process.env.NODE_ENV === 'development') console.log(`✅ AUTO-ATTEND: Added organizer ${newEvent.organizerId} as attendee to event ${newEvent.id}`);
+      } catch (autoAttendError: any) {
+        // Don't fail event creation if auto-attend fails - log but continue
+        if (process.env.NODE_ENV === 'development') console.error(`⚠️ AUTO-ATTEND: Failed to add organizer as attendee:`, autoAttendError.message);
+      }
+      
       // AUTOMATICALLY ADD CREATOR TO "THINGS I WANT TO DO IN" - Auto-interest in their own event
       try {
         const eventInterestData = {
@@ -4190,6 +4199,15 @@ Questions? Just reply to this message. Welcome aboard!
           
           // Award aura points
           await awardAuraPoints(newEvent.organizerId, 2, 'creating an event');
+          
+          // AUTOMATICALLY ADD CREATOR AS EVENT ATTENDEE - Organizers should always attend their own events (retry scenario)
+          try {
+            await storage.joinEvent(newEvent.id, newEvent.organizerId);
+            if (process.env.NODE_ENV === 'development') console.log(`✅ AUTO-ATTEND (RETRY): Added organizer ${newEvent.organizerId} as attendee to event ${newEvent.id}`);
+          } catch (autoAttendError: any) {
+            // Don't fail event creation if auto-attend fails - log but continue
+            if (process.env.NODE_ENV === 'development') console.error(`⚠️ AUTO-ATTEND (RETRY): Failed to add organizer as attendee:`, autoAttendError.message);
+          }
           
           // AUTOMATICALLY ADD CREATOR TO "THINGS I WANT TO DO IN" - Auto-interest in their own event (retry scenario)
           try {
