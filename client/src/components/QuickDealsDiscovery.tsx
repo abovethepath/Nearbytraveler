@@ -21,9 +21,20 @@ const CountdownTimer = ({ validUntil }: { validUntil: string }) => {
 
   useEffect(() => {
     const updateTimer = () => {
-      const now = new Date().getTime();
-      const expiry = new Date(validUntil).getTime();
-      const distance = expiry - now;
+      const now = new Date();
+      // Parse the validUntil date and ensure it's in local timezone
+      const expiryDate = new Date(validUntil);
+      
+      // Debug logging to see the actual times
+      console.log('🕐 Timer Debug:', {
+        validUntil,
+        expiryDate: expiryDate.toLocaleString(),
+        now: now.toLocaleString(),
+        expiryISO: expiryDate.toISOString(),
+        nowISO: now.toISOString()
+      });
+      
+      const distance = expiryDate.getTime() - now.getTime();
 
       if (distance < 0) {
         setTimeLeft('EXPIRED');
