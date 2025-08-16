@@ -5210,9 +5210,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    {allEvents && allEvents.length > 0 ? (
+                    {profileEvents && profileEvents.length > 0 ? (
                       <div className="space-y-4">
-                        {allEvents.slice(0, 3).map((event) => (
+                        {profileEvents.slice(0, 3).map((event) => (
                           <div key={event.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
                             <div className="flex justify-between items-start">
                               <div className="flex-1">
@@ -5254,13 +5254,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             </div>
                           </div>
                         ))}
-                        {allEvents.length > 3 && (
+                        {profileEvents.length > 3 && (
                           <Button
                             variant="outline"
                             className="w-full"
                             onClick={() => setLocation('/events')}
                           >
-                            View All {allEvents.length} Events
+                            View All {profileEvents.length} Events
                           </Button>
                         )}
                       </div>
