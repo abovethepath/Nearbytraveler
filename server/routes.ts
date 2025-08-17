@@ -167,11 +167,21 @@ import { fetchAllLocalLAEvents } from './apis/local-la-feeds';
 async function geocodeAddress(address: string): Promise<{ lat: number; lng: number } | null> {
   try {
     const encodedAddress = encodeURIComponent(address);
+    
+    // Add delay to respect rate limits (1 request per second)
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+    
     const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodedAddress}&limit=1`, {
       headers: {
         'User-Agent': 'NearbyTraveler/1.0 (travel-app@nearbytraveler.com)'
-      }
+      },
+      signal: controller.signal
     });
+    
+    clearTimeout(timeoutId);
     
     if (!response.ok) {
       if (process.env.NODE_ENV === 'development') console.error(`❌ Geocoding failed for "${address}": HTTP ${response.status}`);
@@ -1934,21 +1944,29 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         if (processedData.businessAddress) {
           processedData.streetAddress = processedData.businessAddress;
           
-          // AUTOMATIC GEOCODING: Convert business address to coordinates during signup
-          try {
-            const coords = await geocodeAddress(processedData.businessAddress);
-            if (coords) {
-              processedData.currentLatitude = coords.lat;
-              processedData.currentLongitude = coords.lng;
-              // Enable location sharing by default for businesses with valid coordinates
-              processedData.locationSharingEnabled = true;
-              if (process.env.NODE_ENV === 'development') console.log(`🗺️ BUSINESS SIGNUP GEOCODED: "${processedData.businessAddress}" → (${coords.lat}, ${coords.lng})`);
-            } else {
-              if (process.env.NODE_ENV === 'development') console.warn(`⚠️ BUSINESS SIGNUP GEOCODE FAILED: Could not geocode "${processedData.businessAddress}"`);
+          // AUTOMATIC GEOCODING: Convert business address to coordinates during signup (background processing)
+          const businessAddress = processedData.businessAddress;
+          setImmediate(async () => {
+            try {
+              const coords = await geocodeAddress(businessAddress);
+              if (coords) {
+                // Update coordinates separately after signup succeeds
+                await db.update(users)
+                  .set({ 
+                    currentLatitude: coords.lat, 
+                    currentLongitude: coords.lng,
+                    locationSharingEnabled: true // Enable location sharing for businesses with valid coordinates
+                  })
+                  .where(eq(users.username, processedData.username));
+                if (process.env.NODE_ENV === 'development') console.log(`🗺️ BUSINESS SIGNUP BACKGROUND GEOCODED: "${businessAddress}" → (${coords.lat}, ${coords.lng})`);
+              } else {
+                if (process.env.NODE_ENV === 'development') console.warn(`⚠️ BUSINESS SIGNUP BACKGROUND GEOCODE FAILED: Could not geocode "${businessAddress}"`);
+              }
+            } catch (error) {
+              if (process.env.NODE_ENV === 'development') console.error(`❌ BUSINESS SIGNUP BACKGROUND GEOCODE ERROR: Failed to geocode "${businessAddress}":`, error);
             }
-          } catch (error) {
-            if (process.env.NODE_ENV === 'development') console.error(`❌ BUSINESS SIGNUP GEOCODE ERROR: Failed to geocode "${processedData.businessAddress}":`, error);
-          }
+          });
+          if (process.env.NODE_ENV === 'development') console.log(`🗺️ BUSINESS SIGNUP GEOCODING QUEUED: Address "${processedData.businessAddress}" will be processed in background`);
         }
         if (processedData.businessPhone) {
           processedData.phoneNumber = processedData.businessPhone;
@@ -2776,15 +2794,27 @@ Questions? Just reply to this message. Welcome aboard!
       if (updates.streetAddress !== undefined) {
         updates.street_address = updates.streetAddress;
         
-        // AUTOMATIC GEOCODING: Convert business addresses to coordinates for map display - TEMPORARILY DISABLED
+        // AUTOMATIC GEOCODING: Convert business addresses to coordinates for map display
         if (updates.streetAddress && updates.streetAddress.trim()) {
-          try {
-            // DISABLED: const coords = await geocodeAddress(updates.streetAddress);
-            // Temporarily disable geocoding to prevent API errors from blocking profile updates
-            if (process.env.NODE_ENV === 'development') console.log(`🗺️ GEOCODING TEMPORARILY DISABLED: Business address "${updates.streetAddress}" saved without coordinates`);
-          } catch (error) {
-            if (process.env.NODE_ENV === 'development') console.error(`❌ AUTO-GEOCODE ERROR: Failed to geocode "${updates.streetAddress}":`, error);
-          }
+          // Process geocoding in background without blocking profile update
+          setImmediate(async () => {
+            try {
+              const coords = await geocodeAddress(updates.streetAddress);
+              if (coords) {
+                // Update coordinates separately after profile save succeeds
+                await storage.updateUser(userId, { 
+                  currentLatitude: coords.lat, 
+                  currentLongitude: coords.lng 
+                });
+                if (process.env.NODE_ENV === 'development') console.log(`🗺️ BACKGROUND GEOCODED: Business address "${updates.streetAddress}" → (${coords.lat}, ${coords.lng})`);
+              } else {
+                if (process.env.NODE_ENV === 'development') console.warn(`⚠️ BACKGROUND GEOCODE FAILED: Could not geocode business address "${updates.streetAddress}"`);
+              }
+            } catch (error) {
+              if (process.env.NODE_ENV === 'development') console.error(`❌ BACKGROUND GEOCODE ERROR: Failed to geocode "${updates.streetAddress}":`, error);
+            }
+          });
+          if (process.env.NODE_ENV === 'development') console.log(`🗺️ GEOCODING QUEUED: Business address "${updates.streetAddress}" will be processed in background`);
         }
         
         delete updates.streetAddress;
@@ -10479,20 +10509,26 @@ Questions? Just reply to this message. Welcome aboard!
       if (streetAddress !== undefined) {
         updateData.streetAddress = streetAddress;
         
-        // AUTOMATIC GEOCODING: Convert business address to coordinates
+        // AUTOMATIC GEOCODING: Convert business address to coordinates (background processing)
         if (streetAddress && streetAddress.trim()) {
-          try {
-            const coords = await geocodeAddress(streetAddress);
-            if (coords) {
-              updateData.currentLatitude = coords.lat;
-              updateData.currentLongitude = coords.lng;
-              if (process.env.NODE_ENV === 'development') console.log(`🗺️ PATCH GEOCODED: Business address "${streetAddress}" → (${coords.lat}, ${coords.lng})`);
-            } else {
-              if (process.env.NODE_ENV === 'development') console.warn(`⚠️ PATCH GEOCODE FAILED: Could not geocode business address "${streetAddress}"`);
+          setImmediate(async () => {
+            try {
+              const coords = await geocodeAddress(streetAddress);
+              if (coords) {
+                // Update coordinates separately after patch succeeds
+                await storage.updateUser(userId, { 
+                  currentLatitude: coords.lat, 
+                  currentLongitude: coords.lng 
+                });
+                if (process.env.NODE_ENV === 'development') console.log(`🗺️ PATCH BACKGROUND GEOCODED: Business address "${streetAddress}" → (${coords.lat}, ${coords.lng})`);
+              } else {
+                if (process.env.NODE_ENV === 'development') console.warn(`⚠️ PATCH BACKGROUND GEOCODE FAILED: Could not geocode business address "${streetAddress}"`);
+              }
+            } catch (error) {
+              if (process.env.NODE_ENV === 'development') console.error(`❌ PATCH BACKGROUND GEOCODE ERROR: Failed to geocode "${streetAddress}":`, error);
             }
-          } catch (error) {
-            if (process.env.NODE_ENV === 'development') console.error(`❌ PATCH GEOCODE ERROR: Failed to geocode "${streetAddress}":`, error);
-          }
+          });
+          if (process.env.NODE_ENV === 'development') console.log(`🗺️ PATCH GEOCODING QUEUED: Business address "${streetAddress}" will be processed in background`);
         }
       }
       if (zipCode !== undefined) updateData.zipCode = zipCode;
