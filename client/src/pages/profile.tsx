@@ -4740,79 +4740,67 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 {isOwnProfile && !editingInterests && !editingActivities && !editingEvents && (
                   <div className="flex justify-center mb-4">
                     <Button
-                      onClick={async () => {
-                        try {
-                          console.log('🔧 BUSINESS EDIT - BEFORE REFRESH:', { 
-                            oldUser: user,
-                            hasCustomInterests: !!user?.customInterests,
-                            hasCustomActivities: !!user?.customActivities,
-                            hasCustomEvents: !!user?.customEvents
+                      onClick={() => {
+                        console.log('🔧 BUSINESS EDIT - Starting:', { 
+                          user,
+                          hasCustomInterests: !!user?.customInterests,
+                          hasCustomActivities: !!user?.customActivities,
+                          hasCustomEvents: !!user?.customEvents,
+                          customInterests: user?.customInterests,
+                          customActivities: user?.customActivities,
+                          customEvents: user?.customEvents
+                        });
+                        
+                        // Open ALL editing modes at once for business users
+                        setEditingInterests(true);
+                        setEditingActivities(true);
+                        setEditingEvents(true);
+                        
+                        // Initialize form data with combined predefined + custom entries
+                        const userInterests = [...(user?.interests || [])];
+                        const userActivities = [...(user?.activities || [])];
+                        const userEvents = [...(user?.events || [])];
+                        
+                        // Add custom fields from database to the arrays for display
+                        if (user?.customInterests) {
+                          const customInterests = user.customInterests.split(',').map(s => s.trim()).filter(s => s);
+                          console.log('🔧 Processing custom interests:', customInterests);
+                          customInterests.forEach(item => {
+                            if (!userInterests.includes(item)) {
+                              userInterests.push(item);
+                            }
                           });
-                          
-                          // Force refresh user data to get latest custom fields
-                          const freshResult = await userQuery.refetch();
-                          const freshUser = freshResult.data;
-                          
-                          console.log('🔧 BUSINESS EDIT - AFTER REFRESH:', { 
-                            freshUser,
-                            hasCustomInterests: !!freshUser?.customInterests,
-                            hasCustomActivities: !!freshUser?.customActivities,
-                            hasCustomEvents: !!freshUser?.customEvents,
-                            customInterests: freshUser?.customInterests,
-                            customActivities: freshUser?.customActivities,
-                            customEvents: freshUser?.customEvents
-                          });
-                          
-                          // Open ALL editing modes at once for business users
-                          setEditingInterests(true);
-                          setEditingActivities(true);
-                          setEditingEvents(true);
-                          
-                          // Initialize form data with combined predefined + custom entries using fresh data
-                          const userInterests = [...(freshUser?.interests || [])];
-                          const userActivities = [...(freshUser?.activities || [])];
-                          const userEvents = [...(freshUser?.events || [])];
-                          
-                          // Add custom fields from database to the arrays for display
-                          if (freshUser?.customInterests) {
-                            const customInterests = freshUser.customInterests.split(',').map(s => s.trim()).filter(s => s);
-                            customInterests.forEach(item => {
-                              if (!userInterests.includes(item)) {
-                                userInterests.push(item);
-                              }
-                            });
-                          }
-                          if (freshUser?.customActivities) {
-                            const customActivities = freshUser.customActivities.split(',').map(s => s.trim()).filter(s => s);
-                            customActivities.forEach(item => {
-                              if (!userActivities.includes(item)) {
-                                userActivities.push(item);
-                              }
-                            });
-                          }
-                          if (freshUser?.customEvents) {
-                            const customEvents = freshUser.customEvents.split(',').map(s => s.trim()).filter(s => s);
-                            customEvents.forEach(item => {
-                              if (!userEvents.includes(item)) {
-                                userEvents.push(item);
-                              }
-                            });
-                          }
-                          
-                          console.log('🔧 BUSINESS EDIT - Final arrays with custom fields:', { 
-                            finalInterests: userInterests,
-                            finalActivities: userActivities,
-                            finalEvents: userEvents
-                          });
-                          
-                          setEditFormData({
-                            interests: userInterests,
-                            activities: userActivities,
-                            events: userEvents
-                          });
-                        } catch (error) {
-                          console.error('Error opening business preferences edit:', error);
                         }
+                        if (user?.customActivities) {
+                          const customActivities = user.customActivities.split(',').map(s => s.trim()).filter(s => s);
+                          console.log('🔧 Processing custom activities:', customActivities);
+                          customActivities.forEach(item => {
+                            if (!userActivities.includes(item)) {
+                              userActivities.push(item);
+                            }
+                          });
+                        }
+                        if (user?.customEvents) {
+                          const customEvents = user.customEvents.split(',').map(s => s.trim()).filter(s => s);
+                          console.log('🔧 Processing custom events:', customEvents);
+                          customEvents.forEach(item => {
+                            if (!userEvents.includes(item)) {
+                              userEvents.push(item);
+                            }
+                          });
+                        }
+                        
+                        console.log('🔧 BUSINESS EDIT - Final arrays:', { 
+                          finalInterests: userInterests,
+                          finalActivities: userActivities,
+                          finalEvents: userEvents
+                        });
+                        
+                        setEditFormData({
+                          interests: userInterests,
+                          activities: userActivities,
+                          events: userEvents
+                        });
                       }}
                       className="bg-orange-600 hover:bg-orange-700 text-white"
                     >
