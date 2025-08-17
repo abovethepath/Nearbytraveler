@@ -242,6 +242,7 @@ export interface IStorage {
   
   // Business location discovery methods
   getBusinessesByLocation(city: string, state: string, country: string, category?: string): Promise<any[]>;
+  getBusinessesWithGeolocation(city?: string, state?: string, country?: string, radiusKm?: number, centerLat?: number, centerLng?: number): Promise<any[]>;
   createAIBusiness(businessData: any): Promise<any>;
   
   // Business Location methods
@@ -4945,6 +4946,144 @@ export class DatabaseStorage implements IStorage {
       console.error('Error getting businesses by location:', error);
       return [];
     }
+  }
+
+  // NEW: Get businesses with geolocation that have active deals/events for map display
+  async getBusinessesWithGeolocation(city?: string, state?: string, country?: string, radiusKm?: number, centerLat?: number, centerLng?: number): Promise<any[]> {
+    try {
+      // Create subqueries to find businesses with active events or deals
+      const businessesWithEventsSubquery = db.select({
+        businessId: events.organizerId
+      })
+      .from(events)
+      .where(
+        and(
+          eq(events.isActive, true),
+          gte(events.date, new Date()) // Future or current events only
+        )
+      );
+
+      const businessesWithQuickDealsSubquery = db.select({
+        businessId: quickDeals.businessId
+      })
+      .from(quickDeals)
+      .where(
+        and(
+          eq(quickDeals.isActive, true),
+          gte(quickDeals.validUntil, new Date()) // Active deals that haven't expired
+        )
+      );
+
+      const businessesWithOffersSubquery = db.select({
+        businessId: businessOffers.businessId
+      })
+      .from(businessOffers)
+      .where(
+        and(
+          eq(businessOffers.isActive, true),
+          gte(businessOffers.validUntil, new Date()) // Active offers that haven't expired
+        )
+      );
+
+      // Apply location filters
+      const filters = [];
+      if (city) {
+        filters.push(ilike(users.city, `%${city}%`));
+      }
+      if (state) {
+        filters.push(ilike(users.state, `%${state}%`));
+      }
+      if (country) {
+        filters.push(ilike(users.country, `%${country}%`));
+      }
+
+      let query = db
+        .select({
+          id: users.id,
+          name: users.name,
+          username: users.username,
+          bio: users.bio,
+          businessDescription: users.businessDescription,
+          services: users.services,
+          specialOffers: users.specialOffers,
+          targetCustomers: users.targetCustomers,
+          profileImage: users.profileImage,
+          city: users.city,
+          state: users.state,
+          country: users.country,
+          streetAddress: users.streetAddress,
+          phoneNumber: users.phoneNumber,
+          website: users.website,
+          businessType: users.businessType,
+          specialty: users.specialty,
+          priceRange: users.priceRange,
+          tags: users.tags,
+          isAiGenerated: users.isAIGenerated,
+          // CRITICAL: Include geolocation coordinates
+          currentLatitude: users.currentLatitude,
+          currentLongitude: users.currentLongitude,
+          lastLocationUpdate: users.lastLocationUpdate
+        })
+        .from(users)
+        .where(and(
+          eq(users.userType, 'business'),
+          eq(users.isActive, true),
+          // MUST have geolocation coordinates
+          isNotNull(users.currentLatitude),
+          isNotNull(users.currentLongitude),
+          // ONLY include businesses that have active events or deals
+          or(
+            inArray(users.id, businessesWithEventsSubquery),
+            inArray(users.id, businessesWithQuickDealsSubquery),
+            inArray(users.id, businessesWithOffersSubquery)
+          ),
+          ...(filters.length > 0 ? filters : [])
+        ));
+
+      let businesses = await query;
+
+      // Apply radius filter if coordinates provided
+      if (radiusKm && centerLat && centerLng) {
+        businesses = businesses.filter(business => {
+          if (!business.currentLatitude || !business.currentLongitude) return false;
+          
+          const distance = this.calculateHaversineDistance(
+            centerLat,
+            centerLng,
+            business.currentLatitude,
+            business.currentLongitude
+          );
+          
+          return distance <= radiusKm;
+        });
+      }
+
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`🗺️ GEOLOCATION BUSINESSES: Found ${businesses.length} businesses with GPS coordinates and active deals/events`);
+      }
+
+      return businesses;
+    } catch (error) {
+      console.error('Error getting businesses with geolocation:', error);
+      return [];
+    }
+  }
+
+  // Helper method for distance calculation
+  private calculateHaversineDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
+    const R = 6371; // Earth's radius in kilometers
+    const dLat = this.toRad(lat2 - lat1);
+    const dLon = this.toRad(lon2 - lon1);
+    const a = 
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(this.toRad(lat1)) * Math.cos(this.toRad(lat2)) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c; // Distance in kilometers
+  }
+
+  private toRad(degrees: number): number {
+    return degrees * (Math.PI / 180);
   }
 
   async createAIBusiness(businessData: any): Promise<any> {

@@ -7145,6 +7145,35 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // NEW: GET businesses with geolocation for map display
+  app.get("/api/businesses/map", async (req, res) => {
+    try {
+      const { city, state, country, radiusKm, centerLat, centerLng } = req.query;
+      
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`🗺️ MAP BUSINESSES: Fetching businesses with geolocation for ${city || 'any city'} ${radiusKm ? `within ${radiusKm}km` : ''}`);
+      }
+      
+      const businesses = await storage.getBusinessesWithGeolocation(
+        city as string,
+        state as string,
+        country as string,
+        radiusKm ? parseFloat(radiusKm as string) : undefined,
+        centerLat ? parseFloat(centerLat as string) : undefined,
+        centerLng ? parseFloat(centerLng as string) : undefined
+      );
+
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`✅ MAP BUSINESSES API: Found ${businesses.length} businesses with GPS coordinates and active deals/events`);
+      }
+      
+      res.json(businesses);
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error fetching map businesses:", error);
+      res.status(500).json({ message: "Failed to fetch map businesses" });
+    }
+  });
+
   // Customer Photos Endpoints for Businesses
   // GET customer photos for a business
   app.get("/api/businesses/:businessId/customer-photos", async (req, res) => {
