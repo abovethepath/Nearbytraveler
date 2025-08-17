@@ -1302,9 +1302,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           events: predefinedEvents,
           isVeteran: Boolean((user as any).is_veteran || user.isVeteran),
           isActiveDuty: Boolean((user as any).is_active_duty || user.isActiveDuty),
-          customInterests: customInterests || (user as any).custom_interests || "",
-          customActivities: customActivities || (user as any).custom_activities || "",
-          customEvents: customEvents || (user as any).custom_events || "",
+          customInterests: (user as any).customInterests || "",
+          customActivities: (user as any).customActivities || "",
+          customEvents: (user as any).customEvents || "",
         });
       } else {
         const travelingWithChildrenValue = !!(user as any).travelingWithChildren;
