@@ -5287,7 +5287,49 @@ export class DatabaseStorage implements IStorage {
     return code || `REF${Date.now()}`;
   }
 
-  // Duplicate getReferralStats method removed
+  async getDuplicateReferralStats(): Promise<any> {
+    try {
+      const [totalReferrals] = await db
+        .select({ count: count() })
+        .from(referrals);
+
+      const [pendingReferrals] = await db
+        .select({ count: count() })
+        .from(referrals)
+        .where(eq(referrals.status, 'pending'));
+
+      const [completedReferrals] = await db
+        .select({ count: count() })
+        .from(referrals)
+        .where(ne(referrals.status, 'pending'));
+
+      const [totalRewards] = await db
+        .select({ count: count() })
+        .from(referrals)
+        .where(eq(referrals.rewardEarned, true));
+
+      const conversionRate = totalReferrals.count > 0 
+        ? (completedReferrals.count / totalReferrals.count) * 100 
+        : 0;
+
+      const topReferrers = await db
+        .select({
+          userId: referrals.referrerId,
+          referralCount: count(referrals.id),
+          rewardsEarned: sql`count(case when ${referrals.rewardEarned} = true then 1 end)`
+        })
+        .from(referrals)
+        .leftJoin(users, eq(users.id, referrals.referrerId))
+        .groupBy(referrals.referrerId, users.username)
+        .orderBy(desc(count(referrals.id)))
+        .limit(10);
+
+      const topReferrersWithNames = await Promise.all(
+        topReferrers.map(async (referrer) => {
+          const user = await this.getUser(referrer.userId);
+          return {
+            ...referrer,
+            username: user?.username || 'Unknown'
           };
         })
       );
@@ -5301,7 +5343,7 @@ export class DatabaseStorage implements IStorage {
         topReferrers: topReferrersWithNames
       };
     } catch (error) {
-      console.error('Error getting referral stats:', error);
+      console.error('Error getting duplicate referral stats:', error);
       return {
         totalReferrals: 0,
         pendingReferrals: 0,

@@ -444,14 +444,15 @@ async function handleInstagramPost(event: any, organizerId: number) {
     }
 
     // Create single Instagram post record for dual posting (user + @nearbytraveler)
-    const instagramPost = await storage.createInstagramPost({
-      eventId: event.id,
-      userId: organizerId,
-      postContent: generateEventCaption(event),
-      imageUrl: event.imageUrl || null,
-      userPostStatus: 'pending',
-      nearbytravelerPostStatus: 'pending'
-    });
+    // Note: createInstagramPost method temporarily disabled
+    const instagramPost = null; // await storage.createInstagramPost({
+      // eventId: event.id,
+      // userId: organizerId,
+      // postContent: generateEventCaption(event),
+      // imageUrl: event.imageUrl || null,
+      // userPostStatus: 'pending',
+      // nearbytravelerPostStatus: 'pending'
+    // });
 
     if (process.env.NODE_ENV === 'development') console.log('Instagram post created for dual posting event:', event.id);
     return instagramPost;
@@ -1302,10 +1303,10 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       }
       
       if (process.env.NODE_ENV === 'development') console.log(`🏙️ CITY USERS: Final result - ${users.length} users for ${city} (with metro consolidation)`);
-      res.json(users);
+      return res.json(users);
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error fetching city users:", error);
-      res.status(500).json({ message: "Failed to fetch city users", error: error.message });
+      return res.status(500).json({ message: "Failed to fetch city users", error: error.message });
     }
   });
 
