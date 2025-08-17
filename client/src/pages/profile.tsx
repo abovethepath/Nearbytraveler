@@ -4813,48 +4813,89 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 {/* Display current business interests/activities/events when not editing */}
                 {(!editingInterests || !editingActivities || !editingEvents) && (
                   <div className="space-y-4">
-                    {user?.interests?.length > 0 && (
-                      <div>
-                        <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Business Interests</h4>
-                        <div className="flex flex-wrap gap-2">
-                          {user.interests.map((interest, index) => (
-                            <Badge key={`interest-${index}`} className="bg-orange-500 text-white">
-                              {interest}
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                    {user?.activities?.length > 0 && (
-                      <div>
-                        <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Business Activities</h4>
-                        <div className="flex flex-wrap gap-2">
-                          {user.activities.map((activity, index) => (
-                            <Badge key={`activity-${index}`} className="bg-green-500 text-white">
-                              {activity}
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                    {user?.events?.length > 0 && (
-                      <div>
-                        <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Business Events</h4>
-                        <div className="flex flex-wrap gap-2">
-                          {user.events.map((event, index) => (
-                            <Badge key={`event-${index}`} className="bg-purple-500 text-white">
-                              {event}
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                    {(!user?.interests?.length && !user?.activities?.length && !user?.events?.length) && (
-                      <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-                        <Heart className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-                        <p>Click "Edit Business Preferences" to add your business interests, activities, and events</p>
-                      </div>
-                    )}
+                    {(() => {
+                      // Combine predefined and custom fields for display
+                      const allInterests = [...(user?.interests || [])];
+                      const allActivities = [...(user?.activities || [])];
+                      const allEvents = [...(user?.events || [])];
+                      
+                      // Add custom interests
+                      if (user?.customInterests) {
+                        const customInterests = user.customInterests.split(',').map(s => s.trim()).filter(s => s);
+                        customInterests.forEach(item => {
+                          if (!allInterests.includes(item)) {
+                            allInterests.push(item);
+                          }
+                        });
+                      }
+                      
+                      // Add custom activities
+                      if (user?.customActivities) {
+                        const customActivities = user.customActivities.split(',').map(s => s.trim()).filter(s => s);
+                        customActivities.forEach(item => {
+                          if (!allActivities.includes(item)) {
+                            allActivities.push(item);
+                          }
+                        });
+                      }
+                      
+                      // Add custom events
+                      if (user?.customEvents) {
+                        const customEvents = user.customEvents.split(',').map(s => s.trim()).filter(s => s);
+                        customEvents.forEach(item => {
+                          if (!allEvents.includes(item)) {
+                            allEvents.push(item);
+                          }
+                        });
+                      }
+                      
+                      return (
+                        <>
+                          {allInterests.length > 0 && (
+                            <div>
+                              <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Business Interests</h4>
+                              <div className="flex flex-wrap gap-2">
+                                {allInterests.map((interest, index) => (
+                                  <Badge key={`interest-${index}`} className="bg-orange-500 text-white">
+                                    {interest}
+                                  </Badge>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          {allActivities.length > 0 && (
+                            <div>
+                              <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Business Activities</h4>
+                              <div className="flex flex-wrap gap-2">
+                                {allActivities.map((activity, index) => (
+                                  <Badge key={`activity-${index}`} className="bg-green-500 text-white">
+                                    {activity}
+                                  </Badge>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          {allEvents.length > 0 && (
+                            <div>
+                              <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Business Events</h4>
+                              <div className="flex flex-wrap gap-2">
+                                {allEvents.map((event, index) => (
+                                  <Badge key={`event-${index}`} className="bg-purple-500 text-white">
+                                    {event}
+                                  </Badge>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          {(allInterests.length === 0 && allActivities.length === 0 && allEvents.length === 0) && (
+                            <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                              <Heart className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+                              <p>Click "Edit Business Preferences" to add your business interests, activities, and events</p>
+                            </div>
+                          )}
+                        </>
+                      );
+                    })()}
                   </div>
                 )}
 
