@@ -6889,27 +6889,71 @@ Questions? Just reply to this message. Welcome aboard!
         return;
       }
 
-      // Handle parameterized queries for specific filters
-      const activeDeals = dealsWithBusiness.filter(deal => {
-        const validUntil = new Date(deal.validUntil);
-        return deal.isActive && validUntil > now && (!deal.maxRedemptions || (deal.currentRedemptions || 0) < deal.maxRedemptions);
-      });
+      // Handle parameterized queries (with city or businessId filters)
+      // This creates a parameterized query with proper SQL injection protection
+      const dynamicQuery = `
+        SELECT 
+          qd.*,
+          u.business_name,
+          u.name as fallback_name,
+          u.bio as business_description,
+          u.business_type,
+          u.location as business_location,
+          u.email as business_email,
+          u.phone_number as business_phone,
+          u.profile_image as business_image
+        FROM quick_deals qd
+        LEFT JOIN users u ON qd.business_id = u.id
+        ${whereClause}
+        ORDER BY qd.created_at DESC
+      `;
+      
+      const result = await db.execute(sql.raw(dynamicQuery, params));
+      
+      const dealsWithBusiness = result.rows.map((row: any) => ({
+        id: row.id,
+        businessId: row.business_id,
+        title: row.title,
+        description: row.description,
+        dealType: row.deal_type,
+        category: row.category,
+        location: row.location,
+        street: row.street,
+        discountAmount: row.discount_amount,
+        originalPrice: row.original_price,
+        salePrice: row.sale_price,
+        dealCode: row.deal_code,
+        validFrom: row.valid_from,
+        validUntil: row.valid_until,
+        maxRedemptions: row.max_redemptions,
+        currentRedemptions: row.current_redemptions,
+        requiresReservation: row.requires_reservation,
+        isActive: row.is_active,
+        terms: row.terms,
+        availability: row.availability,
+        autoExpire: row.auto_expire,
+        city: row.city,
+        state: row.state,
+        country: row.country,
+        zipcode: row.zipcode,
+        createdAt: row.created_at,
+        businessName: row.business_name || row.fallback_name || 'Business Name Missing',
+        businessDescription: row.business_description || '',
+        businessType: row.business_type || 'Business',
+        businessLocation: row.business_location || row.city || 'Location Unknown',
+        businessEmail: row.business_email || '',
+        businessPhone: row.business_phone || '',
+        businessImage: row.business_image || ''
+      }));
 
-      const expiredDeals = dealsWithBusiness.filter(deal => {
-        const validUntil = new Date(deal.validUntil);
-        return !deal.isActive || validUntil <= now || (deal.maxRedemptions && (deal.currentRedemptions || 0) >= deal.maxRedemptions);
-      });
-
-      const sortedDeals = [...activeDeals, ...expiredDeals];
-
-      if (process.env.NODE_ENV === 'development') console.log(`🛍️ QUICK DEALS: Found ${activeDeals.length} active + ${expiredDeals.length} expired = ${sortedDeals.length} total deals`);
-
-      res.json(sortedDeals);
+      res.json(dealsWithBusiness);
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error fetching quick deals:", error);
       res.status(500).json({ message: "Failed to fetch deals" });
     }
   });
+
+
 
   // UPDATE quick deal endpoint
   app.put("/api/quick-deals/:id", async (req, res) => {
