@@ -613,6 +613,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   });
   const [savingBusinessDescription, setSavingBusinessDescription] = useState(false);
   
+  // Owner contact information state
+  const [editingOwnerInfo, setEditingOwnerInfo] = useState(false);
+  const [ownerContactForm, setOwnerContactForm] = useState({
+    ownerName: '',
+    ownerPhone: ''
+  });
+  
   // Controlled input states for custom entries
   const [showReferenceForm, setShowReferenceForm] = useState(false);
   const [selectedConnection, setSelectedConnection] = useState<any>(null);
@@ -2777,6 +2784,63 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     });
     setEditingBusinessDescription(true);
   };
+
+  // Owner contact mutation and handlers
+  const updateOwnerContact = useMutation({
+    mutationFn: async (data: { ownerName: string; ownerPhone: string }) => {
+      const response = await fetch(`/api/users/${effectiveUserId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-user-id': currentUser?.id?.toString(),
+          'x-user-type': 'business'
+        },
+        body: JSON.stringify(data)
+      });
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText);
+      }
+      return response.json();
+    },
+    onSuccess: (updatedUser) => {
+      queryClient.setQueryData([`/api/users/${effectiveUserId}`], updatedUser);
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
+      
+      authStorage.setUser(updatedUser);
+      if (typeof setAuthUser === 'function') {
+        setAuthUser(updatedUser);
+      }
+      
+      toast({
+        title: "Owner contact updated",
+        description: "Internal contact information has been successfully updated.",
+      });
+      setEditingOwnerInfo(false);
+    },
+    onError: (error) => {
+      toast({
+        title: "Update failed",
+        description: `Failed to update owner contact: ${error.message}`,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleSaveOwnerContact = () => {
+    updateOwnerContact.mutate(ownerContactForm);
+  };
+
+  // Initialize owner contact form when user data loads
+  useEffect(() => {
+    if (user && user.userType === 'business') {
+      setOwnerContactForm({
+        ownerName: user.name || "",
+        ownerPhone: user.ownerPhone || ""
+      });
+    }
+  }, [user]);
 
   // Profile edit mutation
   const editProfile = useMutation({
@@ -6789,6 +6853,105 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               </Card>
             )}
 
+
+            {/* Owner/Admin Contact Information - Only visible to business owner */}
+            {isOwnProfile && user?.userType === 'business' && (
+              <Card className="border-purple-200 dark:border-purple-800 bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-900/30 dark:to-indigo-900/30">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <Shield className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                      <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">
+                        Admin Information
+                      </CardTitle>
+                      <Badge variant="secondary" className="bg-purple-100 text-purple-700 dark:bg-purple-800 dark:text-purple-200 text-xs">
+                        Private
+                      </Badge>
+                    </div>
+                    {!editingOwnerInfo && (
+                      <Button
+                        size="sm"
+                        onClick={() => setEditingOwnerInfo(true)}
+                        className="bg-purple-600 hover:bg-purple-700 text-white border-0"
+                      >
+                        <Edit className="w-3 h-3 mr-1" />
+                        Edit
+                      </Button>
+                    )}
+                  </div>
+                  <p className="text-sm text-gray-700 dark:text-gray-300 mt-2">
+                    Internal contact information for platform communications
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  {editingOwnerInfo ? (
+                    <div className="space-y-4">
+                      <div>
+                        <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Owner Name</Label>
+                        <Input 
+                          value={ownerContactForm.ownerName}
+                          onChange={(e) => setOwnerContactForm(prev => ({ ...prev, ownerName: e.target.value }))}
+                          placeholder="Enter owner name"
+                          className="mt-1"
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Owner Phone</Label>
+                        <Input 
+                          value={ownerContactForm.ownerPhone}
+                          onChange={(e) => setOwnerContactForm(prev => ({ ...prev, ownerPhone: e.target.value }))}
+                          placeholder="(555) 123-4567"
+                          className="mt-1"
+                        />
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          onClick={handleSaveOwnerContact}
+                          disabled={updateOwnerContact.isPending}
+                          className="bg-purple-600 hover:bg-purple-700 text-white"
+                        >
+                          {updateOwnerContact.isPending ? "Saving..." : "Save"}
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => {
+                            setEditingOwnerInfo(false);
+                            setOwnerContactForm({
+                              ownerName: user?.name || "",
+                              ownerPhone: user?.ownerPhone || ""
+                            });
+                          }}
+                          className="border-purple-500 text-purple-600 hover:bg-purple-50 dark:border-purple-400 dark:text-purple-400 dark:hover:bg-purple-900/20"
+                        >
+                          Cancel
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-gray-600 dark:text-gray-400">Owner Name:</span>
+                        <span className="text-sm font-medium text-gray-900 dark:text-white">
+                          {user?.name || "Not set"}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-gray-600 dark:text-gray-400">Owner Phone:</span>
+                        <span className="text-sm font-medium text-gray-900 dark:text-white">
+                          {user?.ownerPhone || "Not set"}
+                        </span>
+                      </div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400 bg-purple-100 dark:bg-purple-900/50 p-2 rounded">
+                        <AlertCircle className="w-3 h-3 inline mr-1" />
+                        This information is only visible to you and used for platform communications
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
 
             {/* Boost Connections Widget - MOVED TO BOTTOM - Only show for own profile */}
             {isOwnProfile && (
