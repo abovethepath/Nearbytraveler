@@ -78,7 +78,7 @@ export default function InstantDealCreator({ businessId, businessName, businessL
         tags: "instant,flash,limited_time"
       };
 
-      return apiRequest('POST', '/api/business-offers', dealData);
+      return apiRequest('POST', '/api/business-deals', dealData);
     },
     onSuccess: () => {
       toast({
@@ -91,8 +91,8 @@ export default function InstantDealCreator({ businessId, businessName, businessL
       onDealCreated();
       
       // Invalidate relevant queries
-      queryClient.invalidateQueries({ queryKey: ['/api/business-offers'] });
-      queryClient.invalidateQueries({ queryKey: [`/api/business-offers/business/${businessId}`] });
+      queryClient.invalidateQueries({ queryKey: ['/api/business-deals'] });
+      queryClient.invalidateQueries({ queryKey: [`/api/business-deals/business/${businessId}`] });
     },
     onError: (error) => {
       toast({

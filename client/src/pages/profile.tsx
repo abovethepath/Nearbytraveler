@@ -1067,7 +1067,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   });
 
   // Fetch business offers for business users
-  const { data: businessOffers = [], isLoading: businessOffersLoading } = useQuery<any[]>({
+  const { data: businessDeals = [], isLoading: businessDealsLoading } = useQuery<any[]>({
     queryKey: [`/api/business-deals/business/${effectiveUserId}`],
     enabled: !!user && user.userType === 'business' && user.id.toString() === effectiveUserId?.toString(),
     staleTime: 0,
@@ -3801,12 +3801,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               </CardContent>
             </Card>
 
-            {/* Business Offers Section - Only for business users */}
+            {/* Business Deals Section - Only for business users */}
             {user?.userType === 'business' && (
               <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
                 <CardHeader className="bg-white dark:bg-gray-900">
                   <CardTitle className="flex items-center justify-between text-gray-900 dark:text-white">
-                    <span>Business Offers & Deals</span>
+                    <span>Business Deals</span>
                     {isOwnProfile && (
                       <Button 
                         size="sm" 
@@ -3823,7 +3823,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="bg-white dark:bg-gray-900 p-6">
-                  {businessOffersLoading ? (
+                  {businessDealsLoading ? (
                     <div className="space-y-3">
                       {[1, 2].map(i => (
                         <div key={i} className="animate-pulse">
@@ -3831,32 +3831,32 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         </div>
                       ))}
                     </div>
-                  ) : businessOffers.length === 0 ? (
+                  ) : businessDeals.length === 0 ? (
                     <div className="text-center py-8 text-gray-500 dark:text-gray-400">
                       <Package className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                      <p>No business offers created yet</p>
+                      <p>No business deals created yet</p>
                       {isOwnProfile && (
-                        <p className="text-sm mt-2">Create your first offer to attract customers!</p>
+                        <p className="text-sm mt-2">Create your first deal to attract customers!</p>
                       )}
                     </div>
                   ) : (
                     <div className="space-y-4">
-                      {businessOffers.slice(0, 3).map((offer: any) => (
-                        <div key={offer.id} className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 hover:shadow-md dark:hover:shadow-gray-800/50 transition-shadow bg-white dark:bg-gray-800">
+                      {businessDeals.slice(0, 3).map((deal: any) => (
+                        <div key={deal.id} className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 hover:shadow-md dark:hover:shadow-gray-800/50 transition-shadow bg-white dark:bg-gray-800">
                           <div className="flex items-start justify-between mb-2">
-                            <h4 className="font-semibold text-gray-900 dark:text-white">{offer.title}</h4>
+                            <h4 className="font-semibold text-gray-900 dark:text-white">{deal.title}</h4>
                             <Badge variant="secondary" className="bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-200 border-green-200 dark:border-green-700">
-                              {offer.discountValue} {offer.discountType === 'percentage' ? '%' : ''} off
+                              {deal.discountValue} {deal.discountType === 'percentage' ? '%' : ''} off
                             </Badge>
                           </div>
-                          <p className="text-gray-600 dark:text-gray-300 text-sm mb-3 line-clamp-2">{offer.description}</p>
+                          <p className="text-gray-600 dark:text-gray-300 text-sm mb-3 line-clamp-2">{deal.description}</p>
                           <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
-                            <span>Valid until {new Date(offer.validUntil).toLocaleDateString()}</span>
-                            <span className="capitalize">{offer.category}</span>
+                            <span>Valid until {new Date(deal.validUntil).toLocaleDateString()}</span>
+                            <span className="capitalize">{deal.category}</span>
                           </div>
                         </div>
                       ))}
-                      {businessOffers.length > 3 && (
+                      {businessDeals.length > 3 && (
                         <div className="text-center pt-2">
                           <Button 
                             variant="outline" 
@@ -3864,7 +3864,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             onClick={() => setLocation('/deals')}
                             className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
                           >
-                            View All {businessOffers.length} Offers
+                            View All {businessDeals.length} Deals
                           </Button>
                         </div>
                       )}

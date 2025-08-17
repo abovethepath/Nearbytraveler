@@ -5682,7 +5682,7 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
-  // CRITICAL: Get business offers with business information
+  // CRITICAL: Get business deals with business information (renamed from business-offers)
   app.get("/api/business-deals", async (req, res) => {
     try {
       // FORCE NO CACHE TO ENSURE FRESH BUSINESS DATA
@@ -5692,9 +5692,9 @@ Questions? Just reply to this message. Welcome aboard!
         'Expires': '0'
       });
       
-      if (process.env.NODE_ENV === 'development') console.log("🎯 FETCHING ALL BUSINESS OFFERS");
+      if (process.env.NODE_ENV === 'development') console.log("🎯 FETCHING ALL BUSINESS DEALS");
       
-      // Get all active business offers with business information in single query
+      // Get all active business deals with business information in single query
       const offersWithBusiness = await db
         .select({
           // All business offer fields
@@ -5776,12 +5776,12 @@ Questions? Just reply to this message. Welcome aboard!
       });
       return res.json(processedOffers);
     } catch (error: any) {
-      if (process.env.NODE_ENV === 'development') console.error("🚨 ERROR fetching business offers:", error);
-      return res.status(500).json({ error: "Failed to fetch business offers" });
+      if (process.env.NODE_ENV === 'development') console.error("🚨 ERROR fetching business deals:", error);
+      return res.status(500).json({ error: "Failed to fetch business deals" });
     }
   });
 
-  // Get business offers for a specific business - WITH BUSINESS INFO
+  // Get business deals for a specific business - WITH BUSINESS INFO (renamed from business-offers)
   app.get("/api/business-deals/business/:businessId", async (req, res) => {
     try {
       const businessId = parseInt(req.params.businessId || '0');

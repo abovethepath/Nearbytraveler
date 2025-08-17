@@ -51,8 +51,8 @@ export default function Deals() {
 
 
   // Fetch all business deals with complete business information
-  const { data: businessOffers = [], isLoading: isBusinessOffersLoading, error: businessOffersError } = useQuery<BusinessDeal[]>({
-    queryKey: ['/api/business-offers'],
+  const { data: businessDeals = [], isLoading: isBusinessDealsLoading, error: businessDealsError } = useQuery<BusinessDeal[]>({
+    queryKey: ['/api/business-deals'],
     enabled: !!effectiveUser,
     refetchOnWindowFocus: false,
     staleTime: 30000, // 30 seconds
@@ -95,11 +95,11 @@ export default function Deals() {
       street: deal.street || '' // Add street address field
     }));
 
-    return [...businessOffers, ...convertedQuickDeals];
-  }, [businessOffers, quickDeals]);
+    return [...businessDeals, ...convertedQuickDeals];
+  }, [businessDeals, quickDeals]);
 
-  const isLoading = isBusinessOffersLoading || isQuickDealsLoading;
-  const error = businessOffersError || quickDealsError;
+  const isLoading = isBusinessDealsLoading || isQuickDealsLoading;
+  const error = businessDealsError || quickDealsError;
 
   // Handle claiming a deal
   const handleClaimDeal = async (deal: BusinessDeal) => {
@@ -465,7 +465,7 @@ export default function Deals() {
           {effectiveUser?.userType === 'business' && (
             <div className="mt-4 mb-6">
               <Button 
-                onClick={() => setLocation('/business-offers')}
+                onClick={() => setLocation('/business-deals')}
                 className="bg-orange-600 hover:bg-orange-700 text-white font-semibold px-6 py-3"
                 data-testid="button-create-deal"
               >
