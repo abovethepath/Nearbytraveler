@@ -28,6 +28,7 @@ const businessSignupSchema = z.object({
   businessPhone: z.string().min(1, "Business phone number is required"),
   
   // Basic Location (City is required for metro area matching)
+  streetAddress: z.string().min(1, "Street address is required for location services"),
   city: z.string().min(1, "City is required"),
   state: z.string().min(1, "State/Province is required"),
   country: z.string().min(1, "Country is required"),
@@ -111,6 +112,7 @@ export default function SignupBusinessSimple() {
       customBusinessType: "",
       businessPhone: "",
       businessWebsite: "",
+      streetAddress: "",
       city: accountData?.city || "",
       state: "",
       country: "",
@@ -352,6 +354,24 @@ export default function SignupBusinessSimple() {
                     <MapPin className="w-5 h-5" />
                     Business Location
                   </h3>
+                  
+                  {/* Street Address Field - Required for location services */}
+                  <FormField
+                    control={form.control}
+                    name="streetAddress"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Street Address *</FormLabel>
+                        <FormControl>
+                          <Input placeholder="123 Main Street, Suite 100" {...field} />
+                        </FormControl>
+                        <FormDescription>
+                          Required for location services and customer directions
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                   
                   <div>
                     <FormLabel className="text-gray-900 dark:text-white">City, State/Province, Country *</FormLabel>
