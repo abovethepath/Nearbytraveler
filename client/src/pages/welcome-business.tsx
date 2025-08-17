@@ -216,24 +216,24 @@ export default function WelcomeBusiness() {
           <div className="bg-gradient-to-r from-blue-600 to-orange-600 rounded-2xl p-1">
             <div className="bg-white dark:bg-gray-800 rounded-xl p-8">
               <h3 className="text-2xl font-bold text-center mb-6 dark:text-white">
-                Currently FREE During Beta
+                Business Membership Pricing
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
                 <div>
-                  <div className="text-3xl font-bold text-blue-600 mb-2">$0</div>
+                  <div className="text-3xl font-bold text-blue-600 mb-2">$50</div>
                   <div className="text-gray-600 dark:text-gray-300">Monthly Cost</div>
                 </div>
                 <div>
-                  <div className="text-3xl font-bold text-green-600 mb-2">5</div>
-                  <div className="text-gray-600 dark:text-gray-300">Special Offers</div>
+                  <div className="text-3xl font-bold text-orange-600 mb-2">$100</div>
+                  <div className="text-gray-600 dark:text-gray-300">One-Time Signup Fee</div>
                 </div>
                 <div>
-                  <div className="text-3xl font-bold text-purple-600 mb-2">100%</div>
-                  <div className="text-gray-600 dark:text-gray-300">Full Access</div>
+                  <div className="text-3xl font-bold text-green-600 mb-2">∞</div>
+                  <div className="text-gray-600 dark:text-gray-300">Unlimited Deals & Events</div>
                 </div>
               </div>
               <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-4">
-                Take advantage of free access while we build our community
+                Professional business membership with full platform access and unlimited marketing opportunities
               </p>
             </div>
           </div>
