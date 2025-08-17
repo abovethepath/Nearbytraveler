@@ -4778,6 +4778,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         }
                         
                         console.log('🔧 BUSINESS EDIT - Loading custom fields:', { 
+                          user,
                           customInterests: user?.customInterests, 
                           customActivities: user?.customActivities, 
                           customEvents: user?.customEvents,
