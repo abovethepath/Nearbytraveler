@@ -3822,7 +3822,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     )}
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="bg-white dark:bg-gray-900">
+                <CardContent className="bg-white dark:bg-gray-900 p-6">
                   {businessOffersLoading ? (
                     <div className="space-y-3">
                       {[1, 2].map(i => (
@@ -3842,7 +3842,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   ) : (
                     <div className="space-y-4">
                       {businessOffers.slice(0, 3).map((offer: any) => (
-                        <div key={offer.id} className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 hover:shadow-md dark:hover:shadow-gray-800/50 transition-shadow bg-gray-50 dark:bg-gray-800">
+                        <div key={offer.id} className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 hover:shadow-md dark:hover:shadow-gray-800/50 transition-shadow bg-white dark:bg-gray-800">
                           <div className="flex items-start justify-between mb-2">
                             <h4 className="font-semibold text-gray-900 dark:text-white">{offer.title}</h4>
                             <Badge variant="secondary" className="bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-200 border-green-200 dark:border-green-700">
