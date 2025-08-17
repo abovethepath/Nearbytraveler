@@ -24,7 +24,7 @@ const businessSignupSchema = z.object({
   ownerPhone: z.string().min(1, "Owner contact phone is required"),
   
   // Essential Business Information Only
-  businessName: z.string().min(1, "Business name is required"),
+  // businessName comes from step 1 account data
   businessType: z.string().min(1, "Business type is required"),
   customBusinessType: z.string().optional(),
   businessPhone: z.string().min(1, "Business phone number is required"),
@@ -111,7 +111,7 @@ export default function SignupBusinessSimple() {
       password: accountData?.password || "",
       ownerName: accountData?.name || "",
       ownerPhone: "",
-      businessName: accountData?.businessName || "",
+      // businessName comes from step 1, no need to collect again
       businessType: "",
       customBusinessType: "",
       businessPhone: "",
@@ -131,8 +131,8 @@ export default function SignupBusinessSimple() {
       // Process custom business type
       const processedData = { ...data };
       
-      // CRITICAL: Add the required "name" field using business name for businesses
-      (processedData as any).name = data.businessName;
+      // CRITICAL: Add the required "name" field using business name from step 1
+      (processedData as any).name = accountData?.businessName || "";
       
       // Handle custom business type
       if (data.businessType === "Custom (specify below)" && data.customBusinessType) {
@@ -148,6 +148,7 @@ export default function SignupBusinessSimple() {
         body: JSON.stringify({
           ...processedData,
           userType: "business",
+          businessName: accountData?.businessName || "", // Include businessName from step 1
         })
       });
 
@@ -257,7 +258,7 @@ export default function SignupBusinessSimple() {
                       name="ownerPhone"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Owner Contact Phone *</FormLabel>
+                          <FormLabel>Contact Person Phone Number *</FormLabel>
                           <FormControl>
                             <Input placeholder="+1 (555) 123-4567" {...field} />
                           </FormControl>
@@ -312,19 +313,7 @@ export default function SignupBusinessSimple() {
                     Business Information
                   </h3>
                   
-                  <FormField
-                    control={form.control}
-                    name="businessName"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Business Name *</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Your Business Name" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <FormField

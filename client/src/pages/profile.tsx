@@ -2791,9 +2791,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       const response = await fetch(`/api/users/${effectiveUserId}`, {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json',
-          'x-user-id': currentUser?.id?.toString(),
-          'x-user-type': 'business'
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify(data)
       });
@@ -6896,7 +6894,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         />
                       </div>
                       <div>
-                        <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Owner Phone</Label>
+                        <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Contact Person Phone Number</Label>
                         <Input 
                           value={ownerContactForm.ownerPhone}
                           onChange={(e) => setOwnerContactForm(prev => ({ ...prev, ownerPhone: e.target.value }))}
@@ -6938,7 +6936,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         </span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600 dark:text-gray-400">Owner Phone:</span>
+                        <span className="text-sm text-gray-600 dark:text-gray-400">Contact Person Phone:</span>
                         <span className="text-sm font-medium text-gray-900 dark:text-white">
                           {user?.ownerPhone || "Not set"}
                         </span>
