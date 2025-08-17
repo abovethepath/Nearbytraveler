@@ -1,8 +1,30 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 
-// CACHE BUST: Force cache clear with timestamp
-const CACHE_BUST_VERSION = Date.now();
+// PRODUCTION CACHE BUST: Force complete cache clear
+const CACHE_BUST_VERSION = '2025-08-17-FINAL-v' + Date.now();
+console.log('🚨 PRODUCTION CACHE BUST VERSION:', CACHE_BUST_VERSION);
+
+// Clear all possible cached authentication states on app load
+if (typeof window !== 'undefined') {
+  // Force clear service worker cache
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(function(registrations) {
+      for(let registration of registrations) {
+        registration.unregister();
+      }
+    });
+  }
+  
+  // Clear all caches
+  if ('caches' in window) {
+    caches.keys().then(names => {
+      names.forEach(name => {
+        caches.delete(name);
+      });
+    });
+  }
+}
 
 // Debug browser history + Cache clear version: 2025-08-17-v2
 console.log('🚀 CACHE CLEAR: App loading - version 2025-08-17-v2');
@@ -403,7 +425,7 @@ function Router() {
     }
 
     if (!isActuallyAuthenticated) {
-      console.log('User not authenticated, showing landing page for:', location);
+      console.log('🚨 CACHE BUST v2 - User not authenticated, showing landing page for:', location);
 
       // Allow access to events landing page without authentication for marketing
       if (location === '/events-landing') {
@@ -583,14 +605,14 @@ function Router() {
         return <Auth />;
       }
 
-      // Default: show new landing page for unknown routes  
       // CRITICAL: Root path should always show landing page for unauthenticated users
       if (location === '/' || location === '') {
-        console.log('🏠 Root path for unauthenticated user - showing landing page');
+        console.log('🏠 CACHE BUST v2 - Root path for unauthenticated user - showing landing page');
         return <LandingNew />;
       }
       
-      console.log('❌ Unknown route, showing new landing page:', location);
+      // Force all unknown routes to landing page for unauthenticated users
+      console.log('❌ CACHE BUST v2 - Unknown route for unauthenticated user, showing landing page:', location);
       return <LandingNew />;
     }
 
