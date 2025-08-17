@@ -197,12 +197,10 @@ export default function WelcomeBusiness() {
           >
             Open Business Dashboard
           </Button>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mt-6">
-            <Link href="/events">
-              <Button variant="outline" size="lg" className="px-6">
-                Create Business Events
-              </Button>
-            </Link>
+          <div className="mt-6 p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-200 dark:border-orange-800">
+            <p className="text-center text-sm text-orange-700 dark:text-orange-300 font-medium">
+              After Beta: $50/month + $100 one-time signup fee
+            </p>
           </div>
         </div>
 
