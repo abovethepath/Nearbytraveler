@@ -14,6 +14,7 @@ import { useLocation } from "wouter";
 import { Building, MapPin, User, Zap } from "lucide-react";
 import { SmartLocationInput } from "@/components/SmartLocationInput";
 import { BUSINESS_TYPES } from "../../../shared/base-options";
+import { useAuth } from "@/App";
 
 const businessSignupSchema = z.object({
   // Account Owner Information (for platform communication)
@@ -74,6 +75,7 @@ type BusinessSignupData = z.infer<typeof businessSignupSchema>;
 export default function SignupBusinessSimple() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
+  const { login } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [isGettingLocation, setIsGettingLocation] = useState(false);
   const [locationCaptured, setLocationCaptured] = useState(false);
@@ -201,7 +203,12 @@ export default function SignupBusinessSimple() {
         description: "Welcome to Nearby Traveler Business Network!",
       });
       
-      // Store auth data in the correct format that the app expects
+      // CRITICAL: Update the authentication context first
+      if (response.user && response.token) {
+        login(response.user, response.token);
+      }
+      
+      // Store auth data in localStorage as backup (login function should handle this)
       if (response.user) {
         localStorage.setItem('user', JSON.stringify(response.user));
         localStorage.setItem('userData', JSON.stringify(response.user));
@@ -215,8 +222,10 @@ export default function SignupBusinessSimple() {
       // Clear sessionStorage account data since signup is complete
       sessionStorage.removeItem('accountData');
       
-      // Immediate redirect to profile to complete setup
-      setLocation('/profile');
+      // Small delay to ensure context update, then redirect
+      setTimeout(() => {
+        setLocation('/profile');
+      }, 100);
     },
     onError: (error: Error) => {
       toast({
