@@ -2776,17 +2776,12 @@ Questions? Just reply to this message. Welcome aboard!
       if (updates.streetAddress !== undefined) {
         updates.street_address = updates.streetAddress;
         
-        // AUTOMATIC GEOCODING: Convert business addresses to coordinates for map display
+        // AUTOMATIC GEOCODING: Convert business addresses to coordinates for map display - TEMPORARILY DISABLED
         if (updates.streetAddress && updates.streetAddress.trim()) {
           try {
-            const coords = await geocodeAddress(updates.streetAddress);
-            if (coords) {
-              updates.currentLatitude = coords.lat;
-              updates.currentLongitude = coords.lng;
-              if (process.env.NODE_ENV === 'development') console.log(`🗺️ AUTO-GEOCODED: Business address "${updates.streetAddress}" → (${coords.lat}, ${coords.lng})`);
-            } else {
-              if (process.env.NODE_ENV === 'development') console.warn(`⚠️ AUTO-GEOCODE FAILED: Could not geocode business address "${updates.streetAddress}"`);
-            }
+            // DISABLED: const coords = await geocodeAddress(updates.streetAddress);
+            // Temporarily disable geocoding to prevent API errors from blocking profile updates
+            if (process.env.NODE_ENV === 'development') console.log(`🗺️ GEOCODING TEMPORARILY DISABLED: Business address "${updates.streetAddress}" saved without coordinates`);
           } catch (error) {
             if (process.env.NODE_ENV === 'development') console.error(`❌ AUTO-GEOCODE ERROR: Failed to geocode "${updates.streetAddress}":`, error);
           }
