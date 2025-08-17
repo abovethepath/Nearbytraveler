@@ -1387,6 +1387,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           zipCode: user.zipCode || "",
           phoneNumber: user.phoneNumber || "",
           websiteUrl: user.websiteUrl || "",
+          ownerName: user.ownerName || user.name || "",
+          ownerPhone: user.ownerPhone || "",
           interests: predefinedInterests,
           activities: predefinedActivities,
           events: predefinedEvents,
@@ -2844,7 +2846,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   useEffect(() => {
     if (user && user.userType === 'business') {
       setOwnerContactForm({
-        ownerName: user.name || "",
+        ownerName: user.ownerName || user.name || "",
         ownerPhone: user.ownerPhone || ""
       });
     }
@@ -3412,7 +3414,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         <MapPin className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
                         <span className="text-black/90">
                           {user.streetAddress && <>{user.streetAddress}<br /></>}
-                          {[user.city, user.state, user.zipCode].filter(Boolean).join(', ')}
+                          {[user.city || user.hometownCity, user.state || user.hometownState, user.zipCode].filter(Boolean).join(', ')}
                         </span>
                       </div>
                     )}

@@ -226,9 +226,9 @@ export default function SignupBusinessSimple() {
       // Clear sessionStorage account data since signup is complete
       sessionStorage.removeItem('accountData');
       
-      // Small delay to ensure context update, then redirect
+      // Small delay to ensure context update, then redirect to welcome page
       setTimeout(() => {
-        setLocation('/profile');
+        setLocation('/welcome-business');
       }, 100);
     },
     onError: (error: Error) => {
