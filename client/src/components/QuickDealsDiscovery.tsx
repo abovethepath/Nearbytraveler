@@ -22,13 +22,7 @@ const CountdownTimer = ({ validUntil }: { validUntil: string }) => {
   useEffect(() => {
     const updateTimer = () => {
       const now = new Date();
-      // Parse the validUntil date and ensure it's in local timezone
       const expiryDate = new Date(validUntil);
-      
-      if (process.env.NODE_ENV === 'development') {
-        console.log(`⏰ COUNTDOWN: Now: ${now.toISOString()}, Expires: ${expiryDate.toISOString()}`);
-      }
-      
       const distance = expiryDate.getTime() - now.getTime();
 
       if (distance < 0) {

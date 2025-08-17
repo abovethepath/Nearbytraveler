@@ -88,6 +88,7 @@ export default function Deals() {
       businessId: deal.businessId,
       title: deal.title,
       description: deal.description,
+      category: deal.category || 'general', // Add missing category field
       offerType: deal.dealType || deal.discountType || 'quick_deal',
       discountType: deal.discountType || deal.dealType || 'percentage',
       discountValue: deal.discountValue || deal.discountAmount || '0',
