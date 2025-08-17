@@ -11406,6 +11406,18 @@ Questions? Just reply to this message. Welcome aboard!
       if (businessData.ownerPhone !== undefined) {
         businessData.ownerPhone = businessData.ownerPhone; // Keep as ownerPhone for schema
       }
+      if (businessData.locationSharingEnabled !== undefined) {
+        businessData.location_sharing_enabled = businessData.locationSharingEnabled;
+        delete businessData.locationSharingEnabled;
+      }
+      if (businessData.currentLatitude !== undefined) {
+        businessData.current_latitude = businessData.currentLatitude;
+        delete businessData.currentLatitude;
+      }
+      if (businessData.currentLongitude !== undefined) {
+        businessData.current_longitude = businessData.currentLongitude;
+        delete businessData.currentLongitude;
+      }
       
       // Create business user account
       const result = await storage.createBusinessUser(businessData);
