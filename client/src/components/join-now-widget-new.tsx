@@ -318,10 +318,15 @@ export default function JoinNowWidgetNew() {
                 type="email"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                placeholder="your@email.com"
+                placeholder={userType === 'business' ? "owner@example.com or owner+restaurant@example.com" : "your@email.com"}
                 className="text-base py-3 text-crisp font-medium"
                 required
               />
+              {userType === 'business' && (
+                <p className="text-sm text-blue-600 dark:text-blue-400 mt-1">
+                  💡 <strong>Multiple Businesses?</strong> Use email variants like: owner+pizza@example.com, owner+shop@example.com
+                </p>
+              )}
             </div>
             
             <div>

@@ -20,7 +20,10 @@ import { useEffect } from "react";
 const businessSignupSchema = z.object({
   // Account Owner Information (for platform communication)
   username: z.string().min(6, "Username must be 6-14 characters").max(14, "Username must be 6-14 characters"),
-  email: z.string().email("Please enter a valid email"),
+  email: z.string().email("Please enter a valid email").refine((val) => {
+    // Allow email variants for multiple businesses (e.g., owner+restaurant@example.com)
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+  }, "Please enter a valid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
   ownerName: z.string().min(1, "Account owner name is required"),
   ownerPhone: z.string().min(1, "Contact phone is required").refine((val) => {
@@ -360,10 +363,13 @@ export default function SignupBusinessSimple() {
                         <FormItem>
                           <FormLabel>Email</FormLabel>
                           <FormControl>
-                            <Input placeholder="owner@business.com" {...field} disabled className="bg-gray-100 dark:bg-gray-800" />
+                            <Input placeholder="owner@example.com or owner+pizza@example.com" {...field} disabled className="bg-gray-100 dark:bg-gray-800" />
                           </FormControl>
                           <FormDescription>
-                            Owner's email for platform notifications
+                            Owner's email for platform notifications. <br/>
+                            <span className="text-sm text-blue-600 dark:text-blue-400">
+                              💡 <strong>Multiple Businesses?</strong> Use email variants like: owner+restaurant@example.com, owner+shop@example.com
+                            </span>
                           </FormDescription>
                           <FormMessage />
                         </FormItem>

@@ -157,6 +157,37 @@ export default function WelcomeBusiness() {
           </Card>
         </div>
 
+        {/* Multiple Business Info */}
+        <div className="max-w-4xl mx-auto mt-8">
+          <Card className="border-0 shadow-xl bg-gradient-to-r from-blue-50 to-orange-50 dark:from-blue-900/20 dark:to-orange-900/20 backdrop-blur-sm rounded-2xl overflow-hidden">
+            <CardHeader className="pb-4">
+              <CardTitle className="flex items-center gap-3 dark:text-white text-lg">
+                <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-orange-500 rounded-lg flex items-center justify-center">
+                  <Building className="h-4 w-4 text-white" />
+                </div>
+                Managing Multiple Businesses?
+              </CardTitle>
+              <CardDescription className="dark:text-gray-300 text-sm">
+                Our platform supports business owners with multiple locations or businesses
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="bg-white/50 dark:bg-gray-800/50 rounded-xl p-4 mb-4">
+                <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Email Variants for Additional Businesses:</h4>
+                <div className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
+                  <p>• <code className="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">owner@example.com</code> (First business)</p>
+                  <p>• <code className="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">owner+restaurant@example.com</code> (Restaurant)</p>
+                  <p>• <code className="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">owner+shop@example.com</code> (Retail store)</p>
+                  <p>• <code className="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">owner+services@example.com</code> (Service business)</p>
+                </div>
+              </div>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                All emails go to the same inbox while maintaining separate business accounts. Each business gets its own profile, deals, and customer interactions.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+
         {/* Action Buttons */}
         <div className="text-center space-y-4">
           <Button
