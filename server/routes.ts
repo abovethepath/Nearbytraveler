@@ -5732,11 +5732,14 @@ Questions? Just reply to this message. Welcome aboard!
           // Business information (COMPLETE INFO FOR CUSTOMERS)
           businessName: users.businessName,
           fallbackName: users.name,
+          businessDescription: users.businessDescription,
+          businessType: users.businessType,
           businessLocation: users.location,
           businessImage: users.profileImage,
           businessPhone: users.phoneNumber,
           businessAddress: users.streetAddress,
           businessWebsite: users.websiteUrl,
+          businessEmail: users.email,
         })
         .from(businessOffers)
         .innerJoin(users, eq(businessOffers.businessId, users.id))
@@ -6113,86 +6116,7 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
-  // NEW: Business Deals API with Complete Information 
-  app.get("/api/business-deals", async (req, res) => {
-    try {
-      if (process.env.NODE_ENV === 'development') console.log("🎯 FETCHING BUSINESS DEALS WITH COMPLETE BUSINESS INFO");
-      
-      // Get all active business offers with complete business information
-      const dealsWithBusinessInfo = await db
-        .select({
-          // Deal fields
-          id: businessOffers.id,
-          businessId: businessOffers.businessId,
-          title: businessOffers.title,
-          description: businessOffers.description,
-          category: businessOffers.category,
-          discountType: businessOffers.discountType,
-          discountValue: businessOffers.discountValue,
-          discountCode: businessOffers.discountCode,
-          validFrom: businessOffers.validFrom,
-          validUntil: businessOffers.validUntil,
-          isActive: businessOffers.isActive,
-          imageUrl: businessOffers.imageUrl,
-          termsConditions: businessOffers.termsConditions,
-          city: businessOffers.city,
-          state: businessOffers.state,
-          country: businessOffers.country,
-          // Complete Business Information
-          businessName: users.businessName,
-          businessDescription: users.businessDescription,
-          businessType: users.businessType,
-          businessLocation: users.location,
-          businessEmail: users.email,
-          businessPhone: users.phoneNumber,
-          businessImage: users.profileImage,
-        })
-        .from(businessOffers)
-        .innerJoin(users, eq(businessOffers.businessId, users.id))
-        .where(and(
-          eq(businessOffers.isActive, true),
-          eq(users.userType, 'business')
-        ))
-        .orderBy(desc(businessOffers.createdAt));
-      
-      if (process.env.NODE_ENV === 'development') console.log(`🎯 FOUND ${dealsWithBusinessInfo.length} BUSINESS DEALS WITH COMPLETE INFO`);
-      
-      // Format the response for frontend consumption
-      const formattedDeals = dealsWithBusinessInfo.map(deal => ({
-        // Deal information
-        id: deal.id,
-        businessId: deal.businessId,
-        title: deal.title,
-        description: deal.description,
-        category: deal.category,
-        discountType: deal.discountType,
-        discountValue: deal.discountValue,
-        discountCode: deal.discountCode,
-        validFrom: deal.validFrom,
-        validUntil: deal.validUntil,
-        isActive: deal.isActive,
-        imageUrl: deal.imageUrl,
-        termsConditions: deal.termsConditions,
-        city: deal.city,
-        state: deal.state,
-        country: deal.country,
-        // Complete business information
-        businessName: deal.businessName || 'Business Name',
-        businessDescription: deal.businessDescription || '',
-        businessType: deal.businessType || '',
-        businessLocation: deal.businessLocation || '',
-        businessEmail: deal.businessEmail || '',
-        businessPhone: deal.businessPhone || '',
-        businessImage: deal.businessImage || null,
-      }));
-      
-      if (process.env.NODE_ENV === 'development') console.log(`✅ BUSINESS DEALS API: Returning ${formattedDeals.length} deals with complete business information`);
-      return res.json(formattedDeals);
-    } catch (error: any) {
-      if (process.env.NODE_ENV === 'development') console.error("Failed to get business deals:", error);
-      return res.status(500).json({ message: "Failed to get business deals" });
-    }
-  });
+
 
   // CREATE quick meetup endpoint
   app.post("/api/quick-meetups", async (req, res) => {

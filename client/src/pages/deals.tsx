@@ -51,12 +51,13 @@ export default function Deals() {
   
 
 
-  // Fetch all business deals with complete business information
+  // Fetch all business deals with complete business information - FORCE REFRESH for dynamic bio updates
   const { data: businessDeals = [], isLoading: isBusinessDealsLoading, error: businessDealsError } = useQuery<BusinessDeal[]>({
     queryKey: ['/api/business-deals'],
     enabled: !!effectiveUser,
-    refetchOnWindowFocus: false,
-    staleTime: 30000, // 30 seconds
+    refetchOnWindowFocus: true, // Enable refetch on focus to get fresh business data
+    staleTime: 0, // No stale time - always fetch fresh data for dynamic bio updates
+    cacheTime: 0, // Don't cache to ensure fresh business info
   });
 
   // Fetch quick deals
