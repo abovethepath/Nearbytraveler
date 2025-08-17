@@ -73,8 +73,9 @@ import { ThingsIWantToDoSection } from "@/components/ThingsIWantToDoSection";
 
 
 import { PhotoAlbumWidget } from "@/components/photo-album-widget";
-import { SimpleAvatar } from "@/components/simple-avatar";
+import { MobileTopNav } from "@/components/MobileTopNav";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
+import { SimpleAvatar } from "@/components/simple-avatar";
 // Removed Navbar import since App.tsx handles navigation
 // Removed animated loading for static interface
 
@@ -3290,6 +3291,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
   return (
     <>
+      {/* Mobile Navigation */}
+      <MobileTopNav />
+      <MobileBottomNav />
+      
       <div className="min-h-screen profile-page">
       {shouldShowBackToChatroom && (
         <div className="w-full max-w-full mx-auto px-2 pt-2">
@@ -3304,7 +3309,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       )}
 
       {/* Mobile spacing to account for global MobileTopNav */}
-      <div className="h-4 md:hidden"></div>
+      <div className="h-16 md:hidden"></div>
 
       {/* Mobile Back Button */}
       <div className="block md:hidden px-4 pb-2">
