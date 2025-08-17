@@ -4955,6 +4955,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         <div className="flex flex-wrap gap-2 p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
                           {getAllInterests().map((interest, index) => {
                             const isSelected = editFormData.interests.includes(interest);
+                            console.log(`🔍 Interest "${interest}" is ${isSelected ? 'SELECTED' : 'not selected'} in:`, editFormData.interests);
                             return (
                               <button
                                 key={`business-interest-${interest}-${index}`}
@@ -5019,7 +5020,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           {/* Display Custom Interests with Delete Option */}
                           {editFormData.interests.filter(interest => !getAllInterests().includes(interest)).length > 0 && (
                             <div className="mt-2">
-                              <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Custom Interests (click X to remove):</p>
+                              <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Your Custom Interests (click X to remove):</p>
                               <div className="flex flex-wrap gap-1">
                                 {editFormData.interests.filter(interest => !getAllInterests().includes(interest)).map((interest, index) => (
                                   <span
