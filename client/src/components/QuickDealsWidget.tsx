@@ -450,8 +450,8 @@ export function QuickDealsWidget({ city, profileUserId, showCreateForm: external
           )}
 
           {!isLoading && activateDeals.length === 0 && expiredDeals.length === 0 && (
-            <div className="text-center py-8 text-gray-500">
-              <Zap className="h-12 w-12 mx-auto mb-2 text-gray-300" />
+            <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+              <Zap className="h-12 w-12 mx-auto mb-2 text-gray-300 dark:text-gray-600" />
               <p>No active deals</p>
               <p className="text-sm">Create your first quick deal to attract customers</p>
             </div>
@@ -460,7 +460,7 @@ export function QuickDealsWidget({ city, profileUserId, showCreateForm: external
           {/* Active Deals Section */}
           {activateDeals.length > 0 && (
             <>
-              <h4 className="font-medium text-sm text-green-700 flex items-center gap-1">
+              <h4 className="font-medium text-sm text-green-700 dark:text-green-400 flex items-center gap-1">
                 <Zap className="h-4 w-4" />
                 Active Deals ({activateDeals.length})
               </h4>
@@ -524,7 +524,7 @@ export function QuickDealsWidget({ city, profileUserId, showCreateForm: external
           {/* Expired Deals Section */}
           {expiredDeals.length > 0 && (
             <>
-              <h4 className="font-medium text-sm text-gray-500 flex items-center gap-1 mt-4">
+              <h4 className="font-medium text-sm text-gray-500 dark:text-gray-400 flex items-center gap-1 mt-4">
                 <Clock className="h-4 w-4" />
                 Expired Deals ({expiredDeals.length})
               </h4>
@@ -536,7 +536,7 @@ export function QuickDealsWidget({ city, profileUserId, showCreateForm: external
                       Expired
                     </Badge>
                   </div>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">{deal.description}</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">{deal.description}</p>
                   <div className="flex items-center gap-4 text-xs text-gray-400 dark:text-gray-500 mt-1">
                     <span>{deal.currentRedemptions || 0}{deal.maxRedemptions ? `/${deal.maxRedemptions}` : ''} used</span>
                     <span>Expired {format(new Date(deal.validUntil), 'MMM d')}</span>

@@ -7042,6 +7042,85 @@ Questions? Just reply to this message. Welcome aboard!
   });
 
   // CLAIM/REDEEM quick deal endpoint
+  app.post("/api/quick-deals/claim", async (req, res) => {
+    try {
+      const { dealId } = req.body;
+      const userId = req.headers['x-user-id'];
+      
+      if (!userId || !dealId) {
+        return res.status(400).json({ message: "User ID and deal ID required" });
+      }
+
+      // Get the deal to verify it exists and is active
+      const [deal] = await db
+        .select()
+        .from(quickDeals)
+        .where(eq(quickDeals.id, dealId))
+        .limit(1);
+      
+      if (!deal) {
+        return res.status(404).json({ message: "Deal not found" });
+      }
+      
+      // Check if deal is still valid
+      const now = new Date();
+      if (!deal.isActive || new Date(deal.validUntil) <= now) {
+        return res.status(400).json({ message: "Deal has expired" });
+      }
+      
+      // Check if deal has reached max redemptions
+      if (deal.maxRedemptions && (deal.currentRedemptions || 0) >= deal.maxRedemptions) {
+        return res.status(400).json({ message: "Deal has reached maximum redemptions" });
+      }
+
+      // Check if user has already claimed this deal
+      const [existingRedemption] = await db
+        .select()
+        .from(quickDealRedemptions)
+        .where(and(
+          eq(quickDealRedemptions.dealId, dealId),
+          eq(quickDealRedemptions.userId, parseInt(userId as string))
+        ))
+        .limit(1);
+      
+      if (existingRedemption) {
+        return res.status(400).json({ message: "You have already claimed this deal" });
+      }
+
+      // Create redemption record
+      const [redemption] = await db
+        .insert(quickDealRedemptions)
+        .values({
+          dealId: dealId,
+          userId: parseInt(userId as string),
+          status: 'claimed',
+          notes: req.body.notes || null
+        })
+        .returning();
+
+      // Update deal redemption count
+      await db
+        .update(quickDeals)
+        .set({ 
+          currentRedemptions: (deal.currentRedemptions || 0) + 1 
+        })
+        .where(eq(quickDeals.id, dealId));
+
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`🎯 DEAL CLAIMED: User ${userId} claimed deal ${dealId}`);
+      }
+
+      res.json({ 
+        success: true, 
+        message: "Deal claimed successfully",
+        redemption: redemption
+      });
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error claiming deal:", error);
+      res.status(500).json({ message: "Failed to claim deal" });
+    }
+  });
+
   app.post("/api/quick-deals/:id/claim", async (req, res) => {
     try {
       const dealId = parseInt(req.params.id || '0');

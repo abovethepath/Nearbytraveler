@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CalendarDays, MapPin, Percent, Store, Users, Phone, Globe, Mail, Clock, Timer, Zap } from "lucide-react";
 import { useLocation } from "wouter";
 import { authStorage } from "@/lib/auth";
+import { useToast } from "@/hooks/use-toast";
 
 interface BusinessDeal {
   id: number;
@@ -26,6 +27,7 @@ interface BusinessDeal {
   city: string;
   state: string;
   country: string;
+  street?: string; // Add street address field
   // Business Information (Customer-Facing Only)
   businessName: string;
   businessDescription: string;
@@ -39,6 +41,7 @@ interface BusinessDeal {
 export default function Deals() {
   const { user } = useContext(AuthContext);
   const [, setLocation] = useLocation();
+  const { toast } = useToast();
   
   const effectiveUser = user || authStorage.getUser();
   
@@ -88,7 +91,8 @@ export default function Deals() {
       businessLocation: deal.businessLocation || deal.city || 'Los Angeles',
       businessEmail: deal.businessEmail || '',
       businessPhone: deal.businessPhone || '',
-      businessImage: deal.businessImage || ''
+      businessImage: deal.businessImage || '',
+      street: deal.street || '' // Add street address field
     }));
 
     return [...businessOffers, ...convertedQuickDeals];
@@ -96,6 +100,46 @@ export default function Deals() {
 
   const isLoading = isBusinessOffersLoading || isQuickDealsLoading;
   const error = businessOffersError || quickDealsError;
+
+  // Handle claiming a deal
+  const handleClaimDeal = async (deal: BusinessDeal) => {
+    if (!effectiveUser) {
+      toast({
+        title: "Login Required",
+        description: "Please log in to claim deals.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/quick-deals/claim', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-user-id': effectiveUser.id.toString()
+        },
+        body: JSON.stringify({ dealId: deal.id })
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to claim deal');
+      }
+
+      toast({
+        title: "Deal Claimed!",
+        description: `You've successfully claimed "${deal.title}". Show this to the business to redeem.`
+      });
+
+    } catch (error: any) {
+      toast({
+        title: "Claim Failed",
+        description: error.message || "Failed to claim deal. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
 
   // Get unique cities from all deals
   const availableCities = useMemo(() => {
@@ -362,7 +406,7 @@ export default function Deals() {
               <div className="flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-gray-500" />
                 <span className="text-gray-600 dark:text-gray-400 text-sm">
-                  {deal.city}, {deal.state}, {deal.country}
+                  {deal.street && `${deal.street}, `}{deal.city}, {deal.state}, {deal.country}
                 </span>
               </div>
             </div>
@@ -383,6 +427,8 @@ export default function Deals() {
             <Button 
               className={`w-full ${instant ? 'bg-orange-500 hover:bg-orange-600' : 'bg-blue-500 hover:bg-blue-600'} text-white`}
               disabled={expired}
+              onClick={() => handleClaimDeal(deal)}
+              data-testid="button-claim-deal"
             >
               {expired ? 'Deal Expired' : instant ? 'Claim Instant Deal' : 'Claim Deal'}
             </Button>
