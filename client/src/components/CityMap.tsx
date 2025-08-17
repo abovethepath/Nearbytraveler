@@ -107,7 +107,8 @@ const getCityCoordinates = (city: string, country: string): [number, number] => 
 };
 
 export function CityMap({ city, state, country }: CityMapProps) {
-  const { data: mapData, isLoading } = useQuery<MapData>({
+  // Query for regular map data (users and events)
+  const { data: mapData, isLoading: isLoadingMapData } = useQuery<MapData>({
     queryKey: ['/api/city-map-data', city, state, country],
     queryFn: async () => {
       const params = new URLSearchParams();
@@ -121,6 +122,36 @@ export function CityMap({ city, state, country }: CityMapProps) {
     },
     enabled: !!city && !!country,
   });
+
+  // NEW: Query for businesses with geolocation and active deals/events
+  const { data: businessMapData, isLoading: isLoadingBusinesses } = useQuery<Array<{
+    id: number;
+    name: string;
+    username: string;
+    city: string;
+    state: string;
+    country: string;
+    currentLatitude: number;
+    currentLongitude: number;
+    businessType?: string;
+    specialty?: string;
+    streetAddress?: string;
+  }>>({
+    queryKey: ['/api/businesses/map', city, state, country],
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      params.append('city', city);
+      if (state) params.append('state', state);
+      params.append('country', country);
+      
+      const response = await fetch(`/api/businesses/map?${params}`);
+      if (!response.ok) throw new Error('Failed to fetch business map data');
+      return response.json();
+    },
+    enabled: !!city && !!country,
+  });
+
+  const isLoading = isLoadingMapData || isLoadingBusinesses;
 
   const cityCenter = getCityCoordinates(city, country);
 
@@ -163,13 +194,14 @@ export function CityMap({ city, state, country }: CityMapProps) {
         day: 'numeric' 
       })}`
     })) || []),
-    ...(mapData?.businesses?.filter(b => b.latitude && b.longitude).map(business => ({
+    // NEW: Use the dedicated geolocation API for businesses with active deals/events
+    ...(businessMapData?.filter(b => b.currentLatitude && b.currentLongitude).map(business => ({
       id: business.id + 20000, // Offset to avoid ID conflicts
-      lat: parseFloat(String(business.latitude)),
-      lng: parseFloat(String(business.longitude)),
-      name: business.businessName,
+      lat: parseFloat(String(business.currentLatitude)),
+      lng: parseFloat(String(business.currentLongitude)),
+      name: business.name,
       type: 'business' as const,
-      description: business.category
+      description: `${business.businessType || 'Business'} ${business.streetAddress ? `at ${business.streetAddress}` : `in ${business.city}`} - Has active deals/events`
     })) || [])
   ];
 
@@ -178,6 +210,8 @@ export function CityMap({ city, state, country }: CityMapProps) {
   console.log('🗺️ CityMap all locations:', locations);
   console.log('🗺️ CityMap center coordinates:', cityCenter);
   console.log('🗺️ CityMap mapData:', mapData);
+  console.log('🗺️ NEW businessMapData:', businessMapData);
+  console.log('🗺️ Business locations found:', businessMapData?.length || 0);
 
 
 
