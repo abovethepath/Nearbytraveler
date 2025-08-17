@@ -39,6 +39,7 @@ const businessSignupSchema = z.object({
   
   // Basic Location (City is required for metro area matching)
   streetAddress: z.string().min(1, "Street address is required for location services"),
+  zipCode: z.string().min(1, "Zip/Postal code is required"),
   city: z.string().min(1, "City is required"),
   state: z.string().min(1, "State/Province is required"),
   country: z.string().min(1, "Country is required"),
@@ -155,8 +156,10 @@ export default function SignupBusinessSimple() {
       // Process custom business type
       const processedData = { ...data };
       
-      // CRITICAL: Add the required "name" field using business name from step 1
+      // CRITICAL: Add required fields using data from step 1 and current form
       (processedData as any).name = accountData?.businessName || "";
+      (processedData as any).businessName = accountData?.businessName || "";
+      (processedData as any).websiteUrl = processedData.businessWebsite || "";
       
       // Handle custom business type
       if (data.businessType === "Custom (specify below)" && data.customBusinessType) {
@@ -171,8 +174,9 @@ export default function SignupBusinessSimple() {
         }
       }
       
-      // Remove the custom fields from the final data since they're now merged
+      // Remove the custom and temporary fields from the final data since they're now merged
       delete processedData.customBusinessType;
+      delete processedData.businessWebsite; // Remove since we moved it to websiteUrl
 
       const response = await fetch('/api/business-signup', {
         method: 'POST',
@@ -430,23 +434,40 @@ export default function SignupBusinessSimple() {
                     Business Location
                   </h3>
                   
-                  {/* Street Address Field - Required for location services */}
-                  <FormField
-                    control={form.control}
-                    name="streetAddress"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Street Address *</FormLabel>
-                        <FormControl>
-                          <Input placeholder="123 Main Street, Suite 100" {...field} />
-                        </FormControl>
-                        <FormDescription>
-                          Required for location services and customer directions
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  {/* Street Address and Zip Code Row */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="md:col-span-2">
+                      <FormField
+                        control={form.control}
+                        name="streetAddress"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Street Address *</FormLabel>
+                            <FormControl>
+                              <Input placeholder="123 Main Street, Suite 100" {...field} />
+                            </FormControl>
+                            <FormDescription>
+                              Required for location services and customer directions
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    <FormField
+                      control={form.control}
+                      name="zipCode"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Zip/Postal Code *</FormLabel>
+                          <FormControl>
+                            <Input placeholder="90210" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
                   
                   <div>
                     <FormLabel className="text-gray-900 dark:text-white">City, State/Province, Country *</FormLabel>

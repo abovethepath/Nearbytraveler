@@ -1930,8 +1930,25 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           });
           if (process.env.NODE_ENV === 'development') console.log(`🗺️ BUSINESS SIGNUP GEOCODING QUEUED: Address "${processedData.businessAddress}" will be processed in background`);
         }
+        
+        // Map business contact information
         if (processedData.businessPhone) {
           processedData.phoneNumber = processedData.businessPhone;
+        }
+        
+        // Map business name from form or account data
+        if ((processedData as any).businessName) {
+          processedData.businessName = (processedData as any).businessName;
+        }
+        
+        // Map website URL from form data
+        if ((processedData as any).websiteUrl) {
+          processedData.websiteUrl = (processedData as any).websiteUrl;
+        }
+        
+        // Map street address directly if provided
+        if (processedData.streetAddress && !processedData.businessAddress) {
+          // Street address already mapped
         }
 
         // Populate location and hometown fields for businesses
@@ -1951,7 +1968,9 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           phoneNumber: processedData.phoneNumber,
           zipCode: processedData.zipCode,
           location: processedData.location,
-          hometown: processedData.hometown
+          hometown: processedData.hometown,
+          businessName: processedData.businessName,
+          websiteUrl: processedData.websiteUrl
         });
       }
 
