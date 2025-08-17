@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 
-// Debug browser history
+// CACHE BUST: Force cache clear with timestamp
+const CACHE_BUST_VERSION = Date.now();
+
+// Debug browser history + Cache clear version: 2025-08-17-v2
+console.log('🚀 CACHE CLEAR: App loading - version 2025-08-17-v2');
 window.addEventListener('popstate', (event) => {
   console.log('=== BROWSER BACK/FORWARD DETECTED ===');
   console.log('Event:', event);
@@ -147,7 +151,7 @@ function Router() {
   const isLandingPage = landingPageRoutes.includes(location);
 
   useEffect(() => {
-    console.log('Starting authentication check');
+    console.log('🚀 PRODUCTION CACHE BUST v2025-08-17-17-28 - Starting authentication check');
 
     // Try multiple localStorage keys to find user data
     const possibleKeys = ['user', 'travelconnect_user', 'currentUser', 'authUser'];
