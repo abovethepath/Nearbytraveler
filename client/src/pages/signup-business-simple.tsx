@@ -35,8 +35,16 @@ const businessSignupSchema = z.object({
   state: z.string().min(1, "State/Province is required"),
   country: z.string().min(1, "Country is required"),
   
-  // Optional website
-  businessWebsite: z.string().url("Please enter a valid website URL").optional().or(z.literal("")),
+  // Optional website - Allow empty string or valid URL
+  businessWebsite: z.string().optional().refine((val) => {
+    if (!val || val === '') return true; // Allow empty
+    try {
+      new URL(val);
+      return true;
+    } catch {
+      return false;
+    }
+  }, "Please enter a valid website URL (e.g., https://example.com)"),
   
   // Location services for proximity features
   currentLatitude: z.number().optional(),
