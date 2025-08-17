@@ -48,12 +48,54 @@ export default function Deals() {
 
 
   // Fetch all business deals with complete business information
-  const { data: allDeals = [], isLoading, error } = useQuery<BusinessDeal[]>({
+  const { data: businessOffers = [], isLoading: isBusinessOffersLoading, error: businessOffersError } = useQuery<BusinessDeal[]>({
     queryKey: ['/api/business-offers'],
     enabled: !!effectiveUser,
     refetchOnWindowFocus: false,
     staleTime: 30000, // 30 seconds
   });
+
+  // Fetch quick deals
+  const { data: quickDeals = [], isLoading: isQuickDealsLoading, error: quickDealsError } = useQuery<any[]>({
+    queryKey: ['/api/quick-deals'],
+    enabled: !!effectiveUser,
+    refetchOnWindowFocus: false,
+    staleTime: 30000, // 30 seconds
+  });
+
+  // Combine all deals
+  const allDeals = useMemo(() => {
+    // Convert quick deals to match BusinessDeal interface
+    const convertedQuickDeals = quickDeals.map((deal: any) => ({
+      id: deal.id,
+      businessId: deal.businessId,
+      title: deal.title,
+      description: deal.description,
+      offerType: deal.dealType || deal.discountType || 'quick_deal',
+      discountType: deal.discountType || deal.dealType || 'percentage',
+      discountValue: deal.discountValue || deal.discountAmount || '0',
+      discountCode: deal.dealCode || deal.discountCode || '',
+      validFrom: deal.validFrom || deal.createdAt,
+      validUntil: deal.validUntil,
+      imageUrl: deal.imageUrl || '',
+      termsConditions: deal.terms || deal.termsConditions || '',
+      city: deal.city || 'Los Angeles',
+      state: deal.state || 'California', 
+      country: deal.country || 'United States',
+      businessName: deal.businessName || 'Business',
+      businessDescription: deal.businessDescription || '',
+      businessType: deal.businessType || 'Business',
+      businessLocation: deal.businessLocation || deal.city || 'Los Angeles',
+      businessEmail: deal.businessEmail || '',
+      businessPhone: deal.businessPhone || '',
+      businessImage: deal.businessImage || ''
+    }));
+
+    return [...businessOffers, ...convertedQuickDeals];
+  }, [businessOffers, quickDeals]);
+
+  const isLoading = isBusinessOffersLoading || isQuickDealsLoading;
+  const error = businessOffersError || quickDealsError;
 
   // Get unique cities from all deals
   const availableCities = useMemo(() => {
