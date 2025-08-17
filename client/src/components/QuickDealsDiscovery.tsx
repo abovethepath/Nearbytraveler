@@ -119,6 +119,11 @@ export function QuickDealsDiscovery({ userLocation }: QuickDealsDiscoveryProps) 
     // Clean up common formatting issues
     let formatted = discountAmount.trim();
     
+    // Handle percentage deals - if just a number, add % symbol
+    if (/^\d+$/.test(formatted)) {
+      formatted = `${formatted}%`;
+    }
+    
     // Remove duplicate symbols and fix common issues
     formatted = formatted.replace(/(%\$|%\s*\$|\$%)/gi, '$'); // Fix %$ to just $
     formatted = formatted.replace(/%+/g, '%'); // Remove multiple % signs

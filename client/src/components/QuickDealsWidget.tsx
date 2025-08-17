@@ -245,6 +245,31 @@ export function QuickDealsWidget({ city, profileUserId, showCreateForm: external
     }
   };
 
+  // Format discount amount for display
+  const formatDiscountAmount = (discountAmount: string | null) => {
+    if (!discountAmount) return 'Special Deal';
+    
+    // Clean up common formatting issues
+    let formatted = discountAmount.trim();
+    
+    // Handle percentage deals - if just a number, add % symbol
+    if (/^\d+$/.test(formatted)) {
+      formatted = `${formatted}%`;
+    }
+    
+    // Remove duplicate symbols and fix common issues
+    formatted = formatted.replace(/(%\$|%\s*\$|\$%)/gi, '$'); // Fix %$ to just $
+    formatted = formatted.replace(/%+/g, '%'); // Remove multiple % signs
+    formatted = formatted.replace(/\s+/g, ' '); // Normalize spaces
+    
+    // Final cleanup - ensure no double %% remains
+    while (formatted.includes('%%')) {
+      formatted = formatted.replace('%%', '%');
+    }
+    
+    return formatted;
+  };
+
   const activateDeals = quickDeals?.filter((deal: QuickDeal) => {
     const now = new Date();
     const validUntil = new Date(deal.validUntil);
@@ -472,7 +497,7 @@ export function QuickDealsWidget({ city, profileUserId, showCreateForm: external
                         <h4 className="font-medium text-gray-900 dark:text-white">{deal.title}</h4>
                         <Badge className={`text-xs ${getAvailabilityColor(deal.availability)}`}>
                           {getDealTypeIcon(deal.dealType)}
-                          {deal.discountAmount}
+                          {formatDiscountAmount(deal.discountAmount)}
                         </Badge>
                       </div>
                       <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">{deal.description}</p>
