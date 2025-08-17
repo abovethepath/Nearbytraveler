@@ -49,6 +49,9 @@ const businessProfileSchema = z.object({
   zipCode: z.string().optional(),
   phoneNumber: z.string().optional(),
   websiteUrl: z.string().optional(),
+  // Owner/Internal Contact Information
+  ownerName: z.string().optional(),
+  ownerPhone: z.string().optional(),
   travelStyle: z.array(z.string()).optional(),
   interests: z.array(z.string()).default([]),
   activities: z.array(z.string()).default([]),
@@ -85,6 +88,9 @@ const BusinessProfileForm = ({ user, isEditMode, setIsEditMode, onSaveSuccess })
       zipCode: user?.zip_code || user?.zipCode || "",
       phoneNumber: user?.phone_number || user?.phoneNumber || "",
       websiteUrl: user?.website_url || user?.websiteUrl || user?.website || "",
+      // Owner/Internal Contact Information
+      ownerName: user?.name || "",
+      ownerPhone: user?.ownerPhone || user?.owner_phone || "",
       travelStyle: user?.travelStyle || [],
       interests: user?.interests || [],
       activities: user?.activities || [],
@@ -370,6 +376,59 @@ const BusinessProfileForm = ({ user, isEditMode, setIsEditMode, onSaveSuccess })
                   </FormItem>
                 )}
               />
+            </div>
+
+            {/* OWNER/INTERNAL CONTACT INFORMATION - HIDDEN FROM PUBLIC */}
+            <div className="border-t pt-4">
+              <h3 className="text-lg font-semibold mb-4 text-purple-600 flex items-center gap-2">
+                <Shield className="h-5 w-5" />
+                Owner Contact Information
+              </h3>
+              <div className="text-sm text-gray-600 mb-4 p-3 bg-purple-50 rounded border">
+                <strong>Internal Use Only:</strong> This information is private and used only for platform communication. It won't be visible to customers or the public.
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={profileForm.control}
+                  name="ownerName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Owner Name</FormLabel>
+                      <FormControl>
+                        <Input 
+                          {...field} 
+                          placeholder="John Doe"
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        Used for platform communications
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={profileForm.control}
+                  name="ownerPhone"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Owner Phone</FormLabel>
+                      <FormControl>
+                        <Input 
+                          {...field} 
+                          placeholder="(555) 123-4567"
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        Private contact for platform use
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
             </div>
 
             {/* BUSINESS OFFERINGS */}
