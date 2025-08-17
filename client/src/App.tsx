@@ -579,7 +579,13 @@ function Router() {
         return <Auth />;
       }
 
-      // Default: show new landing page for unknown routes
+      // Default: show new landing page for unknown routes  
+      // CRITICAL: Root path should always show landing page for unauthenticated users
+      if (location === '/' || location === '') {
+        console.log('🏠 Root path for unauthenticated user - showing landing page');
+        return <LandingNew />;
+      }
+      
       console.log('❌ Unknown route, showing new landing page:', location);
       return <LandingNew />;
     }
@@ -874,11 +880,11 @@ function Router() {
           }
         }
 
-        // BUSINESS USER FIX: Prevent automatic redirects for business users
-        // They should stay on their intended routes (profile, dashboard, etc.)
-        if (user?.userType === 'business') {
-          console.log('🏢 BUSINESS USER: Unknown route detected, redirecting to profile instead of home');
-          setLocation(`/profile/${user.id}`);
+        // BUSINESS USER FIX: Only redirect business users to profile for specific routes
+        // NOT for root path - root should always go to home for everyone
+        if (user?.userType === 'business' && location !== '/') {
+          console.log('🏢 BUSINESS USER: Unknown route detected (not root), redirecting to home page');
+          setLocation('/');
           return null;
         }
         
