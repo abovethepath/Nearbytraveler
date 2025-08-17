@@ -271,14 +271,43 @@ body {
 /* UNIVERSAL TEXT CONTRAST FIX - Force visibility for all text elements */
 .deal-card span,
 .deal-card p,
-.deal-card div {
-  color: hsl(217.2, 25%, 15%) !important;
+.deal-card div,
+.deal-card h1,
+.deal-card h2,
+.deal-card h3,
+.deal-card h4,
+.deal-card h5,
+.deal-card h6 {
+  color: black !important;
 }
 
 .dark .deal-card span,
 .dark .deal-card p,
-.dark .deal-card div {
-  color: hsl(210, 40%, 98%) !important;
+.dark .deal-card div,
+.dark .deal-card h1,
+.dark .deal-card h2,
+.dark .deal-card h3,
+.dark .deal-card h4,
+.dark .deal-card h5,
+.dark .deal-card h6 {
+  color: white !important;
+}
+
+/* Force black text for deal card titles specifically */
+.deal-card .text-gray-900,
+.deal-card .text-gray-800,
+.deal-card .text-gray-700,
+.deal-card .text-gray-600,
+.deal-card .text-gray-500 {
+  color: black !important;
+}
+
+.dark .deal-card .text-gray-900,
+.dark .deal-card .text-gray-800,
+.dark .deal-card .text-gray-700,
+.dark .deal-card .text-gray-600,
+.dark .deal-card .text-gray-500 {
+  color: white !important;
 }
 
 /* Exception for elements that should stay specific colors */

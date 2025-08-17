@@ -321,12 +321,12 @@ export default function Deals() {
               </div>
             )}
             <div className="flex-1">
-              <h3 className="font-bold text-lg text-gray-900 dark:text-white">
+              <h3 className="font-bold text-lg" style={{ color: 'black' }}>
                 {deal.businessName || 'Business Name'}
               </h3>
-              <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+              <div className="flex items-center gap-2 text-sm">
                 <MapPin className="w-4 h-4" />
-                <span>{deal.businessAddress ? `${deal.businessAddress}, ${deal.businessLocation}` : deal.businessLocation}</span>
+                <span style={{ color: 'black' }}>{deal.businessAddress ? `${deal.businessAddress}, ${deal.businessLocation}` : deal.businessLocation}</span>
               </div>
             </div>
             {instant && (
@@ -340,7 +340,7 @@ export default function Deals() {
           {/* Deal Title & Discount */}
           <div className="flex justify-between items-start">
             <div className="flex-1">
-              <CardTitle className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+              <CardTitle className="text-xl font-bold mb-2" style={{ color: 'black' }}>
                 {deal.title}
               </CardTitle>
               <div className="flex items-center gap-2">
@@ -371,8 +371,8 @@ export default function Deals() {
         <CardContent className="space-y-4">
           {/* Deal Description */}
           <div>
-            <h4 className="font-semibold text-gray-900 dark:text-white mb-1">Deal Details</h4>
-            <p className="text-gray-700 dark:text-gray-300 text-sm">
+            <h4 className="font-semibold mb-1" style={{ color: 'black' }}>Deal Details</h4>
+            <p className="text-sm" style={{ color: 'black' }}>
               {deal.description}
             </p>
           </div>
@@ -380,8 +380,8 @@ export default function Deals() {
           {/* Business Description */}
           {deal.businessDescription && (
             <div>
-              <h4 className="font-semibold text-gray-900 dark:text-white mb-1">About {deal.businessName}</h4>
-              <p className="text-gray-600 dark:text-gray-400 text-sm">
+              <h4 className="font-semibold mb-1" style={{ color: 'black' }}>About {deal.businessName}</h4>
+              <p className="text-sm" style={{ color: 'black' }}>
                 {deal.businessDescription}
               </p>
             </div>
