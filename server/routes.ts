@@ -2707,6 +2707,21 @@ Questions? Just reply to this message. Welcome aboard!
 
       // Remove password from response
       const { password: _, ...userWithoutPassword } = user;
+      
+      // MAP CUSTOM FIELDS: Convert snake_case database fields to camelCase for frontend
+      if (userWithoutPassword.custom_interests !== undefined) {
+        userWithoutPassword.customInterests = userWithoutPassword.custom_interests;
+        delete userWithoutPassword.custom_interests;
+      }
+      if (userWithoutPassword.custom_activities !== undefined) {
+        userWithoutPassword.customActivities = userWithoutPassword.custom_activities;
+        delete userWithoutPassword.custom_activities;
+      }
+      if (userWithoutPassword.custom_events !== undefined) {
+        userWithoutPassword.customEvents = userWithoutPassword.custom_events;
+        delete userWithoutPassword.custom_events;
+      }
+      
       return res.json(userWithoutPassword);
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error fetching user:", error);
