@@ -738,23 +738,18 @@ function Router() {
       case '/profile':
         console.log('🔍 PROFILE ROUTE: user in context:', user?.id, 'user object:', !!user);
 
-        // Get user from context or auth storage
-        let profileUserId = user?.id;
-
-        if (!profileUserId) {
-          console.log('🔍 PROFILE ROUTE: No user in context, checking auth storage');
+        // For /profile route (own profile), don't pass userId prop so it defaults to own profile
+        if (!user?.id) {
+          console.log('🔍 PROFILE ROUTE: No user found, checking auth storage');
           const storageUser = authStorage.getUser();
-          if (storageUser?.id) {
-            console.log('🔍 PROFILE ROUTE: Found user in auth storage:', storageUser.id);
-            profileUserId = storageUser.id;
-          } else {
+          if (!storageUser?.id) {
             console.log('🔍 PROFILE ROUTE: No user found anywhere, redirecting to auth');
             setLocation('/auth');
             return null;
           }
         }
 
-        return <Profile userId={profileUserId} />;
+        return <Profile />;
       case '/messages':
         return <Messages />;
       case '/meetups':

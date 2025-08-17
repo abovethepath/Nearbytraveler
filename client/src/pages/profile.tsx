@@ -813,14 +813,16 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   }, [currentUser, setAuthUser]);
   
   const effectiveUserId = propUserId || currentUser?.id;
-  const isOwnProfile = propUserId ? (propUserId === currentUser?.id) : true;
+  const isOwnProfile = propUserId ? (parseInt(propUserId) === currentUser?.id) : true;
   
   console.log('🔧 AUTHENTICATION STATE:', {
     currentUserId: currentUser?.id,
     currentUsername: currentUser?.username,
     effectiveUserId,
     isOwnProfile,
-    propUserId
+    propUserId,
+    propUserIdType: typeof propUserId,
+    currentUserIdType: typeof currentUser?.id
   });
   
   console.log('Profile OWNERSHIP:', {
@@ -829,7 +831,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     currentUserId: currentUser?.id,
     effectiveUserId,
     comparison: `${propUserId} === ${currentUser?.id}`,
-    comparisonResult: propUserId === currentUser?.id
+    comparisonResult: propUserId === currentUser?.id,
+    parsedComparison: `parseInt(${propUserId}) === ${currentUser?.id}`,
+    parsedResult: parseInt(propUserId || '') === currentUser?.id
   });
   
 
