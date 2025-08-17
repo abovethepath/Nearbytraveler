@@ -6831,7 +6831,7 @@ Questions? Just reply to this message. Welcome aboard!
         console.log(`🛍️ QUICK DEALS: Parameters received - city: ${city}, businessId: ${businessId}`);
       }
 
-      // Use a single, simple query that works reliably
+      // Use a single, simple query that works reliably - ONLY return non-expired deals
       const result = await db.execute(sql`
         SELECT 
           qd.*,
@@ -6845,7 +6845,9 @@ Questions? Just reply to this message. Welcome aboard!
           u.profile_image as business_image
         FROM quick_deals qd
         LEFT JOIN users u ON qd.business_id = u.id
-        WHERE qd.is_active = true
+        WHERE qd.is_active = true 
+          AND qd.valid_until > NOW()
+          AND (qd.max_redemptions IS NULL OR qd.current_redemptions < qd.max_redemptions)
         ORDER BY qd.created_at DESC
       `);
       
