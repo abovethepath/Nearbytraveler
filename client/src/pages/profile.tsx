@@ -4843,7 +4843,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                 method: 'PUT',
                                 headers: {
                                   'Content-Type': 'application/json',
-                                  'x-user-data': JSON.stringify(user),
+                                  // CRITICAL FIX: Remove massive x-user-data header causing 431 error
                                   'x-user-id': effectiveUserId?.toString() || '',
                                   'x-user-type': user?.userType || 'business'
                                 },
@@ -5239,7 +5239,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               method: 'PUT',
                               headers: {
                                 'Content-Type': 'application/json',
-                                'x-user-data': JSON.stringify(user),
+                                // CRITICAL FIX: Remove massive x-user-data header causing 431 error
                                 'x-user-id': effectiveUserId?.toString() || '',
                                 'x-user-type': user?.userType || 'business'
                               },
@@ -5247,6 +5247,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             });
                             
                             console.log('🔧 BUSINESS SAVE - Response status:', response.status);
+                            
+                            if (!response.ok) {
+                              const errorText = await response.text();
+                              console.error('🔴 BUSINESS SAVE - Error response:', errorText);
+                              throw new Error(`Failed to save: ${response.status} ${errorText}`);
+                            }
+                            
                             const responseData = await response.json();
                             console.log('🔧 BUSINESS SAVE - Response data:', responseData);
                             
