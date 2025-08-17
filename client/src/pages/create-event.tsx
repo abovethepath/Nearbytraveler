@@ -20,6 +20,7 @@ import Logo from "@/components/logo";
 import { COUNTRIES, US_CITIES_BY_STATE } from "@shared/locationData";
 import { Badge } from "@/components/ui/badge";
 import { SmartLocationInput } from "@/components/SmartLocationInput";
+import { authStorage } from "@/lib/auth";
 
 // Predefined categories for events
 const EVENT_CATEGORIES = [
@@ -318,13 +319,17 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
     
     setIsSubmitting(true);
     try {
-      // Get user data to set organizer ID
-      const storedUser = localStorage.getItem('travelconnect_user');
-      if (!storedUser) {
-        throw new Error('User not found. Please log in again.');
-      }
+      // Get user data to set organizer ID using the proper auth system
+      let user = authStorage.getUser();
       
-      const user = JSON.parse(storedUser);
+      if (!user || !user.id) {
+        // Try emergency refresh if no user found
+        const refreshedUser = await authStorage.forceRefreshUser();
+        if (!refreshedUser || !refreshedUser.id) {
+          throw new Error('User not found. Please log in again.');
+        }
+        user = refreshedUser;
+      }
       
       // Combine date and time fields into proper datetime strings
       let startDateTime = null;
