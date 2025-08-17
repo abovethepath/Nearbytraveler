@@ -2794,28 +2794,9 @@ Questions? Just reply to this message. Welcome aboard!
       if (updates.streetAddress !== undefined) {
         updates.street_address = updates.streetAddress;
         
-        // AUTOMATIC GEOCODING: Convert business addresses to coordinates for map display
-        if (updates.streetAddress && updates.streetAddress.trim()) {
-          // Process geocoding in background without blocking profile update
-          setImmediate(async () => {
-            try {
-              const coords = await geocodeAddress(updates.streetAddress);
-              if (coords) {
-                // Update coordinates separately after profile save succeeds
-                await storage.updateUser(userId, { 
-                  currentLatitude: coords.lat, 
-                  currentLongitude: coords.lng 
-                });
-                if (process.env.NODE_ENV === 'development') console.log(`🗺️ BACKGROUND GEOCODED: Business address "${updates.streetAddress}" → (${coords.lat}, ${coords.lng})`);
-              } else {
-                if (process.env.NODE_ENV === 'development') console.warn(`⚠️ BACKGROUND GEOCODE FAILED: Could not geocode business address "${updates.streetAddress}"`);
-              }
-            } catch (error) {
-              if (process.env.NODE_ENV === 'development') console.error(`❌ BACKGROUND GEOCODE ERROR: Failed to geocode "${updates.streetAddress}":`, error);
-            }
-          });
-          if (process.env.NODE_ENV === 'development') console.log(`🗺️ GEOCODING QUEUED: Business address "${updates.streetAddress}" will be processed in background`);
-        }
+        // GEOCODING DISABLED: Temporarily disabled due to rate limiting issues
+        // Business addresses will be saved without automatic geocoding to prevent 431 errors
+        if (process.env.NODE_ENV === 'development') console.log(`📍 GEOCODING SKIPPED: Business address "${updates.streetAddress}" saved without coordinates (geocoding disabled)`);
         
         delete updates.streetAddress;
       }
