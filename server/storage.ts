@@ -5069,22 +5069,7 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  // Helper method for distance calculation
-  private calculateHaversineDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
-    const R = 6371; // Earth's radius in kilometers
-    const dLat = this.toRad(lat2 - lat1);
-    const dLon = this.toRad(lon2 - lon1);
-    const a = 
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(this.toRad(lat1)) * Math.cos(this.toRad(lat2)) *
-      Math.sin(dLon / 2) * Math.sin(dLon / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c; // Distance in kilometers
-  }
-
-  private toRad(degrees: number): number {
-    return degrees * (Math.PI / 180);
-  }
+  // Helper method for distance calculation (duplicate removed)
 
   async createAIBusiness(businessData: any): Promise<any> {
     try {
@@ -5302,51 +5287,7 @@ export class DatabaseStorage implements IStorage {
     return code || `REF${Date.now()}`;
   }
 
-  async getReferralStats(): Promise<any> {
-    try {
-      const [totalReferrals] = await db
-        .select({ count: count() })
-        .from(referrals);
-
-      const [pendingReferrals] = await db
-        .select({ count: count() })
-        .from(referrals)
-        .where(eq(referrals.status, 'pending'));
-
-      const [completedReferrals] = await db
-        .select({ count: count() })
-        .from(referrals)
-        .where(ne(referrals.status, 'pending'));
-
-      const [totalRewards] = await db
-        .select({ count: count() })
-        .from(referrals)
-        .where(eq(referrals.rewardEarned, true));
-
-      const conversionRate = totalReferrals.count > 0 
-        ? (completedReferrals.count / totalReferrals.count) * 100 
-        : 0;
-
-      // Get top referrers
-      const topReferrers = await db
-        .select({
-          userId: referrals.referrerId,
-          referralCount: count(referrals.id),
-          rewardsEarned: sql`count(case when ${referrals.rewardEarned} = true then 1 end)`
-        })
-        .from(referrals)
-        .leftJoin(users, eq(users.id, referrals.referrerId))
-        .groupBy(referrals.referrerId, users.username)
-        .orderBy(desc(count(referrals.id)))
-        .limit(10);
-
-      // Add usernames to top referrers
-      const topReferrersWithNames = await Promise.all(
-        topReferrers.map(async (referrer) => {
-          const user = await this.getUser(referrer.userId);
-          return {
-            ...referrer,
-            username: user?.username || 'Unknown'
+  // Duplicate getReferralStats method removed
           };
         })
       );
@@ -6853,35 +6794,7 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  // Get users by location and type for clickable city stats
-  async getUsersByLocationAndType(city: string, state: string | null, country: string | null, userType: string): Promise<any[]> {
-    try {
-      console.log(`getUsersByLocationAndType called with: city="${city}", state="${state}", country="${country}", userType="${userType}"`);
-
-      // FIXED: Use the working searchUsersByLocationDirect method to avoid Drizzle ORM errors
-      const locationString = [city, state, country].filter(Boolean).join(', ');
-      console.log(`getUsersByLocationAndType - formatted location: "${locationString}"`);
-      
-      // Get all users using the working direct search method 
-      const allMatchedUsers = await this.searchUsersByLocationDirect(locationString, userType);
-      console.log(`getUsersByLocationAndType - searchUsersByLocationDirect returned ${allMatchedUsers.length} users`);
-      
-      console.log('getUsersByLocationAndType - final results:', allMatchedUsers.map(u => ({ 
-        id: u.id, 
-        username: u.username, 
-        userType: u.userType,
-        hometown: `${u.hometownCity}, ${u.hometownState}, ${u.hometownCountry}`
-      })));
-      
-      return allMatchedUsers.map(user => {
-        const { password, ...safeUser } = user;
-        return safeUser;
-      });
-    } catch (error) {
-      console.error('Error in getUsersByLocationAndType:', error);
-      return [];
-    }
-  }
+  // Duplicate getUsersByLocationAndType method removed - using original version above
 
   // Re-enabled chatroom creation for new cities - creates 2 chatrooms per city
   async ensureMeetLocalsChatrooms(city?: string, state?: string | null, country?: string): Promise<void> {
