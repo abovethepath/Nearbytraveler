@@ -13,7 +13,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Plus, Edit, Trash2, Eye, BarChart3, Calendar, DollarSign, Users, TrendingUp, CalendarDays, Camera, Image, MapPin, Clock, Percent, Tag, Gift } from "lucide-react";
+import { Plus, Edit, Trash2, Eye, BarChart3, Calendar, DollarSign, Users, TrendingUp, CalendarDays, Camera, Image, MapPin, Clock, Percent, Tag, Gift, Zap } from "lucide-react";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { SubscriptionStatus } from "@/components/SubscriptionStatus";
@@ -258,7 +258,7 @@ export default function BusinessDashboard() {
     queryKey: [`/api/business-deals/business/${storageUser?.id}`],
     enabled: !!storageUser?.id && storageUser?.userType === 'business',
     staleTime: 0,
-    cacheTime: 0,
+    gcTime: 0,
     refetchOnMount: 'always',
     refetchOnWindowFocus: true,
     refetchInterval: 5000 // Refresh every 5 seconds
