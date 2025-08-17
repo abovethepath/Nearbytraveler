@@ -16,10 +16,12 @@ import { SmartLocationInput } from "@/components/SmartLocationInput";
 import { BUSINESS_TYPES } from "../../../shared/base-options";
 
 const businessSignupSchema = z.object({
-  // Business Account Information
+  // Account Owner Information (for platform communication)
   username: z.string().min(6, "Username must be 6-14 characters").max(14, "Username must be 6-14 characters"),
   email: z.string().email("Please enter a valid email"),
   password: z.string().min(6, "Password must be at least 6 characters"),
+  ownerName: z.string().min(1, "Account owner name is required"),
+  ownerPhone: z.string().min(1, "Owner contact phone is required"),
   
   // Essential Business Information Only
   businessName: z.string().min(1, "Business name is required"),
@@ -107,7 +109,9 @@ export default function SignupBusinessSimple() {
       username: accountData?.username || "",
       email: accountData?.email || "",
       password: accountData?.password || "",
-      businessName: accountData?.name || "",
+      ownerName: accountData?.name || "",
+      ownerPhone: "",
+      businessName: accountData?.businessName || "",
       businessType: "",
       customBusinessType: "",
       businessPhone: "",
@@ -221,56 +225,106 @@ export default function SignupBusinessSimple() {
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                 
-                {/* Account Information Section - Pre-filled from join page */}
-                {accountData && (
-                  <div className="space-y-4 bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
-                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                      <User className="w-5 h-5" />
-                      Account Information ✓
-                    </h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      Account details from step 1 (automatically filled)
-                    </p>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <FormField
-                        control={form.control}
-                        name="businessName"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Business Name</FormLabel>
-                            <FormControl>
-                              <Input placeholder="Your Business Name" {...field} disabled className="bg-gray-100 dark:bg-gray-800" />
-                            </FormControl>
-                            <FormDescription>
-                              From step 1 registration
-                            </FormDescription>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="username"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Username</FormLabel>
-                            <FormControl>
-                              <Input placeholder="businessusername" {...field} disabled className="bg-gray-100 dark:bg-gray-800" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
+                {/* Account Owner Information Section */}
+                <div className="space-y-4 bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                    <User className="w-5 h-5" />
+                    Account Owner Information
+                  </h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Contact information for the person managing this account
+                  </p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="ownerName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Full Name *</FormLabel>
+                          <FormControl>
+                            <Input placeholder="John Smith" {...field} />
+                          </FormControl>
+                          <FormDescription>
+                            Name of the account owner/manager
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="ownerPhone"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Owner Contact Phone *</FormLabel>
+                          <FormControl>
+                            <Input placeholder="+1 (555) 123-4567" {...field} />
+                          </FormControl>
+                          <FormDescription>
+                            Direct line to reach the account owner
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="username"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Username</FormLabel>
+                          <FormControl>
+                            <Input placeholder="businessusername" {...field} disabled className="bg-gray-100 dark:bg-gray-800" />
+                          </FormControl>
+                          <FormDescription>
+                            From step 1 registration
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Email</FormLabel>
+                          <FormControl>
+                            <Input placeholder="owner@business.com" {...field} disabled className="bg-gray-100 dark:bg-gray-800" />
+                          </FormControl>
+                          <FormDescription>
+                            Owner's email for platform notifications
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   </div>
-                )}
+                </div>
 
                 {/* Essential Business Information Section */}
                 <div className="space-y-4">
                   <h3 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center gap-2">
                     <Building className="w-5 h-5" />
-                    Essential Business Information
+                    Business Information
                   </h3>
+                  
+                  <FormField
+                    control={form.control}
+                    name="businessName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Business Name *</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Your Business Name" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <FormField
@@ -303,12 +357,12 @@ export default function SignupBusinessSimple() {
                       name="businessPhone"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Business Phone Number *</FormLabel>
+                          <FormLabel>Customer Phone *</FormLabel>
                           <FormControl>
                             <Input placeholder="+1 (555) 123-4567" {...field} />
                           </FormControl>
                           <FormDescription>
-                            Public phone number for customer inquiries
+                            Public phone number customers will call
                           </FormDescription>
                           <FormMessage />
                         </FormItem>

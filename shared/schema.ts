@@ -78,6 +78,7 @@ export const users = pgTable("users", {
   streetAddress: text("street_address"),
   zipCode: text("zip_code"),
   phoneNumber: text("phone_number"),
+  ownerPhone: text("owner_phone"), // Direct contact for account owner (separate from business phone)
   
   // Business Description Fields
   services: text("services"),

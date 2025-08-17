@@ -11380,6 +11380,13 @@ Questions? Just reply to this message. Welcome aboard!
         businessData.custom_events = businessData.customEvents;
         delete businessData.customEvents;
       }
+      if (businessData.ownerName !== undefined) {
+        businessData.name = businessData.ownerName; // Map to name field
+        delete businessData.ownerName;
+      }
+      if (businessData.ownerPhone !== undefined) {
+        businessData.ownerPhone = businessData.ownerPhone; // Keep as ownerPhone for schema
+      }
       
       // Create business user account
       const result = await storage.createBusinessUser(businessData);
