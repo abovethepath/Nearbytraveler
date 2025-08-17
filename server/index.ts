@@ -182,15 +182,8 @@ app.use((req, res, next) => {
     res.json({ message: "Server is running", timestamp: new Date().toISOString() });
   });
   
-  // Add quick login fix (temporarily disabled during debugging)
-  try {
-    const { setupQuickLoginFix } = await import('./quick-login-fix.js');
-    setupQuickLoginFix(app);
-    console.log("Quick login fix registered successfully");
-  } catch (error) {
-    console.error("Failed to register quick login fix:", error);
-    console.log("Continuing without quick login fix...");
-  }
+  // Add quick login fix (temporarily disabled during deployment debugging)
+  console.log("Quick login fix temporarily disabled for deployment stability");
   
   console.log("Minimal routes registered successfully");
 
@@ -207,9 +200,14 @@ app.use((req, res, next) => {
   }
 
   // Setup vite after ALL routes are registered
-  if (app.get("env") === "development") {
+  // Force development mode for Replit to ensure proper frontend serving
+  const isProduction = process.env.NODE_ENV === "production";
+  
+  if (!isProduction) {
+    console.log("🔧 Setting up Vite development server...");
     await setupVite(app, server);
   } else {
+    console.log("📦 Setting up static file serving for production...");
     serveStatic(app);
   }
 
