@@ -5773,6 +5773,7 @@ Questions? Just reply to this message. Welcome aboard!
       if (process.env.NODE_ENV === 'development') console.log(`📡 API RESPONSE SAMPLE:`, JSON.stringify(processedOffers[0], null, 2));
       if (process.env.NODE_ENV === 'development') console.log(`🔍 BUSINESS FIELDS IN RESPONSE:`, {
         businessName: processedOffers[0]?.businessName,
+        businessDescription: processedOffers[0]?.businessDescription,
         businessPhone: processedOffers[0]?.businessPhone,
         businessAddress: processedOffers[0]?.businessAddress,
         businessLocation: processedOffers[0]?.businessLocation

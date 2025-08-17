@@ -1,5 +1,5 @@
-import React, { useContext, useState, useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
+import React, { useContext, useState, useMemo, useEffect } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { AuthContext } from "@/App";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -43,21 +43,33 @@ export default function Deals() {
   const { user } = useContext(AuthContext);
   const [, setLocation] = useLocation();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   
   const effectiveUser = user || authStorage.getUser();
   
   // Simple city filtering 
   const [selectedCity, setSelectedCity] = useState('');
+
+  // Add periodic refresh to ensure business description updates are reflected
+  useEffect(() => {
+    const interval = setInterval(() => {
+      // Invalidate business deals cache every 30 seconds to catch bio changes
+      queryClient.invalidateQueries({ queryKey: ['/api/business-deals'] });
+    }, 30000); // 30 seconds
+
+    return () => clearInterval(interval);
+  }, [queryClient]);
   
 
 
   // Fetch all business deals with complete business information - FORCE REFRESH for dynamic bio updates
-  const { data: businessDeals = [], isLoading: isBusinessDealsLoading, error: businessDealsError } = useQuery<BusinessDeal[]>({
+  const { data: businessDeals = [], isLoading: isBusinessDealsLoading, error: businessDealsError, refetch: refetchBusinessDeals } = useQuery<BusinessDeal[]>({
     queryKey: ['/api/business-deals'],
     enabled: !!effectiveUser,
     refetchOnWindowFocus: true, // Enable refetch on focus to get fresh business data
+    refetchOnMount: true, // Always refetch when component mounts
     staleTime: 0, // No stale time - always fetch fresh data for dynamic bio updates
-    cacheTime: 0, // Don't cache to ensure fresh business info
+    gcTime: 0, // Don't cache to ensure fresh business info (gcTime replaces cacheTime in newer versions)
   });
 
   // Fetch quick deals
