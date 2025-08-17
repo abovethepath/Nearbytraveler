@@ -6908,7 +6908,9 @@ Questions? Just reply to this message. Welcome aboard!
         ORDER BY qd.created_at DESC
       `;
       
-      const result = await db.execute(sql.raw(dynamicQuery, params));
+      const result = params.length > 0 
+        ? await db.execute(sql.raw(dynamicQuery, params))
+        : await db.execute(sql.raw(dynamicQuery));
       
       const dealsWithBusiness = result.rows.map((row: any) => ({
         id: row.id,
