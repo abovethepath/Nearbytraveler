@@ -224,9 +224,10 @@ export default function Deals() {
   };
 
   const formatDiscount = (discountType: string, discountValue: string) => {
+    // Let businesses write their own deal descriptions without automatic formatting
     switch(discountType) {
       case 'percentage':
-        return `${discountValue}% OFF`;
+        return discountValue; // Just show the value, no "% OFF" suffix
       case 'buy_one_get_one':
         return 'BOGO';
       case 'fixed_amount':
@@ -284,12 +285,9 @@ export default function Deals() {
                 {deal.title}
               </CardTitle>
               <div className="flex items-center gap-2">
-                {getDiscountIcon(deal.discountType)}
-                <span className={`font-bold text-lg ${instant ? 'text-orange-600' : 'text-blue-600'}`}>
-                  {formatDiscount(deal.discountType, deal.discountValue)}
-                </span>
+                {/* Hide automatic discount formatting - let businesses write their own deal descriptions */}
                 {deal.discountCode && (
-                  <Badge variant="secondary" className="ml-2">
+                  <Badge variant="secondary">
                     Code: {deal.discountCode}
                   </Badge>
                 )}
