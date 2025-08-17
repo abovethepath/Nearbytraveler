@@ -232,4 +232,3 @@ export default function DiscoverPage() {
     </div>
   );
 }
-}
