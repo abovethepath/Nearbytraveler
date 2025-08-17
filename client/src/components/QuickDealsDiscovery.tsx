@@ -25,6 +25,9 @@ const CountdownTimer = ({ validUntil }: { validUntil: string }) => {
       // Parse the validUntil date and ensure it's in local timezone
       const expiryDate = new Date(validUntil);
       
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`⏰ COUNTDOWN: Now: ${now.toISOString()}, Expires: ${expiryDate.toISOString()}`);
+      }
       
       const distance = expiryDate.getTime() - now.getTime();
 
@@ -206,7 +209,7 @@ export function QuickDealsDiscovery({ userLocation }: QuickDealsDiscoveryProps) 
                   
                   {/* Countdown Timer - Most Prominent */}
                   <div className="mb-2 p-2 bg-white dark:bg-gray-800 rounded-md border border-orange-200 dark:border-orange-700">
-                    <CountdownTimer validUntil={deal.validUntil} />
+                    <CountdownTimer validUntil={deal.validUntil.toString()} />
                   </div>
                   
                   <p className="text-xs text-gray-600 dark:text-gray-300 mb-2 line-clamp-2">{deal.description}</p>
