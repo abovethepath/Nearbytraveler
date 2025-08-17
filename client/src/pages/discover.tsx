@@ -24,9 +24,6 @@ interface CityStats {
 }
 
 export default function DiscoverPage() {
-  return <DiscoverPaused />;
-
-function DiscoverPaused() {
   const [location, setLocation] = useLocation();
   const [searchQuery, setSearchQuery] = useState("");
 

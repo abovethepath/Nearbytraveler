@@ -198,7 +198,7 @@ export default function WelcomeBusiness() {
             Open Business Dashboard
           </Button>
           <div className="flex flex-col sm:flex-row gap-4 justify-center mt-6">
-            <Link href="/profile">
+            <Link href="/business-profile">
               <Button variant="outline" size="lg" className="px-6">
                 Complete Profile
               </Button>
