@@ -471,6 +471,7 @@ export class DatabaseStorage implements IStorage {
   // User methods
   async getUser(id: number): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.id, id));
+    
     if (!user) return undefined;
     
     // Convert PostgreSQL boolean strings to proper JavaScript booleans using consistent helper

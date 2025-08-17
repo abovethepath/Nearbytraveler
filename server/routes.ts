@@ -2708,44 +2708,15 @@ Questions? Just reply to this message. Welcome aboard!
       // Remove password from response
       const { password: _, ...userWithoutPassword } = user;
       
-      // DEBUG: Log custom fields from database
-      if (process.env.NODE_ENV === 'development' && userId === 22) {
-        console.log('🔍 RAW USER DATA FROM DB:', {
-          userId: userWithoutPassword.id,
-          hasCustomInterests: !!userWithoutPassword.custom_interests,
-          hasCustomActivities: !!userWithoutPassword.custom_activities,
-          hasCustomEvents: !!userWithoutPassword.custom_events,
-          rawCustomInterests: userWithoutPassword.custom_interests,
-          rawCustomActivities: userWithoutPassword.custom_activities,
-          rawCustomEvents: userWithoutPassword.custom_events
-        });
-      }
-      
       // MAP CUSTOM FIELDS: Convert snake_case database fields to camelCase for frontend
-      if (userWithoutPassword.custom_interests !== undefined) {
-        userWithoutPassword.customInterests = userWithoutPassword.custom_interests;
-        delete userWithoutPassword.custom_interests;
+      if (userWithoutPassword.customInterests !== undefined) {
+        userWithoutPassword.customInterests = userWithoutPassword.customInterests;
       }
-      if (userWithoutPassword.custom_activities !== undefined) {
-        userWithoutPassword.customActivities = userWithoutPassword.custom_activities;
-        delete userWithoutPassword.custom_activities;
+      if (userWithoutPassword.customActivities !== undefined) {
+        userWithoutPassword.customActivities = userWithoutPassword.customActivities;
       }
-      if (userWithoutPassword.custom_events !== undefined) {
-        userWithoutPassword.customEvents = userWithoutPassword.custom_events;
-        delete userWithoutPassword.custom_events;
-      }
-      
-      // DEBUG: Log final mapped fields  
-      if (process.env.NODE_ENV === 'development' && userId === 22) {
-        console.log('🔍 MAPPED USER DATA TO FRONTEND:', {
-          userId: userWithoutPassword.id,
-          hasCustomInterests: !!userWithoutPassword.customInterests,
-          hasCustomActivities: !!userWithoutPassword.customActivities,
-          hasCustomEvents: !!userWithoutPassword.customEvents,
-          finalCustomInterests: userWithoutPassword.customInterests,
-          finalCustomActivities: userWithoutPassword.customActivities,
-          finalCustomEvents: userWithoutPassword.customEvents
-        });
+      if (userWithoutPassword.customEvents !== undefined) {
+        userWithoutPassword.customEvents = userWithoutPassword.customEvents;
       }
       
       return res.json(userWithoutPassword);
