@@ -8155,7 +8155,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             type="checkbox"
                             checked={field.value}
                             onChange={(e) => field.onChange(e.target.checked)}
-                            className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                            className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:checked:bg-purple-600 rounded"
                           />
                         </FormControl>
                       </div>
@@ -8204,7 +8204,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             type="checkbox"
                             checked={field.value}
                             onChange={(e) => field.onChange(e.target.checked)}
-                            className="h-4 w-4 text-pink-600 focus:ring-pink-500 border-gray-300 rounded"
+                            className="h-4 w-4 text-pink-600 focus:ring-pink-500 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:checked:bg-pink-600 rounded"
                           />
                         </FormControl>
                       </div>
@@ -8253,7 +8253,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             type="checkbox"
                             checked={field.value}
                             onChange={(e) => field.onChange(e.target.checked)}
-                            className="h-4 w-4 text-rainbow border-gray-300 rounded"
+                            className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:checked:bg-purple-600 rounded"
                             style={{ accentColor: '#8B5CF6' }}
                           />
                         </FormControl>
