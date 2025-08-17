@@ -6804,7 +6804,7 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
-  // GET quick deals endpoint
+  // GET quick deals endpoint - SIMPLIFIED VERSION
   app.get("/api/quick-deals", async (req, res) => {
     try {
       const { city, businessId } = req.query;
@@ -6812,79 +6812,85 @@ Questions? Just reply to this message. Welcome aboard!
 
       if (process.env.NODE_ENV === 'development') console.log(`🛍️ QUICK DEALS: Fetching deals, active first`);
 
-      // Build conditions array
-      const conditions = [eq(quickDeals.isActive, true)];
-
-      // Add businessId filtering if specified (for business profile)
+      // Temporary fix: Use raw SQL to avoid Drizzle issues
+      let whereClause = 'WHERE qd.is_active = true';
+      const params: any[] = [];
+      
       if (businessId && typeof businessId === 'string') {
         const targetBusinessId = parseInt(businessId as string);
         if (!isNaN(targetBusinessId)) {
-          conditions.push(eq(quickDeals.businessId, targetBusinessId));
+          whereClause += ` AND qd.business_id = $${params.length + 1}`;
+          params.push(targetBusinessId);
         }
       }
 
-      // Add city filtering if specified
       if (city && typeof city === 'string') {
-        conditions.push(eq(quickDeals.city, city as string));
+        whereClause += ` AND qd.city = $${params.length + 1}`;
+        params.push(city);
       }
 
-      // Get quick deals with business information
-      const allDeals = await db
-        .select({
-          // Quick deal fields
-          id: quickDeals.id,
-          businessId: quickDeals.businessId,
-          title: quickDeals.title,
-          description: quickDeals.description,
-          dealType: quickDeals.dealType,
-          discountType: quickDeals.discountType,
-          discountValue: quickDeals.discountValue,
-          discountAmount: quickDeals.discountAmount,
-          originalPrice: quickDeals.originalPrice,
-          salePrice: quickDeals.salePrice,
-          dealCode: quickDeals.dealCode,
-          discountCode: quickDeals.discountCode,
-          validFrom: quickDeals.validFrom,
-          validUntil: quickDeals.validUntil,
-          maxRedemptions: quickDeals.maxRedemptions,
-          currentRedemptions: quickDeals.currentRedemptions,
-          isActive: quickDeals.isActive,
-          terms: quickDeals.terms,
-          termsConditions: quickDeals.termsConditions,
-          availability: quickDeals.availability,
-          imageUrl: quickDeals.imageUrl,
-          city: quickDeals.city,
-          state: quickDeals.state,
-          country: quickDeals.country,
-          createdAt: quickDeals.createdAt,
-          // Business information
-          businessName: users.businessName,
-          fallbackName: users.name,
-          businessDescription: users.bio,
-          businessType: users.businessType,
-          businessLocation: users.location,
-          businessEmail: users.email,
-          businessPhone: users.phoneNumber,
-          businessImage: users.profileImage,
-        })
-        .from(quickDeals)
-        .innerJoin(users, eq(quickDeals.businessId, users.id))
-        .where(and(...conditions))
-        .orderBy(desc(quickDeals.createdAt));
+      // Use completely raw SQL without any Drizzle sql template
+      const queryText = `
+        SELECT 
+          qd.*,
+          u.business_name,
+          u.name as fallback_name,
+          u.bio as business_description,
+          u.business_type,
+          u.location as business_location,
+          u.email as business_email,
+          u.phone_number as business_phone,
+          u.profile_image as business_image
+        FROM quick_deals qd
+        LEFT JOIN users u ON qd.business_id = u.id
+        ${whereClause}
+        ORDER BY qd.created_at DESC
+      `;
 
-      // Apply business name fallback and process deals
-      const processedDeals = allDeals.map(deal => ({
-        ...deal,
-        businessName: deal.businessName || deal.fallbackName || 'Business Name Missing',
-        fallbackName: undefined // Remove temporary field
+      const result = await db.execute(sql.raw(queryText, params));
+
+      const dealsWithBusiness = result.rows.map((row: any) => ({
+        id: row.id,
+        businessId: row.business_id,
+        title: row.title,
+        description: row.description,
+        dealType: row.deal_type,
+        category: row.category,
+        location: row.location,
+        street: row.street,
+        discountAmount: row.discount_amount,
+        originalPrice: row.original_price,
+        salePrice: row.sale_price,
+        dealCode: row.deal_code,
+        validFrom: row.valid_from,
+        validUntil: row.valid_until,
+        maxRedemptions: row.max_redemptions,
+        currentRedemptions: row.current_redemptions,
+        requiresReservation: row.requires_reservation,
+        isActive: row.is_active,
+        terms: row.terms,
+        availability: row.availability,
+        autoExpire: row.auto_expire,
+        city: row.city,
+        state: row.state,
+        country: row.country,
+        zipcode: row.zipcode,
+        createdAt: row.created_at,
+        businessName: row.business_name || row.fallback_name || 'Business Name Missing',
+        businessDescription: row.business_description || '',
+        businessType: row.business_type || 'Business',
+        businessLocation: row.business_location || row.city || 'Location Unknown',
+        businessEmail: row.business_email || '',
+        businessPhone: row.business_phone || '',
+        businessImage: row.business_image || ''
       }));
 
-      const activeDeals = processedDeals.filter(deal => {
+      const activeDeals = dealsWithBusiness.filter(deal => {
         const validUntil = new Date(deal.validUntil);
         return deal.isActive && validUntil > now && (!deal.maxRedemptions || (deal.currentRedemptions || 0) < deal.maxRedemptions);
       });
 
-      const expiredDeals = processedDeals.filter(deal => {
+      const expiredDeals = dealsWithBusiness.filter(deal => {
         const validUntil = new Date(deal.validUntil);
         return !deal.isActive || validUntil <= now || (deal.maxRedemptions && (deal.currentRedemptions || 0) >= deal.maxRedemptions);
       });
