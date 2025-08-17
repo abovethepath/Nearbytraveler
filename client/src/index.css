@@ -160,14 +160,102 @@ body {
 }
 
 /* Universal dark mode checkbox styling - override all checkboxes */
-.dark input[type="checkbox"]:not([class*="dark:"]) {
+.dark input[type="checkbox"] {
   background-color: hsl(217.2, 32.6%, 17.5%) !important;
   border-color: hsl(217.2, 32.6%, 25%) !important;
 }
 
-.dark input[type="checkbox"]:checked:not([class*="dark:"]) {
+.dark input[type="checkbox"]:checked {
   background-color: hsl(217.2, 91.2%, 59.8%) !important;
   border-color: hsl(217.2, 91.2%, 59.8%) !important;
+}
+
+/* Enhanced dark mode for deal cards and business components */
+.dark .deal-card {
+  background-color: hsl(217.2, 32.6%, 17.5%);
+  border-color: hsl(217.2, 32.6%, 25%);
+  color: hsl(210, 40%, 98%);
+}
+
+.dark .deal-percentage {
+  background-color: hsl(280, 65%, 40%);
+  color: hsl(210, 40%, 98%);
+}
+
+.dark .deal-restaurant-badge {
+  background-color: hsl(217.2, 32.6%, 25%);
+  color: hsl(215, 20.2%, 65.1%);
+}
+
+/* Comprehensive Dark Mode for Business Deals Page */
+.dark .bg-gray-50 {
+  background-color: hsl(217.2, 32.6%, 17.5%) !important;
+}
+
+.dark .bg-white {
+  background-color: hsl(217.2, 32.6%, 17.5%) !important;
+}
+
+.dark .text-gray-900 {
+  color: hsl(210, 40%, 98%) !important;
+}
+
+.dark .text-gray-700 {
+  color: hsl(215, 20.2%, 65.1%) !important;
+}
+
+.dark .text-gray-600 {
+  color: hsl(215, 20.2%, 65.1%) !important;
+}
+
+.dark .text-gray-500 {
+  color: hsl(215, 20.2%, 65.1%) !important;
+}
+
+.dark .border-gray-200 {
+  border-color: hsl(217.2, 32.6%, 25%) !important;
+}
+
+.dark .border-gray-300 {
+  border-color: hsl(217.2, 32.6%, 25%) !important;
+}
+
+/* Dark mode for percentage badges */
+.dark .bg-purple-500 {
+  background-color: hsl(280, 65%, 40%) !important;
+}
+
+.dark .bg-purple-600 {
+  background-color: hsl(280, 65%, 35%) !important;
+}
+
+/* Dark mode for specific deal elements */
+.dark .bg-yellow-50 {
+  background-color: hsl(45, 85%, 15%) !important;
+}
+
+.dark .border-yellow-200 {
+  border-color: hsl(45, 85%, 25%) !important;
+}
+
+.dark .text-yellow-600 {
+  color: hsl(45, 85%, 60%) !important;
+}
+
+.dark .text-gray-800 {
+  color: hsl(210, 40%, 98%) !important;
+}
+
+/* Dark mode for dropdown selects */
+.dark select {
+  background-color: hsl(217.2, 32.6%, 17.5%) !important;
+  color: hsl(210, 40%, 98%) !important;
+  border-color: hsl(217.2, 32.6%, 25%) !important;
+}
+
+.dark select option {
+  background-color: hsl(217.2, 32.6%, 17.5%) !important;
+  color: hsl(210, 40%, 98%) !important;
 }
 
 /* Desktop containers */

@@ -3169,6 +3169,16 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const isProfileIncomplete = () => {
     if (!user || !isOwnProfile) return false;
     
+    // For business users, check business-specific required fields
+    if (user.userType === 'business') {
+      const hasBusinessInfo = user.businessName && user.businessDescription && user.businessType;
+      const hasBusinessLocation = user.city && user.state && user.country;
+      const hasBusinessInterests = user.interests && Array.isArray(user.interests) && user.interests.length >= 3;
+      
+      return !hasBusinessInfo || !hasBusinessLocation || !hasBusinessInterests;
+    }
+    
+    // For regular users (travelers/locals)
     const hasBasicInfo = user.bio && user.bio.trim().length > 0;
     const hasInterests = user.interests && Array.isArray(user.interests) && user.interests.length >= 3;
     const hasLocation = user.hometownCity && user.hometownState && user.hometownCountry;

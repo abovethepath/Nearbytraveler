@@ -305,7 +305,7 @@ export default function Deals() {
     const instant = isInstantDeal(deal.category);
     
     return (
-      <Card key={deal.id} className={`hover:shadow-lg transition-all duration-300 cursor-pointer bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 ${expired ? 'opacity-75' : ''} ${instant ? 'border-orange-300 dark:border-orange-600 bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20' : 'border-blue-300 dark:border-blue-600'}`} onClick={() => handleClaimDeal(deal)}>
+      <Card key={deal.id} className={`deal-card hover:shadow-lg transition-all duration-300 cursor-pointer bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 ${expired ? 'opacity-75' : ''} ${instant ? 'border-orange-300 dark:border-orange-600 bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20' : 'border-blue-300 dark:border-blue-600'}`} onClick={() => handleClaimDeal(deal)}>
         <CardHeader className="pb-3">
           {/* Business Header */}
           <div className="flex items-start gap-3 mb-3">
