@@ -121,8 +121,13 @@ export function QuickDealsDiscovery({ userLocation }: QuickDealsDiscoveryProps) 
     
     // Remove duplicate symbols and fix common issues
     formatted = formatted.replace(/(%\$|%\s*\$|\$%)/gi, '$'); // Fix %$ to just $
-    formatted = formatted.replace(/(%.*%)/gi, (match) => match.replace(/%/g, '')); // Remove duplicate %
+    formatted = formatted.replace(/%+/g, '%'); // Remove multiple % signs
     formatted = formatted.replace(/\s+/g, ' '); // Normalize spaces
+    
+    // Final cleanup - ensure no double %% remains
+    while (formatted.includes('%%')) {
+      formatted = formatted.replace('%%', '%');
+    }
     
     return formatted;
   };
