@@ -187,29 +187,146 @@ body {
   color: hsl(215, 20.2%, 65.1%);
 }
 
-/* Comprehensive Dark Mode for Business Deals Page */
+/* FIXED: Text contrast issues - Force proper contrast for all text colors */
+/* Remove overly broad dark mode overrides that break visibility */
+
+/* Deal Cards - Fix white-on-white text issues */
+.deal-card .text-gray-900,
+.deal-card .text-gray-800,
+.deal-card .text-gray-700,
+.deal-card .text-gray-600 {
+  color: hsl(217.2, 25%, 15%) !important; /* Dark text for light backgrounds */
+}
+
+.dark .deal-card .text-gray-900,
+.dark .deal-card .text-gray-800,
+.dark .deal-card .text-gray-700,
+.dark .deal-card .text-gray-600 {
+  color: hsl(210, 40%, 98%) !important; /* Light text for dark backgrounds */
+}
+
+/* Specific text contrast fixes for deal elements */
+.deal-card .font-bold,
+.deal-card .font-semibold {
+  color: hsl(217.2, 25%, 15%) !important;
+}
+
+.dark .deal-card .font-bold,
+.dark .deal-card .font-semibold {
+  color: hsl(210, 40%, 98%) !important;
+}
+
+/* Background fixes without breaking text visibility */
 .dark .bg-gray-50 {
   background-color: hsl(217.2, 32.6%, 17.5%) !important;
 }
 
-.dark .bg-white {
+.dark .deal-card {
   background-color: hsl(217.2, 32.6%, 17.5%) !important;
-}
-
-.dark .text-gray-900 {
   color: hsl(210, 40%, 98%) !important;
 }
 
-.dark .text-gray-700 {
-  color: hsl(215, 20.2%, 65.1%) !important;
+/* CRITICAL FIX: Purple percentage badges visibility */
+.deal-percentage {
+  background-color: hsl(280, 65%, 40%) !important;
+  color: white !important;
+  font-weight: bold !important;
 }
 
-.dark .text-gray-600 {
-  color: hsl(215, 20.2%, 65.1%) !important;
+.dark .deal-percentage {
+  background-color: hsl(280, 65%, 50%) !important;
+  color: white !important;
 }
 
-.dark .text-gray-500 {
-  color: hsl(215, 20.2%, 65.1%) !important;
+/* Fix all badge visibility issues */
+.bg-purple-500,
+.bg-purple-600 {
+  background-color: hsl(280, 65%, 40%) !important;
+  color: white !important;
+}
+
+/* Ensure all text in badges is visible */
+.deal-card .badge,
+.deal-card .bg-purple-500,
+.deal-card .bg-purple-600 {
+  color: white !important;
+  font-weight: 600 !important;
+}
+
+/* Fix white text issues in light mode */
+.deal-card h3,
+.deal-card h4,
+.deal-card .font-bold,
+.deal-card .font-semibold {
+  color: hsl(217.2, 25%, 15%) !important;
+}
+
+.dark .deal-card h3,
+.dark .deal-card h4,
+.dark .deal-card .font-bold,
+.dark .deal-card .font-semibold {
+  color: hsl(210, 40%, 98%) !important;
+}
+
+/* UNIVERSAL TEXT CONTRAST FIX - Force visibility for all text elements */
+.deal-card span,
+.deal-card p,
+.deal-card div {
+  color: hsl(217.2, 25%, 15%) !important;
+}
+
+.dark .deal-card span,
+.dark .deal-card p,
+.dark .deal-card div {
+  color: hsl(210, 40%, 98%) !important;
+}
+
+/* Exception for elements that should stay specific colors */
+.deal-card .text-orange-600,
+.deal-card .text-blue-600,
+.deal-card .text-red-500,
+.deal-card .bg-orange-500,
+.deal-card .bg-purple-500,
+.deal-card .bg-purple-600 {
+  color: white !important;
+}
+
+/* Fix any remaining white-on-white issues */
+.deal-card .text-white {
+  color: white !important;
+  background-color: hsl(280, 65%, 40%) !important;
+  padding: 2px 8px !important;
+  border-radius: 4px !important;
+  font-weight: 600 !important;
+}
+
+/* CRITICAL: Fix invisible percentage badges and restaurant badges */
+.bg-purple-500.text-white,
+.bg-purple-600.text-white,
+[class*="bg-purple"].text-white {
+  background-color: hsl(280, 65%, 40%) !important;
+  color: white !important;
+  font-weight: bold !important;
+}
+
+/* Force visibility for all purple badge text */
+.bg-purple-500 *,
+.bg-purple-600 * {
+  color: white !important;
+}
+
+/* Restaurant badge specific fix */
+.restaurant-badge,
+[class*="Restaurant"] {
+  background-color: hsl(217.2, 25%, 75%) !important;
+  color: hsl(217.2, 25%, 15%) !important;
+  font-weight: 600 !important;
+}
+
+.dark .restaurant-badge,
+.dark [class*="Restaurant"] {
+  background-color: hsl(217.2, 32.6%, 25%) !important;
+  color: hsl(210, 40%, 98%) !important;
 }
 
 .dark .border-gray-200 {
