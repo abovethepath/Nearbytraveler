@@ -4740,36 +4740,40 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 {isOwnProfile && !editingInterests && !editingActivities && !editingEvents && (
                   <div className="flex justify-center mb-4">
                     <Button
-                      onClick={() => {
+                      onClick={async () => {
+                        // Force refresh user data before editing to get latest custom fields
+                        await userQuery.refetch();
+                        const freshUser = userQuery.data;
+                        
                         // Open ALL editing modes at once for business users
                         setEditingInterests(true);
                         setEditingActivities(true);
                         setEditingEvents(true);
                         
-                        // Initialize form data with combined predefined + custom entries
-                        const userInterests = [...(user?.interests || [])];
-                        const userActivities = [...(user?.activities || [])];
-                        const userEvents = [...(user?.events || [])];
+                        // Initialize form data with combined predefined + custom entries using fresh data
+                        const userInterests = [...(freshUser?.interests || [])];
+                        const userActivities = [...(freshUser?.activities || [])];
+                        const userEvents = [...(freshUser?.events || [])];
                         
                         // Add custom fields from database to the arrays for display
-                        if (user?.customInterests) {
-                          const customInterests = user.customInterests.split(',').map(s => s.trim()).filter(s => s);
+                        if (freshUser?.customInterests) {
+                          const customInterests = freshUser.customInterests.split(',').map(s => s.trim()).filter(s => s);
                           customInterests.forEach(item => {
                             if (!userInterests.includes(item)) {
                               userInterests.push(item);
                             }
                           });
                         }
-                        if (user?.customActivities) {
-                          const customActivities = user.customActivities.split(',').map(s => s.trim()).filter(s => s);
+                        if (freshUser?.customActivities) {
+                          const customActivities = freshUser.customActivities.split(',').map(s => s.trim()).filter(s => s);
                           customActivities.forEach(item => {
                             if (!userActivities.includes(item)) {
                               userActivities.push(item);
                             }
                           });
                         }
-                        if (user?.customEvents) {
-                          const customEvents = user.customEvents.split(',').map(s => s.trim()).filter(s => s);
+                        if (freshUser?.customEvents) {
+                          const customEvents = freshUser.customEvents.split(',').map(s => s.trim()).filter(s => s);
                           customEvents.forEach(item => {
                             if (!userEvents.includes(item)) {
                               userEvents.push(item);
@@ -4778,10 +4782,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         }
                         
                         console.log('🔧 BUSINESS EDIT - Loading custom fields:', { 
-                          user,
-                          customInterests: user?.customInterests, 
-                          customActivities: user?.customActivities, 
-                          customEvents: user?.customEvents,
+                          freshUser,
+                          customInterests: freshUser?.customInterests, 
+                          customActivities: freshUser?.customActivities, 
+                          customEvents: freshUser?.customEvents,
                           finalInterests: userInterests,
                           finalActivities: userActivities,
                           finalEvents: userEvents
