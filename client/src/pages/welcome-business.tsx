@@ -198,11 +198,6 @@ export default function WelcomeBusiness() {
             Open Business Dashboard
           </Button>
           <div className="flex flex-col sm:flex-row gap-4 justify-center mt-6">
-            <Link href="/business-profile">
-              <Button variant="outline" size="lg" className="px-6">
-                Complete Profile
-              </Button>
-            </Link>
             <Link href="/events">
               <Button variant="outline" size="lg" className="px-6">
                 Create Business Events
@@ -216,25 +211,30 @@ export default function WelcomeBusiness() {
           <div className="bg-gradient-to-r from-blue-600 to-orange-600 rounded-2xl p-1">
             <div className="bg-white dark:bg-gray-800 rounded-xl p-8">
               <h3 className="text-2xl font-bold text-center mb-6 dark:text-white">
-                Business Membership Pricing
+                Currently FREE During Beta
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
                 <div>
-                  <div className="text-3xl font-bold text-blue-600 mb-2">$50</div>
+                  <div className="text-3xl font-bold text-blue-600 mb-2">$0</div>
                   <div className="text-gray-600 dark:text-gray-300">Monthly Cost</div>
                 </div>
                 <div>
-                  <div className="text-3xl font-bold text-orange-600 mb-2">$100</div>
-                  <div className="text-gray-600 dark:text-gray-300">One-Time Signup Fee</div>
+                  <div className="text-3xl font-bold text-green-600 mb-2">5</div>
+                  <div className="text-gray-600 dark:text-gray-300">Special Offers</div>
                 </div>
                 <div>
-                  <div className="text-3xl font-bold text-green-600 mb-2">∞</div>
-                  <div className="text-gray-600 dark:text-gray-300">Unlimited Deals & Events</div>
+                  <div className="text-3xl font-bold text-purple-600 mb-2">100%</div>
+                  <div className="text-gray-600 dark:text-gray-300">Full Access</div>
                 </div>
               </div>
               <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-4">
-                Professional business membership with full platform access and unlimited marketing opportunities
+                Take advantage of free access while we build our community
               </p>
+              <div className="mt-6 p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-200 dark:border-orange-800">
+                <p className="text-center text-sm text-orange-700 dark:text-orange-300 font-medium">
+                  After Beta: $50/month + $100 one-time signup fee
+                </p>
+              </div>
             </div>
           </div>
         </div>
