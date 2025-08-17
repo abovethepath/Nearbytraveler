@@ -2841,6 +2841,20 @@ Questions? Just reply to this message. Welcome aboard!
         delete updates.showLGBTQIAOwned;
       }
 
+      // MAP CUSTOM FIELDS: Convert camelCase frontend fields to snake_case database fields
+      if (updates.customInterests !== undefined) {
+        updates.custom_interests = updates.customInterests;
+        delete updates.customInterests;
+      }
+      if (updates.customActivities !== undefined) {
+        updates.custom_activities = updates.customActivities;
+        delete updates.customActivities;
+      }
+      if (updates.customEvents !== undefined) {
+        updates.custom_events = updates.customEvents;
+        delete updates.customEvents;
+      }
+
       if (process.env.NODE_ENV === 'development') console.log(`🏢 BUSINESS PROFILE: Mapped fields for user ${userId}:`, Object.keys(updates));
 
       // Convert dateOfBirth string to Date object if present

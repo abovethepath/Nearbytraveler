@@ -5223,6 +5223,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               customEvents: customEvents.join(', ')
                             };
                             
+                            console.log('🔧 BUSINESS SAVE - Final payload:', JSON.stringify(saveData, null, 2));
+                            
                             const response = await fetch(`/api/users/${effectiveUserId}`, {
                               method: 'PUT',
                               headers: {
@@ -5234,9 +5236,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               body: JSON.stringify(saveData)
                             });
                             
+                            console.log('🔧 BUSINESS SAVE - Response status:', response.status);
+                            const responseData = await response.json();
+                            console.log('🔧 BUSINESS SAVE - Response data:', responseData);
+                            
                             if (!response.ok) {
-                              const errorText = await response.text();
-                              throw new Error(`Failed to save: ${errorText}`);
+                              throw new Error(`Failed to save: ${response.status} ${response.statusText}`);
                             }
                             
                             // Update cache and UI
