@@ -99,8 +99,9 @@ app.use(session({
   name: "nt.sid"
 }));
 
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: false, limit: '10mb' }));
+// CRITICAL FIX: Increase payload limits to prevent 431 "Request Header Fields Too Large" errors
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb', parameterLimit: 100000 }));
 
 // Serve static files from public directory FIRST (for logo)
 app.use(express.static(path.join(process.cwd(), 'public')));
