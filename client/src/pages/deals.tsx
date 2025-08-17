@@ -27,7 +27,7 @@ interface BusinessDeal {
   city: string;
   state: string;
   country: string;
-  street?: string; // Add street address field
+  street?: string;
   // Business Information (Customer-Facing Only)
   businessName: string;
   businessDescription: string;
@@ -35,6 +35,7 @@ interface BusinessDeal {
   businessLocation: string;
   businessEmail: string;
   businessPhone: string;
+  businessAddress?: string; // Add full street address
   businessImage?: string;
 }
 
@@ -290,8 +291,8 @@ export default function Deals() {
     const instant = isInstantDeal(deal.category);
     
     return (
-      <Card key={deal.id} className={`hover:shadow-lg transition-all duration-300 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 ${expired ? 'opacity-75' : ''} ${instant ? 'border-orange-300 dark:border-orange-600 bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20' : 'border-blue-300 dark:border-blue-600'}`}>
-        <CardHeader className="pb-3 bg-white dark:bg-gray-800">
+      <Card key={deal.id} className={`hover:shadow-lg transition-all duration-300 cursor-pointer bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 ${expired ? 'opacity-75' : ''} ${instant ? 'border-orange-300 dark:border-orange-600 bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20' : 'border-blue-300 dark:border-blue-600'}`} onClick={() => handleClaimDeal(deal)}>
+        <CardHeader className="pb-3">
           {/* Business Header */}
           <div className="flex items-start gap-3 mb-3">
             {deal.businessImage ? (
@@ -311,7 +312,7 @@ export default function Deals() {
               </h3>
               <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
                 <MapPin className="w-4 h-4" />
-                <span>{deal.businessLocation}</span>
+                <span>{deal.businessAddress ? `${deal.businessAddress}, ${deal.businessLocation}` : deal.businessLocation}</span>
               </div>
             </div>
             {instant && (
@@ -353,7 +354,7 @@ export default function Deals() {
           </div>
         </CardHeader>
 
-        <CardContent className="space-y-4 bg-white dark:bg-gray-800">
+        <CardContent className="space-y-4">
           {/* Deal Description */}
           <div>
             <h4 className="font-semibold text-gray-900 dark:text-white mb-1">Deal Details</h4>
@@ -406,7 +407,7 @@ export default function Deals() {
               <div className="flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-gray-500" />
                 <span className="text-gray-600 dark:text-gray-400 text-sm">
-                  {deal.street && `${deal.street}, `}{deal.city}, {deal.state}, {deal.country}
+                  {deal.businessAddress && `${deal.businessAddress}, `}{deal.businessLocation || `${deal.city}, ${deal.state}, ${deal.country}`}
                 </span>
               </div>
             </div>
