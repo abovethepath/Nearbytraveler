@@ -71,7 +71,7 @@ export function QuickDealsDiscovery({ userLocation }: QuickDealsDiscoveryProps) 
 
   // Fetch active quick deals from all businesses
   const { data: quickDeals, isLoading } = useQuery<QuickDeal[]>({
-    queryKey: ['/api/quick-deals/discovery', userLocation?.city],
+    queryKey: ['/api/quick-deals', userLocation?.city],
     queryFn: async () => {
       let url = '/api/quick-deals';
       const params = new URLSearchParams();
