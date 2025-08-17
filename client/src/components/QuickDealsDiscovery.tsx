@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Zap, Clock, MapPin, Users, DollarSign, Tag, Percent, Gift, Package } from 'lucide-react';
+import { Zap, Clock, MapPin, Users, DollarSign, Tag, Percent, Gift, Package, Phone } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useLocation } from 'wouter';
 import type { QuickDeal } from '@shared/schema';
@@ -251,6 +251,20 @@ export function QuickDealsDiscovery({ userLocation }: QuickDealsDiscoveryProps) 
                     <div className="flex items-center gap-1">
                       <Tag className="w-3 h-3" />
                       <span>{(deal as any).businessType || deal.category}</span>
+                    </div>
+                  )}
+                  
+                  {/* Business Phone - Clickable */}
+                  {(deal as any).businessPhone && (
+                    <div className="flex items-center gap-1">
+                      <Phone className="w-3 h-3" />
+                      <a 
+                        href={`tel:${(deal as any).businessPhone}`} 
+                        className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 underline transition-colors"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {(deal as any).businessPhone}
+                      </a>
                     </div>
                   )}
                 </div>

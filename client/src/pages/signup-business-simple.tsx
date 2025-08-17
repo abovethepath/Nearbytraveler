@@ -21,13 +21,21 @@ const businessSignupSchema = z.object({
   email: z.string().email("Please enter a valid email"),
   password: z.string().min(6, "Password must be at least 6 characters"),
   ownerName: z.string().min(1, "Account owner name is required"),
-  ownerPhone: z.string().min(1, "Owner contact phone is required"),
+  ownerPhone: z.string().min(1, "Contact phone is required").refine((val) => {
+    // Accept various international phone formats
+    const phoneRegex = /^[\+]?[1-9][\d]{0,15}$|^[\+]?[\d\s\-\(\)]{7,20}$/;
+    return phoneRegex.test(val.replace(/[\s\-\(\)]/g, ''));
+  }, "Please enter a valid phone number (supports international formats)"),
   
   // Essential Business Information Only
   // businessName comes from step 1 account data
   businessType: z.string().min(1, "Business type is required"),
   customBusinessType: z.string().optional(),
-  businessPhone: z.string().min(1, "Business phone number is required"),
+  businessPhone: z.string().min(1, "Business phone number is required").refine((val) => {
+    // Accept various international phone formats
+    const phoneRegex = /^[\+]?[1-9][\d]{0,15}$|^[\+]?[\d\s\-\(\)]{7,20}$/;
+    return phoneRegex.test(val.replace(/[\s\-\(\)]/g, ''));
+  }, "Please enter a valid phone number (supports international formats)"),
   
   // Basic Location (City is required for metro area matching)
   streetAddress: z.string().min(1, "Street address is required for location services"),

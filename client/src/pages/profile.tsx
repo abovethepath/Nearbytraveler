@@ -749,11 +749,21 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         location: z.string().optional(),
         streetAddress: z.string().optional(),
         zipCode: z.string().optional(),
-        phoneNumber: z.string().optional(),
+        phoneNumber: z.string().optional().refine((val) => {
+          if (!val || val === '') return true; // Allow empty
+          // Accept various international phone formats
+          const phoneRegex = /^[\+]?[1-9][\d]{0,15}$|^[\+]?[\d\s\-\(\)]{7,20}$/;
+          return phoneRegex.test(val.replace(/[\s\-\(\)]/g, ''));
+        }, "Please enter a valid phone number (supports international formats)"),
         websiteUrl: z.string().optional(),
         // Owner/Internal Contact Information
         ownerName: z.string().optional(),
-        ownerPhone: z.string().optional(),
+        ownerPhone: z.string().optional().refine((val) => {
+          if (!val || val === '') return true; // Allow empty
+          // Accept various international phone formats
+          const phoneRegex = /^[\+]?[1-9][\d]{0,15}$|^[\+]?[\d\s\-\(\)]{7,20}$/;
+          return phoneRegex.test(val.replace(/[\s\-\(\)]/g, ''));
+        }, "Please enter a valid phone number (supports international formats)"),
         interests: z.array(z.string()).default([]),
         activities: z.array(z.string()).default([]),
         events: z.array(z.string()).default([]),
@@ -6937,9 +6947,18 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       </div>
                       <div className="flex items-center justify-between">
                         <span className="text-sm text-gray-600 dark:text-gray-400">Contact Person Phone:</span>
-                        <span className="text-sm font-medium text-gray-900 dark:text-white">
-                          {user?.ownerPhone || "Not set"}
-                        </span>
+                        {user?.ownerPhone ? (
+                          <a 
+                            href={`tel:${user.ownerPhone}`} 
+                            className="text-sm font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 underline transition-colors"
+                          >
+                            {user.ownerPhone}
+                          </a>
+                        ) : (
+                          <span className="text-sm font-medium text-gray-900 dark:text-white">
+                            Not set
+                          </span>
+                        )}
                       </div>
                       <div className="text-xs text-gray-500 dark:text-gray-400 bg-purple-100 dark:bg-purple-900/50 p-2 rounded">
                         <AlertCircle className="w-3 h-3 inline mr-1" />
