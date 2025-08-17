@@ -414,14 +414,16 @@ export default function Deals() {
 
           {/* Terms & Conditions - PROMINENTLY DISPLAYED */}
           {deal.termsConditions && (
-            <div className="border-t border-gray-200 dark:border-gray-600 pt-3 bg-gray-50 dark:bg-gray-700/50 p-3 rounded-lg">
-              <h4 className="font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 text-orange-500" />
-                Terms & Conditions
-              </h4>
-              <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
-                {deal.termsConditions}
-              </p>
+            <div className="border-t border-gray-200 dark:border-gray-600 pt-4 mt-4">
+              <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 p-4 rounded-lg">
+                <h4 className="font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
+                  <AlertCircle className="w-5 h-5 text-yellow-600 dark:text-yellow-400" />
+                  IMPORTANT: Terms & Conditions
+                </h4>
+                <p className="text-sm text-gray-800 dark:text-gray-200 leading-relaxed font-medium">
+                  {deal.termsConditions}
+                </p>
+              </div>
             </div>
           )}
 
