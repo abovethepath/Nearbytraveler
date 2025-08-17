@@ -205,37 +205,52 @@ export function QuickDealsDiscovery({ userLocation }: QuickDealsDiscoveryProps) 
                 <div className="mb-3">
                   <div className="flex items-center justify-between mb-2">
                     <h3 className="font-bold text-sm text-gray-900 dark:text-white line-clamp-1">{deal.title}</h3>
-                    <Badge className={`text-xs ${getAvailabilityColor(deal.availability)}`}>
+                    <Badge className={`text-xs font-medium ${getAvailabilityColor(deal.availability)}`}>
                       {getDealTypeIcon(deal.dealType)}
                       {formatDiscountAmount(deal.discountAmount)}
                     </Badge>
                   </div>
                   
-                  {/* Countdown Timer - Most Prominent */}
+                  {/* Deal Description - More Prominent */}
+                  {deal.description && (
+                    <div className="mb-2 p-2 bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-950 dark:to-cyan-950 rounded-md border border-blue-200 dark:border-blue-700">
+                      <p className="text-xs font-medium text-blue-800 dark:text-blue-200 line-clamp-2">{deal.description}</p>
+                    </div>
+                  )}
+                  
+                  {/* Countdown Timer */}
                   <div className="mb-2 p-2 bg-white dark:bg-gray-800 rounded-md border border-orange-200 dark:border-orange-700">
                     <CountdownTimer validUntil={deal.validUntil.toString()} />
                   </div>
-                  
-                  <p className="text-xs text-gray-600 dark:text-gray-300 mb-2 line-clamp-2">{deal.description}</p>
                 </div>
 
                 <div className="space-y-1 text-xs text-gray-500 dark:text-gray-400">
-                  <div className="flex items-center gap-1">
-                    <MapPin className="w-3 h-3" />
-                    <span className="line-clamp-1">{deal.location}</span>
-                  </div>
-                  
-                  {(deal as any).streetAddress && (
-                    <div className="flex items-center gap-1">
-                      <MapPin className="w-3 h-3" />
-                      <span className="line-clamp-1">{(deal as any).streetAddress}</span>
+                  {/* Business Name - Most Important */}
+                  {(deal as any).businessName && (
+                    <div className="flex items-center gap-1 font-medium text-gray-700 dark:text-gray-200">
+                      <span className="line-clamp-1">{(deal as any).businessName}</span>
                     </div>
                   )}
+                  
+                  {/* Street Address */}
+                  {(deal as any).businessStreetAddress && (
+                    <div className="flex items-center gap-1">
+                      <MapPin className="w-3 h-3" />
+                      <span className="line-clamp-1">{(deal as any).businessStreetAddress}</span>
+                    </div>
+                  )}
+                  
+                  {/* City/Location */}
+                  <div className="flex items-center gap-1">
+                    <MapPin className="w-3 h-3" />
+                    <span className="line-clamp-1">{(deal as any).businessCity || deal.location}</span>
+                  </div>
 
-                  {deal.category && (
+                  {/* Business Type/Category */}
+                  {((deal as any).businessType || deal.category) && (
                     <div className="flex items-center gap-1">
                       <Tag className="w-3 h-3" />
-                      <span>{deal.category}</span>
+                      <span>{(deal as any).businessType || deal.category}</span>
                     </div>
                   )}
                 </div>

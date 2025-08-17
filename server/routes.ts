@@ -6723,7 +6723,12 @@ Questions? Just reply to this message. Welcome aboard!
           u.location as business_location,
           u.email as business_email,
           u.phone_number as business_phone,
-          u.profile_image as business_image
+          u.profile_image as business_image,
+          u.street_address as business_street_address,
+          u.city as business_city,
+          u.state as business_state,
+          u.country as business_country,
+          u.zipcode as business_zipcode
         FROM quick_deals qd
         LEFT JOIN users u ON qd.business_id = u.id
         WHERE qd.is_active = true 
@@ -6765,7 +6770,12 @@ Questions? Just reply to this message. Welcome aboard!
         businessLocation: row.business_location || row.city || 'Location Unknown',
         businessEmail: row.business_email || '',
         businessPhone: row.business_phone || '',
-        businessImage: row.business_image || ''
+        businessImage: row.business_image || '',
+        businessStreetAddress: row.business_street_address || '',
+        businessCity: row.business_city || row.city || '',
+        businessState: row.business_state || row.state || '',
+        businessCountry: row.business_country || row.country || '',
+        businessZipcode: row.business_zipcode || row.zipcode || ''
       }));
 
       // Apply filters in JavaScript if needed
