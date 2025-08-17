@@ -6829,27 +6829,27 @@ Questions? Just reply to this message. Welcome aboard!
         params.push(city);
       }
 
-      // Use completely raw SQL without any Drizzle sql template
-      const queryText = `
-        SELECT 
-          qd.*,
-          u.business_name,
-          u.name as fallback_name,
-          u.bio as business_description,
-          u.business_type,
-          u.location as business_location,
-          u.email as business_email,
-          u.phone_number as business_phone,
-          u.profile_image as business_image
-        FROM quick_deals qd
-        LEFT JOIN users u ON qd.business_id = u.id
-        ${whereClause}
-        ORDER BY qd.created_at DESC
-      `;
-
-      const result = await db.execute(sql.raw(queryText, ...params));
-
-      const dealsWithBusiness = result.rows.map((row: any) => ({
+      // Build parameterized query properly
+      if (params.length === 0) {
+        // No parameters, just use basic filter
+        const result = await db.execute(sql`
+          SELECT 
+            qd.*,
+            u.business_name,
+            u.name as fallback_name,
+            u.bio as business_description,
+            u.business_type,
+            u.location as business_location,
+            u.email as business_email,
+            u.phone_number as business_phone,
+            u.profile_image as business_image
+          FROM quick_deals qd
+          LEFT JOIN users u ON qd.business_id = u.id
+          WHERE qd.is_active = true
+          ORDER BY qd.created_at DESC
+        `);
+        
+        const dealsWithBusiness = result.rows.map((row: any) => ({
         id: row.id,
         businessId: row.business_id,
         title: row.title,
@@ -6883,8 +6883,13 @@ Questions? Just reply to this message. Welcome aboard!
         businessEmail: row.business_email || '',
         businessPhone: row.business_phone || '',
         businessImage: row.business_image || ''
-      }));
+        }));
 
+        res.json(dealsWithBusiness);
+        return;
+      }
+
+      // Handle parameterized queries for specific filters
       const activeDeals = dealsWithBusiness.filter(deal => {
         const validUntil = new Date(deal.validUntil);
         return deal.isActive && validUntil > now && (!deal.maxRedemptions || (deal.currentRedemptions || 0) < deal.maxRedemptions);
