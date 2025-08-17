@@ -15,6 +15,7 @@ import { Building, MapPin, User, Zap } from "lucide-react";
 import { SmartLocationInput } from "@/components/SmartLocationInput";
 import { BUSINESS_TYPES } from "../../../shared/base-options";
 import { useAuth } from "@/App";
+import { useEffect } from "react";
 
 const businessSignupSchema = z.object({
   // Account Owner Information (for platform communication)
@@ -75,7 +76,7 @@ type BusinessSignupData = z.infer<typeof businessSignupSchema>;
 export default function SignupBusinessSimple() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
-  const { login } = useAuth();
+  const { user, isAuthenticated, login } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [isGettingLocation, setIsGettingLocation] = useState(false);
   const [locationCaptured, setLocationCaptured] = useState(false);
@@ -91,6 +92,22 @@ export default function SignupBusinessSimple() {
   };
 
   const accountData = getAccountData();
+
+  // Redirect authenticated business users to their welcome/dashboard page
+  useEffect(() => {
+    console.log('🔍 Business Signup Page - Auth Check:', { isAuthenticated, userType: user?.userType, username: user?.username });
+    if (isAuthenticated && user?.userType === 'business') {
+      console.log('🔄 Business user already authenticated, redirecting to welcome page');
+      setLocation('/welcome-business');
+      return;
+    }
+  }, [isAuthenticated, user, setLocation]);
+
+  // Early return if user is already authenticated as business
+  if (isAuthenticated && user?.userType === 'business') {
+    console.log('🔄 Rendering redirect for authenticated business user');
+    return <div>Redirecting...</div>;
+  }
 
   // Function to get business GPS coordinates
   const getBusinessLocation = async () => {
