@@ -6847,7 +6847,7 @@ Questions? Just reply to this message. Welcome aboard!
         ORDER BY qd.created_at DESC
       `;
 
-      const result = await db.execute(sql.raw(queryText, params));
+      const result = await db.execute(sql.raw(queryText, ...params));
 
       const dealsWithBusiness = result.rows.map((row: any) => ({
         id: row.id,
