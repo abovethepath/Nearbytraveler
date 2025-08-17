@@ -6812,86 +6812,13 @@ Questions? Just reply to this message. Welcome aboard!
 
       if (process.env.NODE_ENV === 'development') console.log(`🛍️ QUICK DEALS: Fetching deals, active first`);
 
-      // Temporary fix: Use raw SQL to avoid Drizzle issues
-      let whereClause = 'WHERE qd.is_active = true';
-      const params: any[] = [];
-      
-      if (businessId && typeof businessId === 'string') {
-        const targetBusinessId = parseInt(businessId as string);
-        if (!isNaN(targetBusinessId)) {
-          whereClause += ` AND qd.business_id = $${params.length + 1}`;
-          params.push(targetBusinessId);
-        }
+      // Simplified approach: always use basic query without parameters to avoid SQL issues
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`🛍️ QUICK DEALS: Parameters received - city: ${city}, businessId: ${businessId}`);
       }
 
-      if (city && typeof city === 'string') {
-        whereClause += ` AND qd.city = $${params.length + 1}`;
-        params.push(city);
-      }
-
-      // Build parameterized query properly
-      if (params.length === 0) {
-        // No parameters, just use basic filter
-        const result = await db.execute(sql`
-          SELECT 
-            qd.*,
-            u.business_name,
-            u.name as fallback_name,
-            u.bio as business_description,
-            u.business_type,
-            u.location as business_location,
-            u.email as business_email,
-            u.phone_number as business_phone,
-            u.profile_image as business_image
-          FROM quick_deals qd
-          LEFT JOIN users u ON qd.business_id = u.id
-          WHERE qd.is_active = true
-          ORDER BY qd.created_at DESC
-        `);
-        
-        const dealsWithBusiness = result.rows.map((row: any) => ({
-        id: row.id,
-        businessId: row.business_id,
-        title: row.title,
-        description: row.description,
-        dealType: row.deal_type,
-        category: row.category,
-        location: row.location,
-        street: row.street,
-        discountAmount: row.discount_amount,
-        originalPrice: row.original_price,
-        salePrice: row.sale_price,
-        dealCode: row.deal_code,
-        validFrom: row.valid_from,
-        validUntil: row.valid_until,
-        maxRedemptions: row.max_redemptions,
-        currentRedemptions: row.current_redemptions,
-        requiresReservation: row.requires_reservation,
-        isActive: row.is_active,
-        terms: row.terms,
-        availability: row.availability,
-        autoExpire: row.auto_expire,
-        city: row.city,
-        state: row.state,
-        country: row.country,
-        zipcode: row.zipcode,
-        createdAt: row.created_at,
-        businessName: row.business_name || row.fallback_name || 'Business Name Missing',
-        businessDescription: row.business_description || '',
-        businessType: row.business_type || 'Business',
-        businessLocation: row.business_location || row.city || 'Location Unknown',
-        businessEmail: row.business_email || '',
-        businessPhone: row.business_phone || '',
-        businessImage: row.business_image || ''
-        }));
-
-        res.json(dealsWithBusiness);
-        return;
-      }
-
-      // Handle parameterized queries (with city or businessId filters)
-      // This creates a parameterized query with proper SQL injection protection
-      const dynamicQuery = `
+      // Use a single, simple query that works reliably
+      const result = await db.execute(sql`
         SELECT 
           qd.*,
           u.business_name,
@@ -6904,15 +6831,11 @@ Questions? Just reply to this message. Welcome aboard!
           u.profile_image as business_image
         FROM quick_deals qd
         LEFT JOIN users u ON qd.business_id = u.id
-        ${whereClause}
+        WHERE qd.is_active = true
         ORDER BY qd.created_at DESC
-      `;
+      `);
       
-      const result = params.length > 0 
-        ? await db.execute(sql.raw(dynamicQuery, params))
-        : await db.execute(sql.raw(dynamicQuery));
-      
-      const dealsWithBusiness = result.rows.map((row: any) => ({
+      let dealsWithBusiness = result.rows.map((row: any) => ({
         id: row.id,
         businessId: row.business_id,
         title: row.title,
@@ -6947,6 +6870,25 @@ Questions? Just reply to this message. Welcome aboard!
         businessPhone: row.business_phone || '',
         businessImage: row.business_image || ''
       }));
+
+      // Apply filters in JavaScript if needed
+      if (businessId && typeof businessId === 'string') {
+        const targetBusinessId = parseInt(businessId as string);
+        if (!isNaN(targetBusinessId)) {
+          dealsWithBusiness = dealsWithBusiness.filter(deal => deal.businessId === targetBusinessId);
+        }
+      }
+
+      if (city && typeof city === 'string') {
+        dealsWithBusiness = dealsWithBusiness.filter(deal => deal.city === city);
+      }
+
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`🛍️ QUICK DEALS: Returning ${dealsWithBusiness.length} deals`);
+        if (dealsWithBusiness.length > 0) {
+          console.log(`🛍️ QUICK DEALS: Sample deal - Title: ${dealsWithBusiness[0].title}, Business: ${dealsWithBusiness[0].businessName}`);
+        }
+      }
 
       res.json(dealsWithBusiness);
     } catch (error: any) {
