@@ -566,10 +566,17 @@ function Router() {
       }
 
       // If user is authenticated but accessing auth page, redirect to appropriate page
-      if (location === '/auth' && user) {
-        console.log('🔄 Authenticated user on auth page, redirecting to home');
+      // EXCEPTION: Allow business users to access /auth if they're completing signup flow
+      if (location === '/auth' && user && user.userType !== 'business') {
+        console.log('🔄 Authenticated non-business user on auth page, redirecting to home');
         setLocation('/home');
         return null;
+      }
+      
+      // For business users accessing /auth, allow them to see the auth page for account management
+      if (location === '/auth' && user && user.userType === 'business') {
+        console.log('✅ Business user accessing auth page - allowing access for account management');
+        return <Auth />;
       }
 
       // Default: show new landing page for unknown routes
