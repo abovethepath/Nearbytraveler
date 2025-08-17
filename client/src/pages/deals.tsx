@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 
-import { CalendarDays, MapPin, Percent, Store, Users, Phone, Globe, Mail, Clock, Timer, Zap } from "lucide-react";
+import { CalendarDays, MapPin, Percent, Store, Users, Phone, Globe, Mail, Clock, Timer, Zap, AlertCircle } from "lucide-react";
 import { useLocation } from "wouter";
 import { authStorage } from "@/lib/auth";
 import { useToast } from "@/hooks/use-toast";
@@ -290,15 +290,15 @@ export default function Deals() {
     const instant = isInstantDeal(deal.category);
     
     return (
-      <Card key={deal.id} className={`hover:shadow-lg transition-all duration-300 ${expired ? 'opacity-75' : ''} ${instant ? 'border-orange-300 bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20' : 'border-blue-300'}`}>
-        <CardHeader className="pb-3">
+      <Card key={deal.id} className={`hover:shadow-lg transition-all duration-300 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 ${expired ? 'opacity-75' : ''} ${instant ? 'border-orange-300 dark:border-orange-600 bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20' : 'border-blue-300 dark:border-blue-600'}`}>
+        <CardHeader className="pb-3 bg-white dark:bg-gray-800">
           {/* Business Header */}
           <div className="flex items-start gap-3 mb-3">
             {deal.businessImage ? (
               <img 
                 src={deal.businessImage} 
                 alt={deal.businessName}
-                className="w-12 h-12 rounded-full object-cover border-2 border-gray-200"
+                className="w-12 h-12 rounded-full object-cover border-2 border-gray-200 dark:border-gray-600"
               />
             ) : (
               <div className="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-lg">
@@ -353,7 +353,7 @@ export default function Deals() {
           </div>
         </CardHeader>
 
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-4 bg-white dark:bg-gray-800">
           {/* Deal Description */}
           <div>
             <h4 className="font-semibold text-gray-900 dark:text-white mb-1">Deal Details</h4>
@@ -384,7 +384,7 @@ export default function Deals() {
           )}
 
           {/* Contact Information */}
-          <div className="border-t pt-3">
+          <div className="border-t border-gray-200 dark:border-gray-600 pt-3">
             <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Contact Information</h4>
             <div className="space-y-2">
               {deal.businessPhone && (
@@ -412,11 +412,14 @@ export default function Deals() {
             </div>
           </div>
 
-          {/* Terms & Conditions */}
+          {/* Terms & Conditions - PROMINENTLY DISPLAYED */}
           {deal.termsConditions && (
-            <div className="border-t pt-3">
-              <h4 className="font-semibold text-gray-900 dark:text-white mb-1">Terms & Conditions</h4>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
+            <div className="border-t border-gray-200 dark:border-gray-600 pt-3 bg-gray-50 dark:bg-gray-700/50 p-3 rounded-lg">
+              <h4 className="font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 text-orange-500" />
+                Terms & Conditions
+              </h4>
+              <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
                 {deal.termsConditions}
               </p>
             </div>
