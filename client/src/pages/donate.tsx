@@ -168,7 +168,6 @@ export default function Donate() {
               <Star className="w-12 h-12 text-yellow-500" />
             </div>
             <h3 className="text-3xl font-bold mb-4 text-black dark:text-white">Angel Investor</h3>
-            <div className="text-6xl font-bold mb-4 text-black dark:text-white">$600,000</div>
             <p className="text-lg mb-6 text-black dark:text-white">One-time investment opportunity</p>
             
             <div className="bg-white dark:bg-gray-800 rounded-lg p-6 mb-6 border border-yellow-200 dark:border-yellow-500">
