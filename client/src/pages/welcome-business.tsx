@@ -197,11 +197,7 @@ export default function WelcomeBusiness() {
           >
             Open Business Dashboard
           </Button>
-          <div className="mt-6 p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-200 dark:border-orange-800">
-            <p className="text-center text-sm text-orange-700 dark:text-orange-300 font-medium">
-              After Beta: $50/month + $100 one-time signup fee
-            </p>
-          </div>
+
         </div>
 
         {/* Business Stats Preview */}
@@ -228,8 +224,8 @@ export default function WelcomeBusiness() {
               <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-4">
                 Take advantage of free access while we build our community
               </p>
-              <div className="mt-6 p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-200 dark:border-orange-800">
-                <p className="text-center text-sm text-orange-700 dark:text-orange-300 font-medium">
+              <div className="mt-6 p-4 bg-gradient-to-r from-orange-100 to-red-100 dark:from-orange-900/30 dark:to-red-900/30 rounded-lg border-2 border-orange-300 dark:border-orange-700">
+                <p className="text-center text-sm text-orange-800 dark:text-orange-200 font-bold">
                   After Beta: $50/month + $100 one-time signup fee
                 </p>
               </div>
