@@ -35,16 +35,24 @@ const businessSignupSchema = z.object({
   state: z.string().min(1, "State/Province is required"),
   country: z.string().min(1, "Country is required"),
   
-  // Optional website - Allow empty string or valid URL
+  // Optional website - Allow empty string or valid URL with or without protocol
   businessWebsite: z.string().optional().refine((val) => {
     if (!val || val === '') return true; // Allow empty
+    
+    // Try with protocol first
     try {
       new URL(val);
       return true;
     } catch {
-      return false;
+      // If it fails, try adding https:// prefix
+      try {
+        new URL(`https://${val}`);
+        return true;
+      } catch {
+        return false;
+      }
     }
-  }, "Please enter a valid website URL (e.g., https://example.com)"),
+  }, "Please enter a valid website URL (e.g., example.com or https://example.com)"),
   
   // Location services for proximity features
   currentLatitude: z.number().optional(),
@@ -145,6 +153,14 @@ export default function SignupBusinessSimple() {
       // Handle custom business type
       if (data.businessType === "Custom (specify below)" && data.customBusinessType) {
         processedData.businessType = data.customBusinessType;
+      }
+      
+      // Handle website URL - add https:// if missing protocol
+      if (processedData.businessWebsite && processedData.businessWebsite.trim()) {
+        const website = processedData.businessWebsite.trim();
+        if (!website.startsWith('http://') && !website.startsWith('https://')) {
+          processedData.businessWebsite = `https://${website}`;
+        }
       }
       
       // Remove the custom fields from the final data since they're now merged
