@@ -200,15 +200,21 @@ app.use((req, res, next) => {
   }
 
   // Setup vite after ALL routes are registered
-  // Force development mode for Replit to ensure proper frontend serving
+  // Force production-style static serving for Replit deployment to prevent WebSocket issues
+  const isReplitDeployment = process.env.REPL_ID && process.env.REPLIT_DEPLOYMENT;
   const isProduction = process.env.NODE_ENV === "production";
   
-  if (!isProduction) {
-    console.log("🔧 Setting up Vite development server...");
-    await setupVite(app, server);
-  } else {
-    console.log("📦 Setting up static file serving for production...");
+  if (isReplitDeployment || isProduction) {
+    console.log("📦 Setting up static file serving for Replit deployment...");
     serveStatic(app);
+  } else {
+    console.log("🔧 Setting up Vite development server...");
+    try {
+      await setupVite(app, server);
+    } catch (viteError) {
+      console.error("⚠️ Vite setup failed, falling back to static serving:", viteError);
+      serveStatic(app);
+    }
   }
 
   // Add error handler AFTER all routes and Vite setup (critical placement)
