@@ -2720,7 +2720,10 @@ Questions? Just reply to this message. Welcome aboard!
       const userId = parseInt(req.params.id || '0');
       const updates = req.body;
 
-      if (process.env.NODE_ENV === 'development') console.log(`Updating user ${userId} with:`, Object.keys(updates));
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`🔧 BUSINESS PROFILE UPDATE: User ${userId} updating with keys:`, Object.keys(updates));
+        console.log(`🔧 BUSINESS PROFILE UPDATE: Full request body:`, JSON.stringify(updates, null, 2));
+      }
 
       // MAP USER FIELDS: Convert camelCase frontend fields to snake_case database fields
       if (updates.hometownCity !== undefined) {
@@ -2938,8 +2941,18 @@ Questions? Just reply to this message. Welcome aboard!
       if (process.env.NODE_ENV === 'development') console.log(`✓ User ${userId} updated successfully`);
       return res.json(userWithoutPassword);
     } catch (error: any) {
-      if (process.env.NODE_ENV === 'development') console.error("Error updating user:", error);
-      return res.status(500).json({ message: "Failed to update user" });
+      if (process.env.NODE_ENV === 'development') {
+        console.error("🔴 CRITICAL ERROR updating user:", error);
+        console.error("🔴 Error message:", error.message);
+        console.error("🔴 Error stack:", error.stack);
+        console.error("🔴 Error code:", error.code);
+        console.error("🔴 Full error details:", JSON.stringify(error, null, 2));
+      }
+      return res.status(500).json({ 
+        message: "Failed to update user", 
+        error: error.message,
+        stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+      });
     }
   });
 
