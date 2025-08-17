@@ -49,24 +49,8 @@ const businessSignupSchema = z.object({
   state: z.string().min(1, "State/Province is required"),
   country: z.string().min(1, "Country is required"),
   
-  // Optional website - Allow empty string or valid URL with or without protocol
-  businessWebsite: z.string().optional().refine((val) => {
-    if (!val || val === '') return true; // Allow empty
-    
-    // Try with protocol first
-    try {
-      new URL(val);
-      return true;
-    } catch {
-      // If it fails, try adding https:// prefix
-      try {
-        new URL(`https://${val}`);
-        return true;
-      } catch {
-        return false;
-      }
-    }
-  }, "Please enter a valid website URL (e.g., example.com or https://example.com)"),
+  // Optional website - Accept any reasonable format
+  businessWebsite: z.string().optional(),
   
   // Location services for proximity features
   currentLatitude: z.number().optional(),
@@ -455,7 +439,7 @@ export default function SignupBusinessSimple() {
                       <FormItem>
                         <FormLabel>Website (Optional)</FormLabel>
                         <FormControl>
-                          <Input placeholder="https://yourbusiness.com" {...field} />
+                          <Input placeholder="www.yourbusiness.com" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

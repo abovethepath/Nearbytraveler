@@ -7690,8 +7690,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         <FormControl>
                           <Input 
                             {...field} 
-                            placeholder="https://yourwebsite.com"
-                            type="url"
+                            placeholder="www.yourwebsite.com"
+                            type="text"
                           />
                         </FormControl>
                         <FormMessage />
