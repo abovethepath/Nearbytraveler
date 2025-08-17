@@ -163,48 +163,10 @@ import { fetchTicketmasterEvents } from './apis/ticketmaster';
 
 import { fetchAllLocalLAEvents } from './apis/local-la-feeds';
 
-// Geocoding utility function to convert addresses to coordinates
+// GEOCODING DISABLED: Temporarily disabled to prevent 431 rate limit errors from Nominatim API
 async function geocodeAddress(address: string): Promise<{ lat: number; lng: number } | null> {
-  try {
-    const encodedAddress = encodeURIComponent(address);
-    
-    // Add delay to respect rate limits (1 request per second)
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
-    
-    const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodedAddress}&limit=1`, {
-      headers: {
-        'User-Agent': 'NearbyTraveler/1.0 (travel-app@nearbytraveler.com)'
-      },
-      signal: controller.signal
-    });
-    
-    clearTimeout(timeoutId);
-    
-    if (!response.ok) {
-      if (process.env.NODE_ENV === 'development') console.error(`❌ Geocoding failed for "${address}": HTTP ${response.status}`);
-      return null;
-    }
-    
-    const data = await response.json();
-    
-    if (data && data.length > 0) {
-      const result = data?.[0];
-      if (process.env.NODE_ENV === 'development') console.log(`✅ Geocoded "${address}" to (${result.lat}, ${result.lon})`);
-      return {
-        lat: parseFloat(result.lat),
-        lng: parseFloat(result.lon)
-      };
-    } else {
-      if (process.env.NODE_ENV === 'development') console.error(`❌ No geocoding results found for "${address}"`);
-      return null;
-    }
-  } catch (error: any) {
-    if (process.env.NODE_ENV === 'development') console.error(`❌ Geocoding error for "${address}":`, error);
-    return null;
-  }
+  if (process.env.NODE_ENV === 'development') console.log(`📍 GEOCODING DISABLED: Skipping geocoding for "${address}" (prevented 431 errors)`);
+  return null; // Always return null to prevent API calls
 }
 
 // METRO CONSOLIDATION DISABLED PER USER REQUEST
@@ -4865,31 +4827,9 @@ Questions? Just reply to this message. Welcome aboard!
   
   // Helper function to get coordinates for a city
   async function getCityCoordinates(cityName: string): Promise<{ lat: number; lng: number } | null> {
-    try {
-      const encodedCity = encodeURIComponent(cityName);
-      const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodedCity}&limit=1`, {
-        headers: {
-          'User-Agent': 'NearbyTraveler/1.0 (travel-app@nearbytraveler.com)'
-        }
-      });
-      
-      if (!response.ok) return null;
-      
-      const data = await response.json();
-      
-      if (data && data.length > 0) {
-        const result = data?.[0];
-        return {
-          lat: parseFloat(result.lat),
-          lng: parseFloat(result.lon)
-        };
-      }
-      
-      return null;
-    } catch (error: any) {
-      if (process.env.NODE_ENV === 'development') console.error(`🌍 GEOCODING: Error for ${cityName}:`, error);
-      return null;
-    }
+    // GEOCODING DISABLED: Preventing 431 rate limit errors
+    if (process.env.NODE_ENV === 'development') console.log(`📍 CITY GEOCODING DISABLED: Skipping geocoding for "${cityName}" (prevented 431 errors)`);
+    return null;
   }
   
   // Get Meetup events by location
@@ -5330,26 +5270,11 @@ Questions? Just reply to this message. Welcome aboard!
         }
       }
       
-      // Helper function to reverse geocode GPS coordinates to address
+      // Helper function to reverse geocode GPS coordinates to address  
       async function reverseGeocode(lat: number, lon: number): Promise<string | null> {
-        try {
-          const response = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&addressdetails=1`, {
-            headers: {
-              'User-Agent': 'NearbyTraveler/1.0'
-            }
-          });
-          
-          if (response.ok) {
-            const data = await response.json();
-            if (data && data.display_name) {
-              return data.display_name;
-            }
-          }
-          return null;
-        } catch (error: any) {
-          if (process.env.NODE_ENV === 'development') console.error('Reverse geocoding failed:', error);
-          return null;
-        }
+        // REVERSE GEOCODING DISABLED: Preventing 431 rate limit errors
+        if (process.env.NODE_ENV === 'development') console.log(`📍 REVERSE GEOCODING DISABLED: Skipping reverse geocoding for (${lat}, ${lon}) (prevented 431 errors)`);
+        return null;
       }
 
       // Check for PredictHQ API token as fallback
