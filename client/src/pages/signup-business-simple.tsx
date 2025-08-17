@@ -161,19 +161,22 @@ export default function SignupBusinessSimple() {
       // CRITICAL: Add required fields using data from step 1 and current form
       (processedData as any).name = accountData?.businessName || "";
       (processedData as any).businessName = accountData?.businessName || "";
-      (processedData as any).websiteUrl = processedData.businessWebsite || "";
+      
+      // Handle website URL - add https:// if missing protocol and set to websiteUrl
+      let finalWebsiteUrl = "";
+      if (processedData.businessWebsite && processedData.businessWebsite.trim()) {
+        const website = processedData.businessWebsite.trim();
+        if (!website.startsWith('http://') && !website.startsWith('https://')) {
+          finalWebsiteUrl = `https://${website}`;
+        } else {
+          finalWebsiteUrl = website;
+        }
+      }
+      (processedData as any).websiteUrl = finalWebsiteUrl;
       
       // Handle custom business type
       if (data.businessType === "Custom (specify below)" && data.customBusinessType) {
         processedData.businessType = data.customBusinessType;
-      }
-      
-      // Handle website URL - add https:// if missing protocol
-      if (processedData.businessWebsite && processedData.businessWebsite.trim()) {
-        const website = processedData.businessWebsite.trim();
-        if (!website.startsWith('http://') && !website.startsWith('https://')) {
-          processedData.businessWebsite = `https://${website}`;
-        }
       }
       
       // Remove the custom and temporary fields from the final data since they're now merged
@@ -187,6 +190,7 @@ export default function SignupBusinessSimple() {
           ...processedData,
           userType: "business",
           businessName: accountData?.businessName || "", // Include businessName from step 1
+          websiteUrl: (processedData as any).websiteUrl, // Ensure websiteUrl is included
         })
       });
 
