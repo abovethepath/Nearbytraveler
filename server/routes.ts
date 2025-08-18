@@ -9663,47 +9663,103 @@ Questions? Just reply to this message. Welcome aboard!
   });
 
   // REMOVED: Duplicate search endpoint - moved to line 2718 for correct route precedence
-        sexualPreference,
-        minAge,
-        maxAge,
-        interests,
-        activities,
-        events,
-        location,
-        userType,
-        travelerTypes,
-        militaryStatus
-      } = req.query;
 
-      // Get current user ID from headers to exclude them from results (optional)
-      const userIdHeader = req.headers['x-user-id'] as string;
-      let currentUserId = null;
-      
-      // FIX: Make user ID optional for search - only parse if valid
-      if (userIdHeader && userIdHeader !== 'NaN' && userIdHeader !== 'undefined' && userIdHeader !== 'null') {
-        const parsedUserId = parseInt(userIdHeader);
-        if (!isNaN(parsedUserId) && parsedUserId > 0) {
-          currentUserId = parsedUserId;
-        }
+  // Global keyword search for users who have matched specific activities
+  app.get('/api/users/search-by-keyword', async (req, res) => {
+    try {
+      const { keyword } = req.query;
+
+      if (!keyword || typeof keyword !== 'string') {
+        return res.status(400).json({ error: 'Keyword parameter is required' });
       }
 
-      if (process.env.NODE_ENV === 'development') console.log('🔍 ADVANCED SEARCH: Performing search with filters:', {
-        search, gender, sexualPreference, minAge, maxAge, interests, activities, events, location, userType, travelerTypes, militaryStatus, currentUserId
-      });
-
-      // Build WHERE conditions
-      const whereConditions = [];
-      
-      // Exclude current user from their own search results
-      if (currentUserId) {
-        whereConditions.push(ne(users.id, currentUserId));
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`KEYWORD SEARCH: Searching for users who matched activities containing: "${keyword}"`);
       }
 
-      // Text search in name, username, or bio
-      if (search && typeof search === 'string') {
-        whereConditions.push(
-          or(
-            ilike(users.name, `%${search}%`),
+      // Search for activities that match the keyword
+      const matchingActivities = await db
+        .select({
+          id: cityActivities.id,
+          activityName: cityActivities.activityName,
+          city: cityActivities.city,
+          state: cityActivities.state,
+          country: cityActivities.country,
+          category: cityActivities.category,
+          description: cityActivities.description
+        })
+        .from(cityActivities)
+        .where(
+          and(
+            or(
+              ilike(cityActivities.activityName, `%${keyword}%`),
+              ilike(cityActivities.description, `%${keyword}%`),
+              ilike(cityActivities.category, `%${keyword}%`)
+            ),
+            eq(cityActivities.isActive, true)
+          )
+        );
+
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`KEYWORD SEARCH: Found ${matchingActivities.length} activities matching "${keyword}"`);
+      }
+
+      if (matchingActivities.length === 0) {
+        return res.json([]);
+      }
+
+      // Get all activity IDs that match the keyword
+      const activityIds = matchingActivities.map(activity => activity.id);
+
+      // Skip activity matches query as activityMatches table doesn't exist
+      // This query was referencing a non-existent table
+      const usersWithActivityMatches: any[] = [];
+
+      // ENHANCED: Also find users who have selected these activities in city interests (toggle buttons)
+      const usersWithCityInterests = await db
+        .select({
+          id: users.id,
+          username: users.username,  
+          name: users.name,
+          email: users.email,
+          userType: users.userType,
+          bio: users.bio,
+          location: users.location,
+          hometownCity: users.hometownCity,
+          hometownState: users.hometownState,
+          hometownCountry: users.hometownCountry,
+          profileImage: users.profileImage,
+          matchedActivityId: userCityInterests.activityId,
+          matchedAt: userCityInterests.createdAt,
+          activityName: userCityInterests.activityName,
+          activityCity: userCityInterests.cityName,
+          activityState: sql<string>`''`,
+          activityCountry: sql<string>`''`,
+          matchType: sql<string>`'city_interest'`
+        })
+        .from(users)
+        .innerJoin(userCityInterests, eq(users.id, userCityInterests.userId))
+        .where(and(
+          inArray(userCityInterests.activityId, activityIds),
+          eq(userCityInterests.isActive, true)
+        ))
+        .orderBy(desc(userCityInterests.createdAt));
+
+      // Combine both result sets
+      const allUsersWithMatches = [...usersWithActivityMatches, ...usersWithCityInterests];
+
+      if (process.env.NODE_ENV === 'development') console.log(`KEYWORD SEARCH: Found ${usersWithActivityMatches.length} activity matches + ${usersWithCityInterests.length} city interest matches for "${keyword}"`);
+      
+      res.json(allUsersWithMatches);
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error('Error in keyword search:', error);
+      res.status(500).json({ error: 'Failed to perform keyword search' });
+    }
+  });
+
+  // Return the configured HTTP server with WebSocket support  
+  return httpServerWithWebSocket;
+}
             ilike(users.username, `%${search}%`),
             ilike(users.bio, `%${search}%`)
           )
