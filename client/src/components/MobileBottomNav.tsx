@@ -8,7 +8,24 @@ export function MobileBottomNav() {
   const [location, setLocation] = useLocation();
   const [showActionMenu, setShowActionMenu] = useState(false);
   const [showSearchWidget, setShowSearchWidget] = useState(false);
-  const { user } = React.useContext(AuthContext);
+  const authContext = React.useContext(AuthContext);
+  let user = authContext?.user;
+  
+  // Fallback to localStorage if AuthContext user is null
+  if (!user) {
+    const storedUser = localStorage.getItem('user') || localStorage.getItem('currentUser') || localStorage.getItem('authUser');
+    if (storedUser) {
+      try {
+        user = JSON.parse(storedUser);
+        console.log('🔧 MobileBottomNav - Recovered user from localStorage:', user?.username, 'userType:', user?.userType);
+      } catch (e) {
+        console.error('Error parsing stored user in MobileBottomNav:', e);
+      }
+    }
+  }
+  
+  console.log('🔍 MobileBottomNav - Final user object:', user);
+  console.log('🔍 MobileBottomNav - userType:', user?.userType, 'is business?:', user?.userType === 'business');
 
   // Navigation items based on user type - Search opens widget instead of navigating
   const navItems = user?.userType === 'business' ? [
