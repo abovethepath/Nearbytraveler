@@ -121,9 +121,9 @@ app.get('/api/business-deals', async (req, res) => {
         businessDescription: business.bio || '',
         businessType: business.userType || 'business',
         businessLocation: business.location || offer.city,
-        businessEmail: business.contactEmail || '',
-        businessPhone: business.contactPhone || '',
-        businessAddress: business.street || '',
+        businessEmail: business.email || '',
+        businessPhone: business.phoneNumber || '',
+        businessAddress: business.streetAddress || '',
         businessImage: business.profileImage || '',
         // Add metro tags for frontend filtering
         isLAMetro: isInLAMetro,
@@ -233,10 +233,10 @@ app.get('/api/users/:id', async (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
     
-    res.json(userQuery[0]);
+    return res.json(userQuery[0]);
   } catch (error: any) {
     console.error('🔥 Error in user by ID API:', error);
-    res.status(500).json({ error: 'Failed to get user' });
+    return res.status(500).json({ error: 'Failed to get user' });
   }
 });
 
@@ -386,22 +386,23 @@ app.get('/api/city-stats', async (req, res) => {
 app.get('/api/search-users', async (req, res) => {
   try {
     console.log('🔍 DIRECT API: Search users');
-    const location = req.query.location as string;
-    const search = req.query.search as string;
-    const currentUserId = req.query.currentUserId || req.headers['x-user-id'] as string;
+    const location = Array.isArray(req.query.location) ? req.query.location[0] : req.query.location as string;
+    const search = Array.isArray(req.query.search) ? req.query.search[0] : req.query.search as string;
+    const currentUserId = req.query.currentUserId || req.headers['x-user-id'];
     
     console.log('🔍 SEARCH PARAMS:', { search, location, currentUserId });
     
-    let results;
+    let results: any[] = [];
     const whereConditions = [];
     
     // Exclude current user if provided
-    if (currentUserId && !isNaN(parseInt(currentUserId))) {
-      whereConditions.push(ne(users.id, parseInt(currentUserId)));
+    const userIdString = Array.isArray(currentUserId) ? currentUserId[0] : currentUserId as string;
+    if (userIdString && typeof userIdString === 'string' && !isNaN(parseInt(userIdString))) {
+      whereConditions.push(ne(users.id, parseInt(userIdString)));
     }
     
     // Search by text (name, username, bio, interests, activities)  
-    if (search && search.trim() !== '') {
+    if (search && typeof search === 'string' && search.trim() !== '') {
       const searchTerm = search.trim().toLowerCase();
       whereConditions.push(
         or(
@@ -417,7 +418,7 @@ app.get('/api/search-users', async (req, res) => {
     }
     
     // Search by location with LA Metro consolidation
-    if (location && location.trim() !== '') {
+    if (location && typeof location === 'string' && location.trim() !== '') {
       const locationTerm = location.trim();
       
       // Import metro consolidation helpers
