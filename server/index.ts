@@ -416,17 +416,53 @@ app.get('/api/search-users', async (req, res) => {
       console.log('🔍 SEARCH: Added text search condition for:', searchTerm);
     }
     
-    // Search by location
+    // Search by location with LA Metro consolidation
     if (location && location.trim() !== '') {
-      whereConditions.push(
-        or(
-          ilike(users.location, `%${location}%`),
-          ilike(users.hometownCity, `%${location}%`),
-          ilike(users.hometownState, `%${location}%`),
-          ilike(users.hometownCountry, `%${location}%`)
-        )
-      );
-      console.log('🔍 SEARCH: Added location search condition for:', location);
+      const locationTerm = location.trim();
+      
+      // Import metro consolidation helpers
+      const { isLAMetroCity, getMetroCities } = await import('../shared/constants.js');
+      
+      // Extract just the city name from formatted locations like "Los Angeles, California, United States"
+      const cityName = locationTerm.split(',')[0].trim();
+      
+      // Check if searching for Los Angeles or any LA Metro city
+      const isSearchingLA = cityName.toLowerCase().includes('los angeles') || 
+                           cityName.toLowerCase().includes('la ') ||
+                           cityName.toLowerCase() === 'la';
+      
+      if (isSearchingLA) {
+        // Get all LA Metro cities for the search
+        const metroCities = getMetroCities('Los Angeles');
+        const cityConditions = metroCities.map(city => 
+          or(
+            ilike(users.location, `%${city}%`),
+            ilike(users.hometownCity, `%${city}%`)
+          )
+        );
+        
+        // Also include direct "Los Angeles" matches
+        cityConditions.push(
+          or(
+            ilike(users.location, `%Los Angeles%`),
+            ilike(users.hometownCity, `%Los Angeles%`)
+          )
+        );
+        
+        whereConditions.push(or(...cityConditions));
+        console.log('🔍 SEARCH: Added LA Metro consolidated search for:', metroCities.length, 'cities');
+      } else {
+        // Regular location search
+        whereConditions.push(
+          or(
+            ilike(users.location, `%${locationTerm}%`),
+            ilike(users.hometownCity, `%${locationTerm}%`),
+            ilike(users.hometownState, `%${locationTerm}%`),
+            ilike(users.hometownCountry, `%${locationTerm}%`)
+          )
+        );
+        console.log('🔍 SEARCH: Added location search condition for:', locationTerm);
+      }
     }
     
     // Execute query
