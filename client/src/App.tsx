@@ -593,14 +593,14 @@ function Router() {
 
       // If user is authenticated but accessing auth page, redirect to appropriate page
       // EXCEPTION: Allow business users to access /auth if they're completing signup flow
-      if (location === '/auth' && user && user.userType !== 'business') {
+      if (location === '/auth' && user && (user as any).userType !== 'business') {
         console.log('🔄 Authenticated non-business user on auth page, redirecting to home');
         setLocation('/home');
         return null;
       }
       
       // For business users accessing /auth, allow them to see the auth page for account management
-      if (location === '/auth' && user && user.userType === 'business') {
+      if (location === '/auth' && user && (user as any).userType === 'business') {
         console.log('✅ Business user accessing auth page - allowing access for account management');
         return <Auth />;
       }
@@ -991,8 +991,8 @@ function Router() {
             </div>
 
             {/* Mobile Bottom Navigation - only show on mobile for authenticated users */}
-            {user && (
-              <div className="md:hidden">
+            {(user || localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || localStorage.getItem('auth_token')) && (
+              <div className="md:hidden" style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 9999 }}>
                 <MobileBottomNav />
               </div>
             )}
