@@ -203,12 +203,14 @@ export function QuickDealsDiscovery({ userLocation }: QuickDealsDiscoveryProps) 
             >
               <CardContent className="p-4">
                 <div className="mb-3">
-                  <div className="flex items-center justify-between mb-2">
-                    <h3 className="font-bold text-sm text-gray-900 dark:text-white line-clamp-1">{deal.title}</h3>
-                    <Badge className={`text-xs font-medium ${getAvailabilityColor(deal.availability)}`}>
-                      {getDealTypeIcon(deal.dealType)}
-                      {formatDiscountAmount(deal.discountAmount)}
-                    </Badge>
+                  <div className="flex flex-col gap-2 mb-2">
+                    <h3 className="font-bold text-sm text-gray-900 dark:text-white">{deal.title}</h3>
+                    <div className="flex items-center gap-1">
+                      <Badge className={`text-xs font-medium whitespace-nowrap ${getAvailabilityColor(deal.availability)}`}>
+                        {getDealTypeIcon(deal.dealType)}
+                        <span className="ml-1">{formatDiscountAmount(deal.discountAmount)}</span>
+                      </Badge>
+                    </div>
                   </div>
                   
                   {/* Deal Description - More Prominent */}
