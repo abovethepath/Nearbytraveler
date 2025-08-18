@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { MapPin, Users, Calendar, Star, Search, Compass, TrendingUp, MessageCircle, Heart, Plane } from "lucide-react";
 import { useLocation } from "wouter";
 import { ArrowLeft } from "lucide-react";
-import { AuthContext } from "@/contexts/AuthContext";
+import { AuthContext } from "@/App";
 // MobileNav removed - using global mobile navigation
 
 
