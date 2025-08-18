@@ -3763,6 +3763,30 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // Get unread message count for a user
+  app.get("/api/messages/:userId/unread-count", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      
+      const unreadMessages = await db
+        .select({ count: sql<number>`count(*)` })
+        .from(messages)
+        .where(
+          and(
+            eq(messages.receiverId, userId),
+            eq(messages.isRead, false)
+          )
+        );
+      
+      const unreadCount = unreadMessages[0]?.count || 0;
+      
+      return res.json({ unreadCount });
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error fetching unread count:", error);
+      return res.status(500).json({ message: "Failed to fetch unread count" });
+    }
+  });
+
   // CRITICAL: Send message for IM system (handles offline message delivery)
   app.post("/api/messages", async (req, res) => {
     try {

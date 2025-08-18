@@ -30,17 +30,14 @@ export function MobileBottomNav() {
   console.log('🔍 MobileBottomNav - Final user object:', user);
   console.log('🔍 MobileBottomNav - userType:', user?.userType, 'is business?:', user?.userType === 'business');
 
-  // Query for unread messages count
-  const { data: messages } = useQuery({
-    queryKey: [`/api/messages/${user?.id}`],
+  // Query for unread messages count using dedicated endpoint
+  const { data: unreadData } = useQuery({
+    queryKey: [`/api/messages/${user?.id}/unread-count`],
     enabled: !!user?.id,
+    refetchInterval: 10000, // Refetch every 10 seconds to catch new messages
   });
 
-  // Calculate unread message count
-  const unreadCount = React.useMemo(() => {
-    if (!messages || !Array.isArray(messages)) return 0;
-    return messages.filter((msg: any) => !msg.isRead && msg.receiverId === user?.id).length;
-  }, [messages, user?.id]);
+  const unreadCount = unreadData?.unreadCount || 0;
 
   console.log('📧 MobileBottomNav - Unread messages count:', unreadCount);
 
