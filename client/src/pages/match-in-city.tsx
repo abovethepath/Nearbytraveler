@@ -222,11 +222,18 @@ export default function MatchInCity() {
 
   const fetchCityActivities = async () => {
     try {
+      console.log(`🏃 FRONTEND: Fetching activities for city: "${selectedCity}"`);
       const response = await fetch(`/api/city-activities/${encodeURIComponent(selectedCity)}`);
+      console.log(`🏃 FRONTEND: Response status:`, response.status);
+      
       if (response.ok) {
         const activities = await response.json();
-
+        console.log(`🏃 FRONTEND: Got ${activities.length} activities for ${selectedCity}:`, activities);
         setCityActivities(activities);
+      } else {
+        console.error(`🏃 FRONTEND: Error response:`, response.status, response.statusText);
+        const errorText = await response.text();
+        console.error(`🏃 FRONTEND: Error details:`, errorText);
       }
     } catch (error) {
       console.error('Error fetching city activities:', error);
