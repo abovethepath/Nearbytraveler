@@ -107,22 +107,11 @@ export default function JoinNowWidgetNew() {
     }
 
     // Username length validation
-    if (formData.username.length < 6) {
-      const errorMsg = "Username must be at least 6 characters long.";
+    if (formData.username.length < 6 || formData.username.length > 13) {
+      const errorMsg = "Username must be 6-13 characters long";
       setCurrentError(errorMsg);
       toast({
-        title: "Username too short",
-        description: errorMsg,
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    if (formData.username.length > 20) {
-      const errorMsg = "Username cannot exceed 20 characters.";
-      setCurrentError(errorMsg);
-      toast({
-        title: "Username too long",
+        title: "Invalid username length",
         description: errorMsg,
         variant: "destructive",
       });
@@ -289,11 +278,13 @@ export default function JoinNowWidgetNew() {
                   type="text"
                   value={formData.username}
                   onChange={(e) => handleUsernameChange(e.target.value)}
-                  placeholder="Choose username"
+                  placeholder="Choose username (6-13 characters)"
                   required
+                  maxLength={13}
                   className={`pr-10 text-base py-3 text-crisp font-medium ${
                     usernameAvailable === true ? 'border-green-500' : 
-                    usernameAvailable === false ? 'border-red-500' : ''
+                    usernameAvailable === false ? 'border-red-500' : 
+                    formData.username.length > 13 ? 'border-red-500' : ''
                   }`}
                 />
                 <div className="absolute inset-y-0 right-0 flex items-center pr-3 z-10">
@@ -308,6 +299,16 @@ export default function JoinNowWidgetNew() {
                   )}
                 </div>
               </div>
+              {formData.username && (
+                <p className={`text-xs mt-1 ${
+                  formData.username.length < 6 || formData.username.length > 13 
+                    ? 'text-red-500 font-semibold' 
+                    : 'text-gray-500'
+                }`}>
+                  {formData.username.length}/13 characters {formData.username.length < 6 && "(minimum 6)"}
+                  {formData.username.length > 13 && " - USERNAME TOO LONG!"}
+                </p>
+              )}
               {formData.username && formData.username.length < 6 && (
                 <p className="text-yellow-500 text-sm font-medium mt-1">⚠️ Username must be at least 6 characters</p>
               )}
