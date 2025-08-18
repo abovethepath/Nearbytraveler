@@ -220,11 +220,25 @@ export default function BusinessDashboard() {
 
   // Helper function to format discount text
   const getDiscountText = (offer: BusinessOffer) => {
+    const value = offer.discountValue;
+    
+    // Check if the value already contains % or $ signs to avoid duplication
+    const hasPercentSign = value.includes('%');
+    const hasDollarSign = value.includes('$');
+    
     switch (offer.discountType) {
       case 'percentage':
-        return `${offer.discountValue}% off`;
+        // If it already has %, don't add another one
+        if (hasPercentSign || value.toLowerCase().includes('off')) {
+          return value;
+        }
+        return `${value}% off`;
       case 'fixed_amount':
-        return `$${offer.discountValue} off`;
+        // If it already has $, don't add another one
+        if (hasDollarSign || value.toLowerCase().includes('off')) {
+          return value;
+        }
+        return `$${value} off`;
       case 'buy_one_get_one':
         return 'Buy One Get One';
       case 'free_service':
@@ -234,9 +248,9 @@ export default function BusinessDashboard() {
       case 'combo_deal':
         return 'Combo Deal';
       case 'other':
-        return offer.discountValue;
+        return value;
       default:
-        return offer.discountValue;
+        return value;
     }
   };
 
@@ -1975,7 +1989,7 @@ export default function BusinessDashboard() {
                 <div className="flex gap-2 mt-2">
                   <Badge variant="outline">{viewingOffer.category}</Badge>
                   <Badge variant="secondary" className="bg-green-100 text-green-800">
-                    {viewingOffer.discountValue}
+                    {getDiscountText(viewingOffer)}
                   </Badge>
                 </div>
               </DialogHeader>
@@ -1991,7 +2005,7 @@ export default function BusinessDashboard() {
                     <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Discount Details</h4>
                     <div className="space-y-1 text-sm">
                       <p><span className="font-medium">Type:</span> {viewingOffer.discountType}</p>
-                      <p><span className="font-medium">Value:</span> {viewingOffer.discountValue}</p>
+                      <p><span className="font-medium">Value:</span> {getDiscountText(viewingOffer)}</p>
                       {viewingOffer.discountCode && (
                         <p><span className="font-medium">Code:</span> {viewingOffer.discountCode}</p>
                       )}
