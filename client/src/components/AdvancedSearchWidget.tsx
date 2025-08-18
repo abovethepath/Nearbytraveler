@@ -9,6 +9,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { ChevronDown, Search, X, Users, Filter } from "lucide-react";
 import { SmartLocationInput } from "@/components/SmartLocationInput";
 import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
 import type { User } from "@shared/schema";
 
 interface AdvancedSearchWidgetProps {
@@ -101,15 +102,18 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
       if (advancedFilters.travelerTypes.length > 0) params.append('travelerTypes', advancedFilters.travelerTypes.join(','));
       if (advancedFilters.militaryStatus.length > 0) params.append('militaryStatus', advancedFilters.militaryStatus.join(','));
       
-      const response = await fetch(`/api/users/search?${params.toString()}`);
+      const response = await apiRequest("GET", `/api/users/search?${params.toString()}`);
       
       const data = await response.json();
       console.log('🔍 Advanced search results:', data);
-      setAdvancedSearchResults(data || []);
+      
+      // Handle the response format: { users: [], total: number, page: number, hasMore: boolean }
+      const users = data.users || data || [];
+      setAdvancedSearchResults(users);
       
       toast({
         title: "Search Complete",
-        description: `Found ${data?.length || 0} users matching your criteria`,
+        description: `Found ${users?.length || 0} users matching your criteria`,
       });
     } catch (error) {
       console.error('🔍 Advanced search error:', error);
