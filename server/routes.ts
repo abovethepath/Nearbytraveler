@@ -9800,13 +9800,59 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
-  // REMOVED: Duplicate city activities route - using the correct one later in the file
+  // GET city activities for a specific city
+  app.get("/api/city-activities/:cityName", async (req, res) => {
+    try {
+      const { cityName } = req.params;
+      if (process.env.NODE_ENV === 'development') console.log(`🏃 CITY ACTIVITIES GET: Fetching activities for ${cityName}`);
+      
+      const activities = await db
+        .select()
+        .from(cityActivities)
+        .where(
+          and(
+            eq(cityActivities.cityName, cityName),
+            eq(cityActivities.isActive, true)
+          )
+        )
+        .orderBy(desc(cityActivities.createdAt));
+      
+      if (process.env.NODE_ENV === 'development') console.log(`✅ CITY ACTIVITIES GET: Found ${activities.length} activities for ${cityName}`);
+      res.json(activities);
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error('Error fetching city activities:', error);
+      res.status(500).json({ error: 'Failed to fetch city activities' });
+    }
+  });
 
-  // REMOVED: Duplicate POST route - using the correct one later in the file
-
-  // REMOVED: Duplicate update/delete routes - using the correct ones later in the file
-
-  // REMOVED: All duplicate detection code with broken references
+  // POST new city activity 
+  app.post("/api/city-activities", async (req, res) => {
+    try {
+      const { cityName, state, country, activityName, category, description, createdByUserId } = req.body;
+      
+      if (!cityName || !activityName || !createdByUserId) {
+        return res.status(400).json({ error: 'Missing required fields: cityName, activityName, createdByUserId' });
+      }
+      
+      if (process.env.NODE_ENV === 'development') console.log(`🏃 CITY ACTIVITIES POST: Creating activity "${activityName}" for ${cityName}`);
+      
+      const newActivity = await storage.createCityActivity({
+        cityName,
+        state: state || '',
+        country: country || 'United States',
+        activityName,
+        category: category || 'general',
+        description: description || 'User added activity',
+        createdByUserId
+      });
+      
+      if (process.env.NODE_ENV === 'development') console.log(`✅ CITY ACTIVITIES POST: Created activity ${newActivity.id} for ${cityName}`);
+      res.json(newActivity);
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error('Error creating city activity:', error);
+      res.status(500).json({ error: 'Failed to create city activity' });
+    }
+  });
 
   // Direct search by city activity interests (toggle button selections)
   app.get('/api/users/search-by-activity-name', async (req, res) => {
