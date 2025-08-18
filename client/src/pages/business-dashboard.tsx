@@ -21,6 +21,7 @@ import { SmartLocationInput } from "@/components/SmartLocationInput";
 import { AuthContext } from "@/App";
 import { authStorage } from "@/lib/auth";
 import InstantDealCreator from "@/components/InstantDealCreator";
+import { QuickDealsWidget } from "@/components/QuickDealsWidget";
 
 // Helper function to extract city from street address
 function extractCityFromAddress(address: string | null | undefined): string {
@@ -717,6 +718,14 @@ export default function BusinessDashboard() {
               </Button>
             </div>
           </div>
+        </div>
+
+        {/* Quick Deals Widget - Show at top for easy access */}
+        <div className="mb-8">
+          <QuickDealsWidget 
+            city={currentUser?.hometownCity || currentUser?.city || ''} 
+            profileUserId={currentUser?.id} 
+          />
         </div>
 
         {/* Analytics Cards */}

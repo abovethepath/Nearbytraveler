@@ -88,13 +88,17 @@ export function QuickDealsWidget({ city, profileUserId, showCreateForm: external
       
       if (params.toString()) url += `?${params.toString()}`;
       
+      console.log('🎯 QuickDealsWidget: Fetching from URL:', url);
+      
       const response = await fetch(url, {
         headers: {
           ...(actualUser?.id && { 'x-user-id': actualUser.id.toString() })
         }
       });
       if (!response.ok) throw new Error('Failed to fetch quick deals');
-      return response.json();
+      const data = await response.json();
+      console.log('🎯 QuickDealsWidget: Received deals:', data);
+      return data;
     },
     refetchInterval: 30000, // Refresh every 30 seconds for real-time updates
     enabled: actualUser?.userType === 'business' // Only run query for business users
