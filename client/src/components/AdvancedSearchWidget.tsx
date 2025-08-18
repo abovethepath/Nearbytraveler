@@ -147,9 +147,9 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
   };
 
   // Update location filter when SmartLocationInput changes
-  const handleLocationChange = (country: string, state: string, city: string) => {
-    setLocationFilter({ country, state, city });
-    const locationString = [city, state, country].filter(Boolean).join(', ');
+  const handleLocationChange = (location: { city: string; state: string; country: string }) => {
+    setLocationFilter(location);
+    const locationString = [location.city, location.state, location.country].filter(Boolean).join(', ');
     setAdvancedFilters(prev => ({ ...prev, location: locationString }));
   };
 

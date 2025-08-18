@@ -151,7 +151,7 @@ export function SmartLocationInput({
         </Label>
         <Select value={country} onValueChange={handleCountryChange}>
           <SelectTrigger className="dark:bg-gray-700 dark:text-white dark:border-gray-600">
-            <SelectValue placeholder={placeholder?.country || "Select country"} />
+            <SelectValue placeholder={typeof placeholder === 'object' ? placeholder?.country : "Select country"} />
           </SelectTrigger>
           <SelectContent className="dark:bg-gray-700 dark:border-gray-600">
             {COUNTRIES.map((countryOption) => (
@@ -171,7 +171,7 @@ export function SmartLocationInput({
           </Label>
           <Select value={city} onValueChange={handleCityChange}>
             <SelectTrigger className="dark:bg-gray-700 dark:text-white dark:border-gray-600">
-              <SelectValue placeholder={placeholder?.city || "Select city"} />
+              <SelectValue placeholder={typeof placeholder === 'object' ? placeholder?.city : "Select city"} />
             </SelectTrigger>
             <SelectContent className="dark:bg-gray-700 dark:border-gray-600 max-h-96 overflow-y-auto scroll-smooth">
               {citiesForCountry.map((cityOption) => (
