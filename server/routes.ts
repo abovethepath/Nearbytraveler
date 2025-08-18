@@ -8345,16 +8345,6 @@ Questions? Just reply to this message. Welcome aboard!
       res.status(500).json({ message: "Failed to calculate compatibility" });
     }
   });
-      );
-
-      if (process.env.NODE_ENV === 'development') console.log(`🔮 COMPATIBILITY: Score between ${user1.username} and ${user2.username}: ${Math.round(compatibilityScore.score * 100)}%`);
-
-      res.json(compatibilityScore);
-    } catch (error: any) {
-      if (process.env.NODE_ENV === 'development') console.error("Error calculating compatibility:", error);
-      return res.status(500).json({ message: "Failed to fetch matches" });
-    }
-  });
 
   // RESTORED: City map data endpoint
   app.get("/api/city-map-data", async (req, res) => {
