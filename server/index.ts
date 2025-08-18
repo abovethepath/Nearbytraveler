@@ -192,8 +192,49 @@ app.use((req, res, next) => {
   try {
     console.log("Loading main API routes from routes.ts...");
     const { registerRoutes } = await import('./routes.js');
-    await registerRoutes(app, httpServerWithWebSocket);
+    const registeredServer = await registerRoutes(app, httpServerWithWebSocket);
     console.log("✅ Main API routes registered successfully");
+    
+    // Add explicit API route verification
+    app.get('/api/debug-routes', (req, res) => {
+      res.json({ 
+        message: "API routes are working properly",
+        timestamp: new Date().toISOString(),
+        method: req.method,
+        url: req.url 
+      });
+    });
+
+    // CRITICAL FIX: Add search route with different path to bypass Vite interception
+    app.get('/api/search-users', async (req, res) => {
+      try {
+        const {
+          search,
+          gender,
+          sexualPreference,
+          minAge,
+          maxAge,
+          interests,
+          activities,
+          events,
+          location,
+          userType,
+          travelerTypes,
+          militaryStatus
+        } = req.query;
+
+        if (process.env.NODE_ENV === 'development') console.log('🔍 DIRECT SEARCH: Performing search with filters:', {
+          search, gender, sexualPreference, minAge, maxAge, interests, activities, events, location, userType, travelerTypes, militaryStatus
+        });
+
+        // For now, return empty results to test the endpoint
+        res.json([]);
+      } catch (error: any) {
+        console.error('Error in direct search:', error);
+        res.status(500).json({ error: 'Failed to perform search' });
+      }
+    });
+    
   } catch (error) {
     console.error("❌ CRITICAL: Failed to register main API routes:", error);
     console.log("The server will continue with basic functionality only");

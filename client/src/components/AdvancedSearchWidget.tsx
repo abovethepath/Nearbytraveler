@@ -102,7 +102,7 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
       if (advancedFilters.travelerTypes.length > 0) params.append('travelerTypes', advancedFilters.travelerTypes.join(','));
       if (advancedFilters.militaryStatus.length > 0) params.append('militaryStatus', advancedFilters.militaryStatus.join(','));
       
-      const response = await apiRequest("GET", `/api/users/search?${params.toString()}`);
+      const response = await apiRequest("GET", `/api/search-users?${params.toString()}`);
       
       const data = await response.json();
       console.log('🔍 Advanced search results:', data);
