@@ -6909,11 +6909,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   {editingOwnerInfo ? (
                     <div className="space-y-4">
                       <div>
-                        <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Owner Name</Label>
+                        <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Business Name</Label>
                         <Input 
                           value={ownerContactForm.ownerName}
                           onChange={(e) => setOwnerContactForm(prev => ({ ...prev, ownerName: e.target.value }))}
-                          placeholder="Enter business owner name"
+                          placeholder="Enter business name"
                           className="mt-1"
                         />
                       </div>
@@ -6978,7 +6978,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   ) : (
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600 dark:text-gray-400">Owner Name:</span>
+                        <span className="text-sm text-gray-600 dark:text-gray-400">Business Name:</span>
                         <span className="text-sm font-medium text-gray-900 dark:text-white">
                           {user?.ownerName || "Not set"}
                         </span>
