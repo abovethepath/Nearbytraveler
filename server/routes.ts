@@ -2718,7 +2718,20 @@ Questions? Just reply to this message. Welcome aboard!
   // CRITICAL: Get user by ID endpoint
   app.get("/api/users/:id", async (req, res) => {
     try {
-      const userId = parseInt(req.params.id || '0');
+      const userIdParam = req.params.id || '0';
+      
+      // FIX: Validate user ID parameter to prevent NaN errors
+      if (userIdParam === 'NaN' || userIdParam === 'undefined' || userIdParam === 'null') {
+        return res.status(400).json({ message: "Invalid user ID parameter" });
+      }
+      
+      const userId = parseInt(userIdParam);
+      
+      // Additional check for invalid parsed values
+      if (isNaN(userId) || userId <= 0) {
+        return res.status(400).json({ message: "Invalid user ID format" });
+      }
+      
       const user = await storage.getUser(userId);
 
       if (!user) {
@@ -6694,7 +6707,7 @@ Questions? Just reply to this message. Welcome aboard!
         console.log(`✅ TOTAL DEAL LIMIT CHECK: Business ${businessId} has ${totalDealsCount}/10 total deals this month (${quickDealsCount} Quick + ${businessDealsCount} Regular)`);
       }
 
-      // Ensure timestamp fields are properly converted to Date objects
+      // FIX TIMER BUG: Ensure timestamp fields are properly converted to Date objects
       // Handle dates without timezone info as local time, not UTC
       const dealData = {
         ...req.body,
@@ -6702,6 +6715,15 @@ Questions? Just reply to this message. Welcome aboard!
         validFrom: req.body.validFrom ? new Date(req.body.validFrom) : new Date(),
         validUntil: req.body.validUntil ? new Date(req.body.validUntil) : new Date(Date.now() + 60 * 60 * 1000) // Default 1 hour from now
       };
+
+      // DEBUG: Log the timer calculation to identify issues
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`🕐 TIMER DEBUG: validUntil received from frontend: ${req.body.validUntil}`);
+        console.log(`🕐 TIMER DEBUG: validUntil parsed as Date: ${dealData.validUntil}`);
+        console.log(`🕐 TIMER DEBUG: validUntil ISO string: ${dealData.validUntil.toISOString()}`);
+        console.log(`🕐 TIMER DEBUG: Current time: ${new Date().toISOString()}`);
+        console.log(`🕐 TIMER DEBUG: Hours difference: ${(dealData.validUntil.getTime() - new Date().getTime()) / (1000 * 60 * 60)}`);
+      }
 
       if (process.env.NODE_ENV === 'development') console.log(`🛍️ CREATING QUICK DEAL: ${dealData.title} by business ${userId}`);
       
