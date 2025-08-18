@@ -35,8 +35,8 @@ export function MobileBottomNav() {
     <>
       {/* Action Menu Overlay */}
       {showActionMenu && (
-        <div className="fixed inset-0 z-50 bg-black/50 flex items-end">
-          <div className="w-full bg-white dark:bg-gray-900 rounded-t-2xl p-4 pb-safe max-h-[60vh] md:max-h-[70vh] lg:max-h-[80vh] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center md:items-end justify-center">
+          <div className="w-full max-w-md mx-4 bg-white dark:bg-gray-900 rounded-2xl md:rounded-t-2xl md:mb-20 p-4 pb-safe max-h-[60vh] md:max-h-[70vh] lg:max-h-[80vh] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent shadow-2xl">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                 Create New
