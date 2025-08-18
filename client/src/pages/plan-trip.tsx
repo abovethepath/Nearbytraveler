@@ -651,6 +651,19 @@ export default function PlanTrip() {
         }}
       >
         <div className="absolute inset-0 bg-black/40" />
+        {/* Close Button */}
+        <button
+          onClick={() => {
+            // Clear any editing state
+            localStorage.removeItem('editingTravelPlan');
+            // Navigate to home
+            setLocation('/');
+          }}
+          className="absolute top-4 right-4 z-20 bg-white/90 hover:bg-white text-gray-800 rounded-full p-2 shadow-lg transition-all hover:scale-110"
+          aria-label="Close"
+        >
+          <X className="w-6 h-6" />
+        </button>
         <div className="relative z-10 h-full flex items-center justify-center">
           <div className="text-center text-white">
             <Compass className="w-16 h-16 mx-auto mb-4" />
