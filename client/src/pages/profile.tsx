@@ -292,6 +292,10 @@ const createProfileSchema = (userType: string) => {
       sexualPreferenceVisible: z.boolean().default(false),
       secretActivities: z.string().optional(),
       travelingWithChildren: z.boolean().default(false),
+      travelWhy: z.string().optional(),
+      travelHow: z.string().optional(),
+      travelBudget: z.string().optional(),
+      travelGroup: z.string().optional(),
     });
   }
 };
@@ -1333,6 +1337,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           sexualPreference: user.sexualPreference || [],
           sexualPreferenceVisible: Boolean(user.sexualPreferenceVisible),
           travelStyle: user.travelStyle || [],
+          travelWhy: user.travelWhy || "",
+          travelHow: user.travelHow || "",
+          travelBudget: user.travelBudget || "",
+          travelGroup: user.travelGroup || "",
           travelingWithChildren: travelingWithChildrenValue,
           childrenAges: (user as any).childrenAges || "",
           isVeteran: Boolean(user.isVeteran),
