@@ -24,9 +24,9 @@ export function MobileBottomNav() {
   ];
 
   const actionMenuItems = user?.userType === 'business' ? [
-    { label: "Create Quick Deal", path: "/profile/" + (user?.id || ''), icon: Calendar },
+    { label: "Create Deal", path: "/business-dashboard", icon: Calendar },
+    { label: "Create Quick Deal", path: "/business-dashboard", icon: MessageCircle },
     { label: "Create Event", path: "/create-event", icon: Calendar },
-    { label: "View Analytics", path: "/profile/" + (user?.id || ''), icon: MessageCircle },
   ] : [
     { label: "Create Event", path: "/create-event", icon: Calendar },
     { label: "Create Trip", path: "/plan-trip", icon: Calendar },
