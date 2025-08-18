@@ -3,7 +3,7 @@ import { useLocation } from "wouter";
 import { Home, Plus, MessageCircle, User, Calendar, Search, X } from "lucide-react";
 import { AuthContext } from "@/App";
 import { AdvancedSearchWidget } from "@/components/AdvancedSearchWidget";
-import InstantDealCreator from "@/components/InstantDealCreator";
+import QuickDealModal from "@/components/QuickDealModal";
 
 export function MobileBottomNav() {
   const [location, setLocation] = useLocation();
@@ -180,7 +180,7 @@ export function MobileBottomNav() {
 
       {/* Quick Deal Creator Modal */}
       {showQuickDealCreator && (
-        <InstantDealCreator
+        <QuickDealModal
           onClose={() => setShowQuickDealCreator(false)}
           businessId={user?.id || 0}
         />
