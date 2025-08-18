@@ -47,8 +47,8 @@ export default function Deals() {
   
   const effectiveUser = user || authStorage.getUser();
   
-  // Simple city filtering 
-  const [selectedCity, setSelectedCity] = useState('');
+  // Simple city filtering - Initialize with user's city for proper location filtering
+  const [selectedCity, setSelectedCity] = useState(effectiveUser?.hometownCity || '');
 
   // Add periodic refresh to ensure business description updates are reflected
   useEffect(() => {
@@ -166,39 +166,27 @@ export default function Deals() {
   const filteredDeals = useMemo(() => {
     // Use the centralized metro configuration from shared/constants
     
-    if (!selectedCity) {
-      // Default filter by user's location WITH LA METRO CONSOLIDATION
-      if (effectiveUser?.hometownCity) {
-        const userCity = effectiveUser.hometownCity;
-        
-        // If user is in LA metro area, show ALL LA metro deals
-        if (isLAMetroCity(userCity)) {
-          console.log(`🌍 DEALS METRO CONSOLIDATION: ${userCity} → showing all LA metro deals`);
-          // Show all deals marked as LA Metro by the API
-          return allDeals.filter(deal => deal.isLAMetro === true);
-        }
-        
-        // For non-LA users, show deals from their city
-        return allDeals.filter(deal => 
-          deal.city?.toLowerCase().includes(userCity.toLowerCase()) ||
-          deal.businessLocation?.toLowerCase().includes(userCity.toLowerCase())
-        );
-      }
-      
-      return allDeals; // Show all if no user location
+    // Determine the active city filter - use selectedCity if manually set, otherwise user's hometown
+    const activeCity = selectedCity || effectiveUser?.hometownCity || '';
+    
+    if (!activeCity) {
+      // Only show all deals if user has no location AND no manual filter
+      console.log('🌍 DEALS: No city filter and no user location - showing all deals');
+      return allDeals;
     }
     
-    // Manual city filter WITH LA METRO CONSOLIDATION
-    if (isLAMetroCity(selectedCity)) {
-      console.log(`🌍 MANUAL SEARCH METRO CONSOLIDATION: ${selectedCity} → showing all LA metro deals`);
-      // Show all LA metro deals when searching for any LA metro city
+    // Apply location filtering WITH LA METRO CONSOLIDATION
+    if (isLAMetroCity(activeCity)) {
+      console.log(`🌍 DEALS METRO CONSOLIDATION: ${activeCity} → showing all LA metro deals`);
+      // Show all deals marked as LA Metro by the API
       return allDeals.filter(deal => deal.isLAMetro === true);
     }
     
-    // For non-LA cities, standard filtering
+    // For non-LA cities, filter by city name
+    console.log(`🌍 DEALS: Filtering deals for city: ${activeCity}`);
     return allDeals.filter(deal => 
-      deal.city?.toLowerCase().includes(selectedCity.toLowerCase()) ||
-      deal.businessLocation?.toLowerCase().includes(selectedCity.toLowerCase())
+      deal.city?.toLowerCase().includes(activeCity.toLowerCase()) ||
+      deal.businessLocation?.toLowerCase().includes(activeCity.toLowerCase())
     );
   }, [allDeals, selectedCity, effectiveUser]);
 
@@ -503,31 +491,38 @@ export default function Deals() {
             <div className="flex items-center gap-4">
               <div className="flex-1">
                 <label className="text-sm font-medium mb-2 block text-gray-900 dark:text-white">
-                  Select City (or leave blank to see ALL deals)
+                  Select City (defaults to your location)
                 </label>
                 <select 
                   className="w-full p-2 border border-gray-300 rounded-md dark:border-gray-600 dark:bg-gray-800 dark:text-white"
                   value={selectedCity}
                   onChange={(e) => setSelectedCity(e.target.value)}
                 >
-                  <option value="">Show ALL Cities</option>
+                  <option value="">Your Location: {effectiveUser?.hometownCity || 'Set location in profile'}</option>
                   {availableCities.map(city => (
                     <option key={city} value={city}>{city}</option>
                   ))}
                 </select>
               </div>
-              {selectedCity && (
+              {selectedCity && selectedCity !== effectiveUser?.hometownCity && (
                 <Button 
                   variant="outline"
                   onClick={() => setSelectedCity('')}
                   className="mt-6"
                 >
-                  Clear City Filter
+                  Back to My Location
                 </Button>
               )}
             </div>
             <p className="text-sm text-gray-500 mt-2">
-              {selectedCity ? `Showing deals in ${selectedCity}` : `Showing ALL deals from all cities (${allDeals.length} total)`}
+              {(() => {
+                const activeCity = selectedCity || effectiveUser?.hometownCity || '';
+                const dealCount = filteredDeals.length;
+                if (!activeCity) {
+                  return `Showing ALL deals from all cities (${allDeals.length} total)`;
+                }
+                return `Showing ${dealCount} deals in ${activeCity}`;
+              })()}
             </p>
           </CardContent>
         </Card>
