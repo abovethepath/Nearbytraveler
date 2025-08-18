@@ -78,10 +78,10 @@ export function MobileBottomNav() {
 
       {/* Bottom Navigation */}
       <div 
-        className="mobile-bottom-nav fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 shadow-lg md:hidden"
+        className="mobile-bottom-nav fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 shadow-lg"
         style={{ position: 'fixed', zIndex: 9999, width: '100vw', height: '72px', bottom: '0px', display: 'block' }}
       >
-        <div className="relative h-full flex items-center justify-between px-4">
+        <div className="relative h-full flex items-center justify-between px-4 md:px-8 max-w-6xl mx-auto">
           {/* Left two items */}
           {navItems.slice(0, 2).map((item) => {
             const isActive = location === item.path || (item.path === '/' && location === '/');
@@ -93,8 +93,8 @@ export function MobileBottomNav() {
                 className="flex flex-col items-center justify-center min-w-0 flex-1"
                 aria-label={item.label}
               >
-                <Icon className={`w-6 h-6 mb-1 ${isActive ? 'text-orange-500' : 'text-gray-400 dark:text-gray-500'}`} />
-                <span className={`text-xs font-medium ${isActive ? 'text-orange-500' : 'text-gray-500 dark:text-gray-500'}`}>{item.label}</span>
+                <Icon className={`w-6 h-6 md:w-7 md:h-7 mb-1 ${isActive ? 'text-orange-500' : 'text-gray-400 dark:text-gray-500'}`} />
+                <span className={`text-xs md:text-sm font-medium ${isActive ? 'text-orange-500' : 'text-gray-500 dark:text-gray-500'}`}>{item.label}</span>
               </button>
             );
           })}
@@ -103,9 +103,9 @@ export function MobileBottomNav() {
           <button
             onClick={() => setShowActionMenu(true)}
             aria-label="Create"
-            className="absolute left-1/2 -translate-x-1/2 -top-4 w-14 h-14 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-xl flex items-center justify-center"
+            className="absolute left-1/2 -translate-x-1/2 -top-4 w-14 h-14 md:w-16 md:h-16 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-xl flex items-center justify-center hover:scale-105 transition-transform"
           >
-            <Plus className="w-7 h-7 text-orange-500" />
+            <Plus className="w-7 h-7 md:w-8 md:h-8 text-orange-500" />
           </button>
 
           {/* Right two items */}
@@ -119,8 +119,8 @@ export function MobileBottomNav() {
                 className="flex flex-col items-center justify-center min-w-0 flex-1"
                 aria-label={item.label}
               >
-                <Icon className={`w-6 h-6 mb-1 ${isActive ? 'text-orange-500' : 'text-gray-400 dark:text-gray-500'}`} />
-                <span className={`text-xs font-medium ${isActive ? 'text-orange-500' : 'text-gray-500 dark:text-gray-500'}`}>{item.label}</span>
+                <Icon className={`w-6 h-6 md:w-7 md:h-7 mb-1 ${isActive ? 'text-orange-500' : 'text-gray-400 dark:text-gray-500'}`} />
+                <span className={`text-xs md:text-sm font-medium ${isActive ? 'text-orange-500' : 'text-gray-500 dark:text-gray-500'}`}>{item.label}</span>
               </button>
             );
           })}

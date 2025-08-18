@@ -346,10 +346,10 @@ function Router() {
                 <div className="md:hidden">
                   <MobileTopNav />
                 </div>
-            <main className="flex-1 w-full max-w-full pt-16 pb-24 md:pt-0 md:pb-0 overflow-x-hidden main-with-bottom-nav">
+            <main className="flex-1 w-full max-w-full pt-16 pb-24 md:pt-0 md:pb-20 overflow-x-hidden main-with-bottom-nav">
                   <Home />
                 </main>
-                <div className="md:hidden">
+                <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 9999 }}>
                   <MobileBottomNav />
                 </div>
               </div>
@@ -979,20 +979,15 @@ function Router() {
               null
             )}
 
-            <main className="flex-1 w-full max-w-full pt-16 pb-24 md:pt-0 md:pb-0 overflow-x-hidden main-with-bottom-nav">
+            <main className="flex-1 w-full max-w-full pt-16 pb-24 md:pt-0 md:pb-20 overflow-x-hidden main-with-bottom-nav">
               <div className="w-full max-w-full overflow-x-hidden">
                 {renderPage()}
               </div>
             </main>
 
-            {/* Desktop Footer */}
-            <div className="hidden md:block">
-              <Footer />
-            </div>
-
-            {/* Mobile Bottom Navigation - only show on mobile for authenticated users */}
+            {/* Bottom Navigation - show on all screen sizes for authenticated users */}
             {(user || localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || localStorage.getItem('auth_token')) && (
-              <div className="md:hidden" style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 9999 }}>
+              <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 9999 }}>
                 <MobileBottomNav />
               </div>
             )}
