@@ -2716,7 +2716,8 @@ Questions? Just reply to this message. Welcome aboard!
   });
 
   // Advanced search endpoint with comprehensive filtering - MUST COME BEFORE :id ROUTE
-  app.get('/api/users/search', async (req, res) => {
+  // Advanced search endpoint - support both URL formats
+  app.get('/api/search-users', async (req, res) => {
     try {
       const {
         search,
@@ -2774,16 +2775,20 @@ Questions? Just reply to this message. Welcome aboard!
         const searchCity = locationParts[0];
         
         if (process.env.NODE_ENV === 'development') console.log('🌴 ADVANCED SEARCH LOCATION: Searching for users in:', location);
+      if (process.env.NODE_ENV === 'development') console.log('🌴 SEARCH CITY EXTRACTED:', searchCity);
         
         // Apply LA Metro consolidation
         const citiesToSearch = [];
         const laMetroCities = ['Los Angeles', 'Beverly Hills', 'Santa Monica', 'West Hollywood', 'Pasadena', 'Glendale', 'Burbank', 'Hollywood', 'Manhattan Beach', 'Redondo Beach', 'Hermosa Beach', 'Venice', 'Marina del Rey', 'Culver City', 'El Segundo', 'Inglewood', 'LAX', 'Playa del Rey'];
         if (laMetroCities.includes(searchCity)) {
           citiesToSearch.push(...laMetroCities);
-          if (process.env.NODE_ENV === 'development') console.log('🌴 ADVANCED SEARCH LA METRO: Expanded search to all LA metro cities');
+          if (process.env.NODE_ENV === 'development') console.log('🌴 ADVANCED SEARCH LA METRO: Expanded search to all LA metro cities:', citiesToSearch.length, 'cities');
         } else {
           citiesToSearch.push(searchCity);
+          if (process.env.NODE_ENV === 'development') console.log('🌴 ADVANCED SEARCH SINGLE CITY:', searchCity);
         }
+        
+        if (process.env.NODE_ENV === 'development') console.log('🌴 CITIES TO SEARCH:', citiesToSearch.slice(0, 5), '... (total:', citiesToSearch.length, ')');
         
         whereConditions.push(
           or(
