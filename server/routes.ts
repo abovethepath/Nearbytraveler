@@ -9854,6 +9854,111 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // GET user city interests for a specific user and city
+  app.get("/api/user-city-interests/:userId/:cityName", async (req, res) => {
+    try {
+      const { userId, cityName } = req.params;
+      if (process.env.NODE_ENV === 'development') console.log(`💡 USER INTERESTS GET: Fetching interests for user ${userId} in ${cityName}`);
+      
+      const interests = await db
+        .select({
+          id: userCityInterests.id,
+          userId: userCityInterests.userId,
+          activityId: userCityInterests.activityId,
+          activityName: userCityInterests.activityName,
+          cityName: userCityInterests.cityName,
+          isActive: userCityInterests.isActive,
+          createdAt: userCityInterests.createdAt
+        })
+        .from(userCityInterests)
+        .where(
+          and(
+            eq(userCityInterests.userId, parseInt(userId)),
+            eq(userCityInterests.cityName, cityName),
+            eq(userCityInterests.isActive, true)
+          )
+        )
+        .orderBy(desc(userCityInterests.createdAt));
+      
+      if (process.env.NODE_ENV === 'development') console.log(`✅ USER INTERESTS GET: Found ${interests.length} interests for user ${userId} in ${cityName}`);
+      res.json(interests);
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error('Error fetching user city interests:', error);
+      res.status(500).json({ error: 'Failed to fetch user city interests' });
+    }
+  });
+
+  // POST new user city interest
+  app.post("/api/user-city-interests", async (req, res) => {
+    try {
+      const { activityId, cityName } = req.body;
+      const userId = req.headers['x-user-id'];
+      
+      if (!activityId || !cityName || !userId) {
+        return res.status(400).json({ error: 'Missing required fields: activityId, cityName, userId' });
+      }
+      
+      if (process.env.NODE_ENV === 'development') console.log(`💡 USER INTERESTS POST: Adding interest for user ${userId} in activity ${activityId}`);
+      
+      // Get the activity name from the city activities table
+      const [activity] = await db
+        .select({ activityName: cityActivities.activityName })
+        .from(cityActivities)
+        .where(eq(cityActivities.id, parseInt(activityId)));
+      
+      if (!activity) {
+        return res.status(404).json({ error: 'Activity not found' });
+      }
+      
+      const [newInterest] = await db
+        .insert(userCityInterests)
+        .values({
+          userId: parseInt(userId as string),
+          activityId: parseInt(activityId),
+          activityName: activity.activityName,
+          cityName,
+          isActive: true
+        })
+        .returning();
+      
+      if (process.env.NODE_ENV === 'development') console.log(`✅ USER INTERESTS POST: Created interest ${newInterest.id} for user ${userId}`);
+      res.json(newInterest);
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error('Error creating user city interest:', error);
+      res.status(500).json({ error: 'Failed to create user city interest' });
+    }
+  });
+
+  // DELETE user city interest
+  app.delete("/api/user-city-interests/:interestId", async (req, res) => {
+    try {
+      const { interestId } = req.params;
+      const userId = req.headers['x-user-id'];
+      
+      if (!interestId || !userId) {
+        return res.status(400).json({ error: 'Missing required fields: interestId, userId' });
+      }
+      
+      if (process.env.NODE_ENV === 'development') console.log(`💡 USER INTERESTS DELETE: Removing interest ${interestId} for user ${userId}`);
+      
+      await db
+        .update(userCityInterests)
+        .set({ isActive: false })
+        .where(
+          and(
+            eq(userCityInterests.id, parseInt(interestId)),
+            eq(userCityInterests.userId, parseInt(userId as string))
+          )
+        );
+      
+      if (process.env.NODE_ENV === 'development') console.log(`✅ USER INTERESTS DELETE: Removed interest ${interestId} for user ${userId}`);
+      res.json({ success: true });
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error('Error deleting user city interest:', error);
+      res.status(500).json({ error: 'Failed to delete user city interest' });
+    }
+  });
+
   // Direct search by city activity interests (toggle button selections)
   app.get('/api/users/search-by-activity-name', async (req, res) => {
     try {
