@@ -4,6 +4,7 @@ import { Home, Plus, MessageCircle, User, Calendar, Search, X } from "lucide-rea
 import { AuthContext } from "@/App";
 import { AdvancedSearchWidget } from "@/components/AdvancedSearchWidget";
 import QuickDealModal from "@/components/QuickDealModal";
+import { useQuery } from "@tanstack/react-query";
 
 export function MobileBottomNav() {
   const [location, setLocation] = useLocation();
@@ -28,6 +29,20 @@ export function MobileBottomNav() {
   
   console.log('🔍 MobileBottomNav - Final user object:', user);
   console.log('🔍 MobileBottomNav - userType:', user?.userType, 'is business?:', user?.userType === 'business');
+
+  // Query for unread messages count
+  const { data: messages } = useQuery({
+    queryKey: [`/api/messages/${user?.id}`],
+    enabled: !!user?.id,
+  });
+
+  // Calculate unread message count
+  const unreadCount = React.useMemo(() => {
+    if (!messages || !Array.isArray(messages)) return 0;
+    return messages.filter((msg: any) => !msg.isRead && msg.receiverId === user?.id).length;
+  }, [messages, user?.id]);
+
+  console.log('📧 MobileBottomNav - Unread messages count:', unreadCount);
 
   // Navigation items based on user type - Search opens widget instead of navigating
   const navItems = user?.userType === 'business' ? [
@@ -149,6 +164,8 @@ export function MobileBottomNav() {
           {navItems.slice(2).map((item, index) => {
             const isActive = item.path ? (location === item.path || (item.path.startsWith('/profile') && location.startsWith('/profile'))) : false;
             const Icon = item.icon;
+            const isMessagesItem = item.label === "Messages";
+            
             return (
               <button
                 key={item.path || item.action || index}
@@ -163,7 +180,17 @@ export function MobileBottomNav() {
                 className="flex flex-col items-center justify-center min-w-0 flex-1"
                 aria-label={item.label}
               >
-                <Icon className={`w-6 h-6 md:w-7 md:h-7 mb-1 ${isActive ? 'text-orange-500' : 'text-gray-400 dark:text-gray-500'}`} />
+                <div className="relative">
+                  <Icon className={`w-6 h-6 md:w-7 md:h-7 mb-1 ${isActive ? 'text-orange-500' : 'text-gray-400 dark:text-gray-500'}`} />
+                  {/* Unread message badge */}
+                  {isMessagesItem && unreadCount > 0 && (
+                    <div className="absolute -top-1 -right-1 min-w-[18px] h-[18px] bg-red-500 rounded-full flex items-center justify-center px-1">
+                      <span className="text-white text-[10px] font-bold">
+                        {unreadCount > 99 ? '99+' : unreadCount}
+                      </span>
+                    </div>
+                  )}
+                </div>
                 <span className={`text-xs md:text-sm font-medium ${isActive ? 'text-orange-500' : 'text-gray-500 dark:text-gray-500'}`}>{item.label}</span>
               </button>
             );
