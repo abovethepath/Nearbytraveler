@@ -9761,6 +9761,3 @@ Questions? Just reply to this message. Welcome aboard!
   return httpServerWithWebSocket;
 }
 
-      // Location filter with LA Metro consolidation
-      if (location && typeof location === 'string') {
-

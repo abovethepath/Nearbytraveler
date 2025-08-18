@@ -29,13 +29,8 @@ export default function DiscoverPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const { user } = useContext(AuthContext);
 
-  // Redirect business users away from discover page
-  useEffect(() => {
-    if (user?.userType === 'business') {
-      console.log('Business user detected on discover page, redirecting to business dashboard');
-      setLocation('/business-dashboard');
-    }
-  }, [user, setLocation]);
+  // Remove business redirect - user wants discover access for all users
+  // Business users can access discover page like everyone else
 
   // Fetch city stats
   const { data: allCities = [], isLoading: statsLoading } = useQuery<CityStats[]>({
@@ -85,10 +80,7 @@ export default function DiscoverPage() {
 
   console.log("Discover page - filtered cities:", filtered.length);
 
-  // Don't show anything to business users while redirecting
-  if (user?.userType === 'business') {
-    return null;
-  }
+  // Business users can access discover page normally
 
   if (statsLoading) {
     return (
