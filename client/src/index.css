@@ -880,12 +880,18 @@ span.text-blue-400, span.text-blue-300, span.text-blue-500, span.text-blue-600 {
       padding-top: 0 !important;
       margin-top: 0 !important;
     }
+  }
 
-    /* Force mobile nav visibility */
-    .mobile-top-nav, .mobile-bottom-nav {
+  /* Desktop navbar should respect Tailwind's responsive utilities */
+  @media (max-width: 767px) {
+    /* Ensure desktop navbar wrapper is hidden on mobile */
+    .hidden.md\:block {
+      display: none !important;
+    }
+    
+    /* Ensure mobile nav wrapper is visible on mobile */
+    .md\:hidden {
       display: block !important;
-      position: fixed !important;
-      z-index: 9999 !important;
     }
   }
 
