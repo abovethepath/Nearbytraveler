@@ -122,6 +122,7 @@ export const users = pgTable("users", {
   dealLimitResetDate: timestamp("deal_limit_reset_date"), // When to reset the counter
   
   ownerName: text("owner_name"), // Name of business owner for admin contact
+  contactName: text("contact_name"), // Name of primary contact person (may be different from owner)
   
   isActive: boolean("is_active").default(true),
   isAdmin: boolean("is_admin").default(false),

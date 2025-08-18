@@ -697,6 +697,7 @@ export class DatabaseStorage implements IStorage {
         showFemaleOwned: 'show_female_owned',
         showLGBTQIAOwned: 'show_lgbtqia_owned',
         ownerName: 'owner_name',
+        contactName: 'contact_name',
         ownerEmail: 'owner_email',
         ownerPhone: 'owner_phone',
         profileImage: 'profile_image',
