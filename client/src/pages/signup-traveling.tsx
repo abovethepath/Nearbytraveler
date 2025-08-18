@@ -213,7 +213,6 @@ export default function SignupTraveling() {
         languagesSpoken: [],
         sexualPreference: [],
         // Default values for removed fields
-        bio: 'New traveler looking to explore and connect with fellow travelers and locals around the world.',
         gender: '',
         isVeteran: false,
         isActiveDuty: false,

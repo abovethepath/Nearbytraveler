@@ -149,7 +149,6 @@ export default function SignupBusiness() {
         body: JSON.stringify({
           ...processedData,
           userType: "business",
-          bio: "Business offering quality services and products to both locals and travelers. Contact us to learn more!",
         })
       });
 

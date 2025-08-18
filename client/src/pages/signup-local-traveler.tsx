@@ -195,7 +195,6 @@ export default function SignupLocalTraveler() {
         languagesSpoken: [],
         sexualPreference: [],
         // Default values for removed fields
-        bio: 'Local resident excited to share my city knowledge and connect with travelers from around the world.',
         gender: '',
         isVeteran: false,
         isActiveDuty: false,
