@@ -1,0 +1,92 @@
+Got you. Here’s the same “Replit-stability” patch I gave you before—the one that stopped the crashes. It does three things: (1) binds to Replit’s port/host correctly, (2) removes the flaky Replit Vite plugins, and (3) stabilizes Vite HMR on Replit.
+
+1) Safe vite.config.(ts|js) (drop-in)
+
+Use this clean config (no Replit plugins, correct aliases, stable HMR):
+
+// vite.config.ts
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import { fileURLToPath } from "url";
+import { dirname, resolve } from "path";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+export default defineConfig({
+  plugins: [react()],
+  resolve: {
+    alias: {
+      "@": resolve(__dirname, "client", "src"),
+      "@shared": resolve(__dirname, "shared"),
+      "@assets": resolve(__dirname, "attached_assets"),
+    },
+  },
+  root: resolve(__dirname, "client"),
+  build: {
+    outDir: resolve(__dirname, "dist/public"),
+    emptyOutDir: true,
+  },
+  server: {
+    host: true,            // 0.0.0.0 on Replit
+    port: 5173,            // dev port
+    strictPort: true,
+    hmr: { clientPort: 443 } // fixes HMR websocket behind Replit proxy
+  },
+});
+
+
+If you had @replit/vite-plugin-runtime-error-modal or @replit/vite-plugin-cartographer, remove them from plugins and from package.json dependencies. They’re a common crash source.
+
+2) Express server must bind to Replit’s port
+
+Make sure your server listens on Replit’s provided port and 0.0.0.0:
+
+// server/index.ts (or server.js)
+import express from "express";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const app = express();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const PORT = Number(process.env.PORT) || 3000;
+
+app.use(express.static(path.join(__dirname, "../dist/public")));
+
+app.get("*", (_req, res) => {
+  res.sendFile(path.join(__dirname, "../dist/public/index.html"));
+});
+
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`Server listening on http://0.0.0.0:${PORT}`);
+});
+
+3) Scripts + Replit run command
+
+Use one command that works well on Replit. If you run client+server in dev:
+
+// package.json (relevant parts)
+{
+  "scripts": {
+    "dev:client": "vite --host",
+    "dev:server": "nodemon --watch server --ext ts,js --exec \"node --experimental-specifier-resolution=node server/index.js\"",
+    "dev": "concurrently -k \"npm:dev:client\" \"npm:dev:server\"",
+    "build": "vite build",
+    "start": "node server/index.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "nodemon": "^3.0.1",
+    "vite": "^5"
+  }
+}
+
+
+.replit (simple and reliable):
+
+run = "npm run dev"
