@@ -26,9 +26,22 @@ export default function QuickDealModal({ onClose, businessId }: QuickDealModalPr
 
   const createQuickDealMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
+      const startTime = new Date();
+      const validUntil = new Date(startTime.getTime() + (parseInt(data.validFor) * 60 * 60 * 1000)); // Hours to milliseconds
+      
       return apiRequest("POST", "/api/quick-deals", {
         businessId,
-        ...data,
+        title: data.title,
+        description: data.description,
+        discountType: data.discountType,
+        discountValue: data.discountValue,
+        dealType: data.discountType, // Add the required deal_type field
+        validFrom: startTime.toISOString(),
+        validUntil: validUntil.toISOString(),
+        maxRedemptions: 100, // Default max redemptions
+        availability: data.availability,
+        category: 'flash_deal',
+        isActive: true
       });
     },
     onSuccess: () => {
