@@ -2715,6 +2715,131 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // Advanced search endpoint with comprehensive filtering - MUST COME BEFORE :id ROUTE
+  app.get('/api/users/search', async (req, res) => {
+    try {
+      const {
+        search,
+        gender,
+        sexualPreference,
+        minAge,
+        maxAge,
+        interests,
+        activities,
+        events,
+        location,
+        userType,
+        travelerTypes,
+        militaryStatus
+      } = req.query;
+
+      // Get current user ID from headers to exclude them from results (optional)
+      const userIdHeader = req.headers['x-user-id'] as string;
+      let currentUserId = null;
+      
+      // FIX: Make user ID optional for search - only parse if valid
+      if (userIdHeader && userIdHeader !== 'NaN' && userIdHeader !== 'undefined' && userIdHeader !== 'null') {
+        const parsedUserId = parseInt(userIdHeader);
+        if (!isNaN(parsedUserId) && parsedUserId > 0) {
+          currentUserId = parsedUserId;
+        }
+      }
+
+      if (process.env.NODE_ENV === 'development') console.log('🔍 ADVANCED SEARCH: Performing search with filters:', {
+        search, gender, sexualPreference, minAge, maxAge, interests, activities, events, location, userType, travelerTypes, militaryStatus, currentUserId
+      });
+
+      // Build WHERE conditions
+      const whereConditions = [];
+      
+      // Exclude current user from their own search results
+      if (currentUserId) {
+        whereConditions.push(ne(users.id, currentUserId));
+      }
+
+      // Text search in name, username, or bio
+      if (search && typeof search === 'string') {
+        whereConditions.push(
+          or(
+            ilike(users.name, `%${search}%`),
+            ilike(users.username, `%${search}%`),
+            ilike(users.bio, `%${search}%`)
+          )
+        );
+      }
+
+      // Location filter with LA Metro consolidation
+      if (location && typeof location === 'string') {
+        const locationParts = location.split(',').map(part => part.trim());
+        const searchCity = locationParts[0];
+        
+        if (process.env.NODE_ENV === 'development') console.log('🌴 ADVANCED SEARCH LOCATION: Searching for users in:', location);
+        
+        // Apply LA Metro consolidation
+        const citiesToSearch = [];
+        const laMetroCities = ['Los Angeles', 'Beverly Hills', 'Santa Monica', 'West Hollywood', 'Pasadena', 'Glendale', 'Burbank', 'Hollywood', 'Manhattan Beach', 'Redondo Beach', 'Hermosa Beach', 'Venice', 'Marina del Rey', 'Culver City', 'El Segundo', 'Inglewood', 'LAX', 'Playa del Rey'];
+        if (laMetroCities.includes(searchCity)) {
+          citiesToSearch.push(...laMetroCities);
+          if (process.env.NODE_ENV === 'development') console.log('🌴 ADVANCED SEARCH LA METRO: Expanded search to all LA metro cities');
+        } else {
+          citiesToSearch.push(searchCity);
+        }
+        
+        whereConditions.push(
+          or(
+            inArray(users.hometownCity, citiesToSearch),
+            ...citiesToSearch.map(city => ilike(users.location, `%${city}%`))
+          )
+        );
+      }
+
+      // User type filter
+      if (userType && typeof userType === 'string') {
+        const typeList = userType.split(',');
+        whereConditions.push(inArray(users.userType, typeList));
+      }
+
+      // Execute search query
+      const searchResults = await db
+        .select({
+          id: users.id,
+          username: users.username,
+          name: users.name,
+          userType: users.userType,
+          bio: users.bio,
+          location: users.location,
+          hometownCity: users.hometownCity,
+          hometownState: users.hometownState,
+          hometownCountry: users.hometownCountry,
+          profileImage: users.profileImage,
+          age: users.age,
+          gender: users.gender,
+          interests: users.interests,
+          activities: users.activities
+        })
+        .from(users)
+        .where(whereConditions.length > 0 ? and(...whereConditions) : undefined)
+        .orderBy(desc(users.id))
+        .limit(20);
+
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`✅ ADVANCED SEARCH: Found ${searchResults.length} users matching criteria`);
+      }
+      
+      res.json({
+        users: searchResults,
+        total: searchResults.length,
+        page: 1,
+        hasMore: searchResults.length === 20
+      });
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error in advanced search:', error);
+      }
+      res.status(500).json({ error: 'Failed to perform advanced search' });
+    }
+  });
+
   // CRITICAL: Get user by ID endpoint
   app.get("/api/users/:id", async (req, res) => {
     try {
@@ -9537,12 +9662,7 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
-  // Advanced search endpoint with comprehensive filtering
-  app.get('/api/users/search', async (req, res) => {
-    try {
-      const {
-        search,
-        gender,
+  // REMOVED: Duplicate search endpoint - moved to line 2718 for correct route precedence
         sexualPreference,
         minAge,
         maxAge,
@@ -9555,8 +9675,17 @@ Questions? Just reply to this message. Welcome aboard!
         militaryStatus
       } = req.query;
 
-      // Get current user ID from headers to exclude them from results
-      const currentUserId = req.headers['x-user-id'] ? parseInt(req.headers['x-user-id'] as string || '0') : null;
+      // Get current user ID from headers to exclude them from results (optional)
+      const userIdHeader = req.headers['x-user-id'] as string;
+      let currentUserId = null;
+      
+      // FIX: Make user ID optional for search - only parse if valid
+      if (userIdHeader && userIdHeader !== 'NaN' && userIdHeader !== 'undefined' && userIdHeader !== 'null') {
+        const parsedUserId = parseInt(userIdHeader);
+        if (!isNaN(parsedUserId) && parsedUserId > 0) {
+          currentUserId = parsedUserId;
+        }
+      }
 
       if (process.env.NODE_ENV === 'development') console.log('🔍 ADVANCED SEARCH: Performing search with filters:', {
         search, gender, sexualPreference, minAge, maxAge, interests, activities, events, location, userType, travelerTypes, militaryStatus, currentUserId
