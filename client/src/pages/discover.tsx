@@ -29,8 +29,13 @@ export default function DiscoverPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const { user } = useContext(AuthContext);
 
-  // Remove business redirect - user wants discover access for all users
-  // Business users can access discover page like everyone else
+  // Redirect business users away from destination discovery page
+  useEffect(() => {
+    if (user?.userType === 'business') {
+      console.log('Business user detected on discover page, redirecting to business dashboard');
+      setLocation('/business-dashboard');
+    }
+  }, [user, setLocation]);
 
   // Fetch city stats
   const { data: allCities = [], isLoading: statsLoading } = useQuery<CityStats[]>({
@@ -80,7 +85,19 @@ export default function DiscoverPage() {
 
   console.log("Discover page - filtered cities:", filtered.length);
 
-  // Business users can access discover page normally
+  // Don't show destination discovery to business users while redirecting
+  if (user?.userType === 'business') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-orange-50 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-2">
+            Redirecting to Business Dashboard...
+          </h2>
+          <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full mx-auto" />
+        </div>
+      </div>
+    );
+  }
 
   if (statsLoading) {
     return (
