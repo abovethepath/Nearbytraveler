@@ -408,8 +408,9 @@ app.get('/api/search-users', async (req, res) => {
           ilike(users.name, `%${searchTerm}%`),
           ilike(users.username, `%${searchTerm}%`),
           ilike(users.bio, `%${searchTerm}%`),
-          ilike(users.interests, `%${searchTerm}%`),
-          ilike(users.activities, `%${searchTerm}%`)
+          // For array fields, we use SQL to check if any element contains the search term
+          sql`EXISTS (SELECT 1 FROM unnest(${users.interests}) AS interest WHERE lower(interest) LIKE '%' || lower(${searchTerm}) || '%')`,
+          sql`EXISTS (SELECT 1 FROM unnest(${users.activities}) AS activity WHERE lower(activity) LIKE '%' || lower(${searchTerm}) || '%')`
         )
       );
       console.log('🔍 SEARCH: Added text search condition for:', searchTerm);
