@@ -3,11 +3,13 @@ import { useLocation } from "wouter";
 import { Home, Plus, MessageCircle, User, Calendar, Search, X } from "lucide-react";
 import { AuthContext } from "@/App";
 import { AdvancedSearchWidget } from "@/components/AdvancedSearchWidget";
+import InstantDealCreator from "@/components/InstantDealCreator";
 
 export function MobileBottomNav() {
   const [location, setLocation] = useLocation();
   const [showActionMenu, setShowActionMenu] = useState(false);
   const [showSearchWidget, setShowSearchWidget] = useState(false);
+  const [showQuickDealCreator, setShowQuickDealCreator] = useState(false);
   const authContext = React.useContext(AuthContext);
   let user = authContext?.user;
   
@@ -46,7 +48,7 @@ export function MobileBottomNav() {
   
   const actionMenuItems = isBusinessUser ? [
     { label: "Create Deal", path: "/business-dashboard?action=create-deal", icon: Calendar },
-    { label: "Create Quick Deal", path: "/business-dashboard?action=create-quick-deal", icon: MessageCircle },
+    { label: "Create Quick Deal", action: "quick-deal", icon: MessageCircle },
     { label: "Create Event", path: "/create-event", icon: Calendar },
   ] : [
     { label: "Create Event", path: "/create-event", icon: Calendar },
@@ -79,9 +81,14 @@ export function MobileBottomNav() {
                   <button
                     key={index}
                     onClick={() => {
-                      console.log('🎯 MOBILE ACTION MENU: Clicked', action.label, 'navigating to:', action.path);
-                      setLocation(action.path);
-                      setShowActionMenu(false);
+                      console.log('🎯 MOBILE ACTION MENU: Clicked', action.label);
+                      if (action.action === 'quick-deal') {
+                        setShowQuickDealCreator(true);
+                        setShowActionMenu(false);
+                      } else if (action.path) {
+                        setLocation(action.path);
+                        setShowActionMenu(false);
+                      }
                     }}
                     className="flex flex-col items-center justify-center p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                   >
@@ -170,6 +177,14 @@ export function MobileBottomNav() {
         open={showSearchWidget}
         onOpenChange={setShowSearchWidget}
       />
+
+      {/* Quick Deal Creator Modal */}
+      {showQuickDealCreator && (
+        <InstantDealCreator
+          onClose={() => setShowQuickDealCreator(false)}
+          businessId={user?.id || 0}
+        />
+      )}
     </>
   );
 }
