@@ -182,234 +182,45 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-md bg-white dark:bg-gray-900 border shadow-2xl" style={{ zIndex: 999999 }}>
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
+          <DialogTitle className="flex items-center gap-2 text-black dark:text-white">
             <Search className="h-5 w-5" />
-            Advanced Search
+            TEST - Advanced Search
           </DialogTitle>
-          <DialogDescription>
-            Find people using detailed filters and preferences
+          <DialogDescription className="text-gray-600 dark:text-gray-400">
+            This is a test to see if the dialog shows up
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-6">
-          {/* Basic Search */}
+        <div className="space-y-4 text-black dark:text-white">
+          <p>If you can see this text, the dialog is working!</p>
+          
           <div>
-            <Label htmlFor="search">Search by name or username</Label>
+            <Label htmlFor="test-search" className="text-black dark:text-white">Test Search Input</Label>
             <Input
-              id="search"
-              placeholder="Search people..."
-              value={advancedFilters.search}
-              onChange={(e) => setAdvancedFilters(prev => ({ ...prev, search: e.target.value }))}
+              id="test-search"
+              placeholder="Type something..."
+              className="bg-white dark:bg-gray-800 text-black dark:text-white"
             />
           </div>
 
-          {/* Location Filter */}
-          <div>
-            <Label>Location</Label>
-            <SmartLocationInput
-              country={locationFilter.country}
-              state={locationFilter.state}
-              city={locationFilter.city}
-              onLocationChange={handleLocationChange}
-              placeholder="Search by location..."
-            />
-          </div>
-
-          {/* Collapsible Filters */}
-          <div className="space-y-4">
-            {/* Gender Filter */}
-            <Collapsible open={expandedSections.gender} onOpenChange={() => toggleSection('gender')}>
-              <CollapsibleTrigger asChild>
-                <Button variant="outline" className="w-full justify-between">
-                  <span>Gender {advancedFilters.gender.length > 0 && `(${advancedFilters.gender.length})`}</span>
-                  <ChevronDown className="h-4 w-4" />
-                </Button>
-              </CollapsibleTrigger>
-              <CollapsibleContent className="space-y-2 pt-2">
-                {genderOptions.map((option) => (
-                  <div key={option} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`gender-${option}`}
-                      checked={advancedFilters.gender.includes(option)}
-                      onCheckedChange={(checked) => handleCheckboxChange('gender', option, checked as boolean)}
-                    />
-                    <Label htmlFor={`gender-${option}`}>{option}</Label>
-                  </div>
-                ))}
-              </CollapsibleContent>
-            </Collapsible>
-
-            {/* Age Range */}
-            <Collapsible open={expandedSections.ageRange} onOpenChange={() => toggleSection('ageRange')}>
-              <CollapsibleTrigger asChild>
-                <Button variant="outline" className="w-full justify-between">
-                  <span>Age Range</span>
-                  <ChevronDown className="h-4 w-4" />
-                </Button>
-              </CollapsibleTrigger>
-              <CollapsibleContent className="space-y-2 pt-2">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="minAge">Min Age</Label>
-                    <Input
-                      id="minAge"
-                      type="number"
-                      placeholder="18"
-                      value={advancedFilters.minAge || ""}
-                      onChange={(e) => setAdvancedFilters(prev => ({ 
-                        ...prev, 
-                        minAge: e.target.value ? parseInt(e.target.value) : undefined 
-                      }))}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="maxAge">Max Age</Label>
-                    <Input
-                      id="maxAge"
-                      type="number"
-                      placeholder="65"
-                      value={advancedFilters.maxAge || ""}
-                      onChange={(e) => setAdvancedFilters(prev => ({ 
-                        ...prev, 
-                        maxAge: e.target.value ? parseInt(e.target.value) : undefined 
-                      }))}
-                    />
-                  </div>
-                </div>
-              </CollapsibleContent>
-            </Collapsible>
-
-            {/* User Type */}
-            <Collapsible open={expandedSections.userType} onOpenChange={() => toggleSection('userType')}>
-              <CollapsibleTrigger asChild>
-                <Button variant="outline" className="w-full justify-between">
-                  <span>User Type {advancedFilters.userType.length > 0 && `(${advancedFilters.userType.length})`}</span>
-                  <ChevronDown className="h-4 w-4" />
-                </Button>
-              </CollapsibleTrigger>
-              <CollapsibleContent className="space-y-2 pt-2">
-                {userTypeOptions.map((option) => (
-                  <div key={option} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`userType-${option}`}
-                      checked={advancedFilters.userType.includes(option)}
-                      onCheckedChange={(checked) => handleCheckboxChange('userType', option, checked as boolean)}
-                    />
-                    <Label htmlFor={`userType-${option}`}>{option}</Label>
-                  </div>
-                ))}
-              </CollapsibleContent>
-            </Collapsible>
-
-            {/* Interests */}
-            <Collapsible open={expandedSections.interests} onOpenChange={() => toggleSection('interests')}>
-              <CollapsibleTrigger asChild>
-                <Button variant="outline" className="w-full justify-between">
-                  <span>Interests {advancedFilters.interests.length > 0 && `(${advancedFilters.interests.length})`}</span>
-                  <ChevronDown className="h-4 w-4" />
-                </Button>
-              </CollapsibleTrigger>
-              <CollapsibleContent className="space-y-2 pt-2">
-                <div className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto">
-                  {interestOptions.map((option) => (
-                    <div key={option} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={`interest-${option}`}
-                        checked={advancedFilters.interests.includes(option)}
-                        onCheckedChange={(checked) => handleCheckboxChange('interests', option, checked as boolean)}
-                      />
-                      <Label htmlFor={`interest-${option}`} className="text-sm">{option}</Label>
-                    </div>
-                  ))}
-                </div>
-              </CollapsibleContent>
-            </Collapsible>
-
-            {/* Activities */}
-            <Collapsible open={expandedSections.activities} onOpenChange={() => toggleSection('activities')}>
-              <CollapsibleTrigger asChild>
-                <Button variant="outline" className="w-full justify-between">
-                  <span>Activities {advancedFilters.activities.length > 0 && `(${advancedFilters.activities.length})`}</span>
-                  <ChevronDown className="h-4 w-4" />
-                </Button>
-              </CollapsibleTrigger>
-              <CollapsibleContent className="space-y-2 pt-2">
-                <div className="grid grid-cols-2 gap-2">
-                  {activityOptions.map((option) => (
-                    <div key={option} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={`activity-${option}`}
-                        checked={advancedFilters.activities.includes(option)}
-                        onCheckedChange={(checked) => handleCheckboxChange('activities', option, checked as boolean)}
-                      />
-                      <Label htmlFor={`activity-${option}`} className="text-sm">{option}</Label>
-                    </div>
-                  ))}
-                </div>
-              </CollapsibleContent>
-            </Collapsible>
-          </div>
-
-          {/* Search Actions */}
-          <div className="flex gap-4">
-            <Button
-              onClick={handleAdvancedSearch}
-              disabled={isAdvancedSearching}
-              className="flex-1"
-            >
-              {isAdvancedSearching ? "Searching..." : "Search People"}
-              <Search className="ml-2 h-4 w-4" />
+          <div className="flex gap-2">
+            <Button onClick={() => {
+              console.log('🔍 TEST: Search button clicked');
+              toast({
+                title: "Test Search",
+                description: "Dialog is working!",
+              });
+            }} className="flex-1">
+              <Search className="mr-2 h-4 w-4" />
+              Test Search
             </Button>
-            <Button
-              onClick={clearAdvancedFilters}
-              variant="outline"
-            >
-              Clear Filters
-              <X className="ml-2 h-4 w-4" />
+            <Button onClick={() => onOpenChange(false)} variant="outline">
+              <X className="mr-2 h-4 w-4" />
+              Close
             </Button>
           </div>
-
-          {/* Search Results */}
-          {advancedSearchResults.length > 0 && (
-            <div className="space-y-4">
-              <div className="flex items-center gap-2">
-                <Users className="h-5 w-5" />
-                <h3 className="text-lg font-semibold">Search Results ({advancedSearchResults.length})</h3>
-              </div>
-              <div className="grid gap-4 max-h-60 overflow-y-auto">
-                {advancedSearchResults.map((user) => (
-                  <Card key={user.id} className="cursor-pointer hover:shadow-md transition-shadow">
-                    <CardContent className="p-4">
-                      <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
-                          <Users className="h-6 w-6 text-gray-600" />
-                        </div>
-                        <div className="flex-1">
-                          <h4 className="font-medium">@{user.username}</h4>
-                          <p className="text-sm text-gray-600">
-                            {user.hometownCity && `${user.hometownCity}, `}
-                            {user.hometownState}
-                          </p>
-                          <div className="flex gap-1 mt-1">
-                            <Badge variant="secondary" className="text-xs">
-                              {user.userType || 'User'}
-                            </Badge>
-                            {user.age && (
-                              <Badge variant="outline" className="text-xs">
-                                Age {user.age}
-                              </Badge>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
       </DialogContent>
     </Dialog>
