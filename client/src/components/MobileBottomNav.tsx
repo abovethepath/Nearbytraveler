@@ -2,21 +2,23 @@ import React, { useState } from "react";
 import { useLocation } from "wouter";
 import { Home, Plus, MessageCircle, User, Calendar, Search, X } from "lucide-react";
 import { AuthContext } from "@/App";
+import { AdvancedSearchWidget } from "@/components/AdvancedSearchWidget";
 
 export function MobileBottomNav() {
   const [location, setLocation] = useLocation();
   const [showActionMenu, setShowActionMenu] = useState(false);
+  const [showSearchWidget, setShowSearchWidget] = useState(false);
   const { user } = React.useContext(AuthContext);
 
-  // Navigation items based on user type
+  // Navigation items based on user type - Search opens widget instead of navigating
   const navItems = user?.userType === 'business' ? [
     { icon: Home, label: "Dashboard", path: "/" },
-    { icon: Search, label: "Search", path: "/discover" },
+    { icon: Search, label: "Search", action: "search" },
     { icon: MessageCircle, label: "Messages", path: "/messages" },
     { icon: User, label: "Business", path: user ? `/profile/${user.id}` : "/profile" },
   ] : [
     { icon: Home, label: "Home", path: "/" },
-    { icon: Search, label: "Search", path: "/discover" },
+    { icon: Search, label: "Search", action: "search" },
     { icon: MessageCircle, label: "Messages", path: "/messages" },
     { icon: User, label: "Profile", path: user ? `/profile/${user.id}` : "/profile" },
   ];
@@ -83,13 +85,20 @@ export function MobileBottomNav() {
       >
         <div className="relative h-full flex items-center justify-between px-4 md:px-8 max-w-6xl mx-auto">
           {/* Left two items */}
-          {navItems.slice(0, 2).map((item) => {
-            const isActive = location === item.path || (item.path === '/' && location === '/');
+          {navItems.slice(0, 2).map((item, index) => {
+            const isActive = item.path ? (location === item.path || (item.path === '/' && location === '/')) : false;
             const Icon = item.icon;
             return (
               <button
-                key={item.path}
-                onClick={() => setLocation(item.path)}
+                key={item.path || item.action || index}
+                onClick={() => {
+                  if (item.action === "search") {
+                    console.log('🎯 MOBILE NAV: Opening Advanced Search Widget');
+                    setShowSearchWidget(true);
+                  } else if (item.path) {
+                    setLocation(item.path);
+                  }
+                }}
                 className="flex flex-col items-center justify-center min-w-0 flex-1"
                 aria-label={item.label}
               >
@@ -109,13 +118,20 @@ export function MobileBottomNav() {
           </button>
 
           {/* Right two items */}
-          {navItems.slice(2).map((item) => {
-            const isActive = location === item.path || (item.path.startsWith('/profile') && location.startsWith('/profile'));
+          {navItems.slice(2).map((item, index) => {
+            const isActive = item.path ? (location === item.path || (item.path.startsWith('/profile') && location.startsWith('/profile'))) : false;
             const Icon = item.icon;
             return (
               <button
-                key={item.path}
-                onClick={() => setLocation(item.path)}
+                key={item.path || item.action || index}
+                onClick={() => {
+                  if (item.action === "search") {
+                    console.log('🎯 MOBILE NAV: Opening Advanced Search Widget');
+                    setShowSearchWidget(true);
+                  } else if (item.path) {
+                    setLocation(item.path);
+                  }
+                }}
                 className="flex flex-col items-center justify-center min-w-0 flex-1"
                 aria-label={item.label}
               >
@@ -127,6 +143,12 @@ export function MobileBottomNav() {
         </div>
         <div className="h-safe-area-inset-bottom" />
       </div>
+
+      {/* Advanced Search Widget */}
+      <AdvancedSearchWidget 
+        open={showSearchWidget}
+        onOpenChange={setShowSearchWidget}
+      />
     </>
   );
 }
