@@ -304,7 +304,7 @@ export function PeopleDiscoveryWidget({
               {compatibilityData ? (
                 (() => {
                   const data = compatibilityData as any;
-                  // Use the same calculation as the profile page - include ALL commonality types
+                  // Use exact same logic as profile page for consistency
                   const sharedInterestsCount = data.sharedInterests?.length || 0;
                   const sharedEventsCount = data.sharedEvents?.length || 0;
                   const sharedActivitiesCount = data.sharedActivities?.length || 0;
@@ -317,13 +317,16 @@ export function PeopleDiscoveryWidget({
                   const overlappingTravelDatesCount = data.overlappingTravelDates?.length || 0;
                   const otherCommonalitiesCount = data.otherCommonalities?.length || 0;
                   
-                  // Match the profile page calculation exactly
-                  const totalCommon = sharedInterestsCount + sharedEventsCount + 
-                                     sharedActivitiesCount + sharedTravelIntentCount +
-                                     sharedCityActivitiesCount + sharedSexualPreferencesCount +
-                                     sharedLanguagesCount + sharedCountriesCount +
-                                     sharedTravelDestinationsCount + overlappingTravelDatesCount +
-                                     otherCommonalitiesCount;
+                  // Calculate total exactly like profile page
+                  const calculatedTotal = sharedInterestsCount + sharedEventsCount + 
+                                         sharedActivitiesCount + sharedTravelIntentCount +
+                                         sharedCityActivitiesCount + sharedSexualPreferencesCount +
+                                         sharedLanguagesCount + sharedCountriesCount +
+                                         sharedTravelDestinationsCount + overlappingTravelDatesCount +
+                                         otherCommonalitiesCount;
+                  
+                  // Use same fallback logic as profile page: totalCommonalities ?? calculatedTotal
+                  const totalCommon = data.totalCommonalities ?? calculatedTotal;
                   
                   if (totalCommon > 0) {
                     return (
