@@ -91,7 +91,7 @@ export class TravelMatchingService {
   /**
    * Calculate comprehensive compatibility score between two users
    */
-  private async calculateCompatibilityScore(
+  public async calculateCompatibilityScore(
     user1: User, 
     user2: User, 
     user1Plans: TravelPlan[], 

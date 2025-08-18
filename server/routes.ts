@@ -8300,12 +8300,17 @@ Questions? Just reply to this message. Welcome aboard!
       const user2 = await storage.getUser(userId2);
       
       if (!user1 || !user2) {
+        if (process.env.NODE_ENV === 'development') console.log(`🔮 COMPATIBILITY: User not found - user1: ${!!user1}, user2: ${!!user2}`);
         return res.status(404).json({ message: "User not found" });
       }
+
+      if (process.env.NODE_ENV === 'development') console.log(`🔮 COMPATIBILITY: Found users - ${user1.username} and ${user2.username}`);
 
       // Get travel plans for both users
       const user1TravelPlans = await storage.getUserTravelPlans(userId1);
       const user2TravelPlans = await storage.getUserTravelPlans(userId2);
+
+      if (process.env.NODE_ENV === 'development') console.log(`🔮 COMPATIBILITY: Travel plans - user1: ${user1TravelPlans?.length || 0}, user2: ${user2TravelPlans?.length || 0}`);
 
       // Calculate compatibility using the matching service
       const compatibilityScore = await matchingService.calculateCompatibilityScore(
@@ -8315,9 +8320,26 @@ Questions? Just reply to this message. Welcome aboard!
         user2TravelPlans
       );
 
-      if (process.env.NODE_ENV === 'development') console.log(`🔮 COMPATIBILITY: Score between ${user1.username} and ${user2.username}: ${Math.round(compatibilityScore.score * 100)}%`);
+      if (process.env.NODE_ENV === 'development') console.log(`🔮 COMPATIBILITY: Raw score result:`, compatibilityScore);
+      if (process.env.NODE_ENV === 'development') console.log(`🔮 COMPATIBILITY: Score between ${user1.username} and ${user2.username}: ${Math.round((compatibilityScore?.score || 0) * 100)}%`);
 
-      res.json(compatibilityScore);
+      // Ensure we return a valid response even if score is null/undefined
+      const response = compatibilityScore || {
+        userId: user2.id,
+        score: 0,
+        reasons: [],
+        compatibilityLevel: 'low',
+        sharedInterests: [],
+        sharedActivities: [],
+        sharedEvents: [],
+        sharedTravelIntent: [],
+        locationOverlap: false,
+        dateOverlap: false,
+        userTypeCompatibility: false,
+        travelIntentCompatibility: false
+      };
+
+      res.json(response);
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error calculating compatibility:", error);
       res.status(500).json({ message: "Failed to calculate compatibility" });
