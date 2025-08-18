@@ -118,19 +118,14 @@ export default function BusinessEventsWidget({ userId }: BusinessEventsWidgetPro
                   <div className="flex items-center gap-2">
                     <Calendar className="w-4 h-4" />
                     <span>
-                      {event.startDate ? formatDateForDisplay(event.startDate, 'UTC') : 'Date TBD'}
-                      {event.endDate && event.endDate !== event.startDate && 
-                        ` - ${formatDateForDisplay(event.endDate, 'UTC')}`
+                      {event.date ? formatDateForDisplay(event.date, 'UTC') : 'Date TBD'}
+                      {event.end_date && event.end_date !== event.date && 
+                        ` - ${formatDateForDisplay(event.end_date, 'UTC')}`
                       }
                     </span>
                   </div>
                   
-                  {event.startTime && (
-                    <div className="flex items-center gap-2">
-                      <Clock className="w-4 h-4" />
-                      <span>{event.startTime}</span>
-                    </div>
-                  )}
+                  {/* Time is included in the date field, no separate startTime field */}
                   
                   <div className="flex items-center gap-2">
                     <MapPin className="w-4 h-4" />
