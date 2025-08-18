@@ -145,56 +145,112 @@ export function MobileTopNav() {
       {showDropdown && (
         <div className="absolute top-16 left-0 right-0 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 shadow-lg z-50">
           <div className="flex flex-col py-2">
-            <button
-              className="flex items-center px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800"
-              onClick={() => {
-                console.log('🏠 MOBILE NAV: Navigating to home');
-                setShowDropdown(false);
-                setLocation('/');
-              }}
-            >
-              Home
-            </button>
-            <button
-              className="flex items-center px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800"
-              onClick={() => { setLocation('/discover'); setShowDropdown(false); }}
-            >
-              Cities
-            </button>
-            <button
-              className="flex items-center px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800"
-              onClick={() => { setLocation('/events'); setShowDropdown(false); }}
-            >
-              Events
-            </button>
-            <button
-              className="flex items-center px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800"
-              onClick={() => { setLocation('/match-in-city'); setShowDropdown(false); }}
-            >
-              City Match
-            </button>
-            <button
-              className="flex items-center px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800"
-              onClick={() => { setLocation('/connect'); setShowDropdown(false); }}
-            >
-              Connect
-            </button>
-            <button
-              className="flex items-center px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800"
-              onClick={() => { setLocation('/messages'); setShowDropdown(false); }}
-            >
-              Messages
-            </button>
-            <button
-              className="flex items-center px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800"
-              onClick={() => {
-                const profilePath = currentUser?.id ? `/profile/${currentUser.id}` : '/profile';
-                setLocation(profilePath);
-                setShowDropdown(false);
-              }}
-            >
-              Profile
-            </button>
+            {/* Conditional navigation based on user type */}
+            {currentUser?.userType === 'business' ? (
+              // Business navigation
+              <>
+                <button
+                  className="flex items-center px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800"
+                  onClick={() => {
+                    console.log('🏢 BUSINESS MOBILE NAV: Navigating to dashboard');
+                    setShowDropdown(false);
+                    setLocation('/');
+                  }}
+                >
+                  Business Dashboard
+                </button>
+                <button
+                  className="flex items-center px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800"
+                  onClick={() => { setLocation('/create-event'); setShowDropdown(false); }}
+                >
+                  Create Event
+                </button>
+                <button
+                  className="flex items-center px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800"
+                  onClick={() => { setLocation('/messages'); setShowDropdown(false); }}
+                >
+                  Customer Messages
+                </button>
+                <button
+                  className="flex items-center px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800"
+                  onClick={() => {
+                    const profilePath = currentUser?.id ? `/profile/${currentUser.id}` : '/profile';
+                    setLocation(profilePath);
+                    setShowDropdown(false);
+                  }}
+                >
+                  Business Profile
+                </button>
+                <button
+                  className="flex items-center px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800"
+                  onClick={() => { setLocation('/discover'); setShowDropdown(false); }}
+                >
+                  View Cities
+                </button>
+                <button
+                  className="flex items-center px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800"
+                  onClick={() => { setLocation('/welcome-business'); setShowDropdown(false); }}
+                >
+                  Business Welcome
+                </button>
+              </>
+            ) : (
+              // User navigation
+              <>
+                <button
+                  className="flex items-center px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800"
+                  onClick={() => {
+                    console.log('🏠 MOBILE NAV: Navigating to home');
+                    setShowDropdown(false);
+                    setLocation('/');
+                  }}
+                >
+                  Home
+                </button>
+                <button
+                  className="flex items-center px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800"
+                  onClick={() => { setLocation('/discover'); setShowDropdown(false); }}
+                >
+                  Cities
+                </button>
+                <button
+                  className="flex items-center px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800"
+                  onClick={() => { setLocation('/events'); setShowDropdown(false); }}
+                >
+                  Events
+                </button>
+                <button
+                  className="flex items-center px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800"
+                  onClick={() => { setLocation('/match-in-city'); setShowDropdown(false); }}
+                >
+                  City Match
+                </button>
+                <button
+                  className="flex items-center px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800"
+                  onClick={() => { setLocation('/connect'); setShowDropdown(false); }}
+                >
+                  Connect
+                </button>
+                <button
+                  className="flex items-center px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800"
+                  onClick={() => { setLocation('/messages'); setShowDropdown(false); }}
+                >
+                  Messages
+                </button>
+                <button
+                  className="flex items-center px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800"
+                  onClick={() => {
+                    const profilePath = currentUser?.id ? `/profile/${currentUser.id}` : '/profile';
+                    setLocation(profilePath);
+                    setShowDropdown(false);
+                  }}
+                >
+                  Profile
+                </button>
+              </>
+            )}
+            
+            {/* Common sign out button */}
             <button
               className="flex items-center px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800 border-t border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400"
               onClick={() => {

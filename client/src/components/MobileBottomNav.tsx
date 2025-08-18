@@ -8,15 +8,24 @@ export function MobileBottomNav() {
   const [showActionMenu, setShowActionMenu] = useState(false);
   const { user } = React.useContext(AuthContext);
 
-  // Four primary destinations for authenticated users
-  const navItems = [
+  // Navigation items based on user type
+  const navItems = user?.userType === 'business' ? [
+    { icon: Home, label: "Dashboard", path: "/" },
+    { icon: Search, label: "Search", path: "/discover" },
+    { icon: MessageCircle, label: "Messages", path: "/messages" },
+    { icon: User, label: "Business", path: user ? `/profile/${user.id}` : "/profile" },
+  ] : [
     { icon: Home, label: "Home", path: "/" },
     { icon: Search, label: "Search", path: "/discover" },
     { icon: MessageCircle, label: "Messages", path: "/messages" },
     { icon: User, label: "Profile", path: user ? `/profile/${user.id}` : "/profile" },
   ];
 
-  const actionMenuItems = [
+  const actionMenuItems = user?.userType === 'business' ? [
+    { label: "Create Quick Deal", path: "/profile/" + (user?.id || ''), icon: Calendar },
+    { label: "Create Event", path: "/create-event", icon: Calendar },
+    { label: "View Analytics", path: "/profile/" + (user?.id || ''), icon: MessageCircle },
+  ] : [
     { label: "Create Event", path: "/create-event", icon: Calendar },
     { label: "Create Trip", path: "/plan-trip", icon: Calendar },
     { label: "Create Quick Meetup", path: "/quick-meetups", icon: MessageCircle },
