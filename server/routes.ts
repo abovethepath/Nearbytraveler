@@ -1937,6 +1937,27 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           processedData.phoneNumber = processedData.businessPhone;
         }
         
+        // Map business contact fields for admin database
+        if (processedData.ownerName) {
+          // ownerName now contains business name for contact database
+          processedData.ownerName = processedData.ownerName;
+        }
+        
+        if (processedData.contactName) {
+          // contactName contains actual contact person name
+          processedData.contactName = processedData.contactName;
+        }
+        
+        if (processedData.ownerPhone) {
+          // ownerPhone contains contact person phone
+          processedData.ownerPhone = processedData.ownerPhone;
+        }
+        
+        if (processedData.email) {
+          // email contains contact email
+          processedData.ownerEmail = processedData.email;
+        }
+        
         // Map business name from form or account data
         if ((processedData as any).businessName) {
           processedData.businessName = (processedData as any).businessName;

@@ -25,7 +25,8 @@ const businessSignupSchema = z.object({
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
   }, "Please enter a valid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
-  ownerName: z.string().min(1, "Account owner name is required"),
+  ownerName: z.string().min(1, "Business name is required for contact database"),
+  contactName: z.string().min(1, "Contact person name is required"),
   ownerPhone: z.string().min(1, "Contact phone is required").refine((val) => {
     // Accept various international phone formats
     const phoneRegex = /^[\+]?[1-9][\d]{0,15}$|^[\+]?[\d\s\-\(\)]{7,20}$/;
@@ -140,7 +141,8 @@ export default function SignupBusinessSimple() {
       username: accountData?.username || "",
       email: accountData?.email || "",
       password: accountData?.password || "",
-      ownerName: accountData?.name || "",
+      ownerName: accountData?.businessName || "", // Business name for contact database
+      contactName: accountData?.name || "", // Contact person name 
       ownerPhone: "",
       // businessName comes from step 1, no need to collect again
       businessType: "",
@@ -187,7 +189,7 @@ export default function SignupBusinessSimple() {
       delete processedData.customBusinessType;
       delete processedData.businessWebsite; // Remove since we moved it to websiteUrl
 
-      const response = await fetch('/api/business-signup', {
+      const response = await fetch('/api/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -294,12 +296,29 @@ export default function SignupBusinessSimple() {
                       name="ownerName"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Full Name *</FormLabel>
+                          <FormLabel>Business Name *</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Your Business Name" {...field} />
+                          </FormControl>
+                          <FormDescription>
+                            Legal name of your business for contact database
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="contactName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Contact Person Name *</FormLabel>
                           <FormControl>
                             <Input placeholder="John Smith" {...field} />
                           </FormControl>
                           <FormDescription>
-                            Name of the account owner/manager
+                            Name of the person to contact about this business
                           </FormDescription>
                           <FormMessage />
                         </FormItem>
