@@ -304,10 +304,27 @@ export function PeopleDiscoveryWidget({
               {compatibilityData ? (
                 (() => {
                   const data = compatibilityData as any;
-                  const sharedInterestsCount = data.sharedInterests?.length || 0;
-                  const sharedEventsCount = data.sharedEvents?.length || 0;
-                  const sharedActivitiesCount = data.sharedActivities?.length || 0;
-                  const totalCommon = sharedInterestsCount + sharedEventsCount + sharedActivitiesCount;
+                  // Use the API's totalCommonalities if available, otherwise calculate
+                  let totalCommon = data.totalCommonalities || 0;
+                  
+                  // Fallback calculation if API doesn't provide totalCommonalities
+                  if (!totalCommon) {
+                    const sharedInterestsCount = data.sharedInterests?.length || 0;
+                    const sharedEventsCount = data.sharedEvents?.length || 0;
+                    const sharedActivitiesCount = data.sharedActivities?.length || 0;
+                    const sharedCityActivitiesCount = data.sharedCityActivities?.length || 0;
+                    const sharedLanguagesCount = data.sharedLanguages?.length || 0;
+                    const sharedCountriesCount = data.sharedCountries?.length || 0;
+                    const sharedTravelDestinationsCount = data.sharedTravelDestinations?.length || 0;
+                    const overlappingTravelDatesCount = data.overlappingTravelDates?.length || 0;
+                    const sharedTravelIntentCount = data.sharedTravelIntent?.length || 0;
+                    const otherCommonalitiesCount = data.otherCommonalities?.length || 0;
+                    
+                    totalCommon = sharedInterestsCount + sharedEventsCount + sharedActivitiesCount + 
+                                 sharedCityActivitiesCount + sharedLanguagesCount + sharedCountriesCount +
+                                 sharedTravelDestinationsCount + overlappingTravelDatesCount + 
+                                 sharedTravelIntentCount + otherCommonalitiesCount;
+                  }
                   
                   if (totalCommon > 0) {
                     return (

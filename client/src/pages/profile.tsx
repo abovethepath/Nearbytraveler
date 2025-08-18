@@ -912,10 +912,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
   // Fetch compatibility score when viewing other users' profiles
   const { data: compatibilityData } = useQuery({
-    queryKey: ['/api/users', currentUser?.id, 'compatibility', effectiveUserId],
+    queryKey: [`/api/compatibility/${currentUser?.id}/${effectiveUserId}`],
     queryFn: async () => {
       if (!currentUser?.id || !effectiveUserId || isOwnProfile) return null;
-      const response = await fetch(`/api/users/${currentUser.id}/compatibility/${effectiveUserId}`);
+      const response = await fetch(`/api/compatibility/${currentUser.id}/${effectiveUserId}`);
       if (!response.ok) return null;
       return response.json();
     },

@@ -326,12 +326,37 @@ app.get('/api/search-users', async (req, res) => {
   try {
     console.log('🔍 DIRECT API: Search users');
     const location = req.query.location as string;
+    const search = req.query.search as string;
+    const currentUserId = req.query.currentUserId || req.headers['x-user-id'] as string;
+    
+    console.log('🔍 SEARCH PARAMS:', { search, location, currentUserId });
     
     let results;
+    const whereConditions = [];
     
+    // Exclude current user if provided
+    if (currentUserId && !isNaN(parseInt(currentUserId))) {
+      whereConditions.push(ne(users.id, parseInt(currentUserId)));
+    }
+    
+    // Search by text (name, username, bio, interests, activities)  
+    if (search && search.trim() !== '') {
+      const searchTerm = search.trim().toLowerCase();
+      whereConditions.push(
+        or(
+          ilike(users.name, `%${searchTerm}%`),
+          ilike(users.username, `%${searchTerm}%`),
+          ilike(users.bio, `%${searchTerm}%`),
+          ilike(users.interests, `%${searchTerm}%`),
+          ilike(users.activities, `%${searchTerm}%`)
+        )
+      );
+      console.log('🔍 SEARCH: Added text search condition for:', searchTerm);
+    }
+    
+    // Search by location
     if (location && location.trim() !== '') {
-      // Search in location, hometown city, state, or country
-      results = await db.select().from(users).where(
+      whereConditions.push(
         or(
           ilike(users.location, `%${location}%`),
           ilike(users.hometownCity, `%${location}%`),
@@ -339,9 +364,18 @@ app.get('/api/search-users', async (req, res) => {
           ilike(users.hometownCountry, `%${location}%`)
         )
       );
-    } else {
-      results = await db.select().from(users);
+      console.log('🔍 SEARCH: Added location search condition for:', location);
     }
+    
+    // Execute query
+    if (whereConditions.length > 0) {
+      results = await db.select().from(users).where(and(...whereConditions));
+    } else {
+      // If no search criteria provided, return empty results instead of all users
+      results = [];
+      console.log('🔍 SEARCH: No search criteria provided, returning empty results');
+    }
+    
     console.log('🔍 DIRECT API: Found', results.length, 'users matching search');
     res.json(results);
   } catch (error: any) {

@@ -2767,9 +2767,12 @@ Questions? Just reply to this message. Welcome aboard!
         }
       }
 
-      if (process.env.NODE_ENV === 'development') console.log('🔍 ADVANCED SEARCH: Performing search with filters:', {
-        search, gender, sexualPreference, minAge, maxAge, interests, activities, events, location, userType, travelerTypes, militaryStatus, currentUserId
-      });
+      if (process.env.NODE_ENV === 'development') {
+        console.log('🔍 ADVANCED SEARCH: Performing search with filters:', {
+          search, gender, sexualPreference, minAge, maxAge, interests, activities, events, location, userType, travelerTypes, militaryStatus, currentUserId
+        });
+        console.log('🔍 SEARCH QUERY TYPE:', typeof search, 'value:', search);
+      }
       
       // DEBUG: Check what users exist in database
       if (process.env.NODE_ENV === 'development' && location) {
@@ -2780,20 +2783,38 @@ Questions? Just reply to this message. Welcome aboard!
       // Build WHERE conditions
       const whereConditions = [];
       
-      // Exclude current user from their own search results
+      // ALWAYS exclude current user from search results
       if (currentUserId) {
         whereConditions.push(ne(users.id, currentUserId));
       }
 
       // Text search in name, username, or bio
-      if (search && typeof search === 'string') {
+      if (search && typeof search === 'string' && search.trim()) {
+        const searchTerm = search.trim().toLowerCase();
         whereConditions.push(
           or(
-            ilike(users.name, `%${search}%`),
-            ilike(users.username, `%${search}%`),
-            ilike(users.bio, `%${search}%`)
+            ilike(users.name, `%${searchTerm}%`),
+            ilike(users.username, `%${searchTerm}%`),
+            ilike(users.bio, `%${searchTerm}%`),
+            ilike(users.interests, `%${searchTerm}%`),
+            ilike(users.activities, `%${searchTerm}%`)
           )
         );
+        
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`🔍 SEARCH DEBUG: Searching for "${searchTerm}" in name, username, bio, interests, activities`);
+        }
+      } else {
+        // If no search term provided, require at least one other filter
+        if (!location && !userType && !gender && !interests && !activities && !events) {
+          return res.json({
+            users: [],
+            total: 0,
+            page: 1,
+            hasMore: false,
+            message: "Please provide a search term or filter to find users"
+          });
+        }
       }
 
       // Location filter with LA Metro consolidation
@@ -2836,7 +2857,14 @@ Questions? Just reply to this message. Welcome aboard!
         whereConditions.push(inArray(users.userType, typeList));
       }
 
-      // Execute search query
+      // Execute search query with debug logging
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`🔍 EXECUTING QUERY WITH ${whereConditions.length} CONDITIONS:`);
+        if (whereConditions.length === 0) {
+          console.log('⚠️ NO WHERE CONDITIONS - WILL RETURN ALL USERS');
+        }
+      }
+      
       const searchResults = await db
         .select({
           id: users.id,
@@ -2855,14 +2883,25 @@ Questions? Just reply to this message. Welcome aboard!
           activities: users.activities
         })
         .from(users)
-        .where(whereConditions.length > 0 ? and(...whereConditions) : undefined)
+        .where(whereConditions.length > 0 ? and(...whereConditions) : eq(sql`1`, 0)) // Return no results if no conditions
         .orderBy(desc(users.id))
         .limit(20);
 
       if (process.env.NODE_ENV === 'development') {
-        console.log(`✅ ADVANCED SEARCH: Found ${searchResults.length} users matching criteria`);
-        if (searchResults.length > 0) {
-          console.log('🔍 SEARCH RESULTS:', searchResults.map(u => ({ id: u.id, username: u.username, hometownCity: u.hometownCity, location: u.location })));
+        console.log(`🔍 SEARCH: Applied ${whereConditions.length} where conditions, found ${searchResults.length} users`);
+        console.log('🔍 WHERE CONDITIONS DETAILS:');
+        whereConditions.forEach((condition, index) => {
+          console.log(`  ${index + 1}. ${typeof condition} condition applied`);
+        });
+        if (search) {
+          console.log(`🔍 SEARCH TERM USED: "${search}" (length: ${search.length})`);
+          console.log(`🔍 FIRST FEW RESULTS NAME MATCH CHECK:`);
+          searchResults.slice(0, 3).forEach(user => {
+            const nameMatch = user.name?.toLowerCase().includes(search.toLowerCase());
+            const usernameMatch = user.username?.toLowerCase().includes(search.toLowerCase());
+            const bioMatch = user.bio?.toLowerCase().includes(search.toLowerCase());
+            console.log(`  ${user.username}: name="${user.name}" matches=${nameMatch}, username matches=${usernameMatch}, bio matches=${bioMatch}`);
+          });
         }
       }
       
