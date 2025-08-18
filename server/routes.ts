@@ -9758,6 +9758,6 @@ Questions? Just reply to this message. Welcome aboard!
   });
 
   // Return the configured HTTP server with WebSocket support  
-  return httpServerWithWebSocket;
+  return httpServer;
 }
 
