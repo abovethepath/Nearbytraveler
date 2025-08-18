@@ -2749,6 +2749,12 @@ Questions? Just reply to this message. Welcome aboard!
       if (process.env.NODE_ENV === 'development') console.log('🔍 ADVANCED SEARCH: Performing search with filters:', {
         search, gender, sexualPreference, minAge, maxAge, interests, activities, events, location, userType, travelerTypes, militaryStatus, currentUserId
       });
+      
+      // DEBUG: Check what users exist in database
+      if (process.env.NODE_ENV === 'development' && location) {
+        const allUsers = await db.select({ id: users.id, username: users.username, hometownCity: users.hometownCity, location: users.location }).from(users).limit(10);
+        console.log('🔍 DEBUG: All users in database:', allUsers);
+      }
 
       // Build WHERE conditions
       const whereConditions = [];
@@ -2777,12 +2783,14 @@ Questions? Just reply to this message. Welcome aboard!
         if (process.env.NODE_ENV === 'development') console.log('🌴 ADVANCED SEARCH LOCATION: Searching for users in:', location);
       if (process.env.NODE_ENV === 'development') console.log('🌴 SEARCH CITY EXTRACTED:', searchCity);
         
-        // Apply LA Metro consolidation
+        // Apply LA Metro consolidation - if searching for ANY LA metro city, include ALL metro cities
         const citiesToSearch = [];
         const laMetroCities = ['Los Angeles', 'Beverly Hills', 'Santa Monica', 'West Hollywood', 'Pasadena', 'Glendale', 'Burbank', 'Hollywood', 'Manhattan Beach', 'Redondo Beach', 'Hermosa Beach', 'Venice', 'Marina del Rey', 'Culver City', 'El Segundo', 'Inglewood', 'LAX', 'Playa del Rey'];
+        
         if (laMetroCities.includes(searchCity)) {
+          // Include ALL LA metro cities when searching for any LA metro city
           citiesToSearch.push(...laMetroCities);
-          if (process.env.NODE_ENV === 'development') console.log('🌴 ADVANCED SEARCH LA METRO: Expanded search to all LA metro cities:', citiesToSearch.length, 'cities');
+          if (process.env.NODE_ENV === 'development') console.log('🌴 ADVANCED SEARCH LA METRO: Searching', searchCity, '-> expanded to ALL LA metro cities:', citiesToSearch.length, 'cities');
         } else {
           citiesToSearch.push(searchCity);
           if (process.env.NODE_ENV === 'development') console.log('🌴 ADVANCED SEARCH SINGLE CITY:', searchCity);
@@ -2790,12 +2798,15 @@ Questions? Just reply to this message. Welcome aboard!
         
         if (process.env.NODE_ENV === 'development') console.log('🌴 CITIES TO SEARCH:', citiesToSearch.slice(0, 5), '... (total:', citiesToSearch.length, ')');
         
-        whereConditions.push(
-          or(
-            inArray(users.hometownCity, citiesToSearch),
-            ...citiesToSearch.map(city => ilike(users.location, `%${city}%`))
-          )
+        const locationFilter = or(
+          inArray(users.hometownCity, citiesToSearch),
+          ...citiesToSearch.map(city => ilike(users.location, `%${city}%`))
         );
+        whereConditions.push(locationFilter);
+        
+        if (process.env.NODE_ENV === 'development') {
+          console.log('🔍 LOCATION FILTER: Searching for users where hometownCity in:', citiesToSearch.slice(0, 3), '... OR location contains any of these cities');
+        }
       }
 
       // User type filter
@@ -2829,6 +2840,9 @@ Questions? Just reply to this message. Welcome aboard!
 
       if (process.env.NODE_ENV === 'development') {
         console.log(`✅ ADVANCED SEARCH: Found ${searchResults.length} users matching criteria`);
+        if (searchResults.length > 0) {
+          console.log('🔍 SEARCH RESULTS:', searchResults.map(u => ({ id: u.id, username: u.username, hometownCity: u.hometownCity, location: u.location })));
+        }
       }
       
       res.json({
