@@ -20,6 +20,7 @@ User stability note: Server properly configured for Replit (binds to 0.0.0.0, us
 User report fix: "Things in common" display was broken on discover people cards - fixed frontend to calculate totals from API's sharedInterests, sharedEvents, and sharedActivities arrays instead of looking for non-existent totalCommonalities field (January 2025).
 User request: NEVER require bio during signup - removed bio requirement from all three signup forms (traveling, local, business) to maintain fast registration process. Users add bio later in profile editing (January 2025).
 User request: Red profile completion reminder bar restored to navbar - displays when users have incomplete profiles (missing bio, profile image, or less than 3 interests) with direct link to complete profile (January 2025).
+User fix: Date of birth now properly carries over from signup forms to user profile - fixed storage.createUser method to ensure DOB field is preserved during user creation (January 2025).
 
 ## System Architecture
 

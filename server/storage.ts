@@ -544,6 +544,8 @@ export class DatabaseStorage implements IStorage {
     // STEP 1: Create user with basic data first (without travel data that's causing issues)
     const basicUserData = {
       ...insertUser,
+      // Ensure dateOfBirth is included if provided
+      dateOfBirth: insertUser.dateOfBirth || undefined,
       // Remove travel data for initial insert
       isCurrentlyTraveling: undefined,
       travelDestination: undefined,
