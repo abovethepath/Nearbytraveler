@@ -6916,6 +6916,7 @@ Questions? Just reply to this message. Welcome aboard!
       const dealData = {
         ...req.body,
         businessId,
+        dealType: req.body.deal_type || req.body.dealType || 'discount', // Map deal_type properly
         validFrom: req.body.validFrom ? new Date(req.body.validFrom) : new Date(),
         validUntil: req.body.validUntil ? new Date(req.body.validUntil) : new Date(Date.now() + 60 * 60 * 1000) // Default 1 hour from now
       };
