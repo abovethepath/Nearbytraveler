@@ -92,6 +92,9 @@ app.get('/api/business-deals', async (req, res) => {
   try {
     console.log('💰 DIRECT API: Fetching business deals');
     
+    // LA METRO CONSOLIDATION - these cities should all show under Los Angeles searches
+    const LA_METRO_CITIES = ['Los Angeles', 'Playa del Rey', 'Santa Monica', 'Venice', 'Culver City'];
+    
     // First get the business offers
     const offers = await db.select()
       .from(businessOffers)
@@ -107,6 +110,12 @@ app.get('/api/business-deals', async (req, res) => {
       
       const business = businessUser[0] || {};
       
+      // LA METRO CONSOLIDATION: If business is in an LA metro city, also tag it as Los Angeles
+      const offerCity = offer.city || '';
+      const isLAMetro = LA_METRO_CITIES.some(city => 
+        offerCity.toLowerCase().includes(city.toLowerCase())
+      );
+      
       return {
         ...offer,
         businessName: business.businessName || 'Business',
@@ -116,11 +125,15 @@ app.get('/api/business-deals', async (req, res) => {
         businessEmail: business.contactEmail || '',
         businessPhone: business.contactPhone || '',
         businessAddress: business.street || '',
-        businessImage: business.profileImage || ''
+        businessImage: business.profileImage || '',
+        // Add metro tags for frontend filtering
+        isLAMetro: isLAMetro,
+        metroArea: isLAMetro ? 'Los Angeles' : null
       };
     }));
     
     console.log('💰 DIRECT API: Found', offersWithBusinessInfo.length, 'active business offers');
+    console.log('🌍 LA METRO DEALS:', offersWithBusinessInfo.filter(d => d.isLAMetro).length, 'deals in LA metro area');
     res.json(offersWithBusinessInfo);
   } catch (error: any) {
     console.error('🔥 Error in business deals API:', error);
@@ -232,6 +245,9 @@ app.get('/api/quick-deals', async (req, res) => {
   try {
     console.log('🎯 DIRECT API: Fetching quick deals');
     
+    // LA METRO CONSOLIDATION - these cities should all show under Los Angeles searches
+    const LA_METRO_CITIES = ['Los Angeles', 'Playa del Rey', 'Santa Monica', 'Venice', 'Culver City'];
+    
     // Get all active quick deals that haven't expired
     const now = new Date();
     const activeDeals = await db.select({
@@ -258,8 +274,28 @@ app.get('/api/quick-deals', async (req, res) => {
       ))
       .orderBy(desc(quickDeals.createdAt));
     
-    console.log('🎯 DIRECT API: Found', activeDeals.length, 'active quick deals');
-    res.json(activeDeals);
+    // Add LA Metro tags to deals
+    const dealsWithMetroInfo = activeDeals.map(deal => {
+      const dealLocation = deal.location || '';
+      const isLAMetro = LA_METRO_CITIES.some(city => 
+        dealLocation.toLowerCase().includes(city.toLowerCase())
+      );
+      
+      return {
+        ...deal,
+        // Parse city from location string (e.g., "Playa del Rey, California" -> "Playa del Rey")
+        city: dealLocation.split(',')[0]?.trim() || dealLocation,
+        state: 'California',
+        country: 'United States',
+        // Add metro tags for frontend filtering
+        isLAMetro: isLAMetro,
+        metroArea: isLAMetro ? 'Los Angeles' : null
+      };
+    });
+    
+    console.log('🎯 DIRECT API: Found', dealsWithMetroInfo.length, 'active quick deals');
+    console.log('🌍 LA METRO QUICK DEALS:', dealsWithMetroInfo.filter(d => d.isLAMetro).length, 'deals in LA metro area');
+    res.json(dealsWithMetroInfo);
   } catch (error: any) {
     console.error('🔥 Error in quick deals API:', error);
     res.status(500).json({ error: 'Failed to get quick deals' });

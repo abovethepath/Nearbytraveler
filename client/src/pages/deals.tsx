@@ -164,47 +164,37 @@ export default function Deals() {
 
   // Filter deals by selected city WITH LA METRO CONSOLIDATION
   const filteredDeals = useMemo(() => {
+    // LA Metro Cities - MUST match server list
+    const LA_METRO_CITIES = ['Los Angeles', 'Playa del Rey', 'Santa Monica', 'Venice', 'Culver City'];
+    
     if (!selectedCity) {
       // Default filter by user's location WITH LA METRO CONSOLIDATION
       if (effectiveUser?.hometownCity) {
         const userCity = effectiveUser.hometownCity;
         
-        // LA Metro Cities - same list as other features
-        const LA_METRO_CITIES = [
-          'Los Angeles', 'Santa Monica', 'Venice', 'Venice Beach', 'El Segundo',
-          'Manhattan Beach', 'Beverly Hills', 'West Hollywood', 'Pasadena', 'Burbank',
-          'Glendale', 'Long Beach', 'Torrance', 'Inglewood', 'Compton', 'Downey',
-          'Pomona', 'Playa del Rey', 'Redondo Beach', 'Culver City', 'Marina del Rey',
-          'Hermosa Beach', 'Hawthorne', 'Gardena', 'Carson', 'Lakewood', 'Norwalk',
-          'Whittier', 'Montebello', 'East Los Angeles', 'Monterey Park', 'Alhambra',
-          'South Pasadena', 'San Fernando', 'North Hollywood', 'Hollywood', 'Studio City',
-          'Sherman Oaks', 'Encino', 'Reseda', 'Van Nuys', 'Northridge', 'Malibu',
-          'Pacific Palisades', 'Brentwood', 'Westwood', 'Century City', 'West LA',
-          'Koreatown', 'Mid-City', 'Miracle Mile', 'Los Feliz', 'Silver Lake',
-          'Echo Park', 'Downtown LA', 'Arts District', 'Little Tokyo', 'Chinatown',
-          'Boyle Heights', 'East LA', 'Highland Park', 'Eagle Rock', 'Atwater Village',
-          'Glassell Park', 'Mount Washington', 'Cypress Park', 'Sun Valley', 'Pacoima',
-          'Sylmar', 'Granada Hills', 'Porter Ranch', 'Chatsworth', 'Canoga Park',
-          'Woodland Hills', 'Tarzana', 'Panorama City', 'Mission Hills', 'Sepulveda',
-          'Arleta', 'San Pedro', 'Wilmington', 'Harbor City', 'Harbor Gateway',
-          'Watts', 'South LA', 'Crenshaw', 'Leimert Park', 'View Park', 'Baldwin Hills',
-          'Ladera Heights'
-        ];
-        
         // If user is in LA metro area, show ALL LA metro deals
-        if (LA_METRO_CITIES.includes(userCity)) {
+        const isUserInLAMetro = LA_METRO_CITIES.some(city => 
+          userCity.toLowerCase().includes(city.toLowerCase())
+        );
+        
+        if (isUserInLAMetro) {
           console.log(`🌍 DEALS METRO CONSOLIDATION: ${userCity} → showing all LA metro deals`);
-          return allDeals.filter(deal => 
-            LA_METRO_CITIES.some(city => 
-              deal.city.toLowerCase().includes(city.toLowerCase()) ||
+          // Show all deals marked as LA Metro OR in LA metro cities
+          return allDeals.filter(deal => {
+            // Check if API marked it as LA Metro
+            if (deal.isLAMetro) return true;
+            
+            // Also check city names for backward compatibility
+            return LA_METRO_CITIES.some(city => 
+              deal.city?.toLowerCase().includes(city.toLowerCase()) ||
               deal.businessLocation?.toLowerCase().includes(city.toLowerCase())
-            )
-          );
+            );
+          });
         }
         
         // For non-LA users, show deals from their city
         return allDeals.filter(deal => 
-          deal.city.toLowerCase().includes(userCity.toLowerCase()) ||
+          deal.city?.toLowerCase().includes(userCity.toLowerCase()) ||
           deal.businessLocation?.toLowerCase().includes(userCity.toLowerCase())
         );
       }
@@ -212,8 +202,29 @@ export default function Deals() {
       return allDeals; // Show all if no user location
     }
     
+    // Manual city filter WITH LA METRO CONSOLIDATION
+    const isSearchingLAMetro = LA_METRO_CITIES.some(city => 
+      selectedCity.toLowerCase().includes(city.toLowerCase())
+    );
+    
+    if (isSearchingLAMetro) {
+      console.log(`🌍 MANUAL SEARCH METRO CONSOLIDATION: ${selectedCity} → showing all LA metro deals`);
+      // Show all LA metro deals when searching for any LA metro city
+      return allDeals.filter(deal => {
+        // Check if API marked it as LA Metro
+        if (deal.isLAMetro) return true;
+        
+        // Also check city names for backward compatibility
+        return LA_METRO_CITIES.some(city => 
+          deal.city?.toLowerCase().includes(city.toLowerCase()) ||
+          deal.businessLocation?.toLowerCase().includes(city.toLowerCase())
+        );
+      });
+    }
+    
+    // For non-LA cities, standard filtering
     return allDeals.filter(deal => 
-      deal.city.toLowerCase().includes(selectedCity.toLowerCase()) ||
+      deal.city?.toLowerCase().includes(selectedCity.toLowerCase()) ||
       deal.businessLocation?.toLowerCase().includes(selectedCity.toLowerCase())
     );
   }, [allDeals, selectedCity, effectiveUser]);
