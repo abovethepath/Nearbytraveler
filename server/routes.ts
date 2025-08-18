@@ -4002,55 +4002,85 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
-  // ENHANCED: Get events filtered by city with PARTICIPANT COUNTS and LA METRO CONSOLIDATION
+  // FIXED: Get events filtered by city with proper location filtering - NO CROSS-CITY BLEEDING
   app.get("/api/events", async (req, res) => {
     try {
+      if (process.env.NODE_ENV === 'development') console.log(`📅 DIRECT API: Fetching events with query:`, req.query);
       const { city } = req.query;
 
       let eventsQuery = [];
+      if (process.env.NODE_ENV === 'development') console.log(`📅 EVENTS DEBUG: City parameter received: ${city}, type: ${typeof city}`);
+      
       if (city && typeof city === 'string') {
         const cityName = city.toString();
         if (process.env.NODE_ENV === 'development') console.log(`🎪 EVENTS: Getting events for city: ${cityName}`);
         
-        // ENHANCED: Apply metro consolidation for ALL LA area cities
+        // CRITICAL FIX: Only apply LA Metro consolidation if user is specifically in LA Metro area
+        // This prevents Austin users from seeing Los Angeles events
         let searchCities = [cityName];
         
+        // Define LA Metro cities directly to avoid import issues
         const LA_METRO_CITIES = [
-          'Los Angeles', 'Santa Monica', 'Venice', 'Venice Beach', 'El Segundo', 
-          'Manhattan Beach', 'Beverly Hills', 'West Hollywood', 'Pasadena', 
-          'Burbank', 'Glendale', 'Long Beach', 'Torrance', 'Inglewood', 
-          'Playa del Rey', 'Redondo Beach', 'Culver City', 'Marina del Rey', 
-          'Hermosa Beach', 'Hawthorne', 'Hollywood', 'Studio City'
+          'Los Angeles',
+          'Playa del Rey',
+          'Santa Monica', 
+          'Venice',
+          'Venice Beach',
+          'Culver City',
+          'Marina del Rey',
+          'El Segundo',
+          'Manhattan Beach',
+          'Hermosa Beach',
+          'Redondo Beach',
+          'Beverly Hills',
+          'West Hollywood',
+          'Hollywood',
+          'North Hollywood',
+          'Burbank',
+          'Glendale',
+          'Pasadena',
+          'South Pasadena',
+          'Long Beach',
+          'Torrance',
+          'Inglewood',
+          'Hawthorne'
         ];
         
-        // Check if the cityName is ANY LA metro city or includes "los angeles metro"
-        const isLAMetroCity = cityName.toLowerCase().includes('los angeles metro') || 
-                             LA_METRO_CITIES.some(laCity => 
-                               cityName.toLowerCase().includes(laCity.toLowerCase()) ||
-                               laCity.toLowerCase().includes(cityName.toLowerCase())
-                             );
+        if (process.env.NODE_ENV === 'development') console.log(`🔍 EVENTS DEBUG: Checking if ${cityName} is in LA metro. LA cities:`, LA_METRO_CITIES.slice(0, 5));
         
-        if (isLAMetroCity) {
-          // For ANY LA area city, search ALL LA metro cities
+        // Only use metro consolidation if the requesting city is actually in the LA metro area
+        const isActualLAMetroCity = cityName.toLowerCase().includes('los angeles metro') || 
+                                   LA_METRO_CITIES.some(laCity => 
+                                     cityName.toLowerCase() === laCity.toLowerCase()
+                                   );
+        
+        if (process.env.NODE_ENV === 'development') console.log(`🔍 EVENTS DEBUG: isActualLAMetroCity for ${cityName}: ${isActualLAMetroCity}`);
+        
+        if (isActualLAMetroCity) {
+          // Only for genuine LA metro cities, show all LA metro events
           searchCities = LA_METRO_CITIES;
-          if (process.env.NODE_ENV === 'development') console.log(`🗺️ EVENTS METRO: ${cityName} is LA metro area - searching events in ${searchCities.length} LA metro cities:`, searchCities.slice(0, 10));
+          if (process.env.NODE_ENV === 'development') console.log(`🗺️ EVENTS METRO: ${cityName} is genuine LA metro city - searching events in ${searchCities.length} LA metro cities`);
+        } else {
+          // For all other cities (Austin, New York, etc.), only show events in that specific city
+          if (process.env.NODE_ENV === 'development') console.log(`🎯 EVENTS LOCAL: ${cityName} is not in LA metro - showing only local events for ${cityName}`);
         }
         
-        if (process.env.NODE_ENV === 'development') console.log(`🌍 EVENTS: Searching cities:`, searchCities.slice(0, 5));
+        if (process.env.NODE_ENV === 'development') console.log(`🌍 EVENTS: Final searchCities array:`, searchCities);
         
-        // Search events in all relevant cities using pattern matching like map data
-        // ENHANCED: Only return events in the next 6 weeks to include all upcoming events
+        // Search events in relevant cities - strict location matching
         const now = new Date();
         const sixWeeksFromNow = new Date(now.getTime() + (42 * 24 * 60 * 60 * 1000));
         
         for (const searchCity of searchCities) {
+          if (process.env.NODE_ENV === 'development') console.log(`🔍 EVENTS: Searching for events in city: "${searchCity}"`);
           const cityEvents = await db.select().from(events)
             .where(and(
-              ilike(events.city, `%${searchCity}%`),
+              eq(events.city, searchCity), // CHANGED: Use exact match instead of ilike to prevent bleeding
               gte(events.date, now),
               lte(events.date, sixWeeksFromNow)
             ))
             .orderBy(asc(events.date));
+          if (process.env.NODE_ENV === 'development') console.log(`🔍 EVENTS: Found ${cityEvents.length} events in "${searchCity}"`);
           eventsQuery.push(...cityEvents);
         }
         

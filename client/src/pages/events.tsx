@@ -25,7 +25,7 @@ const eventsBgImage = "/event%20page%20bbq%20party_1753299541268.png";
 // MobileNav removed - using global mobile navigation
 
 export default function Events() {
-  const [selectedLocation, setSelectedLocation] = useState<string>("current");
+  const [selectedLocation, setSelectedLocation] = useState<string>("hometown");
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const [customCategory, setCustomCategory] = useState("");
@@ -126,11 +126,14 @@ export default function Events() {
   const { data: events = [], isLoading, error } = useQuery<Event[]>({
     queryKey: ["/api/events", cityToQuery],
     queryFn: async () => {
+      console.log(`🎪 EVENTS: Fetching events for city: "${cityToQuery}"`);
       const response = await fetch(`/api/events?city=${encodeURIComponent(cityToQuery)}`);
       if (!response.ok) {
         throw new Error('Failed to fetch events');
       }
-      return response.json();
+      const data = await response.json();
+      console.log(`🎪 EVENTS: Got ${data.length} events for city "${cityToQuery}":`, data.map(e => `${e.title} in ${e.city}`));
+      return data;
     },
     enabled: !(selectedLocation === "custom" && showCustomInput), // Don't auto-fetch while typing
     staleTime: 30000, // Cache for 30 seconds to improve performance
