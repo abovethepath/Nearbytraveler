@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
+import { isLAMetroCity, getMetroCities } from "@shared/constants";
 
 import { CalendarDays, MapPin, Percent, Store, Users, Phone, Globe, Mail, Clock, Timer, Zap, AlertCircle } from "lucide-react";
 import { useLocation } from "wouter";
@@ -164,8 +164,7 @@ export default function Deals() {
 
   // Filter deals by selected city WITH LA METRO CONSOLIDATION
   const filteredDeals = useMemo(() => {
-    // LA Metro Cities - MUST match server list
-    const LA_METRO_CITIES = ['Los Angeles', 'Playa del Rey', 'Santa Monica', 'Venice', 'Culver City'];
+    // Use the centralized metro configuration from shared/constants
     
     if (!selectedCity) {
       // Default filter by user's location WITH LA METRO CONSOLIDATION
@@ -173,23 +172,10 @@ export default function Deals() {
         const userCity = effectiveUser.hometownCity;
         
         // If user is in LA metro area, show ALL LA metro deals
-        const isUserInLAMetro = LA_METRO_CITIES.some(city => 
-          userCity.toLowerCase().includes(city.toLowerCase())
-        );
-        
-        if (isUserInLAMetro) {
+        if (isLAMetroCity(userCity)) {
           console.log(`🌍 DEALS METRO CONSOLIDATION: ${userCity} → showing all LA metro deals`);
-          // Show all deals marked as LA Metro OR in LA metro cities
-          return allDeals.filter(deal => {
-            // Check if API marked it as LA Metro
-            if (deal.isLAMetro) return true;
-            
-            // Also check city names for backward compatibility
-            return LA_METRO_CITIES.some(city => 
-              deal.city?.toLowerCase().includes(city.toLowerCase()) ||
-              deal.businessLocation?.toLowerCase().includes(city.toLowerCase())
-            );
-          });
+          // Show all deals marked as LA Metro by the API
+          return allDeals.filter(deal => deal.isLAMetro === true);
         }
         
         // For non-LA users, show deals from their city
@@ -203,23 +189,10 @@ export default function Deals() {
     }
     
     // Manual city filter WITH LA METRO CONSOLIDATION
-    const isSearchingLAMetro = LA_METRO_CITIES.some(city => 
-      selectedCity.toLowerCase().includes(city.toLowerCase())
-    );
-    
-    if (isSearchingLAMetro) {
+    if (isLAMetroCity(selectedCity)) {
       console.log(`🌍 MANUAL SEARCH METRO CONSOLIDATION: ${selectedCity} → showing all LA metro deals`);
       // Show all LA metro deals when searching for any LA metro city
-      return allDeals.filter(deal => {
-        // Check if API marked it as LA Metro
-        if (deal.isLAMetro) return true;
-        
-        // Also check city names for backward compatibility
-        return LA_METRO_CITIES.some(city => 
-          deal.city?.toLowerCase().includes(city.toLowerCase()) ||
-          deal.businessLocation?.toLowerCase().includes(city.toLowerCase())
-        );
-      });
+      return allDeals.filter(deal => deal.isLAMetro === true);
     }
     
     // For non-LA cities, standard filtering
