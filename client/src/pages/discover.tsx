@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { MapPin, Users, Calendar, Star, Search, Compass, TrendingUp, MessageCircle, Heart, Plane } from "lucide-react";
 import { useLocation } from "wouter";
 import { ArrowLeft } from "lucide-react";
+import { AuthContext } from "@/contexts/AuthContext";
 // MobileNav removed - using global mobile navigation
 
 
@@ -26,6 +27,15 @@ interface CityStats {
 export default function DiscoverPage() {
   const [location, setLocation] = useLocation();
   const [searchQuery, setSearchQuery] = useState("");
+  const { user } = useContext(AuthContext);
+
+  // Redirect business users away from discover page
+  useEffect(() => {
+    if (user?.userType === 'business') {
+      console.log('Business user detected on discover page, redirecting to business dashboard');
+      setLocation('/business-dashboard');
+    }
+  }, [user, setLocation]);
 
   // Fetch city stats
   const { data: allCities = [], isLoading: statsLoading } = useQuery<CityStats[]>({
@@ -74,6 +84,11 @@ export default function DiscoverPage() {
   });
 
   console.log("Discover page - filtered cities:", filtered.length);
+
+  // Don't show anything to business users while redirecting
+  if (user?.userType === 'business') {
+    return null;
+  }
 
   if (statsLoading) {
     return (
