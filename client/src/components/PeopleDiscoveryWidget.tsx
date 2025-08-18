@@ -304,14 +304,26 @@ export function PeopleDiscoveryWidget({
               {compatibilityData ? (
                 (() => {
                   const data = compatibilityData as any;
-                  // Calculate total from the actual fields the API returns
+                  // Use the same calculation as the profile page - include ALL commonality types
                   const sharedInterestsCount = data.sharedInterests?.length || 0;
                   const sharedEventsCount = data.sharedEvents?.length || 0;
                   const sharedActivitiesCount = data.sharedActivities?.length || 0;
                   const sharedTravelIntentCount = data.sharedTravelIntent?.length || 0;
+                  const sharedCityActivitiesCount = data.sharedCityActivities?.length || 0;
+                  const sharedSexualPreferencesCount = data.sharedSexualPreferences?.length || 0;
+                  const sharedLanguagesCount = data.sharedLanguages?.length || 0;
+                  const sharedCountriesCount = data.sharedCountries?.length || 0;
+                  const sharedTravelDestinationsCount = data.sharedTravelDestinations?.length || 0;
+                  const overlappingTravelDatesCount = data.overlappingTravelDates?.length || 0;
+                  const otherCommonalitiesCount = data.otherCommonalities?.length || 0;
                   
+                  // Match the profile page calculation exactly
                   const totalCommon = sharedInterestsCount + sharedEventsCount + 
-                                     sharedActivitiesCount + sharedTravelIntentCount;
+                                     sharedActivitiesCount + sharedTravelIntentCount +
+                                     sharedCityActivitiesCount + sharedSexualPreferencesCount +
+                                     sharedLanguagesCount + sharedCountriesCount +
+                                     sharedTravelDestinationsCount + overlappingTravelDatesCount +
+                                     otherCommonalitiesCount;
                   
                   if (totalCommon > 0) {
                     return (
