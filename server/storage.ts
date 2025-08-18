@@ -690,6 +690,7 @@ export class DatabaseStorage implements IStorage {
         customActivities: 'custom_activities',
         customEvents: 'custom_events',
         languagesSpoken: 'languages_spoken',
+        countriesVisited: 'countries_visited',
         isMinorityOwned: 'is_minority_owned',
         isFemaleOwned: 'is_female_owned',
         isLGBTQIAOwned: 'is_lgbtqia_owned',
