@@ -195,7 +195,7 @@ export default function SignupLocalTraveler() {
         languagesSpoken: [],
         sexualPreference: [],
         // Default values for removed fields
-        bio: '',
+        bio: 'Local resident excited to share my city knowledge and connect with travelers from around the world.',
         gender: '',
         isVeteran: false,
         isActiveDuty: false,
@@ -241,9 +241,18 @@ export default function SignupLocalTraveler() {
         setLocation('/welcome');
       } else {
         console.error('❌ Registration failed:', data.message);
+        
+        // Provide specific error messages based on the field
+        let errorMessage = data.message || "Something went wrong.";
+        if (data.field === 'bio') {
+          errorMessage = "Your profile description needs to be at least 30 characters. This has been automatically added.";
+        } else if (data.field === 'totalSelections') {
+          errorMessage = "Please select at least 3 interests from the list below.";
+        }
+        
         toast({
           title: "Registration failed",
-          description: data.message || "Something went wrong.",
+          description: errorMessage,
           variant: "destructive",
         });
       }
