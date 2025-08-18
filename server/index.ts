@@ -91,38 +91,37 @@ app.get('/api/events', async (req, res) => {
 app.get('/api/business-deals', async (req, res) => {
   try {
     console.log('💰 DIRECT API: Fetching business deals');
-    const offersQuery = await db
-      .select({
-        id: businessOffers.id,
-        businessId: businessOffers.businessId,
-        title: businessOffers.title,
-        description: businessOffers.description,
-        category: businessOffers.category,
-        discountType: businessOffers.discountType,
-        discountValue: businessOffers.discountValue,
-        city: businessOffers.city,
-        state: businessOffers.state,
-        country: businessOffers.country,
-        validFrom: businessOffers.validFrom,
-        validUntil: businessOffers.validUntil,
-        maxRedemptions: businessOffers.maxRedemptions,
-        currentRedemptions: businessOffers.currentRedemptions,
-        isActive: businessOffers.isActive,
-        imageUrl: businessOffers.imageUrl,
-        contactInfo: businessOffers.contactInfo,
-        websiteUrl: businessOffers.websiteUrl,
-        tags: businessOffers.tags,
-        createdAt: businessOffers.createdAt,
-        businessName: users.businessName,
-        businessLocation: users.location,
-        businessImage: users.profileImage,
-      })
+    
+    // First get the business offers
+    const offers = await db.select()
       .from(businessOffers)
-      .leftJoin(users, eq(businessOffers.businessId, users.id))
       .where(eq(businessOffers.isActive, true))
       .orderBy(desc(businessOffers.createdAt));
     
-    res.json(offersQuery);
+    // Then add business info to each offer
+    const offersWithBusinessInfo = await Promise.all(offers.map(async (offer) => {
+      const businessUser = await db.select()
+        .from(users)
+        .where(eq(users.id, offer.businessId))
+        .limit(1);
+      
+      const business = businessUser[0] || {};
+      
+      return {
+        ...offer,
+        businessName: business.businessName || 'Business',
+        businessDescription: business.bio || '',
+        businessType: business.userType || 'business',
+        businessLocation: business.location || offer.city,
+        businessEmail: business.contactEmail || '',
+        businessPhone: business.contactPhone || '',
+        businessAddress: business.street || '',
+        businessImage: business.profileImage || ''
+      };
+    }));
+    
+    console.log('💰 DIRECT API: Found', offersWithBusinessInfo.length, 'active business offers');
+    res.json(offersWithBusinessInfo);
   } catch (error: any) {
     console.error('🔥 Error in business deals API:', error);
     res.status(500).json({ error: 'Failed to get business deals' });
