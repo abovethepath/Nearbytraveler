@@ -618,6 +618,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const [editingOwnerInfo, setEditingOwnerInfo] = useState(false);
   const [ownerContactForm, setOwnerContactForm] = useState({
     ownerName: '',
+    ownerEmail: '',
     ownerPhone: ''
   });
   
@@ -2803,7 +2804,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
   // Owner contact mutation and handlers
   const updateOwnerContact = useMutation({
-    mutationFn: async (data: { ownerName: string; ownerPhone: string }) => {
+    mutationFn: async (data: { ownerName: string; ownerEmail: string; ownerPhone: string }) => {
       const response = await fetch(`/api/users/${effectiveUserId}`, {
         method: 'PUT',
         headers: {
@@ -2851,6 +2852,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     if (user && user.userType === 'business') {
       setOwnerContactForm({
         ownerName: user.ownerName || user.name || "",
+        ownerEmail: user.ownerEmail || "",
         ownerPhone: user.ownerPhone || ""
       });
     }
@@ -6914,6 +6916,16 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         />
                       </div>
                       <div>
+                        <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Contact Email</Label>
+                        <Input 
+                          value={ownerContactForm.ownerEmail}
+                          onChange={(e) => setOwnerContactForm(prev => ({ ...prev, ownerEmail: e.target.value }))}
+                          placeholder="owner@business.com"
+                          type="email"
+                          className="mt-1"
+                        />
+                      </div>
+                      <div>
                         <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Contact Person Phone Number</Label>
                         <Input 
                           value={ownerContactForm.ownerPhone}
@@ -6938,6 +6950,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             setEditingOwnerInfo(false);
                             setOwnerContactForm({
                               ownerName: user?.name || "",
+                              ownerEmail: user?.ownerEmail || "",
                               ownerPhone: user?.ownerPhone || ""
                             });
                           }}
@@ -6954,6 +6967,21 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         <span className="text-sm font-medium text-gray-900 dark:text-white">
                           {user?.name || "Not set"}
                         </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-gray-600 dark:text-gray-400">Contact Email:</span>
+                        {user?.ownerEmail ? (
+                          <a 
+                            href={`mailto:${user.ownerEmail}`} 
+                            className="text-sm font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 underline transition-colors"
+                          >
+                            {user.ownerEmail}
+                          </a>
+                        ) : (
+                          <span className="text-sm font-medium text-gray-900 dark:text-white">
+                            Not set
+                          </span>
+                        )}
                       </div>
                       <div className="flex items-center justify-between">
                         <span className="text-sm text-gray-600 dark:text-gray-400">Contact Person Phone:</span>
