@@ -14,6 +14,7 @@ User request: Implemented Advanced Search Widget - Search button in bottom navig
 User request: Business users should be redirected away from destination discovery page (/discover) to business dashboard, as destination exploration is for travelers, not businesses focused on local operations.
 User request: Implemented LA Metro dual visibility - users, businesses, and events in metro cities (Playa del Rey, Santa Monica, Venice, Culver City) now appear in both their specific city searches AND when searching "Los Angeles".
 User request: Business contact information (Business Name, Contact Name, Contact Email, Contact Phone) must be collected during signup and automatically populate the admin widget for complete contact database management.
+User report fix: "Things in common" display was broken on discover people cards - fixed frontend to calculate totals from API's sharedInterests, sharedEvents, and sharedActivities arrays instead of looking for non-existent totalCommonalities field (January 2025).
 
 ## System Architecture
 

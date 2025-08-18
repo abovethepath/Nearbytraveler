@@ -301,13 +301,35 @@ export function PeopleDiscoveryWidget({
             
             {/* Line 4: Things in Common */}
             <div className="mb-3">
-              {compatibilityData && (compatibilityData as any).totalCommonalities !== undefined ? (
-                <p className="text-green-600 dark:text-green-400 text-xs font-medium">
-                  {(compatibilityData as any).totalCommonalities} things in common
-                </p>
-              ) : (
+              {compatibilityData ? (
+                (() => {
+                  const data = compatibilityData as any;
+                  const sharedInterestsCount = data.sharedInterests?.length || 0;
+                  const sharedEventsCount = data.sharedEvents?.length || 0;
+                  const sharedActivitiesCount = data.sharedActivities?.length || 0;
+                  const totalCommon = sharedInterestsCount + sharedEventsCount + sharedActivitiesCount;
+                  
+                  if (totalCommon > 0) {
+                    return (
+                      <p className="text-green-600 dark:text-green-400 text-xs font-medium">
+                        {totalCommon} things in common
+                      </p>
+                    );
+                  } else {
+                    return (
+                      <p className="text-gray-500 dark:text-gray-400 text-xs">
+                        {Math.round((data.score || 0) * 100)}% compatible
+                      </p>
+                    );
+                  }
+                })()
+              ) : compatibilityLoading ? (
                 <p className="text-purple-600 dark:text-purple-400 text-xs">
                   Calculating compatibility...
+                </p>
+              ) : (
+                <p className="text-gray-500 dark:text-gray-400 text-xs">
+                  Compatibility unknown
                 </p>
               )}
             </div>
