@@ -8,6 +8,9 @@ import { Redis } from "ioredis";
 import { setupVite, serveStatic, log } from "./vite";
 import path from "path";
 import dotenv from "dotenv";
+import { db } from "./db";
+import { users, events, businessOffers, quickMeetups } from "../shared/schema";
+import { sql, eq, or, count, and, ne, desc, gte, lte, lt, isNotNull, inArray, asc, ilike, like, isNull, gt } from "drizzle-orm";
 
 // Load environment variables
 dotenv.config();
@@ -60,6 +63,183 @@ app.use(cors({
   methods: ["GET","POST","PUT","PATCH","DELETE","OPTIONS"],
   allowedHeaders: ["Content-Type","Authorization"],
 }));
+
+// ===== CRITICAL API ROUTES - MUST BE FIRST TO BYPASS VITE =====
+// Register these API routes BEFORE any other middleware to prevent Vite interception
+console.log('🚀 REGISTERING CRITICAL API ROUTES FIRST TO BYPASS VITE INTERCEPTION');
+
+app.get('/api/events', async (req, res) => {
+  try {
+    console.log('📅 DIRECT API: Fetching events');
+    const now = new Date();
+    const sixWeeksFromNow = new Date(now.getTime() + (42 * 24 * 60 * 60 * 1000));
+    
+    const eventsQuery = await db.select().from(events)
+      .where(and(
+        gte(events.date, now),
+        lte(events.date, sixWeeksFromNow)
+      ))
+      .orderBy(asc(events.date));
+    
+    res.json(eventsQuery);
+  } catch (error: any) {
+    console.error('🔥 Error in events API:', error);
+    res.status(500).json({ error: 'Failed to get events' });
+  }
+});
+
+app.get('/api/business-deals', async (req, res) => {
+  try {
+    console.log('💰 DIRECT API: Fetching business deals');
+    const offersQuery = await db
+      .select({
+        id: businessOffers.id,
+        businessId: businessOffers.businessId,
+        title: businessOffers.title,
+        description: businessOffers.description,
+        category: businessOffers.category,
+        discountType: businessOffers.discountType,
+        discountValue: businessOffers.discountValue,
+        city: businessOffers.city,
+        state: businessOffers.state,
+        country: businessOffers.country,
+        validFrom: businessOffers.validFrom,
+        validUntil: businessOffers.validUntil,
+        maxRedemptions: businessOffers.maxRedemptions,
+        currentRedemptions: businessOffers.currentRedemptions,
+        isActive: businessOffers.isActive,
+        imageUrl: businessOffers.imageUrl,
+        contactInfo: businessOffers.contactInfo,
+        websiteUrl: businessOffers.websiteUrl,
+        tags: businessOffers.tags,
+        createdAt: businessOffers.createdAt,
+        businessName: users.businessName,
+        businessLocation: users.location,
+        businessImage: users.profileImage,
+      })
+      .from(businessOffers)
+      .leftJoin(users, eq(businessOffers.businessId, users.id))
+      .where(eq(businessOffers.isActive, true))
+      .orderBy(desc(businessOffers.createdAt));
+    
+    res.json(offersQuery);
+  } catch (error: any) {
+    console.error('🔥 Error in business deals API:', error);
+    res.status(500).json({ error: 'Failed to get business deals' });
+  }
+});
+
+app.get('/api/quick-meetups', async (req, res) => {
+  try {
+    console.log('⚡ DIRECT API: Fetching quick meetups');
+    const now = new Date();
+    
+    const meetupsQuery = await db.select().from(quickMeetups)
+      .where(and(
+        gt(quickMeetups.expiresAt, now),
+        eq(quickMeetups.isActive, true)
+      ))
+      .orderBy(desc(quickMeetups.createdAt));
+    
+    res.json(meetupsQuery);
+  } catch (error: any) {
+    console.error('🔥 Error in quick meetups API:', error);
+    res.status(500).json({ error: 'Failed to get quick meetups' });
+  }
+});
+
+app.get('/api/businesses', async (req, res) => {
+  try {
+    console.log('🏢 DIRECT API: Fetching businesses');
+    const businessesQuery = await db.select({
+      id: users.id,
+      username: users.username,
+      businessName: users.businessName,
+      name: users.name,
+      businessDescription: users.businessDescription,
+      businessType: users.businessType,
+      location: users.location,
+      profileImage: users.profileImage,
+      phoneNumber: users.phoneNumber,
+      websiteUrl: users.websiteUrl,
+      email: users.email,
+      streetAddress: users.streetAddress,
+      hometownCity: users.hometownCity,
+      hometownState: users.hometownState,
+      hometownCountry: users.hometownCountry,
+    }).from(users)
+      .where(eq(users.userType, 'business'));
+    
+    res.json(businessesQuery);
+  } catch (error: any) {
+    console.error('🔥 Error in businesses API:', error);
+    res.status(500).json({ error: 'Failed to get businesses' });
+  }
+});
+
+// Add more critical endpoints that are being intercepted
+app.get('/api/users', async (req, res) => {
+  try {
+    console.log('👥 DIRECT API: Fetching users');
+    const usersQuery = await db.select({
+      id: users.id,
+      username: users.username,
+      name: users.name,
+      userType: users.userType,
+      location: users.location,
+      hometownCity: users.hometownCity,
+      hometownState: users.hometownState,
+      hometownCountry: users.hometownCountry,
+      bio: users.bio,
+      profileImage: users.profileImage,
+      isCurrentlyTraveling: users.isCurrentlyTraveling,
+      travelDestination: users.travelDestination,
+      interests: users.interests,
+      activities: users.activities,
+      age: users.age,
+      gender: users.gender,
+    }).from(users)
+      .where(eq(users.userType, 'traveler'));
+    
+    res.json(usersQuery);
+  } catch (error: any) {
+    console.error('🔥 Error in users API:', error);
+    res.status(500).json({ error: 'Failed to get users' });
+  }
+});
+
+app.get('/api/users/:id', async (req, res) => {
+  try {
+    const userId = parseInt(req.params.id);
+    console.log('👤 DIRECT API: Fetching user by ID:', userId);
+    
+    const userQuery = await db.select().from(users)
+      .where(eq(users.id, userId))
+      .limit(1);
+    
+    if (userQuery.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    res.json(userQuery[0]);
+  } catch (error: any) {
+    console.error('🔥 Error in user by ID API:', error);
+    res.status(500).json({ error: 'Failed to get user' });
+  }
+});
+
+app.get('/api/quick-deals', async (req, res) => {
+  try {
+    console.log('🎯 DIRECT API: Fetching quick deals');
+    // Return empty array for now - can be implemented later
+    res.json([]);
+  } catch (error: any) {
+    console.error('🔥 Error in quick deals API:', error);
+    res.status(500).json({ error: 'Failed to get quick deals' });
+  }
+});
+
+console.log('✅ CRITICAL API ROUTES REGISTERED BEFORE OTHER MIDDLEWARE');
 
 // Security headers
 app.use(helmet({
@@ -205,7 +385,10 @@ app.use((req, res, next) => {
       });
     });
 
-    // CRITICAL FIX: Add search route with different path to bypass Vite interception
+    // ===== CRITICAL VITE WORKAROUND ROUTES =====
+    // These routes MUST be defined here before any other middleware to bypass Vite interception
+    console.log('🚀 REGISTERING CRITICAL API ROUTES TO BYPASS VITE INTERCEPTION');
+    
     app.get('/api/search-users', async (req, res) => {
       try {
         const {
@@ -234,6 +417,8 @@ app.use((req, res, next) => {
         res.status(500).json({ error: 'Failed to perform search' });
       }
     });
+
+    // Note: Critical API routes already registered at the top of the middleware chain
     
   } catch (error) {
     console.error("❌ CRITICAL: Failed to register main API routes:", error);
