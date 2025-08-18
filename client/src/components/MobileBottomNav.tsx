@@ -40,9 +40,13 @@ export function MobileBottomNav() {
     { icon: User, label: "Profile", path: user ? `/profile/${user.id}` : "/profile" },
   ];
 
-  const actionMenuItems = user?.userType === 'business' ? [
-    { label: "Create Deal", path: "/business-dashboard", icon: Calendar },
-    { label: "Create Quick Deal", path: "/business-dashboard", icon: MessageCircle },
+  // CRITICAL BUSINESS USER FIX - Check userType properly
+  const isBusinessUser = user?.userType === 'business';
+  console.log('🚨 BUSINESS USER CHECK:', { username: user?.username, userType: user?.userType, isBusinessUser });
+  
+  const actionMenuItems = isBusinessUser ? [
+    { label: "Create Deal", path: "/business-dashboard?action=create-deal", icon: Calendar },
+    { label: "Create Quick Deal", path: "/business-dashboard?action=create-quick-deal", icon: MessageCircle },
     { label: "Create Event", path: "/create-event", icon: Calendar },
   ] : [
     { label: "Create Event", path: "/create-event", icon: Calendar },

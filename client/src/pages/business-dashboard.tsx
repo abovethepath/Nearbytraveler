@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import React, { useState, useContext } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -200,6 +200,23 @@ export default function BusinessDashboard() {
   const [reuseDialogOpen, setReuseDialogOpen] = useState(false);
   const [reuseDealData, setReuseDealData] = useState<any>(null);
   const [startingToday, setStartingToday] = useState(true);
+  const [showQuickDealCreator, setShowQuickDealCreator] = useState(false);
+  
+  // Check URL parameters for actions
+  React.useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const action = params.get('action');
+    
+    if (action === 'create-deal') {
+      setIsCreateDialogOpen(true);
+      // Clear the URL parameter
+      window.history.replaceState({}, '', window.location.pathname);
+    } else if (action === 'create-quick-deal') {
+      setShowQuickDealCreator(true);
+      // Clear the URL parameter
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  }, []);
 
   // Helper function to format discount text
   const getDiscountText = (offer: BusinessOffer) => {
@@ -642,6 +659,14 @@ export default function BusinessDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      {/* Instant Deal Creator Modal */}
+      {showQuickDealCreator && (
+        <InstantDealCreator
+          onClose={() => setShowQuickDealCreator(false)}
+          businessId={storageUser?.id || 0}
+        />
+      )}
+      
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
