@@ -121,6 +121,8 @@ export const users = pgTable("users", {
   currentMonthDeals: integer("current_month_deals").default(0), // Track current month's deals
   dealLimitResetDate: timestamp("deal_limit_reset_date"), // When to reset the counter
   
+  ownerName: text("owner_name"), // Name of business owner for admin contact
+  
   isActive: boolean("is_active").default(true),
   isAdmin: boolean("is_admin").default(false),
   
