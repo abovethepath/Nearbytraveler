@@ -8279,6 +8279,57 @@ Questions? Just reply to this message. Welcome aboard!
       return res.json(matches);
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error fetching user matches:", error);
+      res.status(500).json({ message: "Failed to fetch matches" });
+    }
+  });
+
+  // Get compatibility between two specific users
+  app.get("/api/compatibility/:userId1/:userId2", async (req, res) => {
+    try {
+      const userId1 = parseInt(req.params.userId1);
+      const userId2 = parseInt(req.params.userId2);
+      
+      if (!userId1 || !userId2) {
+        return res.status(400).json({ message: "Invalid user IDs" });
+      }
+
+      if (process.env.NODE_ENV === 'development') console.log(`🔮 COMPATIBILITY: Getting compatibility between users ${userId1} and ${userId2}`);
+
+      // Get both users
+      const user1 = await storage.getUser(userId1);
+      const user2 = await storage.getUser(userId2);
+      
+      if (!user1 || !user2) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Get travel plans for both users
+      const user1TravelPlans = await storage.getUserTravelPlans(userId1);
+      const user2TravelPlans = await storage.getUserTravelPlans(userId2);
+
+      // Calculate compatibility using the matching service
+      const compatibilityScore = await matchingService.calculateCompatibilityScore(
+        user1,
+        user2,
+        user1TravelPlans,
+        user2TravelPlans
+      );
+
+      if (process.env.NODE_ENV === 'development') console.log(`🔮 COMPATIBILITY: Score between ${user1.username} and ${user2.username}: ${Math.round(compatibilityScore.score * 100)}%`);
+
+      res.json(compatibilityScore);
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error calculating compatibility:", error);
+      res.status(500).json({ message: "Failed to calculate compatibility" });
+    }
+  });
+      );
+
+      if (process.env.NODE_ENV === 'development') console.log(`🔮 COMPATIBILITY: Score between ${user1.username} and ${user2.username}: ${Math.round(compatibilityScore.score * 100)}%`);
+
+      res.json(compatibilityScore);
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error calculating compatibility:", error);
       return res.status(500).json({ message: "Failed to fetch matches" });
     }
   });
