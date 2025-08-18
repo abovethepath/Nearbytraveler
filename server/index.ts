@@ -240,6 +240,116 @@ app.get('/api/quick-deals', async (req, res) => {
   }
 });
 
+app.get('/api/city-stats', async (req, res) => {
+  try {
+    console.log('🏙️ DIRECT API: Fetching city stats for destinations');
+    
+    // Get counts by city from users table  
+    const cityStats = await db.select({
+      city: users.hometownCity,
+      state: users.hometownState,
+      country: users.hometownCountry,
+      userType: users.userType,
+    }).from(users)
+      .where(isNotNull(users.hometownCity));
+
+    // Group by city and calculate stats
+    const statsMap = new Map();
+    
+    cityStats.forEach(user => {
+      if (!user.city) return;
+      
+      const key = `${user.city}, ${user.state || ''}, ${user.country || ''}`.replace(', ,', ',');
+      if (!statsMap.has(key)) {
+        statsMap.set(key, {
+          city: user.city,
+          state: user.state,
+          country: user.country,
+          localCount: 0,
+          travelerCount: 0,
+          businessCount: 0,
+          eventCount: 0,
+        });
+      }
+      
+      const stats = statsMap.get(key);
+      if (user.userType === 'local') stats.localCount++;
+      else if (user.userType === 'traveler') stats.travelerCount++;
+      else if (user.userType === 'business') stats.businessCount++;
+    });
+
+    // Create Los Angeles Metro consolidation
+    const laMetroStats = {
+      city: 'Los Angeles Metro',
+      state: 'California',
+      country: 'United States',
+      localCount: 0,
+      travelerCount: 0,
+      businessCount: 0,
+      eventCount: 0,
+    };
+
+    const laCities = ['Los Angeles', 'Santa Monica', 'Venice', 'Culver City', 'Playa del Rey', 'Hollywood', 'Beverly Hills'];
+    
+    // Consolidate LA metro area stats
+    for (const [key, stats] of statsMap.entries()) {
+      if (stats.state === 'California' && laCities.some(city => stats.city?.includes(city))) {
+        laMetroStats.localCount += stats.localCount;
+        laMetroStats.travelerCount += stats.travelerCount;
+        laMetroStats.businessCount += stats.businessCount;
+        statsMap.delete(key); // Remove individual city, will be part of metro
+      }
+    }
+
+    // Add LA Metro if it has any activity
+    const result = [];
+    if (laMetroStats.localCount + laMetroStats.travelerCount + laMetroStats.businessCount > 0) {
+      result.push(laMetroStats);
+    }
+
+    // Add other cities with activity
+    for (const stats of statsMap.values()) {
+      if (stats.localCount + stats.travelerCount + stats.businessCount > 0) {
+        result.push(stats);
+      }
+    }
+
+    console.log('🏙️ DIRECT API: Found', result.length, 'cities with activity');
+    res.json(result);
+  } catch (error: any) {
+    console.error('🔥 Error in city stats API:', error);
+    res.status(500).json({ error: 'Failed to get city stats' });
+  }
+});
+
+app.get('/api/search-users', async (req, res) => {
+  try {
+    console.log('🔍 DIRECT API: Search users');
+    const location = req.query.location as string;
+    
+    let results;
+    
+    if (location && location.trim() !== '') {
+      // Search in location, hometown city, state, or country
+      results = await db.select().from(users).where(
+        or(
+          ilike(users.location, `%${location}%`),
+          ilike(users.hometownCity, `%${location}%`),
+          ilike(users.hometownState, `%${location}%`),
+          ilike(users.hometownCountry, `%${location}%`)
+        )
+      );
+    } else {
+      results = await db.select().from(users);
+    }
+    console.log('🔍 DIRECT API: Found', results.length, 'users matching search');
+    res.json(results);
+  } catch (error: any) {
+    console.error('🔥 Error in search users API:', error);
+    res.status(500).json({ error: 'Failed to search users' });
+  }
+});
+
 console.log('✅ CRITICAL API ROUTES REGISTERED BEFORE OTHER MIDDLEWARE');
 
 // Security headers
