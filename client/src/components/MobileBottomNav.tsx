@@ -183,6 +183,12 @@ export function MobileBottomNav() {
         <QuickDealModal
           onClose={() => setShowQuickDealCreator(false)}
           businessId={user?.id || 0}
+          businessLocation={{
+            city: user?.hometownCity || user?.city || 'Los Angeles',
+            state: user?.hometownState || user?.state || 'California',
+            country: user?.hometownCountry || user?.country || 'United States',
+            street: user?.streetAddress || user?.location || ''
+          }}
         />
       )}
     </>

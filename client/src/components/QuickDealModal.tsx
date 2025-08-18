@@ -11,9 +11,15 @@ import { useToast } from "@/hooks/use-toast";
 interface QuickDealModalProps {
   onClose: () => void;
   businessId: number;
+  businessLocation?: {
+    city?: string;
+    state?: string;
+    country?: string;
+    street?: string;
+  };
 }
 
-export default function QuickDealModal({ onClose, businessId }: QuickDealModalProps) {
+export default function QuickDealModal({ onClose, businessId, businessLocation }: QuickDealModalProps) {
   const { toast } = useToast();
   const [formData, setFormData] = useState({
     title: "",
@@ -33,14 +39,17 @@ export default function QuickDealModal({ onClose, businessId }: QuickDealModalPr
         businessId,
         title: data.title,
         description: data.description,
-        discountType: data.discountType,
-        discountValue: data.discountValue,
-        dealType: data.discountType, // Add the required deal_type field
+        deal_type: data.discountType, // Use underscore for database column name
+        category: 'flash_deal',
+        location: businessLocation?.street || 'Business Location',
+        city: businessLocation?.city || 'Los Angeles',
+        state: businessLocation?.state || 'California',
+        country: businessLocation?.country || 'United States',
+        discountAmount: data.discountValue,
         validFrom: startTime.toISOString(),
         validUntil: validUntil.toISOString(),
-        maxRedemptions: 100, // Default max redemptions
+        maxRedemptions: 100,
         availability: data.availability,
-        category: 'flash_deal',
         isActive: true
       });
     },
