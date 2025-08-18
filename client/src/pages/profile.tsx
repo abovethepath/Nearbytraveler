@@ -6692,12 +6692,18 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     </div>
                     <Switch
                       checked={user.locationSharingEnabled || false}
-                      onCheckedChange={(enabled) => {
+                      onCheckedChange={async (enabled) => {
                         console.log('🔧 DIRECT: Location sharing toggle clicked:', { enabled, userId: user.id });
+                        
+                        // Update user data immediately for responsive UI
+                        const updatedUserData = { ...user, locationSharingEnabled: enabled };
+                        queryClient.setQueryData([`/api/users/${user.id}`], updatedUserData);
                         
                         if (enabled) {
                           // Request location permission first
                           if (!navigator.geolocation) {
+                            // Revert the optimistic update
+                            queryClient.setQueryData([`/api/users/${user.id}`], user);
                             toast({
                               title: "Location not supported",
                               description: "Your browser doesn't support location services",
@@ -6708,37 +6714,46 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           
                           // Get current location before enabling sharing
                           navigator.geolocation.getCurrentPosition(
-                            (position) => {
+                            async (position) => {
                               const { latitude, longitude } = position.coords;
                               console.log('🔧 DIRECT: Got location:', { latitude, longitude });
                               
-                              // Update location sharing with coordinates
-                              apiRequest('PUT', `/api/users/${user.id}`, {
-                                locationSharingEnabled: enabled,
-                                currentLatitude: latitude,
-                                currentLongitude: longitude
-                              }).then(() => {
+                              try {
+                                // Update location sharing with coordinates
+                                const response = await apiRequest('PUT', `/api/users/${user.id}`, {
+                                  locationSharingEnabled: enabled,
+                                  currentLatitude: latitude,
+                                  currentLongitude: longitude
+                                });
+                                
                                 console.log('🔧 DIRECT: Location sharing updated successfully');
                                 
-                                // Invalidate cache without page reload
-                                queryClient.invalidateQueries({ queryKey: [`/api/users/${user.id}`] });
-                                queryClient.refetchQueries({ queryKey: [`/api/users/${user.id}`] });
+                                // Update the cache with the response data
+                                queryClient.setQueryData([`/api/users/${user.id}`], response);
+                                
+                                // Also refetch to ensure consistency
+                                await queryClient.refetchQueries({ queryKey: [`/api/users/${user.id}`] });
                                 
                                 toast({
                                   title: "Location sharing enabled",
                                   description: "Your location is now visible on city maps",
                                 });
-                              }).catch((error) => {
+                              } catch (error) {
                                 console.error('🔧 DIRECT: Error updating location sharing:', error);
+                                // Revert the optimistic update on error
+                                queryClient.setQueryData([`/api/users/${user.id}`], user);
                                 toast({
                                   title: "Error", 
                                   description: "Failed to update location sharing",
                                   variant: "destructive",
                                 });
-                              });
+                              }
                             },
                             (error) => {
                               console.error('🔧 DIRECT: Location error:', error);
+                              // Revert the optimistic update on location error
+                              queryClient.setQueryData([`/api/users/${user.id}`], user);
+                              
                               let message = "Unable to get your location";
                               
                               switch (error.code) {
@@ -6767,27 +6782,33 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           );
                         } else {
                           // Simply disable location sharing
-                          apiRequest('PUT', `/api/users/${user.id}`, {
-                            locationSharingEnabled: enabled
-                          }).then(() => {
+                          try {
+                            const response = await apiRequest('PUT', `/api/users/${user.id}`, {
+                              locationSharingEnabled: enabled
+                            });
+                            
                             console.log('🔧 DIRECT: Location sharing disabled');
                             
-                            // Invalidate cache without page reload
-                            queryClient.invalidateQueries({ queryKey: [`/api/users/${user.id}`] });
-                            queryClient.refetchQueries({ queryKey: [`/api/users/${user.id}`] });
+                            // Update the cache with the response data
+                            queryClient.setQueryData([`/api/users/${user.id}`], response);
+                            
+                            // Also refetch to ensure consistency
+                            await queryClient.refetchQueries({ queryKey: [`/api/users/${user.id}`] });
                             
                             toast({
                               title: "Location sharing disabled",
                               description: "Your location is no longer visible on city maps",
                             });
-                          }).catch((error) => {
+                          } catch (error) {
                             console.error('🔧 DIRECT: Error disabling location sharing:', error);
+                            // Revert the optimistic update on error
+                            queryClient.setQueryData([`/api/users/${user.id}`], user);
                             toast({
                               title: "Error", 
                               description: "Failed to update location sharing",
                               variant: "destructive",
                             });
-                          });
+                          }
                         }
                       }}
                       data-testid="location-sharing-toggle"
