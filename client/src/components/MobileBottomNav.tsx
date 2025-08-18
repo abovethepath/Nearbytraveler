@@ -29,8 +29,8 @@ export function MobileBottomNav() {
     { label: "Create Event", path: "/create-event", icon: Calendar },
   ] : [
     { label: "Create Event", path: "/create-event", icon: Calendar },
-    { label: "Create Deal", path: "/plan-trip", icon: Calendar },
-    { label: "Create Quick Deal", path: "/quick-meetups", icon: MessageCircle },
+    { label: "Create Trip", path: "/plan-trip", icon: Calendar },
+    { label: "Create Quick Meetup", path: "/quick-meetups", icon: MessageCircle },
   ];
 
   return (
