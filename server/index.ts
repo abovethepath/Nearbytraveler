@@ -170,6 +170,7 @@ app.get('/api/businesses', async (req, res) => {
     }).from(users)
       .where(eq(users.userType, 'business'));
     
+    console.log('🏢 DIRECT API: Found', businessesQuery.length, 'businesses');
     res.json(businessesQuery);
   } catch (error: any) {
     console.error('🔥 Error in businesses API:', error);
@@ -180,7 +181,7 @@ app.get('/api/businesses', async (req, res) => {
 // Add more critical endpoints that are being intercepted
 app.get('/api/users', async (req, res) => {
   try {
-    console.log('👥 DIRECT API: Fetching users');
+    console.log('👥 DIRECT API: Fetching ALL users (not just travelers)');
     const usersQuery = await db.select({
       id: users.id,
       username: users.username,
@@ -198,9 +199,9 @@ app.get('/api/users', async (req, res) => {
       activities: users.activities,
       age: users.age,
       gender: users.gender,
-    }).from(users)
-      .where(eq(users.userType, 'traveler'));
+    }).from(users);
     
+    console.log('👥 DIRECT API: Found', usersQuery.length, 'total users');
     res.json(usersQuery);
   } catch (error: any) {
     console.error('🔥 Error in users API:', error);
