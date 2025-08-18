@@ -185,6 +185,15 @@ export function QuickDealsDiscovery({ userLocation }: QuickDealsDiscoveryProps) 
               data-testid={`discovery-deal-${deal.id}`}
             >
               <CardContent className="p-4">
+                {/* Business Name at Top - Most Prominent */}
+                {(deal as any).business_name && (
+                  <div className="mb-2 pb-2 border-b border-orange-200 dark:border-orange-700">
+                    <h3 className="font-bold text-base text-blue-700 dark:text-blue-300">
+                      {(deal as any).business_name}
+                    </h3>
+                  </div>
+                )}
+                
                 <div className="mb-3">
                   <div className="flex flex-col gap-2 mb-2">
                     <h3 className="font-bold text-sm text-gray-900 dark:text-white">{deal.title}</h3>
@@ -210,44 +219,43 @@ export function QuickDealsDiscovery({ userLocation }: QuickDealsDiscoveryProps) 
 
                 <div className="space-y-1 text-xs text-gray-500 dark:text-gray-400">
                   {/* Business Name - Most Important */}
-                  {(deal as any).businessName && (
+                  {(deal as any).business_name && (
                     <div className="flex items-center gap-1 font-medium text-gray-700 dark:text-gray-200">
-                      <span className="line-clamp-1">{(deal as any).businessName}</span>
+                      <span className="line-clamp-1 text-sm font-bold">{(deal as any).business_name}</span>
                     </div>
                   )}
                   
-                  {/* Street Address */}
-                  {(deal as any).businessStreetAddress && (
+                  {/* Complete Address */}
+                  {(deal as any).business_street_address && (
                     <div className="flex items-center gap-1">
                       <MapPin className="w-3 h-3" />
-                      <span className="line-clamp-1">{(deal as any).businessStreetAddress}</span>
+                      <span className="line-clamp-2">
+                        {(deal as any).business_street_address}
+                        {(deal as any).business_city && `, ${(deal as any).business_city}`}
+                        {(deal as any).business_state && `, ${(deal as any).business_state}`}
+                        {(deal as any).business_zipcode && ` ${(deal as any).business_zipcode}`}
+                      </span>
                     </div>
                   )}
-                  
-                  {/* City/Location */}
-                  <div className="flex items-center gap-1">
-                    <MapPin className="w-3 h-3" />
-                    <span className="line-clamp-1">{(deal as any).businessCity || deal.location}</span>
-                  </div>
 
                   {/* Business Type/Category */}
-                  {((deal as any).businessType || deal.category) && (
+                  {((deal as any).business_type || deal.category) && (
                     <div className="flex items-center gap-1">
                       <Tag className="w-3 h-3" />
-                      <span>{(deal as any).businessType || deal.category}</span>
+                      <span>{(deal as any).business_type || deal.category}</span>
                     </div>
                   )}
                   
-                  {/* Business Phone - Clickable */}
-                  {(deal as any).businessPhone && (
-                    <div className="flex items-center gap-1">
-                      <Phone className="w-3 h-3" />
+                  {/* Business Phone - Clickable and Prominent */}
+                  {(deal as any).business_phone && (
+                    <div className="flex items-center gap-1 mt-2">
+                      <Phone className="w-3 h-3 text-green-600" />
                       <a 
-                        href={`tel:${(deal as any).businessPhone}`} 
-                        className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 underline transition-colors"
+                        href={`tel:${(deal as any).business_phone}`} 
+                        className="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-200 font-bold text-sm underline transition-colors"
                         onClick={(e) => e.stopPropagation()}
                       >
-                        {(deal as any).businessPhone}
+                        {(deal as any).business_phone}
                       </a>
                     </div>
                   )}
