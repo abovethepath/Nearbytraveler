@@ -110,25 +110,8 @@ export function QuickDealsDiscovery({ userLocation }: QuickDealsDiscoveryProps) 
   const formatDiscountAmount = (discountAmount: string | null) => {
     if (!discountAmount) return 'Special Deal';
     
-    // Clean up common formatting issues
-    let formatted = discountAmount.trim();
-    
-    // Handle percentage deals - if just a number, add % symbol
-    if (/^\d+$/.test(formatted)) {
-      formatted = `${formatted}%`;
-    }
-    
-    // Remove duplicate symbols and fix common issues
-    formatted = formatted.replace(/(%\$|%\s*\$|\$%)/gi, '$'); // Fix %$ to just $
-    formatted = formatted.replace(/%+/g, '%'); // Remove multiple % signs
-    formatted = formatted.replace(/\s+/g, ' '); // Normalize spaces
-    
-    // Final cleanup - ensure no double %% remains
-    while (formatted.includes('%%')) {
-      formatted = formatted.replace('%%', '%');
-    }
-    
-    return formatted;
+    // Just return the discount amount as-is, it's already formatted from the backend
+    return discountAmount.trim();
   };
 
   const getAvailabilityColor = (availability: string) => {
@@ -205,18 +188,17 @@ export function QuickDealsDiscovery({ userLocation }: QuickDealsDiscoveryProps) 
                 <div className="mb-3">
                   <div className="flex flex-col gap-2 mb-2">
                     <h3 className="font-bold text-sm text-gray-900 dark:text-white">{deal.title}</h3>
-                    <div className="flex items-center gap-1">
-                      <Badge className={`text-xs font-medium whitespace-nowrap ${getAvailabilityColor(deal.availability)}`}>
-                        {getDealTypeIcon(deal.dealType)}
-                        <span className="ml-1">{formatDiscountAmount(deal.discountAmount)}</span>
-                      </Badge>
+                    <div className="w-full">
+                      <div className={`inline-block px-2 py-1 rounded-md text-xs font-medium ${getAvailabilityColor(deal.availability)}`}>
+                        {formatDiscountAmount(deal.discountAmount)}
+                      </div>
                     </div>
                   </div>
                   
                   {/* Deal Description - More Prominent */}
                   {deal.description && (
                     <div className="mb-2 p-2 bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-950 dark:to-cyan-950 rounded-md border border-blue-200 dark:border-blue-700">
-                      <p className="text-xs font-medium text-blue-800 dark:text-blue-200 line-clamp-2">{deal.description}</p>
+                      <p className="text-xs font-medium text-blue-800 dark:text-blue-200">{deal.description}</p>
                     </div>
                   )}
                   
