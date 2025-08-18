@@ -413,8 +413,19 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
                   <Card key={user.id} className="cursor-pointer hover:shadow-md transition-shadow">
                     <CardContent className="p-4">
                       <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
-                          <Users className="h-6 w-6 text-gray-600" />
+                        <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center">
+                          {user.profileImage ? (
+                            <img 
+                              src={user.profileImage} 
+                              alt={`@${user.username}`}
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                e.currentTarget.style.display = 'none';
+                                e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                              }}
+                            />
+                          ) : null}
+                          <Users className={`h-6 w-6 text-gray-600 ${user.profileImage ? 'hidden' : ''}`} />
                         </div>
                         <div className="flex-1">
                           <h4 className="font-medium text-black dark:text-white">@{user.username}</h4>
