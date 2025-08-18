@@ -117,6 +117,17 @@ export default function JoinNowWidgetNew() {
       });
       return;
     }
+    
+    if (formData.username.length > 20) {
+      const errorMsg = "Username cannot exceed 20 characters.";
+      setCurrentError(errorMsg);
+      toast({
+        title: "Username too long",
+        description: errorMsg,
+        variant: "destructive",
+      });
+      return;
+    }
 
     // Password length validation
     if (formData.password.length < 8) {

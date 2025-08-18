@@ -19,7 +19,7 @@ import { getAllInterests, getAllActivities, getAllEvents, getAllLanguages, valid
 
 const businessSignupSchema = z.object({
   // Business Account Information
-  username: z.string().min(6, "Username must be 6-14 characters").max(14, "Username must be 6-14 characters"),
+  username: z.string().min(6, "Username must be at least 6 characters").max(20, "Username cannot exceed 20 characters"),
   email: z.string().email("Please enter a valid email"),
   password: z.string().min(6, "Password must be at least 6 characters"),
   
