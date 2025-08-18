@@ -9,7 +9,7 @@ import { setupVite, serveStatic, log } from "./vite";
 import path from "path";
 import dotenv from "dotenv";
 import { db } from "./db";
-import { users, events, businessOffers, quickMeetups } from "../shared/schema";
+import { users, events, businessOffers, quickMeetups, quickDeals } from "../shared/schema";
 import { sql, eq, or, count, and, ne, desc, gte, lte, lt, isNotNull, inArray, asc, ilike, like, isNull, gt } from "drizzle-orm";
 
 // Load environment variables
@@ -232,8 +232,35 @@ app.get('/api/users/:id', async (req, res) => {
 app.get('/api/quick-deals', async (req, res) => {
   try {
     console.log('🎯 DIRECT API: Fetching quick deals');
-    // Return empty array for now - can be implemented later
-    res.json([]);
+    
+    // Get all active quick deals that haven't expired
+    const now = new Date();
+    const activeDeals = await db.select({
+      id: quickDeals.id,
+      businessId: quickDeals.businessId,
+      title: quickDeals.title,
+      description: quickDeals.description,
+      dealType: quickDeals.dealType,
+      category: quickDeals.category,
+      location: quickDeals.location,
+      discountAmount: quickDeals.discountAmount,
+      originalPrice: quickDeals.originalPrice,
+      salePrice: quickDeals.salePrice,
+      validFrom: quickDeals.validFrom,
+      validUntil: quickDeals.validUntil,
+      maxRedemptions: quickDeals.maxRedemptions,
+      currentRedemptions: quickDeals.currentRedemptions,
+      isActive: quickDeals.isActive,
+      createdAt: quickDeals.createdAt
+    }).from(quickDeals)
+      .where(and(
+        eq(quickDeals.isActive, true),
+        gt(quickDeals.validUntil, now)
+      ))
+      .orderBy(desc(quickDeals.createdAt));
+    
+    console.log('🎯 DIRECT API: Found', activeDeals.length, 'active quick deals');
+    res.json(activeDeals);
   } catch (error: any) {
     console.error('🔥 Error in quick deals API:', error);
     res.status(500).json({ error: 'Failed to get quick deals' });

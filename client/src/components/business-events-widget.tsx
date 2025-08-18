@@ -119,8 +119,8 @@ export default function BusinessEventsWidget({ userId }: BusinessEventsWidgetPro
                     <Calendar className="w-4 h-4" />
                     <span>
                       {event.date ? formatDateForDisplay(event.date, 'UTC') : 'Date TBD'}
-                      {event.end_date && event.end_date !== event.date && 
-                        ` - ${formatDateForDisplay(event.end_date, 'UTC')}`
+                      {event.endDate && event.endDate !== event.date && 
+                        ` - ${formatDateForDisplay(event.endDate, 'UTC')}`
                       }
                     </span>
                   </div>
@@ -134,7 +134,7 @@ export default function BusinessEventsWidget({ userId }: BusinessEventsWidgetPro
 
                   <div className="flex items-center gap-2">
                     <Users className="w-4 h-4" />
-                    <span>{event.participantCount || 0} attending</span>
+                    <span>{event.maxParticipants ? `Max ${event.maxParticipants} people` : '0 attending'}</span>
                   </div>
                 </div>
 
