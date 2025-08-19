@@ -252,15 +252,16 @@ export default function Events() {
     staleTime: 300000, // Cache for 5 minutes
   });
 
-  // Fetch Local LA events (RSS feeds + neighborhood events)
-  const { data: localLAEvents = [], isLoading: localLALoading } = useQuery({
-    queryKey: ["/api/external-events/local-la"],
+  // Fetch Local events for user's city (RSS feeds + neighborhood events)
+  const userCity = user?.hometownCity || 'Austin';
+  const { data: localEvents = [], isLoading: localLoading } = useQuery({
+    queryKey: ["/api/external-events/local", userCity],
     queryFn: async () => {
-      const response = await fetch(`/api/external-events/local-la`);
+      const response = await fetch(`/api/external-events/local?city=${encodeURIComponent(userCity)}`);
       if (!response.ok) return { events: [] };
       return response.json();
     },
-    enabled: selectedTab === 'local-la',
+    enabled: selectedTab === 'local-events',
     staleTime: 600000, // Cache for 10 minutes (RSS feeds don't change frequently)
   });
 
@@ -533,14 +534,14 @@ export default function Events() {
             Premium Events
           </Button>
           <Button 
-            onClick={() => setSelectedTab('local-la')}
+            onClick={() => setSelectedTab('local-events')}
             className={`px-3 sm:px-4 py-2 rounded-xl transition-all duration-300 text-xs sm:text-sm ${
-              selectedTab === 'local-la' 
+              selectedTab === 'local-events' 
                 ? 'bg-purple-600 hover:bg-purple-700 text-white shadow-lg' 
                 : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
             }`}
           >
-            Local LA
+            Local {userCity}
           </Button>
 
 
@@ -1544,19 +1545,19 @@ export default function Events() {
           </div>
         )}
 
-        {/* Local LA Events Tab - RSS feeds and neighborhood events */}
-        {selectedTab === 'local-la' && (
+        {/* Local Events Tab - RSS feeds and neighborhood events */}
+        {selectedTab === 'local-events' && (
           <div className="space-y-6">
             <div className="text-center mb-6">
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                Local LA Events
+                Local {userCity} Events
               </h2>
               <p className="text-gray-600 dark:text-gray-300">
-                Authentic events from Venice Beach, Beverly Hills, and Hollywood neighborhoods
+                Authentic local events and activities in {userCity}
               </p>
             </div>
 
-            {localLALoading && (
+            {localLoading && (
               <div className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {[...Array(6)].map((_, i) => (
@@ -1570,16 +1571,16 @@ export default function Events() {
               </div>
             )}
 
-            {!localLALoading && (
+            {!localLoading && (
               <>
-                {localLAEvents.events && localLAEvents.events.length > 0 ? (
+                {localEvents.events && localEvents.events.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {localLAEvents.events.map((event: any) => (
+                    {localEvents.events.map((event: any) => (
                       <Card key={event.id} className="hover:shadow-lg transition-all duration-200 hover:scale-[1.02] border border-gray-200">
                         <CardContent className="p-6">
                           <div className="flex items-start justify-between mb-3">
                             <Badge className="bg-purple-100 text-purple-800">
-                              {event.location || 'Local LA'}
+                              {event.location || `Local ${userCity}`}
                             </Badge>
                             <Badge variant="outline">
                               {event.source}
@@ -1628,7 +1629,7 @@ export default function Events() {
                           {/* Interest Button */}
                           <div className="flex justify-center mb-3">
                             <InterestButton 
-                              event={{...event, source: 'local-la'}} 
+                              event={{...event, source: 'local-events'}} 
                               userId={user?.id} 
                               variant="minimal" 
                             />
@@ -1651,7 +1652,7 @@ export default function Events() {
                     <Calendar className="w-16 h-16 text-gray-300 dark:text-white mx-auto mb-4" />
                     <h3 className="text-xl font-semibold text-gray-600 dark:text-white mb-2">No Local Events Found</h3>
                     <p className="text-gray-500 dark:text-white">
-                      {localLAEvents.message || "No local LA events available at the moment. Check back soon for updates from local sources."}
+                      {localEvents.message || `No local ${userCity} events available at the moment. Check back soon for updates from local sources.`}
                     </p>
                   </div>
                 )}
