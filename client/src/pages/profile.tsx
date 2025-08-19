@@ -436,12 +436,12 @@ function MultiSelect({ options, selected, onChange, placeholder, maxDisplay = 3 
             ) : (
               <>
                 {selected.slice(0, maxDisplay).map((item) => (
-                  <Badge key={item} className="bg-blue-500 text-white border-0 px-3 py-2 text-sm rounded-full font-medium">
+                  <Badge key={item} className="pill">
                     {item}
                   </Badge>
                 ))}
                 {selected.length > maxDisplay && (
-                  <Badge className="bg-gray-200 text-gray-600 border-0 px-3 py-2 text-sm rounded-full font-medium">
+                  <Badge className="pill bg-gray-200 text-gray-600">
                     +{selected.length - maxDisplay} more
                   </Badge>
                 )}
@@ -3418,7 +3418,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   
                   {/* Nearby Business Label */}
                   <div className="flex items-center gap-2 text-sm sm:text-base">
-                    <span className="bg-blue-500 text-white border-0 px-3 py-2 text-sm rounded-full font-medium">
+                    <span className="pill">
                       Nearby Business
                     </span>
                     {user.businessType && (
@@ -3937,7 +3937,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         <div key={deal.id} className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 hover:shadow-md dark:hover:shadow-gray-800/50 transition-shadow bg-white dark:bg-gray-800">
                           <div className="flex items-start justify-between mb-2">
                             <h4 className="font-semibold text-gray-900 dark:text-white">{deal.title}</h4>
-                            <Badge className="bg-blue-500 text-white border-0 px-3 py-2 text-sm rounded-full font-medium">
+                            <Badge className="pill">
                               {deal.discountValue} {deal.discountType === 'percentage' ? '%' : ''} off
                             </Badge>
                           </div>
@@ -4146,7 +4146,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                         setEditFormData({ ...editFormData, interests: newInterests })
                                       );
                                     }}
-                                    className={`bg-blue-500 text-white border-0 px-3 py-2 text-sm rounded-full font-medium transition-all ${
+                                    className={`pill transition-all ${
                                       isSelected
                                         ? 'bg-green-600 text-white font-bold transform scale-105'
                                         : 'bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-800 dark:text-blue-200 dark:hover:bg-blue-700'
@@ -4177,7 +4177,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                         setEditFormData({ ...editFormData, interests: newInterests })
                                       );
                                     }}
-                                    className={`bg-blue-500 text-white border-0 px-3 py-2 text-sm rounded-full font-medium transition-all ${
+                                    className={`pill transition-all ${
                                       isSelected
                                         ? 'bg-green-600 text-white font-bold transform scale-105'
                                         : 'bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-800 dark:text-blue-200 dark:hover:bg-blue-700'
@@ -4215,7 +4215,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                       setEditFormData({ ...editFormData, activities: newActivities })
                                     );
                                   }}
-                                  className={`bg-blue-500 text-white border-0 px-3 py-2 text-sm rounded-full font-medium transition-all ${
+                                  className={`pill transition-all ${
                                     isSelected
                                       ? 'bg-green-600 text-white font-bold transform scale-105'
                                       : 'bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-800 dark:text-green-200 dark:hover:bg-green-700'
@@ -4248,7 +4248,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                       setEditFormData({ ...editFormData, events: newEvents })
                                     );
                                   }}
-                                  className={`bg-blue-500 text-white border-0 px-3 py-2 text-sm rounded-full font-medium transition-all ${
+                                  className={`pill transition-all ${
                                     isSelected
                                       ? 'bg-green-600 text-white font-bold transform scale-105'
                                       : 'bg-orange-100 text-orange-800 hover:bg-orange-200 dark:bg-orange-800 dark:text-orange-200 dark:hover:bg-orange-700'
@@ -4355,7 +4355,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                     setTempInterests([...tempInterests, interest]);
                                   }
                                 }}
-                                className={`bg-blue-500 text-white border-0 px-3 py-2 text-sm rounded-full font-medium transition-all ${
+                                className={`pill transition-all ${
                                   isSelected
                                     ? 'bg-green-600 text-white font-bold transform scale-105'
                                     : 'bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-800 dark:text-blue-200 dark:hover:bg-blue-700'
@@ -4388,7 +4388,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                     setTempInterests([...tempInterests, interest]);
                                   }
                                 }}
-                                className={`bg-blue-500 text-white border-0 px-3 py-2 text-sm rounded-full font-medium transition-all ${
+                                className={`pill transition-all ${
                                   isSelected
                                     ? 'bg-green-600 text-white font-bold transform scale-105'
                                     : 'bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-800 dark:text-green-200 dark:hover:bg-green-700'
@@ -4439,7 +4439,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           <p className="text-sm font-medium text-gray-700 mb-2">Selected Interests:</p>
                           <div className="flex flex-wrap gap-2">
                             {tempInterests.map((interest) => (
-                              <Badge key={interest} className="bg-blue-500 text-white border-0 px-3 py-2 text-sm rounded-full font-medium">
+                              <Badge key={interest} className="pill">
                                 {interest}
                                 <button
                                   onClick={() => setTempInterests(tempInterests.filter(i => i !== interest))}
@@ -4542,7 +4542,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                     setEditFormData({ ...editFormData, activities: newActivities })
                                   );
                                 }}
-                                className={`bg-blue-500 text-white border-0 px-3 py-2 text-sm rounded-full font-medium transition-all ${
+                                className={`pill transition-all ${
                                   isSelected
                                     ? 'bg-green-600 text-white font-bold transform scale-105'
                                     : 'bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-800 dark:text-blue-200 dark:hover:bg-blue-700'
@@ -4585,7 +4585,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           <p className="text-sm font-medium text-gray-700 mb-2">Current Activities:</p>
                           <div className="flex flex-wrap gap-2">
                             {tempActivities.map((activity, index) => (
-                              <span key={`activity-${activity}-${index}`} className="bg-blue-500 text-white border-0 px-3 py-2 text-sm rounded-full font-medium inline-flex items-center">
+                              <span key={`activity-${activity}-${index}`} className="pill inline-flex items-center">
                                 {activity}
                                 <button
                                   onClick={() => setTempActivities(tempActivities.filter(a => a !== activity))}
@@ -4687,7 +4687,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                     setTempEvents([...tempEvents, event]);
                                   }
                                 }}
-                                className={`bg-blue-500 text-white border-0 px-3 py-2 text-sm rounded-full font-medium transition-all ${
+                                className={`pill transition-all ${
                                   isSelected
                                     ? 'bg-green-600 text-white font-bold transform scale-105'
                                     : 'bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-800 dark:text-blue-200 dark:hover:bg-blue-700'
@@ -4730,7 +4730,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           <p className="text-sm font-medium text-gray-700 mb-2">Current Events:</p>
                           <div className="flex flex-wrap gap-2">
                             {tempEvents.map((event, index) => (
-                              <span key={`event-${event}-${index}`} className="bg-blue-500 text-white border-0 px-3 py-2 text-sm rounded-full font-medium inline-flex items-center">
+                              <span key={`event-${event}-${index}`} className="pill inline-flex items-center">
                                 {event}
                                 <button
                                   onClick={() => setTempEvents(tempEvents.filter(e => e !== event))}
@@ -4950,7 +4950,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Business Activities</h4>
                               <div className="flex flex-wrap gap-2">
                                 {allActivities.map((activity, index) => (
-                                  <Badge key={`activity-${index}`} className="bg-blue-500 text-white border-0 px-3 py-2 text-sm rounded-full font-medium">
+                                  <Badge key={`activity-${index}`} className="pill">
                                     {activity}
                                   </Badge>
                                 ))}
@@ -5099,7 +5099,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                     : [...editFormData.interests, interest];
                                   setEditFormData({ ...editFormData, interests: newInterests });
                                 }}
-                                className={`bg-blue-500 text-white border-0 px-3 py-2 text-sm rounded-full font-medium transition-all ${
+                                className={`pill transition-all ${
                                   isSelected
                                     ? 'bg-green-600 text-white font-bold transform scale-105'
                                     : 'bg-orange-100 text-orange-800 hover:bg-orange-200 dark:bg-orange-800 dark:text-orange-200 dark:hover:bg-orange-700'
@@ -5158,7 +5158,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                 {editFormData.interests.filter(interest => !getAllInterests().includes(interest)).map((interest, index) => (
                                   <span
                                     key={`custom-interest-${index}`}
-                                    className="bg-blue-500 text-white border-0 px-3 py-2 text-sm rounded-full font-medium inline-flex items-center"
+                                    className="pill inline-flex items-center"
                                   >
                                     {interest}
                                     <button
@@ -5198,7 +5198,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                     : [...editFormData.activities, activity];
                                   setEditFormData({ ...editFormData, activities: newActivities });
                                 }}
-                                className={`bg-blue-500 text-white border-0 px-3 py-2 text-sm rounded-full font-medium transition-all ${
+                                className={`pill transition-all ${
                                   isSelected
                                     ? 'bg-green-600 text-white font-bold transform scale-105'
                                     : 'bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-800 dark:text-green-200 dark:hover:bg-green-700'
@@ -5257,7 +5257,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                 {editFormData.activities.filter(activity => !getAllActivities().includes(activity)).map((activity, index) => (
                                   <span
                                     key={`custom-activity-${index}`}
-                                    className="bg-blue-500 text-white border-0 px-3 py-2 text-sm rounded-full font-medium inline-flex items-center"
+                                    className="pill inline-flex items-center"
                                   >
                                     {activity}
                                     <button
@@ -5297,7 +5297,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                     : [...editFormData.events, event];
                                   setEditFormData({ ...editFormData, events: newEvents });
                                 }}
-                                className={`bg-blue-500 text-white border-0 px-3 py-2 text-sm rounded-full font-medium transition-all ${
+                                className={`pill transition-all ${
                                   isSelected
                                     ? 'bg-green-600 text-white font-bold transform scale-105'
                                     : 'bg-purple-100 text-purple-800 hover:bg-purple-200 dark:bg-purple-800 dark:text-purple-200 dark:hover:bg-purple-700'
@@ -5356,7 +5356,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                 {editFormData.events.filter(event => !getAllEvents().includes(event)).map((event, index) => (
                                   <span
                                     key={`custom-event-${index}`}
-                                    className="bg-blue-500 text-white border-0 px-3 py-2 text-sm rounded-full font-medium inline-flex items-center"
+                                    className="pill inline-flex items-center"
                                   >
                                     {event}
                                     <button
@@ -5547,12 +5547,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               <div className="flex items-center gap-2 mb-1">
                                 <h4 className="font-medium text-sm">{plan.destination}</h4>
                                 {plan.status === 'active' && (
-                                  <Badge className="bg-blue-500 text-white border-0 px-3 py-2 text-sm rounded-full font-medium">
+                                  <Badge className="pill">
                                     ✈️ Currently Traveling
                                   </Badge>
                                 )}
                                 {plan.status === 'planned' && (
-                                  <Badge className="bg-blue-500 text-white border-0 px-3 py-2 text-sm rounded-full font-medium">
+                                  <Badge className="pill">
                                     📅 Upcoming
                                   </Badge>
                                 )}
@@ -5633,7 +5633,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             <div>
                               <div className="flex flex-wrap gap-1">
                                 {plan.travelStyle.slice(0, 2).map((style: string) => (
-                                  <Badge key={style} className="bg-blue-500 text-white border-0 px-3 py-2 text-sm rounded-full font-medium">
+                                  <Badge key={style} className="pill">
                                     {style}
                                   </Badge>
                                 ))}
@@ -8741,7 +8741,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     {selectedTravelPlan.startDate ? formatDateForDisplay(selectedTravelPlan.startDate, user?.currentCity || 'UTC') : 'Start date TBD'} - {selectedTravelPlan.endDate ? formatDateForDisplay(selectedTravelPlan.endDate, user?.currentCity || 'UTC') : 'End date TBD'}
                   </p>
                 </div>
-                <Badge className="bg-blue-500 text-white border-0 px-3 py-2 text-sm rounded-full font-medium">
+                <Badge className="pill">
                   Trip Details
                 </Badge>
               </div>

@@ -1,0 +1,67 @@
+Got you — the main reason pills look a little different across <Badge>, <button>, and <span> is each element’s default line-height, borders, and inline layout. Make them identical by forcing a shared height + layout + no-wrap.
+
+One class to rule them all
+
+Use this exact class string everywhere (Badge/button/span):
+
+className="inline-flex items-center justify-center h-8 rounded-full px-3 text-sm font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0"
+
+
+Examples:
+
+<Badge className="inline-flex items-center justify-center h-8 rounded-full px-3 text-sm font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0">
+  {content}
+</Badge>
+
+<button className="inline-flex items-center justify-center h-8 rounded-full px-3 text-sm font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0">
+  {content}
+</button>
+
+<span className="inline-flex items-center justify-center h-8 rounded-full px-3 text-sm font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0">
+  {content}
+</span>
+
+
+Why these bits matter
+
+inline-flex items-center justify-center → perfect vertical align across all tags
+
+h-8 + px-3 → identical height with consistent horizontal padding
+
+whitespace-nowrap leading-none → prevents multi-line wrap + line-height glitches
+
+border-0 → neutralizes any default Badge/button borders
+
+rounded-full → true oval
+
+Optional niceties
+
+If you use icons inside pills, add:
+gap-1.5 [&>svg]:h-4 [&>svg]:w-4
+
+Want equal widths (not just equal height)? Pick one:
+w-28 (fixed) or min-w-[7rem] to allow longer text to grow.
+
+Container spacing: wrap pills in
+<div className="flex flex-wrap gap-2">…</div>
+
+Extract it so you never repeat yourself
+
+Tailwind components layer (global class):
+
+/* globals.css */
+@layer components {
+  .pill {
+    @apply inline-flex items-center justify-center h-8 rounded-full px-3 text-sm font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0;
+  }
+}
+
+
+Use:
+
+<Badge className="pill">Host</Badge>
+<button className="pill">Message</button>
+<span className="pill">Los Angeles</span>
+
+
+That’ll make every pill on your profile page identical in size and shape.
