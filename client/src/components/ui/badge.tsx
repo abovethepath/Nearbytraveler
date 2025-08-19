@@ -28,9 +28,18 @@ export interface BadgeProps
     VariantProps<typeof badgeVariants> {}
 
 function Badge({ className, variant, ...props }: BadgeProps) {
-  // PERMANENT COLOR CODING ENFORCEMENT - NEVER REMOVE THIS CODE
-  // Automatically detect and enforce color coding based on content
-  let enforcedClassName = className || '';
+  // RESPECT PILL CLASSES - If pill class is provided, use it instead of auto-enforcement
+  const finalClassName = className || '';
+  
+  // If pill class is explicitly provided, use it and skip auto-enforcement
+  if (finalClassName.includes('pill-')) {
+    return (
+      <div className={cn(finalClassName)} {...props} />
+    )
+  }
+  
+  // Only apply auto-enforcement for non-pill badges
+  let enforcedClassName = finalClassName;
   const content = String(props.children || '').toLowerCase();
   
   // Auto-detect interests, activities, events from common patterns
@@ -57,7 +66,7 @@ function Badge({ className, variant, ...props }: BadgeProps) {
                  content.includes('karaoke') || content.includes('food trucks') || content.includes('community events') ||
                  content.includes('bar crawls');
   
-  // FORCE CORRECT COLORS - OVERRIDE ANY EXISTING CLASSES
+  // FORCE CORRECT COLORS - OVERRIDE ANY EXISTING CLASSES (only for non-pill badges)
   if (isInterest) {
     enforcedClassName = 'text-xs bg-blue-100 text-blue-800 border-blue-300 dark:bg-blue-900 dark:text-blue-200 dark:border-blue-700 justify-center';
   } else if (isActivity) {
