@@ -107,7 +107,7 @@ export default function ConnectModal({ isOpen, onClose, userTravelPlans: propTra
   // Fetch travel plans if user exists - always call hooks
   const { data: travelPlans = [] } = useQuery({
     queryKey: [`/api/travel-plans/${user?.id}`],
-    enabled: !!user?.id && isOpen,
+    enabled: !!user?.id && typeof user.id === 'number' && !isNaN(user.id) && isOpen,
   });
 
   const getUserBucketLocation = (bucketType: 'who_is_here_now' | 'permanent_locals_from_my_area') => {

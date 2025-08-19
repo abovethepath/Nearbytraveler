@@ -124,7 +124,7 @@ export default function ConnectPage() {
   // User data queries with proper refetch configuration
   const { data: userTravelPlans = [], isLoading: isLoadingTravelPlans, refetch: refetchTravelPlans } = useQuery({
     queryKey: [`/api/travel-plans/${user?.id}`],
-    enabled: !!user?.id,
+    enabled: !!user?.id && typeof user.id === 'number' && !isNaN(user.id),
     staleTime: 0, // Always consider data stale for fresh fetches
     gcTime: 5 * 60 * 1000, // Keep in cache for 5 minutes
     refetchOnMount: true,
@@ -135,7 +135,7 @@ export default function ConnectPage() {
   
   // Refetch travel plans when component mounts or user changes
   useEffect(() => {
-    if (user?.id) {
+    if (user?.id && typeof user.id === 'number' && !isNaN(user.id)) {
       refetchTravelPlans();
     }
   }, [user?.id, refetchTravelPlans]);
