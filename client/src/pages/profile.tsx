@@ -4486,7 +4486,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                     </Badge>
                                   ))}
                                   {remaining > 0 && (
-                                    <Badge className="pill-interests bg-gray-200 text-gray-600">
+                                    <Badge className="pill-interests">
                                       +{remaining} more
                                     </Badge>
                                   )}
@@ -4633,7 +4633,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                     </Badge>
                                   ))}
                                   {remaining > 0 && (
-                                    <Badge className="pill-activities bg-gray-200 text-gray-600">
+                                    <Badge className="pill-activities">
                                       +{remaining} more
                                     </Badge>
                                   )}
@@ -4781,7 +4781,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                     </Badge>
                                   ))}
                                   {remaining > 0 && (
-                                    <Badge className="pill-events bg-gray-200 text-gray-600">
+                                    <Badge className="pill-events">
                                       +{remaining} more
                                     </Badge>
                                   )}
@@ -5612,7 +5612,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                 ))}
                                 {plan.interests.length > 2 && (
                                   <Badge 
-                                    className="pill-interests bg-gray-200 text-gray-600 cursor-pointer"
+                                    className="pill-interests cursor-pointer"
                                     onClick={() => {
                                       const newExpanded = new Set(expandedPlanInterests);
                                       if (expandedPlanInterests.has(plan.id)) {
@@ -5638,7 +5638,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                   </Badge>
                                 ))}
                                 {plan.travelStyle.length > 2 && (
-                                  <Badge className="pill-interests bg-gray-200 text-gray-600">
+                                  <Badge className="pill-interests">
                                     +{plan.travelStyle.length - 2} more
                                   </Badge>
                                 )}
@@ -5746,7 +5746,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                   ))}
                                   {plan.interests.length > 2 && (
                                     <Badge 
-                                      className="pill-interests bg-gray-200 text-gray-600 cursor-pointer"
+                                      className="pill-interests cursor-pointer"
                                       onClick={() => {
                                         const newExpanded = new Set(expandedPlanInterests);
                                         if (expandedPlanInterests.has(plan.id)) {
@@ -5772,7 +5772,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                     </Badge>
                                   ))}
                                   {plan.travelStyle.length > 2 && (
-                                    <Badge className="pill-interests bg-gray-200 text-gray-600">
+                                    <Badge className="pill-interests">
                                       +{plan.travelStyle.length - 2} more
                                     </Badge>
                                   )}
@@ -8769,7 +8769,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       </Badge>
                     ))}
                     {selectedTravelPlan.interests.length > 9 && (
-                      <Badge className="pill-interests bg-gray-200 text-gray-600">
+                      <Badge className="pill-interests">
                         +{selectedTravelPlan.interests.length - 9} more
                       </Badge>
                     )}
