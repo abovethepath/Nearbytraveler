@@ -527,7 +527,7 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
             </h5>
             <div className="flex flex-wrap gap-2">
               {commonalities.sharedInterests.map((interest, index) => (
-                <Badge key={`shared-interest-${interest}-${index}`} className="bg-blue-100 text-blue-800 border-blue-300 dark:bg-blue-900 dark:text-blue-200 dark:border-blue-700 font-medium">
+                <Badge key={`shared-interest-${interest}-${index}`} className="pill-interests">
                   {interest}
                 </Badge>
               ))}
@@ -544,7 +544,7 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
             </h5>
             <div className="flex flex-wrap gap-2">
               {commonalities.sharedActivities.map((activity, index) => (
-                <Badge key={`shared-activity-${activity}-${index}`} className="bg-green-100 text-green-800 border-green-300 dark:bg-green-900 dark:text-green-200 dark:border-green-700 font-medium">
+                <Badge key={`shared-activity-${activity}-${index}`} className="pill-activities">
                   {activity}
                 </Badge>
               ))}
@@ -578,7 +578,7 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
             </h5>
             <div className="flex flex-wrap gap-2">
               {commonalities.sharedEvents.map((event, index) => (
-                <Badge key={`shared-event-${event}-${index}`} className="bg-purple-100 text-purple-800 border-purple-300 dark:bg-purple-900 dark:text-purple-200 dark:border-purple-700 font-medium">
+                <Badge key={`shared-event-${event}-${index}`} className="pill-events">
                   {event}
                 </Badge>
               ))}
