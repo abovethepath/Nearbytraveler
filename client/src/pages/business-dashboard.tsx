@@ -13,7 +13,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Plus, Edit, Trash2, Eye, BarChart3, Calendar, DollarSign, Users, TrendingUp, CalendarDays, Camera, Image, MapPin, Clock, Percent, Tag, Gift, Zap } from "lucide-react";
+import { Plus, Edit, Trash2, Eye, BarChart3, Calendar, DollarSign, Users, TrendingUp, CalendarDays, Camera, Image, MapPin, Clock, Percent, Tag, Gift, Zap, Menu } from "lucide-react";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { SubscriptionStatus } from "@/components/SubscriptionStatus";
@@ -189,6 +189,14 @@ interface BusinessOffer {
   viewCount: number;
   createdAt: string;
   tags?: string[] | string;
+  imageUrl?: string;
+  termsConditions?: string;
+  contactInfo?: string;
+  websiteUrl?: string;
+  business?: {
+    businessName?: string;
+    name?: string;
+  };
 }
 
 export default function BusinessDashboard() {
@@ -545,7 +553,7 @@ export default function BusinessDashboard() {
     },
   });
 
-  console.log('BusinessDashboard - CustomerPhotos data:', customerPhotos?.map(p => ({id: p.id, caption: p.caption, hasImage: !!(p.imageUrl || p.imageData)})), 'Length:', customerPhotos?.length, 'Loading:', isCustomerPhotosLoading);
+  console.log('BusinessDashboard - CustomerPhotos data:', customerPhotos?.map((p: any) => ({id: p.id, caption: p.caption, hasImage: !!(p.imageUrl || p.imageData)})), 'Length:', customerPhotos?.length, 'Loading:', isCustomerPhotosLoading);
   console.log('BusinessDashboard - UserPhotos data:', userPhotos?.map(p => ({id: p.id, caption: p.caption, hasImage: !!(p.imageUrl || p.imageData)})), 'Length:', userPhotos?.length, 'Loading:', isPhotosLoading);
   console.log('BusinessDashboard - Current user ID:', currentUser?.id);
 
@@ -603,9 +611,9 @@ export default function BusinessDashboard() {
       category: data.category === 'Custom' ? data.customCategory?.trim() || 'Custom' : data.category,
       // Process tags: convert comma-separated string to array
       tags: data.tags ? (typeof data.tags === 'string' ? data.tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0) : Array.isArray(data.tags) ? data.tags : []) : [],
-      // Convert maxRedemptions to number if provided
-      maxRedemptions: data.maxRedemptions ? parseInt(data.maxRedemptions) : undefined,
-      maxRedemptionsPerUser: data.maxRedemptionsPerUser ? parseInt(data.maxRedemptionsPerUser) : undefined
+      // Convert maxRedemptions to string for form compatibility
+      maxRedemptions: data.maxRedemptions ? data.maxRedemptions.toString() : undefined,
+      maxRedemptionsPerUser: data.maxRedemptionsPerUser ? data.maxRedemptionsPerUser.toString() : undefined
     };
 
     if (editingOffer) {
@@ -621,981 +629,408 @@ export default function BusinessDashboard() {
     setIsDialogOpen(true);
 
     // Check if category is a custom one (not in predefined categories)
-    const isCustomCategory = !CATEGORIES.includes(offer.category) || offer.category === 'Custom';
+    const isCustomCategory = !CATEGORIES.includes(offer.category) && offer.category !== 'Custom';
 
+    // Pre-fill form with offer data
     form.reset({
-      title: offer.title, // FIX: Use offer.title, not editingOffer.title
-      description: offer.description,
+      title: offer.title || "",
+      description: offer.description || "",
       category: isCustomCategory ? 'Custom' : offer.category,
       customCategory: isCustomCategory ? offer.category : "",
-      discountType: offer.discountType,
-      discountValue: offer.discountValue,
+      discountType: offer.discountType || "percentage",
+      discountValue: (offer.discountValue || "").toString(),
       discountCode: offer.discountCode || "",
-      targetAudience: cleanTargetAudience(offer.targetAudience),
+      targetAudience: Array.isArray(offer.targetAudience) ? offer.targetAudience : [],
       city: offer.city || "",
       state: offer.state || "",
       country: offer.country || "United States",
-      validFrom: offer.validFrom.split('T')[0],
-      validUntil: offer.validUntil.split('T')[0],
-      maxRedemptions: offer.maxRedemptions?.toString() || "",
-      maxRedemptionsPerUser: offer.maxRedemptionsPerUser?.toString() || "",
+      validFrom: offer.validFrom || "",
+      validUntil: offer.validUntil || "",
+      maxRedemptions: offer.maxRedemptions ? offer.maxRedemptions.toString() : "",
+      maxRedemptionsPerUser: offer.maxRedemptionsPerUser ? offer.maxRedemptionsPerUser.toString() : "",
       imageUrl: offer.imageUrl || "",
       termsConditions: offer.termsConditions || "",
       contactInfo: offer.contactInfo || "",
       websiteUrl: offer.websiteUrl || "",
-      tags: Array.isArray(offer.tags) ? offer.tags.join(', ') : (offer.tags || "")
+      tags: Array.isArray(offer.tags) ? offer.tags.join(', ') : (typeof offer.tags === 'string' ? offer.tags : ""),
     });
   };
 
   const handleDelete = (id: number) => {
-    if (confirm('Are you sure you want to delete this offer?')) {
+    if (window.confirm('Are you sure you want to delete this offer? This action cannot be undone.')) {
       deleteOfferMutation.mutate(id);
     }
   };
 
-  // Check if user is authenticated and is a business user
+  const handleView = (offer: BusinessOffer) => {
+    setViewingOffer(offer);
+  };
+
+  const handleCloseViewDialog = () => {
+    setViewingOffer(null);
+  };
+
+  const handleCloseCreateDialog = () => {
+    setIsCreateDialogOpen(false);
+    setEditingOffer(null);
+    setIsDialogOpen(false);
+    form.reset();
+  };
+
+  // Filter current offers (active ones)
+  const currentOffers = offers.filter(offer => new Date(offer.validUntil) >= new Date());
+
   console.log('BusinessDashboard - final check - currentUser:', currentUser, 'userType:', currentUser?.userType);
   if (!currentUser || currentUser.userType !== 'business') {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <Card>
-          <CardContent className="text-center py-12">
-            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-              Access Denied
-            </h3>
-            <p className="text-gray-600 dark:text-gray-300">
-              This page is only accessible to verified business accounts.
-            </p>
+      <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900">
+        <Card className="max-w-md w-full mx-4">
+          <CardContent className="p-6 text-center">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Access Restricted</h2>
+            <p className="text-gray-600 dark:text-gray-300 mb-6">This dashboard is only available to business accounts.</p>
+            <Button onClick={() => window.location.href = '/'} className="w-full">
+              Go to Home
+            </Button>
           </CardContent>
         </Card>
       </div>
     );
   }
 
+  const hasActiveOffers = currentOffers.length > 0;
+
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Instant Deal Creator Modal */}
-      {showQuickDealCreator && (
-        <InstantDealCreator
-          onClose={() => setShowQuickDealCreator(false)}
-          businessId={storageUser?.id || 0}
-        />
-      )}
-      
-      <div className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-            {currentUser?.businessName || currentUser?.name || 'Business'} Dashboard
-          </h1>
-          <p className="text-gray-600 dark:text-gray-300">
-            Manage your business deals and track performance
-          </p>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-orange-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+      {/* Mobile-responsive layout with proper spacing */}
+      <div className="container mx-auto p-4 sm:p-6 lg:p-8 max-w-7xl">
+        {/* Mobile-optimized header */}
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 sm:mb-8 space-y-4 sm:space-y-0">
+          <div>
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-2">
+              Business Dashboard
+            </h1>
+            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300">
+              Manage your deals, events, and business presence
+            </p>
+          </div>
+          
+          {/* Mobile-responsive action buttons */}
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
+            <Button 
+              onClick={() => setShowQuickDealCreator(true)}
+              className="w-full sm:w-auto bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base"
+              data-testid="button-create-quick-deal"
+            >
+              <Zap className="w-4 h-4 mr-1 sm:mr-2" />
+              Quick Deal
+            </Button>
+            <Button 
+              onClick={() => setIsCreateDialogOpen(true)}
+              className="w-full sm:w-auto bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base"
+              data-testid="button-create-deal"
+            >
+              <Plus className="w-4 h-4 mr-1 sm:mr-2" />
+              Create Deal
+            </Button>
+          </div>
         </div>
 
-        {/* Subscription Status */}
-        <div className="mb-8">
+        {/* Mobile-responsive analytics cards */}
+        <div className="grid grid-cols-2 lg:grid-cols-6 gap-3 sm:gap-4 lg:gap-6 mb-6 sm:mb-8">
+          <Card className="col-span-1">
+            <CardContent className="p-3 sm:p-6 text-center">
+              <BarChart3 className="h-6 w-6 sm:h-8 sm:w-8 mx-auto mb-2 text-blue-600 dark:text-blue-400" />
+              <div className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white">
+                {analytics.activeOffers}
+              </div>
+              <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Active Deals</div>
+            </CardContent>
+          </Card>
+          
+          <Card className="col-span-1">
+            <CardContent className="p-3 sm:p-6 text-center">
+              <Eye className="h-6 w-6 sm:h-8 sm:w-8 mx-auto mb-2 text-green-600 dark:text-green-400" />
+              <div className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white">
+                {analytics.totalViews}
+              </div>
+              <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Total Views</div>
+            </CardContent>
+          </Card>
+
+          <Card className="col-span-1">
+            <CardContent className="p-3 sm:p-6 text-center">
+              <TrendingUp className="h-6 w-6 sm:h-8 sm:w-8 mx-auto mb-2 text-purple-600 dark:text-purple-400" />
+              <div className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white">
+                {analytics.totalRedemptions}
+              </div>
+              <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Redeemed</div>
+            </CardContent>
+          </Card>
+
+          <Card className="col-span-1">
+            <CardContent className="p-3 sm:p-6 text-center">
+              <DollarSign className="h-6 w-6 sm:h-8 sm:w-8 mx-auto mb-2 text-orange-600 dark:text-orange-400" />
+              <div className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white">
+                {analytics.totalOffers}
+              </div>
+              <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Total Deals</div>
+            </CardContent>
+          </Card>
+
+          <Card className="col-span-1">
+            <CardContent className="p-3 sm:p-6 text-center">
+              <Users className="h-6 w-6 sm:h-8 sm:w-8 mx-auto mb-2 text-indigo-600 dark:text-indigo-400" />
+              <div className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white">
+                {businessEvents.length}
+              </div>
+              <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Events</div>
+            </CardContent>
+          </Card>
+
+          <Card className="col-span-1">
+            <CardContent className="p-3 sm:p-6 text-center">
+              <CalendarDays className="h-6 w-6 sm:h-8 sm:w-8 mx-auto mb-2 text-pink-600 dark:text-pink-400" />
+              <div className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white">
+                {analytics.monthlyUsage}
+              </div>
+              <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">This Month</div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Mobile-responsive subscription status */}
+        <div className="mb-6 sm:mb-8">
           <SubscriptionStatus />
         </div>
 
-        {/* Big CREATE A NEW DEAL CTA */}
-        <div className="mb-8">
-          <div className="bg-gradient-to-r from-orange-500 to-blue-600 rounded-2xl p-6 text-white shadow-xl">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div className="text-center sm:text-left">
-                <h2 className="text-xl sm:text-2xl font-bold mb-2">Ready to Attract New Customers?</h2>
-                <p className="text-orange-100 text-sm sm:text-base">
-                  Create an exclusive deal for travelers and locals in your area
-                </p>
-              </div>
-              <Button
-                onClick={() => setIsCreateDialogOpen(true)}
-                className="bg-white text-orange-600 hover:bg-orange-50 font-bold text-lg px-8 py-4 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-200"
-                size="lg"
-                data-testid="create-deal-cta"
-              >
-                <span className="text-2xl mr-2">🎯</span>
-                CREATE A NEW DEAL
-              </Button>
-            </div>
-          </div>
-        </div>
-
-        {/* Quick Deals Widget - Show at top for easy access */}
-        <div className="mb-8">
-          <QuickDealsWidget 
-            city={currentUser?.hometownCity || currentUser?.city || ''} 
-            profileUserId={currentUser?.id} 
-          />
-        </div>
-
-        {/* Analytics Cards */}
-        {analytics && (
-          <div className="grid grid-cols-1 md:grid-cols-6 gap-6 mb-8">
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Deals</p>
-                    <p className="text-2xl font-bold text-gray-900 dark:text-white">{analytics.totalOffers || 0}</p>
-                  </div>
-                  <BarChart3 className="h-8 w-8 text-blue-600" />
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Views</p>
-                    <p className="text-2xl font-bold text-gray-900 dark:text-white">{analytics.totalViews || 0}</p>
-                  </div>
-                  <Eye className="h-8 w-8 text-green-600" />
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Redemptions</p>
-                    <p className="text-2xl font-bold text-gray-900 dark:text-white">{analytics.totalRedemptions || 0}</p>
-                  </div>
-                  <Users className="h-8 w-8 text-purple-600" />
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Active Deals</p>
-                    <p className="text-2xl font-bold text-gray-900 dark:text-white">{analytics.activeOffers || 0}</p>
-                  </div>
-                  <TrendingUp className="h-8 w-8 text-orange-600" />
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Monthly Usage</p>
-                    <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                      {subscriptionStatus?.daysUsed || 0}/{subscriptionStatus?.dayLimit || 5}
-                    </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Deals this month</p>
-                  </div>
-                  <CalendarDays className="h-8 w-8 text-red-600" />
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Created Events</p>
-                    <p className="text-2xl font-bold text-gray-900 dark:text-white">{businessEvents?.length || 0}</p>
-                  </div>
-                  <Calendar className="h-8 w-8 text-indigo-600" />
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        )}
-
-
-        {/* Header with Create Buttons */}
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Your Deals</h2>
-          <div className="flex gap-3">
-            {/* Instant Deal Creator - Flash deals for immediate foot traffic */}
-            
-
-            <Dialog open={isCreateDialogOpen || !!editingOffer} onOpenChange={(open) => {
-              if (!open) {
-                setIsCreateDialogOpen(false);
-                setEditingOffer(null);
-                form.reset();
-              }
-            }}>
-              <DialogTrigger asChild>
-                <Button 
-                  onClick={() => setIsCreateDialogOpen(true)}
-                  className="bg-gradient-to-r from-blue-600 to-orange-600 hover:from-blue-700 hover:to-orange-700 text-white"
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Create New Deal
-                </Button>
-              </DialogTrigger>
-            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle>{editingOffer ? 'Edit Deal' : 'Create New Deal'}</DialogTitle>
-                <DialogDescription>
-                  {editingOffer ? 'Update your business deal details' : 'Create a new deal to attract customers'}
-                </DialogDescription>
-              </DialogHeader>
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="title"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-gray-900 dark:text-white">Title *</FormLabel>
-                          <FormControl>
-                            <Input placeholder="e.g. 25% Off Weekend Brunch" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="category"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-gray-900 dark:text-white">Category *</FormLabel>
-                          <Select onValueChange={field.onChange} value={field.value}>
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select category" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {CATEGORIES.map(category => (
-                                <SelectItem key={category} value={category}>
-                                  {getCategoryDisplayName(category)}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  {/* Custom Category Input - Show only when Custom is selected */}
-                  {form.watch("category") === "Custom" && (
-                    <FormField
-                      control={form.control}
-                      name="customCategory"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-gray-900 dark:text-white">Custom Category *</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Enter custom category name" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  )}
-
-                  <div className="space-y-4">
-                  </div>
-
-                  <FormField
-                    control={form.control}
-                    name="description"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-gray-900 dark:text-white">Description * (max 120 characters)</FormLabel>
-                        <FormControl>
-                          <Textarea 
-                            placeholder="Describe your offer in detail..." 
-                            maxLength={120}
-                            {...field} 
-                          />
-                        </FormControl>
-                        <FormDescription className="text-gray-600 dark:text-gray-400">
-                          {field.value?.length || 0}/120 characters
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="discountType"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-gray-900 dark:text-white">Discount Type *</FormLabel>
-                          <Select onValueChange={field.onChange} value={field.value}>
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select discount type" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="percentage">Percentage Off</SelectItem>
-                              <SelectItem value="fixed_amount">Fixed Amount Off</SelectItem>
-                              <SelectItem value="buy_one_get_one">Buy One Get One</SelectItem>
-                              <SelectItem value="free_service">Free Service</SelectItem>
-                              <SelectItem value="free_item_with_purchase">Free Item w/ Purchase</SelectItem>
-                              <SelectItem value="combo_deal">Combo Deal</SelectItem>
-                              <SelectItem value="other">Other/Custom</SelectItem>
-                              <SelectItem value="buy_one_get_one">Buy One Get One</SelectItem>
-                              <SelectItem value="free_service">Free Service</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="discountValue"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-gray-900 dark:text-white">Discount Value *</FormLabel>
-                          <FormControl>
-                            <Input placeholder="e.g. 25, up to 50, max allowed 100" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <FormField
-                    control={form.control}
-                    name="discountCode"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-gray-900 dark:text-white">Discount Code (Optional)</FormLabel>
-                        <FormControl>
-                          <Input placeholder="e.g. SAVE25" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="targetAudience"
-                    render={() => (
-                      <FormItem>
-                        <FormLabel className="text-gray-900 dark:text-white">Target Audience *</FormLabel>
-                        <div className="flex space-x-4">
-                          {TARGET_AUDIENCES.map((audience) => (
-                            <FormField
-                              key={audience}
-                              control={form.control}
-                              name="targetAudience"
-                              render={({ field }) => {
-                                return (
-                                  <FormItem
-                                    key={audience}
-                                    className="flex flex-row items-start space-x-3 space-y-0"
-                                  >
-                                    <FormControl>
-                                      <Checkbox
-                                        checked={field.value?.includes(audience)}
-                                        onCheckedChange={(checked) => {
-                                          return checked
-                                            ? field.onChange([...field.value, audience])
-                                            : field.onChange(
-                                                field.value?.filter(
-                                                  (value) => value !== audience
-                                                )
-                                              )
-                                        }}
-                                      />
-                                    </FormControl>
-                                    <FormLabel className="font-normal text-gray-900 dark:text-white">
-                                      {audience.charAt(0).toUpperCase() + audience.slice(1)}
-                                    </FormLabel>
-                                                                    </FormItem>
-                                )
-                              }}
-                            />
-                          ))}
-                        </div>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <div className="space-y-4">
-                    <div className="flex items-center space-x-2 mb-4">
-                      <Checkbox
-                        id="useCustomAddress"
-                        checked={useCustomAddress}
-                        onCheckedChange={(checked) => {
-                          setUseCustomAddress(checked);
-                          if (!checked) {
-                            // Reset to business address (NOT travel destination)
-                            form.setValue("streetAddress", currentUser?.streetAddress || "");
-                            form.setValue("city", currentUser?.businessCity || currentUser?.hometownCity || "");
-                            form.setValue("state", currentUser?.businessState || currentUser?.hometownState || "");
-                            form.setValue("country", currentUser?.businessCountry || currentUser?.hometownCountry || "United States");
-                            form.setValue("zipCode", currentUser?.zipCode || "");
-                          }
-                        }}
-                      />
-                      <label
-                        htmlFor="useCustomAddress"
-                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-gray-900 dark:text-white"
-                      >
-                        Use different address for this offer
-                      </label>
-                    </div>
-
-                    {!useCustomAddress ? (
-                      // Show business address (read-only display)
-                      <div className="space-y-3 bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border">
-                        <h4 className="font-medium text-gray-900 dark:text-white">Business Address</h4>
-                        <div className="text-sm text-gray-700 dark:text-gray-300 space-y-1">
-                          {currentUser?.streetAddress && <div>{currentUser.streetAddress}</div>}
-                          <div>
-                            {currentUser?.hometownCity}{currentUser?.hometownState && `, ${currentUser.hometownState}`}
-                            {currentUser?.hometownCountry && `, ${currentUser.hometownCountry}`}
-                          </div>
-                          {currentUser?.zipCode && <div>{currentUser.zipCode}</div>}
-                        </div>
-                      </div>
-                    ) : (
-                      // Show editable address fields
-                      <div className="space-y-4">
-                        <FormField
-                          control={form.control}
-                          name="streetAddress"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="text-gray-900 dark:text-white">Street Address</FormLabel>
-                              <FormControl>
-                                <Input placeholder="123 Main Street" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-
-                        <div>
-                          <FormLabel className="text-gray-900 dark:text-white">City, State/Province, Country *</FormLabel>
-                          <SmartLocationInput
-                            city={form.watch("city")}
-                            state={form.watch("state")}
-                            country={form.watch("country")}
-                            onLocationChange={(location) => {
-                              form.setValue("city", location.city);
-                              form.setValue("state", location.state);
-                              form.setValue("country", location.country);
-                            }}
-                            required={true}
-                            label=""
-                            placeholder={{
-                              country: "Select country",
-                              state: "Select state/region",
-                              city: "Select city"
-                            }}
-                          />
-                          {(form.formState.errors.city || form.formState.errors.country) && (
-                            <p className="text-sm font-medium text-destructive mt-1">
-                              {form.formState.errors.city?.message || form.formState.errors.country?.message}
-                            </p>
-                          )}
-                        </div>
-
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Starting Today Checkbox */}
-                  {!editingOffer && (
-                    <div className="mb-4">
-                      <div className="flex items-center space-x-2">
-                        <Checkbox 
-                          id="startingToday"
-                          checked={startingToday}
-                          onCheckedChange={(checked) => {
-                            setStartingToday(checked as boolean);
-                            if (checked) {
-                              const today = new Date().toISOString().split('T')[0];
-                              form.setValue('validFrom', today);
-                            }
-                          }}
-                          className="border-gray-300 dark:border-gray-600"
-                        />
-                        <label 
-                          htmlFor="startingToday" 
-                          className="text-sm font-medium text-gray-900 dark:text-white cursor-pointer"
-                        >
-                          Starting Today (recommended)
-                        </label>
-                      </div>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                        Automatically sets start date to today. Uncheck to choose a different start date.
-                      </p>
-                    </div>
-                  )}
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="validFrom"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-gray-900 dark:text-white">Valid From *</FormLabel>
-                          <FormControl>
-                            <Input 
-                              type="date" 
-                              {...field} 
-                              disabled={editingOffer || (!editingOffer && startingToday)}
-                              min="1000-01-01"
-                              max="9999-12-31"
-                              className={`dark:[color-scheme:dark] dark:text-white calendar-white-icon ${
-                                (editingOffer || (!editingOffer && startingToday)) ? 'opacity-50 cursor-not-allowed' : ''
-                              }`}
-                            />
-                          </FormControl>
-                          {editingOffer ? (
-                            <FormDescription className="text-orange-600 dark:text-orange-400 text-xs">
-                              Dates cannot be edited after creation
-                            </FormDescription>
-                          ) : startingToday ? (
-                            <FormDescription className="text-green-600 dark:text-green-400 text-xs">
-                              ✓ Set to today's date
-                            </FormDescription>
-                          ) : (
-                            <FormDescription className="text-amber-600 dark:text-amber-400 text-xs">
-                              ⚠️ Dates cannot be changed once submitted
-                            </FormDescription>
-                          )}
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="validUntil"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-gray-900 dark:text-white">Valid Until *</FormLabel>
-                          <FormControl>
-                            <Input 
-                              type="date" 
-                              {...field} 
-                              disabled={editingOffer}
-                              min="1000-01-01"
-                              max="9999-12-31"
-                              className={`dark:[color-scheme:dark] dark:text-white calendar-white-icon ${
-                                editingOffer ? 'opacity-50 cursor-not-allowed' : ''
-                              }`}
-                            />
-                          </FormControl>
-                          {editingOffer ? (
-                            <FormDescription className="text-orange-600 dark:text-orange-400 text-xs">
-                              Dates cannot be edited after creation
-                            </FormDescription>
-                          ) : (
-                            <FormDescription className="text-amber-600 dark:text-amber-400 text-xs">
-                              ⚠️ Dates cannot be changed once submitted
-                            </FormDescription>
-                          )}
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="maxRedemptions"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-gray-900 dark:text-white">Total Redemption Limit (Optional)</FormLabel>
-                          <FormControl>
-                            <Input type="number" placeholder="100" {...field} />
-                          </FormControl>
-                          <FormDescription className="text-gray-600 dark:text-gray-400">
-                            Maximum total uses across all users
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="maxRedemptionsPerUser"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-gray-900 dark:text-white">Per-User Limit (Optional)</FormLabel>
-                          <FormControl>
-                            <Input type="number" placeholder="3" {...field} />
-                          </FormControl>
-                          <FormDescription className="text-gray-600 dark:text-gray-400">
-                            Max times each user can redeem
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <FormField
-                    control={form.control}
-                    name="imageUrl"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-gray-900 dark:text-white">Offer Image</FormLabel>
-                        <FormControl>
-                          <div className="space-y-4">
-                            <Input 
-                              placeholder="https://example.com/image.jpg or upload below" 
-                              {...field} 
-                            />
-                            <div 
-                              className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 cursor-pointer hover:border-blue-400 dark:hover:border-blue-500 transition-colors"
-                              onClick={() => document.getElementById('file-upload')?.click()}
-                            >
-                              <div className="text-center">
-                                <div className="flex flex-col items-center space-y-2">
-                                  <div className="w-12 h-12 rounded-full bg-blue-50 dark:bg-blue-900 flex items-center justify-center">
-                                    <svg className="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                    </svg>
-                                  </div>
-                                  <div>
-                                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                                      <span className="font-medium text-blue-600 dark:text-blue-400 cursor-pointer hover:underline">
-                                        Click to upload
-                                      </span> or drag and drop
-                                    </p>
-                                    <p className="text-xs text-gray-500 dark:text-gray-500">PNG, JPG up to 5MB</p>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                            <input
-                              id="file-upload"
-                              type="file"
-                              accept="image/*"
-                              className="hidden"
-                              onChange={(e) => {
-                                const file = e.target.files?.[0];
-                                if (file) {
-                                  // Convert to base64 for preview
-                                  const reader = new FileReader();
-                                  reader.onloadend = () => {
-                                    field.onChange(reader.result as string);
-                                  };
-                                  reader.readAsDataURL(file);
-                                }
-                              }}
-                            />
-                            {field.value && (
-                              <div className="mt-4">
-                                <img 
-                                  src={field.value} 
-                                  alt="Offer preview" 
-                                  className="w-full h-48 object-cover rounded-lg border"
-                                />
-                                <button
-                                  type="button"
-                                  onClick={() => field.onChange("")}
-                                  className="mt-2 text-sm text-red-600 dark:text-red-400 hover:underline"
-                                >
-                                  Remove image
-                                </button>
-                              </div>
-                            )}
-                          </div>
-                        </FormControl>
-                        <FormDescription className="text-gray-600 dark:text-gray-400">
-                          Add an eye-catching image for your offer (optional)
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="termsConditions"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-gray-900 dark:text-white">Terms & Conditions</FormLabel>
-                        <FormControl>
-                          <Textarea placeholder="Cannot be combined with other offers..." {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="contactInfo"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-gray-900 dark:text-white">Contact Info</FormLabel>
-                          <FormControl>
-                            <Input placeholder="contact@business.com" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="websiteUrl"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-gray-900 dark:text-white">Website URL</FormLabel>
-                          <FormControl>
-                            <Input placeholder="https://business.com" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <FormField
-                    control={form.control}
-                    name="tags"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-gray-900 dark:text-white">Tags (comma-separated)</FormLabel>
-                        <FormControl>
-                          <Input placeholder="brunch, weekend, family-friendly" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <div className="flex justify-end space-x-2 pt-4">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => {
-                        setIsCreateDialogOpen(false);
-                        setEditingOffer(null);
-                        form.reset();
-                      }}
-                    >
-                      Cancel
-                    </Button>
-                    <Button 
-                      type="submit" 
-                      disabled={createOfferMutation.isPending || updateOfferMutation.isPending}
-                    >
-                      {editingOffer ? 'Update Deal' : 'Create Deal'}
-                    </Button>
-                  </div>
-                </form>
-              </Form>
-            </DialogContent>
-          </Dialog>
-          </div>
-        </div>
-
-        {/* Business Dashboard Tabs */}
-        <Tabs defaultValue="active" className="w-full">
-          <TabsList className="grid w-full grid-cols-5">
-            <TabsTrigger value="active">Active Deals ({offers.length})</TabsTrigger>
-            <TabsTrigger value="quickdeals">Quick Deals History ({quickDealsHistory.length})</TabsTrigger>
-            <TabsTrigger value="events">Special Events ({businessEvents.length})</TabsTrigger>
-            <TabsTrigger value="past">Past Deals ({pastOffers.length})</TabsTrigger>
-            <TabsTrigger value="photos">Customer Photos ({customerPhotos?.length || 0})</TabsTrigger>
+        {/* Mobile-responsive tabs */}
+        <Tabs defaultValue="active" className="space-y-4 sm:space-y-6">
+          <TabsList className="grid w-full grid-cols-3 sm:grid-cols-5 gap-1 sm:gap-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-1 rounded-lg">
+            <TabsTrigger 
+              value="active" 
+              className="text-xs sm:text-sm data-[state=active]:bg-blue-500 data-[state=active]:text-white py-2 sm:py-3"
+              data-testid="tab-active-deals"
+            >
+              <span className="sm:hidden">Active</span>
+              <span className="hidden sm:inline">Active Deals</span>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="quickdeals" 
+              className="text-xs sm:text-sm data-[state=active]:bg-purple-500 data-[state=active]:text-white py-2 sm:py-3"
+              data-testid="tab-quick-deals"
+            >
+              Quick Deals
+            </TabsTrigger>
+            <TabsTrigger 
+              value="events" 
+              className="text-xs sm:text-sm data-[state=active]:bg-green-500 data-[state=active]:text-white py-2 sm:py-3"
+              data-testid="tab-events"
+            >
+              Events
+            </TabsTrigger>
+            <TabsTrigger 
+              value="past" 
+              className="text-xs sm:text-sm data-[state=active]:bg-orange-500 data-[state=active]:text-white py-2 sm:py-3"
+              data-testid="tab-past-deals"
+            >
+              Past Deals
+            </TabsTrigger>
+            <TabsTrigger 
+              value="photos" 
+              className="text-xs sm:text-sm data-[state=active]:bg-pink-500 data-[state=active]:text-white py-2 sm:py-3"
+              data-testid="tab-photos"
+            >
+              Photos
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="active" className="mt-6">
-            {/* Active Deals List */}
             {isLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[...Array(6)].map((_, i) => (
-              <Card key={i} className="animate-pulse">
-                <CardContent className="p-6">
-                  <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded mb-2"></div>
-                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded mb-4"></div>
-                  <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded"></div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                {[...Array(6)].map((_, i) => (
+                  <Card key={i} className="animate-pulse">
+                    <CardContent className="p-4 sm:p-6">
+                      <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded mb-2"></div>
+                      <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded mb-4"></div>
+                      <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : !hasActiveOffers ? (
+              <Card>
+                <CardContent className="text-center py-8 sm:py-12 px-4 sm:px-6">
+                  <BarChart3 className="h-10 w-10 sm:h-12 sm:w-12 mx-auto text-gray-400 mb-4" />
+                  <h3 className="text-base sm:text-lg font-medium text-gray-900 dark:text-white mb-2">
+                    No active deals yet
+                  </h3>
+                  <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 mb-4">
+                    Create your first deal to start attracting customers
+                  </p>
+                  <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 justify-center">
+                    <Button 
+                      onClick={() => setShowQuickDealCreator(true)}
+                      className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white w-full sm:w-auto"
+                    >
+                      <Zap className="w-4 h-4 mr-2" />
+                      Create Quick Deal
+                    </Button>
+                    <Button 
+                      onClick={() => setIsCreateDialogOpen(true)}
+                      className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white w-full sm:w-auto"
+                    >
+                      <Plus className="w-4 h-4 mr-2" />
+                      Create Business Deal
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
-            ))}
-          </div>
-        ) : offers.length === 0 ? (
-          <Card>
-            <CardContent className="text-center py-12">
-              <BarChart3 className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-                No deals yet
-              </h3>
-              <p className="text-gray-600 dark:text-gray-300">
-                Create your first deal to start attracting customers
-              </p>
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {offers.map((offer: BusinessOffer) => (
-              <Card 
-                key={offer.id} 
-                className="cursor-pointer hover:shadow-lg transition-shadow duration-200 bg-white dark:bg-gray-800 overflow-hidden" 
-                onClick={() => {
-                  console.log('🎯 DEAL CLICKED: Opening deal details for', offer.title, offer.id);
-                  setViewingOffer(offer);
-                }}
-              >
-                {/* Offer Image */}
-                {offer.imageUrl && (
-                  <div className="relative h-48 w-full">
-                    <img 
-                      src={offer.imageUrl} 
-                      alt={offer.title}
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.style.display = 'none';
-                      }}
-                    />
-                    <div className="absolute top-2 right-2">
-                      <Badge className="bg-green-600 text-white">
-                        {getDiscountText(offer)}
-                      </Badge>
-                    </div>
-                  </div>
-                )}
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                {currentOffers.map((offer: BusinessOffer) => (
+                  <Card 
+                    key={offer.id} 
+                    className="hover:shadow-lg transition-all duration-200 cursor-pointer"
+                    onClick={() => handleView(offer)}
+                    data-testid={`card-offer-${offer.id}`}
+                  >
+                    <CardContent className="p-4 sm:p-6">
+                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-4 space-y-2 sm:space-y-0">
+                        <div className="flex-1">
+                          <h3 className="text-sm sm:text-lg font-semibold text-gray-900 dark:text-white mb-1 line-clamp-2">
+                            {offer.title}
+                          </h3>
+                          <div className="flex flex-wrap gap-2 mb-2">
+                            <Badge variant="secondary" className="text-xs">
+                              {getCategoryDisplayName(offer.category)}
+                            </Badge>
+                            <Badge 
+                              variant="outline" 
+                              className="text-xs bg-gradient-to-r from-blue-500 to-orange-500 text-white border-0"
+                            >
+                              {getDiscountIcon(offer.discountType)}
+                              <span className="ml-1">{getDiscountText(offer)}</span>
+                            </Badge>
+                          </div>
+                        </div>
+                        <div className="flex sm:flex-col gap-1 sm:gap-2">
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="p-1 sm:p-2 hover:bg-blue-100 dark:hover:bg-blue-900"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleEdit(offer);
+                            }}
+                          >
+                            <Edit className="h-3 w-3 sm:h-4 sm:w-4" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="p-1 sm:p-2 hover:bg-red-100 dark:hover:bg-red-900 text-red-600 dark:text-red-400"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDelete(offer.id);
+                            }}
+                          >
+                            <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
+                          </Button>
+                        </div>
+                      </div>
 
-                <CardContent className="p-6">
-                  <div className="flex justify-between items-start mb-4">
-                    <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
-                        {offer.business?.businessName || offer.business?.name || offer.title}
-                      </h3>
-                      <Badge variant="outline" className="text-xs">
-                        {offer.category}
-                      </Badge>
-                    </div>
-                    <div className="flex space-x-1">
-                      {!offer.imageUrl && (
-                        <div className="flex items-center space-x-1 text-green-600">
-                          {getDiscountIcon(offer.discountType)}
-                          <span className="font-bold text-lg">
-                            {getDiscountText(offer)}
+                      <p className="text-xs sm:text-sm text-gray-700 dark:text-gray-300 mb-3 sm:mb-4 line-clamp-2">
+                        {offer.description}
+                      </p>
+                      <p className="text-xs text-blue-600 dark:text-blue-400 mb-2">Click to view full details</p>
+
+                      <div className="space-y-1 sm:space-y-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
+                        <div className="flex items-center justify-between">
+                          <span>Views:</span>
+                          <span className="font-medium">{offer.viewCount}</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span>Redemptions:</span>
+                          <span className="font-medium">
+                            {offer.currentRedemptions}
+                            {offer.maxRedemptions && ` / ${offer.maxRedemptions}`}
                           </span>
                         </div>
-                      )}
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleEdit(offer);
-                        }}
-                      >
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDelete(offer.id);
-                        }}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-
-                  <p className="text-gray-700 dark:text-gray-300 mb-4">
-                    {offer.description}
-                  </p>
-                  <p className="text-xs text-blue-600 dark:text-blue-400 mb-2">Click to view full details</p>
-
-                  <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
-                    <div className="flex items-center justify-between">
-                      <span>Views:</span>
-                      <span className="font-medium">{offer.viewCount}</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span>Redemptions:</span>
-                      <span className="font-medium">
-                        {offer.currentRedemptions}
-                        {offer.maxRedemptions && ` / ${offer.maxRedemptions}`}
-                      </span>
-                    </div>
-                    {offer.tags && (
-                      <div className="flex flex-wrap gap-1 mt-2">
-                        {Array.isArray(offer.tags) ? offer.tags.map((tag: string, index: number) => (
-                          <Badge key={index} variant="secondary" className="text-xs">
-                            {tag}
-                          </Badge>
-                        )) : typeof offer.tags === 'string' ? offer.tags.split(',').map((tag: string, index: number) => (
-                          <Badge key={index} variant="secondary" className="text-xs">
-                            {tag.trim()}
-                          </Badge>
-                        )) : null}
+                        {offer.tags && (
+                          <div className="flex flex-wrap gap-1 mt-2">
+                            {Array.isArray(offer.tags) ? offer.tags.slice(0, 2).map((tag: string, index: number) => (
+                              <Badge key={index} variant="secondary" className="text-xs">
+                                {tag}
+                              </Badge>
+                            )) : typeof offer.tags === 'string' ? offer.tags.split(',').slice(0, 2).map((tag: string, index: number) => (
+                              <Badge key={index} variant="secondary" className="text-xs">
+                                {tag.trim()}
+                              </Badge>
+                            )) : null}
+                            {Array.isArray(offer.tags) && offer.tags.length > 2 && (
+                              <Badge variant="secondary" className="text-xs">
+                                +{offer.tags.length - 2}
+                              </Badge>
+                            )}
+                          </div>
+                        )}
+                        <div className="flex items-center justify-between">
+                          <span>Valid Until:</span>
+                          <span className="font-medium text-xs">
+                            {new Date(offer.validUntil).toLocaleDateString()}
+                          </span>
+                        </div>
                       </div>
-                    )}
-                    <div className="flex items-center justify-between">
-                      <span>Valid Until:</span>
-                      <span className="font-medium">
-                        {new Date(offer.validUntil).toLocaleDateString()}
-                      </span>
-                    </div>
-                  </div>
 
-                  <div className="flex flex-wrap gap-1 mt-4">
-                    {offer.targetAudience.map(audience => (
-                      <Badge key={audience} variant="secondary" className="text-xs">
-                        {audience}
-                      </Badge>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        )}
+                      <div className="flex flex-wrap gap-1 mt-3 sm:mt-4">
+                        {offer.targetAudience.map(audience => (
+                          <Badge key={audience} variant="secondary" className="text-xs">
+                            {audience}
+                          </Badge>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
           </TabsContent>
 
           <TabsContent value="quickdeals" className="mt-6">
-            <div className="space-y-6">
-              <div className="flex items-center justify-between">
+            <div className="space-y-4 sm:space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Quick Deals History</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Reuse your past Quick Deals by creating new ones with updated timing</p>
+                  <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">Quick Deals History</h3>
+                  <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Reuse your past Quick Deals by creating new ones with updated timing</p>
                 </div>
               </div>
 
               {isQuickDealsHistoryLoading ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {[1, 2, 3].map(i => (
-                    <div key={i} className="animate-pulse bg-gray-200 dark:bg-gray-700 h-48 rounded-lg"></div>
+                    <div key={i} className="animate-pulse bg-gray-200 dark:bg-gray-700 h-32 sm:h-48 rounded-lg"></div>
                   ))}
                 </div>
               ) : quickDealsHistory.length === 0 ? (
-                <Card className="p-8">
+                <Card className="p-6 sm:p-8">
                   <div className="text-center">
-                    <Clock className="h-12 w-12 mx-auto mb-4 text-gray-400" />
-                    <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No Quick Deals History Yet</h3>
-                    <p className="text-gray-600 dark:text-gray-400 mb-4">Once your Quick Deals expire, they'll appear here for easy reuse.</p>
-                    <p className="text-sm text-gray-500 dark:text-gray-500">Quick Deals are different from regular business offers - they're short-term flash deals that expire within hours.</p>
+                    <Clock className="h-10 w-10 sm:h-12 sm:w-12 mx-auto mb-4 text-gray-400" />
+                    <h3 className="text-base sm:text-lg font-medium text-gray-900 dark:text-white mb-2">No Quick Deals History Yet</h3>
+                    <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mb-4">Once your Quick Deals expire, they'll appear here for easy reuse.</p>
+                    <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-500">Quick Deals are different from regular business offers - they're short-term flash deals that expire within hours.</p>
                   </div>
                 </Card>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {quickDealsHistory.map((deal: any) => (
                     <Card key={deal.id} className="hover:shadow-lg transition-all duration-200">
-                      <CardContent className="p-4">
+                      <CardContent className="p-3 sm:p-4">
                         <div className="flex items-start justify-between mb-3">
-                          <div className="flex-1">
-                            <h4 className="font-semibold text-gray-900 dark:text-white text-sm mb-1">{deal.title}</h4>
+                          <div className="flex-1 pr-2">
+                            <h4 className="font-semibold text-gray-900 dark:text-white text-sm mb-1 line-clamp-2">{deal.title}</h4>
                             <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2">{deal.description}</p>
                           </div>
-                          <Badge variant="outline" className="text-xs bg-red-50 text-red-700 border-red-200 dark:bg-red-900 dark:text-red-300">
+                          <Badge variant="outline" className="text-xs bg-red-50 text-red-700 border-red-200 dark:bg-red-900 dark:text-red-300 whitespace-nowrap">
                             Expired
                           </Badge>
                         </div>
@@ -1646,16 +1081,16 @@ export default function BusinessDashboard() {
           </TabsContent>
 
           <TabsContent value="events" className="mt-6">
-            {/* Events Management */}
-            <div className="space-y-6">
-              <div className="flex justify-between items-center">
+            {/* Mobile-responsive Events Management */}
+            <div className="space-y-4 sm:space-y-6">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0">
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Business Events</h3>
-                  <p className="text-gray-600 dark:text-gray-300">Manage your community events and gatherings</p>
+                  <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">Business Events</h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">Manage your community events and gatherings</p>
                 </div>
                 <Button 
                   onClick={() => window.location.href = '/create-event'}
-                  className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white"
+                  className="w-full sm:w-auto bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white"
                 >
                   <Plus className="w-4 h-4 mr-2" />
                   Create Event
@@ -1663,10 +1098,10 @@ export default function BusinessDashboard() {
               </div>
 
               {isEventsLoading ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                   {[...Array(4)].map((_, i) => (
                     <Card key={i} className="animate-pulse">
-                      <CardContent className="p-6">
+                      <CardContent className="p-4 sm:p-6">
                         <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded mb-2"></div>
                         <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded mb-4"></div>
                         <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded"></div>
@@ -1676,47 +1111,47 @@ export default function BusinessDashboard() {
                 </div>
               ) : businessEvents.length === 0 ? (
                 <Card>
-                  <CardContent className="text-center py-12">
-                    <Calendar className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-                    <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+                  <CardContent className="text-center py-8 sm:py-12 px-4 sm:px-6">
+                    <Calendar className="h-10 w-10 sm:h-12 sm:w-12 mx-auto text-gray-400 mb-4" />
+                    <h3 className="text-base sm:text-lg font-medium text-gray-900 dark:text-white mb-2">
                       No events yet
                     </h3>
-                    <p className="text-gray-600 dark:text-gray-300">
+                    <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300">
                       Use the "Create Event" button above to start hosting community events and engage with locals and travelers
                     </p>
                   </CardContent>
                 </Card>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                   {businessEvents.map((event: any) => (
                     <Card key={event.id} className="hover:shadow-lg transition-shadow duration-200">
-                      <CardContent className="p-6">
-                        <div className="flex justify-between items-start mb-4">
+                      <CardContent className="p-4 sm:p-6">
+                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-4 space-y-2 sm:space-y-0">
                           <div className="flex-1">
-                            <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                            <h4 className="text-sm sm:text-lg font-semibold text-gray-900 dark:text-white mb-2 line-clamp-2">
                               {event.title}
                             </h4>
-                            <div className="flex items-center text-sm text-gray-600 dark:text-gray-300 mb-2">
-                              <MapPin className="w-4 h-4 mr-1" />
-                              {event.location}
+                            <div className="flex items-center text-xs sm:text-sm text-gray-600 dark:text-gray-300 mb-2">
+                              <MapPin className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
+                              <span className="line-clamp-1">{event.location}</span>
                             </div>
-                            <div className="flex items-center text-sm text-gray-600 dark:text-gray-300 mb-3">
-                              <Clock className="w-4 h-4 mr-1" />
+                            <div className="flex items-center text-xs sm:text-sm text-gray-600 dark:text-gray-300 mb-3">
+                              <Clock className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
                               {new Date(event.date).toLocaleDateString()} at {event.time || 'Time TBD'}
                             </div>
                           </div>
-                          <Badge variant="outline" className="text-xs">
+                          <Badge variant="outline" className="text-xs whitespace-nowrap">
                             {event.category}
                           </Badge>
                         </div>
 
-                        <p className="text-gray-600 dark:text-gray-300 text-sm mb-4">
+                        <p className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm mb-4 line-clamp-2">
                           {event.description}
                         </p>
 
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
-                            <Users className="w-4 h-4 mr-1" />
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
+                          <div className="flex items-center text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+                            <Users className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
                             {event.participantCount || 0} attending
                             {event.maxParticipants && ` / ${event.maxParticipants}`}
                           </div>
@@ -1724,32 +1159,34 @@ export default function BusinessDashboard() {
                             <Button 
                               size="sm" 
                               variant="outline"
+                              className="flex-1 sm:flex-none text-xs"
                               onClick={() => window.location.href = `/event/${event.id}`}
                             >
-                              <Eye className="w-4 h-4 mr-1" />
+                              <Eye className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
                               View
                             </Button>
                             <Button 
                               size="sm" 
                               variant="outline"
+                              className="flex-1 sm:flex-none text-xs"
                               onClick={() => window.location.href = `/manage-event/${event.id}`}
                             >
-                              <Edit className="w-4 h-4 mr-1" />
+                              <Edit className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
                               Edit
                             </Button>
                           </div>
                         </div>
 
                         {event.tags && event.tags.length > 0 && (
-                          <div className="flex flex-wrap gap-2 mt-4">
-                            {event.tags.slice(0, 3).map((tag: string, index: number) => (
-                              <div key={index} className="pill inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-purple-500 text-white border-0 appearance-none select-none gap-1.5" style={{height: '2.5rem', minWidth: '8rem', padding: '0 1rem', fontSize: '1rem'}}>
+                          <div className="flex flex-wrap gap-1 sm:gap-2 mt-4">
+                            {event.tags.slice(0, 2).map((tag: string, index: number) => (
+                              <Badge key={index} variant="secondary" className="text-xs">
                                 {tag}
-                              </div>
+                              </Badge>
                             ))}
-                            {event.tags.length > 3 && (
+                            {event.tags.length > 2 && (
                               <Badge variant="secondary" className="text-xs">
-                                +{event.tags.length - 3} more
+                                +{event.tags.length - 2} more
                               </Badge>
                             )}
                           </div>
@@ -1763,12 +1200,12 @@ export default function BusinessDashboard() {
           </TabsContent>
 
           <TabsContent value="past" className="mt-6">
-            {/* Past Deals List */}
+            {/* Mobile-responsive Past Deals List */}
             {isPastOffersLoading ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 {[...Array(3)].map((_, i) => (
                   <Card key={i} className="animate-pulse">
-                    <CardContent className="p-6">
+                    <CardContent className="p-4 sm:p-6">
                       <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded mb-2"></div>
                       <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded mb-4"></div>
                       <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded"></div>
@@ -1778,27 +1215,27 @@ export default function BusinessDashboard() {
               </div>
             ) : pastOffers.length === 0 ? (
               <Card>
-                <CardContent className="text-center py-12">
-                  <BarChart3 className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+                <CardContent className="text-center py-8 sm:py-12 px-4 sm:px-6">
+                  <BarChart3 className="h-10 w-10 sm:h-12 sm:w-12 mx-auto text-gray-400 mb-4" />
+                  <h3 className="text-base sm:text-lg font-medium text-gray-900 dark:text-white mb-2">
                     No past deals
                   </h3>
-                  <p className="text-gray-600 dark:text-gray-300">
+                  <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300">
                     Expired deals will appear here
                   </p>
                 </CardContent>
               </Card>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 {pastOffers.map((offer: BusinessOffer) => (
                   <Card key={offer.id} className="opacity-75">
-                    <CardContent className="p-6">
-                      <div className="flex justify-between items-start mb-4">
+                    <CardContent className="p-4 sm:p-6">
+                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-4 space-y-2 sm:space-y-0">
                         <div className="flex-1">
-                          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
+                          <h3 className="text-sm sm:text-lg font-semibold text-gray-900 dark:text-white mb-1 line-clamp-2">
                             {offer.business?.businessName || offer.business?.name || offer.title}
                           </h3>
-                          <div className="flex gap-2">
+                          <div className="flex flex-wrap gap-2">
                             <Badge variant="outline" className="text-xs text-gray-700 dark:text-gray-300">
                               {offer.category}
                             </Badge>
@@ -1810,6 +1247,7 @@ export default function BusinessDashboard() {
                         <Button
                           size="sm"
                           variant="outline"
+                          className="w-full sm:w-auto mt-2 sm:mt-0"
                           onClick={() => {
                             // Create new deal based on past deal
                             const newOfferData = {
@@ -1831,11 +1269,11 @@ export default function BusinessDashboard() {
                         </Button>
                       </div>
 
-                      <p className="text-gray-700 dark:text-gray-300 mb-4">
+                      <p className="text-xs sm:text-sm text-gray-700 dark:text-gray-300 mb-4 line-clamp-2">
                         {offer.description}
                       </p>
 
-                      <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                      <div className="space-y-1 sm:space-y-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                         <div className="flex items-center justify-between">
                           <span>Total Views:</span>
                           <span className="font-medium">{offer.viewCount || 0}</span>
@@ -1849,15 +1287,20 @@ export default function BusinessDashboard() {
                         </div>
                         {offer.tags && (
                           <div className="flex flex-wrap gap-1 mt-2">
-                            {Array.isArray(offer.tags) ? offer.tags.map((tag: string, index: number) => (
+                            {Array.isArray(offer.tags) ? offer.tags.slice(0, 2).map((tag: string, index: number) => (
                               <Badge key={index} variant="secondary" className="text-xs">
                                 {tag}
                               </Badge>
-                            )) : typeof offer.tags === 'string' ? offer.tags.split(',').map((tag: string, index: number) => (
+                            )) : typeof offer.tags === 'string' ? offer.tags.split(',').slice(0, 2).map((tag: string, index: number) => (
                               <Badge key={index} variant="secondary" className="text-xs">
                                 {tag.trim()}
                               </Badge>
                             )) : null}
+                            {Array.isArray(offer.tags) && offer.tags.length > 2 && (
+                              <Badge variant="secondary" className="text-xs">
+                                +{offer.tags.length - 2}
+                              </Badge>
+                            )}
                           </div>
                         )}
                       </div>
@@ -1869,13 +1312,13 @@ export default function BusinessDashboard() {
           </TabsContent>
 
           <TabsContent value="photos" className="mt-6">
-            {/* Customer Photos Management */}
+            {/* Mobile-responsive Customer Photos Management */}
             {isCustomerPhotosLoading ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {[...Array(6)].map((_, i) => (
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
+                {[...Array(8)].map((_, i) => (
                   <Card key={i} className="animate-pulse">
-                    <CardContent className="p-6">
-                      <div className="w-full h-48 bg-gray-300 dark:bg-gray-600 rounded-lg mb-4"></div>
+                    <CardContent className="p-3 sm:p-6">
+                      <div className="w-full h-24 sm:h-48 bg-gray-300 dark:bg-gray-600 rounded-lg mb-4"></div>
                       <div className="h-4 bg-gray-300 dark:bg-gray-600 rounded mb-2"></div>
                       <div className="h-3 bg-gray-300 dark:bg-gray-600 rounded w-2/3"></div>
                     </CardContent>
@@ -1884,12 +1327,12 @@ export default function BusinessDashboard() {
               </div>
             ) : !customerPhotos || customerPhotos.length === 0 ? (
               <Card>
-                <CardContent className="p-8 text-center">
-                  <Camera className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+                <CardContent className="p-6 sm:p-8 text-center">
+                  <Camera className="h-10 w-10 sm:h-12 sm:w-12 mx-auto text-gray-400 mb-4" />
+                  <h3 className="text-base sm:text-lg font-medium text-gray-900 dark:text-white mb-2">
                     No photos uploaded yet
                   </h3>
-                  <p className="text-gray-600 dark:text-gray-300 mb-4">
+                  <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 mb-4">
                     Customer photos will appear here once users start uploading photos of your business
                   </p>
                   <Button
@@ -1906,77 +1349,75 @@ export default function BusinessDashboard() {
                         console.log('Photo creation response:', response);
                         queryClient.invalidateQueries({ queryKey: [`/api/users/${currentUser?.id}/photos`] });
                         toast({
-                          title: "Sample photo added",
-                          description: "Added a test photo to demonstrate edit/delete functionality",
+                          title: "Sample Photo Added",
+                          description: "A sample photo has been added to demonstrate the photo management feature.",
                         });
                       } catch (error) {
                         console.error('Error adding sample photo:', error);
                         toast({
                           title: "Error",
-                          description: `Failed to add sample photo: ${error.message}`,
+                          description: "Failed to add sample photo",
                           variant: "destructive",
                         });
                       }
                     }}
-                    className="bg-gradient-to-r from-blue-600 to-orange-600 text-white"
+                    variant="outline"
+                    className="text-xs sm:text-sm"
                   >
                     Add Sample Photo for Testing
                   </Button>
                 </CardContent>
               </Card>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
                 {customerPhotos.map((photo: any) => (
-                  <Card key={photo.id} className="overflow-hidden">
-                    <div className="relative">
-                      <img
-                        src={photo.imageUrl || photo.imageData}
-                        alt={photo.caption || "Customer photo"}
-                        className="w-full h-48 object-cover"
-                        onError={(e) => {
-                          console.error('Image failed to load:', photo.id, photo.imageUrl ? 'Has URL' : 'No URL', photo.imageData ? 'Has Data' : 'No Data');
-                        }}
-                      />
-                      <div className="absolute top-2 right-2 flex gap-1">
-                        <Button
-                          size="sm"
-                          variant="secondary"
-                          className="h-8 w-8 p-0"
-                          onClick={() => {
-                            const newCaption = prompt("Edit photo caption:", photo.caption || "");
-                            if (newCaption !== null) {
-                              updatePhotoMutation.mutate({ photoId: photo.id, caption: newCaption });
-                            }
-                          }}
-                        >
-                          <Edit className="h-3 w-3" />
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="destructive"
-                          className="h-8 w-8 p-0"
-                          onClick={() => {
-                            if (confirm("Are you sure you want to delete this photo?")) {
-                              deletePhotoMutation.mutate(photo.id);
-                            }
-                          }}
-                        >
-                          <Trash2 className="h-3 w-3" />
-                        </Button>
+                  <Card key={photo.id} className="hover:shadow-lg transition-all duration-200">
+                    <CardContent className="p-2 sm:p-4">
+                      <div className="relative group">
+                        <img 
+                          src={photo.imageUrl || `data:image/jpeg;base64,${photo.imageData}`}
+                          alt={photo.caption || "Customer photo"}
+                          className="w-full h-24 sm:h-48 object-cover rounded-lg mb-2 sm:mb-4"
+                        />
+                        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                          <div className="flex gap-1 sm:gap-2">
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="p-1 sm:p-2 bg-white/80 hover:bg-white text-blue-600 hover:text-blue-700"
+                              onClick={() => {
+                                const newCaption = prompt("Enter new caption:", photo.caption || "");
+                                if (newCaption !== null) {
+                                  updatePhotoMutation.mutate({ photoId: photo.id, caption: newCaption });
+                                }
+                              }}
+                            >
+                              <Edit className="h-3 w-3 sm:h-4 sm:w-4" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="p-1 sm:p-2 bg-white/80 hover:bg-white text-red-600 hover:text-red-700"
+                              onClick={() => {
+                                if (window.confirm('Are you sure you want to delete this photo?')) {
+                                  deletePhotoMutation.mutate(photo.id);
+                                }
+                              }}
+                            >
+                              <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
+                            </Button>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                    <CardContent className="p-4">
-                      <p className="text-sm text-gray-900 dark:text-white font-medium mb-1">
-                        {photo.caption || "Untitled"}
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
-                        Uploaded: {(photo.createdAt || photo.uploadedAt) ? new Date(photo.createdAt || photo.uploadedAt).toLocaleDateString() : 'Unknown date'}
-                      </p>
-                      {photo.isPrivate && (
-                        <Badge variant="secondary" className="text-xs mt-2">
-                          Private
-                        </Badge>
-                      )}
+                      <div className="space-y-1 sm:space-y-2">
+                        <p className="text-xs sm:text-sm font-medium text-gray-900 dark:text-white line-clamp-2">
+                          {photo.caption || "Untitled"}
+                        </p>
+                        <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+                          <span>{photo.isPublic ? "Public" : "Private"}</span>
+                          <span>{new Date(photo.createdAt).toLocaleDateString()}</span>
+                        </div>
+                      </div>
                     </CardContent>
                   </Card>
                 ))}
@@ -1986,325 +1427,756 @@ export default function BusinessDashboard() {
         </Tabs>
       </div>
 
-      {/* View Offer Details Modal */}
-      <Dialog open={!!viewingOffer} onOpenChange={(open) => !open && setViewingOffer(null)}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          {viewingOffer && (
-            <>
-              <DialogHeader>
-                <DialogTitle className="text-xl font-bold">
-                  {viewingOffer.business?.businessName || viewingOffer.business?.name || viewingOffer.title}
-                </DialogTitle>
-                <div className="flex gap-2 mt-2">
-                  <Badge variant="outline">{viewingOffer.category}</Badge>
-                  <Badge variant="secondary" className="bg-green-100 text-green-800">
-                    {getDiscountText(viewingOffer)}
-                  </Badge>
-                </div>
-              </DialogHeader>
-
-              <div className="space-y-4">
-                <div>
-                  <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Full Description</h4>
-                  <p className="text-gray-700 dark:text-gray-300">{viewingOffer.description}</p>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
+      {/* Mobile-responsive View Offer Dialog */}
+      {viewingOffer && (
+        <Dialog open={!!viewingOffer} onOpenChange={handleCloseViewDialog}>
+          <DialogContent className="w-[95vw] sm:max-w-[600px] max-h-[90vh] overflow-y-auto p-4 sm:p-6">
+            <DialogHeader className="space-y-3 sm:space-y-4">
+              <DialogTitle className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">
+                {viewingOffer.title}
+              </DialogTitle>
+              <DialogDescription className="text-sm sm:text-base text-gray-600 dark:text-gray-300">
+                {viewingOffer.description}
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className="space-y-4 sm:space-y-6 mt-4 sm:mt-6">
+              {/* Mobile-responsive offer details grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                <div className="space-y-3 sm:space-y-4">
                   <div>
-                    <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Discount Details</h4>
-                    <div className="space-y-1 text-sm">
-                      <p><span className="font-medium">Type:</span> {viewingOffer.discountType}</p>
-                      <p><span className="font-medium">Value:</span> {getDiscountText(viewingOffer)}</p>
+                    <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">Offer Details</h4>
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        {getDiscountIcon(viewingOffer.discountType)}
+                        <span className="text-sm text-gray-600 dark:text-gray-300">
+                          {getDiscountText(viewingOffer)}
+                        </span>
+                      </div>
+                      <p className="text-sm text-gray-600 dark:text-gray-300">
+                        Category: {viewingOffer.category}
+                      </p>
                       {viewingOffer.discountCode && (
-                        <p><span className="font-medium">Code:</span> {viewingOffer.discountCode}</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-300">
+                          Code: <span className="font-mono bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">
+                            {viewingOffer.discountCode}
+                          </span>
+                        </p>
                       )}
                     </div>
                   </div>
 
                   <div>
-                    <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Valid Period</h4>
-                    <div className="space-y-1 text-sm">
-                      <p><span className="font-medium">From:</span> {new Date(viewingOffer.validFrom).toLocaleDateString()}</p>
-                      <p><span className="font-medium">Until:</span> {new Date(viewingOffer.validUntil).toLocaleDateString()}</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div>
-                  <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Target Audience</h4>
-                  <div className="flex flex-wrap gap-1">
-                    {viewingOffer.targetAudience.map(audience => (
-                      <Badge key={audience} variant="secondary" className="text-xs">
-                        {audience}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Usage Stats</h4>
-                    <div className="space-y-1 text-sm">
-                      <p><span className="font-medium">Views:</span> {viewingOffer.viewCount || 0}</p>
-                      <p><span className="font-medium">Redemptions:</span> {viewingOffer.currentRedemptions || 0}
-                        {viewingOffer.maxRedemptions && ` / ${viewingOffer.maxRedemptions}`}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div>
-                    <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Location</h4>
-                    <div className="space-y-1 text-sm">
-                      <p>{viewingOffer.city}, {viewingOffer.state}</p>
+                    <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">Location</h4>
+                    <div className="text-sm text-gray-600 dark:text-gray-300">
+                      <p>{viewingOffer.city}{viewingOffer.state && `, ${viewingOffer.state}`}</p>
                       <p>{viewingOffer.country}</p>
                     </div>
                   </div>
                 </div>
 
-                {viewingOffer.termsConditions && (
+                <div className="space-y-3 sm:space-y-4">
                   <div>
-                    <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Terms & Conditions</h4>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">{viewingOffer.termsConditions}</p>
+                    <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">Validity</h4>
+                    <div className="text-sm text-gray-600 dark:text-gray-300 space-y-1">
+                      <p>From: {new Date(viewingOffer.validFrom).toLocaleDateString()}</p>
+                      <p>Until: {new Date(viewingOffer.validUntil).toLocaleDateString()}</p>
+                    </div>
                   </div>
-                )}
 
-                {viewingOffer.tags && viewingOffer.tags.length > 0 && (
                   <div>
-                    <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Tags</h4>
-                    <div className="flex flex-wrap gap-1">
-                      {Array.isArray(viewingOffer.tags) ? viewingOffer.tags.map((tag: string, index: number) => (
-                        <Badge key={index} variant="outline" className="text-xs">
+                    <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">Statistics</h4>
+                    <div className="text-sm text-gray-600 dark:text-gray-300 space-y-1">
+                      <p>Views: {viewingOffer.viewCount}</p>
+                      <p>Redemptions: {viewingOffer.currentRedemptions}
+                        {viewingOffer.maxRedemptions && ` / ${viewingOffer.maxRedemptions}`}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {viewingOffer.tags && (
+                <div>
+                  <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">Tags</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {Array.isArray(viewingOffer.tags) ? 
+                      viewingOffer.tags.map((tag: string, index: number) => (
+                        <Badge key={index} variant="secondary" className="text-xs">
                           {tag}
                         </Badge>
-                      )) : typeof viewingOffer.tags === 'string' ? viewingOffer.tags.split(',').map((tag: string, index: number) => (
-                        <Badge key={index} variant="outline" className="text-xs">
-                          {tag.trim()}
-                        </Badge>
-                      )) : null}
+                      )) : 
+                      typeof viewingOffer.tags === 'string' ? 
+                        viewingOffer.tags.split(',').map((tag: string, index: number) => (
+                          <Badge key={index} variant="secondary" className="text-xs">
+                            {tag.trim()}
+                          </Badge>
+                        )) : null
+                    }
+                  </div>
+                </div>
+              )}
+
+              {viewingOffer.termsConditions && (
+                <div>
+                  <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">Terms & Conditions</h4>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">{viewingOffer.termsConditions}</p>
+                </div>
+              )}
+
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 pt-4 border-t">
+                <Button 
+                  onClick={() => handleEdit(viewingOffer)}
+                  className="flex-1 sm:flex-none bg-blue-500 hover:bg-blue-600 text-white"
+                >
+                  <Edit className="w-4 h-4 mr-2" />
+                  Edit Deal
+                </Button>
+                <Button 
+                  onClick={handleCloseViewDialog}
+                  variant="outline"
+                  className="flex-1 sm:flex-none"
+                >
+                  Close
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {/* Mobile-responsive Create/Edit Offer Dialog */}
+      <Dialog open={isCreateDialogOpen || isDialogOpen} onOpenChange={handleCloseCreateDialog}>
+        <DialogContent className="w-[95vw] sm:max-w-[800px] max-h-[90vh] overflow-y-auto p-4 sm:p-6">
+          <DialogHeader className="mb-4 sm:mb-6">
+            <DialogTitle className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">
+              {editingOffer ? 'Edit Offer' : 'Create New Offer'}
+            </DialogTitle>
+            <DialogDescription className="text-sm text-gray-600 dark:text-gray-300">
+              {editingOffer ? 'Update your existing offer details' : 'Create an attractive offer to draw customers to your business'}
+            </DialogDescription>
+          </DialogHeader>
+
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 sm:space-y-6">
+              {/* Mobile-responsive form fields */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                <FormField
+                  control={form.control}
+                  name="title"
+                  render={({ field }) => (
+                    <FormItem className="sm:col-span-2">
+                      <FormLabel className="text-gray-900 dark:text-white">Offer Title *</FormLabel>
+                      <FormControl>
+                        <Input placeholder="20% off your first purchase!" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="description"
+                  render={({ field }) => (
+                    <FormItem className="sm:col-span-2">
+                      <FormLabel className="text-gray-900 dark:text-white">Description *</FormLabel>
+                      <FormControl>
+                        <Textarea 
+                          placeholder="Get 20% off when you spend $50 or more on any item in our store. Valid for new customers only."
+                          rows={3}
+                          {...field} 
+                        />
+                      </FormControl>
+                      <FormDescription className="text-gray-600 dark:text-gray-400">
+                        Maximum 120 characters. Be clear and compelling!
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="category"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-gray-900 dark:text-white">Category *</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select category" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="max-h-64">
+                          {CATEGORIES.map((category) => (
+                            <SelectItem key={category} value={category}>
+                              {getCategoryDisplayName(category)}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {form.watch("category") === "Custom" && (
+                  <FormField
+                    control={form.control}
+                    name="customCategory"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-gray-900 dark:text-white">Custom Category *</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter your category" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
+
+                <FormField
+                  control={form.control}
+                  name="discountType"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-gray-900 dark:text-white">Discount Type *</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select discount type" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="percentage">Percentage Off</SelectItem>
+                          <SelectItem value="fixed_amount">Fixed Amount Off</SelectItem>
+                          <SelectItem value="buy_one_get_one">Buy One Get One</SelectItem>
+                          <SelectItem value="free_service">Free Service</SelectItem>
+                          <SelectItem value="free_item_with_purchase">Free Item with Purchase</SelectItem>
+                          <SelectItem value="combo_deal">Combo Deal</SelectItem>
+                          <SelectItem value="other">Other</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="discountValue"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-gray-900 dark:text-white">Discount Value *</FormLabel>
+                      <FormControl>
+                        <Input 
+                          placeholder={
+                            form.watch("discountType") === "percentage" ? "20" : 
+                            form.watch("discountType") === "fixed_amount" ? "10" :
+                            "Buy 1 Get 1 Free"
+                          } 
+                          {...field} 
+                        />
+                      </FormControl>
+                      <FormDescription className="text-gray-600 dark:text-gray-400">
+                        {form.watch("discountType") === "percentage" ? "Enter number only (e.g., 20 for 20%)" : 
+                         form.watch("discountType") === "fixed_amount" ? "Enter amount only (e.g., 10 for $10 off)" :
+                         "Describe your offer (e.g., 'Buy 1 Get 1 Free')"}
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="discountCode"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-gray-900 dark:text-white">Discount Code</FormLabel>
+                      <FormControl>
+                        <Input placeholder="SAVE20" {...field} />
+                      </FormControl>
+                      <FormDescription className="text-gray-600 dark:text-gray-400">
+                        Optional promo code customers can use
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="targetAudience"
+                  render={() => (
+                    <FormItem>
+                      <div className="mb-4">
+                        <FormLabel className="text-gray-900 dark:text-white">Target Audience *</FormLabel>
+                        <FormDescription className="text-gray-600 dark:text-gray-400">
+                          Who is this offer for?
+                        </FormDescription>
+                      </div>
+                      {TARGET_AUDIENCES.map((audience) => (
+                        <FormField
+                          key={audience}
+                          control={form.control}
+                          name="targetAudience"
+                          render={({ field }) => {
+                            return (
+                              <FormItem
+                                key={audience}
+                                className="flex flex-row items-start space-x-3 space-y-0"
+                              >
+                                <FormControl>
+                                  <Checkbox
+                                    checked={field.value?.includes(audience)}
+                                    onCheckedChange={(checked) => {
+                                      return checked
+                                        ? field.onChange([...field.value, audience])
+                                        : field.onChange(
+                                            field.value?.filter(
+                                              (value) => value !== audience
+                                            )
+                                          )
+                                    }}
+                                  />
+                                </FormControl>
+                                <FormLabel className="font-normal text-gray-900 dark:text-white">
+                                  {audience.charAt(0).toUpperCase() + audience.slice(1)}
+                                </FormLabel>
+                              </FormItem>
+                            )
+                          }}
+                        />
+                      ))}
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <div className="space-y-4">
+                <div className="flex items-center space-x-2 mb-4">
+                  <Checkbox
+                    id="useCustomAddress"
+                    checked={useCustomAddress}
+                    onCheckedChange={(checked) => {
+                      setUseCustomAddress(!!checked);
+                      if (!checked) {
+                        // Reset to business address (NOT travel destination)
+                        form.setValue("streetAddress", currentUser?.streetAddress || "");
+                        form.setValue("city", currentUser?.businessCity || currentUser?.hometownCity || "");
+                        form.setValue("state", currentUser?.businessState || currentUser?.hometownState || "");
+                        form.setValue("country", currentUser?.businessCountry || currentUser?.hometownCountry || "United States");
+                        form.setValue("zipCode", currentUser?.zipCode || "");
+                      }
+                    }}
+                  />
+                  <label
+                    htmlFor="useCustomAddress"
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-gray-900 dark:text-white"
+                  >
+                    Use different address for this offer
+                  </label>
+                </div>
+
+                {!useCustomAddress ? (
+                  // Show business address (read-only display)
+                  <div className="space-y-3 bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border">
+                    <h4 className="font-medium text-gray-900 dark:text-white">Business Address</h4>
+                    <div className="text-sm text-gray-700 dark:text-gray-300 space-y-1">
+                      {currentUser?.streetAddress && <div>{currentUser.streetAddress}</div>}
+                      <div>
+                        {currentUser?.hometownCity}{currentUser?.hometownState && `, ${currentUser.hometownState}`}
+                        {currentUser?.hometownCountry && `, ${currentUser.hometownCountry}`}
+                      </div>
+                      {currentUser?.zipCode && <div>{currentUser.zipCode}</div>}
+                    </div>
+                  </div>
+                ) : (
+                  // Show editable address fields
+                  <div className="space-y-4">
+                    <FormField
+                      control={form.control}
+                      name="streetAddress"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-gray-900 dark:text-white">Street Address</FormLabel>
+                          <FormControl>
+                            <Input placeholder="123 Main Street" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <div>
+                      <FormLabel className="text-gray-900 dark:text-white">City, State/Province, Country *</FormLabel>
+                      <SmartLocationInput
+                        city={form.watch("city")}
+                        state={form.watch("state")}
+                        country={form.watch("country")}
+                        onLocationChange={(location) => {
+                          form.setValue("city", location.city);
+                          form.setValue("state", location.state);
+                          form.setValue("country", location.country);
+                        }}
+                        required={true}
+                        label=""
+                        placeholder={{
+                          country: "Select country",
+                          state: "Select state/region",
+                          city: "Select city"
+                        }}
+                      />
+                      {(form.formState.errors.city || form.formState.errors.country) && (
+                        <p className="text-sm font-medium text-destructive mt-1">
+                          {form.formState.errors.city?.message || form.formState.errors.country?.message}
+                        </p>
+                      )}
                     </div>
                   </div>
                 )}
-
-                <div className="flex justify-end space-x-2 pt-4 border-t">
-                  <Button variant="outline" onClick={() => setViewingOffer(null)}>
-                    Close
-                  </Button>
-                  <Button onClick={() => {
-                    setViewingOffer(null);
-                    handleEdit(viewingOffer);
-                  }}>
-                    Edit Offer
-                  </Button>
-                </div>
               </div>
-            </>
-          )}
+
+              {/* Starting Today Checkbox */}
+              {!editingOffer && (
+                <div className="mb-4">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="startingToday"
+                      checked={startingToday}
+                      onCheckedChange={(checked) => {
+                        setStartingToday(!!checked);
+                        if (checked) {
+                          const today = new Date().toISOString().split('T')[0];
+                          form.setValue('validFrom', today);
+                        }
+                      }}
+                      className="border-gray-300 dark:border-gray-600"
+                    />
+                    <label 
+                      htmlFor="startingToday" 
+                      className="text-sm font-medium text-gray-900 dark:text-white cursor-pointer"
+                    >
+                      Starting Today (recommended)
+                    </label>
+                  </div>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    Automatically sets start date to today. Uncheck to choose a different start date.
+                  </p>
+                </div>
+              )}
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="validFrom"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-gray-900 dark:text-white">Valid From *</FormLabel>
+                      <FormControl>
+                        <Input 
+                          type="date" 
+                          {...field} 
+                          disabled={editingOffer || (!editingOffer && startingToday)}
+                          min="1000-01-01"
+                          max="9999-12-31"
+                          className={`dark:[color-scheme:dark] dark:text-white calendar-white-icon ${
+                            (editingOffer || (!editingOffer && startingToday)) ? 'opacity-50 cursor-not-allowed' : ''
+                          }`}
+                        />
+                      </FormControl>
+                      {editingOffer ? (
+                        <FormDescription className="text-orange-600 dark:text-orange-400 text-xs">
+                          Dates cannot be edited after creation
+                        </FormDescription>
+                      ) : startingToday ? (
+                        <FormDescription className="text-green-600 dark:text-green-400 text-xs">
+                          ✓ Set to today's date
+                        </FormDescription>
+                      ) : (
+                        <FormDescription className="text-amber-600 dark:text-amber-400 text-xs">
+                          ⚠️ Dates cannot be changed once submitted
+                        </FormDescription>
+                      )}
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="validUntil"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-gray-900 dark:text-white">Valid Until *</FormLabel>
+                      <FormControl>
+                        <Input 
+                          type="date" 
+                          {...field} 
+                          disabled={editingOffer}
+                          min="1000-01-01"
+                          max="9999-12-31"
+                          className={`dark:[color-scheme:dark] dark:text-white calendar-white-icon ${
+                            editingOffer ? 'opacity-50 cursor-not-allowed' : ''
+                          }`}
+                        />
+                      </FormControl>
+                      {editingOffer ? (
+                        <FormDescription className="text-orange-600 dark:text-orange-400 text-xs">
+                          Dates cannot be edited after creation
+                        </FormDescription>
+                      ) : (
+                        <FormDescription className="text-amber-600 dark:text-amber-400 text-xs">
+                          ⚠️ Dates cannot be changed once submitted
+                        </FormDescription>
+                      )}
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="maxRedemptions"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-gray-900 dark:text-white">Total Redemption Limit</FormLabel>
+                      <FormControl>
+                        <Input type="number" placeholder="100" {...field} />
+                      </FormControl>
+                      <FormDescription className="text-gray-600 dark:text-gray-400">
+                        Maximum total uses across all users
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="maxRedemptionsPerUser"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-gray-900 dark:text-white">Per-User Limit</FormLabel>
+                      <FormControl>
+                        <Input type="number" placeholder="3" {...field} />
+                      </FormControl>
+                      <FormDescription className="text-gray-600 dark:text-gray-400">
+                        Max times each user can redeem
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <FormField
+                control={form.control}
+                name="imageUrl"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-gray-900 dark:text-white">Offer Image</FormLabel>
+                    <FormControl>
+                      <div className="space-y-4">
+                        <Input 
+                          placeholder="https://example.com/image.jpg" 
+                          {...field} 
+                        />
+                        <div 
+                          className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 cursor-pointer hover:border-blue-400 dark:hover:border-blue-500 transition-colors"
+                          onClick={() => document.getElementById('file-upload')?.click()}
+                        >
+                          <div className="text-center">
+                            <div className="flex flex-col items-center space-y-2">
+                              <div className="w-12 h-12 rounded-full bg-blue-50 dark:bg-blue-900 flex items-center justify-center">
+                                <svg className="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                              </div>
+                              <div>
+                                <p className="text-sm text-gray-600 dark:text-gray-400">
+                                  <span className="font-medium text-blue-600 dark:text-blue-400 cursor-pointer hover:underline">
+                                    Click to upload
+                                  </span> or drag and drop
+                                </p>
+                                <p className="text-xs text-gray-500 dark:text-gray-500">PNG, JPG up to 5MB</p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <input
+                          id="file-upload"
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              // Convert to base64 for preview
+                              const reader = new FileReader();
+                              reader.onloadend = () => {
+                                field.onChange(reader.result as string);
+                              };
+                              reader.readAsDataURL(file);
+                            }
+                          }}
+                        />
+                        {field.value && (
+                          <div className="mt-4">
+                            <img 
+                              src={field.value} 
+                              alt="Offer preview" 
+                              className="w-full h-48 object-cover rounded-lg border"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => field.onChange("")}
+                              className="mt-2 text-sm text-red-600 dark:text-red-400 hover:underline"
+                            >
+                              Remove image
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </FormControl>
+                    <FormDescription className="text-gray-600 dark:text-gray-400">
+                      Add an eye-catching image for your offer (optional)
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="termsConditions"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-gray-900 dark:text-white">Terms & Conditions</FormLabel>
+                    <FormControl>
+                      <Textarea placeholder="Cannot be combined with other offers..." rows={3} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="contactInfo"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-gray-900 dark:text-white">Contact Info</FormLabel>
+                      <FormControl>
+                        <Input placeholder="contact@business.com" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="websiteUrl"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-gray-900 dark:text-white">Website URL</FormLabel>
+                      <FormControl>
+                        <Input placeholder="https://business.com" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <FormField
+                control={form.control}
+                name="tags"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-gray-900 dark:text-white">Tags (comma-separated)</FormLabel>
+                    <FormControl>
+                      <Input placeholder="brunch, weekend, family-friendly" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Mobile-responsive form buttons */}
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 pt-4 sm:pt-6 border-t">
+                <Button 
+                  type="submit" 
+                  disabled={createOfferMutation.isPending || updateOfferMutation.isPending}
+                  className="w-full sm:flex-1 bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white"
+                >
+                  {createOfferMutation.isPending || updateOfferMutation.isPending ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                      {editingOffer ? 'Updating...' : 'Creating...'}
+                    </>
+                  ) : (
+                    <>
+                      {editingOffer ? (
+                        <>
+                          <Edit className="w-4 h-4 mr-2" />
+                          Update Offer
+                        </>
+                      ) : (
+                        <>
+                          <Plus className="w-4 h-4 mr-2" />
+                          Create Offer
+                        </>
+                      )}
+                    </>
+                  )}
+                </Button>
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={handleCloseCreateDialog}
+                  className="w-full sm:w-auto"
+                >
+                  Cancel
+                </Button>
+              </div>
+            </form>
+          </Form>
         </DialogContent>
       </Dialog>
 
-      {/* Quick Deal Reuse Dialog */}
-      <Dialog open={reuseDialogOpen} onOpenChange={setReuseDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Zap className="h-5 w-5 text-orange-500" />
-              Reuse Quick Deal
-            </DialogTitle>
-            <DialogDescription>
-              Create a new Quick Deal based on this expired deal. You can modify the details and set new timing.
-            </DialogDescription>
-          </DialogHeader>
-          
-          {reuseDealData && (
-            <QuickDealReuseForm 
-              originalDeal={reuseDealData}
-              onClose={() => {
-                setReuseDialogOpen(false);
-                setReuseDealData(null);
-              }}
-            />
-          )}
-        </DialogContent>
-      </Dialog>
+      {/* Quick Deal Creator Modal */}
+      {showQuickDealCreator && (
+        <InstantDealCreator
+          open={showQuickDealCreator}
+          onClose={() => setShowQuickDealCreator(false)}
+          onSuccess={() => {
+            setShowQuickDealCreator(false);
+            // Refresh analytics and offers
+            queryClient.invalidateQueries({ queryKey: ['/api/business-deals/analytics'] });
+            queryClient.invalidateQueries({ queryKey: [`/api/business-deals/business/${storageUser?.id}`] });
+          }}
+        />
+      )}
+
+      {/* Reuse Deal Dialog */}
+      {reuseDialogOpen && reuseDealData && (
+        <QuickDealsWidget
+          showCreateForm={reuseDialogOpen}
+          onCloseCreateForm={() => {
+            setReuseDialogOpen(false);
+            setReuseDealData(null);
+          }}
+          city={reuseDealData?.city}
+          profileUserId={storageUser?.id}
+        />
+      )}
     </div>
-  );
-}
-
-// Quick Deal Reuse Form Component
-function QuickDealReuseForm({ originalDeal, onClose }: { originalDeal: any; onClose: () => void }) {
-  const { toast } = useToast();
-  const [formData, setFormData] = useState({
-    title: originalDeal?.title || '',
-    description: originalDeal?.description || '',
-    discountType: (originalDeal?.discountType || 'percentage') as const,
-    discountValue: originalDeal?.discountValue || '',
-    validFor: '2',
-    availability: (originalDeal?.availability || 'now') as const,
-  });
-
-  const createQuickDealMutation = useMutation({
-    mutationFn: async (data: any) => {
-      const now = new Date();
-      const validUntil = new Date(now.getTime() + (parseInt(data.validFor) * 60 * 60 * 1000));
-      
-      const dealData = {
-        title: data.title,
-        description: data.description,
-        discountType: data.discountType,
-        discountValue: data.discountValue,
-        availability: data.availability,
-        dealType: data.discountType,
-        category: 'quick_deal',
-        validFrom: now.toISOString(),
-        validUntil: validUntil.toISOString(),
-        isActive: true,
-        currentRedemptions: 0
-      };
-
-      return apiRequest('POST', '/api/quick-deals', dealData);
-    },
-    onSuccess: () => {
-      toast({
-        title: "Quick Deal Created! ⚡",
-        description: "Your reused Quick Deal is now live.",
-      });
-      queryClient.invalidateQueries({ queryKey: ['/api/quick-deals'] });
-      onClose();
-    },
-    onError: (error) => {
-      toast({
-        title: "Error Creating Quick Deal",
-        description: error instanceof Error ? error.message : "Failed to create quick deal",
-        variant: "destructive",
-      });
-    },
-  });
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formData.title.trim() || !formData.description.trim() || !formData.discountValue.trim()) {
-      toast({
-        title: "Missing Information",
-        description: "Please fill in all required fields.",
-        variant: "destructive"
-      });
-      return;
-    }
-    createQuickDealMutation.mutate(formData);
-  };
-
-  return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <label className="block text-sm font-medium mb-1">Title *</label>
-        <Input
-          value={formData.title}
-          onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-          placeholder="Flash Sale - 20% Off"
-          required
-        />
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium mb-1">Description *</label>
-        <Textarea
-          value={formData.description}
-          onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-          placeholder="Limited time offer..."
-          required
-          rows={3}
-        />
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium mb-1">Discount Type</label>
-          <Select 
-            value={formData.discountType} 
-            onValueChange={(value: any) => setFormData(prev => ({ ...prev, discountType: value }))}
-          >
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="percentage">Percentage Off</SelectItem>
-              <SelectItem value="fixed_amount">Fixed Amount Off</SelectItem>
-              <SelectItem value="buy_one_get_one">Buy One Get One</SelectItem>
-              <SelectItem value="free_service">Free Service</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium mb-1">Discount Value *</label>
-          <Input
-            value={formData.discountValue}
-            onChange={(e) => setFormData(prev => ({ ...prev, discountValue: e.target.value }))}
-            placeholder="20% or $10"
-            required
-          />
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium mb-1">Valid For</label>
-          <Select 
-            value={formData.validFor} 
-            onValueChange={(value) => setFormData(prev => ({ ...prev, validFor: value }))}
-          >
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="1">1 Hour</SelectItem>
-              <SelectItem value="2">2 Hours</SelectItem>
-              <SelectItem value="3">3 Hours</SelectItem>
-              <SelectItem value="4">4 Hours</SelectItem>
-              <SelectItem value="6">6 Hours</SelectItem>
-              <SelectItem value="8">8 Hours</SelectItem>
-              <SelectItem value="12">12 Hours</SelectItem>
-              <SelectItem value="24">24 Hours</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium mb-1">Availability</label>
-          <Select 
-            value={formData.availability} 
-            onValueChange={(value: any) => setFormData(prev => ({ ...prev, availability: value }))}
-          >
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="now">Available Now</SelectItem>
-              <SelectItem value="today">Today Only</SelectItem>
-              <SelectItem value="weekend">This Weekend</SelectItem>
-              <SelectItem value="week">This Week</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-
-      <div className="flex gap-3 pt-4">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={onClose}
-          className="flex-1"
-        >
-          Cancel
-        </Button>
-        <Button
-          type="submit"
-          disabled={createQuickDealMutation.isPending}
-          className="flex-1 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white"
-        >
-          {createQuickDealMutation.isPending ? 'Creating...' : 'Create Quick Deal'}
-        </Button>
-      </div>
-    </form>
   );
 }
