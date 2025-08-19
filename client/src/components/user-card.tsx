@@ -398,18 +398,18 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
                 {user.travelInterests?.slice(0, 2).map((interest) => (
                   <Badge 
                     key={interest} 
-                    className={`text-xs ${getInterestStyle(interest)}`}
+                    className="pill-interests"
                   >
                     {interest}
                   </Badge>
                 ))}
                 {user.preferredActivities?.slice(0, 2).map((activity) => (
-                  <Badge key={activity} className={`text-xs ${getActivityStyle()}`}>
+                  <Badge key={activity} className="pill-activities">
                     {activity}
                   </Badge>
                 ))}
                 {user.plannedEvents?.slice(0, 1).map((event) => (
-                  <Badge key={event} className={`text-xs ${getEventStyle()}`}>
+                  <Badge key={event} className="pill-events">
                     {event}
                   </Badge>
                 ))}
