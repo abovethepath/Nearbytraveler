@@ -470,20 +470,23 @@ export function QuickMeetupWidget({ city, profileUserId }: { city?: string; prof
                     </div>
                   </div>
 
-                  <div className="flex items-start justify-between mb-2">
-                    <div className="flex-1 cursor-pointer" onClick={() => setExpandedMeetup(isExpanded ? null : meetup.id)}>
-                      <h4 className="font-medium text-sm text-gray-900 dark:text-white hover:text-orange-600">{meetup.title}</h4>
-                      <div className="flex items-center gap-1 mt-1">
-                        <MapPin className="w-3 h-3 text-gray-500" />
-                        <span className="text-xs text-gray-600 dark:text-gray-400">{meetup.meetingPoint}</span>
+                  <div className="space-y-3 mb-2">
+                    {/* Title and Meeting Point */}
+                    <div className="cursor-pointer" onClick={() => setExpandedMeetup(isExpanded ? null : meetup.id)}>
+                      <h4 className="font-medium text-sm text-gray-900 dark:text-white hover:text-orange-600 mb-2">{meetup.title}</h4>
+                      <div className="flex items-center gap-1">
+                        <MapPin className="w-3 h-3 text-gray-500 flex-shrink-0" />
+                        <span className="text-xs text-gray-600 dark:text-gray-400 break-words">{meetup.meetingPoint}</span>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <Badge variant="outline" className="text-xs bg-orange-100 dark:bg-orange-900 text-orange-700 dark:text-orange-300 border-orange-300 dark:border-orange-600">
+                    
+                    {/* Time Info - Separate Row on Mobile */}
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                      <Badge variant="outline" className="text-xs bg-orange-100 dark:bg-orange-900 text-orange-700 dark:text-orange-300 border-orange-300 dark:border-orange-600 w-fit">
                         <Clock className="w-3 h-3 mr-1" />
                         {hoursLeft > 0 ? `${hoursLeft}h ${minutesLeft}m` : `${minutesLeft}m`} left
                       </Badge>
-                      <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      <div className="text-xs text-gray-500 dark:text-gray-400">
                         Until {expiresAtLocal.toLocaleTimeString('en-US', { 
                           hour: 'numeric', 
                           minute: '2-digit',
