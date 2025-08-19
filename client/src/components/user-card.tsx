@@ -404,12 +404,12 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
                   </Badge>
                 ))}
                 {user.preferredActivities?.slice(0, 2).map((activity) => (
-                  <Badge key={activity} className="pill-activities">
+                  <Badge key={activity} className="pill pill-activities">
                     {activity}
                   </Badge>
                 ))}
                 {user.plannedEvents?.slice(0, 1).map((event) => (
-                  <Badge key={event} className="pill-events">
+                  <Badge key={event} className="pill pill-events">
                     {event}
                   </Badge>
                 ))}
