@@ -59,7 +59,7 @@ export async function fetchTicketmasterEvents(city: string = 'Los Angeles'): Pro
     const startDateTime = today.toISOString().split('T')[0] + 'T00:00:00Z';
     
     // City-specific search - determine state from city
-    const cityStateMap: { [key: string]: string } = {
+    const cityStateMapping: { [key: string]: string } = {
       'Austin': 'TX',
       'Los Angeles': 'CA', 
       'Las Vegas': 'NV',
@@ -72,7 +72,7 @@ export async function fetchTicketmasterEvents(city: string = 'Los Angeles'): Pro
       'Atlanta': 'GA'
     };
     
-    const stateCode = cityStateMap[city] || 'TX'; // Default to TX if city not mapped
+    const stateCode = cityStateMapping[city] || 'TX'; // Default to TX if city not mapped
     
     const params = new URLSearchParams({
       apikey: apiKey,
@@ -104,7 +104,20 @@ export async function fetchTicketmasterEvents(city: string = 'Los Angeles'): Pro
     
     console.log(`🎫 TICKETMASTER: Successfully fetched ${events.length} events for ${city}`);
 
-    // Transform to our standard format
+    // Transform to our standard format with correct city mapping
+    const cityStateMap: { [key: string]: string } = {
+      'Austin': 'TX',
+      'Los Angeles': 'CA', 
+      'Las Vegas': 'NV',
+      'New York': 'NY',
+      'Chicago': 'IL',
+      'Miami': 'FL',
+      'San Francisco': 'CA',
+      'Seattle': 'WA',
+      'Denver': 'CO',
+      'Atlanta': 'GA'
+    };
+    
     const transformedEvents = events.map((event: TicketmasterEvent) => {
       const venue = event._embedded?.venues?.[0];
       const priceRange = event.priceRanges?.[0];
@@ -122,8 +135,8 @@ export async function fetchTicketmasterEvents(city: string = 'Los Angeles'): Pro
         address: venue?.address ? 
           [venue.address.line1, venue.address.line2, venue.address.city]
             .filter(Boolean).join(', ') : 'Address TBD',
-        city: venue?.address?.city || 'Los Angeles',
-        state: venue?.address?.stateCode || 'CA',
+        city: venue?.address?.city || city, // Use requested city as fallback
+        state: venue?.address?.stateCode || cityStateMapping[city] || 'TX', // Map city to state
         organizer: 'Ticketmaster',
         category: classification?.segment?.name || classification?.genre?.name || 'Entertainment',
         url: event.url,
