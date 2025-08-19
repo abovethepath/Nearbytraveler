@@ -321,8 +321,8 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
                   {/* Activity Pills */}
                   {cityData.activities.map((activity) => (
                     <div key={`act-${activity.id}`} className="relative group">
-                      <div className={`inline-flex items-center justify-center h-8 min-w-[7rem] rounded-full px-3 text-sm font-medium leading-none whitespace-nowrap bg-green-500 text-white border-0 appearance-none select-none gap-1.5 ${
-                        isMobile ? 'min-h-[40px] flex items-center' : ''
+                      <div className={`inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-green-500 text-white border-0 appearance-none select-none gap-1.5 ${
+                        isMobile ? 'min-h-[44px] flex items-center' : ''
                       }`}>
                         {activity.activityName}
                       </div>
@@ -345,8 +345,8 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
                   {/* Event Pills */}
                   {cityData.events.map((event) => (
                     <div key={`evt-${event.id}`} className="relative group">
-                      <div className={`inline-flex items-center justify-center h-8 min-w-[7rem] rounded-full px-3 text-sm font-medium leading-none whitespace-nowrap bg-purple-500 text-white border-0 appearance-none select-none gap-1.5 ${
-                        isMobile ? 'min-h-[40px] flex items-center' : ''
+                      <div className={`inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-purple-500 text-white border-0 appearance-none select-none gap-1.5 ${
+                        isMobile ? 'min-h-[44px] flex items-center' : ''
                       }`}>
                         📅 {event.eventTitle || event.title}
                       </div>
