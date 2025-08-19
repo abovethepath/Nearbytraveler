@@ -1743,9 +1743,9 @@ export default function BusinessDashboard() {
                         {event.tags && event.tags.length > 0 && (
                           <div className="flex flex-wrap gap-2 mt-4">
                             {event.tags.slice(0, 3).map((tag: string, index: number) => (
-                              <Badge key={index} variant="secondary" className="text-xs">
+                              <div key={index} className="pill inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-purple-500 text-white border-0 appearance-none select-none gap-1.5" style={{height: '2.5rem', minWidth: '8rem', padding: '0 1rem', fontSize: '1rem'}}>
                                 {tag}
-                              </Badge>
+                              </div>
                             ))}
                             {event.tags.length > 3 && (
                               <Badge variant="secondary" className="text-xs">

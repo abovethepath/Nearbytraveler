@@ -729,9 +729,9 @@ function RecommendationCard({
               <p className="text-sm font-medium text-gray-900 mb-2">Matches your preferences:</p>
               <div className="flex flex-wrap gap-1">
                 {recommendation.userPreferencesMatched.map((pref, index) => (
-                  <Badge key={index} variant="secondary" className="text-xs">
+                  <div key={index} className="pill inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5" style={{height: '2.5rem', minWidth: '8rem', padding: '0 1rem', fontSize: '1rem'}}>
                     {pref}
-                  </Badge>
+                  </div>
                 ))}
               </div>
             </div>
@@ -739,9 +739,9 @@ function RecommendationCard({
 
           <div className="flex flex-wrap gap-1">
             {recommendation.tags.map((tag, index) => (
-              <Badge key={index} variant="outline" className="text-xs">
+              <div key={index} className="pill inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-purple-500 text-white border-0 appearance-none select-none gap-1.5" style={{height: '2.5rem', minWidth: '8rem', padding: '0 1rem', fontSize: '1rem'}}>
                 {tag}
-              </Badge>
+              </div>
             ))}
           </div>
 
