@@ -4781,7 +4781,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                     </Badge>
                                   ))}
                                   {remaining > 0 && (
-                                    <Badge className="bg-gray-200 text-gray-600 font-medium border-0 px-3 py-2 text-sm rounded-full">
+                                    <Badge className="pill-events bg-gray-200 text-gray-600">
                                       +{remaining} more
                                     </Badge>
                                   )}
@@ -8766,12 +8766,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </h4>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                     {selectedTravelPlan.interests.slice(0, 9).map((interest) => (
-                      <Badge key={interest} variant="secondary" className="bg-blue-500 text-white border-0 px-3 py-2 text-sm rounded-full justify-center">
+                      <Badge key={interest} className="pill-interests">
                         {interest}
                       </Badge>
                     ))}
                     {selectedTravelPlan.interests.length > 9 && (
-                      <Badge variant="outline" className="bg-gray-200 text-gray-600 border-0 px-3 py-2 text-sm rounded-full justify-center">
+                      <Badge className="pill-interests bg-gray-200 text-gray-600">
                         +{selectedTravelPlan.interests.length - 9} more
                       </Badge>
                     )}
@@ -8788,7 +8788,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </h4>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                     {selectedTravelPlan.activities.map((activity) => (
-                      <Badge key={activity} variant="secondary" className="bg-blue-500 text-white border-0 px-3 py-2 text-sm rounded-full justify-center">
+                      <Badge key={activity} className="pill-activities">
                         {activity}
                       </Badge>
                     ))}
@@ -8805,7 +8805,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </h4>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                     {selectedTravelPlan.events.map((event) => (
-                      <Badge key={event} variant="secondary" className="bg-blue-500 text-white border-0 px-3 py-2 text-sm rounded-full justify-center">
+                      <Badge key={event} className="pill-events">
                         {event}
                       </Badge>
                     ))}
