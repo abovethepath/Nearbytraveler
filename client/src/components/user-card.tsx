@@ -464,7 +464,7 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
               {getFilteredInterests(user)?.slice(0, 3).map((interest) => (
                 <Badge
                   key={interest}
-                  className={`text-xs ${getInterestStyle(interest)}`}
+                  className="pill pill-interests"
                 >
                   {interest}
                 </Badge>
