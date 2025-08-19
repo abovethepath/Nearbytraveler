@@ -320,13 +320,12 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
 
                   {/* Activity Pills */}
                   {cityData.activities.map((activity) => (
-                    <Badge
-                      key={`act-${activity.id}`}
-                      className={`pill-activities relative group ${
+                    <div key={`act-${activity.id}`} className="relative group">
+                      <Badge className={`pill-activities ${
                         isMobile ? 'min-h-[40px] flex items-center' : ''
-                      }`}
-                    >
-                      {activity.activityName}
+                      }`}>
+                        {activity.activityName}
+                      </Badge>
                       {isOwnProfile && (
                         <button
                           onClick={() => deleteActivity.mutate(activity.id)}
@@ -340,18 +339,17 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
                           <X className={isMobile ? 'w-3 h-3' : 'w-3 h-3'} />
                         </button>
                       )}
-                    </Badge>
+                    </div>
                   ))}
 
                   {/* Event Pills */}
                   {cityData.events.map((event) => (
-                    <Badge
-                      key={`evt-${event.id}`}
-                      className={`pill-events relative group ${
+                    <div key={`evt-${event.id}`} className="relative group">
+                      <Badge className={`pill-events ${
                         isMobile ? 'min-h-[40px] flex items-center' : ''
-                      }`}
-                    >
-                      📅 {event.eventTitle || event.title}
+                      }`}>
+                        📅 {event.eventTitle || event.title}
+                      </Badge>
                       {isOwnProfile && (
                         <button
                           onClick={() => deleteEvent.mutate(event)}
@@ -365,7 +363,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
                           <X className={isMobile ? 'w-3 h-3' : 'w-3 h-3'} />
                         </button>
                       )}
-                    </Badge>
+                    </div>
                   ))}
 
                 </div>
