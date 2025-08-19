@@ -58,21 +58,23 @@ export async function fetchTicketmasterEvents(city: string = 'Los Angeles'): Pro
     const today = new Date();
     const startDateTime = today.toISOString().split('T')[0] + 'T00:00:00Z';
     
-    // City-specific search - determine state from city
+    // City-specific search - determine state from city (case-insensitive)
     const cityStateMapping: { [key: string]: string } = {
-      'Austin': 'TX',
-      'Los Angeles': 'CA', 
-      'Las Vegas': 'NV',
-      'New York': 'NY',
-      'Chicago': 'IL',
-      'Miami': 'FL',
-      'San Francisco': 'CA',
-      'Seattle': 'WA',
-      'Denver': 'CO',
-      'Atlanta': 'GA'
+      'austin': 'TX',
+      'los angeles': 'CA', 
+      'las vegas': 'NV',
+      'new york': 'NY',
+      'new york city': 'NY',
+      'nyc': 'NY',
+      'chicago': 'IL',
+      'miami': 'FL',
+      'san francisco': 'CA',
+      'seattle': 'WA',
+      'denver': 'CO',
+      'atlanta': 'GA'
     };
     
-    const stateCode = cityStateMapping[city] || 'TX'; // Default to TX if city not mapped
+    const stateCode = cityStateMapping[city.toLowerCase()] || 'TX'; // Default to TX if city not mapped
     
     const params = new URLSearchParams({
       apikey: apiKey,
@@ -136,7 +138,7 @@ export async function fetchTicketmasterEvents(city: string = 'Los Angeles'): Pro
           [venue.address.line1, venue.address.line2, venue.address.city]
             .filter(Boolean).join(', ') : 'Address TBD',
         city: venue?.address?.city || city, // Use requested city as fallback
-        state: venue?.address?.stateCode || cityStateMapping[city] || 'TX', // Map city to state
+        state: venue?.address?.stateCode || cityStateMapping[city.toLowerCase()] || 'TX', // Map city to state
         organizer: 'Ticketmaster',
         category: classification?.segment?.name || classification?.genre?.name || 'Entertainment',
         url: event.url,
