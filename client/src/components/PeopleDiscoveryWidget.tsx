@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from "react";
 import { useLocation } from "wouter";
-import { MapPin, Heart } from "lucide-react";
+import { MapPin, Heart, Plane } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useQuery } from "@tanstack/react-query";
 import { AuthContext } from "@/App";
@@ -114,10 +114,10 @@ export function PeopleDiscoveryWidget({
                   src={person.profileImage} 
                   alt={person.name}
                   loading="lazy"
-                  className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 object-cover rounded-lg"
+                  className="w-24 h-32 object-cover rounded-lg"
                 />
               ) : (
-                <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 text-3xl sm:text-4xl md:text-5xl lg:text-6xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-bold rounded-lg flex items-center justify-center">
+                <div className="w-24 h-32 text-4xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-bold rounded-lg flex items-center justify-center">
                   {person.username?.charAt(0)?.toUpperCase() || "U"}
                 </div>
               )}
@@ -126,36 +126,35 @@ export function PeopleDiscoveryWidget({
             {/* Bottom Section */}
             <div className="text-center pb-2">
               {/* Line 1: Username with @ prefix */}
-              <h4 className="font-bold text-gray-900 dark:text-white text-base mb-1 truncate">
+              <h4 className="font-bold text-gray-900 dark:text-white text-lg mb-0.5 truncate">
                 @{person.username}
               </h4>
               
               {/* Line 2: Current status - Nearby Local/Traveler in current city */}
-              <div className="mb-1 flex items-center justify-center gap-1">
-                <MapPin className="w-3 h-3 text-gray-500 dark:text-gray-400" />
+              <div className="mb-0.5 flex items-center justify-center gap-1">
                 {travelPlans && Array.isArray(travelPlans) && travelPlans.length > 0 && (travelPlans as any)[0]?.status === 'active' ? (
-                  <p className="text-gray-600 dark:text-gray-400 text-xs truncate">
+                  <Plane className="w-4 h-4 text-blue-500" />
+                ) : (
+                  <MapPin className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                )}
+                {travelPlans && Array.isArray(travelPlans) && travelPlans.length > 0 && (travelPlans as any)[0]?.status === 'active' ? (
+                  <p className="text-gray-600 dark:text-gray-400 text-sm truncate">
                     Nearby Traveler in {(travelPlans as any)[0]?.destinationCity || (travelPlans as any)[0]?.destination?.split(',')[0]}
                   </p>
                 ) : (
-                  <p className="text-gray-600 dark:text-gray-400 text-xs truncate">
+                  <p className="text-gray-600 dark:text-gray-400 text-sm truncate">
                     Nearby Local in {person.location || 'Hometown'}
                   </p>
                 )}
               </div>
               
               {/* Line 3: Countries and references + ALWAYS hometown */}
-              <div className="mb-2">
-                <p className="text-gray-500 dark:text-gray-500 text-xs truncate">
+              <div className="mb-1">
+                <p className="text-gray-500 dark:text-gray-500 text-sm truncate">
                   {(userData?.countriesVisited && Array.isArray(userData.countriesVisited) ? userData.countriesVisited.length : 0)} countries ⭐ {(referencesData && Array.isArray(referencesData) ? referencesData.length : 0)} references • Nearby Local in {person.location?.split(',')[0] || 'Hometown'}
                 </p>
               </div>
               
-              <div className="inline-flex items-center gap-1 bg-blue-500 rounded-full px-3 py-1">
-                <span className="text-white font-medium text-xs">
-                  Your Profile
-                </span>
-              </div>
             </div>
           </div>
         </div>

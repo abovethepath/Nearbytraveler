@@ -90,43 +90,34 @@ export default function ResponsiveUserGrid({
     </Card>
   );
 
-  // Mobile Card Component - LARGER SIZE with more information
+  // Mobile Card Component - COMPACT VERTICAL for 2-column grid
   const MobileUserCard = ({ user }: { user: User }) => (
-    <div className="md:hidden">
-      <Card 
-        className="p-4 cursor-pointer hover:shadow-lg transition-shadow"
-        onClick={() => setLocation(`/profile/${user.id}`)}
-      >
-        <div className="flex items-start space-x-4">
-          <SimpleAvatar 
-            user={user} 
-            size="lg" 
-            className="flex-shrink-0"
-          />
-          <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-base truncate">@{user.username}</h3>
-            <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 mb-2">
-              <MapPin className="w-4 h-4" />
-              <span className="truncate">{getLocation(user)}</span>
-            </div>
-            {user.bio && (
-              <p className="text-sm text-gray-700 dark:text-gray-300 line-clamp-2 mb-2">
-                {user.bio}
-              </p>
-            )}
-            <div className="flex items-center justify-between">
-              {getInterestsBadge(user)}
-              {user.aura && user.aura > 0 && (
-                <div className="flex items-center gap-1">
-                  <Star className="w-4 h-4 text-yellow-500" />
-                  <span className="text-sm text-gray-600 dark:text-gray-400">{user.aura}</span>
-                </div>
-              )}
-            </div>
+    <Card 
+      className="p-3 cursor-pointer hover:shadow-lg transition-shadow h-full"
+      onClick={() => setLocation(`/profile/${user.id}`)}
+    >
+      <div className="flex flex-col items-center text-center space-y-2">
+        <SimpleAvatar 
+          user={user} 
+          size="xl" 
+          className="w-16 h-20 rounded-lg"
+        />
+        <div className="w-full">
+          <h3 className="font-semibold text-sm truncate">@{user.username}</h3>
+          <div className="flex items-center justify-center gap-1 text-xs text-gray-600 dark:text-gray-400 mb-1">
+            <MapPin className="w-3 h-3" />
+            <span className="truncate">{getLocation(user)}</span>
           </div>
+          {getInterestsBadge(user)}
+          {user.aura && user.aura > 0 && (
+            <div className="flex items-center justify-center gap-1 mt-1">
+              <Star className="w-3 h-3 text-yellow-500" />
+              <span className="text-xs text-gray-600 dark:text-gray-400">{user.aura}</span>
+            </div>
+          )}
         </div>
-      </Card>
-    </div>
+      </div>
+    </Card>
   );
 
   if (!users || users.length === 0) {
