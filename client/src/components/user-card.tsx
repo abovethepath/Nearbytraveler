@@ -425,10 +425,10 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
               {locationContext.type === 'traveling' ? (
                 // Show travel status for visiting cities
                 <div className="flex flex-col gap-1">
-                  <Badge className="text-xs bg-green-50 text-green-700 dark:bg-green-900 dark:text-green-200 border-green-200 dark:border-green-700">
+                  <div className="pill inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-green-500 text-white border-0 appearance-none select-none gap-1.5" style={{height: '2.5rem', minWidth: '8rem', padding: '0 1rem', fontSize: '1rem'}}>
                     <Clock className="w-3 h-3 mr-1" />
                     Travel Plan
-                  </Badge>
+                  </div>
                   <div className="text-xs text-gray-600 dark:text-gray-400 flex items-center gap-1">
                     <Handshake className="w-3 h-3" />
                     <span>Vouches: Can get from vouched users, can give once vouched</span>
@@ -439,14 +439,14 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
                 <div className="flex flex-col gap-1">
                   <div className="flex flex-wrap gap-1">
                     {user.localExpertise?.slice(0, 2).map((expertise) => (
-                      <Badge key={expertise} className="text-xs bg-orange-50 text-orange-700 dark:bg-orange-900 dark:text-orange-200 border-orange-200 dark:border-orange-700">
+                      <div key={expertise} className="pill inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-orange-500 text-white border-0 appearance-none select-none gap-1.5" style={{height: '2.5rem', minWidth: '8rem', padding: '0 1rem', fontSize: '1rem'}}>
                         {expertise}
-                      </Badge>
+                      </div>
                     ))}
                     {user.localActivities?.slice(0, 2).map((activity) => (
-                      <Badge key={activity} className="text-xs bg-yellow-50 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-200 border-yellow-200 dark:border-yellow-700">
+                      <div key={activity} className="pill inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-yellow-500 text-white border-0 appearance-none select-none gap-1.5" style={{height: '2.5rem', minWidth: '8rem', padding: '0 1rem', fontSize: '1rem'}}>
                         {activity}
-                      </Badge>
+                      </div>
                     ))}
                   </div>
                   <div className="text-xs text-gray-600 dark:text-gray-400 flex items-center gap-1">
