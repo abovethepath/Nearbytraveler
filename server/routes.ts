@@ -4002,6 +4002,8 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // AI event generator will be imported dynamically when needed
+
   // FIXED: Get events filtered by city with proper location filtering - NO CROSS-CITY BLEEDING
   app.get("/api/events", async (req, res) => {
     console.log("🟢 EVENTS ENDPOINT HIT! Query:", req.query);
@@ -4112,6 +4114,24 @@ Questions? Just reply to this message. Welcome aboard!
         
         if (process.env.NODE_ENV === 'development') console.log(`🎪 EVENTS: Found ${eventsQuery.length} events in next 6 weeks for ${cityName}`);
         if (process.env.NODE_ENV === 'development') console.log(`🎪 EVENTS: Event details:`, eventsQuery.map(e => `${e.title} in ${e.city}`));
+        
+        // 🤖 AI EVENT GENERATION: If city has very few events, generate more with OpenAI
+        if (eventsQuery.length <= 3) {
+          console.log(`🤖 AI TRIGGER: ${cityName} has only ${eventsQuery.length} events - generating AI events with OpenAI`);
+          try {
+            // Generate AI events for this city in the background (don't wait for completion)
+            setImmediate(async () => {
+              try {
+                const { createAIEventsInDatabase } = await import('./openaiEventGenerator');
+                await createAIEventsInDatabase(cityName, state || 'TX', country || 'USA');
+              } catch (aiError) {
+                console.error(`🚫 AI EVENT GENERATION FAILED for ${cityName}:`, aiError);
+              }
+            });
+          } catch (error) {
+            console.error(`🚫 AI EVENT TRIGGER FAILED for ${cityName}:`, error);
+          }
+        }
       } else {
         // Return events in next 6 weeks if no city specified - EARLIEST FIRST
         // ENHANCED: Limit to next 6 weeks to include all upcoming events
@@ -4180,6 +4200,32 @@ Questions? Just reply to this message. Welcome aboard!
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error fetching events:", error);
       return res.status(500).json({ message: "Failed to fetch events" });
+    }
+  });
+
+  // 🤖 MANUAL AI EVENT GENERATION ENDPOINT - For testing and manual triggers
+  app.post("/api/events/generate-ai/:city", async (req, res) => {
+    try {
+      const cityName = req.params.city;
+      const { state = 'TX', country = 'USA' } = req.body;
+      
+      console.log(`🤖 MANUAL AI GENERATION: Creating events for ${cityName}, ${state}, ${country}`);
+      
+      const { createAIEventsInDatabase } = await import('./openaiEventGenerator');
+      const aiEvents = await createAIEventsInDatabase(cityName, state, country);
+      
+      return res.json({ 
+        success: true, 
+        message: `Generated ${aiEvents.length} AI events for ${cityName}`,
+        events: aiEvents.map(e => ({ title: e.title, city: e.city }))
+      });
+    } catch (error: any) {
+      console.error(`🚫 MANUAL AI GENERATION ERROR:`, error);
+      return res.status(500).json({ 
+        success: false, 
+        message: "Failed to generate AI events", 
+        error: error.message 
+      });
     }
   });
 
