@@ -4004,16 +4004,17 @@ Questions? Just reply to this message. Welcome aboard!
 
   // FIXED: Get events filtered by city with proper location filtering - NO CROSS-CITY BLEEDING
   app.get("/api/events", async (req, res) => {
+    console.log("🟢 EVENTS ENDPOINT HIT! Query:", req.query);
     try {
       if (process.env.NODE_ENV === 'development') console.log(`📅 DIRECT API: Fetching events with query:`, req.query);
       const { city } = req.query;
 
       let eventsQuery = [];
-      if (process.env.NODE_ENV === 'development') console.log(`📅 EVENTS DEBUG: City parameter received: "${city}", type: ${typeof city}`);
+      console.log(`📅 EVENTS DEBUG: City parameter received: "${city}", type: ${typeof city}`);
       
       if (city && typeof city === 'string' && city.trim() !== '') {
         const cityName = city.toString();
-        if (process.env.NODE_ENV === 'development') console.log(`🎪 EVENTS: Getting events for city: ${cityName}`);
+        console.log(`🎪 EVENTS: Getting events for city: ${cityName}`);
         
         // CRITICAL FIX: Only apply LA Metro consolidation if user is specifically in LA Metro area
         // This prevents Austin users from seeing Los Angeles events
@@ -4054,7 +4055,7 @@ Questions? Just reply to this message. Welcome aboard!
                                      cityName.toLowerCase() === laCity.toLowerCase()
                                    );
         
-        if (process.env.NODE_ENV === 'development') console.log(`🔍 EVENTS DEBUG: isActualLAMetroCity for ${cityName}: ${isActualLAMetroCity}`);
+        console.log(`🔍 EVENTS DEBUG: isActualLAMetroCity for ${cityName}: ${isActualLAMetroCity}`);
         
         if (isActualLAMetroCity) {
           // Only for genuine LA metro cities, show all LA metro events
@@ -4063,7 +4064,7 @@ Questions? Just reply to this message. Welcome aboard!
         } else {
           // For all other cities (Austin, Las Vegas, New York, etc.), only show events in that specific city
           searchCities = [cityName]; // CRITICAL: Ensure we only search the specific city
-          if (process.env.NODE_ENV === 'development') console.log(`🎯 EVENTS LOCAL: ${cityName} is not in LA metro - showing only local events for ${cityName}`);
+          console.log(`🎯 EVENTS LOCAL: ${cityName} is not in LA metro - showing only local events for ${cityName}`);
         }
         
         if (process.env.NODE_ENV === 'development') console.log(`🌍 EVENTS: Final searchCities array:`, searchCities);

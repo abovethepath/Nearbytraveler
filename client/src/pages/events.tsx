@@ -124,10 +124,10 @@ export default function Events() {
 
   // Fetch events based on selected city with optimized loading
   const { data: events = [], isLoading, error } = useQuery<Event[]>({
-    queryKey: ["/api/events", cityToQuery],
+    queryKey: ["/api/events", cityToQuery, Date.now()], // Add timestamp to bypass cache
     queryFn: async () => {
       console.log(`🎪 EVENTS: Fetching events for city: "${cityToQuery}"`);
-      const response = await fetch(`/api/events?city=${encodeURIComponent(cityToQuery)}`);
+      const response = await fetch(`/api/events?city=${encodeURIComponent(cityToQuery)}&_bust=${Date.now()}`);
       if (!response.ok) {
         throw new Error('Failed to fetch events');
       }
@@ -136,7 +136,8 @@ export default function Events() {
       return data;
     },
     enabled: !(selectedLocation === "custom" && showCustomInput), // Don't auto-fetch while typing
-    staleTime: 30000, // Cache for 30 seconds to improve performance
+    staleTime: 0, // Disable cache to test fix
+    cacheTime: 0, // Clear cache immediately
   });
 
   // Fetch all events to identify user's events - ALWAYS load when user is logged in
