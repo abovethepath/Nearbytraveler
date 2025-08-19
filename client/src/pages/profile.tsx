@@ -38,7 +38,7 @@ import { formatDateForDisplay, getCurrentTravelDestination } from "@/lib/dateUti
 import { COUNTRIES, CITIES_BY_COUNTRY } from "@/lib/locationData";
 import { SmartLocationInput } from "@/components/SmartLocationInput";
 import { calculateAge, formatDateOfBirthForInput, validateDateInput, getDateInputConstraints } from "@/lib/ageUtils";
-import { isTopChoiceInterest, getInterestStyle, getActivityStyle, getEventStyle } from "@/lib/topChoicesUtils";
+import { isTopChoiceInterest } from "@/lib/topChoicesUtils";
 import { BUSINESS_TYPES } from "../../../shared/base-options";
 
 // State/Province arrays - consistent with signup forms
