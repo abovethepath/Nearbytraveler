@@ -3410,6 +3410,98 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // User References API Endpoints
+  // Get all references for a user
+  app.get("/api/users/:userId/references", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId || '0');
+      if (isNaN(userId) || userId <= 0) {
+        return res.status(400).json({ message: "Invalid user ID" });
+      }
+      
+      const references = await storage.getUserReferences(userId);
+      return res.json(references || []);
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error fetching user references:", error);
+      return res.status(500).json({ message: "Failed to fetch references" });
+    }
+  });
+
+  // Create a new user reference
+  app.post("/api/user-references", async (req, res) => {
+    try {
+      const { reviewerId, revieweeId, content, experience } = req.body;
+      
+      if (!reviewerId || !revieweeId || !content) {
+        return res.status(400).json({ message: "Missing required fields: reviewerId, revieweeId, content" });
+      }
+      
+      if (reviewerId === revieweeId) {
+        return res.status(400).json({ message: "Cannot create reference for yourself" });
+      }
+      
+      const referenceData = {
+        reviewerId,
+        revieweeId,
+        content,
+        experience: experience || 'positive'
+      };
+      
+      const newReference = await storage.createUserReference(referenceData);
+      return res.json(newReference);
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error creating user reference:", error);
+      return res.status(500).json({ message: "Failed to create reference" });
+    }
+  });
+
+  // Update a user reference
+  app.put("/api/user-references/:referenceId", async (req, res) => {
+    try {
+      const referenceId = parseInt(req.params.referenceId || '0');
+      const { content, experience } = req.body;
+      
+      if (isNaN(referenceId) || referenceId <= 0) {
+        return res.status(400).json({ message: "Invalid reference ID" });
+      }
+      
+      if (!content && !experience) {
+        return res.status(400).json({ message: "No update data provided" });
+      }
+      
+      const updatedReference = await storage.updateUserReference(referenceId, { content, experience });
+      if (!updatedReference) {
+        return res.status(404).json({ message: "Reference not found" });
+      }
+      
+      return res.json(updatedReference);
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error updating user reference:", error);
+      return res.status(500).json({ message: "Failed to update reference" });
+    }
+  });
+
+  // Delete a user reference
+  app.delete("/api/user-references/:referenceId", async (req, res) => {
+    try {
+      const referenceId = parseInt(req.params.referenceId || '0');
+      
+      if (isNaN(referenceId) || referenceId <= 0) {
+        return res.status(400).json({ message: "Invalid reference ID" });
+      }
+      
+      const success = await storage.deleteUserReference();
+      if (!success) {
+        return res.status(404).json({ message: "Reference not found" });
+      }
+      
+      return res.json({ message: "Reference deleted successfully" });
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error deleting user reference:", error);
+      return res.status(500).json({ message: "Failed to delete reference" });
+    }
+  });
+
   // Get detailed itinerary data for a specific completed trip
   app.get("/api/travel-plans/:id/itineraries", async (req, res) => {
     try {
