@@ -1,0 +1,105 @@
+Replace your connections list render block (the part that maps userConnections.slice(0, connectionsDisplayCount)) with this:
+
+<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+  {userConnections.slice(0, connectionsDisplayCount).map((connection) => (
+    <div
+      key={connection.id}
+      onClick={() => setLocation(`/profile/${connection.connectedUser?.id}`)}
+      className="rounded-xl border p-3 hover:shadow-sm bg-white dark:bg-gray-800 cursor-pointer flex flex-col items-center text-center gap-2"
+    >
+      <SimpleAvatar
+        user={connection.connectedUser}
+        size="md"
+        className="w-16 h-16 sm:w-14 sm:h-14 rounded-full border-2 object-cover"
+      />
+      <div className="w-full">
+        <p className="font-medium text-sm truncate text-gray-900 dark:text-white">
+          {connection.connectedUser?.name || connection.connectedUser?.username}
+        </p>
+        <p className="text-xs truncate text-gray-500 dark:text-gray-400">
+          {connection.connectedUser?.hometownCity && connection.connectedUser?.hometownCountry
+            ? `${connection.connectedUser?.hometownCity}, ${connection.connectedUser?.hometownCountry.replace("United States", "USA")}`
+            : "New member"}
+        </p>
+      </div>
+
+      {/* Show the button on ≥sm only; on mobile the whole tile is tappable */}
+      <Button
+        size="sm"
+        variant="outline"
+        className="hidden sm:inline-flex h-8 px-3 text-xs bg-blue-500 hover:bg-blue-600 text-white border-0"
+        onClick={(e) => { e.stopPropagation(); setLocation(`/profile/${connection.connectedUser?.id}`); }}
+      >
+        View
+      </Button>
+    </div>
+  ))}
+</div>
+
+2) Make all pills identical (no overlap)
+
+Wherever you render chips/badges (interests, activities, event tags, countries visited), use this exact class:
+
+className="inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0"
+
+
+Examples:
+
+<Badge className="inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0">
+  {tag}
+</Badge>
+<span className="inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0">
+  {country}
+</span>
+
+
+Wrapper should wrap:
+
+<div className="flex flex-wrap gap-2">
+  {/* pills here */}
+</div>
+
+
+If you show a “+N” tag, make it a bit tighter:
+
+<Badge className="inline-flex items-center justify-center h-7 rounded-full px-2 text-[11px] font-medium whitespace-nowrap leading-none border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 bg-transparent">
+  +{extraCount}
+</Badge>
+
+3) Stop map/content overflow on phones
+
+Wrap your map component:
+
+<div className="overflow-hidden rounded-2xl border max-w-full [&_*>*]:min-w-0">
+  <CityMap city={...} state={...} country={...} />
+</div>
+
+
+Add (or keep) these global CSS rules (e.g., globals.css):
+
+html, body, #root { width: 100%; overflow-x: hidden; }
+* { min-width: 0; }
+
+.mapboxgl-popup-content,
+.gm-style .gm-style-iw,
+.leaflet-popup-content {
+  max-width: calc(100vw - 2rem);
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  white-space: normal;
+}
+
+
+If your “Location Sharing” card exists, make sure its content allows wrapping:
+
+<CardContent className="space-y-4 break-words overflow-hidden">
+  {/* ... */}
+</CardContent>
+
+4) (Optional) Taller hero on mobile
+
+If your profile page has a header/hero that looks squished, give the container a safe viewport height:
+
+<section className="min-h-[70svh] md:min-h-[80svh] bg-cover bg-center bg-no-repeat">
+  {/* hero content */}
+</section>

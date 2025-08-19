@@ -430,18 +430,18 @@ function MultiSelect({ options, selected, onChange, placeholder, maxDisplay = 3,
           aria-expanded={open}
           className="w-full justify-between min-h-[40px] h-auto"
         >
-          <div className="flex flex-wrap gap-1">
+          <div className="flex flex-wrap gap-2">
             {selected.length === 0 ? (
               <span className="text-muted-foreground">{placeholder}</span>
             ) : (
               <>
                 {selected.slice(0, maxDisplay).map((item) => (
-                  <div key={item} className={pillType === 'pill-interests' ? 'inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5' : pillType === 'pill-activities' ? 'inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-green-500 text-white border-0 appearance-none select-none gap-1.5' : 'inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-purple-500 text-white border-0 appearance-none select-none gap-1.5'}>
+                  <div key={item} className={pillType === 'pill-interests' ? 'inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0' : pillType === 'pill-activities' ? 'inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none bg-green-500 text-white border-0' : 'inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none bg-purple-500 text-white border-0'}>
                     {item}
                   </div>
                 ))}
                 {selected.length > maxDisplay && (
-                  <div className={pillType === 'pill-interests' ? 'inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5' : pillType === 'pill-activities' ? 'inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-green-500 text-white border-0 appearance-none select-none gap-1.5' : 'inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-purple-500 text-white border-0 appearance-none select-none gap-1.5'}>
+                  <div className="inline-flex items-center justify-center h-7 rounded-full px-2 text-[11px] font-medium whitespace-nowrap leading-none border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 bg-transparent">
                     +{selected.length - maxDisplay} more
                   </div>
                 )}
@@ -3979,7 +3979,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   Local Interests, Activities & Events
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-6">
+              <CardContent className="space-y-6 break-words overflow-hidden">
                 {/* Single Edit Button for All Preferences */}
                 {isOwnProfile && !editingInterests && !editingActivities && !editingEvents && (
                   <div className="flex justify-center mb-4">
@@ -4133,7 +4133,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           {/* Top Choices for Most Travelers */}
                           <div className="mb-4">
                             <h5 className="text-sm font-medium mb-2 text-gray-900 dark:text-white">Top Choices for Most Travelers</h5>
-                            <div className="flex flex-wrap gap-2 p-3 bg-gradient-to-r from-blue-100 to-orange-100 dark:from-blue-900 dark:to-orange-900 rounded-lg">
+                            <div className="flex flex-wrap gap-2 p-3 bg-gradient-to-r from-blue-100 to-orange-100 dark:from-blue-900 dark:to-orange-900 rounded-lg overflow-hidden break-words">
                               {MOST_POPULAR_INTERESTS.map((interest) => {
                                 const isSelected = editFormData.interests.includes(interest);
                                 
@@ -4162,7 +4162,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           {/* All Available Interests */}
                           <div>
                             <h5 className="text-sm font-medium mb-2 text-gray-900 dark:text-white">All Available Interests</h5>
-                            <div className="flex flex-wrap gap-2 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border">
+                            <div className="flex flex-wrap gap-2 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border overflow-hidden break-words">
                               {getAllInterests().filter(interest => !MOST_POPULAR_INTERESTS.includes(interest)).map((interest) => {
                                 const displayText = interest.startsWith("**") && interest.endsWith("**") ? 
                                   interest.slice(2, -2) : interest;
@@ -4202,7 +4202,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             Your default preferences for trips and to match with Nearby Locals and Travelers. They can be added to and changed in the future for specific trips etc.
                           </div>
                           
-                          <div className="flex flex-wrap gap-2 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border">
+                          <div className="flex flex-wrap gap-2 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border overflow-hidden break-words">
                             {getAllActivities().map((activity, index) => {
                               const isSelected = editFormData.activities.includes(activity);
                               
@@ -4585,7 +4585,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           <p className="text-sm font-medium text-gray-700 mb-2">Current Activities:</p>
                           <div className="flex flex-wrap gap-2">
                             {tempActivities.map((activity, index) => (
-                              <span key={`activity-${activity}-${index}`} className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-green-500 text-white border-0 appearance-none select-none gap-1.5">
+                              <span key={`activity-${activity}-${index}`} className="inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none bg-green-500 text-white border-0">
                                 {activity}
                                 <button
                                   onClick={() => setTempActivities(tempActivities.filter(a => a !== activity))}
@@ -4730,7 +4730,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           <p className="text-sm font-medium text-gray-700 mb-2">Current Events:</p>
                           <div className="flex flex-wrap gap-2">
                             {tempEvents.map((event, index) => (
-                              <span key={`event-${event}-${index}`} className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-purple-500 text-white border-0 appearance-none select-none gap-1.5">
+                              <span key={`event-${event}-${index}`} className="inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none bg-purple-500 text-white border-0">
                                 {event}
                                 <button
                                   onClick={() => setTempEvents(tempEvents.filter(e => e !== event))}
@@ -4817,7 +4817,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   Business Interests, Activities & Events
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-6">
+              <CardContent className="space-y-6 break-words overflow-hidden">
                 {/* Single Edit Button for All Business Preferences */}
                 {isOwnProfile && !editingInterests && !editingActivities && !editingEvents && (
                   <div className="flex justify-center mb-4">
@@ -5154,7 +5154,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           {editFormData.interests.filter(interest => !getAllInterests().includes(interest)).length > 0 && (
                             <div className="mt-2">
                               <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Your Custom Interests (click X to remove):</p>
-                              <div className="flex flex-wrap gap-1">
+                              <div className="flex flex-wrap gap-2">
                                 {editFormData.interests.filter(interest => !getAllInterests().includes(interest)).map((interest, index) => (
                                   <span
                                     key={`custom-interest-${index}`}
@@ -5253,7 +5253,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           {editFormData.activities.filter(activity => !getAllActivities().includes(activity)).length > 0 && (
                             <div className="mt-2">
                               <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Custom Activities (click X to remove):</p>
-                              <div className="flex flex-wrap gap-1">
+                              <div className="flex flex-wrap gap-2">
                                 {editFormData.activities.filter(activity => !getAllActivities().includes(activity)).map((activity, index) => (
                                   <span
                                     key={`custom-activity-${index}`}
@@ -5352,7 +5352,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           {editFormData.events.filter(event => !getAllEvents().includes(event)).length > 0 && (
                             <div className="mt-2">
                               <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Custom Events (click X to remove):</p>
-                              <div className="flex flex-wrap gap-1">
+                              <div className="flex flex-wrap gap-2">
                                 {editFormData.events.filter(event => !getAllEvents().includes(event)).map((event, index) => (
                                   <span
                                     key={`custom-event-${index}`}
@@ -5603,7 +5603,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           </div>
                           {plan.interests && plan.interests.length > 0 && (
                             <div className="mb-2">
-                              <div className="flex flex-wrap gap-1">
+                              <div className="flex flex-wrap gap-2">
                                 {(expandedPlanInterests.has(plan.id) ? plan.interests : plan.interests.slice(0, 2)).map((interest: string) => (
                                   <div key={interest} className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
                                     {interest}
@@ -5630,7 +5630,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           )}
                           {plan.travelStyle && plan.travelStyle.length > 0 && (
                             <div>
-                              <div className="flex flex-wrap gap-1">
+                              <div className="flex flex-wrap gap-2">
                                 {plan.travelStyle.slice(0, 2).map((style: string) => (
                                   <div key={style} className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
                                     {style}
@@ -5737,7 +5737,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             </div>
                             {plan.interests && plan.interests.length > 0 && (
                               <div className="mb-2">
-                                <div className="flex flex-wrap gap-1">
+                                <div className="flex flex-wrap gap-2">
                                   {(expandedPlanInterests.has(plan.id) ? plan.interests : plan.interests.slice(0, 2)).map((interest: string) => (
                                     <div key={interest} className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
                                       {interest}
@@ -5764,7 +5764,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             )}
                             {plan.travelStyle && plan.travelStyle.length > 0 && (
                               <div>
-                                <div className="flex flex-wrap gap-1">
+                                <div className="flex flex-wrap gap-2">
                                   {plan.travelStyle.slice(0, 2).map((style: string) => (
                                     <div key={style} className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
                                       {style}
@@ -5955,7 +5955,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 <CardHeader>
                   <CardTitle className="dark:text-white">Travel Stats</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-4 break-words overflow-hidden">
                   <div className="flex items-center justify-between">
                     <span className="text-gray-600 dark:text-gray-300 flex items-center gap-2">
                       <Sparkles className="w-4 h-4 text-orange-500" />
@@ -6130,34 +6130,41 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               <CardContent>
                 {userConnections.length > 0 ? (
                   <div className="space-y-3">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                     {userConnections.slice(0, connectionsDisplayCount).map((connection: any) => (
-                        <div key={connection.id} className="flex items-center justify-between">
-                          <div 
-                            className="flex items-center gap-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg p-2 -m-2 transition-colors flex-1"
-                            onClick={() => setLocation(`/profile/${connection.connectedUser?.id}`)}
-                          >
-                            <SimpleAvatar 
-                              user={connection.connectedUser} 
-                              size="md" 
-                              className="flex-shrink-0"
-                            />
-                          <div>
-                            <p className="font-medium text-sm text-gray-900 dark:text-white">{connection.connectedUser?.username || connection.connectedUser?.name}</p>
-                            <p className="text-xs text-gray-500 dark:text-gray-400">
-                              {connection.connectedUser?.location || "Location not set"}
-                            </p>
-                          </div>
+                      <div
+                        key={connection.id}
+                        onClick={() => setLocation(`/profile/${connection.connectedUser?.id}`)}
+                        className="rounded-xl border p-3 hover:shadow-sm bg-white dark:bg-gray-800 cursor-pointer flex flex-col items-center text-center gap-2"
+                      >
+                        <SimpleAvatar
+                          user={connection.connectedUser}
+                          size="md"
+                          className="w-16 h-16 sm:w-14 sm:h-14 rounded-full border-2 object-cover"
+                        />
+                        <div className="w-full">
+                          <p className="font-medium text-sm truncate text-gray-900 dark:text-white">
+                            {connection.connectedUser?.name || connection.connectedUser?.username}
+                          </p>
+                          <p className="text-xs truncate text-gray-500 dark:text-gray-400">
+                            {connection.connectedUser?.hometownCity && connection.connectedUser?.hometownCountry
+                              ? `${connection.connectedUser?.hometownCity}, ${connection.connectedUser?.hometownCountry.replace("United States", "USA")}`
+                              : "New member"}
+                          </p>
                         </div>
+
+                        {/* Show the button on ≥sm only; on mobile the whole tile is tappable */}
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => setLocation(`/profile/${connection.connectedUser?.id}`)}
-                          className="h-8 px-3 text-xs bg-blue-500 hover:bg-blue-600 text-white border-0"
+                          className="hidden sm:inline-flex h-8 px-3 text-xs bg-blue-500 hover:bg-blue-600 text-white border-0"
+                          onClick={(e) => { e.stopPropagation(); setLocation(`/profile/${connection.connectedUser?.id}`); }}
                         >
                           View
                         </Button>
                       </div>
                     ))}
+                  </div>
                     
                     {/* Load More / Load Less buttons */}
                     {userConnections.length > 3 && (
@@ -6684,7 +6691,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     Location Sharing
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-4 break-words overflow-hidden">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       {user.locationSharingEnabled ? (
@@ -9235,7 +9242,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     <div className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-2">
                       📍 {chatroom.city}
                       {chatroom.role === 'admin' && (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                        <span className="inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0">
                           Admin
                         </span>
                       )}
