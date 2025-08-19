@@ -5356,7 +5356,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                 {editFormData.events.filter(event => !getAllEvents().includes(event)).map((event, index) => (
                                   <span
                                     key={`custom-event-${index}`}
-                                    className="inline-flex items-center gap-1 px-2 py-1 bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200 rounded text-xs font-medium"
+                                    className="bg-blue-500 text-white border-0 px-3 py-2 text-sm rounded-full font-medium inline-flex items-center"
                                   >
                                     {event}
                                     <button
@@ -5547,12 +5547,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               <div className="flex items-center gap-2 mb-1">
                                 <h4 className="font-medium text-sm">{plan.destination}</h4>
                                 {plan.status === 'active' && (
-                                  <Badge className="bg-green-500 text-white text-xs px-2 py-0.5">
+                                  <Badge className="bg-blue-500 text-white border-0 px-3 py-2 text-sm rounded-full font-medium">
                                     ✈️ Currently Traveling
                                   </Badge>
                                 )}
                                 {plan.status === 'planned' && (
-                                  <Badge className="bg-blue-500 text-white text-xs px-2 py-0.5">
+                                  <Badge className="bg-blue-500 text-white border-0 px-3 py-2 text-sm rounded-full font-medium">
                                     📅 Upcoming
                                   </Badge>
                                 )}
@@ -5633,7 +5633,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             <div>
                               <div className="flex flex-wrap gap-1">
                                 {plan.travelStyle.slice(0, 2).map((style: string) => (
-                                  <Badge key={style} variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200 dark:bg-green-900 dark:text-green-200 dark:border-green-700">
+                                  <Badge key={style} className="bg-blue-500 text-white border-0 px-3 py-2 text-sm rounded-full font-medium">
                                     {style}
                                   </Badge>
                                 ))}
