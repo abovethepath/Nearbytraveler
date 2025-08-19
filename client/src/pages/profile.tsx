@@ -6660,7 +6660,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           {countriesVisited.map((country: string, index: number) => (
                             <Badge 
                               key={country} 
-                              className="bg-blue-500 text-white border-0 px-3 py-2 text-sm font-medium rounded-full whitespace-nowrap"
+                              className="pill-interests"
                             >
                               {country}
                             </Badge>
@@ -8822,7 +8822,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </h4>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                     {selectedTravelPlan.travelStyle.map((style) => (
-                      <Badge key={style} variant="secondary" className="bg-blue-500 text-white border-0 px-3 py-2 text-sm rounded-full justify-center">
+                      <Badge key={style} className="pill-interests">
                         {style}
                       </Badge>
                     ))}
