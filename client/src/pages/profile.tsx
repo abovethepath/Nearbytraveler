@@ -442,7 +442,7 @@ function MultiSelect({ options, selected, onChange, placeholder, maxDisplay = 3,
                   </Badge>
                 ))}
                 {selected.length > maxDisplay && (
-                  <Badge className={`${pillType} bg-gray-200 text-gray-600`}>
+                  <Badge className={pillType}>
                     +{selected.length - maxDisplay} more
                   </Badge>
                 )}
