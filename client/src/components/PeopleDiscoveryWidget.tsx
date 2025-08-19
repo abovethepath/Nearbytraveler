@@ -145,8 +145,8 @@ export function PeopleDiscoveryWidget({
       if (onPersonClick) {
         onPersonClick(person);
       } else {
-        // Show compatibility/commonalities instead of navigating
-        console.log('Show commonalities for', person.username);
+        // Navigate to profile page
+        setLocation(`/profile/${person.id}`);
       }
     };
 
