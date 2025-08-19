@@ -361,28 +361,28 @@ export default function ConnectPage() {
 
   const pageContent = (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-6">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
+        <div className="mb-4 sm:mb-6">
           <BackButton />
         </div>
 
         {/* Quick Connect Section */}
         <Card 
-          className="mb-6 cursor-pointer hover:shadow-md transition-shadow"
+          className="mb-4 sm:mb-6 cursor-pointer hover:shadow-md transition-shadow"
           onClick={() => {
             setConnectModalMode('current');
             setShowConnectModal(true);
           }}
         >
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Users className="w-5 h-5 text-blue-600" />
+          <CardHeader className="p-4 sm:p-6">
+            <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+              <Users className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
               Quick Connect
             </CardTitle>
-            <p className="text-gray-600 dark:text-gray-300">Connect with travelers and locals in your destinations</p>
+            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 mt-1">Connect with travelers and locals in your destinations</p>
           </CardHeader>
-          <CardContent>
-            <div className="flex flex-wrap gap-3 mb-4">
+          <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0">
+            <div className="flex flex-wrap gap-2 sm:gap-3 mb-4">
               {/* Current Travel Destination (if traveling) */}
               {(() => {
                 const currentLocation = getUserLocation('current');
@@ -393,7 +393,8 @@ export default function ConnectPage() {
                   return (
                     <Button
                       variant="outline"
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.stopPropagation();
                         setActiveTab("location-search");
                         setSearchLocation(currentLocation);
                         setStartDate(undefined);
@@ -402,10 +403,12 @@ export default function ConnectPage() {
                         setHasSearched(false);
                         setTimeout(() => handleSearch(), 100);
                       }}
-                      className="flex items-center gap-2 bg-blue-50 border-blue-200"
+                      className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-2 bg-blue-50 border-blue-200"
                     >
-                      <MapPin className="w-4 h-4 text-blue-600" />
-                      {currentLocation.split(',')[0]}
+                      <MapPin className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600" />
+                      <span className="truncate max-w-[100px] sm:max-w-none">
+                        {currentLocation.split(',')[0]}
+                      </span>
                     </Button>
                   );
                 }
@@ -485,17 +488,32 @@ export default function ConnectPage() {
           </CardContent>
         </Card>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3 bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl border border-white/20 dark:border-gray-700/50 rounded-xl p-2">
-            <TabsTrigger value="ai-matches" className="rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-600 data-[state=active]:text-white transition-all duration-300">AI Matches</TabsTrigger>
-            <TabsTrigger value="location-search" className="rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-green-500 data-[state=active]:to-teal-600 data-[state=active]:text-white transition-all duration-300">Location Search</TabsTrigger>
-            <TabsTrigger value="advanced-filters" className="rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-red-600 data-[state=active]:text-white transition-all duration-300">Advanced Filters</TabsTrigger>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4 sm:space-y-6">
+          <TabsList className="grid w-full grid-cols-3 bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl border border-white/20 dark:border-gray-700/50 rounded-xl p-1 sm:p-2">
+            <TabsTrigger 
+              value="ai-matches" 
+              className="text-xs sm:text-sm rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-600 data-[state=active]:text-white transition-all duration-300 px-2 sm:px-4 py-1.5 sm:py-2"
+            >
+              AI Matches
+            </TabsTrigger>
+            <TabsTrigger 
+              value="location-search" 
+              className="text-xs sm:text-sm rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-green-500 data-[state=active]:to-teal-600 data-[state=active]:text-white transition-all duration-300 px-2 sm:px-4 py-1.5 sm:py-2"
+            >
+              Location
+            </TabsTrigger>
+            <TabsTrigger 
+              value="advanced-filters" 
+              className="text-xs sm:text-sm rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-red-600 data-[state=active]:text-white transition-all duration-300 px-2 sm:px-4 py-1.5 sm:py-2"
+            >
+              Advanced
+            </TabsTrigger>
           </TabsList>
 
 
 
           {/* AI Matches Tab - Integrated from Matches page */}
-          <TabsContent value="ai-matches" className="space-y-6">
+          <TabsContent value="ai-matches" className="space-y-4 sm:space-y-6">
             <Card className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl border border-white/20 dark:border-gray-700/50 rounded-2xl shadow-lg">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -510,13 +528,13 @@ export default function ConnectPage() {
           </TabsContent>
 
           {/* Location Search Tab */}
-          <TabsContent value="location-search" className="space-y-6">
+          <TabsContent value="location-search" className="space-y-4 sm:space-y-6">
             <Card>
-              <CardContent className="space-y-6 pt-6">
+              <CardContent className="space-y-4 sm:space-y-6 p-4 sm:p-6">
                 {/* Quick Select Buttons */}
                 <div>
-                  <h3 className="text-sm font-medium mb-2 text-black dark:text-white">Quick Select</h3>
-                  <div className="flex flex-wrap gap-2">
+                  <h3 className="text-xs sm:text-sm font-medium mb-2 text-black dark:text-white">Quick Select</h3>
+                  <div className="flex flex-wrap gap-1.5 sm:gap-2">
                     {/* Current Location */}
                     {getUserLocation('current') && (
                       <Button
@@ -611,10 +629,10 @@ export default function ConnectPage() {
                   </div>
                 </div>
 
-                {/* Search Form */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* Search Form - Stack on mobile */}
+                <div className="grid grid-cols-1 gap-3 sm:gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="location" className="text-black dark:text-white">Location</Label>
+                    <Label htmlFor="location" className="text-xs sm:text-sm text-black dark:text-white">Location</Label>
                     <div className="relative">
                       <Input
                         id="location"
@@ -622,18 +640,23 @@ export default function ConnectPage() {
                         value={searchLocation}
                         onChange={(e) => setSearchLocation(e.target.value)}
                         onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                        className="text-sm sm:text-base pr-8"
                       />
-                      <MapPin className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                      <MapPin className="absolute right-3 top-1/2 transform -translate-y-1/2 w-3 h-3 sm:w-4 sm:h-4 text-gray-400" />
                     </div>
                   </div>
 
-                  <div className="space-y-2">
-                    <Label className="text-black dark:text-white">Start Date (Optional)</Label>
-                    <Popover open={showStartCalendar} onOpenChange={setShowStartCalendar}>
-                      <PopoverTrigger asChild>
-                        <Button variant="outline" className="w-full justify-start text-left font-normal">
-                          <CalendarIcon className="mr-2 h-4 w-4" />
-                          {startDate ? format(startDate, "PPP") : "Select start date"}
+                  {/* Date pickers - Full width on mobile */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                    <div className="space-y-2">
+                      <Label className="text-xs sm:text-sm text-black dark:text-white">Start Date (Optional)</Label>
+                      <Popover open={showStartCalendar} onOpenChange={setShowStartCalendar}>
+                        <PopoverTrigger asChild>
+                          <Button variant="outline" className="w-full justify-start text-left font-normal text-xs sm:text-sm">
+                            <CalendarIcon className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+                            <span className="truncate">
+                              {startDate ? format(startDate, "PPP") : "Select start date"}
+                            </span>
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0" align="start">
@@ -650,13 +673,15 @@ export default function ConnectPage() {
                     </Popover>
                   </div>
 
-                  <div className="space-y-2">
-                    <Label className="text-black dark:text-white">End Date (Optional)</Label>
-                    <Popover open={showEndCalendar} onOpenChange={setShowEndCalendar}>
-                      <PopoverTrigger asChild>
-                        <Button variant="outline" className="w-full justify-start text-left font-normal">
-                          <CalendarIcon className="mr-2 h-4 w-4" />
-                          {endDate ? format(endDate, "PPP") : "Select end date"}
+                      <div className="space-y-2">
+                        <Label className="text-xs sm:text-sm text-black dark:text-white">End Date (Optional)</Label>
+                        <Popover open={showEndCalendar} onOpenChange={setShowEndCalendar}>
+                          <PopoverTrigger asChild>
+                            <Button variant="outline" className="w-full justify-start text-left font-normal text-xs sm:text-sm">
+                              <CalendarIcon className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+                              <span className="truncate">
+                                {endDate ? format(endDate, "PPP") : "Select end date"}
+                              </span>
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0" align="start">
@@ -674,13 +699,14 @@ export default function ConnectPage() {
                     </Popover>
                   </div>
                 </div>
+                </div>
 
                 <Button 
                   onClick={handleSearch}
                   disabled={!searchLocation.trim() || isSearching}
-                  className="w-full"
+                  className="w-full text-sm sm:text-base"
                 >
-                  <Search className="w-4 h-4 mr-2" />
+                  <Search className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
                   {isSearching ? "Searching..." : "Find Locals and Travelers"}
                 </Button>
 
@@ -726,27 +752,35 @@ export default function ConnectPage() {
                     </CardContent>
                   </Card>
                 )}
+
+                {/* Search Results */}
+                {searchResults.length > 0 && (
+                  <ResponsiveUserGrid 
+                    users={searchResults}
+                    title={`Found ${searchResults.length} ${searchResults.length === 1 ? 'person' : 'people'} in ${searchLocation}`}
+                  />
+                )}
               </CardContent>
             </Card>
           </TabsContent>
 
           {/* Advanced Filters Tab - Exact Copy from Home Page */}
-          <TabsContent value="advanced-filters" className="space-y-6">
-            <Card className="p-6 bg-gray-50 dark:bg-gray-800">
-              {/* Search Bar with Top Search Button */}
-              <div className="mb-6 bg-white dark:bg-gray-700 p-4 rounded-lg border dark:border-gray-600 shadow-sm">
-                <div className="flex items-center justify-between mb-3">
-                  <label className="text-sm font-medium text-gray-700 flex items-center">
-                    <Search className="w-4 h-4 mr-2" />
-                    Search Users / Key Word Search
+          <TabsContent value="advanced-filters" className="space-y-4 sm:space-y-6">
+            <Card className="p-4 sm:p-6 bg-gray-50 dark:bg-gray-800">
+              {/* Search Bar */}
+              <div className="mb-4 sm:mb-6 bg-white dark:bg-gray-700 p-3 sm:p-4 rounded-lg border dark:border-gray-600 shadow-sm">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-3">
+                  <label className="text-xs sm:text-sm font-medium text-gray-700 flex items-center">
+                    <Search className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                    Search Users
                   </label>
                   <Button
-                    className="bg-gradient-to-r from-blue-500 to-orange-500 text-white hover:from-blue-600 hover:to-orange-600"
+                    className="bg-gradient-to-r from-blue-500 to-orange-500 text-white hover:from-blue-600 hover:to-orange-600 w-full sm:w-auto"
                     size="sm"
                     onClick={handleAdvancedSearch}
                     disabled={isAdvancedSearching}
                   >
-                    <Search className="w-4 h-4 mr-2" />
+                    <Search className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                     {isAdvancedSearching ? "Searching..." : "Search Now"}
                   </Button>
                 </div>
@@ -759,7 +793,7 @@ export default function ConnectPage() {
                       console.log('Enter pressed - search triggered');
                     }
                   }}
-                  className="w-full text-base"
+                  className="w-full text-sm sm:text-base"
                 />
               </div>
               
@@ -793,7 +827,7 @@ export default function ConnectPage() {
                             setAdvancedFilters(prev => ({ ...prev, gender: [...prev.gender, gender] }));
                           }
                         }}
-                        className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                        className={`px-2 sm:px-4 py-1 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-colors ${
                           advancedFilters.gender.includes(gender)
                             ? 'bg-blue-500 text-white'
                             : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
@@ -836,7 +870,7 @@ export default function ConnectPage() {
                             setAdvancedFilters(prev => ({ ...prev, sexualPreference: [...prev.sexualPreference, preference] }));
                           }
                         }}
-                        className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                        className={`px-2 sm:px-4 py-1 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-colors ${
                           advancedFilters.sexualPreference.includes(preference)
                             ? 'bg-purple-500 text-white'
                             : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
@@ -960,7 +994,7 @@ export default function ConnectPage() {
                             setAdvancedFilters(prev => ({ ...prev, travelerTypes: [...prev.travelerTypes, type] }));
                           }
                         }}
-                        className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                        className={`px-2 sm:px-4 py-1 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-colors ${
                           advancedFilters.travelerTypes.includes(type)
                             ? 'bg-orange-500 text-white'
                             : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
@@ -1244,7 +1278,7 @@ export default function ConnectPage() {
                             setAdvancedFilters(prev => ({ ...prev, militaryStatus: [...prev.militaryStatus, status.value] }));
                           }
                         }}
-                        className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                        className={`px-2 sm:px-4 py-1 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-colors ${
                           advancedFilters.militaryStatus.includes(status.value)
                             ? (status.color === 'red' ? 'bg-red-500 text-white' : 'bg-blue-500 text-white')
                             : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
@@ -1264,16 +1298,16 @@ export default function ConnectPage() {
                   onClick={clearAdvancedFilters}
                   className="text-red-600 hover:text-red-700 border-red-300 hover:border-red-400 w-full sm:w-auto"
                 >
-                  <X className="w-4 h-4 mr-2" />
+                  <X className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                   Clear All Filters
                 </Button>
                 
                 <Button
-                  className="bg-gradient-to-r from-blue-500 to-orange-500 text-white hover:from-blue-600 hover:to-orange-600 w-full sm:w-auto"
+                  className="bg-gradient-to-r from-blue-500 to-orange-500 text-white hover:from-blue-600 hover:to-orange-600 w-full sm:w-auto text-xs sm:text-sm"
                   onClick={handleAdvancedSearch}
                   disabled={isAdvancedSearching}
                 >
-                  <Search className="w-4 h-4 mr-2" />
+                  <Search className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                   {isAdvancedSearching ? "Searching..." : "Search Now"}
                 </Button>
               </div>
