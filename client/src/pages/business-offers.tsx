@@ -127,11 +127,11 @@ export default function BusinessOffers({ businessId, dealId }: BusinessOffersPro
   const nearbyCity = getNearbyCity();
 
   const { data: offers = [], isLoading } = useQuery({
-    queryKey: ['/api/business-offers', filters, nearbyCity, businessId, dealId],
+    queryKey: ['/api/business-deals', filters, nearbyCity, businessId, dealId],
     queryFn: () => {
       // If viewing a specific deal, fetch it directly
       if (dealId) {
-        return fetch(`/api/business-offers/${dealId}`).then(res => res.json()).then(offer => [offer]);
+        return fetch(`/api/business-deals/${dealId}`).then(res => res.json()).then(offer => [offer]);
       }
       
       const params = new URLSearchParams();
@@ -156,7 +156,7 @@ export default function BusinessOffers({ businessId, dealId }: BusinessOffersPro
       if (filters.category && filters.category !== 'all') params.append('category', filters.category);
       if (filters.targetAudience && filters.targetAudience !== 'all') params.append('targetAudience', filters.targetAudience);
       
-      return fetch(`/api/business-offers?${params}`).then(res => res.json());
+      return fetch(`/api/business-deals?${params}`).then(res => res.json());
     },
     enabled: true // Always enabled - will show global offers until location loads
   });
@@ -223,7 +223,7 @@ export default function BusinessOffers({ businessId, dealId }: BusinessOffersPro
         return;
       }
 
-      const response = await fetch(`/api/business-offers/${offerId}/redeem`, {
+      const response = await fetch(`/api/business-deals/${offerId}/redeem`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -237,7 +237,7 @@ export default function BusinessOffers({ businessId, dealId }: BusinessOffersPro
           description: "Offer redeemed successfully",
         });
         // Refresh the data without page reload
-        queryClient.invalidateQueries({ queryKey: ['/api/business-offers'] });
+        queryClient.invalidateQueries({ queryKey: ['/api/business-deals'] });
         queryClient.invalidateQueries({ queryKey: ['/api/user-redemptions'] });
       } else {
         const errorData = await response.json();
