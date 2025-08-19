@@ -63,45 +63,10 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
     gcTime: 1000 * 60 * 10, // 10 minutes
   });
 
-  // Combine all activities and interests
+  // Only use city-specific activities (no general profile interests)
   const allActivities = useMemo(() => {
-    const combined = [];
-    
-    // Add city-specific activities
-    if (Array.isArray(cityActivities)) {
-      combined.push(...cityActivities);
-    }
-    
-    // Add general profile interests as activities
-    if (userProfile?.interests && Array.isArray(userProfile.interests)) {
-      userProfile.interests.forEach((interest, index) => {
-        combined.push({
-          id: `interest-${index}`,
-          userId: userId,
-          activityId: `interest-${index}`,
-          activityName: interest,
-          cityName: 'General Interests',
-          isGeneral: true
-        });
-      });
-    }
-    
-    // Add general profile activities
-    if (userProfile?.activities && Array.isArray(userProfile.activities)) {
-      userProfile.activities.forEach((activity, index) => {
-        combined.push({
-          id: `activity-${index}`,
-          userId: userId,
-          activityId: `activity-${index}`,
-          activityName: activity,
-          cityName: 'General Activities',
-          isGeneral: true
-        });
-      });
-    }
-    
-    return combined;
-  }, [cityActivities, userProfile, userId]);
+    return Array.isArray(cityActivities) ? cityActivities : [];
+  }, [cityActivities]);
   const allEvents = useMemo(() => {
     console.log('🎯 ThingsIWantToDoSection events data:', { 
       userId, 
@@ -146,54 +111,30 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
       });
     }
     
-    // Add general profile events as interests
-    if (userProfile?.events && Array.isArray(userProfile.events)) {
-      userProfile.events.forEach((event, index) => {
-        combined.push({
-          id: `profile-event-${index}`,
-          userId: userId,
-          eventTitle: event,
-          cityName: 'General Events',
-          isGeneral: true
-        });
-      });
-    }
+    // No general profile events - those are shown in the interests section above
     
     return combined;
-  }, [joinedEvents, eventInterestsData, userProfile, userId]);
+  }, [joinedEvents, eventInterestsData, userId]);
 
-  // Delete activity (only works for city-specific ones, not general profile items)
+  // Delete activity
   const deleteActivity = useMutation({
     mutationFn: async (activityId: number) => {
-      // Skip deletion for general profile items
-      if (typeof activityId === 'string' && activityId.includes('-')) {
-        throw new Error('Cannot delete general profile items from here');
-      }
       const response = await apiRequest('DELETE', `/api/user-city-interests/${activityId}`);
       if (!response.ok) throw new Error('Failed to delete');
     },
     onSuccess: () => {
       // Just invalidate cache - no local state updates needed
       queryClient.invalidateQueries({ queryKey: [`/api/user-city-interests/${userId}`] });
-      toast({ title: "Removed", description: "City-specific activity deleted successfully." });
+      toast({ title: "Removed", description: "Activity deleted successfully." });
     },
-    onError: (error: any) => {
-      if (error.message.includes('general profile')) {
-        toast({ title: "Info", description: "General interests can be edited in your profile settings.", variant: "default" });
-      } else {
-        toast({ title: "Error", description: "Failed to remove activity", variant: "destructive" });
-      }
+    onError: () => {
+      toast({ title: "Error", description: "Failed to remove activity", variant: "destructive" });
     }
   });
 
   // Delete event (handles both joined events and event interests)
   const deleteEvent = useMutation({
     mutationFn: async (eventData: any) => {
-      // Skip deletion for general profile items
-      if (eventData.isGeneral) {
-        throw new Error('Cannot delete general profile items from here');
-      }
-      
       // If it's an event interest (from city page selection), delete from user_event_interests
       if (eventData.isEventInterest) {
         const response = await apiRequest('DELETE', `/api/user-event-interests/${eventData.id}`);
@@ -210,25 +151,15 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
       queryClient.invalidateQueries({ queryKey: [`/api/user-event-interests/${userId}`] });
       toast({ title: "Removed", description: "Event removed successfully." });
     },
-    onError: (error: any) => {
-      if (error.message.includes('general profile')) {
-        toast({ title: "Info", description: "General events can be edited in your profile settings.", variant: "default" });
-      } else {
-        toast({ title: "Error", description: "Failed to remove event", variant: "destructive" });
-      }
+    onError: () => {
+      toast({ title: "Error", description: "Failed to remove event", variant: "destructive" });
     }
   });
 
-  // Delete entire city (only works for city-specific items)
+  // Delete entire city
   const deleteCity = async (cityName: string) => {
-    // Don't allow deletion of general profile items
-    if (cityName === 'General Interests' || cityName === 'General Activities' || cityName === 'General Events') {
-      toast({ title: "Info", description: "General interests and activities can be edited in your profile settings.", variant: "default" });
-      return;
-    }
-    
-    const cityActivities = allActivities.filter(a => a.cityName === cityName && !a.isGeneral);
-    const cityEvents = allEvents.filter(e => e.cityName === cityName && !e.isGeneral);
+    const cityActivities = allActivities.filter(a => a.cityName === cityName);
+    const cityEvents = allEvents.filter(e => e.cityName === cityName);
 
     if (!confirm(`Remove all ${cityActivities.length} activities and ${cityEvents.length} events from ${cityName}?`)) {
       return;
@@ -245,7 +176,6 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
       queryClient.invalidateQueries({ queryKey: [`/api/user-city-interests/${userId}`] });
       queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/all-events`] });
       queryClient.invalidateQueries({ queryKey: [`/api/user-event-interests/${userId}`] });
-      queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}`] });
 
       toast({ 
         title: "City Removed", 
@@ -339,7 +269,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
 
   const cities = useMemo(() => Object.keys(citiesByName), [citiesByName]);
 
-  if (loadingCityActivities || loadingProfile || loadingJoinedEvents || loadingEventInterests) {
+  if (loadingCityActivities || loadingJoinedEvents || loadingEventInterests) {
     return (
       <div className="bg-gray-800 rounded-lg p-6">
         <h2 className="text-lg font-semibold text-white mb-6">⭐ Things I Want to Do in...</h2>
@@ -398,7 +328,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
                       }`}
                     >
                       <span>{activity.activityName}</span>
-                      {isOwnProfile && !activity.isGeneral && (
+                      {isOwnProfile && (
                         <button
                           onClick={() => deleteActivity.mutate(activity.id)}
                           className={`absolute bg-gray-400 hover:bg-gray-500 text-white rounded-full flex items-center justify-center transition-opacity ${
@@ -410,13 +340,6 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
                         >
                           <X className={isMobile ? 'w-3 h-3' : 'w-3 h-3'} />
                         </button>
-                      )}
-                      {activity.isGeneral && (
-                        <span className={`absolute text-xs text-gray-300 ${
-                          isMobile ? '-top-1 -right-1' : '-top-1 -right-1 opacity-0 group-hover:opacity-100'
-                        }`} title="Edit in profile settings">
-                          ⚙️
-                        </span>
                       )}
                     </div>
                   ))}
@@ -432,7 +355,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
                       }`}
                     >
                       <span>📅 {event.eventTitle || event.title}</span>
-                      {isOwnProfile && !event.isGeneral && (
+                      {isOwnProfile && (
                         <button
                           onClick={() => deleteEvent.mutate(event)}
                           className={`absolute bg-gray-400 hover:bg-gray-500 text-white rounded-full flex items-center justify-center transition-opacity ${
@@ -444,13 +367,6 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
                         >
                           <X className={isMobile ? 'w-3 h-3' : 'w-3 h-3'} />
                         </button>
-                      )}
-                      {event.isGeneral && (
-                        <span className={`absolute text-xs text-gray-300 ${
-                          isMobile ? '-top-1 -right-1' : '-top-1 -right-1 opacity-0 group-hover:opacity-100'
-                        }`} title="Edit in profile settings">
-                          ⚙️
-                        </span>
                       )}
                     </div>
                   ))}
