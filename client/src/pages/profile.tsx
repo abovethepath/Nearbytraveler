@@ -3418,7 +3418,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   
                   {/* Nearby Business Label */}
                   <div className="flex items-center gap-2 text-sm sm:text-base">
-                    <span className="bg-blue-600 text-white px-3 py-1 rounded-full font-semibold">
+                    <span className="bg-blue-500 text-white border-0 px-3 py-2 text-sm rounded-full font-medium">
                       Nearby Business
                     </span>
                     {user.businessType && (
@@ -4585,7 +4585,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           <p className="text-sm font-medium text-gray-700 mb-2">Current Activities:</p>
                           <div className="flex flex-wrap gap-2">
                             {tempActivities.map((activity, index) => (
-                              <span key={`activity-${activity}-${index}`} className="inline-flex items-center gap-1 px-2 py-1 bg-green-100 text-green-800 rounded text-sm">
+                              <span key={`activity-${activity}-${index}`} className="bg-blue-500 text-white border-0 px-3 py-2 text-sm rounded-full font-medium inline-flex items-center">
                                 {activity}
                                 <button
                                   onClick={() => setTempActivities(tempActivities.filter(a => a !== activity))}
@@ -4730,7 +4730,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           <p className="text-sm font-medium text-gray-700 mb-2">Current Events:</p>
                           <div className="flex flex-wrap gap-2">
                             {tempEvents.map((event, index) => (
-                              <span key={`event-${event}-${index}`} className="inline-flex items-center gap-1 px-2 py-1 bg-purple-100 text-purple-800 rounded text-sm">
+                              <span key={`event-${event}-${index}`} className="bg-blue-500 text-white border-0 px-3 py-2 text-sm rounded-full font-medium inline-flex items-center">
                                 {event}
                                 <button
                                   onClick={() => setTempEvents(tempEvents.filter(e => e !== event))}
@@ -5158,7 +5158,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                 {editFormData.interests.filter(interest => !getAllInterests().includes(interest)).map((interest, index) => (
                                   <span
                                     key={`custom-interest-${index}`}
-                                    className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 rounded text-xs font-medium"
+                                    className="bg-blue-500 text-white border-0 px-3 py-2 text-sm rounded-full font-medium inline-flex items-center"
                                   >
                                     {interest}
                                     <button
@@ -5257,7 +5257,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                 {editFormData.activities.filter(activity => !getAllActivities().includes(activity)).map((activity, index) => (
                                   <span
                                     key={`custom-activity-${index}`}
-                                    className="inline-flex items-center gap-1 px-2 py-1 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 rounded text-xs font-medium"
+                                    className="bg-blue-500 text-white border-0 px-3 py-2 text-sm rounded-full font-medium inline-flex items-center"
                                   >
                                     {activity}
                                     <button
