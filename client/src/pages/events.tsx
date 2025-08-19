@@ -1187,7 +1187,7 @@ export default function Events() {
                     {meetupEvents.events.map((event: any) => (
                       <Card key={event.id} className="hover:shadow-lg transition-all duration-200 hover:scale-[1.02] border border-gray-200">
                         <CardContent className="p-6">
-                          <div className="flex items-start justify-between mb-3">
+                          <div className="flex items-start flex-wrap gap-2 mb-3">
                             <Badge className="bg-green-100 text-green-800">
                               Meetup
                             </Badge>
@@ -1314,7 +1314,7 @@ export default function Events() {
                         )}
                         
                         <CardContent className="p-6">
-                          <div className="flex items-start justify-between mb-3">
+                          <div className="flex items-start flex-wrap gap-2 mb-3">
                             <Badge className="bg-red-100 text-red-800">
                               City Event
                             </Badge>
@@ -1463,7 +1463,7 @@ export default function Events() {
                         )}
                         
                         <CardContent className="p-6">
-                          <div className="flex items-start justify-between mb-3">
+                          <div className="flex items-start flex-wrap gap-2 mb-3">
                             <Badge className="bg-blue-100 text-blue-800">
                               Entertainment
                             </Badge>
@@ -1586,7 +1586,7 @@ export default function Events() {
                     {localEvents.events.map((event: any) => (
                       <Card key={event.id} className="hover:shadow-lg transition-all duration-200 hover:scale-[1.02] border border-gray-200">
                         <CardContent className="p-6">
-                          <div className="flex items-start justify-between mb-3">
+                          <div className="flex items-start flex-wrap gap-2 mb-3">
                             <Badge className="bg-purple-100 text-purple-800">
                               {event.location || `Local ${userCity}`}
                             </Badge>
@@ -1702,7 +1702,7 @@ export default function Events() {
                     {(events as any).map((event: any) => (
                       <Card key={event.id} className="hover:shadow-lg transition-all duration-200 hover:scale-[1.02] border border-gray-200">
                         <CardContent className="p-6">
-                          <div className="flex items-start justify-between mb-3">
+                          <div className="flex items-start flex-wrap gap-2 mb-3">
                             <Badge className="bg-orange-100 text-orange-800">
                               {event.location || 'Curated'}
                             </Badge>

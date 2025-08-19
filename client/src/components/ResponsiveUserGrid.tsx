@@ -100,7 +100,7 @@ export default function ResponsiveUserGrid({
         <SimpleAvatar 
           user={user} 
           size="xl" 
-          className="w-16 h-20 rounded-lg"
+          className="w-20 h-28 rounded-lg"
         />
         <div className="w-full">
           <h3 className="font-semibold text-sm truncate">@{user.username}</h3>

@@ -114,10 +114,10 @@ export function PeopleDiscoveryWidget({
                   src={person.profileImage} 
                   alt={person.name}
                   loading="lazy"
-                  className="w-24 h-32 object-cover rounded-lg"
+                  className="w-32 h-40 object-cover rounded-lg"
                 />
               ) : (
-                <div className="w-24 h-32 text-4xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-bold rounded-lg flex items-center justify-center">
+                <div className="w-32 h-40 text-5xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-bold rounded-lg flex items-center justify-center">
                   {person.username?.charAt(0)?.toUpperCase() || "U"}
                 </div>
               )}
