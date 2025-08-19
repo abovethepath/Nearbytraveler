@@ -31,7 +31,7 @@ function Badge({ className, variant, ...props }: BadgeProps) {
   // RESPECT PILL CLASSES - If pill class is provided, use it instead of auto-enforcement
   const finalClassName = className || '';
   
-  // If pill class is explicitly provided, use it and skip auto-enforcement
+  // If pill class is explicitly provided, use it and skip ALL auto-enforcement
   if (finalClassName.includes('pill')) {
     return (
       <div className={cn(finalClassName)} {...props} />
@@ -42,7 +42,7 @@ function Badge({ className, variant, ...props }: BadgeProps) {
   let enforcedClassName = finalClassName;
   const content = String(props.children || '').toLowerCase();
   
-  // Auto-detect interests, activities, events from common patterns
+  // Auto-detect interests, activities, events from common patterns (ONLY for non-pill badges)
   const isInterest = enforcedClassName.includes('blue') || enforcedClassName.includes('interest') || 
                     content.includes('photography') || content.includes('hiking') || content.includes('nightlife') ||
                     content.includes('shopping') || content.includes('music') || content.includes('festivals') ||
