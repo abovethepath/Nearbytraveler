@@ -3938,9 +3938,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         <div key={deal.id} className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 hover:shadow-md dark:hover:shadow-gray-800/50 transition-shadow bg-white dark:bg-gray-800">
                           <div className="flex items-start justify-between mb-2">
                             <h4 className="font-semibold text-gray-900 dark:text-white">{deal.title}</h4>
-                            <Badge className="pill">
+                            <div className="inline-flex items-center justify-center h-8 min-w-[7rem] rounded-full px-3 text-sm font-medium leading-none whitespace-nowrap bg-green-500 text-white border-0 appearance-none select-none gap-1.5">
                               {deal.discountValue} {deal.discountType === 'percentage' ? '%' : ''} off
-                            </Badge>
+                            </div>
                           </div>
                           <p className="text-gray-600 dark:text-gray-300 text-sm mb-3 line-clamp-2">{deal.description}</p>
                           <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
@@ -5548,14 +5548,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               <div className="flex items-center gap-2 mb-1">
                                 <h4 className="font-medium text-sm">{plan.destination}</h4>
                                 {plan.status === 'active' && (
-                                  <Badge className="pill">
+                                  <div className="inline-flex items-center justify-center h-8 min-w-[7rem] rounded-full px-3 text-sm font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
                                     ✈️ Currently Traveling
-                                  </Badge>
+                                  </div>
                                 )}
                                 {plan.status === 'planned' && (
-                                  <Badge className="pill">
+                                  <div className="inline-flex items-center justify-center h-8 min-w-[7rem] rounded-full px-3 text-sm font-medium leading-none whitespace-nowrap bg-orange-500 text-white border-0 appearance-none select-none gap-1.5">
                                     📅 Upcoming
-                                  </Badge>
+                                  </div>
                                 )}
                               </div>
                               <p className="text-black dark:text-white text-xs mb-1 font-medium">
@@ -5638,9 +5638,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                   </div>
                                 ))}
                                 {plan.travelStyle.length > 2 && (
-                                  <Badge className="pill-interests">
+                                  <div className="inline-flex items-center justify-center h-8 min-w-[7rem] rounded-full px-3 text-sm font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
                                     +{plan.travelStyle.length - 2} more
-                                  </Badge>
+                                  </div>
                                 )}
                               </div>
                             </div>
@@ -5740,9 +5740,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               <div className="mb-2">
                                 <div className="flex flex-wrap gap-1">
                                   {(expandedPlanInterests.has(plan.id) ? plan.interests : plan.interests.slice(0, 2)).map((interest: string) => (
-                                    <Badge key={interest} className="pill-interests">
+                                    <div key={interest} className="inline-flex items-center justify-center h-8 min-w-[7rem] rounded-full px-3 text-sm font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
                                       {interest}
-                                    </Badge>
+                                    </div>
                                   ))}
                                   {plan.interests.length > 2 && (
                                     <Badge 
@@ -5767,14 +5767,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               <div>
                                 <div className="flex flex-wrap gap-1">
                                   {plan.travelStyle.slice(0, 2).map((style: string) => (
-                                    <Badge key={style} className="pill-interests">
+                                    <div key={style} className="inline-flex items-center justify-center h-8 min-w-[7rem] rounded-full px-3 text-sm font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
                                       {style}
-                                    </Badge>
+                                    </div>
                                   ))}
                                   {plan.travelStyle.length > 2 && (
-                                    <Badge className="pill-interests">
+                                    <div className="inline-flex items-center justify-center h-8 min-w-[7rem] rounded-full px-3 text-sm font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
                                       +{plan.travelStyle.length - 2} more
-                                    </Badge>
+                                    </div>
                                   )}
                                 </div>
                               </div>
@@ -6358,9 +6358,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     {user.languagesSpoken && user.languagesSpoken.length > 0 ? (
                       <div className="flex flex-wrap gap-2">
                         {user.languagesSpoken.map((language: string) => (
-                          <Badge key={language} className="pill-languages">
+                          <div key={language} className="inline-flex items-center justify-center h-8 min-w-[7rem] rounded-full px-3 text-sm font-medium leading-none whitespace-nowrap bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0 appearance-none select-none gap-1.5">
                             {language}
-                          </Badge>
+                          </div>
                         ))}
                       </div>
                     ) : (
@@ -8740,9 +8740,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     {selectedTravelPlan.startDate ? formatDateForDisplay(selectedTravelPlan.startDate, user?.currentCity || 'UTC') : 'Start date TBD'} - {selectedTravelPlan.endDate ? formatDateForDisplay(selectedTravelPlan.endDate, user?.currentCity || 'UTC') : 'End date TBD'}
                   </p>
                 </div>
-                <Badge className="pill">
+                <div className="inline-flex items-center justify-center h-8 min-w-[7rem] rounded-full px-3 text-sm font-medium leading-none whitespace-nowrap bg-purple-500 text-white border-0 appearance-none select-none gap-1.5">
                   Trip Details
-                </Badge>
+                </div>
               </div>
               
               {/* Close Button */}
