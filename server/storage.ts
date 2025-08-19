@@ -35,6 +35,7 @@ export interface IStorage {
   getEventParticipants(eventId: number): Promise<EventParticipantWithUser[]>;
   getUserEventParticipations(userId: number): Promise<EventParticipant[]>;
   getAllEventsWithParticipants(): Promise<any[]>;
+  isUserInterestedInEvent(userId: number, eventId?: number, externalEventId?: string, eventSource?: string): Promise<boolean>;
   
   // Connection methods
   getConnection(userId: number, connectedUserId: number): Promise<Connection | undefined>;
@@ -1225,6 +1226,31 @@ export class DatabaseStorage implements IStorage {
       .groupBy(events.id);
 
     return eventsWithParticipants;
+  }
+
+  async isUserInterestedInEvent(userId: number, eventId?: number, externalEventId?: string, eventSource?: string): Promise<boolean> {
+    try {
+      // For internal events, check if user is a participant
+      if (eventId) {
+        const [participant] = await db
+          .select()
+          .from(eventParticipants)
+          .where(
+            and(
+              eq(eventParticipants.eventId, eventId),
+              eq(eventParticipants.userId, userId)
+            )
+          );
+        return !!participant;
+      }
+      
+      // For external events, always return false for now
+      // TODO: Implement external event interest tracking if needed
+      return false;
+    } catch (error) {
+      console.error('Error checking user event interest:', error);
+      return false;
+    }
   }
 
   // Connection methods

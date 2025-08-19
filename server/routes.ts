@@ -5026,9 +5026,12 @@ Questions? Just reply to this message. Welcome aboard!
 
       const { eventId, externalEventId, eventSource } = req.query;
 
+      // Validate eventId to prevent NaN
+      const validEventId = eventId && !isNaN(parseInt(eventId as string)) ? parseInt(eventId as string) : undefined;
+
       const isInterested = await storage.isUserInterestedInEvent(
         userId,
-        eventId ? parseInt(eventId as string) : undefined,
+        validEventId,
         externalEventId as string,
         eventSource as string
       );
