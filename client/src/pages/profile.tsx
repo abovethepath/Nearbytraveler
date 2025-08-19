@@ -6914,7 +6914,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">
                         Admin Information
                       </CardTitle>
-                      <Badge variant="secondary" className="bg-purple-100 text-purple-700 dark:bg-purple-800 dark:text-purple-200 text-xs">
+                      <Badge className="bg-purple-100 text-purple-700 dark:bg-purple-800 dark:text-purple-200 text-xs">
                         Private
                       </Badge>
                     </div>
@@ -7063,7 +7063,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 <CardHeader className="pb-3">
                   <div className="flex items-center space-x-2 mb-2">
                     <TrendingUp className="w-5 h-5 text-orange-600 dark:text-orange-400" />
-                    <Badge variant="default" className="bg-orange-600 text-white">Success Tips</Badge>
+                    <Badge className="bg-orange-600 text-white">Success Tips</Badge>
                   </div>
                   <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">
                     Boost Your Connections
