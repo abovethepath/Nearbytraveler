@@ -172,18 +172,23 @@ export default function BusinessesGrid({ currentLocation, travelPlans = [] }: Bu
               <div className="space-y-1 mb-3">
                 <div className="flex items-center text-gray-600 dark:text-gray-300">
                   <MapPin className="w-3 h-3 mr-1 flex-shrink-0" />
-                  <span className="text-xs truncate">{business.streetAddress || `${business.city}, ${business.state}`}</span>
+                  <span className="text-sm font-medium break-words leading-tight">
+                    {business.streetAddress && business.city ? 
+                      `${business.streetAddress}, ${business.city}, ${business.state}` : 
+                      business.streetAddress || `${business.city}, ${business.state}`
+                    }
+                  </span>
                 </div>
                 {business.phoneNumber && (
                   <div className="flex items-center text-gray-600 dark:text-gray-300">
                     <Phone className="w-3 h-3 mr-1 flex-shrink-0" />
-                    <span className="text-xs truncate">{business.phoneNumber}</span>
+                    <span className="text-sm font-medium break-words">{business.phoneNumber}</span>
                   </div>
                 )}
                 {business.website && (
                   <div className="flex items-center text-gray-600 dark:text-gray-300">
                     <Globe className="w-3 h-3 mr-1 flex-shrink-0" />
-                    <span className="text-xs truncate hover:text-blue-600 dark:hover:text-blue-400">Website</span>
+                    <span className="text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400">Website</span>
                   </div>
                 )}
               </div>
