@@ -1229,24 +1229,24 @@ export default function Home() {
       >
         {/* Dark overlay for text readability */}
         <div className="absolute inset-0 bg-gradient-to-br from-black/40 via-black/30 to-black/50"></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-20">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
           <div className="text-center max-w-3xl mx-auto">
-            <h1 className="text-xl xs:text-2xl sm:text-4xl lg:text-6xl font-bold mb-6 leading-tight text-white text-center" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700', textShadow: '2px 2px 4px rgba(0,0,0,0.8)'}}>
+            <h1 className="text-xl sm:text-2xl md:text-4xl lg:text-6xl font-bold mb-4 sm:mb-6 leading-tight text-white text-center" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700', textShadow: '2px 2px 4px rgba(0,0,0,0.8)'}}>
               <div className="leading-tight">
                 {effectiveUser?.userType === 'business' ? (
                   <>
-                    <div className="whitespace-nowrap text-center">Connect Your <span className="text-orange-400">Business</span></div>
-                    <div className="whitespace-nowrap text-center">with Travelers & Locals</div>
+                    <div className="text-center">Connect Your <span className="text-orange-400">Business</span></div>
+                    <div className="text-center">with Travelers & Locals</div>
                   </>
                 ) : (
                   <>
-                    <div className="whitespace-nowrap text-center">Connect with <span className="text-orange-400">Like-Minded</span></div>
-                    <div className="whitespace-nowrap text-center">Travelers & Locals</div>
+                    <div className="text-center">Connect with <span className="text-orange-400">Like-Minded</span></div>
+                    <div className="text-center">Travelers & Locals</div>
                   </>
                 )}
               </div>
             </h1>
-            <p className="text-xl lg:text-2xl mb-8 text-white leading-relaxed">
+            <p className="text-base sm:text-lg md:text-xl lg:text-2xl mb-6 sm:mb-8 text-white leading-relaxed px-2 sm:px-0">
               {effectiveUser?.userType === 'business' ? (
                 'Reach customers through interest-based matching, business notifications, and location-targeted discovery. Grow your business by connecting with travelers and locals who love what you offer.'
               ) : (
@@ -1256,54 +1256,54 @@ export default function Home() {
 
             {/* Business-specific CTA buttons vs Traveler/Local CTAs */}
             {effectiveUser?.userType === 'business' ? (
-              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4 sm:px-0">
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 md:gap-4 justify-center px-4 sm:px-0">
                 <Button 
                   size="lg" 
-                  className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-black px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg w-full sm:w-[200px] shadow-lg border border-blue-500"
+                  className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-black px-4 sm:px-6 md:px-8 py-2 sm:py-3 md:py-4 text-sm sm:text-base md:text-lg w-full sm:w-auto shadow-lg border border-blue-500"
                   onClick={() => setLocation('/business-dashboard')}
                 >
-                  <Store className="w-4 sm:w-5 h-4 sm:h-5 mr-2" />
+                  <Store className="w-3 sm:w-4 md:w-5 h-3 sm:h-4 md:h-5 mr-1 sm:mr-2" />
                   Manage Business
                 </Button>
                 <Button 
                   size="lg"
-                  className="bg-gradient-to-r from-green-600 to-blue-500 hover:from-green-700 hover:to-blue-600 text-black px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg w-full sm:w-[200px] shadow-lg border border-green-500"
+                  className="bg-gradient-to-r from-green-600 to-blue-500 hover:from-green-700 hover:to-blue-600 text-black px-4 sm:px-6 md:px-8 py-2 sm:py-3 md:py-4 text-sm sm:text-base md:text-lg w-full sm:w-auto shadow-lg border border-green-500"
                   onClick={() => {
                     setConnectModalMode('current');
                     setShowConnectModal(true);
                   }}
                 >
-                  <Users className="w-4 sm:w-5 h-4 sm:h-5 mr-2" />
+                  <Users className="w-3 sm:w-4 md:w-5 h-3 sm:h-4 md:h-5 mr-1 sm:mr-2" />
                   Find Customers
                 </Button>
               </div>
             ) : (
-              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4 sm:px-0">
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 md:gap-4 justify-center px-4 sm:px-0">
                 <Button 
                   size="lg" 
-                  className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-black px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg w-full sm:w-[200px] shadow-lg border border-blue-500"
+                  className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-black px-4 sm:px-6 md:px-8 py-2 sm:py-3 md:py-4 text-sm sm:text-base md:text-lg w-full sm:w-auto shadow-lg border border-blue-500"
                   onClick={() => setLocation('/plan-trip')}
                 >
-                  <Globe className="w-4 sm:w-5 h-4 sm:h-5 mr-2" />
+                  <Globe className="w-3 sm:w-4 md:w-5 h-3 sm:h-4 md:h-5 mr-1 sm:mr-2" />
                   Plan Your Trip
                 </Button>
                 <Button 
                   size="lg"
-                  className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-black px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg w-full sm:w-[200px] shadow-lg border border-blue-500"
+                  className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-black px-4 sm:px-6 md:px-8 py-2 sm:py-3 md:py-4 text-sm sm:text-base md:text-lg w-full sm:w-auto shadow-lg border border-blue-500"
                   onClick={() => {
                     setConnectModalMode('hometown');
                     setShowConnectModal(true);
                   }}
                 >
-                  <Users className="w-4 sm:w-5 h-4 sm:h-5 mr-2" />
+                  <Users className="w-3 sm:w-4 md:w-5 h-3 sm:h-4 md:h-5 mr-1 sm:mr-2" />
                   Connect
                 </Button>
                 <Button 
                   size="lg"
-                  className="bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-black px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg w-full sm:w-[200px] shadow-lg border border-purple-500"
+                  className="bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-black px-4 sm:px-6 md:px-8 py-2 sm:py-3 md:py-4 text-sm sm:text-base md:text-lg w-full sm:w-auto shadow-lg border border-purple-500"
                   onClick={() => setShowAdvancedFilters(true)}
                 >
-                  <Search className="w-4 sm:w-5 h-4 sm:h-5 mr-2" />
+                  <Search className="w-3 sm:w-4 md:w-5 h-3 sm:h-4 md:h-5 mr-1 sm:mr-2" />
                   Advanced Search
                 </Button>
               </div>
@@ -1319,13 +1319,13 @@ export default function Home() {
 
         {/* Advanced Filters Modal - Clean modal approach */}
         {showAdvancedFilters && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-            <Card className="w-full max-w-4xl max-h-[90vh] overflow-y-auto p-4 sm:p-6 rounded-xl border-2 border-gray-200 dark:border-gray-700 shadow-lg bg-white dark:bg-gray-800">
-              <Card className="p-4 sm:p-6 mx-2 sm:mx-0 rounded-xl border-2 border-gray-200 dark:border-gray-700 shadow-lg">
+          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-2 sm:p-4">
+            <Card className="w-full max-w-4xl max-h-[90vh] overflow-y-auto p-2 sm:p-4 md:p-6 rounded-xl border-2 border-gray-200 dark:border-gray-700 shadow-lg bg-white dark:bg-gray-800">
+              <Card className="p-3 sm:p-4 md:p-6 mx-1 sm:mx-2 md:mx-0 rounded-xl border-2 border-gray-200 dark:border-gray-700 shadow-lg">
                 {/* Header with Search Now CTA and Close Button */}
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center">
-                    <Filter className="w-5 h-5 mr-2" />
+                <div className="flex items-center justify-between mb-3 sm:mb-4">
+                  <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center">
+                    <Filter className="w-4 sm:w-5 h-4 sm:h-5 mr-1 sm:mr-2" />
                     Advanced Filters
                   </h3>
                   <div className="flex items-center gap-2">
@@ -1364,8 +1364,9 @@ export default function Home() {
                       className="bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 hover:bg-red-100 dark:hover:bg-red-900/30"
                       data-testid="button-clear-all-filters-advanced"
                     >
-                      <X className="w-4 h-4 mr-2" />
-                      Clear All Filters
+                      <X className="w-3 sm:w-4 h-3 sm:h-4 mr-1 sm:mr-2" />
+                      <span className="hidden sm:inline">Clear All Filters</span>
+                      <span className="sm:hidden">Clear All</span>
                     </Button>
                     <Button
                       className="bg-gradient-to-r from-blue-500 to-orange-500 text-white hover:from-blue-600 hover:to-orange-600"
@@ -1384,7 +1385,7 @@ export default function Home() {
                         }
                       }}
                     >
-                      <Search className="w-4 h-4 mr-2" />
+                      <Search className="w-3 sm:w-4 h-3 sm:h-4 mr-1 sm:mr-2" />
                       Search Now
                     </Button>
                     <Button
@@ -1980,8 +1981,9 @@ export default function Home() {
                     className="w-full sm:w-auto"
                     data-testid="button-clear-all-filters"
                   >
-                    <X className="w-4 h-4 mr-2" />
-                    Clear All Filters
+                    <X className="w-3 sm:w-4 h-3 sm:h-4 mr-1 sm:mr-2" />
+                    <span className="hidden sm:inline">Clear All Filters</span>
+                    <span className="sm:hidden">Clear All</span>
                   </Button>
 
                   <div className="flex flex-col sm:flex-row gap-3 items-center">
@@ -2004,7 +2006,7 @@ export default function Home() {
                         }
                       }}
                     >
-                      <Search className="w-4 h-4 mr-2" />
+                      <Search className="w-3 sm:w-4 h-3 sm:h-4 mr-1 sm:mr-2" />
                       Search Now
                     </Button>
                   </div>
@@ -2028,12 +2030,12 @@ export default function Home() {
         )}
 
         {/* Main Content - Responsive layout with animations */}
-        <div className="max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4 lg:gap-8 px-2 sm:px-4 lg:px-8 mt-2 sm:mt-0">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-2 sm:gap-4 lg:gap-8 px-2 sm:px-4 lg:px-8 mt-2 sm:mt-0">
           {/* Discover Feed - Full width on mobile, 2 columns on desktop */}
-          <div className="col-span-1 lg:col-span-2 space-y-4 sm:space-y-8 min-w-0">
+          <div className="col-span-1 lg:col-span-2 space-y-3 sm:space-y-4 md:space-y-8 min-w-0">
             <div className="flex items-center justify-between" data-testid="discover-people-section">
-              <div className="flex items-center gap-4">
-                <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white">
+              <div className="flex items-center gap-2 sm:gap-4">
+                <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white">
                   {activeFilter === "travel-dates" 
                     ? `Travel Connections to ${user?.travelDestination}` 
                     : "Discover People"
@@ -2083,11 +2085,12 @@ export default function Home() {
                         city: ""
                       });
                     }}
-                    className="bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 hover:bg-red-100 dark:hover:bg-red-900/30"
+                    className="bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 hover:bg-red-100 dark:hover:bg-red-900/30 text-xs sm:text-sm"
                     data-testid="button-quick-clear-filters"
                   >
-                    <X className="w-4 h-4 mr-2" />
-                    Clear Search
+                    <X className="w-3 sm:w-4 h-3 sm:h-4 mr-1 sm:mr-2" />
+                    <span className="hidden sm:inline">Clear Search</span>
+                    <span className="sm:hidden">Clear</span>
                   </Button>
                 )}
               </div>

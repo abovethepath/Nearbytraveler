@@ -1,0 +1,688 @@
+import React, { useState, useContext, useRef, useEffect, useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useLocation } from "wouter";
+import { AuthContext } from "@/App";
+import UserCard from "@/components/user-card";
+import EventCard from "@/components/event-card";
+import MessagePreview from "@/components/message-preview";
+// MobileNav removed - using global mobile navigation
+import DestinationModal from "@/components/destination-modal";
+import ConnectModal from "@/components/connect-modal";
+import Recommendations from "@/components/recommendations";
+import AIChatBot from "@/components/ai-chat-bot";
+import NotificationBell from "@/components/notification-bell";
+import { EmbeddedChatWidget } from "@/components/EmbeddedChatWidget";
+
+import { datesOverlap, formatDateForDisplay, getCurrentTravelDestination } from "@/lib/dateUtils";
+import { format } from "date-fns";
+import { getVersionedCityImage } from "@/lib/imageVersioning";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Globe, Users, MapPin, Briefcase, Calendar, Filter, X, ChevronDown, ChevronRight, MessageCircle, Camera, Search, Store, Hash, Tag, AlertCircle, ArrowUpDown, Clock, Zap, Star, Coffee } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useToast } from "@/hooks/use-toast";
+import { queryClient } from "@/lib/queryClient";
+import { getAllInterests, getAllActivities, getAllEvents, getAllLanguages, validateSelections, getMostPopularInterests } from "../../../shared/base-options";
+import { BASE_TRAVELER_TYPES } from "../../../shared/base-options";
+import { getInterestStyle, getActivityStyle, getEventStyle } from "@/lib/topChoicesUtils";
+import type { User, Event, Message } from "@shared/schema";
+import SmartPhotoGallery from "@/components/smart-photo-gallery";
+import SmartLocationInput from "@/components/SmartLocationInput";
+import AICityEventsWidget from "@/components/ai-city-events";
+import TravelMatches from "@/components/travel-matches";
+
+import ResponsiveUserGrid from "@/components/ResponsiveUserGrid";
+import { SimpleAvatar } from "@/components/simple-avatar";
+
+import MessagesWidget from "@/components/MessagesWidget";
+import EventsWidget from "@/components/EventsWidget";
+import CurrentLocationWeatherWidget from "@/components/CurrentLocationWeatherWidget";
+import EnhancedDiscovery from "@/components/EnhancedDiscovery";
+
+import BusinessesGrid from "@/components/BusinessesGrid";
+import { QuickMeetupWidget } from "@/components/QuickMeetupWidget";
+import QuickDealsDiscovery from "@/components/QuickDealsDiscovery";
+import CityMap from "@/components/CityMap";
+import PeopleDiscoveryWidget from "@/components/PeopleDiscoveryWidget";
+
+// Import centralized constants for consistency
+import { GENDER_OPTIONS, SEXUAL_PREFERENCE_OPTIONS, PRIVACY_NOTES } from "@/lib/formConstants";
+
+const USER_TYPE_OPTIONS = [
+  "traveler", "local", "business"
+];
+
+export default function Home() {
+  const [activeFilter, setActiveFilter] = useState<string>("all");
+  const [showDestinationModal, setShowDestinationModal] = useState(false);
+  const [showConnectModal, setShowConnectModal] = useState(false);
+  const [activeLocationFilter, setActiveLocationFilter] = useState<string>("");
+  const [connectModalMode, setConnectModalMode] = useState<'current' | 'hometown'>('current');
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+  const [sortBy, setSortBy] = useState<'recent' | 'active' | 'compatibility' | 'travel_experience' | 'closest_nearby' | 'aura' | 'references' | 'alphabetical'>('recent');
+
+  // Function to sort users based on selected sorting option
+  const getSortedUsers = (users: any[]) => {
+    if (!users) return [];
+
+    return [...users].sort((a, b) => {
+      switch (sortBy) {
+        case 'closest_nearby':
+          // Sort by location proximity - prioritize same city, then state, then country
+          const currentUser = user || JSON.parse(localStorage.getItem('travelconnect_user') || '{}');
+          const currentCity = currentUser?.hometownCity?.toLowerCase() || '';
+          const currentState = currentUser?.hometownState?.toLowerCase() || '';
+          const currentCountry = currentUser?.hometownCountry?.toLowerCase() || '';
+
+          // Calculate proximity score (higher = closer)
+          const getProximityScore = (user: any) => {
+            const userCity = user.hometownCity?.toLowerCase() || '';
+            const userState = user.hometownState?.toLowerCase() || '';
+            const userCountry = user.hometownCountry?.toLowerCase() || '';
+
+            if (userCity === currentCity) return 100; // Same city
+            if (userState === currentState) return 50; // Same state/region
+            if (userCountry === currentCountry) return 25; // Same country
+            return 0; // Different country
+          };
+
+          return getProximityScore(b) - getProximityScore(a);
+        case 'recent':
+          // Sort by creation date (most recent first)
+          return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
+        case 'active':
+          // Sort by recently active users
+          return new Date(b.lastLocationUpdate || b.createdAt || 0).getTime() - new Date(a.lastLocationUpdate || a.createdAt || 0).getTime();
+        case 'aura':
+          // Sort by Travel Aura points (highest first)
+          return (b.aura || 0) - (a.aura || 0);
+        case 'references':
+          // Sort by number of references/reviews (assuming references are stored in a field)
+          const aReferences = a.references?.length || 0;
+          const bReferences = b.references?.length || 0;
+          return bReferences - aReferences;
+        case 'compatibility':
+          // Sort by number of shared interests/activities
+          const aShared = (a.interests?.length || 0) + (a.activities?.length || 0);
+          const bShared = (b.interests?.length || 0) + (a.activities?.length || 0);
+          return bShared - aShared;
+        case 'travel_experience':
+          // Sort by travel experience (number of countries visited)
+          const aCountries = a.countriesVisited?.length || 0;
+          const bCountries = b.countriesVisited?.length || 0;
+          return bCountries - aCountries;
+        case 'alphabetical':
+          // Sort alphabetically by username
+          return (a.username || '').localeCompare(b.username || '');
+        default:
+          return 0;
+      }
+    });
+  };
+  const [eventsDisplayCount, setEventsDisplayCount] = useState(3);
+  const [businessesDisplayCount, setBusinessesDisplayCount] = useState(3);
+  const [displayLimit, setDisplayLimit] = useState(8);
+  const [filters, setFilters] = useState({
+    gender: [] as string[],
+    sexualPreference: [] as string[],
+    minAge: "",
+    maxAge: "", 
+    interests: [] as string[],
+    activities: [] as string[],
+    location: "",
+    search: "",
+    userType: [] as string[],
+    events: [] as string[],
+    travelerTypes: [] as string[],
+    militaryStatus: [] as string[],
+    startDate: "",
+    endDate: ""
+  });
+
+  // Location filter state for SmartLocationInput in advanced search
+  const [locationFilter, setLocationFilter] = useState({
+    country: "",
+    state: "",
+    city: ""
+  });
+
+  // Collapsible section states for advanced search
+  const [expandedSections, setExpandedSections] = useState({
+    topChoices: false,
+    gender: false,
+    sexualPreference: false,
+    userType: false,
+    ageRange: false,
+    travelerType: false,
+    interests: false,
+    activities: false,
+    events: false,
+    militaryStatus: false
+  });
+
+  const toggleSection = (section: keyof typeof expandedSections) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [section]: !prev[section]
+    }));
+  };
+
+  const { user, setUser } = useContext(AuthContext);
+
+  // Helper function to get current user location for widgets
+  const getCurrentUserLocation = () => {
+    // If user context is not loaded yet, try to get from currentUserProfile or localStorage
+    const effectiveUser = user || currentUserProfile || (typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('travelconnect_user') || '{}') : null);
+
+    // First check if user is currently traveling
+    if (effectiveUser?.isCurrentlyTraveling && effectiveUser?.travelDestination) {
+      return effectiveUser.travelDestination;
+    }
+
+    // Then check if user has a full hometown location
+    if (effectiveUser?.hometownCity && effectiveUser?.hometownState && effectiveUser?.hometownCountry) {
+      return `${effectiveUser.hometownCity}, ${effectiveUser.hometownState}, ${effectiveUser.hometownCountry}`;
+    }
+
+    // Fallback to just the hometown city
+    if (effectiveUser?.hometownCity) {
+      return effectiveUser.hometownCity;
+    }
+
+    // Final fallback to location field
+    return effectiveUser?.location || 'Unknown';
+  };
+
+  // Use static hero image to prevent caching issues - try URL encoding for space
+  const staticHeroImage = '/travelers%20coffee_1750995178947.png';
+
+  console.log('🖼️ Home Hero: Using static image:', staticHeroImage);
+  
+  // Verify image exists
+  const checkImageExists = async (url: string) => {
+    try {
+      const response = await fetch(url, { method: 'HEAD' });
+      console.log('🖼️ Image check:', url, response.ok ? 'EXISTS' : 'MISSING');
+      return response.ok;
+    } catch (error) {
+      console.log('🖼️ Image check failed:', url, error);
+      return false;
+    }
+  };
+  
+  React.useEffect(() => {
+    checkImageExists(staticHeroImage);
+  }, []);
+
+  // Check for URL parameter to auto-open advanced filters
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('filters') === 'open') {
+      setShowAdvancedFilters(true);
+      // Scroll to filters section after a brief delay
+      setTimeout(() => {
+        if (filtersRef.current) {
+          filtersRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
+      // Clean up URL without refreshing page
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  }, []);
+
+  // Helper function to handle filter closing with return navigation
+  const handleCloseFilters = () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const returnUrl = urlParams.get('return');
+    
+    if (returnUrl) {
+      // Navigate back to the return URL
+      setLocation(returnUrl);
+    } else {
+      // Just close filters normally
+      setShowAdvancedFilters(false);
+    }
+  };
+
+  // Auto-populate filters with user's preferences when advanced filters open
+  useEffect(() => {
+    if (showAdvancedFilters && user) {
+      setFilters(prev => ({
+        ...prev,
+        interests: user.interests || [],
+        activities: user.localActivities || [],
+        events: user.localEvents || []
+      }));
+    }
+  }, [showAdvancedFilters, user]);
+  const { toast } = useToast();
+  const [, setLocation] = useLocation();
+  const filtersRef = useRef<HTMLDivElement>(null);
+
+  // Close filters when clicking outside - enhanced version to prevent closing on scroll
+  useEffect(() => {
+    let isScrolling = false;
+    let isDragging = false;
+    let scrollTimer: NodeJS.Timeout;
+
+    const handleScroll = () => {
+      isScrolling = true;
+      clearTimeout(scrollTimer);
+      scrollTimer = setTimeout(() => {
+        isScrolling = false;
+      }, 150);
+    };
+
+    const handleMouseMove = (event: MouseEvent) => {
+      if (event.buttons > 0) {
+        isDragging = true;
+        setTimeout(() => {
+          isDragging = false;
+        }, 100);
+      }
+    };
+
+    const handleClickOutside = (event: MouseEvent) => {
+      // Don't close if currently scrolling or dragging
+      if (isScrolling || isDragging) return;
+
+      // Check if the click target is within the filters panel
+      if (filtersRef.current && !filtersRef.current.contains(event.target as Node)) {
+        // Additional checks to prevent closing on scroll-related interactions
+        const target = event.target as HTMLElement;
+
+        // Don't close if clicking on scrollbars, scroll areas, or within the filters
+        if (target && (
+          target.closest('[data-radix-scroll-area-viewport]') ||
+          target.closest('.overflow-y-auto') ||
+          target.closest('.overflow-auto') ||
+          target.classList.contains('scrollbar-thumb') ||
+          target.classList.contains('scrollbar-track') ||
+          target.closest('.bg-gray-50') || // The filters card background
+          target.tagName === 'HTML' || // Clicking on page scroll area
+          target.tagName === 'BODY'   // Clicking on page scroll area
+        )) {
+          return;
+        }
+
+        // Only close if it's a genuine click outside the component
+        handleCloseFilters();
+      }
+    };
+
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        handleCloseFilters();
+      }
+    };
+
+    if (showAdvancedFilters) {
+      // Use capture phase to catch scroll events early
+      document.addEventListener('scroll', handleScroll, { capture: true, passive: true });
+      window.addEventListener('scroll', handleScroll, { passive: true });
+      document.addEventListener('wheel', handleScroll, { passive: true });
+      document.addEventListener('touchmove', handleScroll, { passive: true });
+      document.addEventListener('mousemove', handleMouseMove, { passive: true });
+
+      // Delay adding click listener to avoid immediate closure
+      const clickTimer = setTimeout(() => {
+        document.addEventListener('mousedown', handleClickOutside);
+      }, 100);
+
+      // Also listen for scroll events on the filters panel itself
+      if (filtersRef.current) {
+        filtersRef.current.addEventListener('scroll', handleScroll, { passive: true });
+      }
+
+      document.addEventListener('keydown', handleEscapeKey);
+
+      return () => {
+        clearTimeout(clickTimer);
+        clearTimeout(scrollTimer);
+        document.removeEventListener('scroll', handleScroll, true);
+        window.removeEventListener('scroll', handleScroll);
+        document.removeEventListener('wheel', handleScroll);
+        document.removeEventListener('touchmove', handleScroll);
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mousedown', handleClickOutside);
+        document.removeEventListener('keydown', handleEscapeKey);
+
+        if (filtersRef.current) {
+          filtersRef.current.removeEventListener('scroll', handleScroll);
+        }
+      };
+    }
+
+    // Return cleanup function for the case where showAdvancedFilters is false
+    return () => {};
+  }, [showAdvancedFilters]);
+
+  // Scroll to top when home page loads
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  // Get user ID from context or localStorage
+  const getUserId = () => {
+    if (user?.id) return user.id;
+    try {
+      const storedUser = localStorage.getItem('travelconnect_user');
+      if (storedUser) {
+        const parsedUser = JSON.parse(storedUser);
+        return parsedUser?.id;
+      }
+    } catch {
+      return null;
+    }
+    return null;
+  };
+
+  const currentUserId = getUserId();
+
+  // Fetch current user's complete profile data
+  const { data: currentUserProfile, isLoading: isLoadingUserProfile } = useQuery<User>({
+    queryKey: [`/api/users/${currentUserId}`],
+    enabled: !!currentUserId,
+  });
+
+  // Fetch travel plans for the current user
+  const { data: travelPlans = [], isLoading: isLoadingTravelPlans } = useQuery<any[]>({
+    queryKey: [`/api/travel-plans/${currentUserId}`],
+    enabled: !!currentUserId,
+  });
+
+  // Get current user ID for matched users query (use the same ID)
+  const matchedUsersUserId = currentUserId;
+
+  // Query for matched users data
+  const { data: matchedUsers = [], isLoading: matchedUsersLoading, refetch: refetchMatchedUsers } = useQuery<User[]>({
+    queryKey: ["/api/users", "matched", matchedUsersUserId],
+    queryFn: async () => {
+      if (!matchedUsersUserId) return [];
+
+      const params = new URLSearchParams({
+        matched: 'true',
+        userId: matchedUsersUserId.toString()
+      });
+      const response = await fetch(`/api/users?${params}`);
+      if (!response.ok) throw new Error('Failed to fetch matched users');
+      const data = await response.json();
+      return data;
+    },
+    enabled: !!matchedUsersUserId,
+    staleTime: 30 * 1000,
+    refetchOnWindowFocus: false,
+  });
+
+  // Force fresh user data fetch on component mount
+  React.useEffect(() => {
+    const refreshUserData = async () => {
+      if (user?.id) {
+        try {
+          // Clear any cached data first
+          localStorage.removeItem('travelconnect_user');
+
+          const response = await fetch(`/api/users/${user.id}?t=${Date.now()}`);
+          if (response.ok) {
+            const freshUser = await response.json();
+            console.log('Fresh user data from database:', freshUser);
+
+            // Update with fresh data
+            localStorage.setItem('travelconnect_user', JSON.stringify(freshUser));
+            setUser(freshUser);
+          }
+        } catch (error) {
+          console.error('Failed to refresh user data:', error);
+        }
+      }
+    };
+
+    refreshUserData();
+  }, [user?.id]); // Run when user ID changes
+
+  const checkDateOverlap = (start1: string, end1: string, start2: string, end2: string) => {
+    return datesOverlap(start1, end1, start2, end2);
+  };
+
+  // Get effective user for filtering (prioritize fresh API data)
+  const effectiveUser = currentUserProfile || user || (typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('travelconnect_user') || '{}') : null);
+
+  // Server now handles all metropolitan area consolidation automatically
+  // No client-side consolidation needed
+
+  // Get ALL travel destinations and hometown for comprehensive discovery
+  const discoveryLocations = useMemo(() => {
+    console.log('Discovery memo - currentUserId:', currentUserId);
+
+    if (!currentUserId) {
+      console.log('Discovery - no auth, returning empty');
+      return { allCities: [] };
+    }
+
+    const locations: Array<{city: string; type: string}> = [];
+
+    // Add hometown with LA metro consolidation for user discovery
+    const hometownCity = effectiveUser?.hometownCity && effectiveUser?.hometownState && effectiveUser?.hometownCountry 
+      ? `${effectiveUser.hometownCity}, ${effectiveUser.hometownState}, ${effectiveUser.hometownCountry}`
+      : null;
+
+    if (hometownCity) {
+      // Server handles all metropolitan area consolidation automatically
+      locations.push({ city: hometownCity, type: 'hometown' });
+      console.log('🏠 USER DISCOVERY: Hometown', hometownCity);
+    }
+
+    // Add current travel destination if traveling
+    if (effectiveUser?.isCurrentlyTraveling && effectiveUser?.travelDestination) {
+      locations.push({ city: effectiveUser.travelDestination, type: 'current_travel' });
+      console.log('✈️ USER DISCOVERY: Current travel', effectiveUser.travelDestination);
+    }
+
+    // Add ALL planned travel destinations from travel plans
+    if (travelPlans && travelPlans.length > 0) {
+      travelPlans.forEach(plan => {
+        if (plan.destination && !locations.some(loc => loc.city === plan.destination)) {
+          locations.push({ city: plan.destination, type: 'planned_travel' });
+          console.log('📅 USER DISCOVERY: Travel plan', plan.destination);
+        }
+      });
+    }
+
+    console.log('Discovery - All locations:', locations);
+
+    return { allCities: locations };
+  }, [currentUserId, effectiveUser?.hometownCity, effectiveUser?.hometownState, effectiveUser?.hometownCountry, effectiveUser?.isCurrentlyTraveling, effectiveUser?.travelDestination, travelPlans]);
+
+  // Fetch events from ALL locations (hometown + all travel destinations)
+  const { data: allEvents = [], isLoading: eventsLoading } = useQuery<Event[]>({
+    queryKey: [`/api/events/all-locations`, discoveryLocations.allCities.map(loc => loc.city)],
+    queryFn: async () => {
+      if (!discoveryLocations.allCities.length) return [];
+
+      console.log('Fetching events from ALL locations:', discoveryLocations.allCities);
+
+      // Fetch events from all cities in parallel
+      const eventPromises = discoveryLocations.allCities.map(async (location) => {
+        const cityName = location.city.split(',')[0].trim();
+        console.log(`Fetching events for ${location.type}:`, cityName);
+
+        try {
+          const response = await fetch(`/api/events?city=${encodeURIComponent(cityName)}`);
+          if (!response.ok) throw new Error(`Failed to fetch events for ${cityName}`);
+          const data = await response.json();
+          console.log(`${location.type} Events API response:`, data.length, 'events for', cityName);
+          return data.map((event: any) => ({ ...event, sourceLocation: location }));
+        } catch (error) {
+          console.error(`Error fetching events for ${cityName}:`, error);
+          return [];
+        }
+      });
+
+      const allEventsArrays = await Promise.all(eventPromises);
+      const combined = allEventsArrays.flat();
+
+      // Remove duplicates by event ID
+      const unique = combined.filter((event, index, self) => 
+        index === self.findIndex((e) => e.id === event.id)
+      );
+
+      console.log('Combined and filtered events:', unique.length, 'events from ALL', discoveryLocations.allCities.length, 'locations');
+      return unique;
+    },
+    enabled: discoveryLocations.allCities.length > 0,
+    staleTime: 0,
+    gcTime: 0,
+  });
+
+  // Filter events to only show upcoming ones with user priority and recurring deduplication
+  const events = useMemo(() => {
+    if (!allEvents.length) return [];
+
+    // Filter to only show upcoming events
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const upcomingEvents = allEvents.filter(event => new Date(event.date) >= today);
+
+    // Handle recurring events - only show one instance per series
+    const uniqueEvents = upcomingEvents.reduce((unique: any[], event: any) => {
+      // If event has a series ID (recurring), only keep the earliest occurrence
+      if (event.seriesId || event.recurringId || event.recurring) {
+        const seriesKey = event.seriesId || event.recurringId || `${event.title}-${event.organizerId}`;
+        const existingEvent = unique.find(e => 
+          (e.seriesId === seriesKey) || 
+          (e.recurringId === seriesKey) || 
+          (e.title === event.title && e.organizerId === event.organizerId && e.location === event.location)
+        );
+
+        if (!existingEvent) {
+          unique.push(event);
+        } else {
+          // Keep the earlier event
+          const eventDate = new Date(event.date);
+          const existingDate = new Date(existingEvent.date);
+          if (eventDate < existingDate) {
+            const index = unique.findIndex(e => e.id === existingEvent.id);
+            unique[index] = event;
+          }
+        }
+      } else {
+        unique.push(event);
+      }
+      return unique;
+    }, []);
+
+    // Sort with member-created events first
+    const sortedEvents = uniqueEvents.sort((a: any, b: any) => {
+      // Prioritize member-created events (not AI-generated) first
+      const aMemberCreated = !a.isAIGenerated;
+      const bMemberCreated = !b.isAIGenerated;
+
+      if (aMemberCreated && !bMemberCreated) return -1;
+      if (!aMemberCreated && bMemberCreated) return 1;
+
+      // Within same type, prioritize events created by current user
+      const userCreatedA = a.organizerId === currentUserId;
+      const userCreatedB = b.organizerId === currentUserId;
+
+      if (userCreatedA && !userCreatedB) return -1;
+      if (!userCreatedA && userCreatedB) return 1;
+
+      // Then sort by date - earliest upcoming events first
+      const dateA = new Date(a.date);
+      const dateB = new Date(b.date);
+      return dateA.getTime() - dateB.getTime();
+    });
+
+    console.log('Filtered events:', sortedEvents.length, 'upcoming events from ALL locations (member-created events prioritized, recurring deduplicated)');
+    return sortedEvents;
+  }, [allEvents, currentUserId]);
+
+  const { data: messages = [], isLoading: messagesLoading } = useQuery<Message[]>({
+    queryKey: [`/api/messages/${currentUserId}`],
+    enabled: !!currentUserId,
+  });
+
+  // Fetch business offers from ALL locations (hometown + all travel destinations)
+  const { data: allBusinessOffers = [], isLoading: businessOffersLoading } = useQuery<any[]>({
+    queryKey: [`/api/business-offers/all-locations`, discoveryLocations.allCities.map(loc => loc.city)],
+    queryFn: async () => {
+      if (!discoveryLocations.allCities.length) return [];
+
+      console.log('Fetching business offers from ALL locations:', discoveryLocations.allCities);
+
+      // Fetch business offers from all cities in parallel
+      const offerPromises = discoveryLocations.allCities.map(async (location) => {
+        const cityName = location.city.split(',')[0].trim();
+        console.log(`Fetching business offers for ${location.type}:`, cityName);
+
+        try {
+          const response = await fetch(`/api/business-deals?city=${encodeURIComponent(cityName)}`);
+          if (!response.ok) throw new Error(`Failed to fetch business offers for ${cityName}`);
+          const data = await response.json();
+          console.log(`${location.type} Business Offers API response:`, data.length, 'offers for', cityName);
+          return data.map((offer: any) => ({ ...offer, sourceLocation: location }));
+        } catch (error) {
+          console.error(`Error fetching business offers for ${cityName}:`, error);
+          return [];
+        }
+      });
+
+      const allOffersArrays = await Promise.all(offerPromises);
+      const combined = allOffersArrays.flat();
+
+      // Remove duplicates by offer ID
+      const unique = combined.filter((offer, index, self) => 
+        index === self.findIndex((o) => o.id === offer.id)
+      );
+
+      console.log('Combined business offers:', unique.length, 'offers from ALL', discoveryLocations.allCities.length, 'locations');
+      return unique;
+    },
+    enabled: discoveryLocations.allCities.length > 0 && !!currentUserId && !isLoadingTravelPlans && !isLoadingUserProfile,
+    staleTime: 0,
+    gcTime: 0,
+  });
+
+  const businessOffers = allBusinessOffers;
+
+  // businessOffersLoading is now defined in the query above
+
+  // Fetch active quick meetups from ALL locations (hometown + all travel destinations)
+  const { data: allMeetups = [], isLoading: meetupsLoading } = useQuery<any[]>({
+    queryKey: [`/api/quick-meetups/all-locations`, discoveryLocations.allCities.map(loc => loc.city)],
+    queryFn: async () => {
+      if (!discoveryLocations.allCities.length) return [];
+
+      console.log('Fetching active quick meetups from ALL locations:', discoveryLocations.allCities);
+
+      // Fetch meetups from all cities in parallel
+      const meetupPromises = discoveryLocations.allCities.map(async (location) => {
+        const cityName = location.city.split(',')[0].trim();
+        console.log(`Fetching quick meetups for ${location.type}:`, cityName);
+
+        try {
+          const response = await fetch(`/api/quick-meetups?city=${encodeURIComponent(cityName)}`);
+          if (!response.ok) throw new Error(`Failed to fetch quick meetups for ${cityName}`);
+          const data = await response.json();
+          console.log(`${location.type} Quick Meetups API response:`, data.length, 'meetups for', cityName);
+          return data.map((meetup: any) => ({ ...meetup, sourceLocation: location }));
+        } catch (error) {
+          console.error(`Error fetching quick meetups for ${cityName}:`, error);
+          return [];
+        }
+      });
+
+      const allMeetupsArrays = await Promise.all(meetupPromises);
+      const combined = allMeetupsArrays.flat();
+
+      // Remove duplicates by meetup ID
+      const unique = combined.filter((meetup, index, self) => 
+        index === self.findIndex((m) => m.id === meetup.id)
+      );
+
+      console.log('Combine
