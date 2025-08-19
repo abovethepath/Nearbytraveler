@@ -2,6 +2,7 @@ import { useContext, useState, useRef, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { AuthContext } from "@/App";
+import { MobilePreview } from "@/components/MobilePreview";
 import TravelMatches from "@/components/travel-matches";
 import UserCard from "@/components/user-card";
 import ResponsiveUserGrid from "@/components/ResponsiveUserGrid";
@@ -358,7 +359,7 @@ export default function ConnectPage() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  return (
+  const pageContent = (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-6">
@@ -1336,5 +1337,14 @@ export default function ConnectPage() {
         currentUser={user}
       />
     </div>
+  );
+
+  return (
+    <>
+      {pageContent}
+      <MobilePreview>
+        {pageContent}
+      </MobilePreview>
+    </>
   );
 }

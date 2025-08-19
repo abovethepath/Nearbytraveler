@@ -8,6 +8,7 @@ import { MapPin, Users, Calendar, Star, Search, Compass, TrendingUp, MessageCirc
 import { useLocation } from "wouter";
 import { ArrowLeft } from "lucide-react";
 import { AuthContext } from "@/App";
+import { MobilePreview } from "@/components/MobilePreview";
 // MobileNav removed - using global mobile navigation
 
 
@@ -109,7 +110,7 @@ export default function DiscoverPage() {
     );
   }
 
-  return (
+  const pageContent = (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-orange-50 dark:from-gray-900 dark:to-gray-800 py-8">
       {/* MobileNav removed - using global MobileTopNav and MobileBottomNav */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -254,5 +255,14 @@ export default function DiscoverPage() {
 
       </div>
     </div>
+  );
+
+  return (
+    <>
+      {pageContent}
+      <MobilePreview>
+        {pageContent}
+      </MobilePreview>
+    </>
   );
 }
