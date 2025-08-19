@@ -47,7 +47,7 @@ export default function ResponsiveUserGrid({
     if (!user.interests || user.interests.length === 0) return null;
     const count = user.interests.length;
     return (
-      <div className="inline-flex items-center justify-center h-8 min-w-[7rem] rounded-full px-3 text-sm font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
+      <div className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
         {count} interest{count !== 1 ? 's' : ''}
       </div>
     );
