@@ -33,6 +33,7 @@ function Badge({ className, variant, ...props }: BadgeProps) {
   
   // If pill class is explicitly provided, use it and skip ALL auto-enforcement
   if (finalClassName.includes('pill')) {
+    console.log('🎯 BADGE DEBUG: Using pill class:', finalClassName);
     return (
       <div className={cn(finalClassName)} {...props} />
     )
