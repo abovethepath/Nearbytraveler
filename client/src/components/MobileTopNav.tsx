@@ -143,7 +143,7 @@ export function MobileTopNav() {
 
       {/* Dropdown Menu */}
       {showDropdown && (
-        <div className="absolute top-16 left-0 right-0 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 shadow-lg z-50">
+        <div className="absolute top-16 left-0 right-0 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 shadow-lg z-[9998]">
           <div className="flex flex-col py-2">
             {/* Conditional navigation based on user type */}
             {currentUser?.userType === 'business' ? (
