@@ -396,22 +396,22 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
               <h4 className="text-xs font-medium text-gray-600 mb-1">Travel Interests</h4>
               <div className="flex flex-wrap gap-1">
                 {user.travelInterests?.slice(0, 2).map((interest) => (
-                  <Badge 
+                  <div 
                     key={interest} 
-                    className="pill-interests"
+                    className="inline-flex items-center justify-center h-8 min-w-[7rem] rounded-full px-3 text-sm font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5"
                   >
                     {interest}
-                  </Badge>
+                  </div>
                 ))}
                 {user.preferredActivities?.slice(0, 2).map((activity) => (
-                  <Badge key={activity} className="pill pill-activities">
+                  <div key={activity} className="inline-flex items-center justify-center h-8 min-w-[7rem] rounded-full px-3 text-sm font-medium leading-none whitespace-nowrap bg-green-500 text-white border-0 appearance-none select-none gap-1.5">
                     {activity}
-                  </Badge>
+                  </div>
                 ))}
                 {user.plannedEvents?.slice(0, 1).map((event) => (
-                  <Badge key={event} className="pill pill-events">
+                  <div key={event} className="inline-flex items-center justify-center h-8 min-w-[7rem] rounded-full px-3 text-sm font-medium leading-none whitespace-nowrap bg-purple-500 text-white border-0 appearance-none select-none gap-1.5">
                     {event}
-                  </Badge>
+                  </div>
                 ))}
               </div>
             </div>
@@ -462,21 +462,21 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
           {(!user.travelInterests?.length && !user.preferredActivities?.length && !user.plannedEvents?.length && !user.localExpertise?.length && !user.localActivities?.length) && (
             <div className="flex flex-wrap gap-2 mb-4">
               {getFilteredInterests(user)?.slice(0, 3).map((interest) => (
-                <Badge
+                <div
                   key={interest}
-                  className="pill pill-interests"
+                  className="inline-flex items-center justify-center h-8 min-w-[7rem] rounded-full px-3 text-sm font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5"
                 >
                   {interest}
-                </Badge>
+                </div>
               ))}
               {(() => {
                 const filteredInterests = getFilteredInterests(user);
                 const totalOverflow = Math.max(0, (filteredInterests?.length || 0) - 3);
                 
                 return totalOverflow > 0 ? (
-                  <Badge className="pill pill-interests">
+                  <div className="inline-flex items-center justify-center h-8 min-w-[7rem] rounded-full px-3 text-sm font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
                     +{totalOverflow} more
-                  </Badge>
+                  </div>
                 ) : null;
               })()}
             </div>

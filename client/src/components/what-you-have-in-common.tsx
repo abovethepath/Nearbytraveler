@@ -527,9 +527,9 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
             </h5>
             <div className="flex flex-wrap gap-2">
               {commonalities.sharedInterests.map((interest, index) => (
-                <Badge key={`shared-interest-${interest}-${index}`} className="pill-interests">
+                <div key={`shared-interest-${interest}-${index}`} className="inline-flex items-center justify-center h-8 min-w-[7rem] rounded-full px-3 text-sm font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
                   {interest}
-                </Badge>
+                </div>
               ))}
             </div>
           </div>
@@ -544,9 +544,9 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
             </h5>
             <div className="flex flex-wrap gap-2">
               {commonalities.sharedActivities.map((activity, index) => (
-                <Badge key={`shared-activity-${activity}-${index}`} className="pill-activities">
+                <div key={`shared-activity-${activity}-${index}`} className="inline-flex items-center justify-center h-8 min-w-[7rem] rounded-full px-3 text-sm font-medium leading-none whitespace-nowrap bg-green-500 text-white border-0 appearance-none select-none gap-1.5">
                   {activity}
-                </Badge>
+                </div>
               ))}
             </div>
           </div>
@@ -578,9 +578,9 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
             </h5>
             <div className="flex flex-wrap gap-2">
               {commonalities.sharedEvents.map((event, index) => (
-                <Badge key={`shared-event-${event}-${index}`} className="pill-events">
+                <div key={`shared-event-${event}-${index}`} className="inline-flex items-center justify-center h-8 min-w-[7rem] rounded-full px-3 text-sm font-medium leading-none whitespace-nowrap bg-purple-500 text-white border-0 appearance-none select-none gap-1.5">
                   {event}
-                </Badge>
+                </div>
               ))}
             </div>
           </div>
