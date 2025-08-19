@@ -6,24 +6,26 @@
 @tailwind utilities;
 
 @layer components {
+  /* Base pill class - use for general pills */
   .pill {
     @apply !inline-flex !items-center !justify-center !h-8 !min-w-[7.5rem] !rounded-full !px-3 !text-sm !font-medium !leading-none !whitespace-nowrap !bg-blue-500 !text-white !border-0 !appearance-none !select-none [&>svg]:!h-4 [&>svg]:!w-4 gap-1.5;
   }
   
-  .pill-events {
+  /* Section-specific pills with higher specificity to override base pill */
+  .pill.pill-events, .pill-events {
     @apply !inline-flex !items-center !justify-center !h-10 !min-w-[8rem] !rounded-full !px-4 !text-base !font-medium !leading-none !whitespace-nowrap !bg-purple-500 !text-white !border-0 !appearance-none !select-none [&>svg]:!h-5 [&>svg]:!w-5 gap-1.5;
   }
   
-  .pill-activities {
+  .pill.pill-activities, .pill-activities {
     @apply !inline-flex !items-center !justify-center !h-10 !min-w-[8rem] !rounded-full !px-4 !text-base !font-medium !leading-none !whitespace-nowrap !bg-green-500 !text-white !border-0 !appearance-none !select-none [&>svg]:!h-5 [&>svg]:!w-5 gap-1.5;
   }
   
-  .pill-interests {
-    @apply !inline-flex !items-center !justify-center !h-8 !min-w-[7.5rem] !rounded-full !px-3 !text-sm !font-medium !leading-none !whitespace-nowrap !bg-blue-500 !text-white !border-0 !appearance-none !select-none [&>svg]:!h-4 [&>svg]:!w-4 gap-1.5;
+  .pill.pill-interests, .pill-interests {
+    @apply !inline-flex !items-center !justify-center !h-10 !min-w-[8rem] !rounded-full !px-4 !text-base !font-medium !leading-none !whitespace-nowrap !bg-blue-500 !text-white !border-0 !appearance-none !select-none [&>svg]:!h-5 [&>svg]:!w-5 gap-1.5;
   }
   
-  .pill-languages {
-    @apply !inline-flex !items-center !justify-center !h-9 !min-w-[8.5rem] !rounded-full !px-4 !text-base !font-medium !leading-none !whitespace-nowrap !bg-gradient-to-r !from-orange-400 !to-pink-500 !text-white !border-0 !appearance-none !select-none [&>svg]:!h-5 [&>svg]:!w-5 gap-1.5 shadow-md;
+  .pill.pill-languages, .pill-languages {
+    @apply !inline-flex !items-center !justify-center !h-10 !min-w-[8.5rem] !rounded-full !px-4 !text-base !font-medium !leading-none !whitespace-nowrap !bg-gradient-to-r !from-orange-400 !to-pink-500 !text-white !border-0 !appearance-none !select-none [&>svg]:!h-5 [&>svg]:!w-5 gap-1.5 shadow-md;
   }
 }
 
