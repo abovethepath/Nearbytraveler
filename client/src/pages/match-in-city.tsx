@@ -1277,7 +1277,7 @@ export default function MatchInCity() {
                   return (
                     <div
                       key={`activity-${userActivity.id}`}
-                      className="relative group px-3 py-1 rounded-lg text-sm font-medium bg-purple-600 hover:bg-purple-700 text-white border border-purple-400/30 shadow-sm"
+                      className="relative group px-4 py-2 rounded-full text-base font-medium bg-purple-600 hover:bg-purple-700 text-white border border-purple-400/30 shadow-sm h-10 min-w-[8rem]"
                     >
                       <span>{globalActivity.activityName}</span>
                       <button
@@ -1301,7 +1301,7 @@ export default function MatchInCity() {
                     return (
                       <div
                         key={`event-${userEvent.id}`}
-                        className="relative group px-3 py-1 rounded-lg text-sm font-medium bg-purple-600 hover:bg-purple-700 text-white border border-purple-400/30 shadow-sm"
+                        className="relative group px-4 py-2 rounded-full text-base font-medium bg-purple-600 hover:bg-purple-700 text-white border border-purple-400/30 shadow-sm h-10 min-w-[8rem]"
                       >
                         <span>📅 {userEvent.eventtitle || userEvent.eventTitle || (userEvent.eventId ? `Event ${userEvent.eventId}` : "Saved Event")}</span>
                         <button
@@ -1332,7 +1332,7 @@ export default function MatchInCity() {
                   return (
                     <div
                       key={`event-${userEvent.id}`}
-                      className="relative group px-3 py-1 rounded-lg text-sm font-medium bg-purple-600 hover:bg-purple-700 text-white border border-purple-400/30 shadow-sm"
+                      className="relative group px-4 py-2 rounded-full text-base font-medium bg-purple-600 hover:bg-purple-700 text-white border border-purple-400/30 shadow-sm h-10 min-w-[8rem]"
                     >
                       <span>📅 {globalEvent.title}</span>
                       <button
