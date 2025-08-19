@@ -4543,7 +4543,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                     setEditFormData({ ...editFormData, activities: newActivities })
                                   );
                                 }}
-                                className={`pill-activities transition-all ${
+                                className={`pill pill-activities transition-all ${
                                   isSelected
                                     ? 'bg-green-600 text-white font-bold transform scale-105'
                                     : 'bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-800 dark:text-blue-200 dark:hover:bg-blue-700'
@@ -4688,7 +4688,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                     setTempEvents([...tempEvents, event]);
                                   }
                                 }}
-                                className={`pill-events transition-all ${
+                                className={`pill pill-events transition-all ${
                                   isSelected
                                     ? 'bg-green-600 text-white font-bold transform scale-105'
                                     : 'bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-800 dark:text-blue-200 dark:hover:bg-blue-700'
