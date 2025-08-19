@@ -1217,16 +1217,12 @@ export default function Home() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
 
       {/* Hero Section with Scrolling Photo Gallery */}
-      <section 
-        className="relative overflow-hidden text-white"
-        style={{ 
-          minHeight: '500px',
-          backgroundImage: 'url("/attached_assets/beach travel_1754973619241.jpg")',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat'
-        }}
-      >
+<section
+  className="relative overflow-hidden text-white min-h-[60svh] sm:min-h-[70svh] md:min-h-[72svh] bg-cover bg-center bg-no-repeat"
+  style={{
+    backgroundImage: "url('/attached_assets/beach travel_1754973619241.jpg')",
+  }}
+>
         {/* Dark overlay for text readability */}
         <div className="absolute inset-0 bg-gradient-to-br from-black/40 via-black/30 to-black/50"></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
@@ -1319,9 +1315,9 @@ export default function Home() {
 
         {/* Advanced Filters Modal - Clean modal approach */}
         {showAdvancedFilters && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-2 sm:p-4">
-            <Card className="w-full max-w-4xl max-h-[90vh] overflow-y-auto p-2 sm:p-4 md:p-6 rounded-xl border-2 border-gray-200 dark:border-gray-700 shadow-lg bg-white dark:bg-gray-800">
-              <Card className="p-3 sm:p-4 md:p-6 mx-1 sm:mx-2 md:mx-0 rounded-xl border-2 border-gray-200 dark:border-gray-700 shadow-lg">
+          <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-3 sm:p-4">
+            <Card className="w-[min(100vw-1.5rem,56rem)] max-h-[85svh] overflow-y-auto p-4 sm:p-6 rounded-xl border-2 border-gray-200 dark:border-gray-700 shadow-lg bg-white dark:bg-gray-800">
+              <Card className="p-4 sm:p-6 mx-0 sm:mx-0 rounded-xl border-2 border-gray-200 dark:border-gray-700 shadow-lg">
                 {/* Header with Search Now CTA and Close Button */}
                 <div className="flex items-center justify-between mb-3 sm:mb-4">
                   <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center">

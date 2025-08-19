@@ -7,7 +7,7 @@
 /* iOS 100vh fix */
 .min-screen { min-height: 100dvh; }
 
-/* Prevent random horizontal scroll on small screens */
+/* Guard rails for mobile - prevent horizontal scroll + text flex fixes */
 html, body, #root { width: 100%; overflow-x: hidden; }
 
 /* Images and media scale down nicely */
