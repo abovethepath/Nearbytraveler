@@ -642,16 +642,16 @@ export default function PlanTrip() {
 
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Hero Section */}
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 overflow-hidden break-words">
+      {/* Hero Section - Mobile Responsive */}
       <div 
-        className="relative h-64 overflow-hidden bg-cover bg-center bg-no-repeat"
+        className="relative h-48 sm:h-56 md:h-64 overflow-hidden bg-cover bg-center bg-no-repeat"
         style={{
           backgroundImage: `url('/attached_assets/people-planning-vacation-trip-map-85261359_1750857749346.webp')`
         }}
       >
         <div className="absolute inset-0 bg-black/40" />
-        {/* Close Button */}
+        {/* Close Button - Mobile Responsive */}
         <button
           onClick={() => {
             // Clear any editing state
@@ -659,40 +659,40 @@ export default function PlanTrip() {
             // Navigate to home
             setLocation('/');
           }}
-          className="absolute top-4 right-4 z-20 bg-white/90 hover:bg-white text-gray-800 rounded-full p-2 shadow-lg transition-all hover:scale-110"
+          className="absolute top-2 right-2 sm:top-4 sm:right-4 z-20 bg-white/90 hover:bg-white text-gray-800 rounded-full p-1.5 sm:p-2 shadow-lg transition-all hover:scale-110"
           aria-label="Close"
         >
-          <X className="w-6 h-6" />
+          <X className="w-4 h-4 sm:w-6 sm:h-6" />
         </button>
-        <div className="relative z-10 h-full flex items-center justify-center">
-          <div className="text-center text-white">
-            <Compass className="w-16 h-16 mx-auto mb-4" />
-            <h1 className="text-4xl font-bold mb-2">
+        <div className="relative z-10 h-full flex items-center justify-center px-2 sm:px-4">
+          <div className="text-center text-white overflow-hidden break-words">
+            <Compass className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-2 sm:mb-4" />
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-1 sm:mb-2 break-words">
               {isEditMode ? "Edit Your Trip" : "Plan Your Trip"}
             </h1>
-            <p className="text-xl opacity-90">
+            <p className="text-sm sm:text-lg md:text-xl opacity-90 break-words">
               {isEditMode ? "Update your travel plan details" : "Discover your perfect travel companions"}
             </p>
           </div>
         </div>
       </div>
 
-      {/* Trip Planning Form - Full Page Layout */}
-      <div className="container max-w-4xl mx-auto px-6 py-8">
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
-          <div className="p-8">
-            <div className="mb-6 text-center">
-              <p className="text-gray-600 dark:text-gray-400">
+      {/* Trip Planning Form - Mobile Responsive Layout */}
+      <div className="container max-w-4xl mx-auto px-2 sm:px-4 md:px-6 py-4 sm:py-6 md:py-8 overflow-hidden break-words">
+        <div className="bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden break-words">
+          <div className="p-4 sm:p-6 md:p-8 overflow-hidden break-words">
+            <div className="mb-4 sm:mb-6 text-center overflow-hidden break-words">
+              <p className="text-xs sm:text-sm md:text-base text-gray-600 dark:text-gray-400 break-words">
                 Create your travel plan and connect with Nearby Locals, fellow Nearby Travelers and Nearby Businesses at your destination
               </p>
-              <p className="text-gray-700 dark:text-gray-300 font-medium mt-2">
+              <p className="text-xs sm:text-sm md:text-base text-gray-700 dark:text-gray-300 font-medium mt-1 sm:mt-2 break-words">
                 FILL OUT AS DETAILED AS POSSIBLE TO ENSURE THE BEST MATCHES. YOU CAN SAVE YOUR CHOICES AS DEFAULTS ON ALL FUTURE TRIPS.
               </p>
             </div>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Travel Destination - Use SmartLocationInput like signup forms */}
-              <div className="space-y-2">
-                <Label className="text-sm font-medium text-black dark:text-white">Travel Destination *</Label>
+            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6 overflow-hidden break-words">
+              {/* Travel Destination - Mobile Responsive */}
+              <div className="space-y-2 sm:space-y-3 overflow-hidden break-words">
+                <Label className="text-sm sm:text-base font-medium text-black dark:text-white break-words">Travel Destination *</Label>
                 <SmartLocationInput
                   city={tripPlan.destinationCity}
                   state={tripPlan.destinationState}
@@ -712,12 +712,14 @@ export default function PlanTrip() {
                     state: "Select state/region",
                     city: "Select city"
                   }}
+                  className="text-sm sm:text-base"
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="startDate" className="text-black dark:text-white">Start Date</Label>
+              {/* Date Fields - Mobile Responsive */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 overflow-hidden break-words">
+                <div className="overflow-hidden break-words">
+                  <Label htmlFor="startDate" className="text-sm sm:text-base font-medium text-black dark:text-white break-words">Start Date</Label>
                   <Input
                     id="startDate"
                     type="date"
@@ -726,11 +728,11 @@ export default function PlanTrip() {
                     max="9999-12-31"
                     onChange={(e) => setTripPlan(prev => ({ ...prev, startDate: e.target.value }))}
                     placeholder="20__-__-__"
-                    className="bg-white dark:bg-gray-800 text-black dark:text-white border-gray-300 dark:border-gray-600 calendar-white-icon"
+                    className="bg-white dark:bg-gray-800 text-black dark:text-white border-gray-300 dark:border-gray-600 calendar-white-icon text-sm sm:text-base h-9 sm:h-10 md:h-11"
                   />
                 </div>
-                <div>
-                  <Label htmlFor="endDate" className="text-black dark:text-white">End Date</Label>
+                <div className="overflow-hidden break-words">
+                  <Label htmlFor="endDate" className="text-sm sm:text-base font-medium text-black dark:text-white break-words">End Date</Label>
                   <Input
                     id="endDate"
                     type="date"
@@ -739,20 +741,20 @@ export default function PlanTrip() {
                     max="9999-12-31"
                     onChange={(e) => setTripPlan(prev => ({ ...prev, endDate: e.target.value }))}
                     placeholder="20__-__-__"
-                    className="bg-white dark:bg-gray-800 text-black dark:text-white border-gray-300 dark:border-gray-600 dark:[&::-webkit-calendar-picker-indicator]:filter dark:[&::-webkit-calendar-picker-indicator]:invert"
+                    className="bg-white dark:bg-gray-800 text-black dark:text-white border-gray-300 dark:border-gray-600 dark:[&::-webkit-calendar-picker-indicator]:filter dark:[&::-webkit-calendar-picker-indicator]:invert text-sm sm:text-base h-9 sm:h-10 md:h-11"
                   />
                 </div>
               </div>
 
-              {/* Traveler Types */}
-              <div>
-                <Label className="text-sm font-medium mb-2 block text-black dark:text-white">
+              {/* Traveler Types - Mobile Responsive */}
+              <div className="overflow-hidden break-words">
+                <Label className="text-sm sm:text-base font-medium mb-2 block text-black dark:text-white break-words">
                   Traveler Type on This Trip
                 </Label>
-                <p className="text-xs text-gray-600 dark:text-gray-300 mb-3">Select all that apply to help us match you with the right people and experiences</p>
-                <div className="grid grid-cols-3 gap-2 border rounded-lg p-3 border-gray-300 dark:border-gray-600">
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 mb-3 break-words">Select all that apply to help us match you with the right people and experiences</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3 border rounded-lg p-3 sm:p-4 border-gray-300 dark:border-gray-600 overflow-hidden break-words">
                   {BASE_TRAVELER_TYPES.map((type) => (
-                    <div key={type} className="flex items-center space-x-2">
+                    <div key={type} className="flex items-center space-x-2 overflow-hidden break-words">
                       <Checkbox
                         id={`traveler-type-${type}`}
                         checked={tripPlan.travelerTypes.includes(type)}
@@ -764,7 +766,7 @@ export default function PlanTrip() {
                           }
                         }}
                       />
-                      <Label htmlFor={`traveler-type-${type}`} className="text-sm text-black dark:text-white">{type}</Label>
+                      <Label htmlFor={`traveler-type-${type}`} className="text-xs sm:text-sm text-black dark:text-white break-words overflow-hidden">{type}</Label>
                     </div>
                   ))}
                 </div>
@@ -774,65 +776,55 @@ export default function PlanTrip() {
               {/* Interests Section */}
               <div>
                 
-                <div className="text-center mb-6">
-                  <div className="text-4xl mb-3">💫</div>
-                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">What Are You Into?</h2>
-                  <p className="text-gray-600 dark:text-gray-300 mb-2">Pick at least 10 things to find your perfect matches!</p>
-                  <div className="text-xs text-purple-600 dark:text-purple-400">💡 These save as your defaults for faster setup next time</div>
+                <div className="text-center mb-4 sm:mb-6 overflow-hidden break-words">
+                  <div className="text-2xl sm:text-3xl md:text-4xl mb-2 sm:mb-3">💫</div>
+                  <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 dark:text-white mb-1 sm:mb-2 break-words">What Are You Into?</h2>
+                  <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 mb-1 sm:mb-2 break-words">Pick at least 10 things to find your perfect matches!</p>
+                  <div className="text-xs sm:text-sm text-purple-600 dark:text-purple-400 break-words">💡 These save as your defaults for faster setup next time</div>
                 </div>
                 
-                {/* I am a Veteran checkbox - positioned prominently */}
-                <div className="mb-4">
-                  <label className="flex items-center space-x-2">
+                {/* Military Status Checkboxes - Mobile Responsive */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-4 sm:mb-6 overflow-hidden break-words">
+                  <label className="flex items-center space-x-2 overflow-hidden break-words">
                     <Checkbox
                       checked={tripPlan.isVeteran || false}
                       onCheckedChange={(checked) => setTripPlan(prev => ({ ...prev, isVeteran: !!checked }))}
                     />
-                    <span className="text-sm font-bold text-black dark:text-white">I am a Veteran</span>
+                    <span className="text-sm sm:text-base font-bold text-black dark:text-white break-words">I am a Veteran</span>
                   </label>
-                </div>
-
-                {/* I am active duty checkbox - positioned prominently */}
-                <div className="mb-4">
-                  <label className="flex items-center space-x-2">
+                  <label className="flex items-center space-x-2 overflow-hidden break-words">
                     <Checkbox
                       checked={tripPlan.isActiveDuty || false}
                       onCheckedChange={(checked) => setTripPlan(prev => ({ ...prev, isActiveDuty: !!checked }))}
                     />
-                    <span className="text-sm font-bold text-black dark:text-white">I am active duty</span>
+                    <span className="text-sm sm:text-base font-bold text-black dark:text-white break-words">I am active duty</span>
                   </label>
                 </div>
                 
                 {/* Top Choices Section */}
-                <div className="mb-6">
-                  <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-6">
-                    <div className="text-center mb-6">
-                      <Star className="w-8 h-8 mx-auto text-blue-600 mb-2" />
-                      <div className="flex items-center justify-between mb-4">
-                        <h4 className="text-sm font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                          <span className="text-lg">🔥</span> Quick Picks - Most Popular
-                        </h4>
-                        <Button 
-                          type="button" 
-                          variant="outline" 
-                          size="sm" 
-                          onClick={() => {
-                            const newInterests = [...new Set([...tripPlan.interests, ...MOST_POPULAR_INTERESTS])];
-                            setTripPlan(prev => ({ ...prev, interests: newInterests }));
-                          }}
-                          className="text-xs h-6 px-2 text-blue-600 border-blue-300 hover:bg-blue-50"
-                        >
-                          Select All
-                        </Button>
+                {/* Popular Interests Section - Mobile Responsive */}
+                <div className="mb-4 sm:mb-6 overflow-hidden break-words">
+                  <div className="bg-gradient-to-r from-blue-500 via-orange-500 to-red-500 p-3 sm:p-4 md:p-6 rounded-lg overflow-hidden break-words">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 mb-3 overflow-hidden break-words">
+                      <div className="flex items-center gap-2 overflow-hidden break-words">
+                        <span className="text-yellow-300 text-base sm:text-lg">⭐</span>
+                        <h4 className="text-white font-bold text-sm sm:text-base md:text-lg break-words overflow-hidden">Top Choices for Most Locals and Travelers</h4>
                       </div>
+                      <Button 
+                        type="button" 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={() => {
+                          const newInterests = [...new Set([...tripPlan.interests, ...MOST_POPULAR_INTERESTS])];
+                          setTripPlan(prev => ({ ...prev, interests: newInterests }));
+                        }}
+                        className="text-xs h-7 px-2 text-blue-600 border-blue-300 hover:bg-blue-50 bg-white/90 ml-auto sm:ml-0 shrink-0"
+                      >
+                        Select All
+                      </Button>
                     </div>
-                <div className="mb-6">
-                  <div className="bg-gradient-to-r from-blue-500 via-orange-500 to-red-500 p-4 rounded-lg">
-                    <div className="flex items-center gap-2 mb-3">
-                      <span className="text-yellow-300 text-lg">⭐</span>
-                      <h4 className="text-white font-bold text-lg">Top Choices for Most Locals and Travelers</h4>
-                    </div>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+                    {/* AI-Companion Responsive Grid */}
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3 overflow-hidden break-words">
                       {MOST_POPULAR_INTERESTS.map((interest: string) => (
                         <button
                           key={interest}
@@ -844,7 +836,7 @@ export default function PlanTrip() {
                               setTripPlan(prev => ({ ...prev, interests: [...prev.interests, interest] }));
                             }
                           }}
-                          className={`px-3 py-2 rounded-md text-sm font-medium transition-all ${
+                          className={`px-2 sm:px-3 py-2 sm:py-3 rounded-md text-xs sm:text-sm font-medium transition-all break-words overflow-hidden text-center leading-tight ${
                             tripPlan.interests.includes(interest)
                               ? 'bg-white text-blue-600 font-bold transform scale-105'
                               : 'bg-white/20 text-white hover:bg-white/30'
@@ -857,18 +849,19 @@ export default function PlanTrip() {
                   </div>
                 </div>
 
-                {/* All Interests Section */}
-                <div className="bg-blue-50 dark:bg-blue-900/10 rounded-lg p-4 mt-4 border border-blue-200 dark:border-blue-600">
+                {/* Additional Interests Section - Mobile Responsive */}
+                <div className="bg-blue-50 dark:bg-blue-900/10 rounded-lg p-3 sm:p-4 mt-3 sm:mt-4 border border-blue-200 dark:border-blue-600 overflow-hidden break-words">
                   <details className="group" open>
-                  <summary className="flex items-center justify-between cursor-pointer list-none mb-4">
-                    <h4 className="text-sm font-bold text-blue-800 dark:text-blue-300 flex items-center gap-2">
-                      <span className="text-base">✨</span> More Options ({ADDITIONAL_INTERESTS.length} available)
+                  <summary className="flex items-center justify-between cursor-pointer list-none mb-3 sm:mb-4 overflow-hidden break-words">
+                    <h4 className="text-xs sm:text-sm font-bold text-blue-800 dark:text-blue-300 flex items-center gap-2 break-words overflow-hidden">
+                      <span className="text-sm sm:text-base">✨</span> More Options ({ADDITIONAL_INTERESTS.length} available)
                     </h4>
-                    <div className="text-blue-400 group-open:rotate-180 transition-transform">
-                      <ChevronDown className="w-4 h-4" />
+                    <div className="text-blue-400 group-open:rotate-180 transition-transform shrink-0">
+                      <ChevronDown className="w-3 h-3 sm:w-4 sm:h-4" />
                     </div>
                   </summary>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 pt-4 border-t border-blue-200 dark:border-blue-600">
+                  {/* AI-Companion Responsive Grid */}
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3 pt-3 sm:pt-4 border-t border-blue-200 dark:border-blue-600 overflow-hidden break-words">
                     {ADDITIONAL_INTERESTS.map((interest: string) => (
                       <Button
                         key={interest}
@@ -881,20 +874,17 @@ export default function PlanTrip() {
                             setTripPlan(prev => ({ ...prev, interests: [...prev.interests, interest] }));
                           }
                         }}
-                        className="h-auto py-2 px-3 text-sm font-medium transition-colors duration-200 bg-white dark:bg-gray-600 border-gray-200 dark:border-gray-500 hover:bg-blue-50 dark:hover:bg-blue-800"
+                        className="h-auto py-2 sm:py-3 px-2 sm:px-3 text-xs sm:text-sm font-medium transition-colors duration-200 bg-white dark:bg-gray-600 border-gray-200 dark:border-gray-500 hover:bg-blue-50 dark:hover:bg-blue-800 break-words overflow-hidden text-center leading-tight"
                       >
-                        {interest}
+                        <span className="break-words overflow-hidden">{interest}</span>
                       </Button>
                     ))}
                   </div>
                 </details>
                 </div>
               </div>
-                
-                
-              </div>
 
-              {/* Activities Section */}
+              {/* Activities Section - Mobile Responsive */}
               <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border border-green-200 dark:border-green-700 rounded-lg p-6">
                 <div className="text-center mb-6">
                   <Coffee className="w-8 h-8 mx-auto text-green-600 mb-2" />
@@ -986,12 +976,12 @@ export default function PlanTrip() {
 
 
 
-              {/* City Activities Information - No interruption to trip planning flow */}
-              <div className="mb-4 bg-gradient-to-r from-blue-600 to-green-600 p-6 rounded-lg border-2 border-blue-400">
-                <p className="text-2xl font-bold text-white text-center drop-shadow-lg mb-2">
+              {/* City Activities Information - Mobile Responsive */}
+              <div className="mb-3 sm:mb-4 bg-gradient-to-r from-blue-600 to-green-600 p-4 sm:p-6 rounded-lg border-2 border-blue-400 overflow-hidden break-words">
+                <p className="text-lg sm:text-2xl font-bold text-white text-center drop-shadow-lg mb-2 break-words">
                   🎯 Want to Find People Doing Specific Activities ON THIS TRIP?
                 </p>
-                <p className="text-lg text-white/90 text-center font-medium">
+                <p className="text-sm sm:text-lg text-white/90 text-center font-medium break-words">
                   After completing your trip plan, visit the City Match page to add and check off specific activities, events, and plans to THIS CITY. Find others who want to do the exact same things!
                 </p>
               </div>
@@ -1000,13 +990,13 @@ export default function PlanTrip() {
 
 
 
-              {/* Accommodation */}
-              <div>
-                <Label htmlFor="accommodation" className="text-black dark:text-white">
+              {/* Accommodation - Mobile Responsive */}
+              <div className="overflow-hidden break-words">
+                <Label htmlFor="accommodation" className="text-sm sm:text-base font-medium text-black dark:text-white break-words">
                   Accommodation on This Trip *
                 </Label>
                 <Select value={tripPlan.accommodation} onValueChange={(value) => setTripPlan(prev => ({ ...prev, accommodation: value }))}>
-                  <SelectTrigger>
+                  <SelectTrigger className="text-sm sm:text-base h-9 sm:h-10 md:h-11">
                     <SelectValue placeholder="Select type" />
                   </SelectTrigger>
                   <SelectContent>
@@ -1026,13 +1016,13 @@ export default function PlanTrip() {
 
 
 
-              {/* Transportation */}
-              <div>
-                <Label className="text-sm font-medium mb-2 block text-black dark:text-white">
+              {/* Transportation - Mobile Responsive */}
+              <div className="overflow-hidden break-words">
+                <Label className="text-sm sm:text-base font-medium mb-2 block text-black dark:text-white break-words">
                   Transportation Method
                 </Label>
                 <Select value={tripPlan.transportation} onValueChange={(value) => setTripPlan(prev => ({ ...prev, transportation: value }))}>
-                  <SelectTrigger className="bg-white dark:bg-gray-800 text-black dark:text-white border-gray-300 dark:border-gray-600">
+                  <SelectTrigger className="bg-white dark:bg-gray-800 text-black dark:text-white border-gray-300 dark:border-gray-600 text-sm sm:text-base h-9 sm:h-10 md:h-11">
                     <SelectValue placeholder="Select transportation method" />
                   </SelectTrigger>
                   <SelectContent>
@@ -1049,51 +1039,52 @@ export default function PlanTrip() {
 
 
 
-              {/* Notes */}
-              <div>
-                <Label className="text-sm font-medium mb-2 block text-black dark:text-white">
+              {/* Notes - Mobile Responsive */}
+              <div className="overflow-hidden break-words">
+                <Label className="text-sm sm:text-base font-medium mb-2 block text-black dark:text-white break-words">
                   Trip Notes (Optional) - Keyword Searchable
                 </Label>
-                <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-2 break-words">
                   Other travelers can search these notes to find you! Include hotels, hostels, concerts, restaurants, or specific events you'll attend.
                 </p>
                 <Textarea
                   value={tripPlan.notes}
                   onChange={(e) => setTripPlan(prev => ({ ...prev, notes: e.target.value }))}
                   placeholder="e.g., Staying at Virgin Hotel, attending Taylor Swift concert Aug 10th, want to check out Gordon Ramsay Hell's Kitchen, looking for hiking buddies to Red Rock Canyon..."
-                  className="bg-white dark:bg-gray-800 text-black dark:text-white border-gray-300 dark:border-gray-600"
+                  className="bg-white dark:bg-gray-800 text-black dark:text-white border-gray-300 dark:border-gray-600 text-sm sm:text-base"
                   rows={4}
                 />
               </div>
 
-              <div className="space-y-2">
+              {/* Action Buttons - Mobile Responsive */}
+              <div className="space-y-2 sm:space-y-3 overflow-hidden break-words">
                 {(tripPlan.interests.length > 0 || tripPlan.activities.length > 0 || tripPlan.events.length > 0) && (
                   <Button 
                     type="button" 
-                    className="w-full bg-red-600 text-white hover:bg-red-700" 
+                    className="w-full bg-red-600 text-white hover:bg-red-700 text-xs sm:text-sm md:text-base py-3 sm:py-4 h-12 sm:h-14 break-words" 
                     disabled={saveAsDefaults.isPending}
                     onClick={() => saveAsDefaults.mutate()}
                   >
-                    {saveAsDefaults.isPending ? "Saving..." : "Do you want to save as NEW Default Preferences?"}
+                    <span className="break-words">{saveAsDefaults.isPending ? "Saving..." : "Do you want to save as NEW Default Preferences?"}</span>
                   </Button>
                 )}
                 
                 <Button 
                   type="submit" 
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors" 
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 sm:py-4 px-4 sm:px-6 rounded-lg transition-colors text-sm sm:text-base md:text-lg h-12 sm:h-14 break-words" 
                   disabled={createTravelPlan.isPending}
                 >
-                  {createTravelPlan.isPending ? 
+                  <span className="break-words">{createTravelPlan.isPending ? 
                     (isEditMode ? "Updating Trip..." : "Creating Trip...") : 
                     (isEditMode ? "Update My Trip Plan" : "Create My Trip Plan")
-                  }
+                  }</span>
                 </Button>
                 
                 {isEditMode && (
                   <Button 
                     type="button" 
                     variant="destructive" 
-                    className="w-full mt-2"
+                    className="w-full mt-2 text-sm sm:text-base py-3 sm:py-4 h-12 sm:h-14 break-words"
                     disabled={endTrip.isPending}
                     onClick={() => {
                       if (confirm("Are you sure you want to end this trip? This action cannot be undone.")) {
@@ -1103,11 +1094,10 @@ export default function PlanTrip() {
                       }
                     }}
                   >
-                    {endTrip.isPending ? "Ending Trip..." : "End Trip"}
+                    <span className="break-words">{endTrip.isPending ? "Ending Trip..." : "End Trip"}</span>
                   </Button>
                 )}
               </div>
-            </div>
             </form>
           </div>
         </div>
