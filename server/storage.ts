@@ -3627,7 +3627,7 @@ export class DatabaseStorage implements IStorage {
         state: data.state,
         country: data.country,
         createdById: data.createdById,
-        isPublic: data.isPublic,
+        isPublic: data.isPublic !== false, // Default to public unless explicitly set to false
         maxMembers: data.maxMembers || 500,
         tags: data.tags || [],
         rules: data.rules
