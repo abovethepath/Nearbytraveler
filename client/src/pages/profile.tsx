@@ -4439,7 +4439,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           <p className="text-sm font-medium text-gray-700 mb-2">Selected Interests:</p>
                           <div className="flex flex-wrap gap-2">
                             {tempInterests.map((interest) => (
-                              <Badge key={interest} className="pill">
+                              <Badge key={interest} className="pill-interests">
                                 {interest}
                                 <button
                                   onClick={() => setTempInterests(tempInterests.filter(i => i !== interest))}
@@ -4585,7 +4585,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           <p className="text-sm font-medium text-gray-700 mb-2">Current Activities:</p>
                           <div className="flex flex-wrap gap-2">
                             {tempActivities.map((activity, index) => (
-                              <span key={`activity-${activity}-${index}`} className="pill inline-flex items-center">
+                              <span key={`activity-${activity}-${index}`} className="pill-activities inline-flex items-center">
                                 {activity}
                                 <button
                                   onClick={() => setTempActivities(tempActivities.filter(a => a !== activity))}
@@ -4730,7 +4730,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           <p className="text-sm font-medium text-gray-700 mb-2">Current Events:</p>
                           <div className="flex flex-wrap gap-2">
                             {tempEvents.map((event, index) => (
-                              <span key={`event-${event}-${index}`} className="pill inline-flex items-center">
+                              <span key={`event-${event}-${index}`} className="pill-events inline-flex items-center">
                                 {event}
                                 <button
                                   onClick={() => setTempEvents(tempEvents.filter(e => e !== event))}
@@ -4775,7 +4775,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               return (
                                 <>
                                   {topEvents.map((event, index) => (
-                                    <Badge key={`event-${index}`} className="bg-blue-500 text-white font-medium border-0 px-3 py-2 text-sm rounded-full">
+                                    <Badge key={`event-${index}`} className="pill-events">
                                       {event}
                                     </Badge>
                                   ))}
@@ -4950,7 +4950,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Business Activities</h4>
                               <div className="flex flex-wrap gap-2">
                                 {allActivities.map((activity, index) => (
-                                  <Badge key={`activity-${index}`} className="pill">
+                                  <Badge key={`activity-${index}`} className="pill-activities">
                                     {activity}
                                   </Badge>
                                 ))}
