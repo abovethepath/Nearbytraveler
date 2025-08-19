@@ -6,7 +6,7 @@
 @tailwind utilities;
 
 @layer components {
-  /* Updated Pill Classes - Cache Buster v8.0 ULTIMATE BADGE OVERRIDE */
+  /* Updated Pill Classes - Cache Buster v10.0 NUCLEAR BADGE OVERRIDE */
   /* Base pill class - now LARGE like section-specific pills */
   .pill {
     @apply !inline-flex !items-center !justify-center !h-10 !min-w-[8rem] !rounded-full !px-4 !text-base !font-medium !leading-none !whitespace-nowrap !bg-blue-500 !text-white !border-0 !appearance-none !select-none [&>svg]:!h-5 [&>svg]:!w-5 gap-1.5 !important;
@@ -24,13 +24,42 @@
   /* Target shadcn/ui Badge component specifically */
   [data-slot="badge"], [role="status"], .inline-flex[class*="rounded-full"][class*="px-2"],
   .inline-flex[class*="rounded-full"][class*="px-3"], .inline-flex[class*="rounded-full"][class*="text-xs"],
-  .inline-flex[class*="rounded-full"][class*="text-sm"] {
+  .inline-flex[class*="rounded-full"][class*="text-sm"],
+  /* GLOBAL OVERRIDE: Force ANY small rounded element to be large */
+  .rounded-full[class*="px-2"], .rounded-full[class*="px-3"], .rounded-full[class*="text-xs"], 
+  .rounded-full[class*="text-sm"], .rounded-full[class*="py-1"], .rounded-md[class*="px-2"],
+  .rounded-md[class*="px-3"], .rounded-md[class*="text-xs"], .rounded-md[class*="text-sm"] {
     height: 2.5rem !important; /* h-10 */
     min-width: 8rem !important; /* min-w-[8rem] */
     padding-left: 1rem !important; /* px-4 */
     padding-right: 1rem !important; /* px-4 */
     font-size: 1rem !important; /* text-base */
     border-radius: 9999px !important; /* rounded-full */
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-weight: 500 !important;
+    white-space: nowrap !important;
+  }
+
+  /* NUCLEAR BADGE OVERRIDE: Force ALL Badge components to be large regardless of variant or size */
+  [role="status"], [class*="text-xs"], [class*="text-sm"]:not(.btn):not(.button):not(.card):not(.input),
+  .inline-flex[class*="rounded"], .inline-flex[class*="border"], 
+  div:has(.inline-flex[class*="rounded"]) .inline-flex,
+  /* Target ALL possible Badge patterns */
+  .inline-flex.items-center[class*="px-"], .inline-flex.items-center[class*="py-"],
+  .inline-flex.items-center[class*="rounded"], .inline-flex.items-center[class*="border"],
+  .inline-flex.items-center[class*="bg-"], .inline-flex[class*="font-medium"],
+  /* Badge component from shadcn */
+  .inline-flex[class*="items-center"][class*="justify-center"][class*="rounded"],
+  .inline-flex[class*="items-center"][class*="border"][class*="px-"],
+  .inline-flex[class*="items-center"][class*="font-semibold"] {
+    height: 2.5rem !important; 
+    min-width: 8rem !important; 
+    padding-left: 1rem !important; 
+    padding-right: 1rem !important; 
+    font-size: 1rem !important; 
+    border-radius: 9999px !important; 
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
