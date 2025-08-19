@@ -456,7 +456,7 @@ export default function Events() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 dark:from-gray-900 dark:via-blue-950 dark:to-purple-950">
       {/* MobileNav removed - using global MobileTopNav and MobileBottomNav */}
       {/* Modern Hero Header with Background Image */}
-      <div className="relative overflow-hidden bg-gray-900 min-h-[400px]">
+      <div className="relative overflow-hidden bg-gray-900 min-h-[300px] sm:min-h-[400px]">
         {/* Background Image */}
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
@@ -464,16 +464,16 @@ export default function Events() {
         ></div>
         {/* Subtle overlay to maintain text readability without heavy color tint */}
         <div className="absolute inset-0 bg-black/30"></div>
-        <div className="relative max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 py-6 sm:py-12">
-          <div className="flex items-center justify-between mb-4 sm:mb-8">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-8 gap-4">
             <BackButton fallbackRoute="/events-landing" />
             <div className="flex-1"></div>
           </div>
-          <div className="text-center">
-            <h1 className="text-2xl sm:text-4xl lg:text-5xl font-bold mb-2 sm:mb-4 bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
+          <div className="text-center px-2">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4 bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
               Events & Experiences
             </h1>
-            <p className="text-sm sm:text-lg text-blue-100 max-w-2xl mx-auto px-2">
+            <p className="text-base sm:text-lg text-blue-100 max-w-2xl mx-auto">
               Discover amazing events, create memorable experiences, and connect with fellow adventurers
             </p>
           </div>
@@ -489,10 +489,10 @@ export default function Events() {
       <div className="container mx-auto px-2 sm:px-6">
 
         {/* Navigation Tabs - Removed "My Events" */}
-        <div className="flex flex-wrap justify-center gap-2 mb-6">
+        <div className="flex flex-wrap justify-center gap-2 mb-6 px-2">
           <Button 
             onClick={() => setSelectedTab('explore')}
-            className={`px-3 sm:px-4 py-2 rounded-xl transition-all duration-300 text-xs sm:text-sm ${
+            className={`px-3 py-2 rounded-xl transition-all duration-300 text-xs sm:text-sm flex-shrink-0 ${
               selectedTab === 'explore' 
                 ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg' 
                 : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
@@ -502,7 +502,7 @@ export default function Events() {
           </Button>
           <Button 
             onClick={() => setSelectedTab('meetup')}
-            className={`px-3 sm:px-4 py-2 rounded-xl transition-all duration-300 text-xs sm:text-sm ${
+            className={`px-3 py-2 rounded-xl transition-all duration-300 text-xs sm:text-sm flex-shrink-0 ${
               selectedTab === 'meetup' 
                 ? 'bg-green-600 hover:bg-green-700 text-white shadow-lg' 
                 : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
@@ -513,7 +513,7 @@ export default function Events() {
 
           <Button 
             onClick={() => setSelectedTab('allevents')}
-            className={`px-3 sm:px-4 py-2 rounded-xl transition-all duration-300 text-xs sm:text-sm ${
+            className={`px-3 py-2 rounded-xl transition-all duration-300 text-xs sm:text-sm flex-shrink-0 ${
               selectedTab === 'allevents' 
                 ? 'bg-red-600 hover:bg-red-700 text-white shadow-lg' 
                 : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
@@ -523,7 +523,7 @@ export default function Events() {
           </Button>
           <Button 
             onClick={() => setSelectedTab('ticketmaster')}
-            className={`px-3 sm:px-4 py-2 rounded-xl transition-all duration-300 text-xs sm:text-sm ${
+            className={`px-3 py-2 rounded-xl transition-all duration-300 text-xs sm:text-sm flex-shrink-0 ${
               selectedTab === 'ticketmaster' 
                 ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg' 
                 : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
@@ -533,7 +533,7 @@ export default function Events() {
           </Button>
           <Button 
             onClick={() => setSelectedTab('stubhub')}
-            className={`px-3 sm:px-4 py-2 rounded-xl transition-all duration-300 text-xs sm:text-sm ${
+            className={`px-3 py-2 rounded-xl transition-all duration-300 text-xs sm:text-sm flex-shrink-0 ${
               selectedTab === 'stubhub' 
                 ? 'bg-orange-600 hover:bg-orange-700 text-white shadow-lg' 
                 : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
@@ -575,7 +575,7 @@ export default function Events() {
                 <div className="w-full md:w-64 h-10 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse"></div>
                 <div className="w-full md:w-64 h-10 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse"></div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 {[...Array(6)].map((_, i) => (
                   <div key={i} className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700 animate-pulse">
                     <div className="h-32 bg-gray-200 dark:bg-gray-700 rounded-lg mb-4"></div>
@@ -591,9 +591,9 @@ export default function Events() {
           {!isLoading && (
             <>
           {/* Location Selection */}
-          <div className="flex flex-col md:flex-row gap-4">
+          <div className="w-full">
             <Select value={selectedLocation} onValueChange={setSelectedLocation}>
-              <SelectTrigger className="w-full md:w-64 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white">
+              <SelectTrigger className="w-full bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white">
                 <SelectValue placeholder="Select location" />
               </SelectTrigger>
               <SelectContent>
@@ -637,20 +637,22 @@ export default function Events() {
           </div>
 
           {/* Search and Filters */}
-          <div className="flex flex-col space-y-4 sm:space-y-0 sm:flex-row gap-4">
-            <div className="flex-1 relative">
+          <div className="flex flex-col gap-4 mb-6">
+            {/* Search Input */}
+            <div className="relative w-full">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-white w-4 h-4" />
               <Input
                 placeholder="Search events..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                className="pl-10 w-full bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
               />
             </div>
 
-            <div className="flex flex-col gap-2">
+            {/* Category Filter */}
+            <div className="w-full">
               <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                <SelectTrigger className="w-full sm:w-48 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white">
+                <SelectTrigger className="w-full bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white">
                   <Filter className="w-4 h-4 mr-2 text-gray-500 dark:text-white" />
                   <SelectValue placeholder="Category" />
                 </SelectTrigger>
@@ -886,16 +888,16 @@ export default function Events() {
                   </p>
                 </div>
               ) : (
-                <div className="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                   {filteredUpcomingEvents.map((event) => (
                     <Card 
                       key={event.id} 
-                      className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-[1.02]"
+                      className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-[1.02] w-full"
                       onClick={() => setLocation(`/events/${event.id}`)}
                     >
                       <CardHeader className="pb-3">
                         {event.imageUrl && (
-                          <div className="relative h-40 bg-gray-100 dark:bg-gray-700 rounded-lg mb-3 overflow-hidden">
+                          <div className="relative h-32 sm:h-40 bg-gray-100 dark:bg-gray-700 rounded-lg mb-3 overflow-hidden">
                             <img
                               src={event.imageUrl}
                               alt={event.title}
@@ -904,10 +906,10 @@ export default function Events() {
                             />
                           </div>
                         )}
-                        <div className="flex items-start justify-between">
-                          <CardTitle className="text-lg line-clamp-2 dark:text-white">{event.title}</CardTitle>
-                          <div className="flex flex-col gap-1 ml-2">
-                            <Badge variant="secondary" className="shrink-0">
+                        <div className="flex flex-col sm:flex-row items-start sm:items-start justify-between gap-2">
+                          <CardTitle className="text-base sm:text-lg line-clamp-2 dark:text-white flex-1">{event.title}</CardTitle>
+                          <div className="flex flex-wrap gap-1">
+                            <Badge variant="secondary" className="shrink-0 text-xs">
                               {event.category}
                             </Badge>
                             {/* Recurring event indicator */}
@@ -923,24 +925,26 @@ export default function Events() {
                           </div>
                         </div>
                       </CardHeader>
-                      <CardContent>
-                        <div className="space-y-3">
-                          <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-white">
-                            <Calendar className="w-4 h-4 text-gray-600 dark:text-white" />
-                            {formatDateForDisplay(event.date)} at{" "}
-                            {new Date(event.date).toLocaleTimeString([], { 
-                              hour: '2-digit', 
-                              minute: '2-digit' 
-                            })}
+                      <CardContent className="px-4">
+                        <div className="space-y-2">
+                          <div className="flex items-start gap-2 text-xs sm:text-sm text-gray-600 dark:text-white">
+                            <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-gray-600 dark:text-white flex-shrink-0 mt-0.5" />
+                            <span className="line-clamp-2">
+                              {formatDateForDisplay(event.date)} at{" "}
+                              {new Date(event.date).toLocaleTimeString([], { 
+                                hour: '2-digit', 
+                                minute: '2-digit' 
+                              })}
+                            </span>
                           </div>
 
-                          <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-white">
-                            <MapPin className="w-4 h-4 text-gray-600 dark:text-white" />
-                            {event.location}
+                          <div className="flex items-start gap-2 text-xs sm:text-sm text-gray-600 dark:text-white">
+                            <MapPin className="w-3 h-3 sm:w-4 sm:h-4 text-gray-600 dark:text-white flex-shrink-0 mt-0.5" />
+                            <span className="line-clamp-2">{event.location}</span>
                           </div>
 
                           {event.description && (
-                            <p className="text-sm text-gray-600 dark:text-white line-clamp-2">
+                            <p className="text-xs sm:text-sm text-gray-600 dark:text-white line-clamp-2">
                               {event.description}
                             </p>
                           )}
@@ -1018,7 +1022,7 @@ export default function Events() {
             {filteredPastEvents.length > 0 && (
               <div>
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Past Events</h2>
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                   {filteredPastEvents.map((event) => (
                     <Card 
                       key={event.id} 
@@ -1127,10 +1131,10 @@ export default function Events() {
               {`body { overflow: hidden; } body.create-event-modal-open .logo-container { display: none !important; }`}
             </style>
             <div className="fixed inset-0 z-[10000] bg-black/50 flex items-center justify-center p-4">
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-                <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
+                <div className="p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
                   <div className="flex items-center justify-between">
-                    <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Create New Event</h2>
+                    <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">Create New Event</h2>
                     <Button
                       variant="ghost"
                       size="sm"
@@ -1141,7 +1145,7 @@ export default function Events() {
                     </Button>
                   </div>
                 </div>
-                <div className="p-6">
+                <div className="p-4 sm:p-6 overflow-y-auto flex-1">
                   <CreateEvent onEventCreated={() => {
                     setShowCreateEvent(false);
                     queryClient.invalidateQueries({ queryKey: ["/api/events"] });
@@ -1168,7 +1172,7 @@ export default function Events() {
 
             {meetupLoading && (
               <div className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                   {[...Array(6)].map((_, i) => (
                     <div key={i} className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700 animate-pulse">
                       <div className="h-32 bg-gray-200 dark:bg-gray-700 rounded-lg mb-4"></div>
@@ -1183,7 +1187,7 @@ export default function Events() {
             {!meetupLoading && (
               <>
                 {meetupEvents.events && meetupEvents.events.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                     {meetupEvents.events.map((event: any) => (
                       <Card key={event.id} className="hover:shadow-lg transition-all duration-200 hover:scale-[1.02] border border-gray-200">
                         <CardContent className="p-6">
@@ -1284,7 +1288,7 @@ export default function Events() {
 
             {isAllEventsLoading && (
               <div className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                   {[...Array(6)].map((_, i) => (
                     <div key={i} className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700 animate-pulse">
                       <div className="h-32 bg-gray-200 dark:bg-gray-700 rounded-lg mb-4"></div>
@@ -1299,7 +1303,7 @@ export default function Events() {
             {!isAllEventsLoading && (
               <>
                 {allEventsData.events && allEventsData.events.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                     {allEventsData.events.map((event: any) => (
                       <Card key={event.id} className="hover:shadow-lg transition-all duration-200 hover:scale-[1.02] border border-gray-200">
                         {event.image && (
@@ -1433,7 +1437,7 @@ export default function Events() {
 
             {ticketmasterLoading && (
               <div className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                   {[...Array(6)].map((_, i) => (
                     <div key={i} className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700 animate-pulse">
                       <div className="h-32 bg-gray-200 dark:bg-gray-700 rounded-lg mb-4"></div>
@@ -1448,7 +1452,7 @@ export default function Events() {
             {!ticketmasterLoading && (
               <>
                 {ticketmasterEvents.events && ticketmasterEvents.events.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                     {ticketmasterEvents.events.map((event: any) => (
                       <Card key={event.id} className="hover:shadow-lg transition-all duration-200 hover:scale-[1.02] border border-gray-200">
                         {event.image && (
@@ -1567,7 +1571,7 @@ export default function Events() {
 
             {localLoading && (
               <div className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                   {[...Array(6)].map((_, i) => (
                     <div key={i} className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700 animate-pulse">
                       <div className="h-20 bg-gray-200 dark:bg-gray-700 rounded-lg mb-4"></div>
@@ -1582,7 +1586,7 @@ export default function Events() {
             {!localLoading && (
               <>
                 {localEvents.events && localEvents.events.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                     {localEvents.events.map((event: any) => (
                       <Card key={event.id} className="hover:shadow-lg transition-all duration-200 hover:scale-[1.02] border border-gray-200">
                         <CardContent className="p-6">
@@ -1683,7 +1687,7 @@ export default function Events() {
 
             {false && (
               <div className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                   {[...Array(6)].map((_, i) => (
                     <div key={i} className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700 animate-pulse">
                       <div className="h-20 bg-gray-200 dark:bg-gray-700 rounded-lg mb-4"></div>
@@ -1698,7 +1702,7 @@ export default function Events() {
             {true && (
               <>
                 {(events as any)?.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                     {(events as any).map((event: any) => (
                       <Card key={event.id} className="hover:shadow-lg transition-all duration-200 hover:scale-[1.02] border border-gray-200">
                         <CardContent className="p-6">
