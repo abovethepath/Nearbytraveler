@@ -436,12 +436,12 @@ function MultiSelect({ options, selected, onChange, placeholder, maxDisplay = 3 
             ) : (
               <>
                 {selected.slice(0, maxDisplay).map((item) => (
-                  <Badge key={item} variant="secondary" className="text-xs">
+                  <Badge key={item} className="bg-blue-500 text-white border-0 px-3 py-2 text-sm rounded-full font-medium">
                     {item}
                   </Badge>
                 ))}
                 {selected.length > maxDisplay && (
-                  <Badge variant="secondary" className="text-xs">
+                  <Badge className="bg-gray-200 text-gray-600 border-0 px-3 py-2 text-sm rounded-full font-medium">
                     +{selected.length - maxDisplay} more
                   </Badge>
                 )}
@@ -3937,7 +3937,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         <div key={deal.id} className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 hover:shadow-md dark:hover:shadow-gray-800/50 transition-shadow bg-white dark:bg-gray-800">
                           <div className="flex items-start justify-between mb-2">
                             <h4 className="font-semibold text-gray-900 dark:text-white">{deal.title}</h4>
-                            <Badge variant="secondary" className="bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-200 border-green-200 dark:border-green-700">
+                            <Badge className="bg-blue-500 text-white border-0 px-3 py-2 text-sm rounded-full font-medium">
                               {deal.discountValue} {deal.discountType === 'percentage' ? '%' : ''} off
                             </Badge>
                           </div>
@@ -4439,7 +4439,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           <p className="text-sm font-medium text-gray-700 mb-2">Selected Interests:</p>
                           <div className="flex flex-wrap gap-2">
                             {tempInterests.map((interest) => (
-                              <Badge key={interest} className="bg-blue-100 text-blue-800 border-blue-300">
+                              <Badge key={interest} className="bg-blue-500 text-white border-0 px-3 py-2 text-sm rounded-full font-medium">
                                 {interest}
                                 <button
                                   onClick={() => setTempInterests(tempInterests.filter(i => i !== interest))}
@@ -4950,7 +4950,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Business Activities</h4>
                               <div className="flex flex-wrap gap-2">
                                 {allActivities.map((activity, index) => (
-                                  <Badge key={`activity-${index}`} className="bg-green-500 text-white">
+                                  <Badge key={`activity-${index}`} className="bg-blue-500 text-white border-0 px-3 py-2 text-sm rounded-full font-medium">
                                     {activity}
                                   </Badge>
                                 ))}
@@ -8741,7 +8741,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     {selectedTravelPlan.startDate ? formatDateForDisplay(selectedTravelPlan.startDate, user?.currentCity || 'UTC') : 'Start date TBD'} - {selectedTravelPlan.endDate ? formatDateForDisplay(selectedTravelPlan.endDate, user?.currentCity || 'UTC') : 'End date TBD'}
                   </p>
                 </div>
-                <Badge variant="outline" className="text-sm">
+                <Badge className="bg-blue-500 text-white border-0 px-3 py-2 text-sm rounded-full font-medium">
                   Trip Details
                 </Badge>
               </div>
