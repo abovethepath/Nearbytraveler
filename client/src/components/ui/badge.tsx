@@ -4,7 +4,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const badgeVariants = cva(
-  "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+  "inline-flex items-center rounded-full border px-4 py-2 text-base font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 h-10 min-w-[8rem]",
   {
     variants: {
       variant: {
@@ -66,13 +66,13 @@ function Badge({ className, variant, ...props }: BadgeProps) {
                  content.includes('karaoke') || content.includes('food trucks') || content.includes('community events') ||
                  content.includes('bar crawls');
   
-  // FORCE CORRECT COLORS - OVERRIDE ANY EXISTING CLASSES (only for non-pill badges)
+  // FORCE CORRECT COLORS - LARGE SIZE (only for non-pill badges)
   if (isInterest) {
-    enforcedClassName = 'text-xs bg-blue-100 text-blue-800 border-blue-300 dark:bg-blue-900 dark:text-blue-200 dark:border-blue-700 justify-center';
+    enforcedClassName = 'text-base bg-blue-500 text-white border-blue-500 dark:bg-blue-500 dark:text-white dark:border-blue-500 justify-center h-10 min-w-[8rem] px-4';
   } else if (isActivity) {
-    enforcedClassName = 'text-xs bg-green-100 text-green-800 border-green-300 dark:bg-green-900 dark:text-green-200 dark:border-green-700 justify-center';
+    enforcedClassName = 'text-base bg-green-500 text-white border-green-500 dark:bg-green-500 dark:text-white dark:border-green-500 justify-center h-10 min-w-[8rem] px-4';
   } else if (isEvent) {
-    enforcedClassName = 'text-xs bg-purple-100 text-purple-800 border-purple-300 dark:bg-purple-900 dark:text-purple-200 dark:border-purple-700 justify-center';
+    enforcedClassName = 'text-base bg-purple-500 text-white border-purple-500 dark:bg-purple-500 dark:text-white dark:border-purple-500 justify-center h-10 min-w-[8rem] px-4';
   }
   
   // For non-pill badges, apply badgeVariants + enforcement
