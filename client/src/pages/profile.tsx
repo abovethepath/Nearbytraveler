@@ -3937,7 +3937,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         <div key={deal.id} className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 hover:shadow-md dark:hover:shadow-gray-800/50 transition-shadow bg-white dark:bg-gray-800">
                           <div className="flex items-start justify-between mb-2">
                             <h4 className="font-semibold text-gray-900 dark:text-white">{deal.title}</h4>
-                            <div className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-green-500 text-white border-0 appearance-none select-none gap-1.5">
+                            <div className="inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0">
                               {deal.discountValue} {deal.discountType === 'percentage' ? '%' : ''} off
                             </div>
                           </div>
@@ -4146,7 +4146,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                         setEditFormData({ ...editFormData, interests: newInterests })
                                       );
                                     }}
-                                    className={`inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap border-0 appearance-none select-none gap-1.5 transition-all ${
+                                    className={`inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none border-0 transition-all ${
                                       isSelected
                                         ? 'bg-green-600 text-white font-bold transform scale-105'
                                         : 'bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-800 dark:text-blue-200 dark:hover:bg-blue-700'
@@ -4177,7 +4177,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                         setEditFormData({ ...editFormData, interests: newInterests })
                                       );
                                     }}
-                                    className={`inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap border-0 appearance-none select-none gap-1.5 transition-all ${
+                                    className={`inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none border-0 transition-all ${
                                       isSelected
                                         ? 'bg-green-600 text-white font-bold transform scale-105'
                                         : 'bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-800 dark:text-blue-200 dark:hover:bg-blue-700'
@@ -4215,7 +4215,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                       setEditFormData({ ...editFormData, activities: newActivities })
                                     );
                                   }}
-                                  className={`inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap border-0 appearance-none select-none gap-1.5 transition-all ${
+                                  className={`inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none border-0 transition-all ${
                                     isSelected
                                       ? 'bg-green-600 text-white font-bold transform scale-105'
                                       : 'bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-800 dark:text-green-200 dark:hover:bg-green-700'
@@ -4248,7 +4248,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                       setEditFormData({ ...editFormData, events: newEvents })
                                     );
                                   }}
-                                  className={`inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap border-0 appearance-none select-none gap-1.5 transition-all ${
+                                  className={`inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none border-0 transition-all ${
                                     isSelected
                                       ? 'bg-green-600 text-white font-bold transform scale-105'
                                       : 'bg-orange-100 text-orange-800 hover:bg-orange-200 dark:bg-orange-800 dark:text-orange-200 dark:hover:bg-orange-700'
@@ -4355,7 +4355,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                     setTempInterests([...tempInterests, interest]);
                                   }
                                 }}
-                                className={`inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap border-0 appearance-none select-none gap-1.5 transition-all ${
+                                className={`inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none border-0 transition-all ${
                                   isSelected
                                     ? 'bg-green-600 text-white font-bold transform scale-105'
                                     : 'bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-800 dark:text-blue-200 dark:hover:bg-blue-700'
@@ -4388,7 +4388,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                     setTempInterests([...tempInterests, interest]);
                                   }
                                 }}
-                                className={`inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap border-0 appearance-none select-none gap-1.5 transition-all ${
+                                className={`inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none border-0 transition-all ${
                                   isSelected
                                     ? 'bg-green-600 text-white font-bold transform scale-105'
                                     : 'bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-800 dark:text-green-200 dark:hover:bg-green-700'
@@ -4439,11 +4439,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           <p className="text-sm font-medium text-gray-700 mb-2">Selected Interests:</p>
                           <div className="flex flex-wrap gap-2">
                             {tempInterests.map((interest) => (
-                              <div key={interest} className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
+                              <div key={interest} className="inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0">
                                 {interest}
                                 <button
                                   onClick={() => setTempInterests(tempInterests.filter(i => i !== interest))}
-                                  className="ml-1 text-blue-600 hover:text-blue-800"
+                                  className="ml-1 text-blue-200 hover:text-white"
                                 >
                                   ×
                                 </button>
@@ -4480,12 +4480,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               return (
                                 <>
                                   {topInterests.map((interest, index) => (
-                                    <div key={`interest-${index}`} className="pill pill-interests inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5" style={{height: '2.5rem', minWidth: '8rem', padding: '0 1rem', fontSize: '1rem'}}>
+                                    <div key={`interest-${index}`} className="inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0">
                                       {interest}
                                     </div>
                                   ))}
                                   {remaining > 0 && (
-                                    <div className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
+                                    <div className="inline-flex items-center justify-center h-7 rounded-full px-2 text-[11px] font-medium whitespace-nowrap leading-none border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 bg-transparent">
                                       +{remaining} more
                                     </div>
                                   )}
@@ -4585,7 +4585,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           <p className="text-sm font-medium text-gray-700 mb-2">Current Activities:</p>
                           <div className="flex flex-wrap gap-2">
                             {tempActivities.map((activity, index) => (
-                              <span key={`activity-${activity}-${index}`} className="inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none bg-green-500 text-white border-0">
+                              <span key={`activity-${activity}-${index}`} className="inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0">
                                 {activity}
                                 <button
                                   onClick={() => setTempActivities(tempActivities.filter(a => a !== activity))}
@@ -4730,7 +4730,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           <p className="text-sm font-medium text-gray-700 mb-2">Current Events:</p>
                           <div className="flex flex-wrap gap-2">
                             {tempEvents.map((event, index) => (
-                              <span key={`event-${event}-${index}`} className="inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none bg-purple-500 text-white border-0">
+                              <span key={`event-${event}-${index}`} className="inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0">
                                 {event}
                                 <button
                                   onClick={() => setTempEvents(tempEvents.filter(e => e !== event))}
@@ -5099,7 +5099,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                     : [...editFormData.interests, interest];
                                   setEditFormData({ ...editFormData, interests: newInterests });
                                 }}
-                                className={`inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap border-0 appearance-none select-none gap-1.5 transition-all ${
+                                className={`inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none border-0 transition-all ${
                                   isSelected
                                     ? 'bg-green-600 text-white font-bold transform scale-105'
                                     : 'bg-orange-100 text-orange-800 hover:bg-orange-200 dark:bg-orange-800 dark:text-orange-200 dark:hover:bg-orange-700'
@@ -5198,7 +5198,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                     : [...editFormData.activities, activity];
                                   setEditFormData({ ...editFormData, activities: newActivities });
                                 }}
-                                className={`inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap border-0 appearance-none select-none gap-1.5 transition-all ${
+                                className={`inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none border-0 transition-all ${
                                   isSelected
                                     ? 'bg-green-600 text-white font-bold transform scale-105'
                                     : 'bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-800 dark:text-green-200 dark:hover:bg-green-700'
@@ -5297,7 +5297,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                     : [...editFormData.events, event];
                                   setEditFormData({ ...editFormData, events: newEvents });
                                 }}
-                                className={`inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap border-0 appearance-none select-none gap-1.5 transition-all ${
+                                className={`inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none border-0 transition-all ${
                                   isSelected
                                     ? 'bg-green-600 text-white font-bold transform scale-105'
                                     : 'bg-purple-100 text-purple-800 hover:bg-purple-200 dark:bg-purple-800 dark:text-purple-200 dark:hover:bg-purple-700'
