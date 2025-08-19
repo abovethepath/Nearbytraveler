@@ -406,9 +406,10 @@ interface MultiSelectProps {
   onChange: (selected: string[]) => void;
   placeholder: string;
   maxDisplay?: number;
+  pillType?: string;
 }
 
-function MultiSelect({ options, selected, onChange, placeholder, maxDisplay = 3 }: MultiSelectProps) {
+function MultiSelect({ options, selected, onChange, placeholder, maxDisplay = 3, pillType = 'pill' }: MultiSelectProps) {
   const [open, setOpen] = useState(false);
 
   const handleSelect = (item: string) => {
@@ -436,12 +437,12 @@ function MultiSelect({ options, selected, onChange, placeholder, maxDisplay = 3 
             ) : (
               <>
                 {selected.slice(0, maxDisplay).map((item) => (
-                  <Badge key={item} className="pill">
+                  <Badge key={item} className={pillType}>
                     {item}
                   </Badge>
                 ))}
                 {selected.length > maxDisplay && (
-                  <Badge className="pill bg-gray-200 text-gray-600">
+                  <Badge className={`${pillType} bg-gray-200 text-gray-600`}>
                     +{selected.length - maxDisplay} more
                   </Badge>
                 )}
