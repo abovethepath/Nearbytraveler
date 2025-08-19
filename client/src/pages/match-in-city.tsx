@@ -25,10 +25,6 @@ import {
   Info,
   X
 } from "lucide-react";
-// Removed CityPhotoUploadWidget to improve performance
-// Removed MobileNav - using global mobile navigation
-
-// Removed problematic city images and photo gallery functions
 
 // DISABLED: Metro consolidation per user request - return original city names
 const consolidateToMetroArea = (city: string, state?: string): string => {
@@ -157,8 +153,6 @@ export default function MatchInCity() {
     setFilteredCities(sorted);
   }, [citySearchTerm, allCities]);
 
-  // Removed city photos functionality to improve performance
-
   const fetchAllCities = async () => {
     setCitiesLoading(true);
     try {
@@ -222,18 +216,18 @@ export default function MatchInCity() {
 
   const fetchCityActivities = async () => {
     try {
-      console.log(`🏃 FRONTEND: Fetching activities for city: "${selectedCity}"`);
+      console.log(`🃏 FRONTEND: Fetching activities for city: "${selectedCity}"`);
       const response = await fetch(`/api/city-activities/${encodeURIComponent(selectedCity)}`);
-      console.log(`🏃 FRONTEND: Response status:`, response.status);
+      console.log(`🃏 FRONTEND: Response status:`, response.status);
       
       if (response.ok) {
         const activities = await response.json();
-        console.log(`🏃 FRONTEND: Got ${activities.length} activities for ${selectedCity}:`, activities);
+        console.log(`🃏 FRONTEND: Got ${activities.length} activities for ${selectedCity}:`, activities);
         setCityActivities(activities);
       } else {
-        console.error(`🏃 FRONTEND: Error response:`, response.status, response.statusText);
+        console.error(`🃏 FRONTEND: Error response:`, response.status, response.statusText);
         const errorText = await response.text();
-        console.error(`🏃 FRONTEND: Error details:`, errorText);
+        console.error(`🃏 FRONTEND: Error details:`, errorText);
       }
     } catch (error) {
       console.error('Error fetching city activities:', error);
@@ -353,1069 +347,496 @@ export default function MatchInCity() {
         setNewActivityName('');
         setNewActivityDescription('');
         setShowAddForm(false);
-        fetchCityActivities();
         
-        // Automatically add the new activity to user's personal list since they created it
-        await toggleActivity(newActivity);
+        // Refresh city activities
+        fetchCityActivities();
       } else {
-        const error = await response.json();
+        const errorData = await response.text();
+        console.error('Error adding activity:', response.status, errorData);
         toast({
           title: "Error",
-          description: error.error || "Failed to add activity",
+          description: "Failed to add activity. Please try again.",
           variant: "destructive",
         });
       }
     } catch (error) {
+      console.error('Network error adding activity:', error);
       toast({
         title: "Error",
-        description: "Failed to add activity",
+        description: "Network error. Please try again.",
         variant: "destructive",
       });
     }
   };
 
-  const toggleActivity = async (activity: any) => {
-    const currentUser = getUserData();
-    if (!currentUser?.id) {
-      toast({ title: 'Error', description: 'Please refresh the page', variant: 'destructive' });
+  const editActivity = async () => {
+    if (!editActivityName.trim()) {
+      toast({
+        title: "Missing Information",
+        description: "Please provide activity name.",
+        variant: "destructive",
+      });
       return;
     }
-    const userId = currentUser.id;
-
-    const isCurrentlyActive = userActivities.some(ua => ua.activityId === activity.id);
 
     try {
-      if (isCurrentlyActive) {
-        // Find the correct user activity interest record ID
-        const userActivityRecord = userActivities.find(ua => ua.activityId === activity.id);
-        if (!userActivityRecord) {
-          toast({ title: 'Error', description: 'Could not find activity record', variant: 'destructive' });
-          return;
-        }
-        
-        // Remove activity using the user interest record ID, not the activity ID
-        const response = await fetch(`/api/user-city-interests/${userActivityRecord.id}`, {
-          method: 'DELETE',
-          headers: {
-            'x-user-id': userId.toString()
-          }
-        });
-        if (response.ok) {
-          toast({
-            title: "Interest Removed",
-            description: `Removed interest in ${activity.activityName}`,
-          });
-          // Immediately update local state
-          setUserActivities(prev => prev.filter(ua => ua.activityId !== activity.id));
-          // Invalidate profile queries to refresh "Things I Want to Do"
-          queryClient.invalidateQueries({ queryKey: [`/api/user-city-interests/${userId}`] });
-          queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}`] });
-        }
-      } else {
-        // Add activity
-        const response = await fetch('/api/user-city-interests', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-user-id': userId.toString()
-          },
-          body: JSON.stringify({
-            activityId: activity.id,
-            cityName: selectedCity
-          })
-        });
-        if (response.ok) {
-          const newInterest = await response.json();
-          toast({
-            title: "Interest Added",
-            description: `Added interest in ${activity.activityName}`,
-          });
-          // Immediately update local state
-          setUserActivities(prev => [...prev, newInterest]);
-          // Invalidate profile queries to refresh "Things I Want to Do"
-          queryClient.invalidateQueries({ queryKey: [`/api/user-city-interests/${userId}`] });
-          queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}`] });
-        }
+      const currentUser = getUserData();
+      if (!currentUser?.id) {
+        toast({ title: 'Error', description: 'Please refresh the page', variant: 'destructive' });
+        return;
       }
-      fetchMatchingUsers();
-    } catch (error) {
 
+      const response = await fetch(`/api/city-activities/${editingActivity.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-user-id': currentUser.id.toString()
+        },
+        body: JSON.stringify({
+          activityName: editActivityName,
+          description: editActivityDescription || 'User edited activity'
+        }),
+      });
+
+      if (response.ok) {
+        toast({
+          title: "Activity Updated",
+          description: "Your activity has been updated successfully!",
+        });
+        setEditActivityName('');
+        setEditActivityDescription('');
+        setEditingActivity(null);
+        
+        // Refresh city activities
+        fetchCityActivities();
+      } else {
+        const errorData = await response.text();
+        console.error('Error editing activity:', response.status, errorData);
+        toast({
+          title: "Error",
+          description: "Failed to update activity. Please try again.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error('Network error editing activity:', error);
       toast({
         title: "Error",
-        description: "Failed to update activity interest",
+        description: "Network error. Please try again.",
         variant: "destructive",
       });
     }
   };
 
   const deleteActivity = async (activityId: number) => {
-    const currentUser = getUserData();
-    if (!currentUser?.id) {
-      toast({ title: 'Error', description: 'Please refresh the page', variant: 'destructive' });
-      return;
-    }
-    const userId = currentUser.id;
-
-    if (!confirm('Are you sure you want to delete this activity? This will remove it for everyone.')) {
+    if (!confirm('Are you sure you want to delete this activity?')) {
       return;
     }
 
     try {
+      const currentUser = getUserData();
+      if (!currentUser?.id) {
+        toast({ title: 'Error', description: 'Please refresh the page', variant: 'destructive' });
+        return;
+      }
+
       const response = await fetch(`/api/city-activities/${activityId}`, {
         method: 'DELETE',
         headers: {
-          'x-user-id': userId.toString()
-        }
+          'x-user-id': currentUser.id.toString()
+        },
       });
 
       if (response.ok) {
         toast({
           title: "Activity Deleted",
-          description: "Activity has been removed successfully",
+          description: "Activity has been removed successfully!",
         });
-        // Immediately update local state
-        setCityActivities(prev => prev.filter(activity => activity.id !== activityId));
-        setUserActivities(prev => prev.filter(ua => ua.activityId !== activityId));
-        fetchMatchingUsers();
+        // Refresh city activities
+        fetchCityActivities();
       } else {
-        const error = await response.json();
+        const errorData = await response.text();
+        console.error('Error deleting activity:', response.status, errorData);
         toast({
-          title: "Error",
-          description: error.error || "Failed to delete activity",
+          title: "Error", 
+          description: "Failed to delete activity. You can only delete your own activities.",
           variant: "destructive",
         });
       }
     } catch (error) {
-
+      console.error('Network error deleting activity:', error);
       toast({
         title: "Error",
-        description: "Failed to delete activity",
+        description: "Network error. Please try again.",
         variant: "destructive",
       });
     }
   };
 
-  const updateActivity = async () => {
-    const currentUser = getUserData();
-    if (!currentUser?.id) {
-      toast({ title: 'Error', description: 'Please refresh the page', variant: 'destructive' });
-      return;
-    }
-    const userId = currentUser.id;
-
-    if (!editingActivity) {
-      return;
-    }
-
+  const joinActivity = async (activityId: number, activityName: string) => {
     try {
-      const response = await fetch(`/api/city-activities/${editingActivity.id}`, {
-        method: 'PATCH',
+      const currentUser = getUserData();
+      if (!currentUser?.id) {
+        toast({ title: 'Error', description: 'Please refresh the page', variant: 'destructive' });
+        return;
+      }
+      const userId = currentUser.id;
+
+      const response = await fetch('/api/user-city-interests', {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'x-user-id': userId.toString()
         },
         body: JSON.stringify({
-          activityName: editActivityName,
-          description: editActivityDescription
-        })
-      });
-
-
-
-      if (response.ok) {
-        const updatedActivity = await response.json();
-
-
-        toast({
-          title: "Activity Updated",
-          description: `Updated "${editingActivity.activityName}" to "${editActivityName}"`,
-        });
-
-        // Immediately update local state
-        setCityActivities(prev => prev.map(activity => 
-          activity.id === editingActivity.id 
-            ? { ...activity, activityName: editActivityName, description: editActivityDescription }
-            : activity
-        ));
-
-        // Clear edit form
-        setEditingActivity(null);
-        setEditActivityName('');
-        setEditActivityDescription('');
-
-
-      } else {
-        const error = await response.json();
-
-        toast({
-          title: "Error",
-          description: error.error || "Failed to update activity",
-          variant: "destructive",
-        });
-      }
-    } catch (error) {
-
-      toast({
-        title: "Error",
-        description: "Failed to update activity",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const enhanceCityWithMoreActivities = async () => {
-    setIsLoading(true);
-    try {
-      const response = await fetch(`/api/city-activities/${encodeURIComponent(selectedCity)}/enhance`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-user-id': getUserData()?.id?.toString() || '0'
-        }
+          userId: userId,
+          activityId: activityId,
+          cityName: selectedCity,
+          activityName: activityName
+        }),
       });
 
       if (response.ok) {
-        const result = await response.json();
         toast({
-          title: "Activities Enhanced!",
-          description: `Added ${result.addedActivities} new AI-generated activities to ${selectedCity}`,
+          title: "Joined Activity",
+          description: `You've joined the activity: ${activityName}`,
         });
         
-        // Refresh the city activities
-        fetchCityActivities();
+        // Refresh user activities and matching users
+        fetchUserActivities();
+        fetchMatchingUsers();
       } else {
-        const error = await response.json();
+        const errorData = await response.text();
+        console.error('Error joining activity:', response.status, errorData);
         toast({
-          title: "Enhancement Failed",
-          description: error.error || "Failed to enhance city activities",
+          title: "Error",
+          description: "Failed to join activity. Please try again.",
           variant: "destructive",
         });
       }
     } catch (error) {
+      console.error('Network error joining activity:', error);
       toast({
         title: "Error",
-        description: "Failed to enhance city activities",
+        description: "Network error. Please try again.",
         variant: "destructive",
       });
-    } finally {
-      setIsLoading(false);
     }
   };
 
-  const isActivityActive = (activityId: number) => {
-    return userActivities.some(ua => ua.activityId === activityId);
-  };
-
-  const isEventActive = (eventId: number) => {
-    return userEvents.some(ue => ue.eventId === eventId);
-  };
-
-  const toggleEvent = async (event: any) => {
-    const currentUser = getUserData();
-    if (!currentUser?.id) {
-      toast({ title: 'Error', description: 'Please refresh the page', variant: 'destructive' });
-      return;
-    }
-    const userId = currentUser.id;
-    const isCurrentlyActive = userEvents.some(ue => ue.eventId === event.id);
-
+  const leaveActivity = async (userActivityId: number, activityName: string) => {
     try {
-      if (isCurrentlyActive) {
-        // Remove event interest
-        const response = await fetch(`/api/user-event-interests/${event.id}`, {
-          method: 'DELETE',
-          headers: {
-            'x-user-id': userId.toString()
-          }
-        });
-        if (response.ok) {
-          toast({
-            title: "Event Interest Removed",
-            description: `Removed interest in ${event.title}`,
-          });
-          setUserEvents(prev => prev.filter(ue => ue.eventId !== event.id));
-          // Invalidate profile queries to refresh "Things I Want to Do"
-          queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/all-events`] });
-          queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}`] });
-        }
-      } else {
-        // Add event interest
-        const response = await fetch('/api/user-event-interests', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-user-id': userId.toString()
-          },
-          body: JSON.stringify({
-            eventId: event.id,
-            cityName: selectedCity
-          })
-        });
-        if (response.ok) {
-          const newInterest = await response.json();
-          toast({
-            title: "Event Interest Added",
-            description: `Added interest in ${event.title}`,
-          });
-          setUserEvents(prev => [...prev, newInterest]);
-          // Invalidate profile queries to refresh "Things I Want to Do"
-          queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/all-events`] });
-          queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}`] });
-        }
+      const currentUser = getUserData();
+      if (!currentUser?.id) {
+        toast({ title: 'Error', description: 'Please refresh the page', variant: 'destructive' });
+        return;
       }
-      fetchMatchingUsers();
+
+      const response = await fetch(`/api/user-city-interests/${userActivityId}`, {
+        method: 'DELETE',
+        headers: {
+          'x-user-id': currentUser.id.toString()
+        },
+      });
+
+      if (response.ok) {
+        toast({
+          title: "Left Activity",
+          description: `You've left the activity: ${activityName}`,
+        });
+        
+        // Refresh user activities and matching users
+        fetchUserActivities();
+        fetchMatchingUsers();
+      } else {
+        const errorData = await response.text();
+        console.error('Error leaving activity:', response.status, errorData);
+        toast({
+          title: "Error",
+          description: "Failed to leave activity. Please try again.",
+          variant: "destructive",
+        });
+      }
     } catch (error) {
+      console.error('Network error leaving activity:', error);
       toast({
         title: "Error",
-        description: "Failed to update event interest",
+        description: "Network error. Please try again.",
         variant: "destructive",
       });
     }
   };
 
-  const handleEventClick = (event: any) => {
-    setSelectedEvent(event);
-    setShowEventModal(true);
-  };
-
-  const joinEvent = async (eventId: number) => {
-    const currentUser = getUserData();
-    if (!currentUser?.id) {
-      toast({ title: 'Error', description: 'Please refresh the page', variant: 'destructive' });
-      return;
-    }
-    const userId = currentUser.id;
-    
+  const joinEvent = async (eventId: number, eventTitle: string) => {
     try {
-      const response = await fetch(`/api/events/${eventId}/join`, {
+      const currentUser = getUserData();
+      if (!currentUser?.id) {
+        toast({ title: 'Error', description: 'Please refresh the page', variant: 'destructive' });
+        return;
+      }
+      const userId = currentUser.id;
+
+      const response = await fetch('/api/user-event-interests', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'x-user-id': userId.toString()
         },
         body: JSON.stringify({
           userId: userId,
-          notes: "Looking forward to attending!"
-        })
+          eventId: eventId,
+          cityName: selectedCity,
+          eventTitle: eventTitle
+        }),
       });
 
       if (response.ok) {
         toast({
-          title: "Success!",
-          description: "You've successfully joined the event",
+          title: "Interested in Event",
+          description: `You've shown interest in: ${eventTitle}`,
         });
-        // Also add to event interests if not already added
-        toggleEvent(selectedEvent);
+        
+        // Refresh user events and matching users
+        fetchUserEvents();
+        fetchMatchingUsers();
       } else {
-        const errorData = await response.json();
+        const errorData = await response.text();
+        console.error('Error showing interest in event:', response.status, errorData);
         toast({
           title: "Error",
-          description: errorData.error || "Failed to join event",
+          description: "Failed to show interest in event. Please try again.",
           variant: "destructive",
         });
       }
     } catch (error) {
+      console.error('Network error joining event:', error);
       toast({
         title: "Error",
-        description: "Failed to join event",
+        description: "Network error. Please try again.",
         variant: "destructive",
       });
     }
   };
 
-  const handleCustomCitySearch = async (cityName: string) => {
-    setSearchingCity(true);
-    setSearchError('');
-    
+  const leaveEvent = async (userEventId: number, eventTitle: string) => {
     try {
-      // Set the city immediately to show the city page
-      setSelectedCity(cityName);
-      setCitySearchTerm(''); // Clear after setting the city
-      
-      // Check if the city has any activities after a short delay
-      setTimeout(async () => {
-        try {
-          const response = await fetch(`/api/city-activities/${encodeURIComponent(cityName)}`);
-          if (response.ok) {
-            const activities = await response.json();
-            if (activities.length === 0) {
-              setSearchError(`No activities found for ${cityName}. AI might not have data for this location yet.`);
-            }
-          }
-        } catch (error) {
-          setSearchError(`Could not load data for ${cityName}. AI might not have information about this location.`);
-        } finally {
-          setSearchingCity(false);
-        }
-      }, 3000); // Give AI time to process
-      
+      const currentUser = getUserData();
+      if (!currentUser?.id) {
+        toast({ title: 'Error', description: 'Please refresh the page', variant: 'destructive' });
+        return;
+      }
+
+      const response = await fetch(`/api/user-event-interests/${userEventId}`, {
+        method: 'DELETE',
+        headers: {
+          'x-user-id': currentUser.id.toString()
+        },
+      });
+
+      if (response.ok) {
+        toast({
+          title: "Removed Interest",
+          description: `You've removed interest from: ${eventTitle}`,
+        });
+        
+        // Refresh user events and matching users
+        fetchUserEvents();
+        fetchMatchingUsers();
+      } else {
+        const errorData = await response.text();
+        console.error('Error removing interest from event:', response.status, errorData);
+        toast({
+          title: "Error",
+          description: "Failed to remove interest. Please try again.",
+          variant: "destructive",
+        });
+      }
     } catch (error) {
-      setSearchError(`Unable to search for ${cityName}. Please try again or choose a different city.`);
-      setSearchingCity(false);
+      console.error('Network error leaving event:', error);
+      toast({
+        title: "Error",
+        description: "Network error. Please try again.",
+        variant: "destructive",
+      });
     }
   };
 
-  console.log('🎯 RENDERING - selectedCity:', selectedCity);
-  
-  if (!selectedCity) {
-    console.log('🎯 RENDERING: Showing city selection interface');
+  const isUserJoinedActivity = (activityId: number) => {
+    return userActivities.some(ua => ua.activityId === activityId);
+  };
+
+  const isUserJoinedEvent = (eventId: number) => {
+    return userEvents.some(ue => ue.eventId === eventId);
+  };
+
+  const getUserActivityId = (activityId: number) => {
+    const userActivity = userActivities.find(ua => ua.activityId === activityId);
+    return userActivity ? userActivity.id : null;
+  };
+
+  const getUserEventId = (eventId: number) => {
+    const userEvent = userEvents.find(ue => ue.eventId === eventId);
+    return userEvent ? userEvent.id : null;
+  };
+
+  const isConnected = (userId: number) => {
+    return connections.some(conn => 
+      (conn.requesterId === user?.id && conn.recipientId === userId) || 
+      (conn.recipientId === user?.id && conn.requesterId === userId)
+    );
+  };
+
+  const sendConnectionRequest = async (recipientId: number, recipientName: string) => {
+    try {
+      const currentUser = getUserData();
+      if (!currentUser?.id) {
+        toast({ title: 'Error', description: 'Please refresh the page', variant: 'destructive' });
+        return;
+      }
+
+      const response = await fetch('/api/connections/request', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-user-id': currentUser.id.toString()
+        },
+        body: JSON.stringify({
+          requesterId: currentUser.id,
+          recipientId: recipientId
+        }),
+      });
+
+      if (response.ok) {
+        toast({
+          title: "Connection Request Sent",
+          description: `Connection request sent to ${recipientName}`,
+        });
+        
+        // Refresh connections
+        fetchConnections();
+      } else {
+        const errorData = await response.text();
+        console.error('Error sending connection request:', response.status, errorData);
+        toast({
+          title: "Error",
+          description: "Failed to send connection request. Please try again.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error('Network error sending connection request:', error);
+      toast({
+        title: "Error",
+        description: "Network error. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const startEditingActivity = (activity: any) => {
+    setEditingActivity(activity);
+    setEditActivityName(activity.activityName);
+    setEditActivityDescription(activity.description);
+  };
+
+  const cancelEditing = () => {
+    setEditingActivity(null);
+    setEditActivityName('');
+    setEditActivityDescription('');
+  };
+
+  if (!user) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800">
-        <div className="container mx-auto px-4 py-4">
-          {/* Header */}
-          <div className="text-center mb-6">
-            <h1 className="text-4xl font-bold text-white mb-4">
-              🎯 City-Specific Matching
-            </h1>
-            <p className="text-xl text-white/80 max-w-3xl mx-auto">
-              Find People Who Want to Do What You Want to Do
-            </p>
-          </div>
-
-          {/* Show loading state */}
-          {citiesLoading ? (
-            <div className="text-center py-16">
-              <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
-              <p className="text-white/70 mt-4 text-lg">Loading cities...</p>
-            </div>
-          ) : (
-            <>
-              {/* City Search */}
-              <div className="mb-6">
-                <div className="max-w-md mx-auto">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/60 w-4 h-4" />
-                    <Input
-                      placeholder="Search cities..."
-                      value={citySearchTerm}
-                      onChange={(e) => setCitySearchTerm(e.target.value)}
-                      className="pl-9 py-2 text-sm bg-white/10 border-white/20 text-white placeholder-white/50 focus:border-white/40"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Featured Los Angeles Metro - FRONT AND CENTER (Same Size) */}
-              {(filteredCities.some(city => isLAAreaCity(city.city, city.state)) || filteredCities.some(city => city.city.includes("Los Angeles Metro"))) && (
-            <div className="mb-12">
-              <div className="text-center mb-8">
-                <h2 className="text-4xl font-bold text-white mb-4">🌟 LOS ANGELES METRO</h2>
-                <p className="text-white/90 text-lg font-semibold">Full Platform Features • Most Active City</p>
-              </div>
-              <div className="flex justify-center mb-8">
-                <div className="grid grid-cols-1 max-w-sm">
-                  {filteredCities.filter(city => isLAAreaCity(city.city, city.state) || city.city.includes("Los Angeles Metro")).map((city, index) => (
-                    <Card
-                      key={`featured-${city.city}-${city.state}-${index}`}
-                      className="group cursor-pointer transform hover:scale-105 transition-all duration-300 overflow-hidden relative bg-gradient-to-br from-orange-500/40 to-red-500/40 backdrop-blur-sm border-orange-400/80 ring-4 ring-orange-300/60 shadow-xl shadow-orange-500/50"
-                      onClick={() => {
-                        setSelectedCity(city.city);
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                      }}
-                    >
-                      <div className="relative h-32 overflow-hidden">
-                        <div className="w-full h-full bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center">
-                          <MapPin className="w-12 h-12 text-white/60" />
-                        </div>
-                        <div className="absolute inset-0 bg-black/20" />
-                        <div className="absolute top-2 right-2">
-                          <Badge className="bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs px-2 py-1 animate-pulse font-bold">
-                            🌟 FEATURED
-                          </Badge>
-                        </div>
-                      </div>
-                      <CardContent className="p-4">
-                        <div className="flex items-center gap-2 mb-2">
-                          <MapPin className="w-4 h-4 text-orange-300" />
-                          <h3 className="font-semibold text-lg text-orange-100 truncate">{city.city}</h3>
-                        </div>
-                        <p className="text-sm text-orange-200/90 mb-3 truncate">
-                          {city.state && `${city.state}, `}{city.country}
-                        </p>
-                        <div className="text-center mb-3">
-                          <p className="text-white/80 text-xs">All features active</p>
-                        </div>
-                        <Button 
-                          className="w-full text-sm bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white py-2"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setSelectedCity(city.city);
-                          }}
-                        >
-                          Explore LA Metro
-                        </Button>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              </div>
-            </div>
-              )}
-
-              {/* Other Cities Grid - Bigger cards */}
-              {filteredCities.filter(city => !isLAAreaCity(city.city, city.state) && !city.city.includes("Los Angeles Metro")).length > 0 && (
-            <div className="mb-8">
-              <div className="text-center mb-8">
-                <h3 className="text-4xl font-bold text-white mb-4">Other Cities</h3>
-              </div>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-                {filteredCities.filter(city => !isLAAreaCity(city.city, city.state) && !city.city.includes("Los Angeles Metro")).map((city, index) => (
-                  <Card
-                    key={`other-${city.city}-${city.state}-${index}`}
-                    className="group cursor-pointer transform hover:scale-105 transition-all duration-300 overflow-hidden relative bg-white/10 backdrop-blur-sm border-white/20 hover:border-white/40"
-                    onClick={() => {
-                      setSelectedCity(city.city);
-                      window.scrollTo({ top: 0, behavior: 'smooth' });
-                    }}
-                  >
-                    <div className="relative h-32 overflow-hidden">
-                      <div className={`w-full h-full bg-gradient-to-br ${city.gradient} flex items-center justify-center`}>
-                        <MapPin className="w-12 h-12 text-white/60" />
-                      </div>
-                      <div className="absolute inset-0 bg-black/20" />
-                    </div>
-                    <CardContent className="p-4">
-                      <div className="flex items-center gap-2 mb-2">
-                        <MapPin className="w-4 h-4 text-white/80" />
-                        <h3 className="font-semibold text-lg text-white truncate">{city.city}</h3>
-                      </div>
-                      <p className="text-sm text-white/60 mb-3 truncate">
-                        {city.state && `${city.state}, `}{city.country}
-                      </p>
-                      <Button 
-                        className="w-full text-sm bg-blue-500 hover:bg-blue-600 text-white py-2"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSelectedCity(city.city);
-                        }}
-                      >
-                        Explore
-                      </Button>
-                    </CardContent>
-                  </Card>
-                ))}
-                </div>
-              </div>
-              )}
-
-              {/* Search for Other Cities Tab */}
-              <div className="mb-8">
-            <Card className="bg-white/10 backdrop-blur-sm border-white/20">
-              <CardContent className="p-6">
-                <div className="text-center mb-4">
-                  <h3 className="text-2xl font-bold text-white mb-2">🔍 Search Any City</h3>
-                  <p className="text-white/70">Don't see your city? Search for any city worldwide</p>
-                </div>
-                <div className="max-w-md mx-auto">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/60 w-5 h-5" />
-                    <Input
-                      placeholder="Type any city name (e.g., Tokyo, Paris, Sydney)..."
-                      value={citySearchTerm}
-                      onChange={(e) => setCitySearchTerm(e.target.value)}
-                      className="pl-10 py-3 text-lg bg-white/20 border-white/30 text-white placeholder-white/50 focus:border-white/60"
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' && citySearchTerm.trim() && !searchingCity) {
-                          handleCustomCitySearch(citySearchTerm.trim());
-                        }
-                      }}
-                    />
-                  </div>
-                  <div className="mt-3 text-center">
-                    <Button 
-                      onClick={() => {
-                        if (citySearchTerm.trim() && !searchingCity) {
-                          handleCustomCitySearch(citySearchTerm.trim());
-                        }
-                      }}
-                      disabled={!citySearchTerm.trim() || searchingCity}
-                      className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold px-6 py-2 flex items-center gap-2"
-                    >
-                      {searchingCity ? (
-                        <>
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                          Searching...
-                        </>
-                      ) : (
-                        'Search This City'
-                      )}
-                    </Button>
-                  </div>
-                  
-                  {/* Search Status Messages */}
-                  {searchingCity && (
-                    <div className="mt-4 p-4 bg-blue-500/20 border border-blue-400/30 rounded-lg">
-                      <div className="flex items-center gap-2 text-blue-200">
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-200"></div>
-                        <p className="text-sm font-medium">Searching for city data...</p>
-                      </div>
-                      <p className="text-xs text-blue-300 mt-1">AI is generating activities and events for {selectedCity}. This may take a few moments.</p>
-                    </div>
-                  )}
-                  
-                  {searchError && (
-                    <div className="mt-4 p-4 bg-yellow-500/20 border border-yellow-400/30 rounded-lg">
-                      <div className="text-yellow-200">
-                        <p className="text-sm font-medium">Limited Results Found</p>
-                        <p className="text-xs text-yellow-300 mt-1">{searchError}</p>
-                        <p className="text-xs text-yellow-300 mt-2">AI isn't always perfect at finding city data. You can still explore the city and add your own activities!</p>
-                      </div>
-                    </div>
-                  )}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-            </>
-          )}
-
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600 dark:text-gray-300 mb-4">Please log in to access city matching</p>
+          <Button onClick={() => setLocation('/login')}>
+            Go to Login
+          </Button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800">
-      <div className="container mx-auto px-4 py-8">
-        {/* Header with Back Button */}
-        <div className="flex items-center gap-4 mb-8">
-          <Button
-            variant="ghost"
-            onClick={() => {
-              // Navigate back to city match selection page
-              setSelectedCity('');
-            }}
-            className="text-white hover:bg-white/10"
-          >
-            <ArrowLeft className="w-5 h-5 mr-2" />
-            Back to Cities
-          </Button>
-          <div className="flex items-center justify-between w-full">
-            <div className="flex items-center gap-3">
-              <div className={`w-12 h-12 rounded-full bg-gradient-to-r from-blue-400 to-purple-500 flex items-center justify-center`}>
-                <MapPin className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-3xl font-bold text-white">{selectedCity}</h1>
-                <p className="text-white/70">Add activities and events. Others click to match!</p>
-              </div>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 overflow-hidden break-words">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+        {/* Header Section */}
+        <div className="overflow-hidden break-words">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">City Connections</h1>
+              <p className="text-gray-600 dark:text-gray-300 mt-2">Find activities, events, and connect with like-minded people</p>
             </div>
-
-            {/* Simplified city display - no photo upload */}
-            <div className="flex items-center gap-2">
-              <div className="text-white/60 text-sm">
-                Activity matching for {selectedCity}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Removed problematic photo gallery */}
-
-        {/* HOW MATCHING WORKS - Small compact widget */}
-        <Card className="mb-3 bg-white/5 backdrop-blur-sm border-white/10 max-w-2xl">
-          <CardContent className="p-3">
-            <div className="text-white/80 text-xs">
-              <strong className="text-blue-400">Quick Start:</strong> Click blue activities below to add them to your profile, then see who else wants to do the same things in {selectedCity}!
-            </div>
-          </CardContent>
-        </Card>
-
-
-
-
-        {/* Global Activities Section */}
-        <div className="mb-6 flex items-center justify-between">
-          <h2 className="text-2xl font-bold text-white mb-2">🌍 All {selectedCity} Activities ({cityActivities.length})</h2>
-          <Button
-            onClick={() => enhanceCityWithMoreActivities()}
-            className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold px-4 py-2 rounded-lg shadow-lg transform hover:scale-105 transition-all duration-200"
-            disabled={isLoading}
-          >
-            🤖 Get More AI Activities
-          </Button>
-        </div>
-
-        {/* Global Activities Section */}
-        <div className="bg-gray-800/60 rounded-lg p-4 mb-6">
-          <h3 className="text-blue-400 font-semibold text-lg mb-3">
-            Everyone can add/edit activities for {selectedCity}
-          </h3>
-          <div className="text-gray-300 text-sm mb-3">
-            🔵 Click blue activities to add them to your personal list below • ✏️ Edit/delete to change for EVERYONE
-          </div>
-
-
-
-          <TooltipProvider>
-            <div className="flex flex-wrap gap-2">
-              {cityActivities.map((activity) => {
-                const isActive = isActivityActive(activity.id);
-
-                return (
-                  <div key={activity.id} className="relative group">
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <button
-                          onClick={() => toggleActivity(activity)}
-                          className="px-3 py-1 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 shadow-sm hover:shadow-md border border-blue-400/20"
-                          style={{ color: '#ffffff !important' }}
-                        >
-                          {activity.activityName}
-                          {activity.description && (
-                            <Info className="w-3 h-3 ml-1 opacity-60" />
-                          )}
-                        </button>
-                      </TooltipTrigger>
-                      {activity.description && (
-                        <TooltipContent className="max-w-xs">
-                          <p className="text-sm">{activity.description}</p>
-                        </TooltipContent>
-                      )}
-                    </Tooltip>
-
-                    {/* Edit/Delete on hover */}
-                    <div className="absolute -top-2 -right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setEditingActivity(activity);
-                          setEditActivityName(activity.activityName);
-                          setEditActivityDescription(activity.description || '');
-                        }}
-                        className="w-5 h-5 bg-blue-600 hover:bg-blue-700 rounded-full text-white text-xs flex items-center justify-center"
-                        title="Edit"
-                      >
-                        ✏️
-                      </button>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          deleteActivity(activity.id);
-                        }}
-                        className="w-5 h-5 bg-red-600 hover:bg-red-700 rounded-full text-white text-xs flex items-center justify-center"
-                        title="Delete"
-                      >
-                        🗑️
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
-
-            {/* Add new activity */}
-            <button
-              onClick={() => {
-                // Scroll to the text input section
-                const addActivitySection = document.querySelector('[data-add-activity-section]');
-                if (addActivitySection) {
-                  addActivitySection.scrollIntoView({ 
-                    behavior: 'smooth', 
-                    block: 'center' 
-                  });
-                  // Focus the input field after scrolling
-                  setTimeout(() => {
-                    const input = addActivitySection.querySelector('input');
-                    if (input) input.focus();
-                  }, 500);
-                }
-              }}
-              className="px-3 py-1.5 rounded-full text-sm font-medium bg-gray-600 hover:bg-gray-500 text-white border-2 border-dashed border-gray-400"
+            <Button
+              variant="outline"
+              onClick={() => setLocation('/')}
+              className="hidden sm:flex"
             >
-              + Add Activity
-            </button>
-            </div>
-          </TooltipProvider>
-
-
-
-          {/* Edit Activity Form */}
-          {editingActivity && (
-            <div className="mt-4 pt-4 border-t border-gray-600">
-              <h4 className="text-white font-medium mb-2">Edit Activity</h4>
-              <div className="space-y-2">
-                <Input
-                  placeholder="Activity name..."
-                  value={editActivityName}
-                  onChange={(e) => setEditActivityName(e.target.value)}
-                  className="bg-white/10 border-white/20 text-white placeholder-white/60"
-                  autoFocus
-                />
-                <Textarea
-                  placeholder="Description required - details about this activity..."
-                  value={editActivityDescription}
-                  onChange={(e) => setEditActivityDescription(e.target.value)}
-                  className="bg-white/10 border-white/20 text-white placeholder-white/60 resize-none h-20"
-                />
-                <div className="flex gap-2">
-                  <Button 
-                    onClick={updateActivity}
-                    className="bg-blue-500 hover:bg-blue-600 text-white"
-                    disabled={!editActivityName.trim() || !editActivityDescription.trim()}
-                  >
-                    Update Activity
-                  </Button>
-                  <Button 
-                    onClick={() => {
-                      setEditingActivity(null);
-                      setEditActivityName('');
-                      setEditActivityDescription('');
-                    }}
-                    variant="outline"
-                    className="border-gray-600 text-gray-300 hover:bg-gray-700"
-                  >
-                    Cancel
-                  </Button>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-
-
-
-        {cityActivities.length === 0 && (
-          <div className="text-center py-8 text-white/60">
-            <h3 className="text-lg font-semibold mb-2">No activities yet in {selectedCity}</h3>
-            <p className="text-sm">Be the first to add activities!</p>
-          </div>
-        )}
-
-        {/* Events Section  */}
-        <div className="mt-8">
-          <div className="mb-6 flex items-center justify-between">
-            <h2 className="text-2xl font-bold text-white mb-2">🎉 Events in {selectedCity} ({cityEvents.length})</h2>
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Home
+            </Button>
           </div>
 
-          <div className="bg-gray-800/60 rounded-lg p-4 mb-6">
-            <h3 className="text-red-400 font-semibold text-lg mb-3">
-              {selectedCity} Events
-            </h3>
-
-            <TooltipProvider>
-              <div className="flex flex-wrap gap-2">
-                {cityEvents.map((event) => {
-                  const isActive = isEventActive(event.id);
-
-                  return (
-                    <div key={event.id} className="relative group">
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <div className="flex items-center gap-2">
-                            <button
-                              onClick={() => handleEventClick(event)}
-                              className={`px-3 py-1 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-1 cursor-pointer hover:shadow-md ${
-                                isActive 
-                                  ? 'bg-gradient-to-r from-green-500 to-green-600 shadow-lg border border-green-400/20' 
-                                  : 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 shadow-sm border border-red-400/20'
-                              }`}
-                              style={{ color: '#ffffff' }}
-                            >
-                              <span className="text-xs opacity-75">
-                                {event.date ? new Date(event.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'TBD'}
-                              </span>
-                              <span className="mx-1">•</span>
-                              {event.title}
-                              <Info className="w-3 h-3 ml-1 opacity-60" />
-                            </button>
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                toggleEvent(event);
-                              }}
-                              className={`w-6 h-6 rounded-full text-xs font-bold transition-all duration-200 ${
-                                isActive 
-                                  ? 'bg-green-600 text-white' 
-                                  : 'bg-gray-500 hover:bg-gray-600 text-white'
-                              }`}
-                              title={isActive ? "Remove Interest" : "Add Interest"}
-                            >
-                              {isActive ? '✓' : '+'}
-                            </button>
-                          </div>
-                        </TooltipTrigger>
-                        <TooltipContent className="max-w-xs">
-                          <p className="text-sm font-medium">Click event name to view details and join</p>
-                          <p className="text-xs text-gray-400 mt-1">Click + to add interest without joining</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </div>
-                  );
-                })}
-              </div>
-            </TooltipProvider>
-
-            {cityEvents.length === 0 && (
-              <div className="text-center py-8 text-white/60">
-                <h3 className="text-lg font-semibold mb-2">No events yet in {selectedCity}</h3>
-                <p className="text-sm">Events created by users will appear here!</p>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* My Personal Selections Section */}
-        <Card className="mb-6 bg-white/10 backdrop-blur-sm border-white/20">
-          <CardHeader>
-            <CardTitle className="text-white flex items-center gap-2">
-              <Heart className="w-5 h-5" />
-              My Selected Activities in {selectedCity}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-white/80 text-sm mb-3">
-              Activities you've selected that appear on your profile:
-            </div>
-            {userActivities.length === 0 && userEvents.length === 0 ? (
-              <p className="text-white/60 text-sm italic">Click blue activities above to add them to your list!</p>
-            ) : (
-              <div className="flex flex-wrap gap-2">
-                {/* User Activities */}
-                {userActivities.map((userActivity) => {
-                  const globalActivity = cityActivities.find(ca => ca.id === userActivity.activityId);
-                  if (!globalActivity) return null;
-                  
-                  return (
-                    <div
-                      key={`activity-${userActivity.id}`}
-                      className="relative group px-4 py-2 rounded-full text-base font-medium bg-purple-600 hover:bg-purple-700 text-white border border-purple-400/30 shadow-sm h-10 min-w-[8rem]"
-                    >
-                      <span>{globalActivity.activityName}</span>
-                      <button
-                        onClick={() => toggleActivity(globalActivity)}
-                        className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center transition-colors"
-                        title="Remove activity"
-                      >
-                        <X className="w-3 h-3" />
-                      </button>
-                    </div>
-                  );
-                })}
-                
-                {/* User Events */}
-                {userEvents.map((userEvent) => {
-                  const globalEvent = cityEvents.find(ce => ce.id === userEvent.eventId);
-                  if (!globalEvent) {
-                    console.log(`🔍 Event not found: ${userEvent.eventId} in`, cityEvents.map(ce => ce.id));
-                    console.log(`🎪 Available userEvent data:`, userEvent);
-                    // Show user event even if global event not found - with remove button
-                    return (
-                      <div
-                        key={`event-${userEvent.id}`}
-                        className="relative group px-4 py-2 rounded-full text-base font-medium bg-purple-600 hover:bg-purple-700 text-white border border-purple-400/30 shadow-sm h-10 min-w-[8rem]"
-                      >
-                        <span>📅 {userEvent.eventtitle || userEvent.eventTitle || (userEvent.eventId ? `Event ${userEvent.eventId}` : "Saved Event")}</span>
-                        <button
-                          onClick={async () => {
-                            try {
-                              const response = await fetch(`/api/user-event-interests/${userEvent.id}`, {
-                                method: 'DELETE',
-                                headers: { 'x-user-id': getUserData()?.id?.toString() || '0' }
-                              });
-                              if (response.ok) {
-                                setUserEvents(prev => prev.filter(ue => ue.id !== userEvent.id));
-                                queryClient.invalidateQueries({ queryKey: [`/api/users/${getUserData()?.id}/all-events`] });
-                                toast({ title: "Removed", description: "Event removed from your list" });
-                              }
-                            } catch (error) {
-                              toast({ title: "Error", description: "Failed to remove event", variant: "destructive" });
-                            }
-                          }}
-                          className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center transition-colors"
-                          title="Remove event"
-                        >
-                          <X className="w-3 h-3" />
-                        </button>
-                      </div>
-                    );
-                  }
-                  
-                  return (
-                    <div
-                      key={`event-${userEvent.id}`}
-                      className="relative group px-4 py-2 rounded-full text-base font-medium bg-purple-600 hover:bg-purple-700 text-white border border-purple-400/30 shadow-sm h-10 min-w-[8rem]"
-                    >
-                      <span>📅 {globalEvent.title}</span>
-                      <button
-                        onClick={() => toggleEvent(globalEvent)}
-                        className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center transition-colors"
-                        title="Remove event"
-                      >
-                        <X className="w-3 h-3" />
-                      </button>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Matching Users Section */}
-        <div className="mt-8">
-          <Card className="bg-white/10 backdrop-blur-sm border-white/20">
+          {/* City Selection */}
+          <Card className="overflow-hidden break-words">
             <CardHeader>
-              <CardTitle className="text-white flex items-center gap-2">
-                <Users className="w-5 h-5" />
-                People Interested ({matchingUsers.length})
+              <CardTitle className="flex items-center gap-2">
+                <MapPin className="w-5 h-5 text-blue-500" />
+                Select a City
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              {(matchingUsers as any[]).length === 0 ? (
-                <div className="text-center py-6 text-white/60">
-                  <Users className="w-12 h-12 mx-auto opacity-30 mb-3" />
-                  <p className="text-sm">Add activities and events to find people with similar interests!</p>
+            <CardContent className="space-y-4 break-words overflow-hidden">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <Input
+                  placeholder="Search cities..."
+                  value={citySearchTerm}
+                  onChange={(e) => setCitySearchTerm(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+              
+              {citiesLoading ? (
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                  {[1, 2, 3, 4].map(i => (
+                    <div key={i} className="animate-pulse">
+                      <div className="h-24 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
+                    </div>
+                  ))}
                 </div>
               ) : (
-                <div className="space-y-3">
-                  {(matchingUsers as any[]).slice(0, 5).map((user: any, index: number) => (
-                    <div key={user.id || index} className="flex items-center gap-3 p-3 bg-white/5 rounded-lg">
-                      <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white font-semibold">
-                        {user.username?.[0]?.toUpperCase() || '?'}
-                      </div>
-                      <div className="flex-1">
-                        <div className="text-white font-medium">{user.username || 'Anonymous'}</div>
-                        {user.sharedActivityNames && user.sharedActivityNames.length > 0 && (
-                          <div className="text-white/50 text-xs mt-1">
-                            Both interested in: {user.sharedActivityNames.slice(0, 2).join(', ')}
-                            {user.sharedActivityNames.length > 2 && ` +${user.sharedActivityNames.length - 2} more`}
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 max-h-96 overflow-y-auto">
+                  {filteredCities.slice(0, 20).map((city) => (
+                    <div
+                      key={`${city.city}-${city.state}`}
+                      onClick={() => setSelectedCity(city.city)}
+                      className={`relative cursor-pointer rounded-xl border-2 p-3 transition-all hover:shadow-lg ${
+                        selectedCity === city.city
+                          ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                          : 'border-gray-200 hover:border-gray-300 dark:border-gray-700 hover:dark:border-gray-600'
+                      }`}
+                    >
+                      <div className={`absolute inset-0 bg-gradient-to-br ${city.gradient} opacity-10 rounded-xl`}></div>
+                      <div className="relative z-10">
+                        <h3 className="font-semibold text-sm text-gray-900 dark:text-white truncate">
+                          {city.city}
+                        </h3>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                          {city.state}, {city.country}
+                        </p>
+                        <div className="flex items-center justify-between mt-2">
+                          <div className="inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0">
+                            <Users className="w-3 h-3 mr-1" />
+                            {city.userCount || 0}
                           </div>
-                        )}
-                        <div className="text-white/60 text-xs">
-                          {user.commonActivities || 1} shared interest{(user.commonActivities || 1) === 1 ? '' : 's'}
-                          {user.matchStrength && (
-                            <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-medium ${
-                              user.matchStrength >= 3 ? 'bg-green-500/20 text-green-300' :
-                              user.matchStrength >= 2 ? 'bg-yellow-500/20 text-yellow-300' :
-                              'bg-blue-500/20 text-blue-300'
-                            }`}>
-                              {user.matchStrength >= 3 ? 'High Match' : 
-                               user.matchStrength >= 2 ? 'Good Match' : 
-                               'Potential Match'}
-                            </span>
+                          {isLAAreaCity(city.city, city.state) && (
+                            <div className="inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none bg-orange-500 text-white border-0">
+                              🔥 Hot
+                            </div>
                           )}
                         </div>
                       </div>
-                      {(() => {
-                        // Check if user is already connected
-                        const isConnected = connections.some(conn => 
-                          conn.connectedUser?.id === user.id && conn.status === 'accepted'
-                        );
-                        // Special case for nearbytraveler (user id 1)
-                        const isNearbyTraveler = user.id === 1;
-                        
-                        if (isConnected || isNearbyTraveler) {
-                          return (
-                            <Button size="sm" className="bg-green-500 hover:bg-green-600 text-white" disabled>
-                              Connected
-                            </Button>
-                          );
-                        }
-                        return (
-                          <Button size="sm" className="bg-blue-500 hover:bg-blue-600 text-white">
-                            Connect
-                          </Button>
-                        );
-                      })()}
                     </div>
                   ))}
                 </div>
@@ -1424,226 +845,384 @@ export default function MatchInCity() {
           </Card>
         </div>
 
-        {/* Event Details Modal */}
-        {selectedEvent && (
-          <Dialog open={showEventModal} onOpenChange={setShowEventModal}>
-            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle className="flex items-center gap-2 text-2xl">
-                  🎉 {selectedEvent.title}
-                </DialogTitle>
-              </DialogHeader>
-              <div className="space-y-6">
-                <div className="flex gap-2">
-                  <Badge className="bg-blue-500 text-white" variant="secondary">
-                    {selectedEvent.category || 'Event'}
-                  </Badge>
-                  <Badge variant="outline">
-                    {selectedEvent.city}
-                  </Badge>
-                  {selectedEvent.participantCount && (
-                    <Badge variant="outline">
-                      {selectedEvent.participantCount} attending
-                    </Badge>
-                  )}
+        {/* City Content */}
+        {selectedCity && (
+          <div className="space-y-6 overflow-hidden break-words">
+            {/* Activities Section */}
+            <Card className="overflow-hidden break-words">
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-2">
+                    <Target className="w-5 h-5 text-green-500" />
+                    Activities in {selectedCity}
+                  </CardTitle>
+                  <Button
+                    size="sm"
+                    onClick={() => setShowAddForm(!showAddForm)}
+                    className="bg-green-500 hover:bg-green-600 text-white"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add Activity
+                  </Button>
                 </div>
-                
-                {selectedEvent.description && (
-                  <div>
-                    <h4 className="font-semibold mb-2">Description</h4>
-                    <p className="text-gray-700 leading-relaxed">{selectedEvent.description}</p>
+              </CardHeader>
+              <CardContent className="space-y-4 break-words overflow-hidden">
+                {/* Add Activity Form */}
+                {showAddForm && (
+                  <div className="border rounded-lg p-4 bg-green-50 dark:bg-green-900/20 space-y-4">
+                    <Input
+                      placeholder="Activity name"
+                      value={newActivityName}
+                      onChange={(e) => setNewActivityName(e.target.value)}
+                    />
+                    <Textarea
+                      placeholder="Activity description (optional)"
+                      value={newActivityDescription}
+                      onChange={(e) => setNewActivityDescription(e.target.value)}
+                      className="min-h-[80px]"
+                    />
+                    <div className="flex gap-2">
+                      <Button size="sm" onClick={addActivity}>
+                        Add Activity
+                      </Button>
+                      <Button size="sm" variant="outline" onClick={() => setShowAddForm(false)}>
+                        Cancel
+                      </Button>
+                    </div>
                   </div>
                 )}
-                
-                <div className="grid grid-cols-1 gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                  {/* Date & Time - CRITICAL MISSING INFO */}
-                  <div className="flex items-start gap-3">
-                    <div className="w-5 h-5 text-gray-500 mt-1">📅</div>
-                    <div>
-                      <p className="font-medium text-black dark:text-white">Date & Time</p>
-                      <p className="text-sm text-gray-700 dark:text-gray-200 font-medium">
-                        {selectedEvent.date ? new Date(selectedEvent.date).toLocaleDateString('en-US', {
-                          weekday: 'long',
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric'
-                        }) : 'Date not specified'}
-                      </p>
-                      {selectedEvent.date && (
-                        <div className="space-y-1">
-                          <p className="text-sm text-gray-700 dark:text-gray-200 font-medium">
-                            Start Time: {new Date(selectedEvent.date).toLocaleTimeString('en-US', {
-                              hour: 'numeric',
-                              minute: '2-digit',
-                              hour12: true
-                            })}
-                          </p>
-                          {selectedEvent.endDate && (
-                            <p className="text-sm text-gray-700 dark:text-gray-200 font-medium">
-                              End Time: {new Date(selectedEvent.endDate).toLocaleTimeString('en-US', {
-                                hour: 'numeric',
-                                minute: '2-digit',
-                                hour12: true
-                              })}
-                            </p>
+
+                {/* Your Activities */}
+                {userActivities.length > 0 && (
+                  <div>
+                    <h4 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                      <Heart className="w-4 h-4 text-red-500" />
+                      Your Activities ({userActivities.length})
+                    </h4>
+                    <div className="flex flex-wrap gap-2 overflow-hidden break-words">
+                      {userActivities.map((activity) => (
+                        <div key={activity.id} className="inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none bg-red-500 text-white border-0">
+                          {activity.activityName}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* All Activities */}
+                <div>
+                  <h4 className="font-semibold text-gray-900 dark:text-white mb-3">All Activities ({cityActivities.length})</h4>
+                  {cityActivities.length === 0 ? (
+                    <p className="text-gray-500 dark:text-gray-400 text-center py-8">
+                      No activities found in {selectedCity}. Be the first to add one!
+                    </p>
+                  ) : (
+                    <div className="space-y-3">
+                      {cityActivities.map((activity) => (
+                        <div key={activity.id} className="border rounded-lg p-4 hover:shadow-sm transition-shadow break-words overflow-hidden">
+                          {editingActivity?.id === activity.id ? (
+                            <div className="space-y-3">
+                              <Input
+                                value={editActivityName}
+                                onChange={(e) => setEditActivityName(e.target.value)}
+                                className="font-medium"
+                              />
+                              <Textarea
+                                value={editActivityDescription}
+                                onChange={(e) => setEditActivityDescription(e.target.value)}
+                                className="min-h-[60px]"
+                              />
+                              <div className="flex gap-2">
+                                <Button size="sm" onClick={editActivity}>
+                                  Save Changes
+                                </Button>
+                                <Button size="sm" variant="outline" onClick={cancelEditing}>
+                                  Cancel
+                                </Button>
+                              </div>
+                            </div>
+                          ) : (
+                            <>
+                              <div className="flex items-start justify-between">
+                                <div className="flex-1 min-w-0">
+                                  <h5 className="font-medium text-gray-900 dark:text-white break-words">
+                                    {activity.activityName}
+                                  </h5>
+                                  <p className="text-sm text-gray-600 dark:text-gray-300 mt-1 break-words">
+                                    {activity.description}
+                                  </p>
+                                  <div className="flex flex-wrap gap-2 mt-2">
+                                    <div className="inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none bg-gray-500 text-white border-0">
+                                      {activity.category}
+                                    </div>
+                                    <div className="inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0">
+                                      <Users className="w-3 h-3 mr-1" />
+                                      {activity.participantCount || 0} joined
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="flex items-center gap-2 ml-4">
+                                  {user?.id === activity.createdByUserId && (
+                                    <>
+                                      <Button
+                                        size="sm"
+                                        variant="ghost"
+                                        onClick={() => startEditingActivity(activity)}
+                                      >
+                                        <Edit className="w-4 h-4" />
+                                      </Button>
+                                      <Button
+                                        size="sm"
+                                        variant="ghost"
+                                        onClick={() => deleteActivity(activity.id)}
+                                        className="text-red-600 hover:text-red-800"
+                                      >
+                                        <Trash2 className="w-4 h-4" />
+                                      </Button>
+                                    </>
+                                  )}
+                                  {isUserJoinedActivity(activity.id) ? (
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() => leaveActivity(getUserActivityId(activity.id)!, activity.activityName)}
+                                      className="border-red-500 text-red-600 hover:bg-red-50"
+                                    >
+                                      Leave
+                                    </Button>
+                                  ) : (
+                                    <Button
+                                      size="sm"
+                                      onClick={() => joinActivity(activity.id, activity.activityName)}
+                                      className="bg-green-500 hover:bg-green-600 text-white"
+                                    >
+                                      Join
+                                    </Button>
+                                  )}
+                                </div>
+                              </div>
+                            </>
                           )}
                         </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Location & Address - CRITICAL MISSING INFO */}
-                  <div className="flex items-start gap-3">
-                    <MapPin className="w-5 h-5 text-gray-500 mt-1" />
-                    <div>
-                      <p className="font-medium text-black dark:text-white">Location & Address</p>
-                      {selectedEvent.streetAddress ? (
-                        <div className="text-sm text-gray-700 dark:text-gray-200">
-                          <p className="font-medium">{selectedEvent.streetAddress}</p>
-                          <p>{selectedEvent.city}, {selectedEvent.state} {selectedEvent.zipCode}</p>
-                          <p>{selectedEvent.country}</p>
-                        </div>
-                      ) : (
-                        <p className="text-sm text-gray-700 dark:text-gray-200">
-                          {selectedEvent.city}, {selectedEvent.state}
-                          {selectedEvent.zipCode && ` ${selectedEvent.zipCode}`}
-                          {selectedEvent.country && `, ${selectedEvent.country}`}
-                        </p>
-                      )}
-                      {selectedEvent.venue && (
-                        <p className="text-xs text-gray-600 dark:text-gray-300 mt-1">
-                          Venue: {selectedEvent.venue}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Additional Event Details */}
-                  {selectedEvent.organizer && (
-                    <div className="flex items-start gap-3">
-                      <Users className="w-5 h-5 text-gray-500 mt-1" />
-                      <div>
-                        <p className="font-medium text-black dark:text-white">Organizer</p>
-                        <p className="text-sm text-gray-700 dark:text-gray-200">{selectedEvent.organizer}</p>
-                        {selectedEvent.organizerContact && (
-                          <p className="text-xs text-gray-600 dark:text-gray-300">{selectedEvent.organizerContact}</p>
-                        )}
-                      </div>
-                    </div>
-                  )}
-
-                  {selectedEvent.requirements && (
-                    <div className="flex items-start gap-3">
-                      <Info className="w-5 h-5 text-gray-500 mt-1" />
-                      <div>
-                        <p className="font-medium text-black dark:text-white">Requirements</p>
-                        <p className="text-sm text-gray-700 dark:text-gray-200">{selectedEvent.requirements}</p>
-                      </div>
+                      ))}
                     </div>
                   )}
                 </div>
+              </CardContent>
+            </Card>
 
-                {/* Event Organizer */}
-                {selectedEvent.organizerName && (
-                  <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                    <h4 className="font-semibold mb-2 text-blue-800 dark:text-blue-200">Organized by</h4>
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold">
-                        {selectedEvent.organizerName[0]?.toUpperCase() || '?'}
-                      </div>
-                      <div>
-                        <p className="font-medium text-blue-800 dark:text-blue-200">{selectedEvent.organizerName}</p>
-                        <p className="text-sm text-blue-600 dark:text-blue-300">Event Organizer</p>
-                      </div>
+            {/* Events Section */}
+            <Card className="overflow-hidden break-words">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Zap className="w-5 h-5 text-purple-500" />
+                  Events in {selectedCity}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4 break-words overflow-hidden">
+                {/* Your Events */}
+                {userEvents.length > 0 && (
+                  <div>
+                    <h4 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                      <Heart className="w-4 h-4 text-red-500" />
+                      Your Events ({userEvents.length})
+                    </h4>
+                    <div className="flex flex-wrap gap-2 overflow-hidden break-words">
+                      {userEvents.map((event) => (
+                        <div key={event.id} className="inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none bg-purple-500 text-white border-0">
+                          {event.eventTitle}
+                        </div>
+                      ))}
                     </div>
                   </div>
                 )}
 
-                {/* Action Buttons */}
-                <div className="flex gap-3 pt-4 border-t">
-                  <Button 
+                {/* All Events */}
+                <div>
+                  <h4 className="font-semibold text-gray-900 dark:text-white mb-3">All Events ({cityEvents.length})</h4>
+                  {cityEvents.length === 0 ? (
+                    <p className="text-gray-500 dark:text-gray-400 text-center py-8">
+                      No events found in {selectedCity}.
+                    </p>
+                  ) : (
+                    <div className="space-y-3">
+                      {cityEvents.map((event) => (
+                        <div key={event.id} className="border rounded-lg p-4 hover:shadow-sm transition-shadow cursor-pointer break-words overflow-hidden" onClick={() => { setSelectedEvent(event); setShowEventModal(true); }}>
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1 min-w-0">
+                              <h5 className="font-medium text-gray-900 dark:text-white break-words">
+                                {event.title}
+                              </h5>
+                              <p className="text-sm text-gray-600 dark:text-gray-300 mt-1 break-words">
+                                {event.description}
+                              </p>
+                              <div className="flex flex-wrap gap-2 mt-2">
+                                <div className="inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none bg-purple-500 text-white border-0">
+                                  {new Date(event.date).toLocaleDateString()}
+                                </div>
+                                <div className="inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0">
+                                  <Users className="w-3 h-3 mr-1" />
+                                  {event.interestedCount || 0} interested
+                                </div>
+                              </div>
+                            </div>
+                            <div className="ml-4">
+                              {isUserJoinedEvent(event.id) ? (
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    leaveEvent(getUserEventId(event.id)!, event.title);
+                                  }}
+                                  className="border-red-500 text-red-600 hover:bg-red-50"
+                                >
+                                  Not Interested
+                                </Button>
+                              ) : (
+                                <Button
+                                  size="sm"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    joinEvent(event.id, event.title);
+                                  }}
+                                  className="bg-purple-500 hover:bg-purple-600 text-white"
+                                >
+                                  Interested
+                                </Button>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Matching Users Section */}
+            <Card className="overflow-hidden break-words">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Users className="w-5 h-5 text-blue-500" />
+                  People with Similar Interests ({matchingUsers.length})
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4 break-words overflow-hidden">
+                {matchingUsers.length === 0 ? (
+                  <p className="text-gray-500 dark:text-gray-400 text-center py-8">
+                    No matching users found in {selectedCity}. Join some activities to find people with similar interests!
+                  </p>
+                ) : (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                    {matchingUsers.map((match) => (
+                      <div
+                        key={match.userId}
+                        className="rounded-xl border p-3 hover:shadow-sm bg-white dark:bg-gray-800 cursor-pointer flex flex-col items-center text-center gap-2"
+                        onClick={() => setLocation(`/profile/${match.userId}`)}
+                      >
+                        <div className="w-16 h-16 sm:w-14 sm:h-14 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold text-lg">
+                          {match.name ? match.name.charAt(0).toUpperCase() : match.username?.charAt(0).toUpperCase() || '?'}
+                        </div>
+                        <div className="w-full">
+                          <p className="font-medium text-sm truncate text-gray-900 dark:text-white">
+                            {match.name || match.username}
+                          </p>
+                          <p className="text-xs truncate text-gray-500 dark:text-gray-400">
+                            {match.location || 'Location not set'}
+                          </p>
+                          <div className="inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none bg-green-500 text-white border-0 mt-1">
+                            {match.sharedActivities} shared
+                          </div>
+                        </div>
+                        {!isConnected(match.userId) && match.userId !== user?.id && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="hidden sm:inline-flex h-8 px-3 text-xs bg-blue-500 hover:bg-blue-600 text-white border-0"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              sendConnectionRequest(match.userId, match.name || match.username);
+                            }}
+                          >
+                            Connect
+                          </Button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        )}
+      </div>
+
+      {/* Event Details Modal */}
+      <Dialog open={showEventModal} onOpenChange={setShowEventModal}>
+        <DialogContent className="max-w-lg overflow-hidden break-words">
+          <DialogHeader>
+            <DialogTitle className="break-words">
+              {selectedEvent?.title}
+            </DialogTitle>
+          </DialogHeader>
+          {selectedEvent && (
+            <div className="space-y-4 break-words overflow-hidden">
+              <p className="text-gray-600 dark:text-gray-300 break-words">
+                {selectedEvent.description}
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <div className="inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none bg-purple-500 text-white border-0">
+                  📅 {new Date(selectedEvent.date).toLocaleDateString()}
+                </div>
+                {selectedEvent.time && (
+                  <div className="inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0">
+                    🕒 {selectedEvent.time}
+                  </div>
+                )}
+                {selectedEvent.location && (
+                  <div className="inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none bg-gray-500 text-white border-0 break-words">
+                    📍 {selectedEvent.location}
+                  </div>
+                )}
+              </div>
+              {selectedEvent.price && (
+                <div className="inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none bg-green-500 text-white border-0">
+                  💰 {selectedEvent.price}
+                </div>
+              )}
+              <div className="flex gap-2 pt-4">
+                {isUserJoinedEvent(selectedEvent.id) ? (
+                  <Button
+                    variant="outline"
                     onClick={() => {
-                      const venueQuery = selectedEvent.venueName ? `${selectedEvent.title} ${selectedEvent.venueName}` : selectedEvent.title;
-                      const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(venueQuery + ' tickets event')}`;
-                      window.open(searchUrl, '_blank');
-                    }}
-                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
-                    size="lg"
-                  >
-                    <Info className="w-4 h-4 mr-2" />
-                    Get Tickets & Info
-                  </Button>
-                  <Button 
-                    onClick={() => {
-                      toggleEvent(selectedEvent);
+                      leaveEvent(getUserEventId(selectedEvent.id)!, selectedEvent.title);
                       setShowEventModal(false);
                     }}
-                    variant="outline"
-                    className="flex-1"
-                    size="lg"
+                    className="border-red-500 text-red-600 hover:bg-red-50"
                   >
-                    {isEventActive(selectedEvent.id) ? 'Remove Interest' : 'Add Interest'}
+                    Not Interested
                   </Button>
-                </div>
-
-                {/* Share Event */}
-                <div className="text-center pt-2 border-t">
-                  <p className="text-sm text-gray-500 mb-2">Share this event with friends</p>
-                  <Button 
-                    variant="ghost" 
-                    size="sm"
+                ) : (
+                  <Button
                     onClick={() => {
-                      const shareUrl = `${window.location.origin}/event-details/${selectedEvent.id}`;
-                      navigator.clipboard.writeText(shareUrl);
-                      toast({
-                        title: "Link Copied!",
-                        description: "Event link has been copied to clipboard",
-                      });
+                      joinEvent(selectedEvent.id, selectedEvent.title);
+                      setShowEventModal(false);
                     }}
+                    className="bg-purple-500 hover:bg-purple-600 text-white"
                   >
-                    📋 Copy Event Link
+                    I'm Interested
                   </Button>
-                </div>
-              </div>
-            </DialogContent>
-          </Dialog>
-        )}
-
-        {/* Compact Add Activity Section - Moved to bottom */}
-        <div className="mt-8 mb-4" data-add-activity-section>
-          <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg p-3">
-            <h3 className="text-white text-sm font-medium mb-2">+ Add Activity</h3>
-            <div className="space-y-2">
-              <Input
-                placeholder="Add activity or event"
-                value={newActivityName}
-                onChange={(e) => setNewActivityName(e.target.value)}
-                className="w-full bg-white/10 border-white/20 text-white placeholder-white/40 text-sm h-8"
-                onKeyPress={(e) => {
-                  if (e.key === 'Enter' && newActivityName.trim()) {
-                    addActivity();
-                  }
-                }}
-              />
-              <div className="flex gap-2">
-                <Input
-                  placeholder="Optional description"
-                  value={newActivityDescription}
-                  onChange={(e) => setNewActivityDescription(e.target.value)}
-                  className="flex-1 bg-white/10 border-white/20 text-white placeholder-white/40 text-sm h-8"
-                />
-                <Button
-                  onClick={addActivity}
-                  disabled={!newActivityName.trim() || isLoading}
-                  className="bg-green-600 hover:bg-green-700 text-white px-3 h-8 text-sm"
-                >
-                  Add
+                )}
+                <Button variant="outline" onClick={() => setShowEventModal(false)}>
+                  Close
                 </Button>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
