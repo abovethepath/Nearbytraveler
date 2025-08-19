@@ -1218,14 +1218,14 @@ export default function Home() {
 
       {/* Hero Section with Scrolling Photo Gallery */}
 <section
-  className="relative overflow-hidden text-white min-h-[75svh] md:min-h-[80svh] bg-cover bg-center bg-no-repeat"
+  className="relative overflow-hidden text-white min-h-[40svh] md:min-h-[45svh] bg-cover bg-center bg-no-repeat"
   style={{
     backgroundImage: "url('/attached_assets/beach travel_1754973619241.jpg')",
   }}
 >
         {/* Dark overlay for text readability */}
         <div className="absolute inset-0 bg-gradient-to-br from-black/40 via-black/30 to-black/50"></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
           <div className="text-center max-w-3xl mx-auto">
             <h1 className="text-xl sm:text-2xl md:text-4xl lg:text-6xl font-bold mb-4 sm:mb-6 leading-tight text-white text-center" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700', textShadow: '2px 2px 4px rgba(0,0,0,0.8)'}}>
               <div className="leading-tight">
@@ -1274,34 +1274,8 @@ export default function Home() {
                 </Button>
               </div>
             ) : (
-              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 md:gap-4 justify-center px-4 sm:px-0">
-                <Button 
-                  size="lg" 
-                  className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-black px-4 sm:px-6 md:px-8 py-2 sm:py-3 md:py-4 text-sm sm:text-base md:text-lg w-full sm:w-auto shadow-lg border border-blue-500"
-                  onClick={() => setLocation('/plan-trip')}
-                >
-                  <Globe className="w-3 sm:w-4 md:w-5 h-3 sm:h-4 md:h-5 mr-1 sm:mr-2" />
-                  Plan Your Trip
-                </Button>
-                <Button 
-                  size="lg"
-                  className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-black px-4 sm:px-6 md:px-8 py-2 sm:py-3 md:py-4 text-sm sm:text-base md:text-lg w-full sm:w-auto shadow-lg border border-blue-500"
-                  onClick={() => {
-                    setConnectModalMode('hometown');
-                    setShowConnectModal(true);
-                  }}
-                >
-                  <Users className="w-3 sm:w-4 md:w-5 h-3 sm:h-4 md:h-5 mr-1 sm:mr-2" />
-                  Connect
-                </Button>
-                <Button 
-                  size="lg"
-                  className="bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-black px-4 sm:px-6 md:px-8 py-2 sm:py-3 md:py-4 text-sm sm:text-base md:text-lg w-full sm:w-auto shadow-lg border border-purple-500"
-                  onClick={() => setShowAdvancedFilters(true)}
-                >
-                  <Search className="w-3 sm:w-4 md:w-5 h-3 sm:h-4 md:h-5 mr-1 sm:mr-2" />
-                  Advanced Search
-                </Button>
+              <div className="text-center">
+                <p className="text-sm text-white/80">Use the navigation below to start exploring</p>
               </div>
             )}
           </div>
