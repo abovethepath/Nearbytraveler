@@ -5,7 +5,6 @@ import { useLocation } from "wouter";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
@@ -5611,7 +5610,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                   </div>
                                 ))}
                                 {plan.interests.length > 2 && (
-                                  <Badge 
+                                  <div 
                                     className="pill-interests cursor-pointer"
                                     onClick={() => {
                                       const newExpanded = new Set(expandedPlanInterests);
@@ -5624,7 +5623,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                     }}
                                   >
                                     {expandedPlanInterests.has(plan.id) ? 'Show less' : `+${plan.interests.length - 2} more`}
-                                  </Badge>
+                                  </div>
                                 )}
                               </div>
                             </div>
@@ -5686,9 +5685,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               <div className="flex-1">
                                 <div className="flex items-center gap-2 mb-1">
                                   <h4 className="font-medium text-sm text-gray-600 dark:text-gray-300">{plan.destination}</h4>
-                                  <Badge className="bg-gray-500 text-white px-2 py-0.5">
+                                  <div className="inline-flex items-center justify-center h-8 min-w-[7rem] rounded-full px-3 text-sm font-medium leading-none whitespace-nowrap bg-gray-500 text-white border-0 appearance-none select-none gap-1.5">
                                     ✓ Completed
-                                  </Badge>
+                                  </div>
                                 </div>
                                 <p className="text-gray-500 dark:text-gray-400 text-xs mb-1 font-medium">
                                   {plan.startDate ? formatDateForDisplay(plan.startDate, user?.hometownCity || 'UTC') : 'Start date TBD'} - {plan.endDate ? formatDateForDisplay(plan.endDate, user?.hometownCity || 'UTC') : 'End date TBD'}
@@ -5745,7 +5744,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                     </div>
                                   ))}
                                   {plan.interests.length > 2 && (
-                                    <Badge 
+                                    <div 
                                       className="pill-interests cursor-pointer"
                                       onClick={() => {
                                         const newExpanded = new Set(expandedPlanInterests);
@@ -5758,7 +5757,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                       }}
                                     >
                                       {expandedPlanInterests.has(plan.id) ? 'Show less' : `+${plan.interests.length - 2} more`}
-                                    </Badge>
+                                    </div>
                                   )}
                                 </div>
                               </div>
@@ -6656,12 +6655,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       {countriesVisited.length > 0 ? (
                         <div className="flex flex-wrap gap-2">
                           {countriesVisited.map((country: string, index: number) => (
-                            <Badge 
+                            <div 
                               key={country} 
                               className="pill-interests"
                             >
                               {country}
-                            </Badge>
+                            </div>
                           ))}
                         </div>
                       ) : (
@@ -6914,9 +6913,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">
                         Admin Information
                       </CardTitle>
-                      <Badge className="bg-purple-100 text-purple-700 dark:bg-purple-800 dark:text-purple-200 text-xs">
+                      <div className="inline-flex items-center justify-center h-6 min-w-[4rem] rounded-full px-2 text-xs font-medium leading-none whitespace-nowrap bg-purple-100 text-purple-700 dark:bg-purple-800 dark:text-purple-200 border-0 appearance-none select-none gap-1">
                         Private
-                      </Badge>
+                      </div>
                     </div>
                     {!editingOwnerInfo && (
                       <Button
@@ -7063,7 +7062,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 <CardHeader className="pb-3">
                   <div className="flex items-center space-x-2 mb-2">
                     <TrendingUp className="w-5 h-5 text-orange-600 dark:text-orange-400" />
-                    <Badge className="bg-orange-600 text-white">Success Tips</Badge>
+                    <div className="inline-flex items-center justify-center h-6 min-w-[4rem] rounded-full px-2 text-xs font-medium leading-none whitespace-nowrap bg-orange-600 text-white border-0 appearance-none select-none gap-1">Success Tips</div>
                   </div>
                   <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">
                     Boost Your Connections
