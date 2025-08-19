@@ -6,10 +6,27 @@
 @tailwind utilities;
 
 @layer components {
-  /* Updated Pill Classes - Cache Buster v5.0 BROWSER REFRESH FORCED */
+  /* Updated Pill Classes - Cache Buster v6.0 NUCLEAR FIX FOR PERSISTENT SMALL PILLS */
   /* Base pill class - now LARGE like section-specific pills */
   .pill {
     @apply !inline-flex !items-center !justify-center !h-10 !min-w-[8rem] !rounded-full !px-4 !text-base !font-medium !leading-none !whitespace-nowrap !bg-blue-500 !text-white !border-0 !appearance-none !select-none [&>svg]:!h-5 [&>svg]:!w-5 gap-1.5 !important;
+  }
+
+  /* NUCLEAR FIX: Force any saved preference displays to use large pills regardless of class conflicts */
+  [key*="interest-"], [key*="activity-"], [key*="event-"],
+  div[className*="interest"], div[className*="activity"], div[className*="event"],
+  .inline-flex[className*="bg-blue-500"], .inline-flex[className*="bg-green-500"], .inline-flex[className*="bg-purple-500"] {
+    height: 2.5rem !important; /* h-10 */
+    min-width: 8rem !important; /* min-w-[8rem] */
+    padding-left: 1rem !important; /* px-4 */
+    padding-right: 1rem !important; /* px-4 */
+    font-size: 1rem !important; /* text-base */
+    border-radius: 9999px !important; /* rounded-full */
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-weight: 500 !important;
+    white-space: nowrap !important;
   }
   
   /* LARGE PILLS - All section-specific pills are now consistently large */
