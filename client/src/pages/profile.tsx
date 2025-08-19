@@ -4481,12 +4481,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               return (
                                 <>
                                   {topInterests.map((interest, index) => (
-                                    <Badge key={`interest-${index}`} className="pill pill-interests">
+                                    <Badge key={`interest-${index}`} className="pill-interests">
                                       {interest}
                                     </Badge>
                                   ))}
                                   {remaining > 0 && (
-                                    <Badge className="pill pill-interests">
+                                    <Badge className="pill-interests">
                                       +{remaining} more
                                     </Badge>
                                   )}
@@ -4628,12 +4628,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               return (
                                 <>
                                   {topActivities.map((activity, index) => (
-                                    <Badge key={`activity-${index}`} className="pill pill-activities">
+                                    <Badge key={`activity-${index}`} className="pill-activities">
                                       {activity}
                                     </Badge>
                                   ))}
                                   {remaining > 0 && (
-                                    <Badge className="pill pill-activities">
+                                    <Badge className="pill-activities">
                                       +{remaining} more
                                     </Badge>
                                   )}
@@ -4776,12 +4776,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               return (
                                 <>
                                   {topEvents.map((event, index) => (
-                                    <Badge key={`event-${index}`} className="pill pill-events">
+                                    <Badge key={`event-${index}`} className="pill-events">
                                       {event}
                                     </Badge>
                                   ))}
                                   {remaining > 0 && (
-                                    <Badge className="pill pill-events">
+                                    <Badge className="pill-events">
                                       +{remaining} more
                                     </Badge>
                                   )}
