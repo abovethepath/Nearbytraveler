@@ -162,8 +162,8 @@ export default function ResponsiveUserGrid({
         ))}
       </div>
 
-      {/* Mobile Vertical List (hidden on desktop) */}
-      <div className="md:hidden space-y-4">
+      {/* Mobile Grid (hidden on desktop) */}
+      <div className="md:hidden grid grid-cols-2 gap-3">
         {displayUsers.map((user) => (
           <MobileUserCard key={user.id} user={user} />
         ))}
