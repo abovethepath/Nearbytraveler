@@ -6,7 +6,7 @@
 @tailwind utilities;
 
 @layer components {
-  /* Updated Pill Classes - Cache Buster v11.0 PROFILE SECTION NUCLEAR OVERRIDE */
+  /* Updated Pill Classes - Cache Buster v12.0 VISUAL TEST OVERRIDE */
   /* Base pill class - now LARGE like section-specific pills */
   .pill {
     @apply !inline-flex !items-center !justify-center !h-10 !min-w-[8rem] !rounded-full !px-4 !text-base !font-medium !leading-none !whitespace-nowrap !bg-blue-500 !text-white !border-0 !appearance-none !select-none [&>svg]:!h-5 [&>svg]:!w-5 gap-1.5 !important;
@@ -67,7 +67,7 @@
     white-space: nowrap !important;
   }
 
-  /* NUCLEAR PROFILE OVERRIDE: Target the exact saved state display sections */
+  /* ULTIMATE NUCLEAR OVERRIDE: Target ALL possible preference pill elements */
   [key*="interest-"], [key*="activity-"], [key*="event-"],
   div[className*="inline-flex items-center justify-center h-10 min-w-"],
   div[className*="inline-flex items-center justify-center"][className*="bg-blue-500"],
@@ -76,7 +76,12 @@
   /* Target exact profile preference display sections */
   .space-y-6 div[className*="inline-flex"],
   .space-y-4 div[className*="inline-flex"],
-  .flex.flex-wrap.gap-2 div[className*="inline-flex"] {
+  .flex.flex-wrap.gap-2 div[className*="inline-flex"],
+  /* Target ANY small element that might be rendering preferences */
+  *:not(button):not(input):not(textarea)[className*="px-2"][className*="rounded"],
+  *:not(button):not(input):not(textarea)[className*="px-3"][className*="rounded"],
+  *:not(button):not(input):not(textarea)[className*="text-xs"][className*="rounded"],
+  *:not(button):not(input):not(textarea)[className*="text-sm"][className*="rounded"] {
     height: 2.5rem !important;
     min-width: 8rem !important;
     padding-left: 1rem !important;
@@ -88,6 +93,8 @@
     justify-content: center !important;
     font-weight: 500 !important;
     white-space: nowrap !important;
+    /* VISUAL TEST: If you see this red border, the CSS is working */
+    border: 3px solid red !important;
   }
   
   /* LARGE PILLS - All section-specific pills are now consistently large */
