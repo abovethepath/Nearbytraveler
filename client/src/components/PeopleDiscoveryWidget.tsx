@@ -277,17 +277,19 @@ export function PeopleDiscoveryWidget({
                   const cityName = currentTravel.destinationCity || currentTravel.destination_city || currentTravel.destination?.split(',')[0];
                   console.log('🧭 Using travel destination:', cityName);
                   return (
-                    <p className="text-gray-600 dark:text-gray-400 text-xs truncate">
-                      Traveling in {cityName || 'Unknown destination'}
-                    </p>
+                    <div className="flex items-center gap-1 text-gray-600 dark:text-gray-400 text-xs">
+                      <MapPin className="w-3 h-3 flex-shrink-0" />
+                      <span className="truncate">{cityName || 'Unknown destination'}</span>
+                    </div>
                   );
                 }
                 
                 console.log('🧭 No active travel, using location:', person.location);
                 return (
-                  <p className="text-gray-600 dark:text-gray-400 text-xs truncate">
-                    Currently in {person.location?.split(',')[0] || 'Unknown'}
-                  </p>
+                  <div className="flex items-center gap-1 text-gray-600 dark:text-gray-400 text-xs">
+                    <MapPin className="w-3 h-3 flex-shrink-0" />
+                    <span className="truncate">{person.location?.split(',')[0] || 'Unknown'}</span>
+                  </div>
                 );
               })()}
             </div>

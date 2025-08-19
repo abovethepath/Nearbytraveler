@@ -179,8 +179,8 @@ export function CityMap({ city, state, country }: CityMapProps) {
       name: `@${user.username}`,
       type: 'user' as const,
       description: user.activeTravelDestination 
-        ? `Traveling in ${user.activeTravelDestination}` 
-        : `${user.userType.charAt(0).toUpperCase() + user.userType.slice(1)} in ${user.hometownCity || city}`
+        ? `${user.activeTravelDestination}` 
+        : `${user.hometownCity || city}`
     })) || []),
     ...(mapData?.events?.filter(e => e.latitude && e.longitude).map(event => ({
       id: event.id + 10000, // Offset to avoid ID conflicts

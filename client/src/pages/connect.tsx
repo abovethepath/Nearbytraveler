@@ -404,7 +404,7 @@ export default function ConnectPage() {
                       className="flex items-center gap-2 bg-blue-50 border-blue-200"
                     >
                       <MapPin className="w-4 h-4 text-blue-600" />
-                      ✈️ Currently in {currentLocation.split(',')[0]}
+                      {currentLocation.split(',')[0]}
                     </Button>
                   );
                 }
