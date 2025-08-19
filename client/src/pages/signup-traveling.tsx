@@ -297,36 +297,36 @@ export default function SignupTraveling() {
   const { min: minDate, max: maxDate } = getDateInputConstraints();
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
-      <div className="max-w-2xl mx-auto">
-        <Card className="shadow-2xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
-          <CardHeader className="text-center bg-gray-50 dark:bg-gray-800 rounded-t-lg pb-8">
-            <div className="flex justify-start mb-4">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 overflow-hidden break-words">
+      <div className="max-w-2xl mx-auto px-2 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-6 overflow-hidden break-words">
+        <Card className="shadow-lg sm:shadow-2xl border border-gray-200 sm:border-2 dark:border-gray-700 bg-white dark:bg-gray-900 overflow-hidden break-words">
+          <CardHeader className="text-center bg-gray-50 dark:bg-gray-800 rounded-t-lg pb-4 sm:pb-6 md:pb-8 px-4 sm:px-6 pt-4 sm:pt-6 overflow-hidden break-words">
+            <div className="flex justify-start mb-3 sm:mb-4">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => setLocation('/join')}
-                className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 border-blue-300 hover:border-blue-500 font-medium"
+                className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 border-blue-300 hover:border-blue-500 font-medium text-xs sm:text-sm h-8 sm:h-9"
                 data-testid="button-back"
               >
-                <ArrowLeft className="w-4 h-4 mr-2" />
+                <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                 Back
               </Button>
             </div>
-            <CardTitle className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-3 text-crisp leading-tight">
+            <CardTitle className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2 sm:mb-3 text-crisp leading-tight break-words">
               Complete Your Profile ✈️
             </CardTitle>
-            <CardDescription className="text-base md:text-lg text-gray-600 dark:text-gray-300 leading-relaxed max-w-lg mx-auto text-crisp">
+            <CardDescription className="text-xs sm:text-sm md:text-base lg:text-lg text-gray-600 dark:text-gray-300 leading-relaxed max-w-lg mx-auto text-crisp px-2 break-words">
               Just a few quick details to get you started. You can add more interests and activities and specific events to your profile after joining!
             </CardDescription>
           </CardHeader>
 
-          <CardContent className="p-8">
-            <form onSubmit={handleSubmit} className="space-y-8">
-              {/* Date of Birth */}
-              <div className="space-y-3">
-                <Label htmlFor="dateOfBirth" className="text-base md:text-lg font-semibold text-gray-900 dark:text-white text-crisp">
-                  Date of Birth * <span className="text-sm font-normal text-gray-500 dark:text-gray-400">(Can be hidden on profile)</span>
+          <CardContent className="p-4 sm:p-6 md:p-8 overflow-hidden break-words">
+            <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8 overflow-hidden break-words">
+              {/* Date of Birth - Mobile Responsive */}
+              <div className="space-y-2 sm:space-y-3 overflow-hidden break-words">
+                <Label htmlFor="dateOfBirth" className="text-sm sm:text-base md:text-lg font-semibold text-gray-900 dark:text-white text-crisp break-words">
+                  Date of Birth * <span className="text-xs sm:text-sm font-normal text-gray-500 dark:text-gray-400">(Can be hidden on profile)</span>
                 </Label>
                 <Input
                   id="dateOfBirth"
@@ -335,16 +335,16 @@ export default function SignupTraveling() {
                   onChange={(e) => setFormData(prev => ({ ...prev, dateOfBirth: e.target.value }))}
                   min={minDate}
                   max={maxDate}
-                  className="text-base py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg focus:border-blue-500 dark:focus:border-blue-400 text-crisp font-medium"
+                  className="text-sm sm:text-base py-2 sm:py-3 border border-gray-300 sm:border-2 dark:border-gray-600 rounded-lg focus:border-blue-500 dark:focus:border-blue-400 text-crisp font-medium h-9 sm:h-10 md:h-11"
                   data-testid="input-date-of-birth"
                   required
                 />
               </div>
 
-              {/* Phone Number for Event Notifications */}
-              <div className="space-y-3">
-                <Label htmlFor="phoneNumber" className="text-base md:text-lg font-semibold text-gray-900 dark:text-white text-crisp">
-                  Phone Number <span className="text-sm font-normal text-gray-500 dark:text-gray-400">(Optional - not in beta)</span>
+              {/* Phone Number - Mobile Responsive */}
+              <div className="space-y-2 sm:space-y-3 overflow-hidden break-words">
+                <Label htmlFor="phoneNumber" className="text-sm sm:text-base md:text-lg font-semibold text-gray-900 dark:text-white text-crisp break-words">
+                  Phone Number <span className="text-xs sm:text-sm font-normal text-gray-500 dark:text-gray-400">(Optional - not in beta)</span>
                 </Label>
                 <Input
                   id="phoneNumber"
@@ -352,18 +352,18 @@ export default function SignupTraveling() {
                   value={formData.phoneNumber}
                   onChange={(e) => setFormData(prev => ({ ...prev, phoneNumber: e.target.value }))}
                   placeholder="(555) 123-4567"
-                  className="text-base py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg focus:border-blue-500 dark:focus:border-blue-400"
+                  className="text-sm sm:text-base py-2 sm:py-3 border border-gray-300 sm:border-2 dark:border-gray-600 rounded-lg focus:border-blue-500 dark:focus:border-blue-400 h-9 sm:h-10 md:h-11"
                   data-testid="input-phone-number"
                 />
-                <p className="text-sm text-gray-500 dark:text-gray-400">
+                <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 break-words">
                   Get text notifications when events you RSVP to are starting or have updates
                 </p>
               </div>
 
-              {/* Hometown Location - CRITICAL for all users */}
-              <div className="space-y-4">
-                <Label className="text-base md:text-lg font-semibold text-gray-900 dark:text-white text-crisp">
-                  Where are you from? (Hometown) *
+              {/* Hometown Location - Mobile Responsive */}
+              <div className="space-y-3 sm:space-y-4 overflow-hidden break-words">
+                <Label className="text-sm sm:text-base md:text-lg font-semibold text-gray-900 dark:text-white text-crisp break-words">
+                  Hometown (Where you're FROM) *
                 </Label>
                 <SmartLocationInput
                   onLocationSelect={(location) => {
@@ -375,14 +375,14 @@ export default function SignupTraveling() {
                       hometownCountry: location.country
                     }));
                   }}
-                  placeholder="Enter your hometown (e.g., Denver, CO, USA)"
-                  className="text-base py-3 text-crisp font-medium"
+                  placeholder="Enter your hometown (e.g., New York, NY, USA)"
+                  className="text-sm sm:text-base py-2 sm:py-3 text-crisp font-medium"
                   data-testid="input-hometown-location"
                 />
                 
                 {formData.hometownCity && (
-                  <div className="mt-2 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
-                    <p className="text-sm text-green-800 dark:text-green-200" data-testid="text-selected-hometown">
+                  <div className="mt-2 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800 overflow-hidden break-words">
+                    <p className="text-xs sm:text-sm text-green-800 dark:text-green-200 break-words" data-testid="text-selected-hometown">
                       <strong>Hometown:</strong> {formData.hometownCity}
                       {formData.hometownState && `, ${formData.hometownState}`}
                       {formData.hometownCountry && `, ${formData.hometownCountry}`}
@@ -391,29 +391,32 @@ export default function SignupTraveling() {
                 )}
               </div>
 
-              {/* Travel Destination - CRITICAL for chatrooms and city pages */}
-              <div className="space-y-4">
-                <Label className="text-base md:text-lg font-semibold text-gray-900 dark:text-white text-crisp">
-                  Where are you traveling to? *
+              {/* Travel Destination - Mobile Responsive */}
+              <div className="space-y-3 sm:space-y-4 overflow-hidden break-words">
+                <Label className="text-sm sm:text-base md:text-lg font-semibold text-gray-900 dark:text-white text-crisp break-words">
+                  Current Travel Destination *
                 </Label>
                 <SmartLocationInput
                   onLocationSelect={(location) => {
-                    console.log('📍 Travel destination selected:', location);
+                    console.log('✈️ Travel destination selected:', location);
                     setFormData(prev => ({
                       ...prev,
                       currentCity: location.city,
                       currentState: location.state || '',
-                      currentCountry: location.country
+                      currentCountry: location.country,
+                      travelDestination: location.state 
+                        ? `${location.city}, ${location.state}, ${location.country}`
+                        : `${location.city}, ${location.country}`
                     }));
                   }}
-                  placeholder="Enter destination city (e.g., Los Angeles, CA, USA)"
-                  className="text-base py-3 text-crisp font-medium"
+                  placeholder="Where are you traveling to? (e.g., Paris, France)"
+                  className="text-sm sm:text-base py-2 sm:py-3 text-crisp font-medium"
                   data-testid="input-travel-destination"
                 />
                 
                 {formData.currentCity && (
-                  <div className="mt-2 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-                    <p className="text-sm text-blue-800 dark:text-blue-200" data-testid="text-selected-destination">
+                  <div className="mt-2 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800 overflow-hidden break-words">
+                    <p className="text-xs sm:text-sm text-blue-800 dark:text-blue-200 break-words" data-testid="text-selected-destination">
                       <strong>Traveling to:</strong> {formData.currentCity}
                       {formData.currentState && `, ${formData.currentState}`}
                       {formData.currentCountry && `, ${formData.currentCountry}`}
@@ -422,48 +425,48 @@ export default function SignupTraveling() {
                 )}
               </div>
 
-              {/* Return Date */}
-              <div className="space-y-3">
-                <Label htmlFor="returnDate" className="text-base md:text-lg font-semibold text-gray-900 dark:text-white text-crisp">
-                  Return Date *
+              {/* Return Date - Mobile Responsive */}
+              <div className="space-y-2 sm:space-y-3 overflow-hidden break-words">
+                <Label htmlFor="travelReturnDate" className="text-sm sm:text-base md:text-lg font-semibold text-gray-900 dark:text-white text-crisp break-words">
+                  When are you returning home? *
                 </Label>
                 <Input
-                  id="returnDate"
+                  id="travelReturnDate"
                   type="date"
                   value={formData.travelReturnDate}
                   onChange={(e) => setFormData(prev => ({ ...prev, travelReturnDate: e.target.value }))}
-                  min={new Date().toISOString().split('T')[0]}
-                  className="text-base py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg focus:border-blue-500 dark:focus:border-blue-400 text-crisp font-medium"
+                  min={new Date().toISOString().split('T')[0]} // Can't return before today
+                  className="text-sm sm:text-base py-2 sm:py-3 border border-gray-300 sm:border-2 dark:border-gray-600 rounded-lg focus:border-blue-500 dark:focus:border-blue-400 text-crisp font-medium h-9 sm:h-10 md:h-11"
                   data-testid="input-return-date"
                   required
                 />
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Let others know when you're returning home
+                <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 break-words">
+                  This helps us show you relevant events and connect you with other travelers
                 </p>
               </div>
 
-              {/* Top Choices - Simplified */}
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <Label className="text-base md:text-lg font-semibold text-gray-900 dark:text-white text-crisp">
+              {/* Top Choices - Mobile Responsive with AI-Companion Grid */}
+              <div className="space-y-3 sm:space-y-4 overflow-hidden break-words">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4">
+                  <Label className="text-sm sm:text-base font-semibold text-gray-900 dark:text-white break-words">
                     Top Choices * (Choose at least 3)
                   </Label>
-                  <span className="text-sm text-gray-500 dark:text-gray-400" data-testid="text-selection-count">
+                  <div className="inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0" data-testid="text-selection-count">
                     {formData.interests.length} selected
-                  </span>
+                  </div>
                 </div>
-                <p className="text-sm md:text-base text-gray-600 dark:text-gray-400 text-crisp leading-relaxed">
-                  Please choose 3 from the list below to better match with others. Once inside you can add more city specific events and activities.
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 break-words">
+                  Please choose 3 from the list below to better match with other travelers. Once inside you can add more city specific events and activities.
                 </p>
                 
-                {/* Select/Clear All buttons */}
-                <div className="flex gap-2 mb-4">
+                {/* Select/Clear All buttons - Mobile Responsive */}
+                <div className="flex flex-wrap gap-2 mb-3 sm:mb-4">
                   <Button
                     type="button"
                     variant="outline"
                     size="sm"
                     onClick={() => setFormData(prev => ({ ...prev, interests: [...MOST_POPULAR_INTERESTS] }))}
-                    className="text-xs font-medium"
+                    className="text-xs font-medium h-8"
                     data-testid="button-select-all-interests"
                   >
                     Select All
@@ -473,33 +476,37 @@ export default function SignupTraveling() {
                     variant="outline"
                     size="sm"
                     onClick={() => setFormData(prev => ({ ...prev, interests: [] }))}
-                    className="text-xs font-medium"
+                    className="text-xs font-medium h-8"
                     data-testid="button-clear-all-interests"
                   >
                     Clear All
                   </Button>
                 </div>
                 
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                {/* AI-Companion Responsive Grid */}
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3 overflow-hidden break-words">
                   {MOST_POPULAR_INTERESTS.map((interest) => (
                     <Button
                       key={interest}
                       type="button"
                       variant={formData.interests.includes(interest) ? "default" : "outline"}
                       onClick={() => toggleInterest(interest)}
-                      className="h-auto py-3 px-4 text-sm md:text-base font-medium transition-colors duration-200 text-crisp"
+                      className="h-auto py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm font-medium transition-colors duration-200 break-words overflow-hidden"
                       data-testid={`button-interest-${interest.toLowerCase().replace(/\s+/g, '-')}`}
                     >
-                      {interest}
+                      <span className="break-words overflow-hidden text-center leading-tight">
+                        {interest}
+                      </span>
                     </Button>
                   ))}
                 </div>
               </div>
 
+              {/* Submit Button - Mobile Responsive */}
               <Button
                 type="submit"
-                disabled={isSubmitting || formData.interests.length < 3 || !formData.hometownCity || !formData.currentCity || !formData.travelReturnDate}
-                className="w-full text-lg md:text-xl py-4 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 disabled:bg-gray-400 disabled:cursor-not-allowed font-bold text-white rounded-lg transition-colors duration-200 text-crisp"
+                disabled={isSubmitting || formData.interests.length < 3}
+                className="w-full text-sm sm:text-base md:text-lg py-3 sm:py-4 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 disabled:bg-gray-400 disabled:cursor-not-allowed font-bold text-white rounded-lg transition-colors duration-200 h-12 sm:h-14"
                 data-testid="button-create-account"
               >
                 {isSubmitting ? "Creating Account..." : "Create My Account"}
