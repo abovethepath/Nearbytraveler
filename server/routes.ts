@@ -4009,9 +4009,9 @@ Questions? Just reply to this message. Welcome aboard!
       const { city } = req.query;
 
       let eventsQuery = [];
-      if (process.env.NODE_ENV === 'development') console.log(`📅 EVENTS DEBUG: City parameter received: ${city}, type: ${typeof city}`);
+      if (process.env.NODE_ENV === 'development') console.log(`📅 EVENTS DEBUG: City parameter received: "${city}", type: ${typeof city}`);
       
-      if (city && typeof city === 'string') {
+      if (city && typeof city === 'string' && city.trim() !== '') {
         const cityName = city.toString();
         if (process.env.NODE_ENV === 'development') console.log(`🎪 EVENTS: Getting events for city: ${cityName}`);
         
@@ -4061,7 +4061,8 @@ Questions? Just reply to this message. Welcome aboard!
           searchCities = LA_METRO_CITIES;
           if (process.env.NODE_ENV === 'development') console.log(`🗺️ EVENTS METRO: ${cityName} is genuine LA metro city - searching events in ${searchCities.length} LA metro cities`);
         } else {
-          // For all other cities (Austin, New York, etc.), only show events in that specific city
+          // For all other cities (Austin, Las Vegas, New York, etc.), only show events in that specific city
+          searchCities = [cityName]; // CRITICAL: Ensure we only search the specific city
           if (process.env.NODE_ENV === 'development') console.log(`🎯 EVENTS LOCAL: ${cityName} is not in LA metro - showing only local events for ${cityName}`);
         }
         
@@ -4109,6 +4110,7 @@ Questions? Just reply to this message. Welcome aboard!
         });
         
         if (process.env.NODE_ENV === 'development') console.log(`🎪 EVENTS: Found ${eventsQuery.length} events in next 6 weeks for ${cityName}`);
+        if (process.env.NODE_ENV === 'development') console.log(`🎪 EVENTS: Event details:`, eventsQuery.map(e => `${e.title} in ${e.city}`));
       } else {
         // Return events in next 6 weeks if no city specified - EARLIEST FIRST
         // ENHANCED: Limit to next 6 weeks to include all upcoming events
