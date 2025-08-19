@@ -4146,7 +4146,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                         setEditFormData({ ...editFormData, interests: newInterests })
                                       );
                                     }}
-                                    className={`pill-interests transition-all ${
+                                    className={`inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap border-0 appearance-none select-none gap-1.5 transition-all ${
                                       isSelected
                                         ? 'bg-green-600 text-white font-bold transform scale-105'
                                         : 'bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-800 dark:text-blue-200 dark:hover:bg-blue-700'
@@ -4177,7 +4177,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                         setEditFormData({ ...editFormData, interests: newInterests })
                                       );
                                     }}
-                                    className={`pill-interests transition-all ${
+                                    className={`inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap border-0 appearance-none select-none gap-1.5 transition-all ${
                                       isSelected
                                         ? 'bg-green-600 text-white font-bold transform scale-105'
                                         : 'bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-800 dark:text-blue-200 dark:hover:bg-blue-700'
@@ -4215,7 +4215,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                       setEditFormData({ ...editFormData, activities: newActivities })
                                     );
                                   }}
-                                  className={`pill-activities transition-all ${
+                                  className={`inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap border-0 appearance-none select-none gap-1.5 transition-all ${
                                     isSelected
                                       ? 'bg-green-600 text-white font-bold transform scale-105'
                                       : 'bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-800 dark:text-green-200 dark:hover:bg-green-700'
@@ -4248,7 +4248,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                       setEditFormData({ ...editFormData, events: newEvents })
                                     );
                                   }}
-                                  className={`pill-events transition-all ${
+                                  className={`inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap border-0 appearance-none select-none gap-1.5 transition-all ${
                                     isSelected
                                       ? 'bg-green-600 text-white font-bold transform scale-105'
                                       : 'bg-orange-100 text-orange-800 hover:bg-orange-200 dark:bg-orange-800 dark:text-orange-200 dark:hover:bg-orange-700'
@@ -4355,7 +4355,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                     setTempInterests([...tempInterests, interest]);
                                   }
                                 }}
-                                className={`pill transition-all ${
+                                className={`inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap border-0 appearance-none select-none gap-1.5 transition-all ${
                                   isSelected
                                     ? 'bg-green-600 text-white font-bold transform scale-105'
                                     : 'bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-800 dark:text-blue-200 dark:hover:bg-blue-700'
@@ -4388,7 +4388,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                     setTempInterests([...tempInterests, interest]);
                                   }
                                 }}
-                                className={`pill transition-all ${
+                                className={`inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap border-0 appearance-none select-none gap-1.5 transition-all ${
                                   isSelected
                                     ? 'bg-green-600 text-white font-bold transform scale-105'
                                     : 'bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-800 dark:text-green-200 dark:hover:bg-green-700'
@@ -4542,7 +4542,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                     setEditFormData({ ...editFormData, activities: newActivities })
                                   );
                                 }}
-                                className={`pill pill-activities transition-all ${
+                                className={`pill inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap border-0 appearance-none select-none gap-1.5 transition-all ${
                                   isSelected
                                     ? 'bg-green-600 text-white font-bold transform scale-105'
                                     : 'bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-800 dark:text-blue-200 dark:hover:bg-blue-700'
@@ -4687,7 +4687,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                     setTempEvents([...tempEvents, event]);
                                   }
                                 }}
-                                className={`pill pill-events transition-all ${
+                                className={`pill inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap border-0 appearance-none select-none gap-1.5 transition-all ${
                                   isSelected
                                     ? 'bg-green-600 text-white font-bold transform scale-105'
                                     : 'bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-800 dark:text-blue-200 dark:hover:bg-blue-700'
@@ -5099,7 +5099,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                     : [...editFormData.interests, interest];
                                   setEditFormData({ ...editFormData, interests: newInterests });
                                 }}
-                                className={`pill-interests transition-all ${
+                                className={`inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap border-0 appearance-none select-none gap-1.5 transition-all ${
                                   isSelected
                                     ? 'bg-green-600 text-white font-bold transform scale-105'
                                     : 'bg-orange-100 text-orange-800 hover:bg-orange-200 dark:bg-orange-800 dark:text-orange-200 dark:hover:bg-orange-700'
@@ -5198,7 +5198,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                     : [...editFormData.activities, activity];
                                   setEditFormData({ ...editFormData, activities: newActivities });
                                 }}
-                                className={`pill-activities transition-all ${
+                                className={`inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap border-0 appearance-none select-none gap-1.5 transition-all ${
                                   isSelected
                                     ? 'bg-green-600 text-white font-bold transform scale-105'
                                     : 'bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-800 dark:text-green-200 dark:hover:bg-green-700'
@@ -5297,7 +5297,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                     : [...editFormData.events, event];
                                   setEditFormData({ ...editFormData, events: newEvents });
                                 }}
-                                className={`pill transition-all ${
+                                className={`inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap border-0 appearance-none select-none gap-1.5 transition-all ${
                                   isSelected
                                     ? 'bg-green-600 text-white font-bold transform scale-105'
                                     : 'bg-purple-100 text-purple-800 hover:bg-purple-200 dark:bg-purple-800 dark:text-purple-200 dark:hover:bg-purple-700'
