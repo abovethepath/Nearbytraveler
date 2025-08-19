@@ -4481,14 +4481,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               return (
                                 <>
                                   {topInterests.map((interest, index) => (
-                                    <Badge key={`interest-${index}`} className="pill-interests">
+                                    <div key={`interest-${index}`} className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
                                       {interest}
-                                    </Badge>
+                                    </div>
                                   ))}
                                   {remaining > 0 && (
-                                    <Badge className="pill-interests">
+                                    <div className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
                                       +{remaining} more
-                                    </Badge>
+                                    </div>
                                   )}
                                 </>
                               );
@@ -4628,14 +4628,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               return (
                                 <>
                                   {topActivities.map((activity, index) => (
-                                    <Badge key={`activity-${index}`} className="pill-activities">
+                                    <div key={`activity-${index}`} className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-green-500 text-white border-0 appearance-none select-none gap-1.5">
                                       {activity}
-                                    </Badge>
+                                    </div>
                                   ))}
                                   {remaining > 0 && (
-                                    <Badge className="pill-activities">
+                                    <div className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-green-500 text-white border-0 appearance-none select-none gap-1.5">
                                       +{remaining} more
-                                    </Badge>
+                                    </div>
                                   )}
                                 </>
                               );
@@ -4776,14 +4776,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               return (
                                 <>
                                   {topEvents.map((event, index) => (
-                                    <Badge key={`event-${index}`} className="pill-events">
+                                    <div key={`event-${index}`} className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-purple-500 text-white border-0 appearance-none select-none gap-1.5">
                                       {event}
-                                    </Badge>
+                                    </div>
                                   ))}
                                   {remaining > 0 && (
-                                    <Badge className="pill-events">
+                                    <div className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-purple-500 text-white border-0 appearance-none select-none gap-1.5">
                                       +{remaining} more
-                                    </Badge>
+                                    </div>
                                   )}
                                 </>
                               );
