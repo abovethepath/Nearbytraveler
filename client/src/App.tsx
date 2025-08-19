@@ -97,6 +97,8 @@ import WelcomeBusiness from "@/pages/welcome-business";
 import Privacy from "@/pages/privacy";
 import Terms from "@/pages/terms";
 import Cookies from "@/pages/cookies";
+import ProfilePageResponsive from "@/pages/ProfilePageResponsive";
+import EventsListResponsive from "@/pages/EventsListResponsive";
 import About from "@/pages/about";
 import GettingStarted from "@/pages/getting-started";
 
@@ -549,6 +551,12 @@ function Router() {
       }
       if (location === '/cookies') {
         return <Cookies />;
+      }
+      if (location === '/profile-responsive') {
+        return <ProfilePageResponsive />;
+      }
+      if (location === '/events-responsive') {
+        return <EventsListResponsive />;
       }
       if (location === '/about') {
         return <About />;

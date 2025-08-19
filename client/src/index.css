@@ -1,14 +1,45 @@
 /* Import modern mobile-optimized font */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
+/* --- COMPREHENSIVE MOBILE SANITY FIXES --- */
+:root { color-scheme: light; }
+
+/* iOS 100vh fix */
+.min-screen { min-height: 100dvh; }
+
+/* Prevent random horizontal scroll on small screens */
+html, body, #root { width: 100%; overflow-x: hidden; }
+
+/* Images and media scale down nicely */
+img, video, canvas, svg { max-width: 100%; height: auto; }
+
+/* Tailwind + flex children can overflow; this prevents text pushing layout */
+* { min-width: 0; }
+
+/* iOS Safari tap highlight */
+* { -webkit-tap-highlight-color: rgba(0,0,0,0.1); }
+
+/* Prevent zoom-on-focus on iOS (keep at least 16px font size on inputs) */
+input, select, textarea, button { font-size: 16px; }
+
+/* Reusable container */
+.container-default {
+  @apply max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer components {
   /* Updated Pill Classes - Cache Buster v12.0 VISUAL TEST OVERRIDE */
-  /* Base pill class - now LARGE like section-specific pills */
+  /* Enhanced pill class with mobile fixes */
   .pill {
+    @apply !inline-flex !items-center !justify-center !h-8 !rounded-full !px-3 !text-sm !font-medium !whitespace-nowrap !leading-none !bg-blue-500 !text-white !border-0 [&>svg]:!h-4 [&>svg]:!w-4 !important;
+  }
+  
+  /* Large pill variant */
+  .pill-large {
     @apply !inline-flex !items-center !justify-center !h-10 !min-w-[8rem] !rounded-full !px-4 !text-base !font-medium !leading-none !whitespace-nowrap !bg-blue-500 !text-white !border-0 !appearance-none !select-none [&>svg]:!h-5 [&>svg]:!w-5 gap-1.5 !important;
   }
 
