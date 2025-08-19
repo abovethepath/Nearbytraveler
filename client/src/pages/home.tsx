@@ -2160,38 +2160,27 @@ export default function Home() {
               </div>
             ) : (
               <div>
-                {/* Mobile-first avatar grid (phones) */}
+                {/* Mobile-first avatar grid (phones) - Fixed to show usernames and travel status */}
                 <div className="sm:hidden">
-                  <div className="grid grid-cols-2 xs:grid-cols-3 gap-3">
-                    {getSortedUsers(filteredUsers)
-                      .slice(0, displayLimit)
-                      .map((u) => (
-                        <button
-                          key={u.id}
-                          onClick={() => setLocation(`/profile/${u.username}`)}
-                          className="group text-left"
-                        >
-                          <div className="relative w-full aspect-[4/5] rounded-2xl overflow-hidden bg-gray-100">
-                            <img
-                              src={u.profileImage || "/attached_assets/placeholder_user.jpg"}
-                              alt={u.name || u.username}
-                              className="h-full w-full object-cover"
-                              loading="lazy"
-                            />
-                          </div>
-                          <div className="mt-2">
-                            <div className="text-sm font-semibold truncate">
-                              {u.name || u.username}
-                            </div>
-                            <div className="text-xs text-gray-500 truncate">
-                              {u.hometownCity && u.hometownCountry
-                                ? `${u.hometownCity}, ${u.hometownCountry.replace("United States","USA")}`
-                                : "New member"}
-                            </div>
-                          </div>
-                        </button>
-                      ))}
-                  </div>
+                  <PeopleDiscoveryWidget 
+                    people={getSortedUsers(filteredUsers).slice(0, displayLimit).map((user: any) => ({
+                      id: user.id,
+                      username: user.username,
+                      name: user.name || user.username,
+                      profileImage: user.profileImage,
+                      location: user.hometownCity && user.hometownCountry 
+                        ? `${user.hometownCity}, ${user.hometownCountry.replace('United States', 'USA')}`
+                        : user.location || "Location not set",
+                      distance: user.hometownCity && user.hometownState 
+                        ? `${user.hometownCity}, ${user.hometownState}`
+                        : user.location || "New member",
+                      commonInterests: [],
+                      userType: user.userType as "traveler" | "local" | "business",
+                    }))}
+                    title="Nearby Travelers"
+                    showSeeAll={false}
+                    currentUserId={user?.id}
+                  />
                 </div>
 
                 {/* Tablet+ keeps existing widget */}
@@ -2213,6 +2202,7 @@ export default function Home() {
                     }))}
                     title="Nearby Travelers"
                     showSeeAll={false}
+                    currentUserId={user?.id}
                   />
                 </div>
 
