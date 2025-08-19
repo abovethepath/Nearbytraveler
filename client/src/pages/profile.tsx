@@ -6359,7 +6359,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     {user.languagesSpoken && user.languagesSpoken.length > 0 ? (
                       <div className="flex flex-wrap gap-2">
                         {user.languagesSpoken.map((language: string) => (
-                          <Badge key={language} className="bg-blue-600 text-white border-0 px-3 py-1.5 text-sm font-medium">
+                          <Badge key={language} className="pill-languages">
                             {language}
                           </Badge>
                         ))}
