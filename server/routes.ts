@@ -3439,6 +3439,15 @@ Questions? Just reply to this message. Welcome aboard!
       if (reviewerId === revieweeId) {
         return res.status(400).json({ message: "Cannot create reference for yourself" });
       }
+
+      // Check if user already has a reference for this person
+      const existingReference = await storage.findUserReference(parseInt(reviewerId), parseInt(revieweeId));
+      if (existingReference) {
+        return res.status(400).json({ 
+          message: "You have already left a reference for this person. Use the edit feature to update it.",
+          existingReferenceId: existingReference.id
+        });
+      }
       
       const referenceData = {
         reviewerId,
@@ -3499,6 +3508,28 @@ Questions? Just reply to this message. Welcome aboard!
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error deleting user reference:", error);
       return res.status(500).json({ message: "Failed to delete reference" });
+    }
+  });
+
+  // Check if user has already left a reference for someone
+  app.get("/api/user-references/check/:reviewerId/:revieweeId", async (req, res) => {
+    try {
+      const reviewerId = parseInt(req.params.reviewerId || '0');
+      const revieweeId = parseInt(req.params.revieweeId || '0');
+      
+      if (isNaN(reviewerId) || isNaN(revieweeId)) {
+        return res.status(400).json({ message: "Invalid user IDs" });
+      }
+      
+      const existingReference = await storage.findUserReference(reviewerId, revieweeId);
+      
+      return res.json({
+        hasReference: !!existingReference,
+        reference: existingReference || null
+      });
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error checking user reference:", error);
+      return res.status(500).json({ message: "Failed to check reference" });
     }
   });
 

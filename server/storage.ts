@@ -138,6 +138,7 @@ export interface IStorage {
   createUserReference(referenceData: any): Promise<any>;
   getUserReferences(userId: number): Promise<any>;
   getUserReferencesGiven(): Promise<any>;
+  findUserReference(reviewerId: number, revieweeId: number): Promise<any>;
   updateUserReference(referenceId: number, updates: any): Promise<any>;
   deleteUserReference(): Promise<any>;
   createReferral(): Promise<any>;
@@ -2741,6 +2742,24 @@ export class DatabaseStorage implements IStorage {
     } catch (error) {
       console.error('DatabaseStorage.getTravelPlansByUserId - Error getting travel plans:', error);
       return [];
+    }
+  }
+
+  async findUserReference(reviewerId: number, revieweeId: number): Promise<any> {
+    try {
+      const reference = await db
+        .select()
+        .from(userReferences)
+        .where(and(
+          eq(userReferences.reviewerId, reviewerId),
+          eq(userReferences.revieweeId, revieweeId)
+        ))
+        .limit(1);
+
+      return reference.length > 0 ? reference[0] : null;
+    } catch (error) {
+      console.error('Error finding user reference:', error);
+      return null;
     }
   }
 
