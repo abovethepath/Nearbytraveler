@@ -176,8 +176,8 @@ export default function Deals() {
     // Apply location filtering WITH LA METRO CONSOLIDATION
     if (isLAMetroCity(activeCity)) {
       console.log(`🌍 DEALS METRO CONSOLIDATION: ${activeCity} → showing all LA metro deals`);
-      // Show all deals marked as LA Metro by the API
-      return allDeals.filter(deal => deal.isLAMetro === true);
+      // Show all deals in LA metro area cities
+      return allDeals.filter(deal => isLAMetroCity(deal.city));
     }
     
     // For non-LA cities, filter by city name

@@ -203,24 +203,24 @@ export default function SignupBusiness() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto">
-        <Card className="border border-gray-200 dark:border-gray-700 shadow-lg bg-white dark:bg-gray-800">
-          <CardHeader className="text-center">
-            <Building className="w-12 h-12 mx-auto text-blue-600 mb-4" />
-            <CardTitle className="text-3xl">Register Your Business</CardTitle>
-            <CardDescription className="text-lg">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 overflow-hidden break-words">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6 overflow-hidden break-words">
+        <Card className="border border-gray-200 dark:border-gray-700 shadow-lg bg-white dark:bg-gray-800 overflow-hidden break-words">
+          <CardHeader className="text-center px-4 sm:px-6 py-4 sm:py-6 overflow-hidden break-words">
+            <Building className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 mx-auto text-blue-600 mb-3 sm:mb-4" />
+            <CardTitle className="text-xl sm:text-2xl md:text-3xl break-words">Register Your Business</CardTitle>
+            <CardDescription className="text-sm sm:text-base md:text-lg px-2 break-words">
               Quick signup - Complete your detailed business profile after registration
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            {/* Back Button */}
-            <div className="mb-6">
+          <CardContent className="px-4 sm:px-6 pb-6 overflow-hidden break-words">
+            {/* Back Button - Mobile Responsive */}
+            <div className="mb-4 sm:mb-6">
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => setLocation('/join')}
-                className="flex items-center gap-2 px-4 py-2 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800"
+                className="flex items-center gap-2 px-3 sm:px-4 py-2 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 text-sm sm:text-base h-9 sm:h-10"
                 data-testid="button-back-top"
               >
                 ← Back to Join
@@ -228,32 +228,32 @@ export default function SignupBusiness() {
             </div>
             
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 sm:space-y-6 md:space-y-8 overflow-hidden break-words">
                 
                 {/* Account Information Section - Pre-filled from join page */}
                 {accountData && (
-                  <div className="space-y-4 bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
-                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                      <User className="w-5 h-5" />
+                  <div className="space-y-3 sm:space-y-4 bg-green-50 dark:bg-green-900/20 p-3 sm:p-4 rounded-lg overflow-hidden break-words">
+                    <h3 className="text-base sm:text-lg md:text-xl font-semibold text-gray-900 dark:text-white flex items-center gap-2 break-words">
+                      <User className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
                       Account Information ✓
                     </h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 break-words">
                       Account details from step 1 (automatically filled)
                     </p>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 overflow-hidden break-words">
                       <FormField
                         control={form.control}
                         name="businessName"
                         render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Business Name</FormLabel>
+                          <FormItem className="overflow-hidden break-words">
+                            <FormLabel className="text-xs sm:text-sm break-words">Business Name</FormLabel>
                             <FormControl>
-                              <Input placeholder="Your Business Name" {...field} disabled className="bg-gray-100 dark:bg-gray-800" />
+                              <Input placeholder="Your Business Name" {...field} disabled className="bg-gray-100 dark:bg-gray-800 text-xs sm:text-sm h-9 sm:h-10" />
                             </FormControl>
-                            <FormDescription>
+                            <FormDescription className="text-xs break-words">
                               From step 1 registration
                             </FormDescription>
-                            <FormMessage />
+                            <FormMessage className="text-xs break-words" />
                           </FormItem>
                         )}
                       />
@@ -261,12 +261,12 @@ export default function SignupBusiness() {
                         control={form.control}
                         name="username"
                         render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Username</FormLabel>
+                          <FormItem className="overflow-hidden break-words">
+                            <FormLabel className="text-xs sm:text-sm break-words">Username</FormLabel>
                             <FormControl>
-                              <Input placeholder="businessusername" {...field} disabled className="bg-gray-100 dark:bg-gray-800" />
+                              <Input placeholder="businessusername" {...field} disabled className="bg-gray-100 dark:bg-gray-800 text-xs sm:text-sm h-9 sm:h-10" />
                             </FormControl>
-                            <FormMessage />
+                            <FormMessage className="text-xs break-words" />
                           </FormItem>
                         )}
                       />
@@ -274,28 +274,15 @@ export default function SignupBusiness() {
                         control={form.control}
                         name="email"
                         render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Account Email</FormLabel>
+                          <FormItem className="sm:col-span-2 overflow-hidden break-words">
+                            <FormLabel className="text-xs sm:text-sm break-words">Account Email</FormLabel>
                             <FormControl>
-                              <Input type="email" placeholder="business@email.com" {...field} disabled className="bg-gray-100 dark:bg-gray-800" />
+                              <Input type="email" placeholder="business@email.com" {...field} disabled className="bg-gray-100 dark:bg-gray-800 text-xs sm:text-sm h-9 sm:h-10" />
                             </FormControl>
-                            <FormDescription>
+                            <FormDescription className="text-xs break-words">
                               Email for account login and business contact
                             </FormDescription>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="password"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Password</FormLabel>
-                            <FormControl>
-                              <Input type="password" value="••••••••" disabled className="bg-gray-100 dark:bg-gray-800" />
-                            </FormControl>
-                            <FormMessage />
+                            <FormMessage className="text-xs break-words" />
                           </FormItem>
                         )}
                       />
@@ -303,376 +290,237 @@ export default function SignupBusiness() {
                   </div>
                 )}
 
-                {/* Essential Business Information Section */}
-                <div className="space-y-4">
-                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                    <Building className="w-5 h-5" />
+                {/* Essential Business Information Section - Mobile Responsive */}
+                <div className="space-y-3 sm:space-y-4 overflow-hidden break-words">
+                  <h3 className="text-base sm:text-lg md:text-xl font-semibold text-gray-900 dark:text-white flex items-center gap-2 break-words">
+                    <Building className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
                     Essential Business Information
                   </h3>
-                  <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-700">
-                    <p className="text-sm text-blue-800 dark:text-blue-200">
-                      We only need basic information to get started. You can complete your detailed business profile (description, services, diversity categories, etc.) after registration.
-                    </p>
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 overflow-hidden break-words">
                     <FormField
                       control={form.control}
                       name="businessType"
                       render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Business Type *</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormItem className="overflow-hidden break-words">
+                          <FormLabel className="text-xs sm:text-sm break-words">Business Type *</FormLabel>
+                          <Select onValueChange={field.onChange} value={field.value}>
                             <FormControl>
-                              <SelectTrigger>
+                              <SelectTrigger className="text-xs sm:text-sm h-9 sm:h-10">
                                 <SelectValue placeholder="Select business type" />
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
                               {businessTypes.map((type) => (
-                                <SelectItem key={type} value={type}>
-                                  {type}
-                                </SelectItem>
+                                <SelectItem key={type} value={type} className="text-xs sm:text-sm">{type}</SelectItem>
                               ))}
                             </SelectContent>
                           </Select>
-                          <FormMessage />
+                          <FormMessage className="text-xs break-words" />
                         </FormItem>
                       )}
                     />
-                    
                     <FormField
                       control={form.control}
                       name="businessPhone"
                       render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Business Phone Number *</FormLabel>
+                        <FormItem className="overflow-hidden break-words">
+                          <FormLabel className="text-xs sm:text-sm break-words">Business Phone *</FormLabel>
                           <FormControl>
-                            <Input placeholder="+1 (555) 123-4567" {...field} />
+                            <Input placeholder="+1 (555) 123-4567" {...field} className="text-xs sm:text-sm h-9 sm:h-10" />
                           </FormControl>
-                          <FormDescription>
-                            Public phone number for customer inquiries
-                          </FormDescription>
-                          <FormMessage />
+                          <FormMessage className="text-xs break-words" />
                         </FormItem>
                       )}
                     />
                   </div>
-                  
-                  {/* Custom Business Type Field */}
+
+                  {/* Custom Business Type field - Mobile Responsive */}
                   {form.watch("businessType") === "Custom (specify below)" && (
                     <FormField
                       control={form.control}
                       name="customBusinessType"
                       render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Custom Business Type *</FormLabel>
+                        <FormItem className="overflow-hidden break-words">
+                          <FormLabel className="text-xs sm:text-sm break-words">Custom Business Type *</FormLabel>
                           <FormControl>
-                            <Input placeholder="Enter your business type" {...field} />
+                            <Input placeholder="Describe your business type" {...field} className="text-xs sm:text-sm h-9 sm:h-10" />
                           </FormControl>
-                          <FormMessage />
+                          <FormDescription className="text-xs break-words">
+                            Please specify your business type
+                          </FormDescription>
+                          <FormMessage className="text-xs break-words" />
                         </FormItem>
                       )}
                     />
                   )}
-                  
-                  <FormField
-                    control={form.control}
-                    name="businessDescription"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Business Description *</FormLabel>
-                        <FormControl>
-                          <Textarea 
-                            placeholder="Tell travelers about your business, what makes you special, and what experiences you offer..."
-                            {...field} 
-                            className="min-h-[100px]"
-                          />
-                        </FormControl>
-                        <FormDescription>
-                          Describe your business to attract travelers and locals
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
 
                   <FormField
                     control={form.control}
                     name="businessWebsite"
                     render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Website (Optional)</FormLabel>
+                      <FormItem className="overflow-hidden break-words">
+                        <FormLabel className="text-xs sm:text-sm flex items-center gap-2 break-words">
+                          <Globe className="w-3 h-3 sm:w-4 sm:h-4" />
+                          Business Website (Optional)
+                        </FormLabel>
                         <FormControl>
-                          <Input placeholder="https://yourbusiness.com" {...field} />
+                          <Input placeholder="www.yourbusiness.com" {...field} className="text-xs sm:text-sm h-9 sm:h-10" />
                         </FormControl>
-                        <FormMessage />
+                        <FormDescription className="text-xs break-words">
+                          Your business website URL (optional)
+                        </FormDescription>
+                        <FormMessage className="text-xs break-words" />
                       </FormItem>
                     )}
                   />
                 </div>
 
-                {/* Basic Location Section */}
-                <div className="space-y-4">
-                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                    <MapPin className="w-5 h-5" />
+                {/* Location Section - Mobile Responsive */}
+                <div className="space-y-3 sm:space-y-4 overflow-hidden break-words">
+                  <h3 className="text-base sm:text-lg md:text-xl font-semibold text-gray-900 dark:text-white flex items-center gap-2 break-words">
+                    <MapPin className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
                     Business Location
                   </h3>
-                  
-                  <div>
-                    <FormLabel className="text-gray-900 dark:text-white">City, State/Province, Country *</FormLabel>
-                    <SmartLocationInput
-                      city={form.watch("city")}
-                      state={form.watch("state")}
-                      country={form.watch("country")}
-                      onLocationChange={(location) => {
-                        form.setValue("city", location.city);
-                        form.setValue("state", location.state);
-                        form.setValue("country", location.country);
-                      }}
-                      required={true}
-                      placeholder={{
-                        country: "Select country",
-                        state: "Select state/region",
-                        city: "Select city"
-                      }}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 overflow-hidden break-words">
+                    <FormField
+                      control={form.control}
+                      name="city"
+                      render={({ field }) => (
+                        <FormItem className="overflow-hidden break-words">
+                          <FormLabel className="text-xs sm:text-sm break-words">City *</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Los Angeles" {...field} className="text-xs sm:text-sm h-9 sm:h-10" />
+                          </FormControl>
+                          <FormDescription className="text-xs break-words">
+                            Required for local discovery
+                          </FormDescription>
+                          <FormMessage className="text-xs break-words" />
+                        </FormItem>
+                      )}
                     />
-                    {(form.formState.errors.city || form.formState.errors.country || form.formState.errors.state) && (
-                      <p className="text-sm font-medium text-destructive mt-1">
-                        {form.formState.errors.city?.message || form.formState.errors.country?.message || form.formState.errors.state?.message}
-                      </p>
-                    )}
+                    <FormField
+                      control={form.control}
+                      name="state"
+                      render={({ field }) => (
+                        <FormItem className="overflow-hidden break-words">
+                          <FormLabel className="text-xs sm:text-sm break-words">State/Province *</FormLabel>
+                          <FormControl>
+                            <Input placeholder="California" {...field} className="text-xs sm:text-sm h-9 sm:h-10" />
+                          </FormControl>
+                          <FormMessage className="text-xs break-words" />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="country"
+                      render={({ field }) => (
+                        <FormItem className="overflow-hidden break-words">
+                          <FormLabel className="text-xs sm:text-sm break-words">Country *</FormLabel>
+                          <FormControl>
+                            <Input placeholder="United States" {...field} className="text-xs sm:text-sm h-9 sm:h-10" />
+                          </FormControl>
+                          <FormMessage className="text-xs break-words" />
+                        </FormItem>
+                      )}
+                    />
                   </div>
 
-                  {/* Optional Location Services */}
-                  <div className="space-y-4 bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-700">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h4 className="text-sm font-medium text-gray-900 dark:text-white">Location Services (Optional)</h4>
-                        <p className="text-xs text-gray-600 dark:text-gray-400">Enable proximity notifications for nearby travelers</p>
-                      </div>
+                  {/* GPS Location Capture - Mobile Responsive */}
+                  <div className="bg-blue-50 dark:bg-blue-900/20 p-3 sm:p-4 rounded-lg border border-blue-200 dark:border-blue-800 overflow-hidden break-words">
+                    <h4 className="text-sm sm:text-base font-medium text-gray-900 dark:text-white mb-2 flex items-center gap-2 break-words">
+                      <Navigation className="w-4 h-4 text-blue-600 flex-shrink-0" />
+                      Enhanced Location Services (Optional)
+                    </h4>
+                    <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 mb-3 break-words">
+                      Capture your exact business location for better customer discovery and proximity features.
+                    </p>
+                    
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4">
                       <Button
                         type="button"
+                        variant="outline"
                         onClick={getBusinessLocation}
-                        disabled={isGettingLocation}
-                        size="sm"
-                        variant={locationCaptured ? "default" : "outline"}
-                        className={locationCaptured ? "bg-green-600 hover:bg-green-700" : ""}
-                        >
-                          {isGettingLocation ? (
-                            <>
-                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                              Getting Location...
-                            </>
-                          ) : (
-                            <>
-                              <Navigation className="w-4 h-4 mr-2" />
-                              Capture Business Location
-                            </>
-                          )}
-                        </Button>
-                      </div>
-                    ) : (
-                      <div className="text-center p-6 bg-green-50 dark:bg-green-900/20 border-2 border-green-300 dark:border-green-600 rounded-lg">
-                        <div className="text-green-600 dark:text-green-400 mb-4">
-                          ✅ Location Captured Successfully!
+                        disabled={isGettingLocation || locationCaptured}
+                        className={`flex items-center gap-2 text-xs sm:text-sm h-9 sm:h-10 ${locationCaptured ? 'bg-green-50 border-green-300 text-green-700 dark:bg-green-900/20 dark:border-green-700 dark:text-green-300' : ''}`}
+                      >
+                        <Navigation className="w-3 h-3 sm:w-4 sm:h-4" />
+                        {isGettingLocation ? 'Getting Location...' : locationCaptured ? 'Location Captured ✓' : 'Capture Business Location'}
+                      </Button>
+                      
+                      {locationCaptured && (
+                        <div className="inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none bg-green-500 text-white border-0">
+                          GPS coordinates saved
                         </div>
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                          <strong>Coordinates:</strong> {form.watch('currentLatitude')?.toFixed(6)}, {form.watch('currentLongitude')?.toFixed(6)}
-                        </p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">
-                          Travelers within 7 miles will now be able to receive notifications about your business.
-                        </p>
-                        <Button
-                          type="button"
-                          onClick={getBusinessLocation}
-                          disabled={isGettingLocation}
-                          variant="outline"
-                          size="sm"
-                          className="mt-3 border-orange-500 text-orange-600 hover:bg-orange-50"
-                        >
-                          <Navigation className="w-4 h-4 mr-1" />
-                          Update Location
-                        </Button>
-                      </div>
-                    )}
-
-                    {/* Location Sharing Toggle */}
+                      )}
+                    </div>
+                    
                     <FormField
                       control={form.control}
                       name="locationSharingEnabled"
                       render={({ field }) => (
-                        <FormItem className="flex flex-row items-start space-x-3 space-y-0 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                        <FormItem className="flex flex-row items-start space-x-2 sm:space-x-3 space-y-0 mt-3 sm:mt-4 overflow-hidden break-words">
                           <FormControl>
                             <Checkbox
                               checked={field.value}
                               onCheckedChange={field.onChange}
+                              className="mt-0.5"
                             />
                           </FormControl>
                           <div className="space-y-1 leading-none">
-                            <FormLabel className="font-medium text-gray-900 dark:text-white">
-                              Enable Proximity Notifications to Travelers
+                            <FormLabel className="text-xs sm:text-sm break-words">
+                              Enable location-based customer discovery
                             </FormLabel>
-                            <FormDescription className="text-sm text-gray-800 dark:text-gray-200 font-semibold">
-                              Allow nearby travelers (within 7 miles) to receive notifications about your business based on their interests and your offerings. This helps drive foot traffic and customer discovery.
+                            <FormDescription className="text-xs break-words">
+                              Allow customers to find your business through location-based searches and proximity features.
                             </FormDescription>
                           </div>
                         </FormItem>
                       )}
                     />
                   </div>
-
-
                 </div>
 
-                {/* Business Interests & Activities Section */}
-                <div className="space-y-6 bg-blue-50 dark:bg-blue-900/20 p-6 rounded-lg">
-                  <div>
-                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center gap-2 mb-2">
-                      <Heart className="w-5 h-5 text-red-500" />
-                      Business Interests & Target Audience
-                    </h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                      Select interests that match your business offerings. This helps us connect you with travelers and locals who are interested in what you provide. (No minimum required for businesses)
-                    </p>
-                  </div>
-
-                  {/* Interests Selection */}
-                  <div className="space-y-4">
-                    <h4 className="text-lg font-medium text-gray-900 dark:text-white">Business-Related Interests</h4>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
-                      {getAllInterests().map((interest) => (
-                        <button
-                          key={interest}
-                          type="button"
-                          onClick={() => {
-                            const currentInterests = form.getValues("interests") || [];
-                            if (currentInterests.includes(interest)) {
-                              form.setValue("interests", currentInterests.filter(i => i !== interest));
-                            } else {
-                              form.setValue("interests", [...currentInterests, interest]);
-                            }
-                          }}
-                          className={`px-3 py-2 rounded-md text-sm font-medium transition-all border ${
-                            (form.watch("interests") || []).includes(interest)
-                              ? 'bg-blue-600 text-white border-blue-600 font-bold transform scale-105'
-                              : 'bg-white text-gray-700 border-gray-200 hover:bg-blue-50 hover:border-blue-300'
-                          }`}
-                        >
-                          {interest}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Activities Selection */}
-                  <div className="space-y-4">
-                    <h4 className="text-lg font-medium text-gray-900 dark:text-white flex items-center gap-2">
-                      <Zap className="w-4 h-4 text-yellow-500" />
-                      Business Activities & Services
-                    </h4>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
-                      {getAllActivities().map((activity) => (
-                        <button
-                          key={activity}
-                          type="button"
-                          onClick={() => {
-                            const currentActivities = form.getValues("activities") || [];
-                            if (currentActivities.includes(activity)) {
-                              form.setValue("activities", currentActivities.filter(a => a !== activity));
-                            } else {
-                              form.setValue("activities", [...currentActivities, activity]);
-                            }
-                          }}
-                          className={`px-3 py-2 rounded-md text-sm font-medium transition-all border ${
-                            (form.watch("activities") || []).includes(activity)
-                              ? 'bg-green-600 text-white border-green-600 font-bold transform scale-105'
-                              : 'bg-white text-gray-700 border-gray-200 hover:bg-green-50 hover:border-green-300'
-                          }`}
-                        >
-                          {activity}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Custom Interests & Activities */}
-                  <div className="space-y-4 border-t pt-6">
-                    <h4 className="text-lg font-medium text-gray-900 dark:text-white">Custom Keywords</h4>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      Add custom interests and activities specific to your business. These help users find you through unique searches.
-                    </p>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <FormField
-                        control={form.control}
-                        name="customInterests"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Custom Interests</FormLabel>
-                            <FormControl>
-                              <Textarea 
-                                placeholder="e.g., sustainable travel, digital nomads, photography tours, wine tasting..."
-                                className="min-h-[80px]"
-                                {...field} 
-                              />
-                            </FormControl>
-                            <FormDescription>
-                              Separate multiple interests with commas
-                            </FormDescription>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <FormField
-                        control={form.control}
-                        name="customActivities"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Custom Activities</FormLabel>
-                            <FormControl>
-                              <Textarea 
-                                placeholder="e.g., rooftop dining, escape rooms, kayak rentals, cooking classes..."
-                                className="min-h-[80px]"
-                                {...field} 
-                              />
-                            </FormControl>
-                            <FormDescription>
-                              Separate multiple activities with commas
-                            </FormDescription>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="bg-yellow-100 dark:bg-yellow-900/30 p-4 rounded-lg">
-                    <p className="text-sm text-gray-700 dark:text-gray-300">
-                      <strong>💡 Tip:</strong> Select interests and activities that best represent what your business offers, plus add custom keywords. 
-                      This helps travelers and locals discover your business when they're looking for specific experiences or services.
-                    </p>
-                  </div>
+                {/* Terms and Privacy - Mobile Responsive */}
+                <div className="bg-gray-50 dark:bg-gray-800/50 p-3 sm:p-4 rounded-lg border overflow-hidden break-words">
+                  <h4 className="text-sm sm:text-base font-medium text-gray-900 dark:text-white mb-2 break-words">
+                    Business Agreement & Privacy
+                  </h4>
+                  <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 leading-relaxed break-words">
+                    By registering your business, you agree to our Terms of Service and Privacy Policy for business accounts. 
+                    Your business information will be publicly visible to help customers discover and connect with your services.
+                  </p>
                 </div>
 
-                <div className="flex gap-4 pt-4">
+                {/* Submit Button - Mobile Responsive */}
+                <div className="pt-4 sm:pt-6 overflow-hidden break-words">
+                  <Button
+                    type="submit"
+                    disabled={isLoading || signupMutation.isPending}
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold h-10 sm:h-12 text-sm sm:text-base"
+                    data-testid="button-register-business"
+                  >
+                    {isLoading || signupMutation.isPending ? (
+                      <div className="flex items-center gap-2">
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                        Registering Business...
+                      </div>
+                    ) : (
+                      'Register Business Account'
+                    )}
+                  </Button>
+                </div>
+
+                {/* Bottom Back Button - Mobile Only */}
+                <div className="sm:hidden pt-4 border-t overflow-hidden break-words">
                   <Button
                     type="button"
                     variant="outline"
                     onClick={() => setLocation('/join')}
-                    className="flex-1 py-4 text-lg border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800"
-                    data-testid="button-back"
+                    className="w-full text-sm h-10"
+                    data-testid="button-back-bottom"
                   >
                     ← Back to Join
-                  </Button>
-                  <Button
-                    type="submit"
-                    className="flex-1 py-4 text-lg bg-blue-600 hover:bg-blue-700"
-                    disabled={isLoading || signupMutation.isPending}
-                    data-testid="button-register"
-                  >
-                    {isLoading || signupMutation.isPending ? "Creating Business Account..." : "Complete Registration"}
                   </Button>
                 </div>
               </form>
