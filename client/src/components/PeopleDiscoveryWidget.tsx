@@ -50,6 +50,7 @@ export function PeopleDiscoveryWidget({
   const PersonWithCommonalities = ({ person }: { person: PersonCard }) => {
     // Show loading state to prevent avatar blinking
     const [isLoading, setIsLoading] = useState(true);
+    const [imageError, setImageError] = useState(false);
     
     useEffect(() => {
       const timer = setTimeout(() => setIsLoading(false), 100);
@@ -109,12 +110,13 @@ export function PeopleDiscoveryWidget({
           <div className="flex flex-col h-full">
             {/* Large Profile Photo */}
             <div className="flex-1 flex items-center justify-center mt-3">
-              {person.profileImage ? (
+              {person.profileImage && !imageError ? (
                 <img 
                   src={person.profileImage} 
                   alt={person.name}
                   loading="lazy"
                   className="w-32 h-40 object-cover rounded-lg"
+                  onError={() => setImageError(true)}
                 />
               ) : (
                 <div className="w-32 h-40 text-5xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-bold rounded-lg flex items-center justify-center">
@@ -241,11 +243,13 @@ export function PeopleDiscoveryWidget({
         <div className="flex flex-col h-full">
           {/* Large Profile Photo */}
           <div className="flex-1 flex items-center justify-center mt-1">
-            {person.profileImage ? (
+            {person.profileImage && !imageError ? (
               <img 
                 src={person.profileImage} 
                 alt={person.name}
                 className="w-36 h-36 object-cover rounded-lg border-2 border-white dark:border-gray-600 shadow-sm"
+                onError={() => setImageError(true)}
+                loading="lazy"
               />
             ) : (
               <div className="w-36 h-36 text-4xl bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 font-bold rounded-lg flex items-center justify-center border-2 border-white dark:border-gray-600 shadow-sm">

@@ -2179,7 +2179,7 @@ export default function Home() {
                     }))}
                     title="Nearby Travelers"
                     showSeeAll={false}
-                    currentUserId={user?.id}
+                    currentUserId={user?.id || 0}
                   />
                 </div>
 
@@ -2202,7 +2202,7 @@ export default function Home() {
                     }))}
                     title="Nearby Travelers"
                     showSeeAll={false}
-                    currentUserId={user?.id}
+                    currentUserId={user?.id || 0}
                   />
                 </div>
 
