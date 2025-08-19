@@ -4006,7 +4006,7 @@ Questions? Just reply to this message. Welcome aboard!
 
   // FIXED: Get events filtered by city with proper location filtering - NO CROSS-CITY BLEEDING
   app.get("/api/events", async (req, res) => {
-    console.log("🟢 EVENTS ENDPOINT HIT! Query:", req.query);
+    console.log("🟢 EVENTS ENDPOINT HIT! Query:", req.query, "URL:", req.url);
     try {
       if (process.env.NODE_ENV === 'development') console.log(`📅 DIRECT API: Fetching events with query:`, req.query);
       const { city } = req.query;

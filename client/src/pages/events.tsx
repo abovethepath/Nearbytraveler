@@ -127,13 +127,36 @@ export default function Events() {
     queryKey: ["/api/events", cityToQuery, Date.now()], // Add timestamp to bypass cache
     queryFn: async () => {
       console.log(`🎪 EVENTS: Fetching events for city: "${cityToQuery}"`);
-      const response = await fetch(`/api/events?city=${encodeURIComponent(cityToQuery)}&_bust=${Date.now()}`);
+      const url = `/api/events?city=${encodeURIComponent(cityToQuery)}&_bust=${Date.now()}`;
+      console.log(`🔗 EVENTS API URL:`, url);
+      const response = await fetch(url, {
+        cache: 'no-store', // Prevent any caching
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
       if (!response.ok) {
         throw new Error('Failed to fetch events');
       }
       const data = await response.json();
-      console.log(`🎪 EVENTS: Got ${data.length} events for city "${cityToQuery}":`, data.map(e => `${e.title} in ${e.city}`));
-      return data;
+      console.log(`✅ RAW API RESPONSE: ${data.length} events for "${cityToQuery}"`);
+      console.log(`🎪 DETAILED EVENTS:`, data.map(e => ({ title: e.title, city: e.city, id: e.id })));
+      
+      // CRITICAL: Filter events client-side as backup to ensure only correct city events show
+      const filteredEvents = data.filter(event => {
+        const eventCity = event.city?.toLowerCase() || '';
+        const requestedCity = cityToQuery.toLowerCase();
+        const isCorrectCity = eventCity === requestedCity || 
+          (requestedCity === 'austin' && eventCity === 'austin') ||
+          (requestedCity === 'las vegas' && eventCity === 'las vegas');
+        
+        console.log(`🔍 FILTER CHECK: "${event.title}" in "${event.city}" - Match for "${cityToQuery}": ${isCorrectCity}`);
+        return isCorrectCity;
+      });
+      
+      console.log(`🎪 FILTERED EVENTS: ${filteredEvents.length} events for city "${cityToQuery}":`, filteredEvents.map(e => `${e.title} in ${e.city}`));
+      return filteredEvents;
     },
     enabled: !(selectedLocation === "custom" && showCustomInput), // Don't auto-fetch while typing
     staleTime: 0, // Disable cache to test fix
