@@ -167,7 +167,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
           <p className="text-base md:text-lg text-gray-600 dark:text-gray-300 mb-4 line-clamp-2 text-crisp leading-relaxed">{event.description}</p>
         )}
         
-        <div className="space-y-2 mb-4">
+        <div className="space-y-2 mb-6">
           <div className="flex items-center text-sm md:text-base text-gray-600 dark:text-gray-300 text-crisp">
             <Calendar className="w-4 h-4 mr-2 text-travel-blue" />
             {formatEventDate(event.date)}
@@ -179,7 +179,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
         </div>
 
         {/* Event detail tags - different from main category badge */}
-        <div className="flex flex-wrap gap-2 mb-4">
+        <div className="flex flex-wrap gap-2 mb-6 mt-2">
           {event.costEstimate && (
             <span className="inline-flex items-center px-2 py-1 rounded-full text-xs md:text-sm font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 text-crisp">
               💰 {event.costEstimate}
@@ -252,7 +252,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div className="flex items-center text-sm md:text-base text-gray-500 dark:text-gray-400 text-crisp">
             <Users className="w-4 h-4 mr-1" />
-            <span>{event.participantCount || 1} attending</span>
+            <span>{(event as any).participantCount || 1} attending</span>
           </div>
           <div className="flex gap-2 flex-shrink-0">
             <Button 
@@ -295,7 +295,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
           isVisible={isVisible}
           onComplete={hideCelebration}
           connectionType={celebrationData.type}
-          userInfo={celebrationData.userInfo}
+          userInfo={celebrationData.userInfo || { username: 'User' }}
         />
       )}
     </>
