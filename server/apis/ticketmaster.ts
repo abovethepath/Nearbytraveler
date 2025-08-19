@@ -1,4 +1,4 @@
-// Ticketmaster Discovery API Integration for Los Angeles Events
+// Ticketmaster Discovery API Integration for City-Specific Events
 // Free tier: 5,000 calls/day, comprehensive event coverage
 
 interface TicketmasterEvent {
@@ -58,11 +58,26 @@ export async function fetchTicketmasterEvents(city: string = 'Los Angeles'): Pro
     const today = new Date();
     const startDateTime = today.toISOString().split('T')[0] + 'T00:00:00Z';
     
-    // Los Angeles specific search - optimized for LA metro area
+    // City-specific search - determine state from city
+    const cityStateMap: { [key: string]: string } = {
+      'Austin': 'TX',
+      'Los Angeles': 'CA', 
+      'Las Vegas': 'NV',
+      'New York': 'NY',
+      'Chicago': 'IL',
+      'Miami': 'FL',
+      'San Francisco': 'CA',
+      'Seattle': 'WA',
+      'Denver': 'CO',
+      'Atlanta': 'GA'
+    };
+    
+    const stateCode = cityStateMap[city] || 'TX'; // Default to TX if city not mapped
+    
     const params = new URLSearchParams({
       apikey: apiKey,
-      city: 'Los Angeles',
-      stateCode: 'CA',
+      city: city,
+      stateCode: stateCode,
       countryCode: 'US',
       size: '50', // Get more events to filter duplicates
       sort: 'date,asc',
@@ -87,7 +102,7 @@ export async function fetchTicketmasterEvents(city: string = 'Los Angeles'): Pro
     const data = await response.json();
     const events = data._embedded?.events || [];
     
-    console.log(`🎫 TICKETMASTER: Successfully fetched ${events.length} LA events`);
+    console.log(`🎫 TICKETMASTER: Successfully fetched ${events.length} events for ${city}`);
 
     // Transform to our standard format
     const transformedEvents = events.map((event: TicketmasterEvent) => {
