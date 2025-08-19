@@ -47,7 +47,7 @@ export default function ResponsiveUserGrid({
     if (!user.interests || user.interests.length === 0) return null;
     const count = user.interests.length;
     return (
-      <Badge variant="secondary" className="text-xs">
+      <Badge variant="secondary" className="pill pill-interests">
         {count} interest{count !== 1 ? 's' : ''}
       </Badge>
     );
