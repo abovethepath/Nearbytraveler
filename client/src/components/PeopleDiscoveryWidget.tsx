@@ -16,7 +16,6 @@ interface PersonCard {
   commonInterests?: string[];
   userType: "traveler" | "local" | "business";
   isOnline?: boolean;
-  totalCommonalities?: number;
   currentUserId?: number;
 }
 
@@ -50,7 +49,6 @@ export function PeopleDiscoveryWidget({
   const PersonWithCommonalities = ({ person }: { person: PersonCard }) => {
     // Show loading state to prevent avatar blinking
     const [isLoading, setIsLoading] = useState(true);
-    const [imageError, setImageError] = useState(false);
     
     useEffect(() => {
       const timer = setTimeout(() => setIsLoading(false), 100);
@@ -110,13 +108,12 @@ export function PeopleDiscoveryWidget({
           <div className="flex flex-col h-full">
             {/* Large Profile Photo */}
             <div className="flex-1 flex items-center justify-center mt-3">
-              {person.profileImage && !imageError ? (
+              {person.profileImage ? (
                 <img 
                   src={person.profileImage} 
                   alt={person.name}
                   loading="lazy"
                   className="w-32 h-40 object-cover rounded-lg"
-                  onError={() => setImageError(true)}
                 />
               ) : (
                 <div className="w-32 h-40 text-5xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-bold rounded-lg flex items-center justify-center">
@@ -243,12 +240,11 @@ export function PeopleDiscoveryWidget({
         <div className="flex flex-col h-full">
           {/* Large Profile Photo */}
           <div className="flex-1 flex items-center justify-center mt-1">
-            {person.profileImage && !imageError ? (
+            {person.profileImage ? (
               <img 
                 src={person.profileImage} 
                 alt={person.name}
                 className="w-36 h-36 object-cover rounded-lg border-2 border-white dark:border-gray-600 shadow-sm"
-                onError={() => setImageError(true)}
                 loading="lazy"
               />
             ) : (
@@ -304,59 +300,6 @@ export function PeopleDiscoveryWidget({
               </p>
             </div>
             
-            {/* Line 4: Things in Common */}
-            <div className="mb-3">
-              {compatibilityData ? (
-                (() => {
-                  const data = compatibilityData as any;
-                  // Use exact same logic as profile page for consistency
-                  const sharedInterestsCount = data.sharedInterests?.length || 0;
-                  const sharedEventsCount = data.sharedEvents?.length || 0;
-                  const sharedActivitiesCount = data.sharedActivities?.length || 0;
-                  const sharedTravelIntentCount = data.sharedTravelIntent?.length || 0;
-                  const sharedCityActivitiesCount = data.sharedCityActivities?.length || 0;
-                  const sharedSexualPreferencesCount = data.sharedSexualPreferences?.length || 0;
-                  const sharedLanguagesCount = data.sharedLanguages?.length || 0;
-                  const sharedCountriesCount = data.sharedCountries?.length || 0;
-                  const sharedTravelDestinationsCount = data.sharedTravelDestinations?.length || 0;
-                  const overlappingTravelDatesCount = data.overlappingTravelDates?.length || 0;
-                  const otherCommonalitiesCount = data.otherCommonalities?.length || 0;
-                  
-                  // Calculate total exactly like profile page
-                  const calculatedTotal = sharedInterestsCount + sharedEventsCount + 
-                                         sharedActivitiesCount + sharedTravelIntentCount +
-                                         sharedCityActivitiesCount + sharedSexualPreferencesCount +
-                                         sharedLanguagesCount + sharedCountriesCount +
-                                         sharedTravelDestinationsCount + overlappingTravelDatesCount +
-                                         otherCommonalitiesCount;
-                  
-                  // Use same fallback logic as profile page: totalCommonalities ?? calculatedTotal
-                  const totalCommon = data.totalCommonalities ?? calculatedTotal;
-                  
-                  if (totalCommon > 0) {
-                    return (
-                      <p className="text-green-600 dark:text-green-400 text-xs font-medium">
-                        {totalCommon} things in common
-                      </p>
-                    );
-                  } else {
-                    return (
-                      <p className="text-gray-500 dark:text-gray-400 text-xs">
-                        {Math.round((data.score || 0) * 100)}% compatible
-                      </p>
-                    );
-                  }
-                })()
-              ) : compatibilityLoading ? (
-                <p className="text-purple-600 dark:text-purple-400 text-xs">
-                  Calculating compatibility...
-                </p>
-              ) : (
-                <p className="text-gray-500 dark:text-gray-400 text-xs">
-                  Compatibility unknown
-                </p>
-              )}
-            </div>
             
             {/* Interested Button */}
             <div className="mb-2">
