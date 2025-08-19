@@ -2766,10 +2766,24 @@ export class DatabaseStorage implements IStorage {
         .where(eq(userReferences.revieweeId, userId))
         .orderBy(desc(userReferences.createdAt));
 
-      return references;
+      // Calculate counts by experience type
+      const counts = {
+        total: references.length,
+        positive: references.filter(ref => ref.experience === 'positive').length,
+        negative: references.filter(ref => ref.experience === 'negative').length,
+        neutral: references.filter(ref => ref.experience === 'neutral').length
+      };
+
+      return {
+        references,
+        counts
+      };
     } catch (error) {
       console.error('Error fetching user references:', error);
-      return [];
+      return {
+        references: [],
+        counts: { total: 0, positive: 0, negative: 0, neutral: 0 }
+      };
     }
   }
 

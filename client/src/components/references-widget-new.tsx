@@ -40,10 +40,12 @@ function ReferencesWidgetNew({ userId }: ReferencesWidgetProps) {
   const [, setLocation] = useLocation();
   const [expandedReference, setExpandedReference] = useState<number | null>(null);
   
-  const { data: references = [] } = useQuery<Reference[]>({
+  const { data: referencesData = { references: [], counts: { total: 0, positive: 0, negative: 0, neutral: 0 } } } = useQuery({
     queryKey: [`/api/users/${userId}/references`],
   });
 
+  const references = referencesData.references || [];
+  const counts = referencesData.counts || { total: 0, positive: 0, negative: 0, neutral: 0 };
   const referenceCount = references.length;
   const recentReferences = references.slice(0, 3);
 
@@ -77,20 +79,20 @@ function ReferencesWidgetNew({ userId }: ReferencesWidgetProps) {
             {/* Stats Section */}
             <div className="grid grid-cols-3 gap-2 p-2 bg-gray-100 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
               <div className="text-center">
-                <div className="text-sm font-medium text-gray-800 dark:text-gray-200">
-                  {references.filter(r => r.experience === "positive").length}
+                <div className="text-sm font-medium text-green-700 dark:text-green-300">
+                  {counts.positive}
                 </div>
                 <div className="text-xs text-gray-600 dark:text-gray-400">Positive</div>
               </div>
               <div className="text-center">
-                <div className="text-sm font-medium text-gray-800 dark:text-gray-200">
-                  {references.filter(r => r.experience === "neutral").length}
+                <div className="text-sm font-medium text-yellow-700 dark:text-yellow-300">
+                  {counts.neutral}
                 </div>
                 <div className="text-xs text-gray-600 dark:text-gray-400">Neutral</div>
               </div>
               <div className="text-center">
-                <div className="text-sm font-medium text-gray-800 dark:text-gray-200">
-                  {references.filter(r => r.experience === "negative").length}
+                <div className="text-sm font-medium text-red-700 dark:text-red-300">
+                  {counts.negative}
                 </div>
                 <div className="text-xs text-gray-600 dark:text-gray-400">Negative</div>
               </div>
