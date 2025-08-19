@@ -93,8 +93,6 @@
     justify-content: center !important;
     font-weight: 500 !important;
     white-space: nowrap !important;
-    /* VISUAL TEST: If you see this red border, the CSS is working */
-    border: 3px solid red !important;
   }
   
   /* LARGE PILLS - All section-specific pills are now consistently large */
