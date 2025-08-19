@@ -16,6 +16,14 @@ img, video, canvas, svg { max-width: 100%; height: auto; }
 /* Tailwind + flex children can overflow; this prevents text pushing layout */
 * { min-width: 0; }
 
+/* Map popups / info panes: wrap long lines */
+.mapboxgl-popup-content, .gm-style .gm-style-iw, .leaflet-popup-content {
+  max-width: calc(100vw - 2rem);
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  white-space: normal;
+}
+
 /* iOS Safari tap highlight */
 * { -webkit-tap-highlight-color: rgba(0,0,0,0.1); }
 
@@ -33,9 +41,9 @@ input, select, textarea, button { font-size: 16px; }
 
 @layer components {
   /* Updated Pill Classes - Cache Buster v12.0 VISUAL TEST OVERRIDE */
-  /* Enhanced pill class with mobile fixes */
+  /* Enhanced pill class with mobile fixes - no overlap */
   .pill {
-    @apply !inline-flex !items-center !justify-center !h-8 !rounded-full !px-3 !text-sm !font-medium !whitespace-nowrap !leading-none !bg-blue-500 !text-white !border-0 [&>svg]:!h-4 [&>svg]:!w-4 !important;
+    @apply !inline-flex !items-center !justify-center !h-7 !rounded-full !px-3 !text-sm !font-medium !whitespace-nowrap !leading-none !shrink-0 !bg-blue-500 !text-white !border-0 [&>svg]:!h-4 [&>svg]:!w-4 !important;
   }
   
   /* Large pill variant */

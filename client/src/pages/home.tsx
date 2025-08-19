@@ -1218,7 +1218,7 @@ export default function Home() {
 
       {/* Hero Section with Scrolling Photo Gallery */}
 <section
-  className="relative overflow-hidden text-white min-h-[60svh] sm:min-h-[70svh] md:min-h-[72svh] bg-cover bg-center bg-no-repeat"
+  className="relative overflow-hidden text-white min-h-[75svh] md:min-h-[80svh] bg-cover bg-center bg-no-repeat"
   style={{
     backgroundImage: "url('/attached_assets/beach travel_1754973619241.jpg')",
   }}
@@ -2160,10 +2160,44 @@ export default function Home() {
               </div>
             ) : (
               <div>
-                {/* Avatar-Focused People Discovery Widget - DIRECT API APPROACH */}
-                <PeopleDiscoveryWidget 
-                  people={getSortedUsers(filteredUsers).slice(0, Math.min(displayLimit, getSortedUsers(filteredUsers).length)).map((user) => {
-                    return {
+                {/* Mobile-first avatar grid (phones) */}
+                <div className="sm:hidden">
+                  <div className="grid grid-cols-2 xs:grid-cols-3 gap-3">
+                    {getSortedUsers(filteredUsers)
+                      .slice(0, displayLimit)
+                      .map((u) => (
+                        <button
+                          key={u.id}
+                          onClick={() => setLocation(`/profile/${u.username}`)}
+                          className="group text-left"
+                        >
+                          <div className="relative w-full aspect-[4/5] rounded-2xl overflow-hidden bg-gray-100">
+                            <img
+                              src={u.profileImage || "/attached_assets/placeholder_user.jpg"}
+                              alt={u.name || u.username}
+                              className="h-full w-full object-cover"
+                              loading="lazy"
+                            />
+                          </div>
+                          <div className="mt-2">
+                            <div className="text-sm font-semibold truncate">
+                              {u.name || u.username}
+                            </div>
+                            <div className="text-xs text-gray-500 truncate">
+                              {u.hometownCity && u.hometownCountry
+                                ? `${u.hometownCity}, ${u.hometownCountry.replace("United States","USA")}`
+                                : "New member"}
+                            </div>
+                          </div>
+                        </button>
+                      ))}
+                  </div>
+                </div>
+
+                {/* Tablet+ keeps existing widget */}
+                <div className="hidden sm:block">
+                  <PeopleDiscoveryWidget 
+                    people={getSortedUsers(filteredUsers).slice(0, displayLimit).map((user: any) => ({
                       id: user.id,
                       username: user.username,
                       name: user.name || user.username,
@@ -2176,16 +2210,11 @@ export default function Home() {
                         : user.location || "New member",
                       commonInterests: [],
                       userType: user.userType as "traveler" | "local" | "business",
-                      isOnline: Math.random() > 0.7, // Random online status simulation
-                      currentUserId: effectiveUser?.id || 0 // Pass current user ID for API call
-                    };
-                  })}
-                  title="Nearby Travelers"
-                  showSeeAll={false}
-                  userLocation={effectiveUser?.hometownCity || "Culver City"}
-                  onPersonClick={(person) => setLocation(`/profile/${person.id}`)}
-                  currentUserId={effectiveUser?.id} // Pass current user ID explicitly as prop
-                />
+                    }))}
+                    title="Nearby Travelers"
+                    showSeeAll={false}
+                  />
+                </div>
 
                 {/* Load More Button */}
                 {getSortedUsers(filteredUsers).length > displayLimit && (
@@ -2339,14 +2368,14 @@ export default function Home() {
 
                           {/* Tags */}
                           {event.tags && event.tags.length > 0 && (
-                            <div className="flex flex-wrap gap-1 mt-2">
+                            <div className="flex flex-wrap gap-2 mt-2">
                               {event.tags.slice(0, 3).map((tag: string, index: number) => (
-                                <Badge key={index} variant="outline" className="text-xs px-1 py-0 h-4 text-gray-600 dark:text-gray-300 border-gray-300 dark:border-gray-600">
+                                <Badge key={index} variant="outline" className="inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none shrink-0 text-gray-600 dark:text-gray-300 border-gray-300 dark:border-gray-600">
                                   {tag}
                                 </Badge>
                               ))}
                               {event.tags.length > 3 && (
-                                <Badge variant="outline" className="text-xs px-1 py-0 h-4 text-gray-500 dark:text-gray-400 border-gray-300 dark:border-gray-600">
+                                <Badge variant="outline" className="inline-flex items-center justify-center h-7 rounded-full px-2 text-[11px] font-medium whitespace-nowrap leading-none shrink-0 text-gray-500 dark:text-gray-400 border-gray-300 dark:border-gray-600">
                                   +{event.tags.length - 3}
                                 </Badge>
                               )}
@@ -2497,11 +2526,13 @@ export default function Home() {
                   // Use structured fields if available, otherwise parse destination string
                   if (activeTravelPlan.destinationCity) {
                     return (
-                      <CityMap 
-                        city={activeTravelPlan.destinationCity} 
-                        state={activeTravelPlan.destinationState}
-                        country={activeTravelPlan.destinationCountry} 
-                      />
+                      <div className="overflow-hidden rounded-2xl border max-w-full [&_*>*]:min-w-0">
+                        <CityMap 
+                          city={activeTravelPlan.destinationCity} 
+                          state={activeTravelPlan.destinationState}
+                          country={activeTravelPlan.destinationCountry} 
+                        />
+                      </div>
                     );
                   } else if (activeTravelPlan.destination) {
                     // Parse destination string "City, State, Country" 
@@ -2511,11 +2542,13 @@ export default function Home() {
                     const country = parts.length > 1 ? parts[parts.length - 1] : undefined;
                     
                     return (
-                      <CityMap 
-                        city={city} 
-                        state={state}
-                        country={country} 
-                      />
+                      <div className="overflow-hidden rounded-2xl border max-w-full [&_*>*]:min-w-0">
+                        <CityMap 
+                          city={city} 
+                          state={state}
+                          country={country} 
+                        />
+                      </div>
                     );
                   }
                 }
@@ -2523,11 +2556,13 @@ export default function Home() {
                 // Priority 2: Fallback to hometown if no active travel
                 if (effectiveUser?.hometownCity && effectiveUser?.hometownCountry) {
                   return (
-                    <CityMap 
-                      city={effectiveUser.hometownCity} 
-                      state={effectiveUser.hometownState}
-                      country={effectiveUser.hometownCountry} 
-                    />
+                    <div className="overflow-hidden rounded-2xl border max-w-full [&_*>*]:min-w-0">
+                      <CityMap 
+                        city={effectiveUser.hometownCity} 
+                        state={effectiveUser.hometownState}
+                        country={effectiveUser.hometownCountry} 
+                      />
+                    </div>
                   );
                 }
                 
