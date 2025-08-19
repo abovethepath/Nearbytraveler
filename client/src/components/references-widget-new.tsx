@@ -3,8 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { SimpleAvatar } from '@/components/simple-avatar';
-import { MessageSquare, Users, ChevronRight, ChevronDown, ChevronUp } from 'lucide-react';
-import { useLocation } from 'wouter';
+import { MessageSquare, Users, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface Reference {
   id: number;
@@ -37,8 +36,8 @@ const getExperienceColor = (experience: string) => {
 };
 
 function ReferencesWidgetNew({ userId }: ReferencesWidgetProps) {
-  const [, setLocation] = useLocation();
   const [expandedReference, setExpandedReference] = useState<number | null>(null);
+  const [showAllReferences, setShowAllReferences] = useState(false);
   
   const { data: referencesData = { references: [], counts: { total: 0, positive: 0, negative: 0, neutral: 0 } } } = useQuery({
     queryKey: [`/api/users/${userId}/references`],
@@ -47,7 +46,7 @@ function ReferencesWidgetNew({ userId }: ReferencesWidgetProps) {
   const references = referencesData.references || [];
   const counts = referencesData.counts || { total: 0, positive: 0, negative: 0, neutral: 0 };
   const referenceCount = references.length;
-  const recentReferences = references.slice(0, 3);
+  const displayedReferences = showAllReferences ? references : references.slice(0, 3);
 
   const toggleReference = (referenceId: number) => {
     setExpandedReference(expandedReference === referenceId ? null : referenceId);
@@ -101,7 +100,7 @@ function ReferencesWidgetNew({ userId }: ReferencesWidgetProps) {
             {/* Recent References */}
             <div className="space-y-2">
               <h4 className="text-xs font-medium text-gray-800 dark:text-gray-200 mb-1">Recent References</h4>
-              {recentReferences.map((reference) => {
+              {displayedReferences.map((reference) => {
                 const isExpanded = expandedReference === reference.id;
                 return (
                   <div
@@ -148,16 +147,25 @@ function ReferencesWidgetNew({ userId }: ReferencesWidgetProps) {
               })}
             </div>
 
-            {/* View All Button */}
+            {/* View All/Show Less Button */}
             {referenceCount > 3 && (
               <Button
                 variant="outline"
                 size="sm"
                 className="w-full border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 bg-transparent text-xs h-7"
-                onClick={() => setLocation('/references')}
+                onClick={() => setShowAllReferences(!showAllReferences)}
               >
-                View All References
-                <ChevronRight className="w-3 h-3 ml-1" />
+                {showAllReferences ? (
+                  <>
+                    Show Recent Only
+                    <ChevronUp className="w-3 h-3 ml-1" />
+                  </>
+                ) : (
+                  <>
+                    View All {referenceCount} References
+                    <ChevronDown className="w-3 h-3 ml-1" />
+                  </>
+                )}
               </Button>
             )}
           </>
