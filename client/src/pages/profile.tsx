@@ -5612,8 +5612,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                 ))}
                                 {plan.interests.length > 2 && (
                                   <Badge 
-                                    variant="outline" 
-                                    className="text-xs dark:bg-gray-800 dark:text-gray-300 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                    className="pill-interests bg-gray-200 text-gray-600 cursor-pointer"
                                     onClick={() => {
                                       const newExpanded = new Set(expandedPlanInterests);
                                       if (expandedPlanInterests.has(plan.id)) {
@@ -5634,12 +5633,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             <div>
                               <div className="flex flex-wrap gap-1">
                                 {plan.travelStyle.slice(0, 2).map((style: string) => (
-                                  <Badge key={style} className="pill">
+                                  <Badge key={style} className="pill-interests">
                                     {style}
                                   </Badge>
                                 ))}
                                 {plan.travelStyle.length > 2 && (
-                                  <Badge variant="outline" className="text-xs dark:bg-gray-800 dark:text-gray-300">
+                                  <Badge className="pill-interests bg-gray-200 text-gray-600">
                                     +{plan.travelStyle.length - 2} more
                                   </Badge>
                                 )}
@@ -5747,8 +5746,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                   ))}
                                   {plan.interests.length > 2 && (
                                     <Badge 
-                                      variant="outline" 
-                                      className="text-xs dark:bg-gray-800 dark:text-gray-300 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                      className="pill-interests bg-gray-200 text-gray-600 cursor-pointer"
                                       onClick={() => {
                                         const newExpanded = new Set(expandedPlanInterests);
                                         if (expandedPlanInterests.has(plan.id)) {
@@ -5769,12 +5767,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               <div>
                                 <div className="flex flex-wrap gap-1">
                                   {plan.travelStyle.slice(0, 2).map((style: string) => (
-                                    <Badge key={style} variant="outline" className="text-xs bg-gray-50 text-gray-600 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600">
+                                    <Badge key={style} className="pill-interests text-xs">
                                       {style}
                                     </Badge>
                                   ))}
                                   {plan.travelStyle.length > 2 && (
-                                    <Badge variant="outline" className="text-xs dark:bg-gray-800 dark:text-gray-300">
+                                    <Badge className="pill-interests bg-gray-200 text-gray-600">
                                       +{plan.travelStyle.length - 2} more
                                     </Badge>
                                   )}
