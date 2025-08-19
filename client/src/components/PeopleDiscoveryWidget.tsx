@@ -25,7 +25,7 @@ interface PeopleDiscoveryWidgetProps {
   showSeeAll?: boolean;
   userLocation?: string;
   onPersonClick?: (person: PersonCard) => void;
-  currentUserId?: number; // Add explicit currentUserId prop
+  currentUserId?: number;
 }
 
 export function PeopleDiscoveryWidget({ 
@@ -39,7 +39,7 @@ export function PeopleDiscoveryWidget({
   const [, setLocation] = useLocation();
   const { user: currentUser } = useContext(AuthContext);
   const currentUserId = propCurrentUserId || currentUser?.id;
-  const [displayCount, setDisplayCount] = React.useState(8); // Show 8 people initially (2x4 grid)
+  const [displayCount, setDisplayCount] = React.useState(6); // Show 6 people initially (3 rows x 2 cols)
 
   // Debug current user ID
   React.useEffect(() => {
@@ -97,69 +97,6 @@ export function PeopleDiscoveryWidget({
       retry: false
     });
 
-    // Don't show commonalities for the current user themselves
-    if (person.id === currentUserId) {
-      return (
-        <div
-          className="bg-gray-100 dark:bg-gray-800 rounded-xl p-4 hover:shadow-lg transition-all duration-200 cursor-pointer text-gray-900 dark:text-white relative h-64"
-          onClick={() => setLocation(`/profile/${person.id}`)}
-        >
-          {/* Main Content */}
-          <div className="flex flex-col h-full">
-            {/* Large Profile Photo */}
-            <div className="flex-1 flex items-center justify-center mt-3">
-              {person.profileImage ? (
-                <img 
-                  src={person.profileImage} 
-                  alt={person.name}
-                  loading="lazy"
-                  className="w-32 h-40 object-cover rounded-lg"
-                />
-              ) : (
-                <div className="w-32 h-40 text-5xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-bold rounded-lg flex items-center justify-center">
-                  {person.username?.charAt(0)?.toUpperCase() || "U"}
-                </div>
-              )}
-            </div>
-            
-            {/* Bottom Section */}
-            <div className="text-center pb-2">
-              {/* Line 1: Username with @ prefix */}
-              <h4 className="font-bold text-gray-900 dark:text-white text-lg mb-0.5 truncate">
-                @{person.username}
-              </h4>
-              
-              {/* Line 2: Current status - Nearby Local/Traveler in current city */}
-              <div className="mb-0.5 flex items-center justify-center gap-1">
-                {travelPlans && Array.isArray(travelPlans) && travelPlans.length > 0 && (travelPlans as any)[0]?.status === 'active' ? (
-                  <Plane className="w-4 h-4 text-blue-500" />
-                ) : (
-                  <MapPin className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                )}
-                {travelPlans && Array.isArray(travelPlans) && travelPlans.length > 0 && (travelPlans as any)[0]?.status === 'active' ? (
-                  <p className="text-gray-600 dark:text-gray-400 text-sm truncate">
-                    Nearby Traveler in {(travelPlans as any)[0]?.destinationCity || (travelPlans as any)[0]?.destination?.split(',')[0]}
-                  </p>
-                ) : (
-                  <p className="text-gray-600 dark:text-gray-400 text-sm truncate">
-                    Nearby Local in {person.location || 'Hometown'}
-                  </p>
-                )}
-              </div>
-              
-              {/* Line 3: Countries and references + ALWAYS hometown */}
-              <div className="mb-1">
-                <p className="text-gray-500 dark:text-gray-500 text-sm truncate">
-                  {(userData?.countriesVisited && Array.isArray(userData.countriesVisited) ? userData.countriesVisited.length : 0)} countries ⭐ {(referencesData && Array.isArray(referencesData) ? referencesData.length : 0)} references • Nearby Local in {person.location?.split(',')[0] || 'Hometown'}
-                </p>
-              </div>
-              
-            </div>
-          </div>
-        </div>
-      );
-    }
-
     // Use the correct compatibility API endpoint
     const { data: compatibilityData, isLoading: compatibilityLoading } = useQuery({
       queryKey: [`/api/compatibility/${currentUserId}/${person.id}`],
@@ -199,25 +136,132 @@ export function PeopleDiscoveryWidget({
       return '🌍';
     };
 
-    const handlePersonClick = () => {
+    const handleAvatarClick = (e: React.MouseEvent) => {
+      e.stopPropagation();
+      setLocation(`/profile/${person.id}`);
+    };
+
+    const handleCardClick = () => {
       if (onPersonClick) {
         onPersonClick(person);
       } else {
-        setLocation(`/profile/${person.id}`);
+        // Show compatibility/commonalities instead of navigating
+        console.log('Show commonalities for', person.username);
       }
     };
 
     // Show loading state to prevent blinking
     if (isLoading || compatibilityLoading) {
       return (
-        <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-2 h-72 animate-pulse">
+        <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 h-96 animate-pulse">
           <div className="flex flex-col h-full">
-            <div className="flex-1 flex items-center justify-center mt-1">
-              <div className="w-36 h-36 bg-gray-300 dark:bg-gray-600 rounded-lg"></div>
+            <div className="flex-1 flex items-center justify-center">
+              <div className="w-48 h-48 bg-gray-300 dark:bg-gray-600 rounded-lg"></div>
             </div>
-            <div className="text-center pb-2">
-              <div className="h-4 bg-gray-300 dark:bg-gray-600 rounded w-3/4 mx-auto mb-2"></div>
-              <div className="h-3 bg-gray-300 dark:bg-gray-600 rounded w-1/2 mx-auto"></div>
+            <div className="text-center mt-4">
+              <div className="h-5 bg-gray-300 dark:bg-gray-600 rounded w-3/4 mx-auto mb-2"></div>
+              <div className="h-4 bg-gray-300 dark:bg-gray-600 rounded w-1/2 mx-auto mb-2"></div>
+              <div className="h-3 bg-gray-300 dark:bg-gray-600 rounded w-2/3 mx-auto"></div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Get current travel destination if different from hometown
+    const getCurrentLocation = () => {
+      const activeTravelPlan = travelPlans && Array.isArray(travelPlans) ? 
+        (travelPlans as any).find((plan: any) => plan.status === 'active') : null;
+      
+      if (activeTravelPlan) {
+        const travelDestination = activeTravelPlan.destinationCity || activeTravelPlan.destination?.split(',')[0];
+        const hometown = person.location?.split(',')[0];
+        
+        // Only show travel destination if it's different from hometown
+        if (travelDestination && travelDestination !== hometown) {
+          return {
+            isTraveling: true,
+            currentLocation: travelDestination,
+            hometown: hometown || 'Hometown'
+          };
+        }
+      }
+      
+      return {
+        isTraveling: false,
+        currentLocation: person.location?.split(',')[0] || 'Hometown',
+        hometown: person.location?.split(',')[0] || 'Hometown'
+      };
+    };
+
+    const locationInfo = getCurrentLocation();
+
+    // Don't show commonalities for the current user themselves
+    if (person.id === currentUserId) {
+      return (
+        <div className="bg-gray-100 dark:bg-gray-800 rounded-xl p-4 text-gray-900 dark:text-white relative h-96">
+          <div className="flex flex-col h-full">
+            {/* Large Profile Photo - Clickable */}
+            <div className="flex-1 flex items-center justify-center">
+              <div 
+                className="cursor-pointer hover:opacity-80 transition-opacity"
+                onClick={handleAvatarClick}
+              >
+                {person.profileImage ? (
+                  <img 
+                    src={person.profileImage} 
+                    alt={person.name}
+                    loading="lazy"
+                    className="w-48 h-48 object-cover rounded-lg border-2 border-white dark:border-gray-600 shadow-lg"
+                  />
+                ) : (
+                  <div className="w-48 h-48 text-6xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-bold rounded-lg flex items-center justify-center border-2 border-white dark:border-gray-600 shadow-lg">
+                    {person.username?.charAt(0)?.toUpperCase() || "U"}
+                  </div>
+                )}
+              </div>
+            </div>
+            
+            {/* Bottom Section */}
+            <div className="text-center mt-4">
+              {/* Username */}
+              <h4 className="font-bold text-gray-900 dark:text-white text-xl mb-2 truncate">
+                @{person.username}
+              </h4>
+              
+              {/* Location Info */}
+              <div className="mb-2 space-y-1">
+                {locationInfo.isTraveling ? (
+                  <>
+                    <div className="flex items-center justify-center gap-1">
+                      <Plane className="w-4 h-4 text-blue-500" />
+                      <p className="text-blue-600 dark:text-blue-400 text-sm font-medium">
+                        Currently in {locationInfo.currentLocation}
+                      </p>
+                    </div>
+                    <div className="flex items-center justify-center gap-1">
+                      <MapPin className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                      <p className="text-gray-600 dark:text-gray-400 text-sm">
+                        Hometown: {locationInfo.hometown}
+                      </p>
+                    </div>
+                  </>
+                ) : (
+                  <div className="flex items-center justify-center gap-1">
+                    <MapPin className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                    <p className="text-gray-600 dark:text-gray-400 text-sm">
+                      Hometown: {locationInfo.hometown}
+                    </p>
+                  </div>
+                )}
+              </div>
+              
+              {/* Stats */}
+              <div className="mb-2">
+                <p className="text-gray-500 dark:text-gray-500 text-sm">
+                  {(userData?.countriesVisited && Array.isArray(userData.countriesVisited) ? userData.countriesVisited.length : 0)} countries ⭐ {(referencesData && Array.isArray(referencesData) ? referencesData.length : 0)} references
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -226,83 +270,85 @@ export function PeopleDiscoveryWidget({
 
     return (
       <div
-        className="bg-gray-50 dark:bg-gray-700 rounded-lg p-2 hover:shadow-lg transition-all duration-200 cursor-pointer text-gray-900 dark:text-white relative h-72"
-        onClick={handlePersonClick}
+        className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 hover:shadow-lg transition-all duration-200 cursor-pointer text-gray-900 dark:text-white relative h-96"
+        onClick={handleCardClick}
       >
         {/* Online Status - Top Right */}
         {person.isOnline && (
-          <div className="absolute top-3 right-3">
-            <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+          <div className="absolute top-6 right-6">
+            <div className="w-3 h-3 bg-green-400 rounded-full"></div>
           </div>
         )}
         
         {/* Main Content */}
         <div className="flex flex-col h-full">
-          {/* Large Profile Photo */}
-          <div className="flex-1 flex items-center justify-center mt-1">
-            {person.profileImage ? (
-              <img 
-                src={person.profileImage} 
-                alt={person.name}
-                className="w-36 h-36 object-cover rounded-lg border-2 border-white dark:border-gray-600 shadow-sm"
-                loading="lazy"
-              />
-            ) : (
-              <div className="w-36 h-36 text-4xl bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 font-bold rounded-lg flex items-center justify-center border-2 border-white dark:border-gray-600 shadow-sm">
-                {person.username?.charAt(0)?.toUpperCase() || "U"}
-              </div>
-            )}
+          {/* Large Profile Photo - Clickable */}
+          <div className="flex-1 flex items-center justify-center">
+            <div 
+              className="cursor-pointer hover:opacity-80 transition-opacity"
+              onClick={handleAvatarClick}
+            >
+              {person.profileImage ? (
+                <img 
+                  src={person.profileImage} 
+                  alt={person.name}
+                  className="w-48 h-48 object-cover rounded-lg border-2 border-white dark:border-gray-600 shadow-lg"
+                  loading="lazy"
+                />
+              ) : (
+                <div className="w-48 h-48 text-6xl bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 font-bold rounded-lg flex items-center justify-center border-2 border-white dark:border-gray-600 shadow-lg">
+                  {person.username?.charAt(0)?.toUpperCase() || "U"}
+                </div>
+              )}
+            </div>
           </div>
           
           {/* Bottom Section */}
-          <div className="text-center pb-2">
-            {/* Line 1: Username with @ prefix */}
-            <h4 className="font-bold text-gray-900 dark:text-white text-lg mb-1 truncate">
+          <div className="text-center mt-4">
+            {/* Username */}
+            <h4 className="font-bold text-gray-900 dark:text-white text-xl mb-2 truncate">
               @{person.username}
             </h4>
             
-            {/* Line 2: Current location - where they are currently */}
-            <div className="mb-1 flex items-center justify-center gap-1">
-              <MapPin className="w-3 h-3 text-gray-500 dark:text-gray-400" />
-              {(() => {
-                // Find current travel plan based on status
-                console.log('🧭 Travel plans for user', person.username, ':', travelPlans);
-                const currentTravel = travelPlans && Array.isArray(travelPlans) ? 
-                  (travelPlans as any).find((plan: any) => plan.status === 'active' || plan.status === 'current') : null;
-                
-                console.log('🧭 Current travel plan:', currentTravel);
-                
-                if (currentTravel) {
-                  const cityName = currentTravel.destinationCity || currentTravel.destination_city || currentTravel.destination?.split(',')[0];
-                  console.log('🧭 Using travel destination:', cityName);
-                  return (
-                    <div className="flex items-center gap-1 text-gray-600 dark:text-gray-400 text-xs">
-                      <MapPin className="w-3 h-3 flex-shrink-0" />
-                      <span className="truncate">{cityName || 'Unknown destination'}</span>
-                    </div>
-                  );
-                }
-                
-                console.log('🧭 No active travel, using location:', person.location);
-                return (
-                  <div className="flex items-center gap-1 text-gray-600 dark:text-gray-400 text-xs">
-                    <MapPin className="w-3 h-3 flex-shrink-0" />
-                    <span className="truncate">{person.location?.split(',')[0] || 'Unknown'}</span>
+            {/* Location Info */}
+            <div className="mb-2 space-y-1">
+              {locationInfo.isTraveling ? (
+                <>
+                  <div className="flex items-center justify-center gap-1">
+                    <Plane className="w-4 h-4 text-blue-500" />
+                    <p className="text-blue-600 dark:text-blue-400 text-sm font-medium">
+                      Currently in {locationInfo.currentLocation}
+                    </p>
                   </div>
-                );
-              })()}
+                  <div className="flex items-center justify-center gap-1">
+                    <MapPin className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                    <p className="text-gray-600 dark:text-gray-400 text-sm">
+                      Hometown: {locationInfo.hometown}
+                    </p>
+                  </div>
+                </>
+              ) : (
+                <div className="flex items-center justify-center gap-1">
+                  <MapPin className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                  <p className="text-gray-600 dark:text-gray-400 text-sm">
+                    Hometown: {locationInfo.hometown}
+                  </p>
+                </div>
+              )}
             </div>
             
-            {/* Line 3: Hometown */}
-            <div className="mb-1">
-              <p className="text-gray-500 dark:text-gray-500 text-xs truncate">
-                From {(person as any).hometownCity || person.location?.split(',')[0] || 'Unknown hometown'}
+            {/* Stats */}
+            <div className="mb-3">
+              <p className="text-gray-500 dark:text-gray-500 text-sm">
+                {(userData?.countriesVisited && Array.isArray(userData.countriesVisited) ? userData.countriesVisited.length : 0)} countries ⭐ {(referencesData && Array.isArray(referencesData) ? referencesData.length : 0)} references
               </p>
             </div>
-            
-            
-            {/* Interested Button */}
-            <div className="mb-2">
+
+            {/* Click to see things in common */}
+            <div className="border-t border-gray-200 dark:border-gray-600 pt-2">
+              <p className="text-blue-600 dark:text-blue-400 text-sm font-medium">
+                Click to see things in common
+              </p>
             </div>
           </div>
         </div>
@@ -310,39 +356,42 @@ export function PeopleDiscoveryWidget({
     );
   };
 
-  const displayedPeople = people.slice(0, displayCount);
-  const hasMore = people.length > displayCount;
-  const showingAll = displayCount >= people.length;
-
   return (
-    <div className="space-y-4">
-      {/* People Grid - 4 Column Avatar Cards with smaller gap */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
-        {displayedPeople.map((person) => (
-          <PersonWithCommonalities key={person.id} person={person} />
+    <div className="w-full">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+          {title}
+        </h2>
+        {showSeeAll && (
+          <button 
+            className="text-blue-600 dark:text-blue-400 hover:underline text-sm font-medium"
+            onClick={() => setLocation('/discover')}
+          >
+            See All
+          </button>
+        )}
+      </div>
+
+      {/* People Grid - 2 per row on all screen sizes */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        {people.slice(0, displayCount).map((person) => (
+          <PersonWithCommonalities 
+            key={person.id} 
+            person={person}
+          />
         ))}
       </div>
-      
-      {/* Load More / Load Less buttons */}
-      {people.length > 6 && (
-        <div className="text-center pt-4">
-          {!showingAll ? (
-            <button
-              onClick={() => setDisplayCount(people.length)}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors"
-              data-testid="button-load-more-people"
-            >
-              Load More ({people.length - displayCount} more)
-            </button>
-          ) : (
-            <button
-              onClick={() => setDisplayCount(6)}
-              className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg font-medium transition-colors"
-              data-testid="button-load-less-people"
-            >
-              Load Less
-            </button>
-          )}
+
+      {/* Show More Button */}
+      {people.length > displayCount && (
+        <div className="text-center mt-6">
+          <button
+            onClick={() => setDisplayCount(prev => prev + 4)}
+            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Show More
+          </button>
         </div>
       )}
     </div>
