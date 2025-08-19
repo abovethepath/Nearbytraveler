@@ -146,12 +146,12 @@ export default function TravelPlansWidget({ userId }: TravelPlansWidgetProps) {
                         <h5 className="font-medium text-gray-900 dark:text-white mb-2">Interests</h5>
                         <div className="flex flex-wrap gap-1">
                           {plan.interests.slice(0, 10).map((interest: string, idx: number) => (
-                            <span
+                            <div
                               key={`interest-${idx}`}
-                              className="pill-interests"
+                              className="inline-flex items-center justify-center h-8 min-w-[7rem] rounded-full px-3 text-sm font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5"
                             >
                               {interest}
-                            </span>
+                            </div>
                           ))}
                           {plan.interests.length > 10 && (
                             <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 text-xs rounded-full">
@@ -167,12 +167,12 @@ export default function TravelPlansWidget({ userId }: TravelPlansWidgetProps) {
                         <h5 className="font-medium text-gray-900 dark:text-white mb-2">Activities</h5>
                         <div className="flex flex-wrap gap-1">
                           {plan.activities.slice(0, 8).map((activity: string, idx: number) => (
-                            <span
+                            <div
                               key={`activity-${idx}`}
-                              className="pill-activities"
+                              className="inline-flex items-center justify-center h-8 min-w-[7rem] rounded-full px-3 text-sm font-medium leading-none whitespace-nowrap bg-green-500 text-white border-0 appearance-none select-none gap-1.5"
                             >
                               {activity}
-                            </span>
+                            </div>
                           ))}
                           {plan.activities.length > 8 && (
                             <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 text-xs rounded-full">
@@ -188,12 +188,12 @@ export default function TravelPlansWidget({ userId }: TravelPlansWidgetProps) {
                         <h5 className="font-medium text-gray-900 dark:text-white mb-2">Events</h5>
                         <div className="flex flex-wrap gap-1">
                           {plan.events.slice(0, 6).map((event: string, idx: number) => (
-                            <span
+                            <div
                               key={`event-${idx}`}
-                              className="pill-events"
+                              className="inline-flex items-center justify-center h-8 min-w-[7rem] rounded-full px-3 text-sm font-medium leading-none whitespace-nowrap bg-purple-500 text-white border-0 appearance-none select-none gap-1.5"
                             >
                               {event}
-                            </span>
+                            </div>
                           ))}
                           {plan.events.length > 6 && (
                             <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 text-xs rounded-full">
