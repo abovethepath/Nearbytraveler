@@ -4147,7 +4147,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                         setEditFormData({ ...editFormData, interests: newInterests })
                                       );
                                     }}
-                                    className={`pill transition-all ${
+                                    className={`pill-interests transition-all ${
                                       isSelected
                                         ? 'bg-green-600 text-white font-bold transform scale-105'
                                         : 'bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-800 dark:text-blue-200 dark:hover:bg-blue-700'
@@ -4216,7 +4216,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                       setEditFormData({ ...editFormData, activities: newActivities })
                                     );
                                   }}
-                                  className={`pill transition-all ${
+                                  className={`pill-activities transition-all ${
                                     isSelected
                                       ? 'bg-green-600 text-white font-bold transform scale-105'
                                       : 'bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-800 dark:text-green-200 dark:hover:bg-green-700'
@@ -4249,7 +4249,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                       setEditFormData({ ...editFormData, events: newEvents })
                                     );
                                   }}
-                                  className={`pill transition-all ${
+                                  className={`pill-events transition-all ${
                                     isSelected
                                       ? 'bg-green-600 text-white font-bold transform scale-105'
                                       : 'bg-orange-100 text-orange-800 hover:bg-orange-200 dark:bg-orange-800 dark:text-orange-200 dark:hover:bg-orange-700'
