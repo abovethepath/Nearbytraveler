@@ -31,11 +31,11 @@ function Badge({ className, variant, ...props }: BadgeProps) {
   // RESPECT PILL CLASSES - If pill class is provided, use it instead of auto-enforcement
   const finalClassName = className || '';
   
-  // If pill class is explicitly provided, use it and skip ALL auto-enforcement
+  // If pill class is explicitly provided, use it and skip ALL auto-enforcement AND badgeVariants
   if (finalClassName.includes('pill')) {
-    console.log('🎯 BADGE DEBUG: Using pill class:', finalClassName);
+    console.log('🎯 BADGE DEBUG: Using pill class (BYPASSING badgeVariants):', finalClassName);
     return (
-      <div className={cn(finalClassName)} {...props} />
+      <div className={finalClassName} {...props} />
     )
   }
   
@@ -76,6 +76,7 @@ function Badge({ className, variant, ...props }: BadgeProps) {
     enforcedClassName = 'text-xs bg-purple-100 text-purple-800 border-purple-300 dark:bg-purple-900 dark:text-purple-200 dark:border-purple-700 justify-center';
   }
   
+  // For non-pill badges, apply badgeVariants + enforcement
   return (
     <div className={cn(badgeVariants({ variant }), enforcedClassName)} {...props} />
   )
