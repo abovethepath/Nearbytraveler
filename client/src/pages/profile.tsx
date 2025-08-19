@@ -4440,7 +4440,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           <p className="text-sm font-medium text-gray-700 mb-2">Selected Interests:</p>
                           <div className="flex flex-wrap gap-2">
                             {tempInterests.map((interest) => (
-                              <Badge key={interest} className="pill-interests">
+                              <div key={interest} className="inline-flex items-center justify-center h-8 min-w-[7rem] rounded-full px-3 text-sm font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
                                 {interest}
                                 <button
                                   onClick={() => setTempInterests(tempInterests.filter(i => i !== interest))}
@@ -4448,7 +4448,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                 >
                                   ×
                                 </button>
-                              </Badge>
+                              </div>
                             ))}
                           </div>
                         </div>
@@ -5606,9 +5606,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             <div className="mb-2">
                               <div className="flex flex-wrap gap-1">
                                 {(expandedPlanInterests.has(plan.id) ? plan.interests : plan.interests.slice(0, 2)).map((interest: string) => (
-                                  <Badge key={interest} className="pill-interests">
+                                  <div key={interest} className="inline-flex items-center justify-center h-8 min-w-[7rem] rounded-full px-3 text-sm font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
                                     {interest}
-                                  </Badge>
+                                  </div>
                                 ))}
                                 {plan.interests.length > 2 && (
                                   <Badge 
@@ -5633,9 +5633,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             <div>
                               <div className="flex flex-wrap gap-1">
                                 {plan.travelStyle.slice(0, 2).map((style: string) => (
-                                  <Badge key={style} className="pill-interests">
+                                  <div key={style} className="inline-flex items-center justify-center h-8 min-w-[7rem] rounded-full px-3 text-sm font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
                                     {style}
-                                  </Badge>
+                                  </div>
                                 ))}
                                 {plan.travelStyle.length > 2 && (
                                   <Badge className="pill-interests">
@@ -8820,9 +8820,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </h4>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                     {selectedTravelPlan.travelStyle.map((style) => (
-                      <Badge key={style} className="pill-interests">
+                      <div key={style} className="inline-flex items-center justify-center h-8 min-w-[7rem] rounded-full px-3 text-sm font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
                         {style}
-                      </Badge>
+                      </div>
                     ))}
                   </div>
                 </div>
