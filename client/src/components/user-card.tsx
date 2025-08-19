@@ -464,7 +464,7 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
               {getFilteredInterests(user)?.slice(0, 3).map((interest) => (
                 <div
                   key={interest}
-                  className="inline-flex items-center justify-center h-8 min-w-[7rem] rounded-full px-3 text-sm font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5"
+                  className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5"
                 >
                   {interest}
                 </div>
@@ -474,7 +474,7 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
                 const totalOverflow = Math.max(0, (filteredInterests?.length || 0) - 3);
                 
                 return totalOverflow > 0 ? (
-                  <div className="inline-flex items-center justify-center h-8 min-w-[7rem] rounded-full px-3 text-sm font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
+                  <div className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
                     +{totalOverflow} more
                   </div>
                 ) : null;
