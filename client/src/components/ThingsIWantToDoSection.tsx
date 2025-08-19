@@ -321,10 +321,8 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
                   {cityData.activities.map((activity) => (
                     <div
                       key={`act-${activity.id}`}
-                      className={`relative group bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-colors ${
-                        isMobile 
-                          ? 'px-3 py-2 text-sm min-h-[40px] flex items-center' 
-                          : 'px-3 py-2 text-sm'
+                      className={`relative group bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-colors px-3 py-2 text-sm ${
+                        isMobile ? 'min-h-[40px] flex items-center' : ''
                       }`}
                     >
                       <span>{activity.activityName}</span>
@@ -348,10 +346,8 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
                   {cityData.events.map((event) => (
                     <div
                       key={`evt-${event.id}`}
-                      className={`relative group bg-purple-600 text-white rounded-full hover:bg-purple-700 transition-colors ${
-                        isMobile 
-                          ? 'px-3 py-2 text-sm min-h-[40px] flex items-center' 
-                          : 'px-3 py-2 text-sm'
+                      className={`relative group bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-colors px-3 py-2 text-sm ${
+                        isMobile ? 'min-h-[40px] flex items-center' : ''
                       }`}
                     >
                       <span>📅 {event.eventTitle || event.title}</span>

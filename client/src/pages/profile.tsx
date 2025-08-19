@@ -4480,12 +4480,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               return (
                                 <>
                                   {topInterests.map((interest, index) => (
-                                    <Badge key={`interest-${index}`} className="bg-blue-500 text-white font-medium border-0">
+                                    <Badge key={`interest-${index}`} className="bg-blue-500 text-white font-medium border-0 px-3 py-2 text-sm rounded-full">
                                       {interest}
                                     </Badge>
                                   ))}
                                   {remaining > 0 && (
-                                    <Badge className="bg-gray-200 text-gray-600 font-medium border-0">
+                                    <Badge className="bg-gray-200 text-gray-600 font-medium border-0 px-3 py-2 text-sm rounded-full">
                                       +{remaining} more
                                     </Badge>
                                   )}
@@ -4627,12 +4627,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               return (
                                 <>
                                   {topActivities.map((activity, index) => (
-                                    <Badge key={`activity-${index}`} className="bg-green-500 text-white font-medium border-0">
+                                    <Badge key={`activity-${index}`} className="bg-blue-500 text-white font-medium border-0 px-3 py-2 text-sm rounded-full">
                                       {activity}
                                     </Badge>
                                   ))}
                                   {remaining > 0 && (
-                                    <Badge className="bg-gray-200 text-gray-600 font-medium border-0">
+                                    <Badge className="bg-gray-200 text-gray-600 font-medium border-0 px-3 py-2 text-sm rounded-full">
                                       +{remaining} more
                                     </Badge>
                                   )}
@@ -4775,12 +4775,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               return (
                                 <>
                                   {topEvents.map((event, index) => (
-                                    <Badge key={`event-${index}`} className="bg-purple-500 text-white font-medium border-0">
+                                    <Badge key={`event-${index}`} className="bg-blue-500 text-white font-medium border-0 px-3 py-2 text-sm rounded-full">
                                       {event}
                                     </Badge>
                                   ))}
                                   {remaining > 0 && (
-                                    <Badge className="bg-gray-200 text-gray-600 font-medium border-0">
+                                    <Badge className="bg-gray-200 text-gray-600 font-medium border-0 px-3 py-2 text-sm rounded-full">
                                       +{remaining} more
                                     </Badge>
                                   )}
@@ -6659,7 +6659,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           {countriesVisited.map((country: string, index: number) => (
                             <Badge 
                               key={country} 
-                              className="bg-blue-500 text-white border-0 px-4 py-2 text-sm font-medium whitespace-nowrap min-w-[100px] h-9 flex items-center justify-center"
+                              className="bg-blue-500 text-white border-0 px-3 py-2 text-sm font-medium rounded-full whitespace-nowrap"
                             >
                               {country}
                             </Badge>
@@ -8765,12 +8765,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </h4>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                     {selectedTravelPlan.interests.slice(0, 9).map((interest) => (
-                      <Badge key={interest} variant="secondary" className="text-xs bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 border-blue-300 dark:border-blue-700 justify-center">
+                      <Badge key={interest} variant="secondary" className="bg-blue-500 text-white border-0 px-3 py-2 text-sm rounded-full justify-center">
                         {interest}
                       </Badge>
                     ))}
                     {selectedTravelPlan.interests.length > 9 && (
-                      <Badge variant="outline" className="text-xs text-gray-500 border-gray-300 justify-center">
+                      <Badge variant="outline" className="bg-gray-200 text-gray-600 border-0 px-3 py-2 text-sm rounded-full justify-center">
                         +{selectedTravelPlan.interests.length - 9} more
                       </Badge>
                     )}
@@ -8787,7 +8787,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </h4>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                     {selectedTravelPlan.activities.map((activity) => (
-                      <Badge key={activity} variant="secondary" className="text-xs bg-green-900 text-green-200 border-green-700 justify-center">
+                      <Badge key={activity} variant="secondary" className="bg-blue-500 text-white border-0 px-3 py-2 text-sm rounded-full justify-center">
                         {activity}
                       </Badge>
                     ))}
@@ -8804,7 +8804,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </h4>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                     {selectedTravelPlan.events.map((event) => (
-                      <Badge key={event} variant="secondary" className="text-xs bg-purple-900 text-purple-200 border-purple-700 justify-center">
+                      <Badge key={event} variant="secondary" className="bg-blue-500 text-white border-0 px-3 py-2 text-sm rounded-full justify-center">
                         {event}
                       </Badge>
                     ))}
@@ -8821,7 +8821,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </h4>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                     {selectedTravelPlan.travelStyle.map((style) => (
-                      <Badge key={style} variant="secondary" className="text-xs bg-orange-900 text-orange-200 border-orange-700 justify-center">
+                      <Badge key={style} variant="secondary" className="bg-blue-500 text-white border-0 px-3 py-2 text-sm rounded-full justify-center">
                         {style}
                       </Badge>
                     ))}
