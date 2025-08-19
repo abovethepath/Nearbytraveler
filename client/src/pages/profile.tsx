@@ -4939,7 +4939,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Business Interests</h4>
                               <div className="flex flex-wrap gap-2">
                                 {allInterests.map((interest, index) => (
-                                  <Badge key={`interest-${index}`} className="bg-orange-500 text-white">
+                                  <Badge key={`interest-${index}`} className="pill-interests">
                                     {interest}
                                   </Badge>
                                 ))}
@@ -4963,7 +4963,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Business Events</h4>
                               <div className="flex flex-wrap gap-2">
                                 {allEvents.map((event, index) => (
-                                  <Badge key={`event-${index}`} className="bg-purple-500 text-white">
+                                  <Badge key={`event-${index}`} className="pill-events">
                                     {event}
                                   </Badge>
                                 ))}
@@ -5606,7 +5606,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             <div className="mb-2">
                               <div className="flex flex-wrap gap-1">
                                 {(expandedPlanInterests.has(plan.id) ? plan.interests : plan.interests.slice(0, 2)).map((interest: string) => (
-                                  <Badge key={interest} className={`text-xs ${getInterestStyle(interest)}`}>
+                                  <Badge key={interest} className="pill-interests text-xs">
                                     {interest}
                                   </Badge>
                                 ))}
@@ -5741,7 +5741,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               <div className="mb-2">
                                 <div className="flex flex-wrap gap-1">
                                   {(expandedPlanInterests.has(plan.id) ? plan.interests : plan.interests.slice(0, 2)).map((interest: string) => (
-                                    <Badge key={interest} className="text-xs bg-gray-100 text-gray-600 border-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600">
+                                    <Badge key={interest} className="pill-interests text-xs">
                                       {interest}
                                     </Badge>
                                   ))}
