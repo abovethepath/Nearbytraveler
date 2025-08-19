@@ -4481,12 +4481,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               return (
                                 <>
                                   {topInterests.map((interest, index) => (
-                                    <Badge key={`interest-${index}`} className="bg-blue-500 text-white font-medium border-0 px-3 py-2 text-sm rounded-full">
+                                    <Badge key={`interest-${index}`} className="pill-interests">
                                       {interest}
                                     </Badge>
                                   ))}
                                   {remaining > 0 && (
-                                    <Badge className="bg-gray-200 text-gray-600 font-medium border-0 px-3 py-2 text-sm rounded-full">
+                                    <Badge className="pill-interests bg-gray-200 text-gray-600">
                                       +{remaining} more
                                     </Badge>
                                   )}
@@ -4628,12 +4628,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               return (
                                 <>
                                   {topActivities.map((activity, index) => (
-                                    <Badge key={`activity-${index}`} className="bg-blue-500 text-white font-medium border-0 px-3 py-2 text-sm rounded-full">
+                                    <Badge key={`activity-${index}`} className="pill-activities">
                                       {activity}
                                     </Badge>
                                   ))}
                                   {remaining > 0 && (
-                                    <Badge className="bg-gray-200 text-gray-600 font-medium border-0 px-3 py-2 text-sm rounded-full">
+                                    <Badge className="pill-activities bg-gray-200 text-gray-600">
                                       +{remaining} more
                                     </Badge>
                                   )}
