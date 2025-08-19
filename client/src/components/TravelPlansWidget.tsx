@@ -211,7 +211,7 @@ export default function TravelPlansWidget({ userId }: TravelPlansWidgetProps) {
                           {plan.tags.slice(0, 8).map((tag: string, idx: number) => (
                             <span
                               key={`tag-${idx}`}
-                              className="inline-flex items-center justify-center h-8 min-w-[7rem] rounded-full px-3 text-sm font-medium leading-none whitespace-nowrap bg-green-500 text-white border-0 appearance-none select-none gap-1.5"
+                              className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-green-500 text-white border-0 appearance-none select-none gap-1.5"
                             >
                               {tag}
                             </span>
