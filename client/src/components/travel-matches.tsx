@@ -91,7 +91,7 @@ export default function TravelMatches({
   };
 
   const MatchCard = ({ match }: { match: MatchScore }) => (
-    <Card className="mb-4 hover:shadow-md transition-shadow">
+    <Card className="mb-4 hover:shadow-md transition-shadow cursor-pointer" onClick={() => window.location.href = `/profile/${match.user.id}`}>
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
@@ -168,12 +168,9 @@ export default function TravelMatches({
 
           {/* Action buttons */}
           <div className="flex gap-2 pt-2">
-            <Button size="sm" className="flex-1">
+            <Button size="sm" className="flex-1" onClick={(e) => e.stopPropagation()}>
               <MessageCircle className="w-4 h-4 mr-1" />
               Connect
-            </Button>
-            <Button size="sm" variant="outline" className="bg-blue-500 hover:bg-blue-600 text-white border-0">
-              View Profile
             </Button>
           </div>
         </div>

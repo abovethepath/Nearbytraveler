@@ -357,16 +357,6 @@ export function PeopleDiscoveryWidget({
             
             {/* Interested Button */}
             <div className="mb-2">
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setLocation(`/profile/${person.id}`);
-                }}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white text-xs px-3 py-1.5 rounded-lg font-medium transition-colors"
-                data-testid={`button-view-profile-${person.id}`}
-              >
-                View Profile
-              </button>
             </div>
           </div>
         </div>
