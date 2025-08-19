@@ -222,7 +222,7 @@ export function CityMap({ city, state, country }: CityMapProps) {
           <MapPin className="h-5 w-5" />
           {city} Overview Map
         </CardTitle>
-        <div className="text-sm text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 p-2 rounded-lg border border-amber-200 dark:border-amber-800">
+        <div className="text-xs sm:text-sm text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 p-2 sm:p-3 rounded-lg border border-amber-200 dark:border-amber-800 break-words leading-relaxed">
           <strong>Map Notice:</strong> Interactive maps are provided for general reference only. Location accuracy and availability may vary. We are not responsible for map functionality or data accuracy.
         </div>
       </CardHeader>
