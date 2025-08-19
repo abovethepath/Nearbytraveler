@@ -474,7 +474,7 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
                 const totalOverflow = Math.max(0, (filteredInterests?.length || 0) - 3);
                 
                 return totalOverflow > 0 ? (
-                  <Badge className="text-xs bg-blue-100 text-blue-800 dark:bg-blue-800 dark:text-blue-100">
+                  <Badge className="pill pill-interests">
                     +{totalOverflow} more
                   </Badge>
                 ) : null;
