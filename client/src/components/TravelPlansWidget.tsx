@@ -169,7 +169,7 @@ export default function TravelPlansWidget({ userId }: TravelPlansWidgetProps) {
                           {plan.activities.slice(0, 8).map((activity: string, idx: number) => (
                             <div
                               key={`activity-${idx}`}
-                              className="inline-flex items-center justify-center h-8 min-w-[7rem] rounded-full px-3 text-sm font-medium leading-none whitespace-nowrap bg-green-500 text-white border-0 appearance-none select-none gap-1.5"
+                              className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-green-500 text-white border-0 appearance-none select-none gap-1.5"
                             >
                               {activity}
                             </div>
@@ -190,7 +190,7 @@ export default function TravelPlansWidget({ userId }: TravelPlansWidgetProps) {
                           {plan.events.slice(0, 6).map((event: string, idx: number) => (
                             <div
                               key={`event-${idx}`}
-                              className="inline-flex items-center justify-center h-8 min-w-[7rem] rounded-full px-3 text-sm font-medium leading-none whitespace-nowrap bg-purple-500 text-white border-0 appearance-none select-none gap-1.5"
+                              className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-purple-500 text-white border-0 appearance-none select-none gap-1.5"
                             >
                               {event}
                             </div>
