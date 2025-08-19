@@ -4,7 +4,7 @@ import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Globe, ChevronDown, ChevronUp } from "lucide-react";
-import { getInterestStyle, getActivityStyle, getEventStyle } from "@/lib/topChoicesUtils";
+// Removed conflicting style utility imports - using pill classes instead
 import type { TripPlan } from "@shared/schema";
 
 interface TravelPlansWidgetProps {
@@ -148,7 +148,7 @@ export default function TravelPlansWidget({ userId }: TravelPlansWidgetProps) {
                           {plan.interests.slice(0, 10).map((interest: string, idx: number) => (
                             <span
                               key={`interest-${idx}`}
-                              className={`px-2 py-1 text-xs rounded-full ${getInterestStyle(interest)}`}
+                              className="pill-interests"
                             >
                               {interest}
                             </span>
@@ -169,7 +169,7 @@ export default function TravelPlansWidget({ userId }: TravelPlansWidgetProps) {
                           {plan.activities.slice(0, 8).map((activity: string, idx: number) => (
                             <span
                               key={`activity-${idx}`}
-                              className={`px-2 py-1 text-xs rounded-full ${getActivityStyle()}`}
+                              className="pill-activities"
                             >
                               {activity}
                             </span>
@@ -190,7 +190,7 @@ export default function TravelPlansWidget({ userId }: TravelPlansWidgetProps) {
                           {plan.events.slice(0, 6).map((event: string, idx: number) => (
                             <span
                               key={`event-${idx}`}
-                              className={`px-2 py-1 text-xs rounded-full ${getEventStyle()}`}
+                              className="pill-events"
                             >
                               {event}
                             </span>
@@ -211,7 +211,7 @@ export default function TravelPlansWidget({ userId }: TravelPlansWidgetProps) {
                           {plan.tags.slice(0, 8).map((tag: string, idx: number) => (
                             <span
                               key={`tag-${idx}`}
-                              className={`px-2 py-1 text-xs rounded-full ${getActivityStyle()}`}
+                              className="pill-activities"
                             >
                               {tag}
                             </span>
