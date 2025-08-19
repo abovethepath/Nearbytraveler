@@ -3,6 +3,7 @@ import { X, Trash2 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { useEffect, useState, useMemo } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -319,13 +320,13 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
 
                   {/* Activity Pills */}
                   {cityData.activities.map((activity) => (
-                    <div
+                    <Badge
                       key={`act-${activity.id}`}
-                      className={`relative group bg-blue-500 text-white border-0 rounded-full hover:bg-blue-600 transition-colors px-3 py-2 text-sm font-medium ${
+                      className={`pill-activities relative group ${
                         isMobile ? 'min-h-[40px] flex items-center' : ''
                       }`}
                     >
-                      <span>{activity.activityName}</span>
+                      {activity.activityName}
                       {isOwnProfile && (
                         <button
                           onClick={() => deleteActivity.mutate(activity.id)}
@@ -339,18 +340,18 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
                           <X className={isMobile ? 'w-3 h-3' : 'w-3 h-3'} />
                         </button>
                       )}
-                    </div>
+                    </Badge>
                   ))}
 
                   {/* Event Pills */}
                   {cityData.events.map((event) => (
-                    <div
+                    <Badge
                       key={`evt-${event.id}`}
-                      className={`relative group bg-blue-500 text-white border-0 rounded-full hover:bg-blue-600 transition-colors px-3 py-2 text-sm font-medium ${
+                      className={`pill-events relative group ${
                         isMobile ? 'min-h-[40px] flex items-center' : ''
                       }`}
                     >
-                      <span>📅 {event.eventTitle || event.title}</span>
+                      📅 {event.eventTitle || event.title}
                       {isOwnProfile && (
                         <button
                           onClick={() => deleteEvent.mutate(event)}
@@ -364,7 +365,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
                           <X className={isMobile ? 'w-3 h-3' : 'w-3 h-3'} />
                         </button>
                       )}
-                    </div>
+                    </Badge>
                   ))}
 
                 </div>
