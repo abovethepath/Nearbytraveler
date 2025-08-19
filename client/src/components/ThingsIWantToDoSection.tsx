@@ -50,10 +50,17 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
   });
 
   // Fetch events that the user is attending  
-  const { data: events = [], isLoading: loadingEvents } = useQuery({
+  const { data: joinedEvents = [], isLoading: loadingJoinedEvents } = useQuery({
     queryKey: [`/api/users/${userId}/all-events`],
     staleTime: 0, // Always refresh to get latest joined events
     gcTime: 0,
+  });
+
+  // Fetch user event interests (events they marked interest in from city pages)
+  const { data: eventInterestsData = [], isLoading: loadingEventInterests } = useQuery({
+    queryKey: [`/api/user-event-interests/${userId}`],
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    gcTime: 1000 * 60 * 10, // 10 minutes
   });
 
   // Combine all activities and interests
@@ -98,24 +105,45 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
   const allEvents = useMemo(() => {
     console.log('🎯 ThingsIWantToDoSection events data:', { 
       userId, 
-      rawEvents: events, 
-      eventsCount: events?.length,
-      eventsType: typeof events,
-      firstEventSample: events?.[0] ? {
-        id: events[0].id,
-        title: events[0].title,
-        eventTitle: events[0].eventTitle,
-        cityName: events[0].cityName,
-        location: events[0].location,
-        allKeys: Object.keys(events[0])
+      rawJoinedEvents: joinedEvents, 
+      joinedEventsCount: joinedEvents?.length,
+      rawEventInterests: eventInterestsData,
+      eventInterestsCount: eventInterestsData?.length,
+      firstJoinedEventSample: joinedEvents?.[0] ? {
+        id: joinedEvents[0].id,
+        title: joinedEvents[0].title,
+        eventTitle: joinedEvents[0].eventTitle,
+        cityName: joinedEvents[0].cityName,
+        location: joinedEvents[0].location,
+        allKeys: Object.keys(joinedEvents[0])
+      } : null,
+      firstEventInterestSample: eventInterestsData?.[0] ? {
+        id: eventInterestsData[0].id,
+        eventTitle: eventInterestsData[0].eventtitle || eventInterestsData[0].eventTitle,
+        cityName: eventInterestsData[0].cityname || eventInterestsData[0].cityName,
+        allKeys: Object.keys(eventInterestsData[0])
       } : null
     });
     
     const combined = [];
     
     // Add specific events the user joined
-    if (Array.isArray(events)) {
-      combined.push(...events);
+    if (Array.isArray(joinedEvents)) {
+      combined.push(...joinedEvents);
+    }
+    
+    // Add event interests (events marked from city pages)
+    if (Array.isArray(eventInterestsData)) {
+      eventInterestsData.forEach((eventInterest) => {
+        combined.push({
+          id: eventInterest.id,
+          userId: userId,
+          eventId: eventInterest.eventid || eventInterest.eventId,
+          eventTitle: eventInterest.eventtitle || eventInterest.eventTitle,
+          cityName: eventInterest.cityname || eventInterest.cityName,
+          isEventInterest: true
+        });
+      });
     }
     
     // Add general profile events as interests
@@ -132,7 +160,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
     }
     
     return combined;
-  }, [events, userProfile, userId]);
+  }, [joinedEvents, eventInterestsData, userProfile, userId]);
 
   // Delete activity (only works for city-specific ones, not general profile items)
   const deleteActivity = useMutation({
@@ -158,19 +186,36 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
     }
   });
 
-  // Delete event
+  // Delete event (handles both joined events and event interests)
   const deleteEvent = useMutation({
-    mutationFn: async (eventId: number) => {
-      const response = await apiRequest('DELETE', `/api/event-interests/${eventId}`);
-      if (!response.ok) throw new Error('Failed to delete');
+    mutationFn: async (eventData: any) => {
+      // Skip deletion for general profile items
+      if (eventData.isGeneral) {
+        throw new Error('Cannot delete general profile items from here');
+      }
+      
+      // If it's an event interest (from city page selection), delete from user_event_interests
+      if (eventData.isEventInterest) {
+        const response = await apiRequest('DELETE', `/api/user-event-interests/${eventData.id}`);
+        if (!response.ok) throw new Error('Failed to delete event interest');
+      } else {
+        // It's a joined event, delete from event participants
+        const response = await apiRequest('DELETE', `/api/event-interests/${eventData.id}`);
+        if (!response.ok) throw new Error('Failed to delete event participation');
+      }
     },
     onSuccess: () => {
-      // Just invalidate cache - no local state updates needed
+      // Invalidate all related caches
       queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/all-events`] });
-      toast({ title: "Removed", description: "Event deleted successfully." });
+      queryClient.invalidateQueries({ queryKey: [`/api/user-event-interests/${userId}`] });
+      toast({ title: "Removed", description: "Event removed successfully." });
     },
-    onError: () => {
-      toast({ title: "Error", description: "Failed to remove event", variant: "destructive" });
+    onError: (error: any) => {
+      if (error.message.includes('general profile')) {
+        toast({ title: "Info", description: "General events can be edited in your profile settings.", variant: "default" });
+      } else {
+        toast({ title: "Error", description: "Failed to remove event", variant: "destructive" });
+      }
     }
   });
 
@@ -196,9 +241,10 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
       // Delete all events for this city
       await Promise.all(cityEvents.map(e => apiRequest('DELETE', `/api/event-interests/${e.id}`)));
 
-      // Refresh cache only - no local state updates needed
+      // Refresh all caches - no local state updates needed
       queryClient.invalidateQueries({ queryKey: [`/api/user-city-interests/${userId}`] });
       queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/all-events`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/user-event-interests/${userId}`] });
       queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}`] });
 
       toast({ 
@@ -293,7 +339,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
 
   const cities = useMemo(() => Object.keys(citiesByName), [citiesByName]);
 
-  if (loadingCityActivities || loadingProfile || loadingEvents) {
+  if (loadingCityActivities || loadingProfile || loadingJoinedEvents || loadingEventInterests) {
     return (
       <div className="bg-gray-800 rounded-lg p-6">
         <h2 className="text-lg font-semibold text-white mb-6">⭐ Things I Want to Do in...</h2>
@@ -388,7 +434,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
                       <span>📅 {event.eventTitle || event.title}</span>
                       {isOwnProfile && !event.isGeneral && (
                         <button
-                          onClick={() => deleteEvent.mutate(event.id)}
+                          onClick={() => deleteEvent.mutate(event)}
                           className={`absolute bg-gray-400 hover:bg-gray-500 text-white rounded-full flex items-center justify-center transition-opacity ${
                             isMobile 
                               ? '-top-1 -right-1 w-6 h-6 opacity-100' 

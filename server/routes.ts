@@ -4750,6 +4750,38 @@ Questions? Just reply to this message. Welcome aboard!
   // User Event Interests API endpoints for City Match Events functionality
   
   // Get user's event interests for a specific city
+  // GET all user event interests for a user across all cities
+  app.get("/api/user-event-interests/:userId", async (req, res) => {
+    try {
+      const { userId } = req.params;
+      if (process.env.NODE_ENV === 'development') console.log(`🎪 USER EVENT INTERESTS ALL: Getting all event interests for user ${userId}`);
+
+      const interests = await db.execute(sql`
+        SELECT 
+          id,
+          user_id as userid,
+          event_id as eventid,
+          city_name as cityname,
+          event_title as eventtitle,
+          event_source,
+          is_active as isactive,
+          created_at as createdat
+        FROM user_event_interests 
+        WHERE user_id = ${parseInt(userId)} AND is_active = true
+        ORDER BY created_at DESC
+      `);
+
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`🎪 USER EVENT INTERESTS ALL: Found ${interests.rows.length} event interests for user ${userId} across all cities`);
+      }
+
+      return res.json(interests.rows || []);
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error getting user event interests:", error);
+      return res.status(500).json({ error: "Failed to get user event interests" });
+    }
+  });
+
   app.get("/api/user-event-interests/:userId/:city", async (req, res) => {
     try {
       const userId = parseInt(req.params.userId || '0');
