@@ -398,18 +398,18 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
                 {user.travelInterests?.slice(0, 2).map((interest) => (
                   <div 
                     key={interest} 
-                    className="inline-flex items-center justify-center h-8 min-w-[7rem] rounded-full px-3 text-sm font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5"
+                    className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5"
                   >
                     {interest}
                   </div>
                 ))}
                 {user.preferredActivities?.slice(0, 2).map((activity) => (
-                  <div key={activity} className="inline-flex items-center justify-center h-8 min-w-[7rem] rounded-full px-3 text-sm font-medium leading-none whitespace-nowrap bg-green-500 text-white border-0 appearance-none select-none gap-1.5">
+                  <div key={activity} className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-green-500 text-white border-0 appearance-none select-none gap-1.5">
                     {activity}
                   </div>
                 ))}
                 {user.plannedEvents?.slice(0, 1).map((event) => (
-                  <div key={event} className="inline-flex items-center justify-center h-8 min-w-[7rem] rounded-full px-3 text-sm font-medium leading-none whitespace-nowrap bg-purple-500 text-white border-0 appearance-none select-none gap-1.5">
+                  <div key={event} className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-purple-500 text-white border-0 appearance-none select-none gap-1.5">
                     {event}
                   </div>
                 ))}

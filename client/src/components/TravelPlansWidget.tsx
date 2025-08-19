@@ -148,7 +148,7 @@ export default function TravelPlansWidget({ userId }: TravelPlansWidgetProps) {
                           {plan.interests.slice(0, 10).map((interest: string, idx: number) => (
                             <div
                               key={`interest-${idx}`}
-                              className="inline-flex items-center justify-center h-8 min-w-[7rem] rounded-full px-3 text-sm font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5"
+                              className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5"
                             >
                               {interest}
                             </div>
