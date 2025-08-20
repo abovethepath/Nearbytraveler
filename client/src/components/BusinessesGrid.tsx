@@ -16,9 +16,14 @@ interface BusinessesGridProps {
   travelPlans?: any[];
 }
 
+// Helper functions for safe text processing
+const stripHtml = (s?: string) => (s ? s.replace(/<[^>]+>/g, "").trim() : "");
+const safeUrl = (u?: string) =>
+  !u ? "" : /^https?:\/\//i.test(u) ? u : `https://${u}`;
+
 export default function BusinessesGrid({ currentLocation, travelPlans = [] }: BusinessesGridProps) {
   const [, setLocation] = useLocation();
-  const [displayLimit, setDisplayLimit] = useState(3);
+  const [displayLimit, setDisplayLimit] = useState(6);
 
   // Determine ALL locations for business discovery (hometown + all travel destinations)
   const locationsForDiscovery = useMemo(() => {
@@ -118,9 +123,9 @@ export default function BusinessesGrid({ currentLocation, travelPlans = [] }: Bu
 
   if (businessesLoading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {[1, 2, 3].map(i => (
-          <div key={i} className="animate-pulse bg-gray-100 h-64 rounded-lg" />
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6">
+        {[1, 2, 3, 4, 5, 6].map(i => (
+          <div key={i} className="animate-pulse bg-gray-100 dark:bg-gray-800 h-64 rounded-lg" />
         ))}
       </div>
     );
@@ -134,128 +139,141 @@ export default function BusinessesGrid({ currentLocation, travelPlans = [] }: Bu
     );
   }
 
+  const visible = businesses.slice(0, displayLimit);
+
   return (
-    <div className="space-y-6">
-      {/* Grid Layout - 2 cols on mobile, 3 on desktop */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
-        {businesses.slice(0, displayLimit).map((business: any) => (
-          <Card 
-            key={business.id} 
-            className="hover:shadow-lg transition-shadow bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 overflow-hidden cursor-pointer"
-            onClick={() => setLocation(`/business/${business.id}`)}
-          >
-            {/* Business Photo Header */}
-            {business.profileImage && (
-              <div className="relative h-24 bg-cover bg-center">
-                <img
-                  src={business.profileImage}
-                  alt={business.name}
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
-              </div>
-            )}
-            
-            <CardContent className="p-3">
-              <div className="mb-3">
-                <h3 className="font-bold text-sm text-black dark:text-white leading-tight line-clamp-2 mb-1">{business.name}</h3>
-                <div className="flex items-center gap-2 mb-2">
-                  <Badge variant="secondary" className="text-xs">
-                    {business.businessType || 'Business'}
-                  </Badge>
-                </div>
-                <p className="text-xs text-gray-600 dark:text-gray-300 line-clamp-2">
-                  {business.businessDescription || business.services || 'Local business offering quality services'}
-                </p>
-              </div>
+    <>
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6">
+        {visible.map((b: any) => {
+          const title = b.businessName || b.name || b.username || "Business";
+          const category = b.businessType || b.category || b.specialty;
+          const city = b.city || b.sourceLocation?.city;
+          const state = b.state || b.sourceLocation?.state;
+          const country = b.country || b.sourceLocation?.country;
+          const website = b.website || b.url || b.site;
+          const phone = b.phone || b.phoneNumber;
+          const bioRaw = b.bio || b.description || b.businessDescription || b.about || "";
+          const bio = stripHtml(bioRaw);
 
-              <div className="space-y-1 mb-3">
-                <div className="flex items-center text-gray-600 dark:text-gray-300">
-                  <MapPin className="w-3 h-3 mr-1 flex-shrink-0" />
-                  <span className="text-sm font-medium break-words leading-tight">
-                    {business.streetAddress && business.city ? 
-                      `${business.streetAddress}, ${business.city}, ${business.state}` : 
-                      business.streetAddress || `${business.city}, ${business.state}`
+          return (
+            <Card key={b.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+              <CardContent className="p-4 md:p-5">
+                {/* Header row */}
+                <div className="flex items-start gap-3 min-w-0">
+                  {/* Optional logo/avatar */}
+                  {(b.logoUrl || b.profileImage) && (
+                    <img
+                      src={b.logoUrl || b.profileImage}
+                      alt={title}
+                      className="h-10 w-10 rounded-lg object-cover shrink-0"
+                      loading="lazy"
+                    />
+                  )}
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <h3 className="font-semibold text-gray-900 dark:text-white text-base md:text-lg truncate">
+                        {title}
+                      </h3>
+                      {category && (
+                        <Badge className="shrink-0 rounded-full">
+                          {category}
+                        </Badge>
+                      )}
+                    </div>
+
+                    {/* Location row */}
+                    <div className="mt-1 flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 min-w-0">
+                      <MapPin className="h-4 w-4 shrink-0" />
+                      <span className="truncate">
+                        {[city, state, country].filter(Boolean).join(", ")}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Bio — safe wrapping + clamp */}
+                {bio && (
+                  <p
+                    className="mt-3 text-sm text-gray-600 dark:text-gray-300 leading-relaxed
+                               whitespace-normal break-words [overflow-wrap:anywhere] hyphens-auto
+                               line-clamp-3 md:line-clamp-4"
+                    title={bio}
+                  >
+                    {bio}
+                  </p>
+                )}
+
+                {/* Contact row — wrap on small, truncate long URLs */}
+                <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+                  {website && (
+                    <a
+                      href={safeUrl(website)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400 hover:underline min-w-0"
+                      title={website}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <Globe className="h-4 w-4 shrink-0" />
+                      <span className="truncate">{website}</span>
+                    </a>
+                  )}
+                  {phone && (
+                    <a
+                      href={`tel:${phone}`}
+                      className="inline-flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 min-w-0"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <Phone className="h-4 w-4 shrink-0" />
+                      <span className="truncate">{phone}</span>
+                    </a>
+                  )}
+                  {b.openHours && (
+                    <div className="inline-flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 min-w-0">
+                      <Clock className="h-4 w-4 shrink-0" />
+                      <span className="truncate">{b.openHours}</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Actions */}
+                <div className="mt-4 flex gap-2">
+                  <Button
+                    className="flex-1 sm:flex-none"
+                    onClick={() => setLocation(`/business/${b.id}`)}
+                  >
+                    View
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="flex-1 sm:flex-none"
+                    onClick={() =>
+                      setLocation(
+                        `/map?lat=${encodeURIComponent(
+                          b.currentLatitude ?? b.latitude ?? ""
+                        )}&lng=${encodeURIComponent(
+                          b.currentLongitude ?? b.longitude ?? ""
+                        )}`
+                      )
                     }
-                  </span>
+                  >
+                    Directions
+                  </Button>
                 </div>
-                {business.phoneNumber && (
-                  <div className="flex items-center text-gray-600 dark:text-gray-300">
-                    <Phone className="w-3 h-3 mr-1 flex-shrink-0" />
-                    <span className="text-sm font-medium break-words">{business.phoneNumber}</span>
-                  </div>
-                )}
-                {business.website && (
-                  <div className="flex items-center text-gray-600 dark:text-gray-300">
-                    <Globe className="w-3 h-3 mr-1 flex-shrink-0" />
-                    <span className="text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400">Website</span>
-                  </div>
-                )}
-              </div>
-
-              {business.tags && business.tags.length > 0 && (
-                <div className="mb-3">
-                  <div className="flex flex-wrap gap-1">
-                    {business.tags.slice(0, 2).map((tag: string, index: number) => (
-                      <Badge key={index} variant="outline" className="text-xs py-0">
-                        {tag}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              <div className="grid grid-cols-2 gap-1">
-                <Button 
-                  size="sm" 
-                  className="text-xs h-6 bg-blue-500 hover:bg-blue-600 text-white border-0"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setLocation(`/business/${business.id}`);
-                  }}
-                >
-                  Details
-                </Button>
-                <Button 
-                  size="sm" 
-                  variant="outline" 
-                  className="text-xs h-6 border-green-200 hover:bg-green-50 dark:border-green-700 dark:hover:bg-green-900"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setLocation(`/business/${business.id}/offers`);
-                  }}
-                >
-                  Offers
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
 
-      {/* Load More / Load Less buttons */}
-      {businesses.length > 3 && (
-        <div className="text-center py-4 space-x-3">
-          {displayLimit < businesses.length && (
-            <Button 
-              variant="outline" 
-              className="bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white dark:border-gray-600"
-              onClick={() => setDisplayLimit(Math.min(displayLimit + 3, businesses.length))}
-            >
-              Load More ({Math.min(3, businesses.length - displayLimit)} more businesses)
-            </Button>
-          )}
-          {displayLimit > 3 && (
-            <Button
-              variant="outline"
-              onClick={() => setDisplayLimit(3)}
-              className="bg-gray-50 hover:bg-gray-100 dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white dark:border-gray-500"
-            >
-              Load Less
-            </Button>
-          )}
+      {/* Show more */}
+      {businesses.length > displayLimit && (
+        <div className="text-center mt-6">
+          <Button onClick={() => setDisplayLimit((n) => n + 6)}>
+            Show more ({businesses.length - displayLimit} remaining)
+          </Button>
         </div>
       )}
-    </div>
+    </>
   );
 }

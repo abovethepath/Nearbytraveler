@@ -1,0 +1,167 @@
+Yep—this is just text not wrapping + missing min-w-0 in flex/grid children. Here’s a mobile-first render section you can drop after your loading block to make bios wrap and never blow past the screen.
+
+What this does
+
+Forces wrapping for long bios/URLs (break-words + [overflow-wrap:anywhere] + hyphens-auto).
+
+Adds min-w-0 on flex children so truncate actually works.
+
+Clamps bio to 3 lines on mobile (4 on md+) so cards stay the same height.
+
+Keeps badges/pills in normal flow—no overlaps.
+
+// helpers at top of file (or inline)
+const stripHtml = (s?: string) => (s ? s.replace(/<[^>]+>/g, "").trim() : "");
+const safeUrl = (u?: string) =>
+  !u ? "" : /^https?:\/\//i.test(u) ? u : `https://${u}`;
+
+//
+// ...inside your component, after the loading branch:
+//
+const visible = businesses.slice(0, displayLimit);
+
+return (
+  <>
+    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6">
+      {visible.map((b: any) => {
+        const title = b.businessName || b.name || b.username || "Business";
+        const category = b.businessType || b.category || b.specialty;
+        const city = b.city || b.sourceLocation?.city;
+        const state = b.state || b.sourceLocation?.state;
+        const country = b.country || b.sourceLocation?.country;
+        const website = b.website || b.url || b.site;
+        const phone = b.phone || b.phoneNumber;
+        const bioRaw = b.bio || b.description || b.about || "";
+        const bio = stripHtml(bioRaw);
+
+        return (
+          <Card key={b.id} className="overflow-hidden">
+            <CardContent className="p-4 md:p-5">
+              {/* Header row */}
+              <div className="flex items-start gap-3 min-w-0">
+                {/* Optional logo/avatar */}
+                {b.logoUrl && (
+                  <img
+                    src={b.logoUrl}
+                    alt={title}
+                    className="h-10 w-10 rounded-lg object-cover shrink-0"
+                    loading="lazy"
+                  />
+                )}
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <h3 className="font-semibold text-white text-base md:text-lg truncate">
+                      {title}
+                    </h3>
+                    {category && (
+                      <Badge className="shrink-0 rounded-full">
+                        {category}
+                      </Badge>
+                    )}
+                  </div>
+
+                  {/* Location row */}
+                  <div className="mt-1 flex items-center gap-2 text-sm text-gray-300 min-w-0">
+                    <MapPin className="h-4 w-4 shrink-0" />
+                    <span className="truncate">
+                      {[city, state, country].filter(Boolean).join(", ")}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Bio — safe wrapping + clamp */}
+              {bio && (
+                <p
+                  className="mt-3 text-sm text-gray-300 leading-relaxed
+                             whitespace-normal break-words [overflow-wrap:anywhere] hyphens-auto
+                             line-clamp-3 md:line-clamp-4"
+                  title={bio}
+                >
+                  {bio}
+                </p>
+              )}
+
+              {/* Contact row — wrap on small, truncate long URLs */}
+              <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+                {website && (
+                  <a
+                    href={safeUrl(website)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 text-sm text-blue-400 hover:underline min-w-0"
+                    title={website}
+                  >
+                    <Globe className="h-4 w-4 shrink-0" />
+                    <span className="truncate">{website}</span>
+                  </a>
+                )}
+                {phone && (
+                  <a
+                    href={`tel:${phone}`}
+                    className="inline-flex items-center gap-2 text-sm text-gray-300 min-w-0"
+                  >
+                    <Phone className="h-4 w-4 shrink-0" />
+                    <span className="truncate">{phone}</span>
+                  </a>
+                )}
+                {b.openHours && (
+                  <div className="inline-flex items-center gap-2 text-sm text-gray-300 min-w-0">
+                    <Clock className="h-4 w-4 shrink-0" />
+                    <span className="truncate">{b.openHours}</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Actions */}
+              <div className="mt-4 flex gap-2">
+                <Button
+                  className="flex-1 sm:flex-none"
+                  onClick={() => setLocation(`/business/${b.id}`)}
+                >
+                  View
+                </Button>
+                <Button
+                  variant="outline"
+                  className="flex-1 sm:flex-none"
+                  onClick={() =>
+                    setLocation(
+                      `/map?lat=${encodeURIComponent(
+                        b.currentLatitude ?? b.latitude ?? ""
+                      )}&lng=${encodeURIComponent(
+                        b.currentLongitude ?? b.longitude ?? ""
+                      )}`
+                    )
+                  }
+                >
+                  Directions
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        );
+      })}
+    </div>
+
+    {/* Show more */}
+    {businesses.length > displayLimit && (
+      <div className="text-center mt-6">
+        <Button onClick={() => setDisplayLimit((n) => n + 6)}>
+          Show more
+        </Button>
+      </div>
+    )}
+  </>
+);
+
+Why this fixes overflow
+
+break-words + [overflow-wrap:anywhere] handles long unbroken strings (bios with URLs, single-word spam, etc.).
+
+min-w-0 on flex children lets truncate actually take effect.
+
+line-clamp-* keeps cards equal height; remove it if you want full bios.
+
+No 100vw anywhere, so you won’t get phantom horizontal scrollbars.
+
+If a specific field is still spilling (e.g., a 300-char URL), tell me which and I’ll add a micro-rule just for that row.
