@@ -1218,16 +1218,16 @@ export default function Home() {
 
       {/* Hero Section with Scrolling Photo Gallery */}
 <section
-  className="relative overflow-hidden text-white min-h-[40svh] md:min-h-[45svh] bg-cover bg-center bg-no-repeat"
+  className="relative overflow-hidden text-white min-h-[20svh] md:min-h-[25svh] bg-cover bg-center bg-no-repeat"
   style={{
     backgroundImage: "url('/attached_assets/beach travel_1754973619241.jpg')",
   }}
 >
         {/* Dark overlay for text readability */}
         <div className="absolute inset-0 bg-gradient-to-br from-black/40 via-black/30 to-black/50"></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4 lg:py-6">
           <div className="text-center max-w-3xl mx-auto">
-            <h1 className="text-xl sm:text-2xl md:text-4xl lg:text-6xl font-bold mb-4 sm:mb-6 leading-tight text-white text-center" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700', textShadow: '2px 2px 4px rgba(0,0,0,0.8)'}}>
+            <h1 className="text-lg sm:text-xl md:text-2xl lg:text-4xl font-bold mb-2 sm:mb-3 leading-tight text-white text-center" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700', textShadow: '2px 2px 4px rgba(0,0,0,0.8)'}}>
               <div className="leading-tight">
                 {effectiveUser?.userType === 'business' ? (
                   <>
@@ -1242,7 +1242,7 @@ export default function Home() {
                 )}
               </div>
             </h1>
-            <p className="text-base sm:text-lg md:text-xl lg:text-2xl mb-6 sm:mb-8 text-white leading-relaxed px-2 sm:px-0">
+            <p className="text-sm sm:text-base md:text-lg lg:text-xl mb-3 sm:mb-4 text-white leading-relaxed px-2 sm:px-0">
               {effectiveUser?.userType === 'business' ? (
                 'Reach customers through interest-based matching, business notifications, and location-targeted discovery. Grow your business by connecting with travelers and locals who love what you offer.'
               ) : (
@@ -1252,30 +1252,30 @@ export default function Home() {
 
             {/* Business-specific CTA buttons vs Traveler/Local CTAs */}
             {effectiveUser?.userType === 'business' ? (
-              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 md:gap-4 justify-center px-4 sm:px-0">
+              <div className="flex flex-col sm:flex-row gap-1 sm:gap-2 justify-center px-4 sm:px-0 mt-2">
                 <Button 
-                  size="lg" 
-                  className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-black px-4 sm:px-6 md:px-8 py-2 sm:py-3 md:py-4 text-sm sm:text-base md:text-lg w-full sm:w-auto shadow-lg border border-blue-500"
+                  size="sm" 
+                  className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-black px-3 py-1.5 text-xs sm:text-sm w-full sm:w-auto shadow-lg border border-blue-500"
                   onClick={() => setLocation('/business-dashboard')}
                 >
-                  <Store className="w-3 sm:w-4 md:w-5 h-3 sm:h-4 md:h-5 mr-1 sm:mr-2" />
+                  <Store className="w-3 h-3 mr-1" />
                   Manage Business
                 </Button>
                 <Button 
-                  size="lg"
-                  className="bg-gradient-to-r from-green-600 to-blue-500 hover:from-green-700 hover:to-blue-600 text-black px-4 sm:px-6 md:px-8 py-2 sm:py-3 md:py-4 text-sm sm:text-base md:text-lg w-full sm:w-auto shadow-lg border border-green-500"
+                  size="sm"
+                  className="bg-gradient-to-r from-green-600 to-blue-500 hover:from-green-700 hover:to-blue-600 text-black px-3 py-1.5 text-xs sm:text-sm w-full sm:w-auto shadow-lg border border-green-500"
                   onClick={() => {
                     setConnectModalMode('current');
                     setShowConnectModal(true);
                   }}
                 >
-                  <Users className="w-3 sm:w-4 md:w-5 h-3 sm:h-4 md:h-5 mr-1 sm:mr-2" />
+                  <Users className="w-3 h-3 mr-1" />
                   Find Customers
                 </Button>
               </div>
             ) : (
-              <div className="text-center">
-                <p className="text-sm text-white/80">Use the navigation below to start exploring</p>
+              <div className="text-center mt-2">
+                <p className="text-xs text-white/80">Use the navigation below to start exploring</p>
               </div>
             )}
           </div>
