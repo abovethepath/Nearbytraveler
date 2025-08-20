@@ -2620,6 +2620,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   }
 
   return (
+    <>
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {shouldShowBackToChatroom && (
         <div className="w-full max-w-full mx-auto px-2 pt-2">
@@ -6601,8 +6602,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           </div>
         </DialogContent>
       </Dialog>
-      </div>
-    </div>
+    </>
   );
 }
 
