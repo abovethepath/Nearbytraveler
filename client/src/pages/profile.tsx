@@ -2942,7 +2942,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           <div className="flex flex-row items-start gap-4 sm:gap-6">
             {/* Profile Avatar - Left Side */}
             <div className="relative flex-shrink-0">
-              <Avatar className="w-20 h-20 sm:w-32 sm:h-32 md:w-40 md:h-40 border-4 border-white shadow-lg bg-white">
+              <Avatar className="w-28 h-28 sm:w-44 sm:h-44 md:w-56 md:h-56 border-4 border-white shadow-lg bg-white">
                 <AvatarImage src={user?.profileImage || ''} className="object-cover" />
                 <AvatarFallback className="text-lg sm:text-2xl md:text-4xl bg-gradient-to-br from-blue-600 to-orange-600 text-white">
                   {(user?.username?.charAt(0) || user?.name?.charAt(0) || 'U').toUpperCase()}
@@ -2956,7 +2956,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     onClick={() => document.getElementById('avatar-upload-input')?.click()}
                     disabled={uploadingPhoto}
                   >
-                    <Camera className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <Camera className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                   </Button>
                   <input
                     type="file"
@@ -2970,16 +2970,16 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             </div>
 
             {/* Profile Info - Right Side */}
-            <div className="flex-1 min-w-0">
+            <div className="flex-1 min-w-0 relative">
               {isOwnProfile && (
-                <div className="mb-3">
+                <div className="absolute top-0 right-0">
                   <Button
                     size="sm"
                     variant="ghost"
-                    className="bg-white/90 hover:bg-white text-gray-800 hover:text-gray-900 border border-white text-xs sm:text-sm px-3 py-1 font-medium shadow-sm"
+                    className="bg-white/90 hover:bg-white text-gray-800 hover:text-gray-900 border border-white text-xs px-2 py-0.5 font-medium shadow-sm"
                     onClick={() => setSelectedGradient((prev) => (prev + 1) % gradientOptions.length)}
                   >
-                    🎨 Change Color
+                    🎨
                   </Button>
                 </div>
               )}
