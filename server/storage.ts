@@ -8688,7 +8688,7 @@ export class DatabaseStorage implements IStorage {
         city: 'Global', // Events can be global
         state: null,
         country: 'Global',
-        createdById: 1, // System user
+        createdById: 2, // nearbytraveler as system user
         isPublic: data.isPublic !== false,
         maxMembers: data.maxMembers || 100,
         tags: ['event', 'chat', `event-${data.eventId}`],
@@ -8766,7 +8766,7 @@ export class DatabaseStorage implements IStorage {
         city: 'Global',
         state: null,
         country: 'Global',
-        createdById: 1,
+        createdById: 2, // nearbytraveler as system user
         isPublic: data.isPublic !== false,
         maxMembers: data.maxMembers || 20,
         tags: ['meetup', 'chat', `meetup-${data.meetupId}`],
