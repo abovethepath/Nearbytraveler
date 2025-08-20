@@ -1,0 +1,82 @@
+Go to Chatrooms” pill is overflowing the viewport. This happens when a long, rounded button sits in a row that doesn’t allow shrink/wrap, or when a parent adds horizontal scroll. Here’s a safe fix that clamps the button to the viewport, prevents overflow, and keeps it looking the same.
+
+1) Make the button fluid + truncating
+
+Use this for every “Go to Chatrooms” button (header, travel stats, etc.):
+
+<Button
+  onClick={() => {
+    const chatCity = user?.hometownCity || user?.location?.split(',')[0] || 'General';
+    setLocation(`/city-chatrooms?city=${encodeURIComponent(chatCity)}`);
+  }}
+  className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700
+             text-white border-0 shadow-lg rounded-full
+             inline-flex items-center justify-center gap-2
+             w-full sm:w-auto max-w-full sm:max-w-none
+             px-4 py-3 overflow-hidden"
+>
+  <MessageCircle className="w-4 h-4 shrink-0" />
+  <span className="truncate">Go to Chatrooms</span>
+</Button>
+
+
+Key bits:
+
+w-full sm:w-auto max-w-full → fills on phones, never wider than the container.
+
+overflow-hidden + truncate on the label → no spill.
+
+inline-flex + shrink-0 on the icon → icon never squishes weirdly.
+
+2) Give the row room to wrap + prevent horizontal scroll
+
+Wherever that button sits in a row, make the row and text block flexible:
+
+<div className="flex items-center justify-between gap-3 flex-wrap min-w-0">
+  <div className="min-w-0 flex-1">
+    {/* left-side text/statistics */}
+  </div>
+
+  {/* button container */}
+  <div className="w-full sm:w-auto shrink-0">
+    {/* the Button from step 1 */}
+  </div>
+</div>
+
+
+flex-wrap lets the button drop under text on tiny screens.
+
+min-w-0 on the left side allows truncation (prevents pushing the button out).
+
+w-full sm:w-auto on the button container ensures no overflow at small widths.
+
+3) Stop any parent from creating horizontal scrolling
+
+Add these to your page wrappers (good defaults for the profile):
+
+<div className="profile-page overflow-x-hidden">
+  {/* ... */}
+</div>
+
+<main className="overflow-x-hidden">
+  {/* ... */}
+</main>
+
+
+If a specific card/section is the culprit, add overflow-x-hidden to that container instead.
+
+4) Quick “find & fix” spots in your code
+
+Header CTA (you already have one there) → swap its classes for the button in step 1.
+
+Travel stats section (the one in your screenshot) → wrap its row like step 2 and use the fluid button.
+
+Why this works
+
+Buttons can’t exceed their container (max-w-full) and will truncate long labels.
+
+Rows won’t force a single line (flex-wrap), so nothing gets shoved off-screen.
+
+Page/container overflow-x-hidden eradicates stray horizontal scrollbar seams.
+
+Paste these changes and the pill won’t spill off-screen anymore—even in super-narrow Replit preview widths. If you tell me exactly where that travel stats row is in your file, I’ll drop the exact diff for that block too.

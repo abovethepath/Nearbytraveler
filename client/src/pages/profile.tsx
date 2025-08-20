@@ -3515,19 +3515,38 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             
             {/* About Section */}
             <Card className="mt-6 relative overflow-visible">
-              <CardHeader className="flex flex-row items-center justify-between gap-2">
-                <CardTitle>
+              <CardHeader className="flex items-center gap-2 flex-wrap min-w-0 w-full">
+                <CardTitle className="text-base sm:text-lg truncate max-w-[calc(100%-3rem)] sm:max-w-none">
                   About {user?.userType === 'business'
                     ? (user?.businessName || user?.name || user?.username)
                     : (user?.username || 'User')}
                 </CardTitle>
 
-                {/* Move the edit button up here so it doesn't cover content */}
                 {isOwnProfile && (
-                  <Button size="sm" variant="outline" onClick={() => setIsEditMode(true)} className="shrink-0">
-                    <Edit className="w-3 h-3 mr-2" />
-                    Edit Profile
-                  </Button>
+                  <>
+                    {/* Icon-only on phones */}
+                    <Button
+                      size="icon"
+                      variant="outline"
+                      onClick={() => setIsEditMode(true)}
+                      className="ml-auto sm:hidden shrink-0"
+                      aria-label="Edit Profile"
+                    >
+                      <svg viewBox="0 0 24 24" className="w-4 h-4" fill="currentColor">
+                        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zm2.92 2.33H5v-.92l8.06-8.06.92.92L5.92 19.58zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                      </svg>
+                    </Button>
+
+                    {/* Labeled button on ≥ sm */}
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setIsEditMode(true)}
+                      className="ml-auto hidden sm:inline-flex shrink-0 whitespace-nowrap"
+                    >
+                      Edit Profile
+                    </Button>
+                  </>
                 )}
               </CardHeader>
 
