@@ -22,9 +22,10 @@ interface UserCardProps {
   searchLocation?: string;
   showCompatibilityScore?: boolean;
   compatibilityScore?: number;
+  currentUserId?: number;
 }
 
-export default function UserCard({ user, searchLocation, showCompatibilityScore = false, compatibilityScore = 0 }: UserCardProps) {
+export default function UserCard({ user, searchLocation, showCompatibilityScore = false, compatibilityScore = 0, currentUserId }: UserCardProps) {
   const authContext = useContext(AuthContext);
   const { user: currentUser, isAuthenticated } = authContext;
   const { toast } = useToast();
@@ -33,6 +34,20 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
 
   // Emergency fallback - check localStorage directly if context fails
   const [fallbackUser, setFallbackUser] = useState<User | null>(null);
+  
+  // Fetch compatibility data between current user and this user
+  const { data: compatibilityData } = useQuery({
+    queryKey: [`/api/compatibility/${currentUserId || effectiveUser?.id}/${user.id}`],
+    enabled: !!(currentUserId || effectiveUser?.id) && currentUserId !== user.id && effectiveUser?.id !== user.id,
+    staleTime: Infinity,
+    gcTime: Infinity,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchInterval: false,
+    refetchIntervalInBackground: false,
+    refetchOnReconnect: false,
+    retry: false
+  });
   
   React.useEffect(() => {
     if (!currentUser) {
@@ -281,7 +296,7 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
         <div className="space-y-3">
           <div className="flex items-center justify-between mb-2">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white truncate">
-              {user.username}
+              @{user.username}
             </h3>
           </div>
           
@@ -291,7 +306,7 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
                 const today = new Date();
                 
                 // First, check if user has active travel plans using travel plans data
-                const activeTravelPlan = userTravelPlans?.find((plan: TravelPlan) => {
+                const activeTravelPlan = (userTravelPlans as TravelPlan[] || []).find((plan: TravelPlan) => {
                   const startDate = parseLocalDate(plan.startDate);
                   const endDate = parseLocalDate(plan.endDate);
                   return startDate && endDate && today >= startDate && today <= endDate;
@@ -313,7 +328,7 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
                 }
                 
                 // Check for future travel plans
-                const futureTravelPlan = userTravelPlans?.find((plan: TravelPlan) => {
+                const futureTravelPlan = (userTravelPlans as TravelPlan[] || []).find((plan: TravelPlan) => {
                   const startDate = parseLocalDate(plan.startDate);
                   return startDate && startDate > today;
                 });
@@ -381,6 +396,11 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
                       <span className="text-gray-700 dark:text-gray-300 font-medium">
                         🏠 {(user.hometownCity || user.hometown || user.location || '').split(',')[0]}
                       </span>
+                      {compatibilityData && (compatibilityData.sharedInterests?.length > 0 || compatibilityData.sharedActivities?.length > 0 || compatibilityData.sharedEvents?.length > 0) && (
+                        <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full ml-2">
+                          {(compatibilityData.sharedInterests?.length || 0) + (compatibilityData.sharedActivities?.length || 0) + (compatibilityData.sharedEvents?.length || 0)} in common
+                        </span>
+                      )}
                     </>
                   );
                 }

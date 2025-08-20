@@ -310,15 +310,20 @@ export function PeopleDiscoveryWidget({
               @{person.username}
             </h4>
             
-            {/* Location Info */}
+            {/* Location Info with Things in Common */}
             <div className="mb-2 space-y-1">
               {locationInfo.isTraveling ? (
                 <>
-                  <div className="flex items-center justify-center gap-1">
+                  <div className="flex items-center justify-center gap-1 flex-wrap">
                     <Plane className="w-4 h-4 text-blue-500" />
                     <p className="text-blue-600 dark:text-blue-400 text-sm font-medium">
                       Currently in {locationInfo.currentLocation}
                     </p>
+                    {compatibilityData && (compatibilityData.sharedInterests?.length > 0 || compatibilityData.sharedActivities?.length > 0 || compatibilityData.sharedEvents?.length > 0) && (
+                      <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">
+                        {(compatibilityData.sharedInterests?.length || 0) + (compatibilityData.sharedActivities?.length || 0) + (compatibilityData.sharedEvents?.length || 0)} in common
+                      </span>
+                    )}
                   </div>
                   <div className="flex items-center justify-center gap-1">
                     <MapPin className="w-4 h-4 text-gray-500 dark:text-gray-400" />
@@ -328,11 +333,16 @@ export function PeopleDiscoveryWidget({
                   </div>
                 </>
               ) : (
-                <div className="flex items-center justify-center gap-1">
+                <div className="flex items-center justify-center gap-1 flex-wrap">
                   <MapPin className="w-4 h-4 text-gray-500 dark:text-gray-400" />
                   <p className="text-gray-600 dark:text-gray-400 text-sm">
                     Hometown: {locationInfo.hometown}
                   </p>
+                  {compatibilityData && (compatibilityData.sharedInterests?.length > 0 || compatibilityData.sharedActivities?.length > 0 || compatibilityData.sharedEvents?.length > 0) && (
+                    <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
+                      {(compatibilityData.sharedInterests?.length || 0) + (compatibilityData.sharedActivities?.length || 0) + (compatibilityData.sharedEvents?.length || 0)} in common
+                    </span>
+                  )}
                 </div>
               )}
             </div>

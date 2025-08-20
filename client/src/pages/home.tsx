@@ -1294,7 +1294,7 @@ export default function Home() {
                 maxWidth: '30px !important',
                 overflow: 'hidden !important',
                 textOverflow: 'clip !important',
-                wordBreak: 'break-all !important'
+                wordBreak: 'break-all' as any
               }}>
                 {effectiveUser?.userType === 'business' ? (
                   <>
@@ -2234,14 +2234,14 @@ export default function Home() {
                         <div className="relative w-full aspect-[4/5] rounded-lg overflow-hidden bg-gray-100">
                           <img
                             src={u.profileImage || "/attached_assets/placeholder_user.jpg"}
-                            alt={u.name || u.username}
+                            alt={u.username}
                             className="h-full w-full object-cover"
                             loading="lazy"
                           />
                         </div>
                         <div className="mt-2 min-w-0">
                           <div className="text-sm font-semibold truncate text-gray-900 dark:text-white">
-                            {u.name || u.username}
+                            @{u.username}
                           </div>
                           <div className="text-xs text-gray-500 dark:text-gray-400 truncate">
                             {u.hometownCity && u.hometownCountry
@@ -2265,7 +2265,7 @@ export default function Home() {
                           people={people.map((user: any) => ({
                             id: user.id,
                             username: user.username,
-                            name: user.name || user.username,
+                            name: user.username,
                             profileImage: user.profileImage,
                             location: user.hometownCity && user.hometownCountry ? `${user.hometownCity}, ${user.hometownCountry.replace("United States","USA")}` : user.location || "Location not set",
                             distance: user.hometownCity && user.hometownState ? `${user.hometownCity}, ${user.hometownState}` : user.location || "New member",
@@ -2287,10 +2287,10 @@ export default function Home() {
                             className="group text-left rounded-xl border bg-white dark:bg-gray-800 p-3 hover:shadow-sm"
                           >
                             <div className="relative w-full aspect-[4/5] rounded-lg overflow-hidden bg-gray-100">
-                              <img src={u.profileImage || "/attached_assets/placeholder_user.jpg"} alt={u.name || u.username} className="h-full w-full object-cover" />
+                              <img src={u.profileImage || "/attached_assets/placeholder_user.jpg"} alt={u.username} className="h-full w-full object-cover" />
                             </div>
                             <div className="mt-2 min-w-0">
-                              <div className="text-sm font-semibold truncate">{u.name || u.username}</div>
+                              <div className="text-sm font-semibold truncate">@{u.username}</div>
                               <div className="text-xs text-gray-500 dark:text-gray-400 truncate">
                                 {u.hometownCity && u.hometownCountry ? `${u.hometownCity}, ${u.hometownCountry.replace("United States","USA")}` : u.location || "New member"}
                               </div>
