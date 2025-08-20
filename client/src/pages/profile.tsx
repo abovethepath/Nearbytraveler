@@ -3360,12 +3360,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       )}
     
       {/* EXPANDED GRADIENT HEADER - MOBILE OPTIMIZED WITH RIGHT-ALIGNED PHOTO */}
-      <div className={`w-full bg-gradient-to-r ${gradientOptions[selectedGradient]} p-4 sm:p-6`}>
+      <div className={`w-full bg-gradient-to-r ${gradientOptions[selectedGradient]} p-6 sm:p-8 pb-8 sm:pb-10`}>
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-row items-start gap-4 sm:gap-6">
             {/* Profile Avatar - Left Side */}
             <div className="relative flex-shrink-0">
-              <div className="w-20 h-20 sm:w-32 sm:h-32 md:w-40 md:h-40 border-4 border-white shadow-lg bg-white rounded-full overflow-hidden">
+              <div className="w-28 h-28 sm:w-32 sm:h-32 md:w-40 md:h-40 border-4 border-white shadow-lg bg-white rounded-full overflow-hidden">
                 <SimpleAvatar 
                   user={user} 
                   size="xl" 
@@ -3376,7 +3376,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 <>
                   <Button 
                     size="sm" 
-                    className="absolute -bottom-2 -right-2 bg-blue-600 hover:bg-blue-700 text-white border-none shadow-lg w-8 h-8 sm:w-10 sm:h-10 p-0"
+                    className="absolute -bottom-1 -right-1 bg-blue-600 hover:bg-blue-700 text-white border-none shadow-lg w-8 h-8 sm:w-10 sm:h-10 p-0"
                     onClick={() => document.getElementById('avatar-upload-input')?.click()}
                     disabled={uploadingPhoto}
                   >
@@ -3400,10 +3400,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   <Button
                     size="sm"
                     variant="ghost"
-                    className="bg-white/90 hover:bg-white text-gray-800 hover:text-gray-900 border border-white text-xs sm:text-sm px-3 py-1 font-medium shadow-sm"
+                    className="bg-white/70 hover:bg-white/90 text-gray-700 hover:text-gray-900 border-none text-xs px-2 py-1 font-normal shadow-sm rounded-full opacity-75 hover:opacity-100"
                     onClick={() => setSelectedGradient((prev) => (prev + 1) % gradientOptions.length)}
                   >
-                    🎨 Change Color
+                    🎨
                   </Button>
                 </div>
               )}
