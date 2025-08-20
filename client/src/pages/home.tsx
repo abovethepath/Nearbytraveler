@@ -1216,122 +1216,96 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
 
-      {/* Hero Section with Scrolling Photo Gallery */}
+{/* HERO — DROP-IN REPLACEMENT */}
 <section
-  className="relative text-white min-h-[68svh] md:min-h-[48vh] xl:min-h-[42vh] bg-cover bg-center bg-no-repeat"
-  style={{
-    backgroundImage: "url('/attached_assets/beach travel_1754973619241.jpg')",
-  }}
+  className="
+    relative text-white overflow-hidden
+    bg-cover bg-center bg-no-repeat
+    min-h-[40svh] sm:min-h-[44vh] md:min-h-[40vh] xl:min-h-[36vh]
+  "
+  style={{ backgroundImage: "url('/attached_assets/beach travel_1754973619241.jpg')" }}
 >
-        {/* Dark overlay for text readability */}
-        <div className="absolute inset-0 bg-gradient-to-br from-black/40 via-black/30 to-black/50"></div>
-        <div className="relative w-full mx-auto py-1 sm:py-4 md:py-6" style={{padding: '2px 1px'}}>
-          <div className="text-center mx-auto px-4">
-            {/* Mobile First Heading - Make it bigger and readable */}
-            <h1 className="sm:hidden font-bold mb-3 text-white text-center" style={{
-              fontFamily: '"Open Sans", sans-serif', 
-              fontWeight: '700', 
-              textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
-              fontSize: 'clamp(1.6rem, 6.5vw, 2.2rem)',
-              lineHeight: '1.1',
-              letterSpacing: '0.02em'
-            }}>
-              {effectiveUser?.userType === 'business' ? (
-                <>
-                  <div>Connect Your</div>
-                  <div><span className="text-orange-400">Business</span></div>
-                  <div>with <span className="text-blue-400">Travelers</span></div>
-                  <div>& <span className="text-blue-400">Locals</span></div>
-                </>
-              ) : (
-                <>
-                  <div>Connect with</div>
-                  <div><span className="text-orange-400">Like-Minded</span></div>
-                  <div><span className="text-blue-400">Travelers</span></div>
-                  <div>& <span className="text-blue-400">Locals</span></div>
-                </>
-              )}
-            </h1>
-            
-            {/* Larger heading for tablets and desktop */}
-            <h1 className="hidden sm:block font-bold mb-2 md:mb-3 text-white text-center" style={{
-              fontFamily: '"Open Sans", sans-serif', 
-              fontWeight: '700', 
-              textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
-              fontSize: 'clamp(1rem, 4vw, 2rem)',
-              lineHeight: '1.2'
-            }}>
-              {effectiveUser?.userType === 'business' ? (
-                <>
-                  <div>Connect Your <span className="text-orange-400">Business</span></div>
-                  <div>with <span className="text-blue-400">Travelers</span> & <span className="text-blue-400">Locals</span></div>
-                </>
-              ) : (
-                <>
-                  <div>Connect with <span className="text-orange-400">Like-Minded</span></div>
-                  <div><span className="text-blue-400">Travelers</span> & <span className="text-blue-400">Locals</span></div>
-                </>
-              )}
-            </h1>
-            {/* Mobile Second Sentence - Make it readable and separate */}
-            <div className="sm:hidden mb-4 px-2">
-              <p className="text-white text-center" style={{
-                fontSize: 'clamp(0.9rem, 4vw, 1.1rem)',
-                lineHeight: '1.3',
-                textShadow: '1px 1px 3px rgba(0,0,0,0.7)',
-                fontWeight: '500'
-              }}>
-                {effectiveUser?.userType === 'business' ? (
-                  'Reach customers through interest matching & business discovery'
-                ) : (
-                  'Discover amazing experiences & make meaningful connections with like-minded adventurers'
-                )}
-              </p>
-            </div>
-            
-            {/* Tablet and desktop description */}
-            <div className="hidden sm:block mb-2 md:mb-3" style={{maxWidth: '600px', margin: '0 auto', padding: '0 8px'}}>
-              <p className="text-white text-center" style={{
-                fontSize: 'clamp(0.75rem, 2.5vw, 1rem)',
-                lineHeight: '1.3',
-                wordWrap: 'break-word',
-                overflowWrap: 'break-word'
-              }}>
-                {effectiveUser?.userType === 'business' ? (
-                  'Reach customers through interest-based matching, business notifications, and location-targeted discovery. Grow your business by connecting with travelers and locals who love what you offer.'
-                ) : (
-                  'Discover amazing experiences & make meaningful connections with like-minded adventurers based on demographics, activities, interests and events'
-                )}
-              </p>
-            </div>
+  {/* Non-interactive overlay for readability */}
+  <div
+    aria-hidden
+    className="pointer-events-none absolute inset-0 bg-gradient-to-br from-black/45 via-black/30 to-black/55"
+  />
 
-            {/* Business-specific CTA buttons vs Traveler/Local CTAs */}
-            {effectiveUser?.userType === 'business' ? (
-              <div className="flex flex-col sm:flex-row gap-1 sm:gap-2 justify-center px-4 sm:px-0 mt-2">
-                <Button 
-                  size="sm" 
-                  className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-black px-3 py-1.5 text-xs sm:text-sm w-full sm:w-auto shadow-lg border border-blue-500"
-                  onClick={() => setLocation('/business-dashboard')}
-                >
-                  <Store className="w-3 h-3 mr-1" />
-                  Manage Business
-                </Button>
-                <Button 
-                  size="sm"
-                  className="bg-gradient-to-r from-green-600 to-blue-500 hover:from-green-700 hover:to-blue-600 text-black px-3 py-1.5 text-xs sm:text-sm w-full sm:w-auto shadow-lg border border-green-500"
-                  onClick={() => {
-                    setConnectModalMode('current');
-                    setShowConnectModal(true);
-                  }}
-                >
-                  <Users className="w-3 h-3 mr-1" />
-                  Find Customers
-                </Button>
-              </div>
-            ) : null}
-          </div>
+  <div className="relative w-full mx-auto py-4 sm:py-6">
+    <div className="mx-auto px-4 max-w-screen-md text-center">
+
+      {/* Single responsive heading */}
+      <h1
+        className="
+          font-bold text-balance drop-shadow
+          text-[clamp(1.4rem,6vw,2rem)] sm:text-[clamp(1.25rem,3.2vw,2rem)]
+          leading-tight
+        "
+        style={{ textShadow: "2px 2px 4px rgba(0,0,0,0.8)" }}
+      >
+        {effectiveUser?.userType === "business" ? (
+          <>
+            Connect Your <span className="text-orange-400">Business</span>{" "}
+            with <span className="text-blue-500">Travelers</span> &{" "}
+            <span className="text-blue-500">Locals</span>
+          </>
+        ) : (
+          <>
+            Connect with <span className="text-orange-400">Like-Minded</span>{" "}
+            <span className="text-blue-500">Travelers</span> &{" "}
+            <span className="text-blue-500">Locals</span>
+          </>
+        )}
+      </h1>
+
+      {/* Subhead */}
+      <p
+        className="
+          mt-3 sm:mt-2 mx-auto max-w-prose
+          text-white/95
+          text-[clamp(0.9rem,3.8vw,1rem)] sm:text-[clamp(0.8rem,2vw,1rem)]
+          leading-snug whitespace-normal break-words [overflow-wrap:anywhere]
+        "
+        style={{ textShadow: "1px 1px 3px rgba(0,0,0,0.7)" }}
+      >
+        {effectiveUser?.userType === "business"
+          ? "Reach customers through interest-based matching, business notifications, and location-targeted discovery."
+          : "Discover amazing experiences & make meaningful connections based on demographics, activities, interests, and events."}
+      </p>
+
+      {/* Business CTAs (no blue borders) */}
+      {effectiveUser?.userType === "business" && (
+        <div className="mt-3 sm:mt-4 flex flex-col sm:flex-row gap-2 justify-center px-4 sm:px-0">
+          <Button
+            size="sm"
+            className="
+              bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600
+              text-black px-3 py-1.5 text-xs sm:text-sm w-full sm:w-auto shadow-lg border-none
+            "
+            onClick={() => setLocation("/business-dashboard")}
+          >
+            <Store className="w-3 h-3 mr-1" />
+            Manage Business
+          </Button>
+          <Button
+            size="sm"
+            className="
+              bg-gradient-to-r from-green-600 to-blue-500 hover:from-green-700 hover:to-blue-600
+              text-black px-3 py-1.5 text-xs sm:text-sm w-full sm:w-auto shadow-lg border-none
+            "
+            onClick={() => {
+              setConnectModalMode("current");
+              setShowConnectModal(true);
+            }}
+          >
+            <Users className="w-3 h-3 mr-1" />
+            Find Customers
+          </Button>
         </div>
-      </section>
+      )}
+    </div>
+  </div>
+</section>
 
       <main className="pt-2 sm:pt-4 pb-24 md:pb-8 lg:pb-4">
         <div className="w-full max-w-full px-2 sm:px-4 lg:px-6">
