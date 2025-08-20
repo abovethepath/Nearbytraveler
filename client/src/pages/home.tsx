@@ -1225,13 +1225,36 @@ export default function Home() {
 >
         {/* Dark overlay for text readability */}
         <div className="absolute inset-0 bg-gradient-to-br from-black/40 via-black/30 to-black/50"></div>
-        <div className="relative w-full mx-auto px-2 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8">
-          <div className="text-center w-full mx-auto" style={{maxWidth: '100%'}}>
-            <h1 className="font-bold mb-1 sm:mb-2 md:mb-3 leading-tight text-white text-center" style={{
+        <div className="relative w-full mx-auto px-1 py-3 sm:px-4 sm:py-6 md:px-6 md:py-8">
+          <div className="text-center mx-auto" style={{maxWidth: '320px', width: '100%'}}>
+            <h1 className="font-bold mb-1 sm:mb-2 text-white text-center" style={{
               fontFamily: '"Open Sans", sans-serif', 
               fontWeight: '700', 
               textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
-              fontSize: 'clamp(0.875rem, 4vw, 2rem)',
+              fontSize: '13px',
+              lineHeight: '1.1',
+              maxWidth: '280px',
+              margin: '0 auto'
+            }}>
+              {effectiveUser?.userType === 'business' ? (
+                <>
+                  <div>Connect Your <span className="text-orange-400">Business</span></div>
+                  <div>with Travelers & Locals</div>
+                </>
+              ) : (
+                <>
+                  <div>Connect with <span className="text-orange-400">Like-Minded</span></div>
+                  <div>Travelers & Locals</div>
+                </>
+              )}
+            </h1>
+            
+            {/* Larger heading for tablets and desktop */}
+            <h1 className="hidden sm:block font-bold mb-2 md:mb-3 text-white text-center" style={{
+              fontFamily: '"Open Sans", sans-serif', 
+              fontWeight: '700', 
+              textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
+              fontSize: 'clamp(1rem, 4vw, 2rem)',
               lineHeight: '1.2'
             }}>
               {effectiveUser?.userType === 'business' ? (
@@ -1246,15 +1269,30 @@ export default function Home() {
                 </>
               )}
             </h1>
-            <div className="w-full mb-1 sm:mb-2 md:mb-3" style={{padding: '0 8px'}}>
-              <p className="text-white text-center leading-tight" style={{
-                fontSize: 'clamp(0.625rem, 2.5vw, 1rem)',
+            {/* Mobile description - very small and constrained */}
+            <div className="sm:hidden mb-1" style={{maxWidth: '280px', margin: '0 auto', padding: '0 4px'}}>
+              <p className="text-white text-center" style={{
+                fontSize: '9px',
+                lineHeight: '1.2',
+                wordBreak: 'break-all',
+                overflowWrap: 'break-word',
+                hyphens: 'auto'
+              }}>
+                {effectiveUser?.userType === 'business' ? (
+                  'Reach customers through interest-based matching, business notifications, and location-targeted discovery. Grow your business by connecting with travelers and locals who love what you offer.'
+                ) : (
+                  'Discover amazing experiences, make meaningful connections, and explore the world with like-minded adventurers based on demographics, activities, interests and events'
+                )}
+              </p>
+            </div>
+            
+            {/* Tablet and desktop description */}
+            <div className="hidden sm:block mb-2 md:mb-3" style={{maxWidth: '600px', margin: '0 auto', padding: '0 8px'}}>
+              <p className="text-white text-center" style={{
+                fontSize: 'clamp(0.75rem, 2.5vw, 1rem)',
                 lineHeight: '1.3',
                 wordWrap: 'break-word',
-                overflowWrap: 'break-word',
-                hyphens: 'auto',
-                maxWidth: '100%',
-                margin: '0 auto'
+                overflowWrap: 'break-word'
               }}>
                 {effectiveUser?.userType === 'business' ? (
                   'Reach customers through interest-based matching, business notifications, and location-targeted discovery. Grow your business by connecting with travelers and locals who love what you offer.'
