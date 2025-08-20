@@ -196,6 +196,43 @@ export function PeopleDiscoveryWidget({
 
     const locationInfo = getCurrentLocation();
 
+    // NEW: count + list the top common items
+    const compatData = compatibilityData as any;
+    const countInCommon =
+      (compatData?.sharedInterests?.length || 0) +
+      (compatData?.sharedActivities?.length || 0) +
+      (compatData?.sharedEvents?.length || 0);
+
+    const topCommon: string[] = [
+      ...(compatData?.sharedInterests ?? []),
+      ...(compatData?.sharedActivities ?? []),
+      ...((compatData?.sharedEvents ?? []).map((e: any) => e?.title).filter(Boolean)),
+    ].slice(0, 3);
+
+    // NEW: figure out an upcoming/active destination
+    const getTravelBlurb = () => {
+      const plans = Array.isArray(travelPlans) ? (travelPlans as any[]) : [];
+
+      const active = plans.find(p => p?.status === 'active');
+      if (active) {
+        const city = active.destinationCity || active.destination?.split(',')[0];
+        if (city && city !== locationInfo.hometown) return `Traveling now: ${city}`;
+      }
+
+      const upcoming = plans
+        .filter(p => p?.status === 'upcoming')
+        .sort((a, b) => new Date(a.startDate || 0).getTime() - new Date(b.startDate || 0).getTime())[0];
+
+      if (upcoming) {
+        const city = upcoming.destinationCity || upcoming.destination?.split(',')[0];
+        if (city && city !== locationInfo.hometown) return `Next trip: ${city}`;
+      }
+
+      return null;
+    };
+
+    const travelBlurb = getTravelBlurb();
+
     // Don't show commonalities for the current user themselves
     if (person.id === currentUserId) {
       return (
@@ -262,6 +299,13 @@ export function PeopleDiscoveryWidget({
                   {(userData?.countriesVisited && Array.isArray(userData.countriesVisited) ? userData.countriesVisited.length : 0)} countries ⭐ {(referencesData && Array.isArray(referencesData) ? referencesData.length : 0)} references
                 </p>
               </div>
+
+              {/* NEW: Traveling to / Next trip */}
+              {travelBlurb && (
+                <div className="mb-2">
+                  <p className="text-gray-700 dark:text-gray-300 text-sm">{travelBlurb}</p>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -310,20 +354,15 @@ export function PeopleDiscoveryWidget({
               @{person.username}
             </h4>
             
-            {/* Location Info with Things in Common */}
+            {/* Location Info */}
             <div className="mb-2 space-y-1">
               {locationInfo.isTraveling ? (
                 <>
-                  <div className="flex items-center justify-center gap-1 flex-wrap">
+                  <div className="flex items-center justify-center gap-1">
                     <Plane className="w-4 h-4 text-blue-500" />
                     <p className="text-blue-600 dark:text-blue-400 text-sm font-medium">
                       Currently in {locationInfo.currentLocation}
                     </p>
-                    {compatibilityData && (compatibilityData.sharedInterests?.length > 0 || compatibilityData.sharedActivities?.length > 0 || compatibilityData.sharedEvents?.length > 0) && (
-                      <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">
-                        {(compatibilityData.sharedInterests?.length || 0) + (compatibilityData.sharedActivities?.length || 0) + (compatibilityData.sharedEvents?.length || 0)} in common
-                      </span>
-                    )}
                   </div>
                   <div className="flex items-center justify-center gap-1">
                     <MapPin className="w-4 h-4 text-gray-500 dark:text-gray-400" />
@@ -333,31 +372,43 @@ export function PeopleDiscoveryWidget({
                   </div>
                 </>
               ) : (
-                <div className="flex items-center justify-center gap-1 flex-wrap">
+                <div className="flex items-center justify-center gap-1">
                   <MapPin className="w-4 h-4 text-gray-500 dark:text-gray-400" />
                   <p className="text-gray-600 dark:text-gray-400 text-sm">
                     Hometown: {locationInfo.hometown}
                   </p>
-                  {compatibilityData && (compatibilityData.sharedInterests?.length > 0 || compatibilityData.sharedActivities?.length > 0 || compatibilityData.sharedEvents?.length > 0) && (
-                    <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
-                      {(compatibilityData.sharedInterests?.length || 0) + (compatibilityData.sharedActivities?.length || 0) + (compatibilityData.sharedEvents?.length || 0)} in common
-                    </span>
-                  )}
                 </div>
               )}
             </div>
             
             {/* Stats */}
-            <div className="mb-3">
+            <div className="mb-2">
               <p className="text-gray-500 dark:text-gray-500 text-sm">
                 {(userData?.countriesVisited && Array.isArray(userData.countriesVisited) ? userData.countriesVisited.length : 0)} countries ⭐ {(referencesData && Array.isArray(referencesData) ? referencesData.length : 0)} references
               </p>
             </div>
 
-            {/* Click to see things in common */}
+            {/* NEW: Traveling to / Next trip */}
+            {travelBlurb && (
+              <div className="mb-2">
+                <p className="text-gray-700 dark:text-gray-300 text-sm">{travelBlurb}</p>
+              </div>
+            )}
+
+            {/* NEW: Things in common */}
+            {countInCommon > 0 && (
+              <div className="mb-2">
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
+                  <span className="font-semibold">{countInCommon} Things In Common:</span>{' '}
+                  {topCommon.join(' • ')}
+                </p>
+              </div>
+            )}
+
+            {/* Click to see more details */}
             <div className="border-t border-gray-200 dark:border-gray-600 pt-2">
               <p className="text-blue-600 dark:text-blue-400 text-sm font-medium">
-                Click to see things in common
+                Click to view full profile
               </p>
             </div>
           </div>
