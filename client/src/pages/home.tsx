@@ -1218,7 +1218,7 @@ export default function Home() {
 
       {/* Hero Section with Scrolling Photo Gallery */}
 <section
-  className="relative overflow-hidden text-white min-h-[68svh] md:min-h-[35vh] xl:min-h-[30vh] bg-cover bg-center bg-no-repeat"
+  className="relative text-white min-h-[68svh] md:min-h-[48vh] xl:min-h-[42vh] bg-cover bg-center bg-no-repeat"
   style={{
     backgroundImage: "url('/attached_assets/beach travel_1754973619241.jpg')",
   }}
@@ -2166,28 +2166,53 @@ export default function Home() {
                   </div>
                 </div>
 
-                {/* Tablet+ keeps existing widget */}
-                <div className="hidden sm:block">
-                  <PeopleDiscoveryWidget 
-                    people={getSortedUsers(filteredUsers).slice(0, displayLimit).map((user: any) => ({
-                      id: user.id,
-                      username: user.username,
-                      name: user.name || user.username,
-                      profileImage: user.profileImage,
-                      location: user.hometownCity && user.hometownCountry 
-                        ? `${user.hometownCity}, ${user.hometownCountry.replace('United States', 'USA')}`
-                        : user.location || "Location not set",
-                      distance: user.hometownCity && user.hometownState 
-                        ? `${user.hometownCity}, ${user.hometownState}`
-                        : user.location || "New member",
-                      commonInterests: [],
-                      userType: user.userType as "traveler" | "local" | "business",
-                    }))}
-                    title="Nearby Travelers"
-                    showSeeAll={false}
-                    currentUserId={user?.id || 0}
-                  />
-                </div>
+                {(() => {
+                  const people = getSortedUsers(filteredUsers).slice(0, displayLimit);
+                  
+                  return (
+                    <>
+                      {/* Tablets only (≥640px and <1024px): keep your widget here */}
+                      <div className="hidden sm:block lg:hidden">
+                        <PeopleDiscoveryWidget
+                          people={people.map((user: any) => ({
+                            id: user.id,
+                            username: user.username,
+                            name: user.name || user.username,
+                            profileImage: user.profileImage,
+                            location: user.hometownCity && user.hometownCountry ? `${user.hometownCity}, ${user.hometownCountry.replace("United States","USA")}` : user.location || "Location not set",
+                            distance: user.hometownCity && user.hometownState ? `${user.hometownCity}, ${user.hometownState}` : user.location || "New member",
+                            commonInterests: [],
+                            userType: user.userType as "traveler" | "local" | "business",
+                          }))}
+                          title="Nearby Travelers"
+                          showSeeAll={false}
+                          currentUserId={user?.id || 0}
+                        />
+                      </div>
+
+                      {/* Desktop (≥1024px): force 4 across (5 on very wide) */}
+                      <div className="hidden lg:grid grid-cols-4 xl:grid-cols-5 gap-4">
+                        {people.map((u: any) => (
+                          <button
+                            key={u.id}
+                            onClick={() => setLocation(`/profile/${u.username}`)}
+                            className="group text-left rounded-xl border bg-white dark:bg-gray-800 p-3 hover:shadow-sm"
+                          >
+                            <div className="relative w-full aspect-[4/5] rounded-lg overflow-hidden bg-gray-100">
+                              <img src={u.profileImage || "/attached_assets/placeholder_user.jpg"} alt={u.name || u.username} className="h-full w-full object-cover" />
+                            </div>
+                            <div className="mt-2 min-w-0">
+                              <div className="text-sm font-semibold truncate">{u.name || u.username}</div>
+                              <div className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                                {u.hometownCity && u.hometownCountry ? `${u.hometownCity}, ${u.hometownCountry.replace("United States","USA")}` : u.location || "New member"}
+                              </div>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    </>
+                  );
+                })()}
 
                 {/* Load More Button */}
                 {getSortedUsers(filteredUsers).length > displayLimit && (
