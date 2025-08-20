@@ -45,11 +45,7 @@ function MobileMenu({
   const menu = (
     <div
       id="mobile-menu"
-      className="
-        block md:hidden fixed inset-x-0 top-20 z-[100]
-        bg-white dark:bg-black border-b border-gray-200 dark:border-gray-800
-        shadow-lg
-      "
+      className={`md:hidden fixed inset-x-0 top-20 z-[100] bg-white dark:bg-black border-b border-gray-200 dark:border-gray-800 shadow-lg transition-[max-height,opacity] duration-200 overflow-hidden`}
       role="dialog"
       aria-modal="true"
     >

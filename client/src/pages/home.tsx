@@ -1218,14 +1218,14 @@ export default function Home() {
 
       {/* Hero Section with Scrolling Photo Gallery */}
 <section
-  className="relative overflow-hidden text-white min-h-[50svh] md:min-h-[55svh] bg-cover bg-center bg-no-repeat"
+  className="relative overflow-hidden text-white min-h-[50svh] md:min-h-[35vh] xl:min-h-[30vh] bg-cover bg-center bg-no-repeat"
   style={{
     backgroundImage: "url('/attached_assets/beach travel_1754973619241.jpg')",
   }}
 >
         {/* Dark overlay for text readability */}
         <div className="absolute inset-0 bg-gradient-to-br from-black/40 via-black/30 to-black/50"></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12 lg:py-16">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 md:py-12">
           <div className="text-center max-w-3xl mx-auto">
             <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-5xl font-bold mb-6 sm:mb-8 leading-tight text-white text-center" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700', textShadow: '2px 2px 4px rgba(0,0,0,0.8)'}}>
               <div className="leading-tight">
