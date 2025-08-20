@@ -139,155 +139,171 @@ export default function EventCard({ event, compact = false, featured = false }: 
 
   return (
     <>
-      <Card 
-        className={`hover:shadow-lg transition-all duration-300 overflow-hidden bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 cursor-pointer ${featured ? 'ring-2 ring-travel-blue' : ''}`}
-        onClick={() => setLocation(`/events/${event.id}`)}
-      >
-      {event.imageUrl && (
-        <div className="relative h-48 overflow-hidden bg-gray-100 dark:bg-gray-700">
-          <ImageLoader
-            src={event.imageUrl}
-            alt={event.title}
-            className="w-full h-full object-cover transition-opacity duration-300 hover:opacity-90"
-            loading="lazy"
-          />
-          {featured && (
-            <Badge className="absolute top-3 left-3 bg-travel-blue text-white">
-              Featured
-            </Badge>
-          )}
-        </div>
-      )}
-      <CardContent className="p-6">
-        <div className="flex items-start justify-between mb-3">
-          <h3 className="text-lg md:text-xl font-semibold text-gray-900 dark:text-white text-crisp">{event.title}</h3>
-        </div>
-        
-        {event.description && (
-          <p className="text-base md:text-lg text-gray-600 dark:text-gray-300 mb-4 line-clamp-2 text-crisp leading-relaxed">{event.description}</p>
+      <div className="rounded-2xl bg-white dark:bg-gray-800 shadow-sm overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer"
+           onClick={() => setLocation(`/events/${event.id}`)}>
+        {/* Image + category - Mobile-first approach */}
+        {event.imageUrl && (
+          <div className="relative">
+            <img
+              src={event.imageUrl}
+              alt={event.title}
+              className="w-full aspect-[16/9] object-cover"
+              loading="lazy"
+            />
+            {/* Featured badge: hidden on mobile, overlay on md+ */}
+            <div className="hidden md:block">
+              {featured && (
+                <span className="md:absolute md:top-3 md:left-3 inline-block rounded-full px-3 py-1 text-xs font-semibold bg-travel-blue text-white">
+                  Featured
+                </span>
+              )}
+            </div>
+          </div>
         )}
-        
-        <div className="space-y-2 mb-6">
-          <div className="flex items-center text-sm md:text-base text-gray-600 dark:text-gray-300 text-crisp">
-            <Calendar className="w-4 h-4 mr-2 text-travel-blue" />
-            {formatEventDate(event.date)}
-          </div>
-          <div className="flex items-center text-sm md:text-base text-gray-600 dark:text-gray-300 text-crisp">
-            <MapPin className="w-4 h-4 mr-2 text-travel-blue" />
-            {event.location}
-          </div>
-        </div>
 
-        {/* Event detail tags - different from main category badge */}
-        <div className="flex flex-wrap gap-2 mb-6 mt-2">
-          {event.costEstimate && (
-            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs md:text-sm font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 text-crisp">
-              💰 {event.costEstimate}
-            </span>
+        {/* Content */}
+        <div className="p-4 md:p-5 text-left">
+          {/* Mobile featured badge (not overlay) */}
+          <div className="md:hidden mb-2">
+            {featured && (
+              <span className="inline-block rounded-full px-3 py-1 text-xs font-semibold bg-travel-blue text-white">
+                Featured
+              </span>
+            )}
+          </div>
+
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white leading-snug line-clamp-2 mb-2">
+            {event.title}
+          </h3>
+
+          {event.description && (
+            <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed line-clamp-3 mb-3">
+              {event.description}
+            </p>
           )}
-          
-          {event.isSpontaneous && (
-            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs md:text-sm font-medium bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200 text-crisp">
-              ⚡ Last Minute
-            </span>
-          )}
-          
-          {event.isRecurring && (
-            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs md:text-sm font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200 text-crisp">
-              🔄 Recurring
-            </span>
-          )}
-          
-          {event.urgency === 'urgent' && (
-            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs md:text-sm font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 text-crisp">
-              🚨 Urgent
-            </span>
-          )}
-          
-          {event.maxParticipants && (
-            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs md:text-sm font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 text-crisp">
-              👥 Max {event.maxParticipants}
-            </span>
-          )}
-          
-          {/* Show specific event tags (not category) - filter out redundant tags */}
-          {event.tags && event.tags.length > 0 && event.tags
-            .filter((tag: string) => {
-              if (!tag || typeof tag !== 'string') return false;
-              
-              // Filter out tags that are redundant with the main category
-              const categoryLower = (event.category || '').toLowerCase();
-              const tagLower = tag.toLowerCase().trim();
-              
-              // Skip empty tags
-              if (!tagLower) return false;
-              
-              // Remove exact matches or substring matches with category keywords
-              const categoryWords = categoryLower.split(/[,&\s]+/).filter(word => word.length > 2);
-              const tagWords = tagLower.split(/[\s]+/);
-              
-              // Check if any tag word matches any category word
-              for (const tagWord of tagWords) {
-                for (const categoryWord of categoryWords) {
-                  if (tagWord.includes(categoryWord) || categoryWord.includes(tagWord)) {
-                    return false; // Filter out redundant tag
+
+          {/* Meta row(s) — wrap on small screens to avoid overlap */}
+          <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center mb-3">
+            <div className="min-w-0 flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+              <Calendar className="h-4 w-4 shrink-0 text-travel-blue" />
+              <span className="truncate">{formatEventDate(event.date)}</span>
+            </div>
+            <div className="min-w-0 flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+              <MapPin className="h-4 w-4 shrink-0 text-travel-blue" />
+              <span className="truncate">{event.location}</span>
+            </div>
+            <div className="min-w-0 flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+              <Users className="h-4 w-4 shrink-0" />
+              <span className="truncate">
+                {(event as any).participantCount ?? 0} attending
+              </span>
+            </div>
+          </div>
+
+          {/* Event detail tags */}
+          <div className="flex flex-wrap gap-2 mb-4">
+            {event.costEstimate && (
+              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                💰 {event.costEstimate}
+              </span>
+            )}
+            
+            {event.isSpontaneous && (
+              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">
+                ⚡ Last Minute
+              </span>
+            )}
+            
+            {event.isRecurring && (
+              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
+                🔄 Recurring
+              </span>
+            )}
+            
+            {event.urgency === 'urgent' && (
+              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
+                🚨 Urgent
+              </span>
+            )}
+            
+            {event.maxParticipants && (
+              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                👥 Max {event.maxParticipants}
+              </span>
+            )}
+
+            {/* Show specific event tags (not category) - filter out redundant tags */}
+            {event.tags && event.tags.length > 0 && event.tags
+              .filter((tag: string) => {
+                if (!tag || typeof tag !== 'string') return false;
+                
+                // Filter out tags that are redundant with the main category
+                const categoryLower = (event.category || '').toLowerCase();
+                const tagLower = tag.toLowerCase().trim();
+                
+                // Skip empty tags
+                if (!tagLower) return false;
+                
+                // Remove exact matches or substring matches with category keywords
+                const categoryWords = categoryLower.split(/[,&\s]+/).filter(word => word.length > 2);
+                const tagWords = tagLower.split(/[\s]+/);
+                
+                // Check if any tag word matches any category word
+                for (const tagWord of tagWords) {
+                  for (const categoryWord of categoryWords) {
+                    if (tagWord.includes(categoryWord) || categoryWord.includes(tagWord)) {
+                      return false; // Filter out redundant tag
+                    }
                   }
                 }
-              }
-              
-              return true; // Keep non-redundant tag
-            })
-            .slice(0, 3)
-            .map((tag: string, index: number) => (
-              <span 
-                key={index}
-                className="inline-flex items-center px-2 py-1 rounded-full text-xs md:text-sm font-medium bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200 text-crisp"
-              >
-                {tag}
-              </span>
-            ))}
-        </div>
+                
+                return true; // Keep non-redundant tag
+              })
+              .slice(0, 3)
+              .map((tag: string, index: number) => (
+                <span 
+                  key={index}
+                  className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200"
+                >
+                  {tag}
+                </span>
+              ))}
+          </div>
 
-        {/* Improved responsive layout for bottom section */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <div className="flex items-center text-sm md:text-base text-gray-500 dark:text-gray-400 text-crisp">
-            <Users className="w-4 h-4 mr-1" />
-            <span>{(event as any).participantCount || 1} attending</span>
-          </div>
-          <div className="flex gap-2 flex-shrink-0">
-            <Button 
-              size="sm" 
-              variant="outline"
-              onClick={(e) => {
-                e.stopPropagation();
-                setLocation(`/event-chat/${event.id}`);
-              }}
-              className="text-xs sm:text-sm px-2 sm:px-3 py-1.5 text-crisp whitespace-nowrap"
-            >
-              Open Chat
-            </Button>
-            <Button 
-              size="sm" 
-              className="text-white btn-bounce border-0 text-crisp flex-shrink-0"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleJoinEvent();
-              }}
-              disabled={joinEventMutation.isPending}
-              style={{ 
-                background: 'linear-gradient(to right, #3b82f6, #ea580c) !important',
-                border: 'none !important',
-                color: 'white !important'
-              }}
-            >
-              <span className="text-xs sm:text-sm px-1 whitespace-nowrap">
-                {joinEventMutation.isPending ? "Joining..." : "Join Event"}
-              </span>
-            </Button>
+          {/* Actions */}
+          <div className="flex gap-2 sm:items-center sm:justify-between">
+            <div className="flex gap-2 flex-1 sm:flex-none">
+              <Button 
+                size="sm" 
+                variant="outline"
+                className="flex-1 sm:flex-none"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setLocation(`/event-chat/${event.id}`);
+                }}
+              >
+                Chat
+              </Button>
+              <Button 
+                size="sm" 
+                className="flex-1 sm:flex-none text-white border-0"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleJoinEvent();
+                }}
+                disabled={joinEventMutation.isPending}
+                style={{ 
+                  background: 'linear-gradient(to right, #3b82f6, #ea580c)',
+                  border: 'none',
+                  color: 'white'
+                }}
+              >
+                {joinEventMutation.isPending ? "Joining..." : "Join"}
+              </Button>
+            </div>
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
     
       {/* Event Join Celebration Modal */}
       {celebrationData && (

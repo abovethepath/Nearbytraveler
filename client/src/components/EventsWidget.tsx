@@ -84,16 +84,17 @@ function EventsWidget({ userId }: EventsWidgetProps) {
 
   // Debug logging for userEvents
   React.useEffect(() => {
+    const eventsArray = Array.isArray(userEvents) ? userEvents : [];
     console.log('🎯 EventsWidget userEvents updated:', { 
       userId, 
-      eventsCount: userEvents?.length, 
-      events: userEvents?.map((e: any) => ({ id: e.id, title: e.title })) 
+      eventsCount: eventsArray.length, 
+      events: eventsArray.map((e: any) => ({ id: e.id, title: e.title })) 
     });
   }, [userEvents, userId]);
 
   // Fetch events from ALL locations
   const { data: allEvents = [], isLoading: eventsLoading } = useQuery({
-    queryKey: [`/api/events/widget-all-locations`, discoveryLocations.allCities.map(loc => loc.city), userEvents?.map((e: any) => e.id).sort().join(',')],
+    queryKey: [`/api/events/widget-all-locations`, discoveryLocations.allCities.map(loc => loc.city), (Array.isArray(userEvents) ? userEvents.map((e: any) => e.id).sort().join(',') : 'no-events')],
     queryFn: async () => {
       if (!discoveryLocations.allCities.length) return [];
       
@@ -121,7 +122,8 @@ function EventsWidget({ userId }: EventsWidgetProps) {
       );
       
       // Mark events that user is attending
-      const userEventIds = new Set(userEvents.map((event: any) => event.id));
+      const userEventsArray = Array.isArray(userEvents) ? userEvents : [];
+      const userEventIds = new Set(userEventsArray.map((event: any) => event.id));
       return unique.map((event: any) => ({
         ...event,
         isUserAttending: userEventIds.has(event.id)
@@ -305,7 +307,7 @@ function EventsWidget({ userId }: EventsWidgetProps) {
                         if (!tagLower) return false;
                         
                         // Remove exact matches or substring matches with category keywords
-                        const categoryWords = categoryLower.split(/[,&\s]+/).filter(word => word.length > 2);
+                        const categoryWords = categoryLower.split(/[,&\s]+/).filter((word: string) => word.length > 2);
                         const tagWords = tagLower.split(/[\s]+/);
                         
                         // Check if any tag word matches any category word
