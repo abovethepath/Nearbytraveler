@@ -234,7 +234,7 @@ export function LandmarkWidget({ city, state, country, currentUserId }: Landmark
               Add Landmark or Secret
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto no-scrollbar bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
             <DialogHeader>
               <DialogTitle>Add New Landmark or Secret</DialogTitle>
             </DialogHeader>

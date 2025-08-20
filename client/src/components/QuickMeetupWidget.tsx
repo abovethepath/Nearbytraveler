@@ -283,7 +283,7 @@ export function QuickMeetupWidget({ city, profileUserId }: { city?: string; prof
               </Button>
             </div>
           ) : (
-            <div className="space-y-3 max-h-[80vh] overflow-y-auto flex flex-col">
+            <div className="space-y-3 max-h-[80vh] overflow-y-auto no-scrollbar flex flex-col">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Zap className="h-4 w-4 text-orange-500" />

@@ -173,7 +173,7 @@ export function SmartLocationInput({
             <SelectTrigger className="dark:bg-gray-700 dark:text-white dark:border-gray-600">
               <SelectValue placeholder={typeof placeholder === 'object' ? placeholder?.city : "Select city"} />
             </SelectTrigger>
-            <SelectContent className="dark:bg-gray-700 dark:border-gray-600 max-h-96 overflow-y-auto scroll-smooth">
+            <SelectContent className="dark:bg-gray-700 dark:border-gray-600 max-h-96 overflow-y-auto no-scrollbar scroll-smooth">
               {citiesForCountry.map((cityOption) => (
                 <SelectItem key={cityOption} value={cityOption} className="dark:text-white dark:hover:bg-gray-600">
                   {cityOption}
@@ -203,7 +203,7 @@ export function SmartLocationInput({
                   : "Select region/province"
               } />
             </SelectTrigger>
-            <SelectContent className="dark:bg-gray-700 dark:border-gray-600 max-h-96 overflow-y-auto scroll-smooth">
+            <SelectContent className="dark:bg-gray-700 dark:border-gray-600 max-h-96 overflow-y-auto no-scrollbar scroll-smooth">
               {/* Add state/region options based on country */}
               {country === "United States" && [
                 "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut",

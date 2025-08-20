@@ -165,7 +165,7 @@ export function UserListModal({ isOpen, onClose, city, state, country, userType,
   
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto no-scrollbar bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-gray-900 dark:text-white">
             <MapPin className="h-5 w-5" />

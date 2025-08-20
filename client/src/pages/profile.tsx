@@ -460,7 +460,7 @@ function MultiSelect({ options, selected, onChange, placeholder, maxDisplay = 3,
               No matching options found.
             </div>
           </CommandEmpty>
-          <CommandGroup className="max-h-60 overflow-y-auto">
+          <CommandGroup className="max-h-60 overflow-y-auto no-scrollbar">
             {allOptions.map((item) => (
               <CommandItem
                 key={item}
@@ -7131,7 +7131,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         setEditingActivities(false);
         setEditingEvents(false);
       }}>
-        <DialogContent className="w-[calc(100vw-16px)] max-w-[calc(100vw-16px)] md:max-w-4xl max-h-[85vh] md:max-h-[90vh] overflow-y-auto mx-2 md:mx-auto p-4 md:p-6 safe-area-inset-bottom">
+        <DialogContent className="w-[calc(100vw-16px)] max-w-[calc(100vw-16px)] md:max-w-4xl max-h-[85vh] md:max-h-[90vh] overflow-y-auto no-scrollbar mx-2 md:mx-auto p-4 md:p-6 safe-area-inset-bottom">
           <DialogHeader>
             <DialogTitle>Edit Travel Plan</DialogTitle>
           </DialogHeader>
@@ -7550,7 +7550,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
       {/* Profile Edit Modal */}
       <Dialog open={isEditMode} onOpenChange={setIsEditMode}>
-        <DialogContent className="w-[calc(100vw-16px)] max-w-[calc(100vw-16px)] md:max-w-2xl max-h-[85vh] md:max-h-[90vh] overflow-y-auto mx-2 md:mx-auto p-4 md:p-6 safe-area-inset-bottom">
+        <DialogContent className="w-[calc(100vw-16px)] max-w-[calc(100vw-16px)] md:max-w-2xl max-h-[85vh] md:max-h-[90vh] overflow-y-auto no-scrollbar mx-2 md:mx-auto p-4 md:p-6 safe-area-inset-bottom">
           <DialogHeader>
             <div className="flex items-center justify-between">
               <DialogTitle>Edit Profile</DialogTitle>
@@ -7977,7 +7977,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       <FormItem>
                         <FormLabel>Sexual Preference (Select all that apply)</FormLabel>
                         <FormControl>
-                          <div className="space-y-2 max-h-32 overflow-y-auto border rounded-md p-3">
+                          <div className="space-y-2 border rounded-md p-3">
                             {SEXUAL_PREFERENCE_OPTIONS.map((preference) => (
                               <div key={preference} className="flex items-center space-x-2">
                                 <input
@@ -8725,7 +8725,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       {/* Simplified Cover Photo Selector Dialog */}
       {showCoverPhotoSelector && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto no-scrollbar">
             <div className="p-4 border-b flex justify-between items-center">
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Choose Cover Photo</h2>
               <button
