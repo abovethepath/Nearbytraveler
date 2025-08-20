@@ -27,6 +27,11 @@ img, video, canvas, svg { max-width: 100%; height: auto; }
 /* iOS Safari tap highlight */
 * { -webkit-tap-highlight-color: rgba(0,0,0,0.1); }
 
+/* Header rows should not create inner scrollbars */
+.profile-page section:is(.isolate) * {
+  overscroll-behavior: contain;
+}
+
 /* Prevent zoom-on-focus on iOS (keep at least 16px font size on inputs) */
 input, select, textarea, button { font-size: 16px; }
 

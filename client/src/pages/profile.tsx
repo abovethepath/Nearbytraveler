@@ -3359,42 +3359,46 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         </div>
       )}
     
-      {/* EXPANDED GRADIENT HEADER - MOBILE OPTIMIZED WITH RIGHT-ALIGNED PHOTO */}
-      <div className={`relative -mt-px w-full bg-gradient-to-r ${gradientOptions[selectedGradient]} p-8 sm:p-10 pb-12 sm:pb-16`}>
+      {/* PROFILE HEADER */}
+      <section
+        className={`relative -mt-px isolate w-full bg-gradient-to-r ${gradientOptions[selectedGradient]} px-6 sm:px-10 py-8 sm:py-12`}
+      >
+        {/* floating color button */}
         {isOwnProfile && (
           <button
             type="button"
             onClick={() => setSelectedGradient((prev) => (prev + 1) % gradientOptions.length)}
             aria-label="Change header colors"
-            className="absolute right-3 top-3 z-10 inline-flex items-center justify-center
-                       h-9 w-9 rounded-full bg-white/80 hover:bg-white text-gray-700 shadow-md"
+            className="absolute right-3 top-3 z-10 inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/85 text-gray-700 shadow-md hover:bg-white"
           >
             🎨
           </button>
         )}
-        
+
         <div className="max-w-7xl mx-auto">
+          {/* allow wrapping so CTAs drop below on small screens */}
           <div className="flex flex-row flex-wrap items-start gap-4 sm:gap-6">
-            {/* Profile Avatar - Left Side */}
+
+            {/* Avatar + camera */}
             <div className="relative flex-shrink-0">
-              <div className="w-32 h-32 sm:w-36 sm:h-36 md:w-48 md:h-48 border-4 border-white shadow-lg bg-white rounded-full overflow-hidden">
-                <SimpleAvatar 
-                  user={user} 
-                  size="xl" 
-                  className="w-full h-full border-0 shadow-none"
+              <div className="w-32 h-32 sm:w-36 sm:h-36 md:w-48 md:h-48 rounded-full bg-white ring-4 ring-white shadow-lg overflow-hidden">
+                <SimpleAvatar
+                  user={user}
+                  size="xl"
+                  className="w-full h-full object-cover border-0 shadow-none"
                 />
               </div>
+
               {isOwnProfile && (
                 <>
                   <Button
                     size="icon"
+                    aria-label="Change avatar"
                     className="absolute -bottom-2 -right-2 translate-x-1/4 translate-y-1/4
                                h-10 w-10 sm:h-11 sm:w-11 rounded-full p-0
-                               bg-blue-600 hover:bg-blue-700 text-white shadow-lg
-                               ring-4 ring-white"
+                               bg-blue-600 hover:bg-blue-700 text-white shadow-lg ring-4 ring-white z-10"
                     onClick={() => document.getElementById('avatar-upload-input')?.click()}
                     disabled={uploadingPhoto}
-                    aria-label="Change avatar"
                   >
                     <Camera className="h-4 w-4 sm:h-5 sm:w-5" />
                   </Button>
@@ -3403,184 +3407,52 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               )}
             </div>
 
-            {/* Profile Info - Right Side */}
+            {/* Profile text */}
             <div className="flex-1 min-w-0">
-
-              {/* Business Profile Clean Display */}
               {user?.userType === 'business' ? (
                 <div className="space-y-2 text-black w-full mt-2">
-                  {/* Business Name - Prominent */}
                   <h1 className="text-2xl sm:text-4xl font-bold text-black">
                     {user.businessName || user.name || `@${user.username}`}
                   </h1>
-                  
-                  {/* Nearby Business Label */}
                   <div className="flex items-center gap-2 text-sm sm:text-base">
-                    <span className="pill">
+                    <span className="inline-flex items-center justify-center h-7 rounded-full px-3 text-xs font-medium bg-blue-500 text-white">
                       Nearby Business
                     </span>
-                    {user.businessType && (
-                      <span className="text-black/80">• {user.businessType}</span>
-                    )}
-                  </div>
-                  
-                  {/* Business Contact Info - Clean Grid */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-3 text-sm sm:text-base">
-                    {/* Address */}
-                    {(user.streetAddress || user.city) && (
-                      <div className="flex items-start gap-2">
-                        <MapPin className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
-                        <span className="text-black/90">
-                          {user.streetAddress && <>{user.streetAddress}<br /></>}
-                          {[user.city || user.hometownCity, user.state || user.hometownState, user.zipCode].filter(Boolean).join(', ')}
-                        </span>
-                      </div>
-                    )}
-                    
-                    {/* Phone */}
-                    {user.phoneNumber && (
-                      <div className="flex items-center gap-2">
-                        <Phone className="w-4 h-4 text-blue-600 flex-shrink-0" />
-                        <a href={`tel:${user.phoneNumber}`} className="text-black/90 hover:text-blue-600 transition-colors">
-                          {user.phoneNumber}
-                        </a>
-                      </div>
-                    )}
-                    
-                    {/* Website */}
-                    {user.websiteUrl && (
-                      <div className="flex items-center gap-2">
-                        <Globe className="w-4 h-4 text-blue-600 flex-shrink-0" />
-                        <a 
-                          href={user.websiteUrl.startsWith('http') ? user.websiteUrl : `https://${user.websiteUrl}`} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="text-black/90 hover:text-blue-600 transition-colors truncate"
-                        >
-                          {user.websiteUrl.replace(/^https?:\/\//, '')}
-                        </a>
-                      </div>
-                    )}
-                    
-                    {/* Business Hours if available */}
-                    {user.businessHours && (
-                      <div className="flex items-center gap-2">
-                        <Clock className="w-4 h-4 text-blue-600 flex-shrink-0" />
-                        <span className="text-black/90">{user.businessHours}</span>
-                      </div>
-                    )}
+                    {user.businessType && <span className="text-black/80">• {user.businessType}</span>}
                   </div>
                 </div>
               ) : (
-                /* Regular User Display */
                 <div className="space-y-1 text-black w-full mt-2">
-                  {/* Line 1: Username */}
-                  <h1 className="text-xl sm:text-3xl font-bold text-black">@{user.username}</h1>
-                  
-                  {/* Line 2: Location/Status with pin icon - Allow full width */}
-                <div className="flex items-center gap-2 w-full">
-                  <MapPin className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
-                  <span className="text-sm sm:text-base font-medium flex-1 min-w-0 truncate">
-                    {user.userType === 'business' 
-                      ? `Nearby Business in ${(user as any).city || (user as any).businessCity || user.hometownCity || 'Los Angeles Metro'}`
-                      : (() => {
-                          // Check for active travel plans first
-                          if (travelPlans && travelPlans.length > 0) {
-                            const today = new Date();
-                            today.setHours(0, 0, 0, 0);
-                            
-                            let activeTrips = [];
-                            
-                            for (const plan of travelPlans) {
-                              if (plan.startDate && plan.endDate) {
-                                const parseLocalDate = (dateInput: string | Date | null | undefined) => {
-                                  if (!dateInput) return null;
-                                  let dateString: string;
-                                  if (dateInput instanceof Date) {
-                                    dateString = dateInput.toISOString();
-                                  } else {
-                                    dateString = dateInput;
-                                  }
-                                  const parts = dateString.split('T')[0].split('-');
-                                  if (parts.length === 3) {
-                                    const year = parseInt(parts[0]);
-                                    const month = parseInt(parts[1]) - 1;
-                                    const day = parseInt(parts[2]);
-                                    return new Date(year, month, day);
-                                  }
-                                  return null;
-                                };
-                                
-                                const startDate = parseLocalDate(plan.startDate);
-                                const endDate = parseLocalDate(plan.endDate);
-                                if (!startDate || !endDate) continue;
-                                startDate.setHours(0, 0, 0, 0);
-                                endDate.setHours(23, 59, 59, 999);
-                                
-                                const isCurrentlyActive = today >= startDate && today <= endDate;
-                                if (isCurrentlyActive && plan.destination) {
-                                  activeTrips.push({
-                                    plan,
-                                    startDate
-                                  });
-                                }
-                              }
-                            }
-                            
-                            if (activeTrips.length > 0) {
-                              activeTrips.sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
-                              const currentTrip = activeTrips[0].plan;
-                              const destination = currentTrip.destination || 'Unknown';
-                              return `Nearby Traveler in ${destination}`;
-                            }
-                          }
-                          
-                          // Show "Nearby Local" when at home
-                          const hometownCity = user.hometownCity;
-                          const hometownState = user.hometownState;
-                          const hometownCountry = user.hometownCountry;
-                          
-                          if (hometownCity) {
-                            if (hometownCountry && hometownCountry !== 'United States' && hometownCountry !== 'USA') {
-                              return `Nearby Local in ${hometownCity}, ${hometownCountry}`;
-                            } else if (hometownState && (hometownCountry === 'United States' || hometownCountry === 'USA')) {
-                              return `Nearby Local in ${hometownCity}, ${hometownState}`;
-                            } else {
-                              return `Nearby Local in ${hometownCity}`;
-                            }
-                          } else if (user.location) {
-                            return `Nearby Local in ${user.location}`;
-                          }
-                          return "Nearby Local";
-                        })()
-                    }
-                  </span>
-                </div>
+                  {/* Username */}
+                  <h1 className="text-xl sm:text-3xl font-bold text-black truncate">@{user.username}</h1>
 
-                {/* Line 3: All stats on ONE line - flexible width */}
-                {user.userType !== 'business' && (
+                  {/* Location/status — never cut off */}
+                  <div className="flex items-center gap-2 w-full">
+                    <MapPin className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+                    <span className="text-sm sm:text-base font-medium flex-1 min-w-0 truncate">
+                      {/* your location / travel status */}
+                      Nearby Local in {user.hometownCity || user.location?.split(',')[0] || 'Location not set'}
+                      {user.hometownState && `, ${user.hometownState}`}
+                      {user.hometownCountry && `, ${user.hometownCountry}`}
+                    </span>
+                  </div>
+
+                  {/* Stats */}
                   <div className="flex items-center flex-wrap gap-2 text-xs sm:text-sm w-full">
                     <span className="font-medium">🌍 {countriesVisited?.length || 0} countries</span>
                     <span className="font-medium">⭐ {references?.length || 0} references</span>
-                    <span className="font-medium">
-                      • Nearby Local in {user.hometownCity || user.location?.split(',')[0] || 'Location not set'}
-                    </span>
                   </div>
-                )}
-              </div>
+                </div>
               )}
             </div>
 
-            {/* Action Buttons - Different for own vs other profiles */}
+            {/* CTAs — wrap on mobile */}
             {!isOwnProfile ? (
               <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto mt-4 sm:mt-0">
-                <Button 
-                  className="bg-orange-500 hover:bg-orange-600 text-white border-0 w-full sm:w-auto"
-                  onClick={handleMessage}
-                >
+                <Button className="bg-orange-500 hover:bg-orange-600 text-white border-0 w-full sm:w-auto" onClick={handleMessage}>
                   Message
                 </Button>
-                <Button 
+                <Button
                   className={`w-full sm:w-auto ${getConnectButtonState().className}`}
                   variant={getConnectButtonState().variant}
                   onClick={handleConnect}
@@ -3599,7 +3471,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     }}
                     className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white border-0 shadow-lg w-full sm:w-auto"
                   >
-                    <MessageCircleMore className="w-4 h-4 mr-2" />
+                    <MessageCircle className="w-4 h-4 mr-2" />
                     Go to Chatrooms
                   </Button>
                 )}
@@ -3607,8 +3479,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             )}
           </div>
         </div>
-        
-        {/* Loading state for photo uploads */}
+
+        {/* Upload overlay (unchanged) */}
         {uploadingPhoto && (
           <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-30">
             <div className="bg-white rounded-lg p-4 text-center">
@@ -3617,7 +3489,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             </div>
           </div>
         )}
-      </div>
+      </section>
       
       {/* Main content section - Modern Sectioned Layout */}
       <div className="w-full max-w-full mx-auto pb-0 px-2 sm:px-4 -mt-2">
