@@ -1327,8 +1327,7 @@ export default function Home() {
                   Find Customers
                 </Button>
               </div>
-            ) : (
-            )}
+            ) : null}
           </div>
         </div>
       </section>
@@ -2195,12 +2194,27 @@ export default function Home() {
                         className="group text-left rounded-xl border bg-white dark:bg-gray-800 p-2 hover:shadow-sm"
                       >
                         <div className="relative w-full aspect-[4/5] rounded-lg overflow-hidden bg-gray-100">
-                          <img
-                            src={u.profileImage || "/attached_assets/placeholder_user.jpg"}
-                            alt={u.username}
-                            className="h-full w-full object-cover"
-                            loading="lazy"
-                          />
+                          {u.profileImage ? (
+                            <img
+                              src={u.profileImage}
+                              alt={u.username}
+                              className="h-full w-full object-cover"
+                              loading="lazy"
+                              onError={(e) => {
+                                // Replace with colorful avatar if image fails to load
+                                e.currentTarget.style.display = 'none';
+                                e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                              }}
+                            />
+                          ) : null}
+                          {/* Colorful fallback avatar with profile completion reminder */}
+                          <div className={`${u.profileImage ? 'hidden' : ''} h-full w-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center relative group cursor-help`}>
+                            <span className="text-white font-bold text-lg">{u.username?.charAt(0)?.toUpperCase() || 'U'}</span>
+                            {/* Tooltip */}
+                            <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-10">
+                              Upload a photo!
+                            </div>
+                          </div>
                         </div>
                         <div className="mt-2 min-w-0">
                           <div className="text-sm font-semibold truncate text-gray-900 dark:text-white">
@@ -2250,7 +2264,24 @@ export default function Home() {
                             className="group text-left rounded-xl border bg-white dark:bg-gray-800 p-3 hover:shadow-sm"
                           >
                             <div className="relative w-full aspect-[4/5] rounded-lg overflow-hidden bg-gray-100">
-                              <img src={u.profileImage || "/attached_assets/placeholder_user.jpg"} alt={u.username} className="h-full w-full object-cover" />
+                              {u.profileImage ? (
+                                <img 
+                                  src={u.profileImage} 
+                                  alt={u.username} 
+                                  className="h-full w-full object-cover"
+                                  onError={(e) => {
+                                    e.currentTarget.style.display = 'none';
+                                    e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                                  }}
+                                />
+                              ) : null}
+                              {/* Colorful fallback avatar */}
+                              <div className={`${u.profileImage ? 'hidden' : ''} h-full w-full bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center relative group cursor-help`}>
+                                <span className="text-white font-bold text-xl">{u.username?.charAt(0)?.toUpperCase() || 'U'}</span>
+                                <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-10">
+                                  Add profile photo!
+                                </div>
+                              </div>
                             </div>
                             <div className="mt-2 min-w-0">
                               <div className="text-sm font-semibold truncate">@{u.username}</div>

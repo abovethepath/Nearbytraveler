@@ -103,8 +103,12 @@ export function SimpleAvatar({ user, size = 'md', className = '' }: SimpleAvatar
 
   if (!user || !currentImage) {
     return (
-      <div className={`${sizeClasses[size]} ${className} bg-gray-300 rounded-full flex items-center justify-center`}>
-        <span className="text-gray-600">?</span>
+      <div className={`${sizeClasses[size]} ${className} bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center relative group cursor-help`}>
+        <span className="text-white font-bold">{user?.username?.charAt(0)?.toUpperCase() || 'U'}</span>
+        {/* Tooltip for profile completion reminder */}
+        <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-10">
+          Complete your profile!
+        </div>
       </div>
     );
   }
@@ -117,7 +121,8 @@ export function SimpleAvatar({ user, size = 'md', className = '' }: SimpleAvatar
       loading="lazy"
       onError={() => {
         // Fallback to generated avatar if image fails
-        setCurrentImage(generateAvatar(user.username, user.avatarColor));
+        const fallbackAvatar = generateAvatar(user.username, user.avatarColor);
+        setCurrentImage(fallbackAvatar);
       }}
     />
   );
