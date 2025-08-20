@@ -1242,17 +1242,25 @@ export default function Home() {
                 )}
               </div>
             </h1>
-            <p className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl mb-3 sm:mb-4 text-white leading-relaxed px-3 sm:px-4 md:px-0 max-w-4xl mx-auto">
+            <p className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl mb-3 sm:mb-4 text-white leading-snug px-4 sm:px-6 md:px-0 max-w-xs sm:max-w-md md:max-w-2xl lg:max-w-4xl mx-auto">
               {effectiveUser?.userType === 'business' ? (
-                <span className="block">
-                  Reach customers through interest-based matching, business notifications, and location-targeted discovery. 
-                  <span className="block sm:inline"> Grow your business by connecting with travelers and locals who love what you offer.</span>
+                <span className="block text-center">
+                  <span className="block">Reach customers through</span>
+                  <span className="block">interest-based matching,</span>
+                  <span className="block sm:inline">business notifications, and</span>
+                  <span className="block sm:inline">location-targeted discovery.</span>
+                  <span className="block mt-1 sm:mt-0 sm:inline"> Grow your business by connecting</span>
+                  <span className="block sm:inline"> with travelers and locals who love</span>
+                  <span className="block sm:inline"> what you offer.</span>
                 </span>
               ) : (
                 <span className="block text-center">
-                  Discover amazing experiences, make meaningful connections, 
-                  <span className="block sm:inline"> and explore the world with like-minded adventurers </span>
-                  <span className="block sm:inline"> based on demographics, activities, interests and events</span>
+                  <span className="block">Discover amazing experiences,</span>
+                  <span className="block">make meaningful connections,</span>
+                  <span className="block">and explore the world with</span>
+                  <span className="block">like-minded adventurers</span>
+                  <span className="block sm:inline"> based on demographics,</span>
+                  <span className="block sm:inline"> activities, interests and events</span>
                 </span>
               )}
             </p>
