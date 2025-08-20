@@ -2222,7 +2222,7 @@ export default function Home() {
                           }))}
                           title="Nearby Travelers"
                           showSeeAll={false}
-                          currentUserId={user?.id || 0}
+                          currentUserId={effectiveUser?.id || currentUserProfile?.id || user?.id}
                         />
                       </div>
 
