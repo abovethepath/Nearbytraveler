@@ -72,17 +72,6 @@ export default function Home() {
   const getSortedUsers = (users: any[]) => {
     if (!users) return [];
 
-    // Debug logging for sort functionality
-    if (sortBy === 'aura' || sortBy === 'travel_experience') {
-      console.log(`🔄 SORTING DEBUG: Sorting by ${sortBy}`);
-      console.log(`🔄 Sample user data:`, users.slice(0, 2).map(u => ({
-        username: u.username,
-        aura: u.aura,
-        countriesVisited: u.countriesVisited?.length || 0,
-        countriesArray: u.countriesVisited
-      })));
-    }
-
     return [...users].sort((a, b) => {
       switch (sortBy) {
         case 'closest_nearby':
@@ -113,10 +102,7 @@ export default function Home() {
           return new Date(b.lastLocationUpdate || b.createdAt || 0).getTime() - new Date(a.lastLocationUpdate || a.createdAt || 0).getTime();
         case 'aura':
           // Sort by Travel Aura points (highest first)
-          const auraA = a.aura || 0;
-          const auraB = b.aura || 0;
-          console.log(`🌟 AURA SORT: ${a.username}(${auraA}) vs ${b.username}(${auraB}), result: ${auraB - auraA}`);
-          return auraB - auraA;
+          return (b.aura || 0) - (a.aura || 0);
         case 'references':
           // Sort by number of references/reviews (assuming references are stored in a field)
           const aReferences = a.references?.length || 0;
@@ -131,7 +117,6 @@ export default function Home() {
           // Sort by travel experience (number of countries visited)
           const aCountries = a.countriesVisited?.length || 0;
           const bCountries = b.countriesVisited?.length || 0;
-          console.log(`🌍 TRAVEL EXP SORT: ${a.username}(${aCountries} countries) vs ${b.username}(${bCountries} countries), result: ${bCountries - aCountries}`);
           return bCountries - aCountries;
         case 'alphabetical':
           // Sort alphabetically by username

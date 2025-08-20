@@ -3147,14 +3147,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const getCurrentLocation = () => {
     if (!user) return "Not specified";
     
-    // Check if user has active travel plans
-    const now = new Date();
-    const travelStart = user.travelStartDate ? new Date(user.travelStartDate) : null;
-    const travelEnd = user.travelEndDate ? new Date(user.travelEndDate) : null;
-    
-    // If user is currently traveling (between start and end dates)
-    if (travelStart && travelEnd && now >= travelStart && now <= travelEnd && user.travelDestination) {
-      return user.travelDestination;
+    // Use the modern travel plans system (same as all other components)
+    const currentDestination = getCurrentTravelDestination(travelPlans || []);
+    if (currentDestination) {
+      return currentDestination;
     }
     
     // Otherwise show their regular location
@@ -3413,13 +3409,30 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
                   {/* Location/status — never cut off */}
                   <div className="flex items-center gap-2 w-full">
-                    <MapPin className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
-                    <span className="text-sm sm:text-base font-medium flex-1 min-w-0 truncate">
-                      {/* your location / travel status */}
-                      Nearby Local in {user.hometownCity || user.location?.split(',')[0] || 'Location not set'}
-                      {user.hometownState && `, ${user.hometownState}`}
-                      {user.hometownCountry && `, ${user.hometownCountry}`}
-                    </span>
+                    {(() => {
+                      const currentDestination = getCurrentTravelDestination(travelPlans || []);
+                      if (currentDestination) {
+                        return (
+                          <>
+                            <Plane className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 text-blue-500" />
+                            <span className="text-sm sm:text-base font-medium flex-1 min-w-0 truncate text-blue-600 dark:text-blue-400">
+                              Currently Traveling in {currentDestination}
+                            </span>
+                          </>
+                        );
+                      } else {
+                        return (
+                          <>
+                            <MapPin className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+                            <span className="text-sm sm:text-base font-medium flex-1 min-w-0 truncate">
+                              {user.userType === 'business' ? 'Business in' : 'Nearby Local in'} {user.hometownCity || user.location?.split(',')[0] || 'Location not set'}
+                              {user.hometownState && `, ${user.hometownState}`}
+                              {user.hometownCountry && `, ${user.hometownCountry}`}
+                            </span>
+                          </>
+                        );
+                      }
+                    })()}
                   </div>
 
                   {/* Stats */}
