@@ -1232,22 +1232,23 @@ export default function Home() {
               fontFamily: '"Open Sans", sans-serif', 
               fontWeight: '700', 
               textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
-              fontSize: 'clamp(1.5rem, 6vw, 2rem)',
-              lineHeight: '1.1'
+              fontSize: 'clamp(1.6rem, 6.5vw, 2.2rem)',
+              lineHeight: '1.1',
+              letterSpacing: '0.02em'
             }}>
               {effectiveUser?.userType === 'business' ? (
                 <>
                   <div>Connect Your</div>
                   <div><span className="text-orange-400">Business</span></div>
-                  <div>with Travelers</div>
-                  <div>& Locals</div>
+                  <div>with <span className="text-blue-400">Travelers</span></div>
+                  <div>& <span className="text-blue-400">Locals</span></div>
                 </>
               ) : (
                 <>
                   <div>Connect with</div>
                   <div><span className="text-orange-400">Like-Minded</span></div>
-                  <div>Travelers</div>
-                  <div>& Locals</div>
+                  <div><span className="text-blue-400">Travelers</span></div>
+                  <div>& <span className="text-blue-400">Locals</span></div>
                 </>
               )}
             </h1>
@@ -1263,12 +1264,12 @@ export default function Home() {
               {effectiveUser?.userType === 'business' ? (
                 <>
                   <div>Connect Your <span className="text-orange-400">Business</span></div>
-                  <div>with Travelers & Locals</div>
+                  <div>with <span className="text-blue-400">Travelers</span> & <span className="text-blue-400">Locals</span></div>
                 </>
               ) : (
                 <>
                   <div>Connect with <span className="text-orange-400">Like-Minded</span></div>
-                  <div>Travelers & Locals</div>
+                  <div><span className="text-blue-400">Travelers</span> & <span className="text-blue-400">Locals</span></div>
                 </>
               )}
             </h1>
