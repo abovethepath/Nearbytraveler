@@ -1226,19 +1226,14 @@ export default function Home() {
         {/* Dark overlay for text readability */}
         <div className="absolute inset-0 bg-gradient-to-br from-black/40 via-black/30 to-black/50"></div>
         <div className="relative w-full mx-auto py-1 sm:py-4 md:py-6" style={{padding: '2px 1px'}}>
-          <div className="text-center mx-auto" style={{maxWidth: '180px', width: '100%', overflow: 'hidden'}}>
-            <h1 className="sm:hidden font-bold mb-0.5 text-white text-center" style={{
-              fontFamily: '"Open Sans", sans-serif !important', 
-              fontWeight: '700 !important', 
-              textShadow: '1px 1px 2px rgba(0,0,0,0.8) !important',
-              fontSize: '3px !important',
-              lineHeight: '0.8 !important',
-              maxWidth: '50px !important',
-              margin: '0 auto !important',
-              padding: '0 !important',
-              transform: 'scale(0.3) !important',
-              transformOrigin: 'center !important',
-              overflow: 'hidden !important'
+          <div className="text-center mx-auto px-4">
+            {/* Mobile First Heading - Make it bigger and readable */}
+            <h1 className="sm:hidden font-bold mb-3 text-white text-center" style={{
+              fontFamily: '"Open Sans", sans-serif', 
+              fontWeight: '700', 
+              textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
+              fontSize: 'clamp(1.5rem, 6vw, 2rem)',
+              lineHeight: '1.1'
             }}>
               {effectiveUser?.userType === 'business' ? (
                 <>
@@ -1277,49 +1272,20 @@ export default function Home() {
                 </>
               )}
             </h1>
-            {/* Inline-styled mobile description */}
-            <div className="sm:hidden mb-0.5" style={{
-              maxWidth: '40px !important',
-              margin: '0 auto !important',
-              padding: '0 !important',
-              overflow: 'hidden !important'
-            }}>
-              <div className="text-white text-center" style={{
-                fontSize: '2px !important',
-                lineHeight: '0.7 !important',
-                transform: 'scale(0.25) !important',
-                transformOrigin: 'center !important',
-                margin: '0 auto !important',
-                padding: '0 !important',
-                maxWidth: '30px !important',
-                overflow: 'hidden !important',
-                textOverflow: 'clip !important',
-                wordBreak: 'break-all' as any
+            {/* Mobile Second Sentence - Make it readable and separate */}
+            <div className="sm:hidden mb-4 px-2">
+              <p className="text-white text-center" style={{
+                fontSize: 'clamp(0.9rem, 4vw, 1.1rem)',
+                lineHeight: '1.3',
+                textShadow: '1px 1px 3px rgba(0,0,0,0.7)',
+                fontWeight: '500'
               }}>
                 {effectiveUser?.userType === 'business' ? (
-                  <>
-                    <div>Reach</div>
-                    <div>customers</div>
-                    <div>through</div>
-                    <div>interest</div>
-                    <div>matching</div>
-                    <div>& business</div>
-                    <div>discovery</div>
-                  </>
+                  'Reach customers through interest matching & business discovery'
                 ) : (
-                  <>
-                    <div>Discover</div>
-                    <div>amazing</div>
-                    <div>experiences</div>
-                    <div>& make</div>
-                    <div>meaningful</div>
-                    <div>connections</div>
-                    <div>with</div>
-                    <div>like-minded</div>
-                    <div>adventurers</div>
-                  </>
+                  'Discover amazing experiences & make meaningful connections with like-minded adventurers'
                 )}
-              </div>
+              </p>
             </div>
             
             {/* Tablet and desktop description */}
@@ -1333,7 +1299,7 @@ export default function Home() {
                 {effectiveUser?.userType === 'business' ? (
                   'Reach customers through interest-based matching, business notifications, and location-targeted discovery. Grow your business by connecting with travelers and locals who love what you offer.'
                 ) : (
-                  'Discover amazing experiences, make meaningful connections, and explore the world with like-minded adventurers based on demographics, activities, interests and events'
+                  'Discover amazing experiences & make meaningful connections with like-minded adventurers based on demographics, activities, interests and events'
                 )}
               </p>
             </div>
@@ -1362,9 +1328,6 @@ export default function Home() {
                 </Button>
               </div>
             ) : (
-              <div className="text-center mt-2">
-                <p className="text-xs text-white/80">Use the navigation below to start exploring</p>
-              </div>
             )}
           </div>
         </div>
