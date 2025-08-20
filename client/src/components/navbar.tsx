@@ -1,4 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { Link, useLocation } from "wouter";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { AuthContext } from "@/App";
@@ -17,6 +18,74 @@ import NotificationBell from "@/components/notification-bell";
 import { useTheme } from "@/components/theme-provider";
 import { authStorage } from "@/lib/auth";
 import { useToast } from "@/hooks/use-toast";
+
+// Portal-based Mobile Menu Component - renders outside header to avoid z-index issues
+function MobileMenu({
+  open,
+  onClose,
+  navItems,
+  location,
+  setLocation,
+}: {
+  open: boolean;
+  onClose: () => void;
+  navItems: { path: string; label: string; icon: React.ReactNode }[];
+  location: string;
+  setLocation: (p: string) => void;
+}) {
+  if (!open) return null;
+
+  // Lock body scroll while menu is open
+  useEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = prev; };
+  }, []);
+
+  const menu = (
+    <div
+      id="mobile-menu"
+      className="
+        block md:hidden fixed inset-x-0 top-20 z-[100]
+        bg-white dark:bg-black border-b border-gray-200 dark:border-gray-800
+        shadow-lg
+      "
+      role="dialog"
+      aria-modal="true"
+    >
+      <div className="px-4 py-6 space-y-4 max-h-[calc(100vh-5rem)] overflow-y-auto">
+        {navItems.map((item) => (
+          <Link
+            key={item.path}
+            href={item.path}
+            className={`block py-3 px-4 rounded-lg text-lg font-medium transition-colors ${
+              location === item.path
+                ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
+                : "text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800"
+            }`}
+            onClick={() => {
+              onClose();
+              setLocation(item.path);
+            }}
+          >
+            <span className="mr-3">{item.icon}</span>
+            {item.label}
+          </Link>
+        ))}
+
+        <button
+          onClick={() => { setLocation("/donate"); onClose(); }}
+          className="w-full mt-4 py-3 px-4 rounded-lg text-white font-medium"
+          style={{ backgroundColor: "#10b981" }}
+        >
+          Donate
+        </button>
+      </div>
+    </div>
+  );
+
+  return createPortal(menu, document.body);
+}
 
 // Theme Toggle as Dropdown Menu Item
 function ThemeToggleMenuItem() {
@@ -576,48 +645,16 @@ function Navbar() {
           </div>
         </div>
 
-        {/* Mobile Navigation Dropdown Overlay */}
-        <div
-          id="mobile-menu"
-          className={`md:hidden fixed inset-x-0 top-20 w-full bg-white dark:bg-black border-b border-gray-200 dark:border-gray-800 shadow-lg transition-[max-height,opacity] duration-200 overflow-hidden ${
-            isMobileMenuOpen 
-              ? "max-h-[85svh] opacity-100 z-[60]" 
-              : "max-h-0 opacity-0 pointer-events-none z-[60]"
-          }`}
-        >
-          <div className="px-4 py-6 space-y-4 max-h-[calc(100vh-5rem)] overflow-y-auto">
-            {navItems.map((item) => (
-              <Link
-                key={item.path}
-                href={item.path}
-                className={`block py-3 px-4 rounded-lg text-lg font-medium transition-colors ${
-                  location === item.path
-                    ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
-                    : "text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800"
-                }`}
-                onClick={() => {
-                  setIsMobileMenuOpen(false);
-                  setLocation(item.path);
-                }}
-              >
-                <span className="mr-3">{item.icon}</span>
-                {item.label}
-              </Link>
-            ))}
-
-            <button
-              onClick={() => { 
-                setLocation('/donate'); 
-                setIsMobileMenuOpen(false); 
-              }}
-              className="w-full mt-4 py-3 px-4 rounded-lg text-white font-medium"
-              style={{ backgroundColor: '#10b981' }}
-            >
-              Donate
-            </button>
-          </div>
-        </div>
       </header>
+
+      {/* Portal-based Mobile Menu - renders outside header to avoid z-index issues */}
+      <MobileMenu
+        open={isMobileMenuOpen}
+        onClose={() => setIsMobileMenuOpen(false)}
+        navItems={navItems}
+        location={location}
+        setLocation={setLocation}
+      />
 
       {/* Connect Modal */}
       <ConnectModal 
