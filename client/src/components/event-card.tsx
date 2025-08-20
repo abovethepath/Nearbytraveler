@@ -151,21 +151,20 @@ export default function EventCard({ event, compact = false, featured = false }: 
               loading="lazy"
             />
 
-            {/* md+ overlay chips with scrim */}
-            <div className="hidden md:block absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/60 to-transparent" />
-            <div className="hidden md:flex absolute bottom-3 left-3 right-3 z-10 gap-2 flex-wrap">
+            {/* md+ pills below image (hotfix forces static positioning) */}
+            <div className="pills hidden md:flex px-4 pt-3 gap-2 flex-wrap">
               {featured && (
-                <span className="rounded-full px-3 py-1 text-xs font-semibold bg-travel-blue/90 text-white">
+                <span className="chip bg-travel-blue text-white">
                   Featured
                 </span>
               )}
               {event.category && (
-                <span className="rounded-full px-3 py-1 text-xs font-semibold bg-gray-900/80 text-white">
+                <span className="chip bg-gray-900/80 text-white">
                   {event.category}
                 </span>
               )}
               {event.isSpontaneous && (
-                <span className="rounded-full px-3 py-1 text-xs font-semibold bg-orange-500/90 text-white">
+                <span className="chip bg-orange-500 text-white">
                   ⚡ Last Minute
                 </span>
               )}
@@ -174,24 +173,24 @@ export default function EventCard({ event, compact = false, featured = false }: 
         )}
 
         {/* MOBILE chips (not overlay) */}
-        <div className="md:hidden px-4 pt-3 flex flex-wrap gap-2">
+        <div className="pills md:hidden px-4 pt-3 flex flex-wrap gap-2">
           {featured && (
-            <span className="rounded-full px-3 py-1 text-xs font-semibold bg-travel-blue text-white">
+            <span className="chip bg-travel-blue text-white">
               Featured
             </span>
           )}
           {event.category && (
-            <span className="rounded-full px-3 py-1 text-xs font-semibold bg-gray-700 dark:bg-gray-600 text-white">
+            <span className="chip bg-gray-700 dark:bg-gray-600 text-white">
               {event.category}
             </span>
           )}
           {event.isSpontaneous && (
-            <span className="rounded-full px-3 py-1 text-xs font-semibold bg-orange-500 text-white">
+            <span className="chip bg-orange-500 text-white">
               ⚡ Last Minute
             </span>
           )}
           {event.isRecurring && (
-            <span className="rounded-full px-3 py-1 text-xs font-semibold bg-purple-500 text-white">
+            <span className="chip bg-purple-500 text-white">
               🔄 Recurring
             </span>
           )}

@@ -2371,9 +2371,9 @@ export default function Home() {
 
                       {/* Pills live in normal flow (hotfix enforces non-absolute) */}
                       <div className="pills px-4 pt-3 flex flex-wrap gap-2">
-                        {event.category && <span className="rounded-full px-3 py-1 text-xs font-semibold bg-gray-900/80 text-white">{event.category}</span>}
+                        {event.category && <span className="chip bg-gray-900/80 text-white">{event.category}</span>}
                         {(event as any).participantCount && (
-                          <span className="rounded-full px-3 py-1 text-xs font-medium bg-purple-600 text-white">{(event as any).participantCount} attending</span>
+                          <span className="chip bg-purple-600 text-white">{(event as any).participantCount} attending</span>
                         )}
                       </div>
 
