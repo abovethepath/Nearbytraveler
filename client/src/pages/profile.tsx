@@ -642,8 +642,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     }, [open, initialBio]);
 
     const Contents = (
-      <div className="flex flex-col h-full">
-        <div className="flex-1 overflow-y-auto p-4">
+      <div className="flex flex-col h-full min-h-0">
+        <div className="flex-1 overflow-y-auto p-4 pb-2">
           <label className="block text-sm font-medium mb-2">Your bio</label>
           <Textarea
             value={bio}
@@ -651,20 +651,23 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               const v = e.target.value;
               if (v.length <= maxLength) setBio(v);
             }}
-            className="min-h-[160px] resize-vertical"
+            className="min-h-[120px] sm:min-h-[160px] resize-vertical w-full"
             placeholder="Tell people about yourself, what you enjoy, and how you like to travel…"
           />
           <div className="mt-2 text-xs text-muted-foreground">{remaining} characters left</div>
         </div>
 
-        <div className="border-t p-3 sticky bottom-0 bg-background">
+        <div className="border-t p-4 bg-background flex-shrink-0">
           <div className="flex items-center justify-end gap-2">
-            <Button variant="ghost" onClick={() => onOpenChange(false)}>Cancel</Button>
+            <Button variant="ghost" onClick={() => onOpenChange(false)} className="min-w-[80px]">
+              Cancel
+            </Button>
             <Button
               onClick={async () => {
                 await onSave(bio.trim());
                 onOpenChange(false);
               }}
+              className="min-w-[80px]"
             >
               Save
             </Button>
@@ -676,11 +679,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     if (isSmall) {
       return (
         <Sheet open={open} onOpenChange={onOpenChange}>
-          <SheetContent side="bottom" className="h-[85vh] p-0 overflow-hidden">
-            <SheetHeader className="p-4 pb-0">
+          <SheetContent side="bottom" className="h-[75vh] p-0 overflow-hidden flex flex-col">
+            <SheetHeader className="p-4 pb-2 flex-shrink-0">
               <SheetTitle>Edit Bio</SheetTitle>
             </SheetHeader>
-            {Contents}
+            <div className="flex-1 min-h-0">
+              {Contents}
+            </div>
           </SheetContent>
         </Sheet>
       );
@@ -688,11 +693,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-lg w-[min(92vw,640px)] p-0 overflow-hidden">
-          <DialogHeader className="p-4 pb-0">
+        <DialogContent className="sm:max-w-lg w-[min(92vw,640px)] max-h-[80vh] p-0 overflow-hidden flex flex-col">
+          <DialogHeader className="p-4 pb-2 flex-shrink-0">
             <DialogTitle>Edit Bio</DialogTitle>
           </DialogHeader>
-          {Contents}
+          <div className="flex-1 min-h-0">
+            {Contents}
+          </div>
         </DialogContent>
       </Dialog>
     );
