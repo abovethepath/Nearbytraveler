@@ -1227,8 +1227,8 @@ export default function Home() {
         <div className="absolute inset-0 bg-gradient-to-br from-black/40 via-black/30 to-black/50"></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 md:py-12">
           <div className="text-center max-w-3xl mx-auto">
-            <h1 className="text-lg sm:text-xl md:text-2xl lg:text-4xl xl:text-5xl font-bold mb-4 sm:mb-6 md:mb-8 leading-tight text-white text-center" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700', textShadow: '2px 2px 4px rgba(0,0,0,0.8)'}}>
-              <div className="leading-tight space-y-1">
+            <h1 className="text-base sm:text-lg md:text-xl lg:text-3xl xl:text-4xl font-bold mb-3 sm:mb-4 md:mb-6 leading-tight text-white text-center" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700', textShadow: '2px 2px 4px rgba(0,0,0,0.8)'}}>
+              <div className="leading-tight space-y-0.5">
                 {effectiveUser?.userType === 'business' ? (
                   <>
                     <div className="text-center">Connect Your <span className="text-orange-400">Business</span></div>
@@ -1242,28 +1242,29 @@ export default function Home() {
                 )}
               </div>
             </h1>
-            <p className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl mb-3 sm:mb-4 text-white leading-snug px-4 sm:px-6 md:px-0 max-w-xs sm:max-w-md md:max-w-2xl lg:max-w-4xl mx-auto">
+            <div className="text-[11px] sm:text-xs md:text-sm lg:text-base xl:text-lg mb-2 sm:mb-3 text-white leading-tight px-2 sm:px-4 md:px-0 max-w-[280px] sm:max-w-sm md:max-w-lg lg:max-w-2xl mx-auto">
               {effectiveUser?.userType === 'business' ? (
-                <span className="block text-center">
-                  <span className="block">Reach customers through</span>
-                  <span className="block">interest-based matching,</span>
-                  <span className="block sm:inline">business notifications, and</span>
-                  <span className="block sm:inline">location-targeted discovery.</span>
-                  <span className="block mt-1 sm:mt-0 sm:inline"> Grow your business by connecting</span>
-                  <span className="block sm:inline"> with travelers and locals who love</span>
-                  <span className="block sm:inline"> what you offer.</span>
-                </span>
+                <div className="text-center space-y-0.5">
+                  <div>Reach customers through</div>
+                  <div>interest-based matching,</div>
+                  <div>business notifications,</div>
+                  <div>and location-targeted discovery.</div>
+                  <div className="mt-1">Grow your business by connecting</div>
+                  <div>with travelers and locals</div>
+                  <div>who love what you offer.</div>
+                </div>
               ) : (
-                <span className="block text-center">
-                  <span className="block">Discover amazing experiences,</span>
-                  <span className="block">make meaningful connections,</span>
-                  <span className="block">and explore the world with</span>
-                  <span className="block">like-minded adventurers</span>
-                  <span className="block sm:inline"> based on demographics,</span>
-                  <span className="block sm:inline"> activities, interests and events</span>
-                </span>
+                <div className="text-center space-y-0.5">
+                  <div>Discover amazing experiences,</div>
+                  <div>make meaningful connections,</div>
+                  <div>and explore the world with</div>
+                  <div>like-minded adventurers</div>
+                  <div>based on demographics,</div>
+                  <div>activities, interests</div>
+                  <div>and events</div>
+                </div>
               )}
-            </p>
+            </div>
 
             {/* Business-specific CTA buttons vs Traveler/Local CTAs */}
             {effectiveUser?.userType === 'business' ? (
