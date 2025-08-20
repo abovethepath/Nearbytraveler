@@ -754,6 +754,14 @@ function Router() {
       return <Profile userId={parseInt(businessId)} />;
     }
 
+    // ✅ CRITICAL FIX: Handle dynamic routes BEFORE the switch statement
+    // This ensures /profile/:id is processed before /profile
+    if (location.startsWith('/profile/')) {
+      const userId = parseInt(location.split('/')[2]);
+      console.log('🔍 AUTHENTICATED PROFILE ROUTE WITH ID: userId:', userId, 'location:', location);
+      return <Profile userId={userId} />;
+    }
+
     switch (location) {
       case '/auth':
         return <Auth />;

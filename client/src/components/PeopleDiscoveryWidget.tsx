@@ -97,11 +97,16 @@ export function PeopleDiscoveryWidget({
       retry: false
     });
 
-    // Use the correct compatibility API endpoint
+    // ✅ Do NOT gate on your local isLoading flag - Remove loading gate
+    const enabledCompat =
+      !!currentUserId &&
+      !!person.id &&
+      Number(currentUserId) !== Number(person.id);
+
     const { data: compatibilityData, isLoading: compatibilityLoading } = useQuery({
       queryKey: [`/api/compatibility/${currentUserId}/${person.id}`],
-      enabled: !!currentUserId && !!person.id && currentUserId !== person.id && !isLoading,
-      staleTime: Infinity,
+      enabled: enabledCompat,
+      staleTime: 5 * 60 * 1000,
       gcTime: Infinity,
       refetchOnMount: false,
       refetchOnWindowFocus: false,
@@ -150,8 +155,8 @@ export function PeopleDiscoveryWidget({
       }
     };
 
-    // Show loading state to prevent blinking
-    if (isLoading || compatibilityLoading) {
+    // Show loading state ONLY for travel plans, not compatibility
+    if (isLoading) {
       return (
         <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 h-96 animate-pulse">
           <div className="flex flex-col h-full">
@@ -435,7 +440,11 @@ export function PeopleDiscoveryWidget({
       </div>
 
       {/* People Grid - 2 per row on all screen sizes */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+      {/* ✅ Click capture protection to prevent parent handlers from interfering */}
+      <div 
+        className="grid grid-cols-1 sm:grid-cols-2 gap-6"
+        onClickCapture={(e) => e.stopPropagation()}
+      >
         {people.slice(0, displayCount).map((person) => (
           <PersonWithCommonalities 
             key={person.id} 
