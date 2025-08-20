@@ -3514,67 +3514,74 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
             
             {/* About Section */}
-            <Card className="mt-6">
-              <CardHeader>
-                <CardTitle>About {user?.userType === 'business' ? (user?.businessName || user?.name || user?.username) : (user?.username || 'User')}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {/* Bio/Business Description Section with Mobile-Friendly Edit Button */}
-                <div className="mb-4">
-                  <div className="flex items-start justify-between mb-2">
-                    <div className="flex-1">
-                      <p className="text-gray-900 dark:text-white leading-relaxed font-semibold">
-                        {user?.userType === 'business' 
-                          ? (user?.businessDescription || "No business description available yet.")
-                          : (user?.bio || "No bio available yet.")
-                        }
-                      </p>
-                    </div>
+            <Card className="mt-6 relative overflow-visible">
+              <CardHeader className="flex flex-row items-center justify-between gap-2">
+                <CardTitle>
+                  About {user?.userType === 'business'
+                    ? (user?.businessName || user?.name || user?.username)
+                    : (user?.username || 'User')}
+                </CardTitle>
 
-                  </div>
-                </div>
-                
-                {/* Metropolitan Area Information for people in metro areas */}
-                {user.hometownCity && user.hometownState && user.hometownCountry && (
-                  (() => {
-                    const metroArea = getMetropolitanArea(user.hometownCity, user.hometownState, user.hometownCountry);
-                    if (metroArea) {
-                      return (
-                        <div className="mb-4 p-3 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg dark:from-gray-800/50 dark:to-gray-700/50">
-                          <div className="flex items-center gap-2">
-                            <MapPin className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Metropolitan Area:</span>
-                            <span className="text-sm text-gray-800 dark:text-gray-200 font-semibold">{metroArea}</span>
-                          </div>
-                        </div>
-                      );
-                    }
-                    return null;
-                  })()
+                {/* Move the edit button up here so it doesn't cover content */}
+                {isOwnProfile && (
+                  <Button size="sm" variant="outline" onClick={() => setIsEditMode(true)} className="shrink-0">
+                    <Edit className="w-3 h-3 mr-2" />
+                    Edit Profile
+                  </Button>
                 )}
+              </CardHeader>
+
+              <CardContent className="space-y-4 pr-3 sm:pr-4 min-w-0 break-words overflow-visible">
+                {/* Bio / Business Description */}
+                <div>
+                  <p className="text-gray-900 dark:text-white leading-relaxed whitespace-pre-wrap break-words">
+                    {user?.userType === 'business'
+                      ? (user?.businessDescription || "No business description available yet.")
+                      : (user?.bio || "No bio available yet.")
+                    }
+                  </p>
+                </div>
+
+                {/* Metropolitan Area (optional) */}
+                {user.hometownCity && user.hometownState && user.hometownCountry && (() => {
+                  const metroArea = getMetropolitanArea(user.hometownCity, user.hometownState, user.hometownCountry);
+                  if (!metroArea) return null;
+                  return (
+                    <div className="p-3 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg dark:from-gray-800/50 dark:to-gray-700/50">
+                      <div className="flex items-center gap-2">
+                        <MapPin className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Metropolitan Area:</span>
+                        <span className="text-sm text-gray-800 dark:text-gray-200 font-semibold">{metroArea}</span>
+                      </div>
+                    </div>
+                  );
+                })()}
+
+                {/* Secret Activities (non-business) */}
                 {user?.userType !== 'business' && user?.secretActivities && (
-                  <div className="mb-4 p-3 bg-gradient-to-br from-orange-50 to-blue-50 border-l-4 border-orange-200 rounded-r-lg">
-                    <h5 className="font-medium text-black dark:text-black mb-2">Secret things I would do if my closest friends came to town</h5>
-                    <p className="text-black dark:text-black text-sm italic">
+                  <div className="p-3 bg-gradient-to-br from-orange-50 to-blue-50 border-l-4 border-orange-200 rounded-r-lg">
+                    <h5 className="font-medium text-black mb-2">
+                      Secret things I would do if my closest friends came to town
+                    </h5>
+                    <p className="text-black text-sm italic whitespace-pre-wrap break-words">
                       {user?.secretActivities}
                     </p>
                   </div>
                 )}
 
-
-
-                {/* CRITICAL: What You Have in Common - MOVED TO TOP FOR VISIBILITY */}
+                {/* What you have in common (for other profiles) */}
                 {!isOwnProfile && currentUser && user?.id && (
-                  <div className="mb-6">
+                  <div>
                     <WhatYouHaveInCommon currentUserId={currentUser.id} otherUserId={user.id} />
                   </div>
                 )}
 
-                <div className="space-y-2 text-sm">
-                  <div>
-                    <span className="font-medium text-gray-600 dark:text-gray-400">From:</span>
-                    <span className="ml-2">
-                      {user?.userType === 'business' 
+                {/* Basic Info — grid so lines never run together */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2 text-sm">
+                  <div className="flex items-start">
+                    <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">From:</span>
+                    <span className="text-gray-900 dark:text-gray-100 flex-1 break-words">
+                      {user?.userType === 'business'
                         ? (user?.location || user?.hometownCity || "Los Angeles, CA")
                         : (() => {
                             const parts = [user?.hometownCity, user?.hometownState, user?.hometownCountry].filter(Boolean);
@@ -3585,28 +3592,30 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </div>
 
                   {user?.userType !== 'business' && user?.gender && (
-                    <div>
-                      <span className="font-medium text-gray-600 dark:text-gray-400">Gender:</span>
-                      <span className="ml-2 capitalize">{user?.gender?.replace('-', ' ')}</span>
+                    <div className="flex items-start">
+                      <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">Gender:</span>
+                      <span className="capitalize flex-1 break-words">{user?.gender?.replace('-', ' ')}</span>
                     </div>
                   )}
+
                   {/* Military Status for non-business users */}
                   {user?.userType !== 'business' && user.isVeteran && (
-                    <div>
-                      <span className="font-medium text-gray-600">Military Status:</span>
-                      <span className="ml-2 text-red-600 font-semibold">Veteran</span>
+                    <div className="flex items-start">
+                      <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">Military:</span>
+                      <span className="text-red-600 font-semibold flex-1 break-words">Veteran</span>
                     </div>
                   )}
                   {user?.userType !== 'business' && user.isActiveDuty && (
-                    <div>
-                      <span className="font-medium text-gray-600">Military Status:</span>
-                      <span className="ml-2 text-blue-600 font-semibold">Active Duty</span>
+                    <div className="flex items-start">
+                      <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">Military:</span>
+                      <span className="text-blue-600 font-semibold flex-1 break-words">Active Duty</span>
                     </div>
                   )}
+
                   {user.sexualPreferenceVisible && user.sexualPreference && (
-                    <div>
-                      <span className="font-medium text-white dark:text-white">Sexual Preference:</span>
-                      <span className="ml-2">
+                    <div className="flex items-start">
+                      <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">Preference:</span>
+                      <span className="flex-1 break-words">
                         {Array.isArray(user.sexualPreference) 
                           ? user.sexualPreference.join(', ')
                           : typeof user.sexualPreference === 'string'
@@ -3618,15 +3627,16 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   )}
 
                   {user.userType !== 'business' && user.ageVisible && user.dateOfBirth && (
-                    <div>
-                      <span className="font-medium text-gray-600 dark:text-gray-400">Age:</span>
-                      <span className="ml-2">{calculateAge(user.dateOfBirth)} years old</span>
+                    <div className="flex items-start">
+                      <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">Age:</span>
+                      <span className="flex-1 break-words">{calculateAge(user.dateOfBirth)} years old</span>
                     </div>
                   )}
+
                   {user.userType !== 'business' && user.travelingWithChildren && (
-                    <div>
-                      <span className="font-medium text-gray-600 dark:text-gray-400">Family Travel:</span>
-                      <span className="ml-2 flex items-center gap-1">
+                    <div className="flex items-start">
+                      <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">Family:</span>
+                      <span className="flex-1 break-words flex items-center gap-1">
                         <Users className="w-4 h-4" /> Traveling with children
                         {(user as any).childrenAges && (
                           <span className="text-sm text-gray-500 dark:text-gray-400">
@@ -3636,28 +3646,30 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       </span>
                     </div>
                   )}
+                </div>
 
-                  {/* Business Contact Information */}
-                  {user.userType === 'business' && (
-                    <div className="space-y-3 border-t pt-4 mt-4">
-                      <h4 className="font-medium text-gray-800 dark:text-white flex items-center gap-2">
-                        <MapPin className="w-4 h-4 text-blue-500" />
-                        Business Information
-                      </h4>
-                      
+                {/* Business Contact Information */}
+                {user.userType === 'business' && (
+                  <div className="space-y-3 border-t pt-4 mt-4">
+                    <h4 className="font-medium text-gray-800 dark:text-white flex items-center gap-2">
+                      <MapPin className="w-4 h-4 text-blue-500" />
+                      Business Information
+                    </h4>
+                    
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2 text-sm">
                       {user.streetAddress && (
-                        <div>
-                          <span className="font-medium text-gray-600 dark:text-gray-400">Address:</span>
-                          <span className="ml-2">{user.streetAddress}{user.zipCode && `, ${user.zipCode}`}</span>
+                        <div className="flex items-start">
+                          <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">Address:</span>
+                          <span className="flex-1 break-words">{user.streetAddress}{user.zipCode && `, ${user.zipCode}`}</span>
                         </div>
                       )}
                       
                       {user.phoneNumber && (
-                        <div>
-                          <span className="font-medium text-gray-600 dark:text-gray-400">Phone:</span>
+                        <div className="flex items-start">
+                          <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">Phone:</span>
                           <a 
                             href={`tel:${user.phoneNumber.replace(/[^\d+]/g, '')}`}
-                            className="ml-2 text-blue-600 underline"
+                            className="text-blue-600 underline flex-1 break-words"
                           >
                             {(() => {
                               const cleaned = user.phoneNumber.replace(/\D/g, '');
@@ -3670,74 +3682,62 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       )}
                       
                       {user.websiteUrl && (
-                        <div>
-                          <span className="font-medium text-gray-600 dark:text-gray-400">Website:</span>
+                        <div className="flex items-start">
+                          <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">Website:</span>
                           <a 
                             href={user.websiteUrl.startsWith('http') ? user.websiteUrl : `https://${user.websiteUrl}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="ml-2 text-blue-600 underline"
+                            className="text-blue-600 underline flex-1 break-words"
                           >
                             {user.websiteUrl}
                           </a>
                         </div>
                       )}
-
-
-
-                      {/* Business Ownership Categories */}
-                      {(user.isVeteran || user.isActiveDuty || (user.isMinorityOwned && user.showMinorityOwned) || (user.isFemaleOwned && user.showFemaleOwned) || (user.isLGBTQIAOwned && user.showLGBTQIAOwned)) && (
-                        <div className="space-y-2 border-t pt-3 mt-3">
-                          <h5 className="font-medium text-gray-700 dark:text-gray-300">Business Ownership</h5>
-                          
-                          {/* Military Status */}
-                          {user.isVeteran && (
-                            <div className="flex items-center gap-2">
-                              <span className="text-green-600">✓</span>
-                              <span className="text-sm">Veteran Owned Business</span>
-                            </div>
-                          )}
-                          {user.isActiveDuty && (
-                            <div className="flex items-center gap-2">
-                              <span className="text-blue-600">✓</span>
-                              <span className="text-sm">Active Duty Owned Business</span>
-                            </div>
-                          )}
-                          
-                          {/* Diversity Categories */}
-                          {user.isMinorityOwned && user.showMinorityOwned && (
-                            <div className="flex items-center gap-2">
-                              <span className="text-purple-600">✓</span>
-                              <span className="text-sm">Minority Owned Business</span>
-                            </div>
-                          )}
-                          {user.isFemaleOwned && user.showFemaleOwned && (
-                            <div className="flex items-center gap-2">
-                              <span className="text-pink-600">✓</span>
-                              <span className="text-sm">Female Owned Business</span>
-                            </div>
-                          )}
-                          {user.isLGBTQIAOwned && user.showLGBTQIAOwned && (
-                            <div className="flex items-center gap-2">
-                              <span className="text-rainbow bg-gradient-to-r from-red-500 via-yellow-500 via-green-500 via-blue-500 to-purple-500 bg-clip-text text-transparent font-bold">✓</span>
-                              <span className="text-sm">LGBTQIA+ Owned Business</span>
-                            </div>
-                          )}
-                        </div>
-                      )}
                     </div>
-                  )}
-                  
-                  {/* Edit Profile Button - Only show for own profile */}
-                  {isOwnProfile && (
-                    <div className="flex justify-end pt-4 border-t border-gray-200 dark:border-gray-700 mt-4">
-                      <Button size="sm" variant="outline" onClick={() => setIsEditMode(true)}>
-                        <Edit className="w-3 h-3 mr-2" />
-                        Edit Profile
-                      </Button>
-                    </div>
-                  )}
-                </div>
+
+                    {/* Business Ownership Categories */}
+                    {(user.isVeteran || user.isActiveDuty || (user.isMinorityOwned && user.showMinorityOwned) || (user.isFemaleOwned && user.showFemaleOwned) || (user.isLGBTQIAOwned && user.showLGBTQIAOwned)) && (
+                      <div className="space-y-2 border-t pt-3 mt-3">
+                        <h5 className="font-medium text-gray-700 dark:text-gray-300">Business Ownership</h5>
+                        
+                        {/* Military Status */}
+                        {user.isVeteran && (
+                          <div className="flex items-center gap-2">
+                            <span className="text-green-600">✓</span>
+                            <span className="text-sm">Veteran Owned Business</span>
+                          </div>
+                        )}
+                        {user.isActiveDuty && (
+                          <div className="flex items-center gap-2">
+                            <span className="text-blue-600">✓</span>
+                            <span className="text-sm">Active Duty Owned Business</span>
+                          </div>
+                        )}
+                        
+                        {/* Diversity Categories */}
+                        {user.isMinorityOwned && user.showMinorityOwned && (
+                          <div className="flex items-center gap-2">
+                            <span className="text-purple-600">✓</span>
+                            <span className="text-sm">Minority Owned Business</span>
+                          </div>
+                        )}
+                        {user.isFemaleOwned && user.showFemaleOwned && (
+                          <div className="flex items-center gap-2">
+                            <span className="text-pink-600">✓</span>
+                            <span className="text-sm">Female Owned Business</span>
+                          </div>
+                        )}
+                        {user.isLGBTQIAOwned && user.showLGBTQIAOwned && (
+                          <div className="flex items-center gap-2">
+                            <span className="text-rainbow bg-gradient-to-r from-red-500 via-yellow-500 via-green-500 via-blue-500 to-purple-500 bg-clip-text text-transparent font-bold">✓</span>
+                            <span className="text-sm">LGBTQIA+ Owned Business</span>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
               </CardContent>
             </Card>
 
