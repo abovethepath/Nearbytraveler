@@ -3291,10 +3291,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       size="sm"
                       variant="secondary"
                       className="shrink-0"
-                      onClick={() => setShowBioEditModal(true)}
+                      onClick={() => setIsEditMode(true)}
                     >
                       <Edit2 className="h-4 w-4 mr-2" />
-                      Edit Bio
+                      Edit Profile
                     </Button>
                   )}
                 </div>
