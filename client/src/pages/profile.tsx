@@ -22,12 +22,13 @@ import { Check, ChevronsUpDown } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { MapPin, Camera, Globe, Users, Calendar, Star, Settings, ArrowLeft, Upload, Edit, Edit2, Heart, MessageSquare, X, Plus, Eye, EyeOff, MessageCircle, ImageIcon, Minus, RotateCcw, Sparkles, Package, Trash2, Home, FileText, TrendingUp, MessageCircleMore, Share2, ChevronDown, Search, Zap, History } from "lucide-react";
+import { MapPin, Camera, Globe, Users, Calendar, Star, Settings, ArrowLeft, Upload, Edit, Edit2, Heart, MessageSquare, X, Plus, Eye, EyeOff, MessageCircle, ImageIcon, Minus, RotateCcw, Sparkles, Package, Trash2, Home, FileText, TrendingUp, MessageCircleMore, Share2, ChevronDown, Search, Zap, History, Clock, Wifi, Shield } from "lucide-react";
+import { compressPhotoAdaptive } from "@/utils/photoCompression";
+import { AdaptiveCompressionIndicator } from "@/components/adaptive-compression-indicator";
 import { UniversalBackButton } from "@/components/UniversalBackButton";
 import FriendReferralWidget from "@/components/friend-referral-widget";
-import TravelPersonalityAssessment from "@/components/TravelPersonalityAssessment";
+
 import ReferencesWidgetNew from "@/components/references-widget-new";
-import { ThingsIWantToDoSection } from "@/components/ThingsIWantToDoSection";
 // Removed framer-motion import for static interface
 import { useToast } from "@/hooks/use-toast";
 import { AuthContext } from "@/App";
@@ -65,11 +66,144 @@ const AUSTRALIAN_STATES = [
 import WorldMap from "@/components/world-map";
 import { QuickMeetupWidget } from "@/components/QuickMeetupWidget";
 import TravelItinerary from "@/components/travel-itinerary";
+import { ThingsIWantToDoSection } from "@/components/ThingsIWantToDoSection";
 
 
-import { TravelMemoryTimeline } from "@/components/travel-memory-timeline-updated";
+
+import { PhotoAlbumWidget } from "@/components/photo-album-widget";
+import { SimpleAvatar } from "@/components/simple-avatar";
+import { MobileBottomNav } from "@/components/MobileBottomNav";
 // Removed Navbar import since App.tsx handles navigation
 // Removed animated loading for static interface
+
+// Helper function to get metropolitan area for a city
+const getMetropolitanArea = (city: string, state: string, country: string): string | null => {
+  if (!city || !state || !country) return null;
+  
+  // Los Angeles Metropolitan Area cities - COMPREHENSIVE LIST
+  const laMetroCities = [
+    // Main cities
+    'Los Angeles', 'Santa Monica', 'Venice', 'Beverly Hills', 'West Hollywood',
+    'Pasadena', 'Burbank', 'Glendale', 'Long Beach', 'Torrance', 'Inglewood',
+    'Compton', 'Downey', 'Pomona', 'Playa del Rey', 'Redondo Beach', 'Culver City',
+    'Marina del Rey', 'Hermosa Beach', 'Manhattan Beach', 'El Segundo', 'Hawthorne',
+    'Gardena', 'Carson', 'Lakewood', 'Norwalk', 'Whittier', 'Montebello',
+    'East Los Angeles', 'Monterey Park', 'Alhambra', 'South Pasadena', 'San Fernando',
+    'North Hollywood', 'Hollywood', 'Studio City', 'Sherman Oaks', 'Encino',
+    'Reseda', 'Van Nuys', 'Northridge', 'Malibu', 'Pacific Palisades', 'Brentwood',
+    'Westwood', 'Century City', 'West LA', 'Koreatown', 'Mid-City', 'Miracle Mile',
+    'Los Feliz', 'Silver Lake', 'Echo Park', 'Downtown LA', 'Arts District',
+    'Little Tokyo', 'Chinatown', 'Boyle Heights', 'East LA', 'Highland Park',
+    'Eagle Rock', 'Atwater Village', 'Glassell Park', 'Mount Washington',
+    'Cypress Park', 'Sun Valley', 'Pacoima', 'Sylmar', 'Granada Hills',
+    'Porter Ranch', 'Chatsworth', 'Canoga Park', 'Woodland Hills', 'Tarzana',
+    'Panorama City', 'Mission Hills', 'Sepulveda', 'Arleta', 'San Pedro',
+    'Wilmington', 'Harbor City', 'Harbor Gateway', 'Watts', 'South LA',
+    'Crenshaw', 'Leimert Park', 'View Park', 'Baldwin Hills', 'Ladera Heights',
+    'Venice Beach', 'Altadena', 'Arcadia', 'Azusa', 'Bell', 'Bell Gardens',
+    'Bellflower', 'Bradbury', 'Calabasas', 'Cerritos', 'Claremont', 'Commerce',
+    'Covina', 'Cudahy', 'Diamond Bar', 'Duarte', 'El Monte', 'Glendora',
+    'Hidden Hills', 'Huntington Park', 'Industry', 'Irwindale', 'La Canada Flintridge',
+    'La Habra Heights', 'La Mirada', 'La Puente', 'La Verne', 'Lancaster',
+    'Lawndale', 'Lomita', 'Lynwood', 'Maywood', 'Monrovia', 'Palmdale',
+    'Palos Verdes Estates', 'Paramount', 'Pico Rivera', 'Rancho Palos Verdes',
+    'Rolling Hills', 'Rolling Hills Estates', 'Rosemead', 'San Dimas', 'San Gabriel',
+    'San Marino', 'Santa Clarita', 'Signal Hill', 'South El Monte', 'South Gate',
+    'Temple City', 'Vernon', 'Walnut', 'West Covina', 'Westlake Village'
+  ];
+  
+  if (state === 'California' && laMetroCities.includes(city)) {
+    return 'Los Angeles Metro';
+  }
+  
+  // San Francisco Bay Area
+  const sfBayAreaCities = [
+    'San Francisco', 'San Jose', 'Oakland', 'Fremont', 'Santa Clara', 'Sunnyvale',
+    'Berkeley', 'Hayward', 'Palo Alto', 'Mountain View', 'Redwood City', 'Cupertino',
+    'San Mateo', 'Daly City', 'Milpitas', 'Union City', 'San Leandro', 'Alameda',
+    'Richmond', 'Vallejo', 'Antioch', 'Concord', 'Fairfield', 'Livermore',
+    'San Rafael', 'Petaluma', 'Napa', 'Sausalito', 'Half Moon Bay', 'Foster City',
+    'Belmont', 'Burlingame', 'Menlo Park', 'Los Altos', 'Campbell', 'Los Gatos',
+    'Saratoga', 'Monte Sereno', 'Milbrae', 'South San Francisco', 'Pacifica',
+    'Brisbane', 'Colma', 'Emeryville', 'Piedmont', 'Albany', 'El Cerrito',
+    'Hercules', 'Pinole', 'San Pablo', 'Dublin', 'Pleasanton', 'Newark',
+    'Castro Valley', 'San Lorenzo', 'Hayward', 'Fremont', 'Milpitas'
+  ];
+  
+  if (state === 'California' && sfBayAreaCities.includes(city)) {
+    return 'San Francisco Bay Area';
+  }
+  
+  // New York Metropolitan Area
+  const nyMetroCities = [
+    'New York City', 'Manhattan', 'Brooklyn', 'Queens', 'Bronx', 'Staten Island',
+    'Jersey City', 'Newark', 'Hoboken', 'Yonkers', 'White Plains', 'Stamford',
+    'Bridgeport', 'New Rochelle', 'Mount Vernon', 'Scarsdale', 'Rye', 'Mamaroneck',
+    'Port Chester', 'Harrison', 'Larchmont', 'Bronxville', 'Tuckahoe', 'Eastchester',
+    'Pelham', 'Pelham Manor', 'Hastings-on-Hudson', 'Dobbs Ferry', 'Irvington',
+    'Tarrytown', 'Sleepy Hollow', 'Ossining', 'Croton-on-Hudson', 'Buchanan',
+    'Peekskill', 'Cortlandt', 'Yorktown', 'Somers', 'North Salem', 'Lewisboro',
+    'Pound Ridge', 'Bedford', 'Mount Kisco', 'Pleasantville', 'Chappaqua',
+    'Millwood', 'Briarcliff Manor', 'Jersey City', 'Bayonne', 'Union City',
+    'West New York', 'North Bergen', 'Guttenberg', 'Secaucus', 'Kearny',
+    'Harrison', 'East Newark', 'Weehawken', 'Edgewater', 'Fort Lee',
+    'Englewood', 'Teaneck', 'Bergenfield', 'New Milford', 'Dumont', 'Cresskill'
+  ];
+  
+  if ((state === 'New York' || state === 'New Jersey' || state === 'Connecticut') && 
+      nyMetroCities.some(metro => metro.toLowerCase() === city.toLowerCase())) {
+    return 'New York Metropolitan Area';
+  }
+  
+  // Chicago Metropolitan Area
+  const chicagoMetroCities = [
+    'Chicago', 'Aurora', 'Rockford', 'Joliet', 'Naperville', 'Springfield',
+    'Peoria', 'Elgin', 'Waukegan', 'Cicero', 'Champaign', 'Bloomington',
+    'Arlington Heights', 'Evanston', 'Decatur', 'Schaumburg', 'Bolingbrook',
+    'Palatine', 'Skokie', 'Des Plaines', 'Orland Park', 'Tinley Park',
+    'Oak Lawn', 'Berwyn', 'Mount Prospect', 'Normal', 'Wheaton', 'Hoffman Estates',
+    'Oak Park', 'Downers Grove', 'Elmhurst', 'Glenview', 'DeKalb', 'Lombard',
+    'Belleville', 'Moline', 'Buffalo Grove', 'Bartlett', 'Urbana', 'Quincy',
+    'Crystal Lake', 'Streamwood', 'Carol Stream', 'Romeoville', 'Rock Island',
+    'Park Ridge', 'Addison', 'Calumet City'
+  ];
+  
+  if (state === 'Illinois' && chicagoMetroCities.includes(city)) {
+    return 'Chicago Metropolitan Area';
+  }
+  
+  // Miami Metropolitan Area
+  const miamiMetroCities = [
+    'Miami', 'Fort Lauderdale', 'Pembroke Pines', 'Hollywood', 'Miramar',
+    'Coral Springs', 'Miami Gardens', 'Davie', 'Sunrise', 'Plantation',
+    'Boca Raton', 'Delray Beach', 'Boynton Beach', 'Pompano Beach',
+    'Deerfield Beach', 'Coconut Creek', 'Margate', 'Tamarac', 'Lauderhill',
+    'Weston', 'Aventura', 'North Miami', 'North Miami Beach', 'Miami Beach',
+    'Coral Gables', 'Key Biscayne', 'Hialeah', 'Homestead', 'Kendall',
+    'Doral', 'Pinecrest', 'Palmetto Bay', 'Cutler Bay', 'South Miami'
+  ];
+  
+  if (state === 'Florida' && miamiMetroCities.includes(city)) {
+    return 'Miami-Dade Metropolitan Area';
+  }
+  
+  // Dallas-Fort Worth Metropolitan Area
+  const dallasMetroCities = [
+    'Dallas', 'Fort Worth', 'Arlington', 'Plano', 'Garland', 'Irving', 'Grand Prairie',
+    'McKinney', 'Frisco', 'Richardson', 'Lewisville', 'Allen', 'Flower Mound',
+    'Carrollton', 'Denton', 'Mesquite', 'Grapevine', 'Coppell', 'Duncanville',
+    'Euless', 'Bedford', 'Hurst', 'Southlake', 'Colleyville', 'Keller',
+    'Cedar Hill', 'DeSoto', 'Lancaster', 'Farmers Branch', 'University Park',
+    'Highland Park', 'Addison', 'Rowlett', 'Wylie', 'Sachse', 'Murphy',
+    'Rockwall', 'Terrell', 'Corsicana', 'Ennis'
+  ];
+  
+  if (state === 'Texas' && dallasMetroCities.includes(city)) {
+    return 'Dallas-Fort Worth Metropolitan Area';
+  }
+  
+  return null;
+};
 
 
 
@@ -83,9 +217,9 @@ import { BlockUserButton } from "@/components/block-user-button";
 
 
 
-import type { User, UserPhoto, PassportStamp, TravelPlan, TravelMemory } from "@shared/schema";
+import type { User, UserPhoto, PassportStamp, TravelPlan } from "@shared/schema";
 import { insertUserReferenceSchema } from "@shared/schema";
-import { getAllInterests, getAllActivities, getAllEvents } from "@/lib/travelOptions";
+import { getAllInterests, getAllActivities, getAllEvents, getAllLanguages, validateSelections, MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS } from "../../../shared/base-options";
 
 // Reference constants
 const REFERENCE_TYPES = [
@@ -133,6 +267,7 @@ const createProfileSchema = (userType: string) => {
       sexualPreference: z.array(z.string()).default([]),
       sexualPreferenceVisible: z.boolean().default(false),
       secretActivities: z.string().optional(),
+      travelingWithChildren: z.boolean().default(false),
     });
   }
 };
@@ -244,20 +379,12 @@ interface MultiSelectProps {
 
 function MultiSelect({ options, selected, onChange, placeholder, maxDisplay = 3 }: MultiSelectProps) {
   const [open, setOpen] = useState(false);
-  const [newItem, setNewItem] = useState("");
 
   const handleSelect = (item: string) => {
     if (selected.includes(item)) {
       onChange(selected.filter(s => s !== item));
     } else {
       onChange([...selected, item]);
-    }
-  };
-
-  const handleAddNew = () => {
-    if (newItem.trim() && !selected.includes(newItem.trim()) && !options.includes(newItem.trim())) {
-      onChange([...selected, newItem.trim()]);
-      setNewItem("");
     }
   };
 
@@ -296,37 +423,10 @@ function MultiSelect({ options, selected, onChange, placeholder, maxDisplay = 3 
       <PopoverContent className="w-full p-0" align="start">
         <Command className="h-auto max-h-80">
           <CommandInput placeholder={`Search ${placeholder.toLowerCase()}...`} />
-          
-          {/* Always visible custom input section */}
-          <div className="p-3 border-b bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700">
-            <div className="text-xs text-gray-600 dark:text-gray-400 mb-2">Add your own:</div>
-            <div className="flex gap-2">
-              <Input
-                placeholder="Type custom option..."
-                value={newItem}
-                onChange={(e) => setNewItem(e.target.value)}
-                onKeyPress={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault();
-                    handleAddNew();
-                  }
-                }}
-                className="text-sm"
-              />
-              <Button
-                onClick={handleAddNew}
-                size="sm"
-                disabled={!newItem.trim()}
-                className="whitespace-nowrap"
-              >
-                Add
-              </Button>
-            </div>
-          </div>
 
           <CommandEmpty>
             <div className="p-4 text-sm text-gray-500 dark:text-gray-400">
-              No matching options found. Use the custom input above to add your own.
+              No matching options found.
             </div>
           </CommandEmpty>
           <CommandGroup className="max-h-60 overflow-y-auto">
@@ -355,15 +455,7 @@ const getFilteredInterestsForProfile = (user: User, isOwnProfile: boolean) => {
   const interests = user.interests || [];
   
   // Popular interests that are displayed in their own section - exclude from main interests to avoid redundancy
-  const popularInterests = [
-    "Single and Looking", "Craft Beer & Breweries", "Coffee Culture", "Cocktails & Bars",
-    "Nightlife & Dancing", "Photography", "Street Art", "Food Trucks", 
-    "Rooftop Bars", "Pub Crawls & Bar Tours", "Local Food Specialties", "Walking Tours",
-    "Happy Hour Deals", "Discounts For Travelers", "Boat & Water Tours", "Food Tours",
-    "Adventure Tours", "City Tours & Sightseeing", "Hiking & Nature", "Museums",
-    "Local Unknown Hotspots", "Meet Locals/Travelers", "Yoga & Wellness", "Live Music Venues",
-    "Beach Activities", "Fine Dining", "Historical Tours", "Festivals & Events"
-  ];
+  const popularInterests = MOST_POPULAR_INTERESTS;
   
   // Travel-specific tags that should be filtered out when user is displayed as local in hometown
   const travelSpecificTags = [
@@ -444,11 +536,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const [searchKeyword, setSearchKeyword] = useState("");
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [selectedState, setSelectedState] = useState("");
+  
+  // State for expanded interests in travel plans
+  const [expandedPlanInterests, setExpandedPlanInterests] = useState<Set<number>>(new Set());
 
   
   // Edit mode states for individual widgets
   const [editingInterests, setEditingInterests] = useState(false);
-  const [editingPopularInterests, setEditingPopularInterests] = useState(false);
   const [editingActivities, setEditingActivities] = useState(false);
   const [editingEvents, setEditingEvents] = useState(false);
   const [editingLanguages, setEditingLanguages] = useState(false);
@@ -456,17 +550,33 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const [editingBio, setEditingBio] = useState(false);
   const [editingBusinessDescription, setEditingBusinessDescription] = useState(false);
   
-  // Reference modal states
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [editingReference, setEditingReference] = useState<any>(null);
-  
-  // Temporary state for editing
+  // Temporary state for editing values
   const [tempInterests, setTempInterests] = useState<string[]>([]);
   const [tempActivities, setTempActivities] = useState<string[]>([]);
   const [tempEvents, setTempEvents] = useState<string[]>([]);
   const [tempLanguages, setTempLanguages] = useState<string[]>([]);
   const [tempCountries, setTempCountries] = useState<string[]>([]);
   const [tempBio, setTempBio] = useState("");
+  
+  // Reference modal states
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingReference, setEditingReference] = useState<any>(null);
+  
+  // Simple edit form data (copying signup pattern)
+  const [editFormData, setEditFormData] = useState({
+    interests: [] as string[],
+    activities: [] as string[],
+    events: [] as string[]
+  });
+
+  // Simple toggle function copied from signup
+  const toggleArrayValue = (array: string[], value: string, setter: (newArray: string[]) => void) => {
+    if (array.includes(value)) {
+      setter(array.filter(item => item !== value));
+    } else {
+      setter([...array, value]);
+    }
+  };
   const [businessDescriptionForm, setBusinessDescriptionForm] = useState({
     services: '',
     specialOffers: '',
@@ -476,9 +586,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const [savingBusinessDescription, setSavingBusinessDescription] = useState(false);
   
   // Controlled input states for custom entries
-  const [customInterestInput, setCustomInterestInput] = useState("");
-  const [customActivityInput, setCustomActivityInput] = useState("");
-  const [customEventInput, setCustomEventInput] = useState("");
   const [showReferenceForm, setShowReferenceForm] = useState(false);
   const [selectedConnection, setSelectedConnection] = useState<any>(null);
   const [showWriteReferenceModal, setShowWriteReferenceModal] = useState(false);
@@ -499,13 +606,27 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const [businessesDisplayCount, setBusinessesDisplayCount] = useState(3);
   const [expandedTravelPlan, setExpandedTravelPlan] = useState<number | null>(null);
   
-  // Travel Personality Assessment state
-  const [showPersonalityAssessment, setShowPersonalityAssessment] = useState(false);
+
   
   // Travel plan details modal state (already declared above)
   
   // Cover photo state
   const [coverPhotoKey, setCoverPhotoKey] = useState(Date.now());
+  
+  // Header gradient color selection with persistence - moved after user declaration
+  const [selectedGradient, setSelectedGradient] = useState(0);
+
+  
+  const gradientOptions = [
+    "from-blue-500 via-purple-500 to-orange-500", // Original
+    "from-green-500 via-emerald-500 to-orange-500", // Green to Orange
+    "from-blue-500 via-cyan-500 to-orange-500", // Blue to Orange
+    "from-purple-500 via-pink-500 to-red-500", // Purple to Red
+    "from-indigo-500 via-blue-500 to-green-500", // Indigo to Green
+    "from-orange-500 via-red-500 to-pink-500", // Orange to Pink
+    "from-teal-500 via-blue-500 to-purple-500", // Teal to Purple
+    "from-yellow-500 via-orange-500 to-red-500", // Yellow to Red
+  ];
   
   // Listen for cover photo refresh events
   useEffect(() => {
@@ -518,6 +639,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     return () => window.removeEventListener('coverPhotoUpdated', handleCoverPhotoRefresh);
   }, []);
   const [showCropModal, setShowCropModal] = useState(false);
+  const [customInterestInput, setCustomInterestInput] = useState("");
+  const [customActivityInput, setCustomActivityInput] = useState("");
+  const [customEventInput, setCustomEventInput] = useState("");
   const [showCoverPhotoSelector, setShowCoverPhotoSelector] = useState(false);
   const [cropImageSrc, setCropImageSrc] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -606,16 +730,16 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   // Robust authentication with emergency recovery
   let currentUser = authContextUser || authStorage.getUser();
   
-  // If no user found, try to refresh from API
+  // If no user found, try to refresh from API without reload
   React.useEffect(() => {
     if (!currentUser) {
       authStorage.forceRefreshUser().then(refreshedUser => {
         if (refreshedUser) {
-          window.location.reload(); // Force refresh to update state
+          setAuthUser(refreshedUser); // Update context instead of reload
         }
       });
     }
-  }, []);
+  }, [currentUser, setAuthUser]);
   
   const effectiveUserId = propUserId || currentUser?.id;
   const isOwnProfile = propUserId ? (propUserId === currentUser?.id) : true;
@@ -632,7 +756,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     isOwnProfile,
     propUserId,
     currentUserId: currentUser?.id,
-    effectiveUserId
+    effectiveUserId,
+    comparison: `${propUserId} === ${currentUser?.id}`,
+    comparisonResult: propUserId === currentUser?.id
   });
   
 
@@ -666,6 +792,23 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
   // Always prioritize fetched user data over localStorage cache
   const user = fetchedUser || currentUser;
+
+  // Load and save gradient selection from localStorage after user is defined
+  useEffect(() => {
+    if (user?.id) {
+      const saved = localStorage.getItem(`profile_gradient_${user.id}`);
+      if (saved) {
+        setSelectedGradient(parseInt(saved, 10));
+      }
+    }
+  }, [user?.id]);
+
+  // Save gradient selection when it changes
+  useEffect(() => {
+    if (user?.id && selectedGradient !== 0) {
+      localStorage.setItem(`profile_gradient_${user.id}`, selectedGradient.toString());
+    }
+  }, [selectedGradient, user?.id]);
   
   // Fetch travel plans early for event discovery logic with itinerary data
   const { data: travelPlans = [], isLoading: isLoadingTravelPlans } = useQuery<any[]>({
@@ -968,46 +1111,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     refetchOnWindowFocus: true, // Ensure fresh data when returning to tab
   });
 
-  // Travel Personality Assessment queries and mutations
-  const { data: userPersonalityProfile, isLoading: personalityLoading, refetch: refetchPersonality } = useQuery({
-    queryKey: [`/api/users/${effectiveUserId}/personality-profile`],
-    queryFn: async () => {
-      if (!effectiveUserId) return null;
-      const response = await fetch(`/api/users/${effectiveUserId}/personality-profile`);
-      if (response.status === 404) return null;
-      if (!response.ok) throw new Error('Failed to fetch personality profile');
-      return response.json();
-    },
-    enabled: !!effectiveUserId,
-    staleTime: 30 * 60 * 1000, // Cache for 30 minutes
-  });
 
-  const createPersonalityProfile = useMutation({
-    mutationFn: async (profileData: any) => {
-      const response = await fetch(`/api/users/${effectiveUserId}/personality-profile`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(profileData),
-      });
-      if (!response.ok) throw new Error('Failed to create personality profile');
-      return response.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}/personality-profile`] });
-      setShowPersonalityAssessment(false);
-      toast({
-        title: "Assessment Complete!",
-        description: "Your travel personality profile has been saved successfully.",
-      });
-    },
-    onError: (error: Error) => {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to save personality profile",
-        variant: "destructive",
-      });
-    },
-  });
 
   // Get the current user type for schema selection
   const currentUserType = user?.userType || 'traveler';
@@ -1183,7 +1287,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     if (user) {
       profileForm.reset({
         bio: user.bio || "",
-        businessName: (user as any).businessName || "",
+        ...(user?.userType === 'business' ? { businessName: (user as any).businessName || "" } : {}),
         hometownCity: user.hometownCity || "",
         hometownState: user.hometownState || "",
         hometownCountry: user.hometownCountry || "",
@@ -1196,11 +1300,15 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         travelStyle: Array.isArray(user.travelStyle) ? user.travelStyle : [],
         isVeteran: user.isVeteran || false,
         isActiveDuty: user.isActiveDuty || false,
-        // Business contact fields
-        streetAddress: (user as any).streetAddress || "",
-        zipCode: (user as any).zipCode || "",
-        phoneNumber: (user as any).phoneNumber || "",
-        websiteUrl: (user as any).websiteUrl || "",
+        // Business contact fields - only for business users
+        ...(user?.userType === 'business' ? {
+          streetAddress: (user as any).streetAddress || "",
+        } : {}),
+        ...(user?.userType === 'business' ? {
+          zipCode: (user as any).zipCode || "",
+          phoneNumber: (user as any).phoneNumber || "",
+          websiteUrl: (user as any).websiteUrl || "",
+        } : {}),
       });
     }
   }, [user, profileForm]);
@@ -1217,11 +1325,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     enabled: !!effectiveUserId,
   });
 
-  // Fetch travel memories for story generator
-  const { data: storyTravelMemories = [] } = useQuery<TravelMemory[]>({
-    queryKey: [`/api/users/${effectiveUserId}/travel-memories`],
-    enabled: !!effectiveUserId,
-  });
+
 
   // Fetch user references
   const { data: references = [] } = useQuery<any[]>({
@@ -1229,42 +1333,88 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     enabled: !!effectiveUserId,
   });
 
-  // Photo upload mutation
+  // Fetch user vouches
+  const { data: vouches = [] } = useQuery<any[]>({
+    queryKey: [`/api/users/${effectiveUserId}/vouches`],
+    enabled: !!effectiveUserId,
+  });
+
+  // Photo upload mutation with adaptive compression
   const uploadPhoto = useMutation({
     mutationFn: async (file: File) => {
-      // Convert file to base64
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = async () => {
-          try {
-            const base64Data = reader.result as string;
-            const response = await fetch(`/api/users/${effectiveUserId}/photos`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                userId: effectiveUserId,
-                imageData: base64Data,
-                title: 'Travel Photo',
-                isPublic: true
-              }),
-            });
-            
-            if (!response.ok) {
-              const errorData = await response.json();
-              throw new Error(errorData.message || 'Failed to upload photo');
+      try {
+        // Use adaptive compression before upload
+        const compressedFile = await compressPhotoAdaptive(file);
+        
+        // Convert compressed file to base64
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = async () => {
+            try {
+              const base64Data = reader.result as string;
+              const response = await fetch(`/api/users/${effectiveUserId}/photos`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  userId: effectiveUserId,
+                  imageData: base64Data,
+                  title: 'Travel Photo',
+                  isPublic: true
+                }),
+              });
+              
+              if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to upload photo');
+              }
+              const result = await response.json();
+              
+              resolve(result);
+            } catch (error) {
+              reject(error);
             }
-            const result = await response.json();
-            
-            resolve(result);
-          } catch (error) {
-            reject(error);
-          }
-        };
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(compressedFile);
+        });
+      } catch (compressionError) {
+        console.warn('Photo compression failed, using original file:', compressionError);
+        // Fall back to original file if compression fails
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = async () => {
+            try {
+              const base64Data = reader.result as string;
+              const response = await fetch(`/api/users/${effectiveUserId}/photos`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  userId: effectiveUserId,
+                  imageData: base64Data,
+                  title: 'Travel Photo',
+                  isPublic: true
+                }),
+              });
+              
+              if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to upload photo');
+              }
+              const result = await response.json();
+              
+              resolve(result);
+            } catch (error) {
+              reject(error);
+            }
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}/photos`] });
@@ -1288,14 +1438,19 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   // Photo deletion mutation
   const deletePhoto = useMutation({
     mutationFn: async (photoId: number) => {
-      const response = await fetch(`/api/user-photos/${photoId}`, {
+      const response = await fetch(`/api/photos/${photoId}`, {
         method: 'DELETE',
       });
       if (!response.ok) throw new Error('Failed to delete photo');
       return response.json();
     },
     onSuccess: () => {
+      // Invalidate ALL photo-related queries to ensure UI updates
       queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}/photos`] });
+      queryClient.invalidateQueries({ queryKey: ['/api/users', effectiveUserId, 'photos'] });
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
+      // Force refetch to update UI immediately
+      queryClient.refetchQueries({ queryKey: [`/api/users/${effectiveUserId}/photos`] });
       toast({
         title: "Photo deleted",
         description: "Your photo has been removed.",
@@ -1506,7 +1661,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   };
 
   const handleDeletePhoto = (photoId: number) => {
-    if (window.confirm("Are you sure you want to delete this photo?")) {
+    if (window.confirm("Are you sure you want to delete this photo? This cannot be undone.")) {
       deletePhoto.mutate(photoId);
     }
   };
@@ -1534,7 +1689,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       console.log('Cover photo update response:', responseData);
       
       // Extract user data from API response (API returns { user, coverPhoto, message }) - SAME AS PROFILE PHOTO
-      const updatedUser = responseData?.user || responseData;
+      const updatedUser = (responseData as any)?.user || responseData || {};
       console.log('Gallery cover photo upload success, user has cover:', !!updatedUser?.coverPhoto);
       
       // Update cache key to force immediate image refresh
@@ -1612,7 +1767,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
 
   // Handle avatar upload from file input
-  const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       // Validate file size (max 2MB for avatar)
@@ -1638,18 +1793,22 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       console.log('Avatar upload starting for file:', file.name, 'size:', file.size);
       setUploadingPhoto(true);
       
-      // Direct upload function call
-      const reader = new FileReader();
-      reader.onload = async () => {
-        try {
-          const base64 = reader.result as string;
-          console.log('File converted to base64, uploading...');
-          
-          const response = await fetch(`/api/users/${effectiveUserId}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ profileImage: base64 })
-          });
+      // Direct upload function call with adaptive compression
+      try {
+        // Use adaptive compression for profile photos
+        const compressedFile = await compressPhotoAdaptive(file);
+        
+        const reader = new FileReader();
+        reader.onload = async () => {
+          try {
+            const base64 = reader.result as string;
+            console.log('Compressed file converted to base64, uploading...');
+            
+            const response = await fetch(`/api/users/${effectiveUserId}`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ profileImage: base64 })
+            });
           
           if (!response.ok) {
             throw new Error(`Upload failed: ${response.statusText}`);
@@ -1698,7 +1857,71 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         setUploadingPhoto(false);
       };
       
-      reader.readAsDataURL(file);
+      reader.readAsDataURL(compressedFile);
+      } catch (compressionError: any) {
+        console.warn('Photo compression failed, using original file:', compressionError);
+        // Fall back to original file if compression fails
+        const reader = new FileReader();
+        reader.onload = async () => {
+          try {
+            const base64 = reader.result as string;
+            console.log('Original file converted to base64, uploading...');
+            
+            const response = await fetch(`/api/users/${effectiveUserId}`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ profileImage: base64 })
+            });
+            
+            if (!response.ok) {
+              throw new Error(`Upload failed: ${response.statusText}`);
+            }
+            
+            const updatedUser = await response.json();
+            console.log('Avatar upload successful:', updatedUser.username);
+            
+            // Update auth immediately
+            authStorage.setUser(updatedUser);
+            if (setAuthUser && isOwnProfile) {
+              setAuthUser(updatedUser);
+            }
+            
+            // Invalidate queries
+            queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
+            queryClient.invalidateQueries({ queryKey: ["/api/users"] });
+            
+            // Trigger navbar refresh
+            window.dispatchEvent(new CustomEvent('userDataUpdated', { detail: updatedUser }));
+            
+            toast({
+              title: "Success",
+              description: "Avatar updated successfully!",
+            });
+            
+          } catch (error: any) {
+            console.error('Avatar upload error:', error);
+            toast({
+              title: "Upload Failed",
+              description: error?.message || "Failed to upload avatar",
+              variant: "destructive",
+            });
+          } finally {
+            setUploadingPhoto(false);
+          }
+        };
+        
+        reader.onerror = () => {
+          console.error('Failed to read file');
+          toast({
+            title: "Error",
+            description: "Failed to read image file",
+            variant: "destructive",
+          });
+          setUploadingPhoto(false);
+        };
+        
+        reader.readAsDataURL(file);
+      }
     }
     // Clear the input to allow same file selection
     e.target.value = '';
@@ -2059,7 +2282,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const updateActivities = useMutation({
     mutationFn: async (activities: string[]) => {
       const response = await apiRequest('PUT', `/api/users/${effectiveUserId}`, {
-        localActivities: activities
+        activities: activities
       });
       if (!response.ok) {
         const errorText = await response.text();
@@ -2069,11 +2292,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
+      refetchUser();
       toast({
         title: "Activities updated",
         description: "Your activities have been successfully updated.",
       });
       setEditingActivities(false);
+      setTempActivities([]);
     },
     onError: () => {
       toast({
@@ -2087,7 +2312,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const updateEvents = useMutation({
     mutationFn: async (events: string[]) => {
       const response = await apiRequest('PUT', `/api/users/${effectiveUserId}`, {
-        localEvents: events
+        events: events
       });
       if (!response.ok) {
         const errorText = await response.text();
@@ -2097,6 +2322,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
+      refetchUser();
       toast({
         title: "Events updated",
         description: "Your events have been successfully updated.",
@@ -2165,9 +2391,21 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
   // Edit handlers
   const handleEditInterests = () => {
-    if (!user) return;
-    setTempInterests(user.interests || []);
+    console.log('🔧 EDIT INTERESTS: Starting edit mode', { 
+      user: user?.username, 
+      userInterests: user?.interests,
+      editingInterests,
+      tempInterests 
+    });
+    if (!user) {
+      console.log('❌ EDIT INTERESTS: No user data available');
+      return;
+    }
+    const userInterests = user.interests || [];
+    console.log('🔧 EDIT INTERESTS: Setting temp interests to:', userInterests);
+    setTempInterests(userInterests);
     setEditingInterests(true);
+    console.log('🔧 EDIT INTERESTS: Edit mode activated');
   };
 
   const handleSaveInterests = () => {
@@ -2181,7 +2419,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
   const handleEditActivities = () => {
     if (!user) return;
-    setTempActivities(user.localActivities || user.activities || []);
+    setTempActivities(user.activities || []);
     setEditingActivities(true);
   };
 
@@ -2196,7 +2434,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
   const handleEditEvents = () => {
     if (!user) return;
-    setTempEvents(user.localEvents || user.events || []);
+    setTempEvents(user.events || []);
     setEditingEvents(true);
   };
 
@@ -2327,7 +2565,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
   // Profile edit mutation
   const editProfile = useMutation({
-    mutationFn: async (data: z.infer<typeof profileSchema>) => {
+    mutationFn: async (data: z.infer<typeof dynamicProfileSchema>) => {
       console.log('Profile edit data being sent:', data);
       const response = await apiRequest('PUT', `/api/users/${effectiveUserId}`, data);
       if (!response.ok) {
@@ -2338,16 +2576,46 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       return response.json();
     },
     onSuccess: (updatedUser) => {
-      queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
-      // Also invalidate navbar user data cache to refresh avatar
-      queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
+      console.log('🔥 PROFILE UPDATE SUCCESS - Immediate cache refresh:', updatedUser);
       
-      // Update localStorage if editing own profile
-      if (isOwnProfile && currentUser) {
-        const updatedStoredUser = { ...currentUser, ...updatedUser };
-        localStorage.setItem('user', JSON.stringify(updatedStoredUser));
-        localStorage.setItem('travelconnect_user', JSON.stringify(updatedStoredUser));
+      // CRITICAL: Update ALL possible cache keys immediately
+      queryClient.setQueryData([`/api/users/${effectiveUserId}`, currentUser?.id], updatedUser);
+      queryClient.setQueryData([`/api/users/${effectiveUserId}`], updatedUser);
+      queryClient.setQueryData(['/api/users'], (oldData: any) => {
+        if (Array.isArray(oldData)) {
+          return oldData.map(u => u.id === updatedUser.id ? updatedUser : u);
+        }
+        return oldData;
+      });
+      
+      // Update localStorage and auth context if editing own profile
+      if (isOwnProfile) {
+        console.log('🔥 Updating auth storage and context with new profile data');
+        authStorage.setUser(updatedUser);
+        
+        // CRITICAL: Update auth context state immediately
+        if (typeof setAuthUser === 'function') {
+          console.log('🔥 Calling setAuthUser with updated profile data');
+          setAuthUser(updatedUser);
+        }
+        
+        // Also update localStorage directly as backup
+        localStorage.setItem('travelconnect_user', JSON.stringify(updatedUser));
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+        
+        // FORCE immediate UI refresh with state update
+        window.dispatchEvent(new CustomEvent('userDataUpdated', { detail: updatedUser }));
+        window.dispatchEvent(new CustomEvent('profileUpdated', { detail: updatedUser }));
       }
+      
+      // Force immediate refetch to trigger component re-render
+      refetchUser();
+      
+      // Multiple invalidations to ensure all cached data is fresh
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`, currentUser?.id] });
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
+      queryClient.invalidateQueries({ queryKey: ["/api/users"] });
+      
       toast({
         title: "Profile updated",
         description: "Your profile has been successfully updated.",
@@ -2364,7 +2632,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     },
   });
 
-  const onSubmitProfile = (data: z.infer<typeof profileSchema>) => {
+  const onSubmitProfile = (data: z.infer<typeof dynamicProfileSchema>) => {
     console.log('onSubmitProfile called with data:', data);
     console.log('Form validation errors:', profileForm.formState.errors);
     
@@ -2621,7 +2889,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
   return (
     <>
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="min-h-screen profile-page">
       {shouldShowBackToChatroom && (
         <div className="w-full max-w-full mx-auto px-2 pt-2">
           <Button 
@@ -2633,162 +2901,138 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           </Button>
         </div>
       )}
-    
-      {/* COMPLETELY REBUILT HERO SECTION - WORKING COVER PHOTO */}
-      <div className="relative w-full h-48 md:h-64 overflow-hidden">
-        {/* Background Layer */}
-        <div 
-          key={`cover-photo-${coverPhotoKey}`}
-          className="absolute inset-0 w-full h-full bg-cover bg-center bg-no-repeat"
-          style={{
-            backgroundImage: user.coverPhoto 
-              ? `url("${user.coverPhoto}?v=${coverPhotoKey}")`
-              : 'linear-gradient(to right, #3b82f6, #8b5cf6, #f97316)'
-          }}
+
+      {/* Mobile spacing to account for global MobileTopNav */}
+      <div className="h-4 md:hidden"></div>
+
+      {/* Mobile Back Button */}
+      <div className="block md:hidden px-4 pb-2">
+        <UniversalBackButton 
+          destination="/discover"
+          label="Back"
+          className="shadow-sm"
         />
-
-        {/* Dark overlay */}
-        <div className="absolute inset-0 bg-black/20 z-10"></div>
-        
-        {/* Upload Controls */}
-        {isOwnProfile && (
-          <div className="absolute top-4 right-4 z-20">
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleCoverPhotoUpload}
-              className="hidden"
-              id="cover-photo-upload"
-            />
-            <label 
-              htmlFor="cover-photo-upload" 
-              className="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-black/60 hover:bg-black/80 rounded-md cursor-pointer transition-colors"
-            >
-              <Camera className="w-4 h-4 mr-2" />
-              {user.coverPhoto ? 'Change Cover' : 'Add Cover'}
-            </label>
-          </div>
-        )}
-        
-        {/* Loading state */}
-        {uploadingPhoto && (
-          <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-30">
-            <div className="bg-white rounded-lg p-4 text-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-2"></div>
-              <p className="text-sm font-medium">Uploading...</p>
-            </div>
-          </div>
-        )}
       </div>
+    
+      {/* EXPANDED GRADIENT HEADER - MOBILE OPTIMIZED WITH RIGHT-ALIGNED PHOTO */}
+      <div className={`w-full bg-gradient-to-r ${gradientOptions[selectedGradient]} p-4 sm:p-6`}>
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-row items-start gap-4 sm:gap-6">
+            {/* Profile Avatar - Left Side */}
+            <div className="relative flex-shrink-0">
+              <Avatar className="w-20 h-20 sm:w-32 sm:h-32 md:w-40 md:h-40 border-4 border-white shadow-lg bg-white">
+                <AvatarImage src={user?.profileImage || ''} className="object-cover" />
+                <AvatarFallback className="text-lg sm:text-2xl md:text-4xl bg-gradient-to-br from-blue-600 to-orange-600 text-white">
+                  {(user?.username?.charAt(0) || user?.name?.charAt(0) || 'U').toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              {isOwnProfile && (
+                <>
+                  <Button 
+                    size="sm" 
+                    className="absolute -bottom-2 -right-2 bg-blue-600 hover:bg-blue-700 text-white border-none shadow-lg w-8 h-8 sm:w-10 sm:h-10 p-0"
+                    onClick={() => document.getElementById('avatar-upload-input')?.click()}
+                    disabled={uploadingPhoto}
+                  >
+                    <Camera className="w-3 h-3 sm:w-4 sm:h-4" />
+                  </Button>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleAvatarUpload}
+                    className="hidden"
+                    id="avatar-upload-input"
+                  />
+                </>
+              )}
+            </div>
 
-      {/* Profile Header */}
-      <div className="w-full max-w-full mx-auto px-4">
-        <div className="relative -mt-16 mb-6">
-          <div className="flex flex-col md:flex-row items-start gap-4 pt-4">
-              {/* Profile Avatar */}
-              <div className="relative z-20">
-                <Avatar className="w-32 h-32 md:w-40 md:h-40 border-4 border-white shadow-xl rounded-lg bg-white">
-                  <AvatarImage src={user.profileImage || photos[0]?.imageUrl} className="rounded-lg object-cover" />
-                  <AvatarFallback className="text-4xl bg-gradient-to-br from-blue-500 to-orange-500 text-white rounded-lg">
-                    {(user?.username?.charAt(0) || user?.name?.charAt(0) || 'U').toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-                {isOwnProfile && (
-                  <>
-                    {/* Avatar Upload Button */}
-                    <Button 
-                      size="sm" 
-                      className="absolute -bottom-2 -right-2 bg-blue-500 hover:bg-blue-600 text-white border-none shadow-lg"
-                      onClick={() => setShowPhotoUpload(true)}
-                      disabled={uploadingPhoto}
-                    >
-                      <Camera className="w-4 h-4 mr-1" />
-                      {uploadingPhoto ? 'Uploading...' : 'Add Photo'}
-                    </Button>
-                    {/* Hidden file input for direct avatar upload */}
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleAvatarUpload}
-                      className="hidden"
-                      id="avatar-upload-input"
-                    />
-                  </>
-                )}
-              </div>
-
-              {/* Profile Info */}
-              <div className="flex-1">
-                <h1 className="text-3xl font-bold mb-2 text-gray-900 dark:text-white outline-none border-none focus:outline-none focus:border-none select-none">@{user.username}</h1>
-                {/* Business Name Display */}
-                {user.userType === 'business' && user.businessName && (
-                  <div className="text-2xl font-semibold mb-2 text-blue-600 dark:text-blue-400">
-                    {user.businessName}
-                  </div>
-                )}
-                <p className="text-sm sm:text-lg mb-2 flex items-start gap-2 text-gray-700 dark:text-gray-300">
-                  <MapPin className="w-5 h-5 flex-shrink-0 mt-0.5" />
-                  <span className="break-words text-wrap">
-                    {user.userType === 'business' 
-                      ? `🏢 Nearby Business in ${user.hometownCity || 'Los Angeles'}`
-                      : (() => {
-                          // Check for active travel plans
-                          if (travelPlans && travelPlans.length > 0) {
-                            const today = new Date();
-                            for (const plan of travelPlans) {
-                              if (plan.startDate && plan.endDate) {
-                                const startDate = new Date(plan.startDate);
-                                const endDate = new Date(plan.endDate);
-                                const isCurrentlyActive = today >= startDate && today <= endDate;
-                                if (isCurrentlyActive && plan.destination) {
-                                  return `✈️ Currently Traveling to ${plan.destination}`;
+            {/* Profile Info - Right Side */}
+            <div className="flex-1 min-w-0">
+              {isOwnProfile && (
+                <div className="mb-2 sm:mb-3">
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="bg-white/90 hover:bg-white text-gray-800 hover:text-gray-900 border border-white text-xs sm:text-sm px-3 py-1 font-medium shadow-sm"
+                    onClick={() => setSelectedGradient((prev) => (prev + 1) % gradientOptions.length)}
+                  >
+                    🎨 Change Color
+                  </Button>
+                </div>
+              )}
+              <h1 className="text-xl sm:text-3xl font-bold text-black mb-1">@{user.username}</h1>
+              {user.userType === 'business' && user.businessName && (
+                <div className="text-lg sm:text-xl font-semibold text-white/90 mb-1">
+                  {user.businessName}
+                </div>
+              )}
+              
+              {/* Clean 2-line layout - Mobile Responsive */}
+              <div className="space-y-1 text-black text-xs sm:text-sm">
+                {/* Line 1: Travel/Local status */}
+                <div className="flex items-center gap-3">
+                  <MapPin className="w-5 h-5 flex-shrink-0" />
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium">
+                      {user.userType === 'business' 
+                        ? `🏢 Nearby Business in ${user.hometownCity || 'Los Angeles'}`
+                        : (() => {
+                            // Check for active travel plans first - prioritize trip that started first
+                            if (travelPlans && travelPlans.length > 0) {
+                              const today = new Date();
+                              today.setHours(0, 0, 0, 0); // Set to start of day for accurate comparison
+                              
+                              let activeTrips = [];
+                              
+                              for (const plan of travelPlans) {
+                                if (plan.startDate && plan.endDate) {
+                                  // FIXED: Manual date parsing to prevent timezone conversion
+                                  const parseLocalDate = (dateInput: string | Date | null | undefined) => {
+                                    if (!dateInput) return null;
+                                    let dateString: string;
+                                    if (dateInput instanceof Date) {
+                                      dateString = dateInput.toISOString();
+                                    } else {
+                                      dateString = dateInput;
+                                    }
+                                    const parts = dateString.split('T')[0].split('-');
+                                    if (parts.length === 3) {
+                                      const year = parseInt(parts[0]);
+                                      const month = parseInt(parts[1]) - 1;
+                                      const day = parseInt(parts[2]);
+                                      return new Date(year, month, day);
+                                    }
+                                    return null;
+                                  };
+                                  
+                                  const startDate = parseLocalDate(plan.startDate);
+                                  const endDate = parseLocalDate(plan.endDate);
+                                  if (!startDate || !endDate) continue;
+                                  startDate.setHours(0, 0, 0, 0);
+                                  endDate.setHours(23, 59, 59, 999);
+                                  
+                                  const isCurrentlyActive = today >= startDate && today <= endDate;
+                                  if (isCurrentlyActive && plan.destination) {
+                                    activeTrips.push({
+                                      plan,
+                                      startDate
+                                    });
+                                  }
                                 }
                               }
+                              
+                              // If multiple active trips, prioritize the one that started first
+                              if (activeTrips.length > 0) {
+                                activeTrips.sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
+                                const currentTrip = activeTrips[0].plan;
+                                // Show full destination with state/country for better clarity
+                                const destination = currentTrip.destination || 'Unknown';
+                                return `✈️ Nearby Traveler in ${destination}`;
+                              }
                             }
-                          }
-                          
-                          // Show hometown for non-traveling status
-                          const hometownCity = user.hometownCity;
-                          const hometownState = user.hometownState;
-                          const hometownCountry = user.hometownCountry;
-                          
-                          if (hometownCity) {
-                            if (hometownCountry && hometownCountry !== 'United States' && hometownCountry !== 'USA') {
-                              return `Nearby Local in ${hometownCity}, ${hometownCountry}`;
-                            } else if (hometownState && (hometownCountry === 'United States' || hometownCountry === 'USA')) {
-                              return `Nearby Local in ${hometownCity}, ${hometownState}`;
-                            } else {
-                              return `Nearby Local in ${hometownCity}`;
-                            }
-                          } else if (user.location) {
-                            return `Nearby Local in ${user.location}`;
-                          }
-                          return "Nearby Local";
-                        })()
-                    }
-                  </span>
-                </p>
-                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-1 sm:gap-3 text-sm text-gray-600 dark:text-gray-400">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    {/* Countries count - Hidden for business profiles */}
-                    {user?.userType !== 'business' && (
-                      <span className="flex items-center gap-1 whitespace-nowrap">
-                        <Globe className="w-4 h-4" />
-                        {countriesVisited.length} countries
-                      </span>
-                    )}
-                    <span className="flex items-center gap-1 whitespace-nowrap">
-                      <Star className="w-4 h-4" />
-                      {references.length} References
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-1 text-xs sm:text-sm">
-                    <Users className="w-4 h-4 flex-shrink-0" />
-                    <span className="break-words">
-                      {user.userType === 'business' 
-                        ? `Nearby Business in ${user.hometownCity || 'Los Angeles'}`
-                        : (() => {
-                            // STATIC HOMETOWN - NEVER CHANGES
+                            
+                            // Show "Nearby Local" when at home - use actual hometown city
                             const hometownCity = user.hometownCity;
                             const hometownState = user.hometownState;
                             const hometownCountry = user.hometownCountry;
@@ -2808,154 +3052,144 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           })()
                       }
                     </span>
+
                   </div>
                 </div>
-              </div>
 
-              {/* Action Buttons - Mobile responsive layout */}
-              <div className="flex flex-col gap-3 sm:grid sm:grid-cols-2 md:self-end md:-ml-4 w-full sm:max-w-[280px] mt-4">
-                {isOwnProfile ? (
-                  <>
-                    <Button 
-                      variant="outline" 
-                      onClick={() => setIsEditMode(true)}
-                      className="sm:col-span-2 bg-blue-500 hover:bg-blue-600 text-white border-0 h-12 text-base font-semibold"
-                    >
-                      <Edit className="w-5 h-5 mr-2" />
-                      Edit Profile
-                    </Button>
+                {/* Line 2: Stats and availability */}
+                {user.userType !== 'business' && (
+                  <div className="ml-8">
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2">
+                        <Globe className="w-5 h-5 text-black" />
+                        <span className="text-sm font-medium">{countriesVisited?.length || 0} countries</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Star className="w-5 h-5 text-black" />
+                        <span className="text-sm font-medium">{references?.length || 0} references</span>
+                      </div>
+                      <span className="text-sm font-medium flex items-center gap-2">
+                        <Users className="w-5 h-5" />
+{(() => {
+                          // ALWAYS show "Nearby Local in hometown" on line 2 - NEVER CHANGE THIS
+                          const hometownCity = user.hometownCity;
+                          const hometownState = user.hometownState;
+                          const hometownCountry = user.hometownCountry;
+                          
+                          if (hometownCity) {
+                            if (hometownCountry && hometownCountry !== 'United States' && hometownCountry !== 'USA') {
+                              return `Nearby Local in ${hometownCity}, ${hometownCountry}`;
+                            } else if (hometownState && (hometownCountry === 'United States' || hometownCountry === 'USA')) {
+                              return `Nearby Local in ${hometownCity}, ${hometownState}`;
+                            } else {
+                              return `Nearby Local in ${hometownCity}`;
+                            }
+                          } else if (user.location) {
+                            return `Nearby Local in ${user.location}`;
+                          }
+                          return "Nearby Local";
+                        })()}
+                      </span>
+                    </div>
 
-                    <Button
-                      variant="outline"
-                      onClick={() => setLocation('/?filters=open')}
-                      className="sm:col-span-2 bg-gradient-to-r from-blue-500 to-orange-500 text-white hover:from-blue-600 hover:to-orange-600 border-0 h-12 text-base font-semibold"
-                    >
-                      <Search className="w-5 h-5 mr-2" />
-                      Keyword Search
-                    </Button>
-                    {user?.hometownCity && (
-                      <Button 
-                        variant="outline"
-                        onClick={handleViewChatrooms}
-                        className="sm:col-span-2 bg-orange-500 hover:bg-blue-600 text-white border-0 h-12 text-base font-semibold"
-                      >
-                        View Chatrooms
-                      </Button>
-                    )}
-                  </>
-                ) : (
-                  <>
-                    <Button 
-                      className="bg-orange-500 hover:bg-orange-600 text-white border-0"
-                      onClick={handleMessage}
-                    >
-                      Message
-                    </Button>
-                    <Button 
-                      variant="default"
-                      className="bg-travel-blue hover:bg-blue-700 text-white border-0"
-                      onClick={handleConnect}
-                      disabled={connectMutation.isPending}
-                    >
-                      {connectMutation.isPending ? 'Connecting...' : 'Connect'}
-                    </Button>
-
-                    {user?.hometownCity && (
-                      <Button 
-                        variant="outline"
-                        onClick={handleViewChatrooms}
-                        className="bg-blue-500 hover:bg-blue-600 text-white border-0"
-                      >
-                        View Chatrooms
-                      </Button>
-                    )}
-                    {currentUser?.id && user?.id && currentUser.id !== user.id && (
-                      <BlockUserButton 
-                        userId={currentUser.id}
-                        targetUserId={user.id}
-                        targetUsername={user.username}
-                      />
-                    )}
-                  </>
+                  </div>
                 )}
               </div>
             </div>
+
+            {/* Action Buttons - Different for own vs other profiles */}
+            {!isOwnProfile ? (
+              <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto mt-4 sm:mt-0">
+                <Button 
+                  className="bg-orange-500 hover:bg-orange-600 text-white border-0 w-full sm:w-auto"
+                  onClick={handleMessage}
+                >
+                  Message
+                </Button>
+                <Button 
+                  className={`w-full sm:w-auto ${getConnectButtonState().className}`}
+                  variant={getConnectButtonState().variant}
+                  onClick={handleConnect}
+                  disabled={getConnectButtonState().disabled}
+                >
+                  {getConnectButtonState().text}
+                </Button>
+              </div>
+            ) : (
+              <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto mt-4 sm:mt-0">
+                <Button
+                  className="bg-blue-600 hover:bg-blue-700 text-white border-0 w-full sm:w-auto"
+                  onClick={() => setIsEditMode(true)}
+                >
+                  <Edit className="w-4 h-4 mr-2" />
+                  Edit Profile
+                </Button>
+                <Button
+                  className="bg-purple-600 hover:bg-purple-700 text-white border-0 w-full sm:w-auto"
+                  onClick={() => setLocation('/upload-photos')}
+                >
+                  <Camera className="w-4 h-4 mr-2" />
+                  Add Photos
+                </Button>
+                <Button
+                  className="bg-orange-600 hover:bg-orange-700 text-white border-0 w-full sm:w-auto"
+                  onClick={() => setLocation(`/?filters=open&return=${encodeURIComponent(window.location.pathname)}`)}
+                >
+                  <Search className="w-4 h-4 mr-2" />
+                  Advanced Search
+                </Button>
+              </div>
+            )}
           </div>
         </div>
+        
+        {/* Loading state for photo uploads */}
+        {uploadingPhoto && (
+          <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-30">
+            <div className="bg-white rounded-lg p-4 text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-2"></div>
+              <p className="text-sm font-medium">Uploading...</p>
+            </div>
+          </div>
+        )}
       </div>
       
-      <div className="w-full max-w-full mx-auto pb-4">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          {/* Main Content Column */}
-          <div className="lg:col-span-2 space-y-4">
-            {/* Action Button - Show different options based on user type */}
-            {isOwnProfile && (
-              <div className="flex justify-end mb-4">
-                {user?.userType === 'business' ? (
-                  // Show instant deal creator for businesses
-                  <div className="flex gap-3">
-                    <Button
-                      onClick={() => setLocation('/business-dashboard')}
-                      className="bg-gradient-to-r from-blue-600 to-orange-600 text-white font-bold border-none hover:from-blue-700 hover:to-orange-700"
-                    >
-                      <Zap className="w-4 h-4 mr-2" />
-                      Create Instant Deal
-                    </Button>
-                  </div>
-                ) : (
-                  // Show QuickMeetupWidget for travelers/locals - same as home page
-                  <div className="mt-6">
-                    <QuickMeetupWidget city={user?.hometownCity || ''} />
-                  </div>
-                )}
-              </div>
-            )}
+      {/* Main content section - Modern Sectioned Layout */}
+      <div className="w-full max-w-full mx-auto pb-0 px-2 sm:px-4 -mt-2">
+        
 
-            {/* Mobile Edit Buttons - Only show on your own profile */}
-            {isOwnProfile && (
-              <div className="md:hidden mb-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg">Quick Actions</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid grid-cols-2 gap-3">
-                      <Button
-                        onClick={() => setIsEditMode(true)}
-                        className="bg-gradient-to-r from-blue-500 to-orange-500 text-white border-0 hover:from-blue-600 hover:to-orange-600"
-                      >
-                        <Edit className="w-4 h-4 mr-2" />
-                        Edit Profile
-                      </Button>
-                      <Button
-                        onClick={() => setShowPhotoUpload(true)}
-                        variant="outline"
-                        className="border-blue-500 text-blue-600 hover:bg-blue-50"
-                      >
-                        <Camera className="w-4 h-4 mr-2" />
-                        Add Photo
-                      </Button>
-                      <Button
-                        onClick={() => setLocation('/travel-plans')}
-                        variant="outline"
-                        className="border-green-500 text-green-600 hover:bg-green-50"
-                      >
-                        <MapPin className="w-4 h-4 mr-2" />
-                        Travel Plans
-                      </Button>
-                      <Button
-                        onClick={() => setLocation('/settings')}
-                        variant="outline"
-                        className="border-gray-500 text-gray-600 hover:bg-gray-50"
-                      >
-                        <Settings className="w-4 h-4 mr-2" />
-                        Settings
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            )}
+
+
+
+
+
+        {/* Things We Have in Common - Mobile Only */}
+        {!isOwnProfile && currentUser && user?.id && (
+          <div className="lg:hidden bg-white dark:bg-gray-800 rounded-2xl p-3 sm:p-4 mb-4 shadow-sm">
+            <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2 mb-3">
+              <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-red-500" />
+              Things We Have in Common
+            </h3>
+            <WhatYouHaveInCommon currentUserId={currentUser.id} otherUserId={user.id} />
+          </div>
+        )}
+
+
+
+
+
+
+
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-2">
+          {/* Main Content Column */}
+          <div className="lg:col-span-2 space-y-2">
+
+
+            
+
+
             
             {/* About Section */}
             <Card>
@@ -2982,12 +3216,49 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 
 
                 
-                <p className="text-gray-900 dark:text-white leading-relaxed mb-4 font-semibold">
-                  {user?.userType === 'business' 
-                    ? (user?.businessDescription || user?.bio || "No business description available yet.")
-                    : (user?.bio || "No bio available yet.")
-                  }
-                </p>
+                {/* Bio Section with Mobile-Friendly Edit Button */}
+                <div className="mb-4">
+                  <div className="flex items-start justify-between mb-2">
+                    <div className="flex-1">
+                      <p className="text-gray-900 dark:text-white leading-relaxed font-semibold">
+                        {user?.userType === 'business' 
+                          ? (user?.businessDescription || user?.bio || "No business description available yet.")
+                          : (user?.bio || "No bio available yet.")
+                        }
+                      </p>
+                    </div>
+                    {/* Bio Edit Button - Always visible on mobile for own profile */}
+                    {isOwnProfile && (
+                      <Button
+                        size="sm"
+                        onClick={() => setIsEditMode(true)}
+                        className="ml-3 bg-blue-600 hover:bg-blue-700 text-white border-0 flex-shrink-0"
+                      >
+                        <Edit className="w-3 h-3 mr-1" />
+                        Edit Bio
+                      </Button>
+                    )}
+                  </div>
+                </div>
+                
+                {/* Metropolitan Area Information for people in metro areas */}
+                {user.hometownCity && user.hometownState && user.hometownCountry && (
+                  (() => {
+                    const metroArea = getMetropolitanArea(user.hometownCity, user.hometownState, user.hometownCountry);
+                    if (metroArea) {
+                      return (
+                        <div className="mb-4 p-3 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg dark:from-gray-800/50 dark:to-gray-700/50">
+                          <div className="flex items-center gap-2">
+                            <MapPin className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Metropolitan Area:</span>
+                            <span className="text-sm text-gray-800 dark:text-gray-200 font-semibold">{metroArea}</span>
+                          </div>
+                        </div>
+                      );
+                    }
+                    return null;
+                  })()
+                )}
                 {user?.userType !== 'business' && user?.secretActivities && (
                   <div className="mb-4 p-3 bg-gradient-to-br from-orange-50 to-blue-50 border-l-4 border-orange-200 rounded-r-lg">
                     <h5 className="font-medium text-black dark:text-black mb-2">Secret things I would do if my closest friends came to town</h5>
@@ -2996,6 +3267,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     </p>
                   </div>
                 )}
+
+                {/* CRITICAL: What You Have in Common - MOVED TO TOP FOR VISIBILITY */}
+                {!isOwnProfile && currentUser && user?.id && (
+                  <div className="mb-6">
+                    <WhatYouHaveInCommon currentUserId={currentUser.id} otherUserId={user.id} />
+                  </div>
+                )}
+
                 <div className="space-y-2 text-sm">
                   <div>
                     <span className="font-medium text-gray-600 dark:text-gray-400">From:</span>
@@ -3035,7 +3314,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         {Array.isArray(user.sexualPreference) 
                           ? user.sexualPreference.join(', ')
                           : typeof user.sexualPreference === 'string'
-                          ? user.sexualPreference.split(',').join(', ')
+                          ? (user.sexualPreference as string).split(',').join(', ')
                           : user.sexualPreference
                         }
                       </span>
@@ -3288,10 +3567,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               </Card>
             )}
 
-            {/* What You Have in Common Section - Only show for other users' profiles */}
-            {!isOwnProfile && currentUser && user?.id && (
-              <WhatYouHaveInCommon currentUserId={currentUser.id} otherUserId={user.id} />
-            )}
+            {/* What You Have in Common Section - MOVED TO ABOUT SECTION FOR BETTER VISIBILITY */}
 
             {/* Local Interests, Activities & Events Section */}
             <Card>
@@ -3302,171 +3578,355 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
-                {/* Most Popular Interest Choices */}
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <h4 className="font-medium text-gray-800 dark:text-white flex items-center gap-2">
-                      <span className="text-yellow-500 text-lg">⭐</span>
-                      Most Popular Interest Choices
-                    </h4>
-                    {isOwnProfile && !editingPopularInterests && (
-                      <Button size="sm" variant="outline" onClick={() => setEditingPopularInterests(true)} className="bg-gradient-to-r from-blue-500 to-orange-500 text-white border-0 hover:from-blue-600 hover:to-orange-600">
-                        <Edit className="w-3 h-3" />
-                      </Button>
-                    )}
+                {/* Single Edit Button for All Preferences */}
+                {isOwnProfile && !editingInterests && !editingActivities && !editingEvents && (
+                  <div className="flex justify-center mb-4">
+                    <Button
+                      onClick={() => {
+                        // Open ALL editing modes at once
+                        setEditingInterests(true);
+                        setEditingActivities(true);
+                        setEditingEvents(true);
+                        // Initialize form data
+                        setEditFormData({
+                          interests: user?.interests || [],
+                          activities: user?.activities || [],
+                          events: user?.events || []
+                        });
+                      }}
+                      className="bg-blue-600 hover:bg-blue-700 text-white"
+                    >
+                      <Edit className="w-4 h-4 mr-2" />
+                      Edit All Preferences
+                    </Button>
                   </div>
-                  
-                  {editingPopularInterests ? (
-                    <div className="space-y-4">
-                      <div className="text-sm text-blue-600 bg-blue-50 border border-blue-400 rounded-md p-3 mb-4 dark:bg-blue-900/20 dark:border-blue-500 dark:text-blue-300">
-                        Select your most popular interests from the curated list below. These will be prominently displayed on your profile.
-                      </div>
-                      
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                        {[
-                          "Single and Looking", "Craft Beer & Breweries", "Coffee Culture", "Cocktails & Bars",
-                          "Nightlife & Dancing", "Photography", "Street Art", "Food Trucks", 
-                          "Rooftop Bars", "Pub Crawls & Bar Tours", "Local Food Specialties", "Walking Tours",
-                          "Happy Hour Deals", "Discounts For Travelers", "Boat & Water Tours", "Food Tours",
-                          "Adventure Tours", "City Tours & Sightseeing", "Hiking & Nature", "Museums",
-                          "Local Unknown Hotspots", "Meet Locals/Travelers", "Yoga & Wellness", "Live Music Venues",
-                          "Beach Activities", "Fine Dining", "Historical Tours", "Festivals & Events"
-                        ].map((interest) => (
-                          <div key={interest} className="flex items-center space-x-2">
-                            <input
-                              type="checkbox"
-                              id={`popular-${interest}`}
-                              checked={user?.interests?.includes(interest) || false}
-                              onChange={(e) => {
-                                const currentInterests = user?.interests || [];
-                                let newInterests;
-                                if (e.target.checked) {
-                                  newInterests = [...currentInterests, interest];
-                                } else {
-                                  newInterests = currentInterests.filter(i => i !== interest);
-                                }
-                                setAuthUser(prev => prev ? { ...prev, interests: newInterests } : prev);
-                              }}
-                              className="h-4 w-4 border-gray-300 rounded text-blue-600 focus:ring-blue-500"
-                            />
-                            <label htmlFor={`popular-${interest}`} className="text-sm text-gray-700 dark:text-gray-300">
-                              {interest}
-                            </label>
-                          </div>
-                        ))}
-                      </div>
-                      
-                      <div className="flex gap-2 pt-4">
+                )}
+
+                {/* Unified Edit Form for All Preferences */}
+                {isOwnProfile && (editingInterests && editingActivities && editingEvents) ? (
+                  <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-600">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Edit All Preferences</h3>
+                      <div className="flex gap-2">
                         <Button 
                           onClick={async () => {
                             try {
-                              await editProfile.mutateAsync({ 
-                                interests: user?.interests || []
+                              console.log('🔧 SAVING DATA:', editFormData);
+                              const response = await fetch(`/api/users/${user.id}`, {
+                                method: 'PUT',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(editFormData)
                               });
-                              setEditingPopularInterests(false);
+                              if (!response.ok) throw new Error('Failed to save');
+                              // Refresh data instead of page reload
+                              queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
+                              // Close all editing modes after successful save
+                              setEditingInterests(false);
+                              setEditingActivities(false);
+                              setEditingEvents(false);
                             } catch (error) {
-                              console.error('Failed to update popular interests:', error);
+                              console.error('Failed to update preferences:', error);
                             }
                           }}
-                          disabled={editProfile.isPending}
-                          className="bg-blue-600 hover:bg-blue-700"
+                          disabled={false}
+                          className="bg-green-600 hover:bg-green-700 text-white"
                         >
-                          {editProfile.isPending ? "Saving..." : "Save Changes"}
+                          Save All Changes
                         </Button>
                         <Button 
                           variant="outline" 
-                          onClick={() => setEditingPopularInterests(false)}
+                          onClick={() => {
+                            // Cancel all edits and close all editing modes
+                            setEditingInterests(false);
+                            setEditingActivities(false);
+                            setEditingEvents(false);
+                            // Reset form data
+                            setEditFormData({
+                              interests: user?.interests || [],
+                              activities: user?.activities || [],
+                              events: user?.events || []
+                            });
+                          }}
                           className="border-orange-500 text-orange-600 hover:bg-orange-50 dark:border-orange-400 dark:text-orange-400 dark:hover:bg-orange-900/20"
                         >
-                          Cancel
+                          Cancel All
                         </Button>
                       </div>
                     </div>
-                  ) : (
-                    <div className="flex flex-wrap gap-2">
-                      {[
-                        "Single and Looking", "Craft Beer & Breweries", "Coffee Culture", "Cocktails & Bars",
-                        "Nightlife & Dancing", "Photography", "Street Art", "Food Trucks", 
-                        "Rooftop Bars", "Pub Crawls & Bar Tours", "Local Food Specialties", "Walking Tours",
-                        "Happy Hour Deals", "Discounts For Travelers", "Boat & Water Tours", "Food Tours",
-                        "Adventure Tours", "City Tours & Sightseeing", "Hiking & Nature", "Museums",
-                        "Local Unknown Hotspots", "Meet Locals/Travelers", "Yoga & Wellness", "Live Music Venues",
-                        "Beach Activities", "Fine Dining", "Historical Tours", "Festivals & Events"
-                      ].filter(interest => user?.interests?.includes(interest)).map((interest, index) => {
-                        return (
-                          <Badge
-                            key={interest}
-                            className={getInterestStyle(interest)}
-                          >
-                            {interest}
-                          </Badge>
-                        );
-                      })}
-                      
-                      {user?.interests?.filter(interest => [
-                        "Single and Looking", "Craft Beer & Breweries", "Coffee Culture", "Cocktails & Bars",
-                        "Nightlife & Dancing", "Photography", "Street Art", "Food Trucks", 
-                        "Rooftop Bars", "Pub Crawls & Bar Tours", "Local Food Specialties", "Walking Tours",
-                        "Happy Hour Deals", "Discounts For Travelers", "Boat & Water Tours", "Food Tours",
-                        "Adventure Tours", "City Tours & Sightseeing", "Hiking & Nature", "Museums",
-                        "Local Unknown Hotspots", "Meet Locals/Travelers", "Yoga & Wellness", "Live Music Venues",
-                        "Beach Activities", "Fine Dining", "Historical Tours", "Festivals & Events"
-                      ].includes(interest)).length === 0 && (
-                        <div className="text-gray-500 dark:text-gray-400 text-sm italic">
-                          No popular interests selected yet
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
+                    
+                    {/* When editing all preferences, show the unified content */}
+                    {editingInterests && editingActivities && editingEvents && (
+                      <div className="space-y-6 mt-6">
+                        {/* Top Interests Section */}
+                        <div>
+                          <h4 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white flex items-center gap-2">
+                            <Heart className="w-5 h-5 text-blue-500" />
+                            Top Interests
+                          </h4>
+                          
+                          {/* Top Choices for Most Travelers */}
+                          <div className="mb-4">
+                            <h5 className="text-sm font-medium mb-2 text-gray-900 dark:text-white">Top Choices for Most Travelers</h5>
+                            <div className="flex flex-wrap gap-2 p-3 bg-gradient-to-r from-blue-100 to-orange-100 dark:from-blue-900 dark:to-orange-900 rounded-lg">
+                              {MOST_POPULAR_INTERESTS.map((interest) => {
+                                const isSelected = editFormData.interests.includes(interest);
+                                
+                                return (
+                                  <button
+                                    key={interest}
+                                    type="button"
+                                    onClick={() => {
+                                      toggleArrayValue(editFormData.interests, interest, (newInterests) => 
+                                        setEditFormData({ ...editFormData, interests: newInterests })
+                                      );
+                                    }}
+                                    className={`px-3 py-2 rounded-md text-sm font-medium transition-all ${
+                                      isSelected
+                                        ? 'bg-green-600 text-white font-bold transform scale-105'
+                                        : 'bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-800 dark:text-blue-200 dark:hover:bg-blue-700'
+                                    }`}
+                                  >
+                                    {interest}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
 
-                {/* Local Interests */}
+                          {/* All Available Interests */}
+                          <div>
+                            <h5 className="text-sm font-medium mb-2 text-gray-900 dark:text-white">All Available Interests</h5>
+                            <div className="flex flex-wrap gap-2 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border">
+                              {getAllInterests().filter(interest => !MOST_POPULAR_INTERESTS.includes(interest)).map((interest) => {
+                                const displayText = interest.startsWith("**") && interest.endsWith("**") ? 
+                                  interest.slice(2, -2) : interest;
+                                const isSelected = editFormData.interests.includes(interest);
+                                
+                                return (
+                                  <button
+                                    key={interest}
+                                    type="button"
+                                    onClick={() => {
+                                      toggleArrayValue(editFormData.interests, interest, (newInterests) => 
+                                        setEditFormData({ ...editFormData, interests: newInterests })
+                                      );
+                                    }}
+                                    className={`px-3 py-2 rounded-md text-sm font-medium transition-all ${
+                                      isSelected
+                                        ? 'bg-green-600 text-white font-bold transform scale-105'
+                                        : 'bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-800 dark:text-blue-200 dark:hover:bg-blue-700'
+                                    }`}
+                                  >
+                                    {displayText}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Activities Section */}
+                        <div>
+                          <h4 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white flex items-center gap-2">
+                            <Globe className="w-5 h-5 text-green-500" />
+                            Activities
+                          </h4>
+                          
+                          <div className="text-sm text-blue-600 bg-blue-50 border border-blue-400 rounded-md p-3 mb-4 dark:bg-blue-900/20 dark:border-blue-600 dark:text-blue-300">
+                            Your default preferences for trips and to match with Nearby Locals and Travelers. They can be added to and changed in the future for specific trips etc.
+                          </div>
+                          
+                          <div className="flex flex-wrap gap-2 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border">
+                            {getAllActivities().map((activity, index) => {
+                              const isSelected = editFormData.activities.includes(activity);
+                              
+                              return (
+                                <button
+                                  key={`activity-${activity}-${index}`}
+                                  type="button"
+                                  onClick={() => {
+                                    toggleArrayValue(editFormData.activities, activity, (newActivities) => 
+                                      setEditFormData({ ...editFormData, activities: newActivities })
+                                    );
+                                  }}
+                                  className={`px-3 py-2 rounded-md text-sm font-medium transition-all ${
+                                    isSelected
+                                      ? 'bg-green-600 text-white font-bold transform scale-105'
+                                      : 'bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-800 dark:text-green-200 dark:hover:bg-green-700'
+                                  }`}
+                                >
+                                  {activity}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+
+                        {/* Events Section */}
+                        <div>
+                          <h4 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white flex items-center gap-2">
+                            <Calendar className="w-5 h-5 text-purple-500" />
+                            Events
+                          </h4>
+                          
+                          <div className="flex flex-wrap gap-2 p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg border">
+                            {getAllEvents().map((event, index) => {
+                              const isSelected = editFormData.events.includes(event);
+                              
+                              return (
+                                <button
+                                  key={`event-${event}-${index}`}
+                                  type="button"
+                                  onClick={() => {
+                                    toggleArrayValue(editFormData.events, event, (newEvents) => 
+                                      setEditFormData({ ...editFormData, events: newEvents })
+                                    );
+                                  }}
+                                  className={`px-3 py-2 rounded-md text-sm font-medium transition-all ${
+                                    isSelected
+                                      ? 'bg-green-600 text-white font-bold transform scale-105'
+                                      : 'bg-orange-100 text-orange-800 hover:bg-orange-200 dark:bg-orange-800 dark:text-orange-200 dark:hover:bg-orange-700'
+                                  }`}
+                                >
+                                  {event}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                        
+                        {/* Bottom Save/Cancel Buttons */}
+                        <div className="flex gap-2 mt-6 pt-4 border-t border-gray-200 dark:border-gray-600">
+                          <Button 
+                            onClick={async () => {
+                              try {
+                                console.log('🔧 BOTTOM SAVE - DATA:', editFormData);
+                                const response = await fetch(`/api/users/${user.id}`, {
+                                  method: 'PUT',
+                                  headers: { 'Content-Type': 'application/json' },
+                                  body: JSON.stringify(editFormData)
+                                });
+                                if (!response.ok) throw new Error('Failed to save');
+                                // Refresh data instead of page reload
+                                queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
+                                // Close all editing modes after successful save
+                                setEditingInterests(false);
+                                setEditingActivities(false);
+                                setEditingEvents(false);
+                              } catch (error) {
+                                console.error('Failed to update preferences:', error);
+                              }
+                            }}
+                            disabled={false}
+                            className="bg-green-600 hover:bg-green-700 text-white flex-1"
+                          >
+                            Save All Changes
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            onClick={() => {
+                              // Cancel all edits and close all editing modes
+                              setEditingInterests(false);
+                              setEditingActivities(false);
+                              setEditingEvents(false);
+                              // Reset temp values
+                              setTempInterests(user?.interests || []);
+                              setTempActivities(user?.activities || []);
+                              setTempEvents(user?.events || []);
+                            }}
+                            className="border-orange-500 text-orange-600 hover:bg-orange-50 dark:border-orange-400 dark:text-orange-400 dark:hover:bg-orange-900/20 flex-1"
+                          >
+                            Cancel All
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ) : null}
+
+
+                {/* Interests */}
                 <div>
                   <div className="flex items-center justify-between mb-3">
                     <h4 className="font-medium text-gray-800 dark:text-white flex items-center gap-2">
-                      <Star className="w-4 h-4 text-yellow-500" />
-                      Local Interests
+                      <Heart className="w-4 h-4 text-blue-500" />
+                      Interests
                     </h4>
-                    {isOwnProfile && !editingInterests && (
-                      <Button size="sm" variant="outline" onClick={handleEditInterests} className="bg-gradient-to-r from-blue-500 to-orange-500 text-white border-0 hover:from-blue-600 hover:to-orange-600">
-                        <Edit className="w-3 h-3" />
+                    {isOwnProfile && (
+                      <Button
+                        size="sm"
+                        onClick={() => setEditingInterests(true)}
+                        className="bg-blue-600 hover:bg-blue-700 text-white border-0"
+                      >
+                        <Edit className="w-3 h-3 mr-1" />
+                        Edit
                       </Button>
                     )}
                   </div>
                   
-                  {editingInterests ? (
+                  {editingInterests && !(editingInterests && editingActivities && editingEvents) ? (
                     <div className="space-y-4">
-                      <div className="text-sm text-blue-600 bg-blue-50 border border-blue-400 rounded-md p-3 mb-4 dark:bg-blue-900/20 dark:border-blue-600 dark:text-blue-300">
-                        Your default preferences for trips and to match with Nearby Locals and Travelers. They can be added to and changed in the future for specific trips etc.
-                      </div>
-                      
-                      {/* All Available Interests */}
-                      <div>
-                        <h4 className="text-lg font-medium mb-3 text-gray-900 dark:text-white">All Available Interests</h4>
-                        <div className="grid grid-cols-4 gap-1 border rounded-lg p-3 bg-blue-50 dark:bg-blue-900/20 border-gray-300 dark:border-gray-600">
-                          {getAllInterests().map((interest) => (
-                            <div key={interest} className="flex items-center space-x-1">
-                              <input
-                                type="checkbox"
-                                id={`interest-${interest}`}
-                                checked={tempInterests.includes(interest)}
-                                onChange={(e) => {
-                                  if (e.target.checked) {
-                                    setTempInterests([...tempInterests, interest]);
-                                  } else {
+                      {/* Top Choices for Most Travelers */}
+                      <div className="mb-4">
+                        <h4 className="text-sm font-medium mb-2 text-gray-900 dark:text-white">Top Choices for Most Travelers</h4>
+                        <div className="flex flex-wrap gap-2 p-3 bg-gradient-to-r from-blue-100 to-orange-100 dark:from-blue-900 dark:to-orange-900 rounded-lg">
+                          {MOST_POPULAR_INTERESTS.map((interest) => {
+                            const isSelected = tempInterests.includes(interest);
+                            
+                            return (
+                              <button
+                                key={interest}
+                                type="button"
+                                onClick={() => {
+                                  if (isSelected) {
                                     setTempInterests(tempInterests.filter(i => i !== interest));
+                                  } else {
+                                    setTempInterests([...tempInterests, interest]);
                                   }
                                 }}
-                                className="h-3 w-3 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                              />
-                              <label 
-                                htmlFor={`interest-${interest}`} 
-                                className="text-xs text-gray-700 dark:text-gray-300 cursor-pointer leading-tight font-medium"
+                                className={`px-3 py-2 rounded-md text-sm font-medium transition-all ${
+                                  isSelected
+                                    ? 'bg-green-600 text-white font-bold transform scale-105'
+                                    : 'bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-800 dark:text-blue-200 dark:hover:bg-blue-700'
+                                }`}
                               >
                                 {interest}
-                              </label>
-                            </div>
-                          ))}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      {/* Additional Interests */}
+                      <div>
+                        <h4 className="text-sm font-medium mb-2 text-gray-900 dark:text-white">🔍 Additional Interests</h4>
+                        <div className="flex flex-wrap gap-2 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border">
+                          {getAllInterests().filter(interest => !MOST_POPULAR_INTERESTS.includes(interest)).map((interest) => {
+                            const displayText = interest.startsWith("**") && interest.endsWith("**") ? 
+                              interest.slice(2, -2) : interest;
+                            const isSelected = tempInterests.includes(interest);
+                            
+                            return (
+                              <button
+                                key={interest}
+                                type="button"
+                                onClick={() => {
+                                  if (isSelected) {
+                                    setTempInterests(tempInterests.filter(i => i !== interest));
+                                  } else {
+                                    setTempInterests([...tempInterests, interest]);
+                                  }
+                                }}
+                                className={`px-3 py-2 rounded-md text-sm font-medium transition-all ${
+                                  isSelected
+                                    ? 'bg-green-600 text-white font-bold transform scale-105'
+                                    : 'bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-800 dark:text-green-200 dark:hover:bg-green-700'
+                                }`}
+                              >
+                                {displayText}
+                              </button>
+                            );
+                          })}
                         </div>
                       </div>
                       
@@ -3486,13 +3946,21 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             }
                           }}
                         />
-                        <Button type="button" onClick={() => {
-                          const trimmed = customInterestInput.trim();
-                          if (trimmed && !tempInterests.includes(trimmed)) {
-                            setTempInterests([...tempInterests, trimmed]);
-                            setCustomInterestInput('');
-                          }
-                        }} variant="outline">Add</Button>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            const trimmed = customInterestInput.trim();
+                            if (trimmed && !tempInterests.includes(trimmed)) {
+                              setTempInterests([...tempInterests, trimmed]);
+                              setCustomInterestInput('');
+                            }
+                          }}
+                          className="h-8 px-2"
+                        >
+                          <Plus className="w-3 h-3" />
+                        </Button>
                       </div>
                       {/* Show selected interests */}
                       {tempInterests.length > 0 && (
@@ -3523,104 +3991,96 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       </div>
                     </div>
                   ) : (
-                    <div className="flex flex-wrap gap-2">
-                      {(() => {
-                        const filteredInterests = getFilteredInterestsForProfile(user, isOwnProfile);
-                        return filteredInterests && filteredInterests.length > 0 ? (
-                          filteredInterests.map((interest, index) => (
-                            <Badge key={`interest-${index}`} className={getInterestStyle(interest)}>
-                              {interest}
-                            </Badge>
-                          ))
-                        ) : (
-                          <p className="text-gray-500 text-sm">No interests listed</p>
-                        );
-                      })()}
+                    <div className="space-y-3">
+                      {/* SIMPLIFIED VIEW: Just show count and top few for own profile */}
+                      {true ? (
+                        <div>
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-sm text-gray-600 dark:text-gray-400">
+                              {(user?.interests || []).length} interests selected
+                            </span>
+                          </div>
+                          <div className="flex flex-wrap gap-2">
+                            {(() => {
+                              const interests = user?.interests || [];
+                              const topInterests = interests.slice(0, 8); // Show only first 8
+                              const remaining = interests.length - 8;
+                              
+                              return (
+                                <>
+                                  {topInterests.map((interest, index) => (
+                                    <Badge key={`interest-${index}`} className="bg-blue-500 text-white font-medium border-0">
+                                      {interest}
+                                    </Badge>
+                                  ))}
+                                  {remaining > 0 && (
+                                    <Badge className="bg-gray-200 text-gray-600 font-medium border-0">
+                                      +{remaining} more
+                                    </Badge>
+                                  )}
+                                </>
+                              );
+                            })()}
+                          </div>
+                        </div>
+                      ) : (
+                        <p className="text-gray-500 text-sm">No interests selected yet</p>
+                      )}
                     </div>
                   )}
                 </div>
 
-                {/* Local Activities */}
+                {/* Activities */}
                 <div>
                   <div className="flex items-center justify-between mb-3">
                     <h4 className="font-medium text-gray-800 dark:text-white flex items-center gap-2">
                       <Globe className="w-4 h-4 text-green-500" />
-                      Local Activities
+                      Activities
                     </h4>
-                    {isOwnProfile && !editingActivities && (
-                      <Button size="sm" variant="outline" onClick={handleEditActivities} className="bg-gradient-to-r from-blue-500 to-orange-500 text-white border-0 hover:from-blue-600 hover:to-orange-600">
-                        <Edit className="w-3 h-3" />
+                    {isOwnProfile && (
+                      <Button
+                        size="sm"
+                        onClick={() => setEditingActivities(true)}
+                        className="bg-green-600 hover:bg-green-700 text-white border-0"
+                      >
+                        <Edit className="w-3 h-3 mr-1" />
+                        Edit
                       </Button>
                     )}
                   </div>
                   
-                  {editingActivities ? (
+                  {editingActivities && !(editingInterests && editingActivities && editingEvents) ? (
                     <div className="space-y-4">
                       <div className="text-sm text-blue-600 bg-blue-50 border border-blue-400 rounded-md p-3 mb-4 dark:bg-blue-900/20 dark:border-blue-600 dark:text-blue-300">
                         Your default preferences for trips and to match with Nearby Locals and Travelers. They can be added to and changed in the future for specific trips etc.
                       </div>
                       
-                      {/* Top Choices for Most Locals and Travelers - Activities */}
-                      <div className="mb-6 p-4 bg-gradient-to-r from-green-100 to-emerald-100 dark:from-green-900/20 dark:to-emerald-900/20 border border-green-300 dark:border-green-600 rounded-lg">
-                        <div className="flex items-center mb-3">
-                          <span className="text-xl mr-2">⭐</span>
-                          <h4 className="text-lg font-semibold text-gray-900 dark:text-white">Top Choices for Most Locals and Travelers</h4>
-                        </div>
-                        <div className="grid grid-cols-4 gap-1">
-                          {[
-                            "Photo Documentation", "Photography Skills", "Travel Buddy Finding", "Local Connections",
-                            "Cultural Learning", "Meetup Organizing", "Itinerary Planning", "Budget Planning",
-                            "Group Formation", "Travel Journaling", "Language Practice", "Video Creation"
-                          ].map((activity) => (
-                            <div key={activity} className="flex items-center space-x-1">
-                              <input
-                                type="checkbox"
-                                id={`top-activity-${activity}`}
-                                checked={tempActivities.includes(activity)}
-                                onChange={(e) => {
-                                  if (e.target.checked) {
-                                    setTempActivities([...tempActivities, activity]);
-                                  } else {
-                                    setTempActivities(tempActivities.filter(a => a !== activity));
-                                  }
-                                }}
-                                className="h-4 w-4 border-gray-300 rounded text-green-600 focus:ring-green-500"
-                              />
-                              <label htmlFor={`top-activity-${activity}`} className="text-xs font-semibold text-black dark:text-green-300 cursor-pointer">
-                                {activity}
-                              </label>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-
                       {/* All Available Activities */}
                       <div>
-                        <h4 className="text-lg font-medium mb-3 text-gray-900 dark:text-white">All Available Activities</h4>
-                        <div className="grid grid-cols-4 gap-1 border rounded-lg p-3 bg-green-50 dark:bg-green-900/20">
-                          {getAllActivities().map((activity, index) => (
-                            <div key={`activity-${activity}-${index}`} className="flex items-center space-x-1">
-                              <input
-                                type="checkbox"
-                                id={`activity-${activity}`}
-                                checked={tempActivities.includes(activity)}
-                                onChange={(e) => {
-                                  if (e.target.checked) {
-                                    setTempActivities([...tempActivities, activity]);
-                                  } else {
-                                    setTempActivities(tempActivities.filter(a => a !== activity));
-                                  }
+                        <h4 className="text-sm font-medium mb-2 text-gray-900 dark:text-white">All Available Activities</h4>
+                        <div className="flex flex-wrap gap-2 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border">
+                          {getAllActivities().map((activity, index) => {
+                            const isSelected = editFormData.activities.includes(activity);
+                            
+                            return (
+                              <button
+                                key={`activity-${activity}-${index}`}
+                                type="button"
+                                onClick={() => {
+                                  toggleArrayValue(editFormData.activities, activity, (newActivities) => 
+                                    setEditFormData({ ...editFormData, activities: newActivities })
+                                  );
                                 }}
-                                className="h-3 w-3 text-green-600 focus:ring-green-500 border-gray-300 rounded"
-                              />
-                              <label 
-                                htmlFor={`activity-${activity}`} 
-                                className="text-xs font-medium text-gray-700 dark:text-gray-300 cursor-pointer leading-tight"
+                                className={`px-3 py-2 rounded-md text-sm font-medium transition-all ${
+                                  isSelected
+                                    ? 'bg-green-600 text-white font-bold transform scale-105'
+                                    : 'bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-800 dark:text-blue-200 dark:hover:bg-blue-700'
+                                }`}
                               >
                                 {activity}
-                              </label>
-                            </div>
-                          ))}
+                              </button>
+                            );
+                          })}
                         </div>
                       </div>
                       
@@ -3648,21 +4108,22 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             }
                           }} variant="outline">Add</Button>
                       </div>
-                      {/* Show selected activities */}
+                      {/* Simple list of current activities with remove buttons */}
                       {tempActivities.length > 0 && (
-                        <div className="p-3 bg-gray-50 rounded-lg">
-                          <p className="text-sm font-medium text-gray-700 mb-2">Selected Activities:</p>
+                        <div className="mt-3 p-3 bg-gray-50 rounded-lg">
+                          <p className="text-sm font-medium text-gray-700 mb-2">Current Activities:</p>
                           <div className="flex flex-wrap gap-2">
                             {tempActivities.map((activity, index) => (
-                              <Badge key={`temp-activity-${activity}-${index}`} className="bg-green-100 text-green-800 border-green-300">
+                              <span key={`activity-${activity}-${index}`} className="inline-flex items-center gap-1 px-2 py-1 bg-green-100 text-green-800 rounded text-sm">
                                 {activity}
                                 <button
                                   onClick={() => setTempActivities(tempActivities.filter(a => a !== activity))}
-                                  className="ml-1 text-green-600 hover:text-green-800"
+                                  className="ml-1 text-green-600 hover:text-red-600 font-bold"
+                                  title={`Remove ${activity}`}
                                 >
                                   ×
                                 </button>
-                              </Badge>
+                              </span>
                             ))}
                           </div>
                         </div>
@@ -3677,111 +4138,94 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       </div>
                     </div>
                   ) : (
-                    <div className="flex flex-wrap gap-2">
-                      {(user.localActivities && user.localActivities.length > 0) ? (
-                        user.localActivities.map((activity: string, index: number) => {
-                          return (
-                            <Badge key={`activity-${index}`} className={getActivityStyle()}>
-                              {activity}
-                            </Badge>
-                          );
-                        })
-                      ) : (user.activities && user.activities.length > 0) ? (
-                        user.activities.map((activity: string, index: number) => {
-                          return (
-                            <Badge key={`activity-${index}`} className={getActivityStyle()}>
-                              {activity}
-                            </Badge>
-                          );
-                        })
+                    <div className="space-y-3">
+                      {/* SIMPLIFIED VIEW: Just show count and top few for own profile */}
+                      {(user.activities && user.activities.length > 0) ? (
+                        <div>
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-sm text-gray-600 dark:text-gray-400">
+                              {user.activities.length} activities selected
+                            </span>
+                          </div>
+                          <div className="flex flex-wrap gap-2">
+                            {(() => {
+                              const activities = user.activities || [];
+                              const topActivities = activities.slice(0, 6); // Show only first 6
+                              const remaining = activities.length - 6;
+                              
+                              return (
+                                <>
+                                  {topActivities.map((activity, index) => (
+                                    <Badge key={`activity-${index}`} className="bg-green-500 text-white font-medium border-0">
+                                      {activity}
+                                    </Badge>
+                                  ))}
+                                  {remaining > 0 && (
+                                    <Badge className="bg-gray-200 text-gray-600 font-medium border-0">
+                                      +{remaining} more
+                                    </Badge>
+                                  )}
+                                </>
+                              );
+                            })()}
+                          </div>
+                        </div>
                       ) : (
-                        <p className="text-gray-500 text-sm">No activities listed</p>
+                        <p className="text-gray-500 text-sm">No activities selected yet</p>
                       )}
                     </div>
                   )}
                 </div>
 
-                {/* Local Events */}
+                {/* Events */}
                 <div>
                   <div className="flex items-center justify-between mb-3">
                     <h4 className="font-medium text-gray-800 dark:text-white flex items-center gap-2">
                       <Calendar className="w-4 h-4 text-purple-500" />
-                      Local Events
+                      Events
                     </h4>
-                    {isOwnProfile && !editingEvents && (
-                      <Button size="sm" variant="outline" onClick={handleEditEvents} className="bg-gradient-to-r from-blue-500 to-orange-500 text-white border-0 hover:from-blue-600 hover:to-orange-600">
-                        <Edit className="w-3 h-3" />
+                    {isOwnProfile && (
+                      <Button
+                        size="sm"
+                        onClick={() => setEditingEvents(true)}
+                        className="bg-purple-600 hover:bg-purple-700 text-white border-0"
+                      >
+                        <Edit className="w-3 h-3 mr-1" />
+                        Edit
                       </Button>
                     )}
                   </div>
                   
-                  {editingEvents ? (
+                  {editingEvents && !(editingInterests && editingActivities && editingEvents) ? (
                     <div className="space-y-4">
-                      <div className="text-sm text-blue-600 bg-blue-50 border border-blue-400 rounded-md p-3 mb-4 dark:bg-blue-900/20 dark:border-blue-600 dark:text-blue-300">
-                        Your default preferences for trips and to match with Nearby Locals and Travelers. They can be added to and changed in the future for specific trips etc.
-                      </div>
-                      
-                      {/* Top Choices for Most Locals and Travelers - Events */}
-                      <div className="mb-6 p-4 bg-gradient-to-r from-purple-100 to-indigo-100 dark:from-purple-900/20 dark:to-indigo-900/20 border border-purple-300 dark:border-purple-600 rounded-lg">
-                        <div className="flex items-center mb-3">
-                          <span className="text-xl mr-2">⭐</span>
-                          <h4 className="text-lg font-semibold text-gray-900 dark:text-white">Top Choices for Most Locals and Travelers</h4>
-                        </div>
-                        <div className="grid grid-cols-4 gap-1">
-                          {[
-                            "Street Festivals", "Cultural Celebrations", "Community Events", "Bar Crawls",
-                            "Club Nights", "Dance Events", "Sports Events", "Seasonal Events",
-                            "Networking Events", "Game Nights", "DJ Events", "Pop-up Restaurants"
-                          ].map((event) => (
-                            <div key={event} className="flex items-center space-x-1">
-                              <input
-                                type="checkbox"
-                                id={`top-event-${event}`}
-                                checked={tempEvents.includes(event)}
-                                onChange={(e) => {
-                                  if (e.target.checked) {
-                                    setTempEvents([...tempEvents, event]);
-                                  } else {
-                                    setTempEvents(tempEvents.filter(ev => ev !== event));
-                                  }
-                                }}
-                                className="h-4 w-4 border-gray-300 rounded text-purple-600 focus:ring-purple-500"
-                              />
-                              <label htmlFor={`top-event-${event}`} className="text-xs font-semibold text-black dark:text-purple-300 cursor-pointer">
-                                {event}
-                              </label>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-
                       {/* All Available Events */}
                       <div>
-                        <h4 className="text-lg font-medium mb-3 text-gray-900 dark:text-white">All Available Events</h4>
-                        <div className="grid grid-cols-4 gap-1 border rounded-lg p-3 bg-purple-50 dark:bg-purple-900/20">
-                          {getAllEvents().map((event, index) => (
-                            <div key={`event-${event}-${index}`} className="flex items-center space-x-1">
-                              <input
-                                type="checkbox"
-                                id={`event-${event}`}
-                                checked={tempEvents.includes(event)}
-                                onChange={(e) => {
-                                  if (e.target.checked) {
-                                    setTempEvents([...tempEvents, event]);
-                                  } else {
+                        <h4 className="text-sm font-medium mb-2 text-gray-900 dark:text-white">All Available Events</h4>
+                        <div className="flex flex-wrap gap-2 p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg border">
+                          {getAllEvents().map((event, index) => {
+                            const isSelected = tempEvents.includes(event);
+                            
+                            return (
+                              <button
+                                key={`event-${event}-${index}`}
+                                type="button"
+                                onClick={() => {
+                                  if (isSelected) {
                                     setTempEvents(tempEvents.filter(ev => ev !== event));
+                                  } else {
+                                    setTempEvents([...tempEvents, event]);
                                   }
                                 }}
-                                className="h-3 w-3 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
-                              />
-                              <label 
-                                htmlFor={`event-${event}`} 
-                                className="text-xs text-gray-700 dark:text-gray-300 cursor-pointer leading-tight font-medium"
+                                className={`px-3 py-2 rounded-md text-sm font-medium transition-all ${
+                                  isSelected
+                                    ? 'bg-green-600 text-white font-bold transform scale-105'
+                                    : 'bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-800 dark:text-blue-200 dark:hover:bg-blue-700'
+                                }`}
                               >
                                 {event}
-                              </label>
-                            </div>
-                          ))}
+                              </button>
+                            );
+                          })}
                         </div>
                       </div>
                       
@@ -3809,21 +4253,22 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             }
                           }} variant="outline">Add</Button>
                       </div>
-                      {/* Show selected events */}
+                      {/* Simple list of current events with remove buttons */}
                       {tempEvents.length > 0 && (
-                        <div className="p-3 bg-gray-50 rounded-lg">
-                          <p className="text-sm font-medium text-gray-700 mb-2">Selected Events:</p>
+                        <div className="mt-3 p-3 bg-gray-50 rounded-lg">
+                          <p className="text-sm font-medium text-gray-700 mb-2">Current Events:</p>
                           <div className="flex flex-wrap gap-2">
                             {tempEvents.map((event, index) => (
-                              <Badge key={`temp-event-${event}-${index}`} className="bg-purple-100 text-purple-800 border-purple-300">
+                              <span key={`event-${event}-${index}`} className="inline-flex items-center gap-1 px-2 py-1 bg-purple-100 text-purple-800 rounded text-sm">
                                 {event}
                                 <button
                                   onClick={() => setTempEvents(tempEvents.filter(e => e !== event))}
-                                  className="ml-1 text-purple-600 hover:text-purple-800"
+                                  className="ml-1 text-purple-600 hover:text-red-600 font-bold"
+                                  title={`Remove ${event}`}
                                 >
                                   ×
                                 </button>
-                              </Badge>
+                              </span>
                             ))}
                           </div>
                         </div>
@@ -3841,25 +4286,40 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       </div>
                     </div>
                   ) : (
-                    <div className="flex flex-wrap gap-2">
-                      {(user.localEvents && user.localEvents.length > 0) ? (
-                        user.localEvents.map((event: string, index: number) => {
-                          return (
-                            <Badge key={`event-${index}`} className={getEventStyle()}>
-                              {event}
-                            </Badge>
-                          );
-                        })
-                      ) : (user.events && user.events.length > 0) ? (
-                        user.events.map((event: string, index: number) => {
-                          return (
-                            <Badge key={`event-${index}`} className={getEventStyle()}>
-                              {event}
-                            </Badge>
-                          );
-                        })
+                    <div className="space-y-3">
+                      {/* SIMPLIFIED VIEW: Just show count and top few for own profile */}
+                      {(user.events && user.events.length > 0) ? (
+                        <div>
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-sm text-gray-600 dark:text-gray-400">
+                              {user.events.length} event types selected
+                            </span>
+                          </div>
+                          <div className="flex flex-wrap gap-2">
+                            {(() => {
+                              const events = user.events || [];
+                              const topEvents = events.slice(0, 6); // Show only first 6
+                              const remaining = events.length - 6;
+                              
+                              return (
+                                <>
+                                  {topEvents.map((event, index) => (
+                                    <Badge key={`event-${index}`} className="bg-purple-500 text-white font-medium border-0">
+                                      {event}
+                                    </Badge>
+                                  ))}
+                                  {remaining > 0 && (
+                                    <Badge className="bg-gray-200 text-gray-600 font-medium border-0">
+                                      +{remaining} more
+                                    </Badge>
+                                  )}
+                                </>
+                              );
+                            })()}
+                          </div>
+                        </div>
                       ) : (
-                        <p className="text-gray-500 text-sm">No event preferences listed</p>
+                        <p className="text-gray-500 text-sm">No event preferences selected yet</p>
                       )}
                     </div>
                   )}
@@ -3867,9 +4327,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               </CardContent>
             </Card>
 
-            {/* Things I Want to Do in... Section */}
+
+            {/* Things I Want to Do Widget - Show for all non-business profiles */}
             {user?.userType !== 'business' && (
-              <ThingsIWantToDoSection userId={effectiveUserId} isOwnProfile={isOwnProfile} />
+              <ThingsIWantToDoSection
+                userId={effectiveUserId || 0}
+                isOwnProfile={isOwnProfile}
+              />
             )}
 
             {/* Travel Plans - Hidden for business profiles */}
@@ -3929,13 +4393,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         {travelPlans.filter(plan => plan.status === 'planned' || plan.status === 'active').map((plan) => (
                         <div 
                           key={plan.id} 
-                          className="border rounded-lg p-3 hover:border-blue-300 dark:hover:border-blue-500 transition-colors cursor-pointer"
+                          className="border rounded-lg p-3 transition-colors hover:border-blue-300 dark:hover:border-blue-500 cursor-pointer border-gray-200 dark:border-gray-700"
+                          title={isOwnProfile ? "Click to view details" : "Click to view travel details, dates, and destinations"}
                           onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
                             setSelectedTravelPlan(plan);
                             setShowTravelPlanDetails(true);
-                            // Use setTimeout to ensure scroll happens after modal opens
                             setTimeout(() => {
                               window.scrollTo({ top: 0, behavior: 'smooth' });
                             }, 100);
@@ -4003,14 +4467,26 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           {plan.interests && plan.interests.length > 0 && (
                             <div className="mb-2">
                               <div className="flex flex-wrap gap-1">
-                                {plan.interests.slice(0, 2).map((interest) => (
+                                {(expandedPlanInterests.has(plan.id) ? plan.interests : plan.interests.slice(0, 2)).map((interest: string) => (
                                   <Badge key={interest} className={`text-xs ${getInterestStyle(interest)}`}>
                                     {interest}
                                   </Badge>
                                 ))}
                                 {plan.interests.length > 2 && (
-                                  <Badge variant="outline" className="text-xs dark:bg-gray-800 dark:text-gray-300">
-                                    +{plan.interests.length - 2} more
+                                  <Badge 
+                                    variant="outline" 
+                                    className="text-xs dark:bg-gray-800 dark:text-gray-300 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                    onClick={() => {
+                                      const newExpanded = new Set(expandedPlanInterests);
+                                      if (expandedPlanInterests.has(plan.id)) {
+                                        newExpanded.delete(plan.id);
+                                      } else {
+                                        newExpanded.add(plan.id);
+                                      }
+                                      setExpandedPlanInterests(newExpanded);
+                                    }}
+                                  >
+                                    {expandedPlanInterests.has(plan.id) ? 'Show less' : `+${plan.interests.length - 2} more`}
                                   </Badge>
                                 )}
                               </div>
@@ -4019,7 +4495,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           {plan.travelStyle && plan.travelStyle.length > 0 && (
                             <div>
                               <div className="flex flex-wrap gap-1">
-                                {plan.travelStyle.slice(0, 2).map((style) => (
+                                {plan.travelStyle.slice(0, 2).map((style: string) => (
                                   <Badge key={style} variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200 dark:bg-green-900 dark:text-green-200 dark:border-green-700">
                                     {style}
                                   </Badge>
@@ -4126,14 +4602,26 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             {plan.interests && plan.interests.length > 0 && (
                               <div className="mb-2">
                                 <div className="flex flex-wrap gap-1">
-                                  {plan.interests.slice(0, 2).map((interest) => (
+                                  {(expandedPlanInterests.has(plan.id) ? plan.interests : plan.interests.slice(0, 2)).map((interest: string) => (
                                     <Badge key={interest} className="text-xs bg-gray-100 text-gray-600 border-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600">
                                       {interest}
                                     </Badge>
                                   ))}
                                   {plan.interests.length > 2 && (
-                                    <Badge variant="outline" className="text-xs dark:bg-gray-800 dark:text-gray-300">
-                                      +{plan.interests.length - 2} more
+                                    <Badge 
+                                      variant="outline" 
+                                      className="text-xs dark:bg-gray-800 dark:text-gray-300 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                      onClick={() => {
+                                        const newExpanded = new Set(expandedPlanInterests);
+                                        if (expandedPlanInterests.has(plan.id)) {
+                                          newExpanded.delete(plan.id);
+                                        } else {
+                                          newExpanded.add(plan.id);
+                                        }
+                                        setExpandedPlanInterests(newExpanded);
+                                      }}
+                                    >
+                                      {expandedPlanInterests.has(plan.id) ? 'Show less' : `+${plan.interests.length - 2} more`}
                                     </Badge>
                                   )}
                                 </div>
@@ -4142,7 +4630,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             {plan.travelStyle && plan.travelStyle.length > 0 && (
                               <div>
                                 <div className="flex flex-wrap gap-1">
-                                  {plan.travelStyle.slice(0, 2).map((style) => (
+                                  {plan.travelStyle.slice(0, 2).map((style: string) => (
                                     <Badge key={style} variant="outline" className="text-xs bg-gray-50 text-gray-600 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600">
                                       {style}
                                     </Badge>
@@ -4187,6 +4675,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
 
 
+
             {/* Our Events Widget - only for business profiles */}
             {user?.userType === 'business' && (
               <Card>
@@ -4197,17 +4686,17 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <BusinessEventsWidget userId={effectiveUserId} />
+                  <BusinessEventsWidget userId={effectiveUserId || 0} />
                 </CardContent>
               </Card>
             )}
 
-            {/* Travel Memories - now using the updated component that matches Travel Story Generator layout */}
+            {/* Photo Albums Widget - Separate from Travel Memories */}
             {user?.userType !== 'business' && (
               <Card>
                 <CardContent className="p-6">
-                  <TravelMemoryTimeline 
-                    userId={effectiveUserId}
+                  <PhotoAlbumWidget 
+                    userId={effectiveUserId || 0}
                     isOwnProfile={isOwnProfile}
                   />
                 </CardContent>
@@ -4299,35 +4788,61 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           </div>
 
           {/* Right Sidebar */}
-          <div className="lg:col-span-1 space-y-4">
-            {/* Optimize Your Profile Widget - Only show for own profile */}
-            {isOwnProfile && (
-              <Card className="border-orange-200 bg-gradient-to-br from-orange-50 to-blue-50 hover:shadow-lg transition-all duration-200">
-                <CardHeader className="pb-3">
-                  <div className="flex items-center space-x-2 mb-2">
-                    <TrendingUp className="w-5 h-5 text-orange-600" />
-                    <Badge variant="default" className="bg-orange-600 text-white">Success Tips</Badge>
-                  </div>
-                  <CardTitle className="text-lg font-semibold text-black dark:text-black">
-                    Boost Your Connections
-                  </CardTitle>
-                  <p className="text-sm text-black dark:text-black mt-2">
-                    Get better matches and more connections with our optimization guide
-                  </p>
+          <div className="lg:col-span-1 space-y-2">
+            {/* Quick Meetup Widget - Only show for own profile */}
+            {isOwnProfile && user?.userType !== 'business' && (
+              <div className="mt-4">
+                <QuickMeetupWidget city={user?.hometownCity ?? ''} />
+              </div>
+            )}
+
+
+            {/* Travel Stats - Hidden for business profiles - MOVED UP */}
+            {user?.userType !== 'business' && (
+              <Card 
+                className="hover:shadow-lg transition-all duration-200 hover:border-orange-300"
+              >
+                <CardHeader>
+                  <CardTitle className="dark:text-white">Travel Stats</CardTitle>
                 </CardHeader>
-                <CardContent className="pt-0">
-                  <Button 
-                    onClick={() => setLocation('/getting-started')}
-                    className="w-full bg-gradient-to-r from-blue-500 via-orange-500 to-violet-500 hover:from-blue-600 hover:via-orange-600 hover:to-violet-600 text-white border-0"
-                  >
-                    <Star className="w-4 h-4 mr-2" />
-                    Optimize Profile
-                  </Button>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600 dark:text-gray-300 flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-orange-500" />
+                      Travel Aura
+                    </span>
+                    <span className="font-semibold text-orange-600 dark:text-orange-400">{user?.aura || 0}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600 dark:text-gray-300">Connections</span>
+                    <span className="font-semibold dark:text-white">{userConnections.length}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600 dark:text-gray-300">Active Travel Plans</span>
+                    <span className="font-semibold dark:text-white">{travelPlans.filter(plan => plan.status === 'planned' || plan.status === 'active').length}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600 dark:text-gray-300">Cumulative Trips Taken</span>
+                    <span className="font-semibold dark:text-white">{travelPlans.filter(plan => plan.status === 'completed').length}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600 dark:text-gray-300">City Chatrooms</span>
+                    <span className="font-semibold dark:text-white">{userChatrooms.length}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600 dark:text-gray-300 flex items-center gap-2">
+                      <Shield className="w-4 h-4 text-blue-500" />
+                      Vouches
+                    </span>
+                    <span className="font-semibold text-blue-600 dark:text-blue-400">{vouches?.length || 0}</span>
+                  </div>
                 </CardContent>
               </Card>
             )}
 
-            {/* Current Connections Widget - Visible to all */}
+
+
+            {/* Current Connections Widget - Visible to all - MOVED UNDER TRAVEL STATS */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center justify-between">
@@ -4459,13 +4974,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           className="flex items-center gap-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg p-2 -m-2 transition-colors flex-1"
                           onClick={() => setLocation(`/profile/${connection.connectedUser?.id}`)}
                         >
-                          <Avatar className="w-10 h-10">
-                            <AvatarImage src={connection.connectedUser?.profileImage || ""} />
-                            <AvatarFallback>
-                              {connection.connectedUser?.name?.charAt(0).toUpperCase() || 
-                               connection.connectedUser?.username?.charAt(0).toUpperCase() || "U"}
-                            </AvatarFallback>
-                          </Avatar>
+                          <SimpleAvatar 
+                            user={connection.connectedUser} 
+                            size="md" 
+                            className="flex-shrink-0"
+                          />
                           <div>
                             <p className="font-medium text-sm text-gray-900 dark:text-white">{connection.connectedUser?.username || connection.connectedUser?.name}</p>
                             <p className="text-xs text-gray-500 dark:text-gray-400">
@@ -4524,48 +5037,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               </CardContent>
             </Card>
 
-            {/* Travel Stats - Hidden for business profiles */}
-            {user?.userType !== 'business' && (
-              <Card 
-                className="hover:shadow-lg transition-all duration-200 hover:border-orange-300"
-              >
-                <CardHeader>
-                  <CardTitle className="dark:text-white">Travel Stats</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600 dark:text-gray-300 flex items-center gap-2">
-                      <Sparkles className="w-4 h-4 text-orange-500" />
-                      Travel Aura
-                    </span>
-                    <span className="font-semibold text-orange-600 dark:text-orange-400">{user?.aura || 0}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600 dark:text-gray-300">Countries Visited</span>
-                    <span className="font-semibold dark:text-white">{countriesVisited.length}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600 dark:text-gray-300">Connections</span>
-                    <span className="font-semibold dark:text-white">{userConnections.length}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600 dark:text-gray-300">References</span>
-                    <span className="font-semibold dark:text-white">{references.length}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600 dark:text-gray-300">Travel Plans</span>
-                    <span className="font-semibold dark:text-white">{travelPlans.length}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600 dark:text-gray-300">City Chatrooms</span>
-                    <span className="font-semibold dark:text-white">{userChatrooms.length}</span>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
+
 
             {/* Reference Widget - Only show for other users' profiles */}
-            {!isOwnProfile && userConnections.some(conn => conn.status === 'accepted') && (
+            {!isOwnProfile && userConnections.some((conn: any) => conn.status === 'accepted') && (
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -4615,9 +5090,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           console.log('Form validation errors:', errors);
                         })} className="space-y-4">
                           
-                          {/* Hidden fields for userReferences schema */}
-                          <input type="hidden" value={user?.id} {...referenceForm.register("revieweeId")} />
-                          <input type="hidden" value={currentUser?.id} {...referenceForm.register("reviewerId")} />
+                          {/* Note: revieweeId and reviewerId handled in submission data */}
 
                           {/* Reference Content */}
                           <FormField
@@ -4682,89 +5155,149 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               </Card>
             )}
 
+            {/* MOBILE-FRIENDLY RIGHT-SIDE WIDGETS SECTION */}
+            
+
+
+
+
+
+
             {/* References Widget */}
             {user?.id && (
-              <div className="references-widget-container">
-                <ReferencesWidgetNew userId={user.id} />
-              </div>
-            )}
-
-            {/* Travel Personality Assessment Widget - Show for all non-business users */}
-            {user?.userType !== 'business' && (
-              <Card className="hover:shadow-lg transition-all duration-200 hover:border-gray-300 dark:hover:border-gray-600">
+              <Card className="hover:shadow-lg transition-all duration-200">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Sparkles className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-                    Travel Personality
+                    <Star className="w-5 h-5 text-yellow-500" />
+                    References
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {personalityLoading ? (
-                    <div className="flex items-center justify-center p-4">
-                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-600 dark:border-gray-400"></div>
-                    </div>
-                  ) : userPersonalityProfile ? (
-                    <div className="space-y-3">
-                      <div className="text-sm text-gray-600 dark:text-gray-300">
-                        {isOwnProfile ? 'Your' : `${user.username}'s`} Travel Style: <span className="font-semibold text-gray-600 dark:text-gray-400 capitalize">
-                          {userPersonalityProfile.personalityType || 'Explorer'}
-                        </span>
+                  <ReferencesWidgetNew userId={user.id} />
+                </CardContent>
+              </Card>
+            )}
+
+
+            {/* Travel Intent Widget - TangoTrips-inspired */}
+            {user?.userType !== 'business' && (
+              <Card className="hover:shadow-lg transition-all duration-200 hover:border-purple-300 dark:hover:border-purple-600 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Sparkles className="w-5 h-5 text-purple-600" />
+                    Travel Intent & Style
+                    {isOwnProfile && (
+                      <Button
+                        size="sm"
+                        onClick={() => setLocation('/travel-quiz')}
+                        className="ml-auto bg-purple-600 hover:bg-purple-700 text-white border-0"
+                      >
+                        <Edit className="w-3 h-3 mr-1" />
+                        Update
+                      </Button>
+                    )}
+                  </CardTitle>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">
+                    What drives your travel and how you like to explore
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  {isOwnProfile ? (
+                    <div className="space-y-4">
+                      {/* Display Current Travel Intent */}
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Why you travel</Label>
+                          <div className="mt-1 p-2 rounded border bg-white dark:bg-gray-800">
+                            <span className="text-sm text-gray-900 dark:text-white">
+                              {user?.travelWhy || 'Not set'}
+                            </span>
+                          </div>
+                        </div>
+                        <div>
+                          <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Travel style</Label>
+                          <div className="mt-1 p-2 rounded border bg-white dark:bg-gray-800">
+                            <span className="text-sm text-gray-900 dark:text-white">
+                              {user?.travelHow || 'Not set'}
+                            </span>
+                          </div>
+                        </div>
+                        <div>
+                          <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Budget range</Label>
+                          <div className="mt-1 p-2 rounded border bg-white dark:bg-gray-800">
+                            <span className="text-sm text-gray-900 dark:text-white">
+                              {user?.travelBudget || 'Not set'}
+                            </span>
+                          </div>
+                        </div>
+                        <div>
+                          <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Group type</Label>
+                          <div className="mt-1 p-2 rounded border bg-white dark:bg-gray-800">
+                            <span className="text-sm text-gray-900 dark:text-white">
+                              {user?.travelGroup || 'Not set'}
+                            </span>
+                          </div>
+                        </div>
                       </div>
-                      <div className="grid grid-cols-2 gap-2 text-xs">
-                        <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 p-2 rounded">
-                          <div className="font-medium text-blue-700 dark:text-blue-300">Adventure</div>
-                          <div className="text-blue-600 dark:text-blue-400 capitalize">{userPersonalityProfile.travelStyle}</div>
-                        </div>
-                        <div className="bg-gradient-to-r from-green-50 to-teal-50 dark:from-green-900/20 dark:to-teal-900/20 p-2 rounded">
-                          <div className="font-medium text-green-700 dark:text-green-300">Social</div>
-                          <div className="text-green-600 dark:text-green-400 capitalize">{userPersonalityProfile.socialPreference}</div>
-                        </div>
-                        <div className="bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 p-2 rounded">
-                          <div className="font-medium text-orange-700 dark:text-orange-300">Budget</div>
-                          <div className="text-orange-600 dark:text-orange-400 capitalize">{userPersonalityProfile.budgetLevel}</div>
-                        </div>
-                        <div className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800/50 dark:to-gray-700/50 p-2 rounded">
-                          <div className="font-medium text-gray-700 dark:text-gray-300">Planning</div>
-                          <div className="text-gray-600 dark:text-gray-400 capitalize">{userPersonalityProfile.planningStyle}</div>
-                        </div>
-                      </div>
-                      <div className="flex items-center justify-between pt-2">
-                        <span className="text-xs text-gray-500 dark:text-gray-400">Compatibility Score</span>
-                        <span className="font-bold text-gray-600 dark:text-gray-400">
-                          {isOwnProfile ? '100' : (compatibilityData?.compatibilityScore || userPersonalityProfile.compatibilityScore || 0)}%
-                        </span>
-                      </div>
-                      {isOwnProfile && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setShowPersonalityAssessment(true)}
-                          className="w-full text-xs bg-gradient-to-r from-gray-500 to-gray-600 text-white border-0 hover:from-gray-600 hover:to-gray-700"
-                        >
-                          Retake Assessment
-                        </Button>
-                      )}
+                      
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setLocation('/travel-quiz')}
+                        className="w-full border-purple-500 text-purple-600 hover:bg-purple-50 dark:border-purple-400 dark:text-purple-400"
+                      >
+                        Update Travel Intent
+                      </Button>
                     </div>
                   ) : (
-                    <div className="text-center space-y-3">
-                      <div className="text-sm text-gray-600 dark:text-gray-300">
-                        {isOwnProfile 
-                          ? "Discover your travel personality to improve travel matching" 
-                          : `${user.username} hasn't completed their travel personality assessment yet`}
+                    <div className="space-y-3">
+                      <div className="grid grid-cols-2 gap-3 text-sm">
+                        <div>
+                          <span className="font-medium text-gray-700 dark:text-gray-300">Why:</span>
+                          <span className="ml-2 text-gray-900 dark:text-white">
+                            {user?.travelWhy ? user.travelWhy.charAt(0).toUpperCase() + user.travelWhy.slice(1) : 'Not shared'}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="font-medium text-gray-700 dark:text-gray-300">Style:</span>
+                          <span className="ml-2 text-gray-900 dark:text-white">
+                            {user?.travelHow ? user.travelHow.charAt(0).toUpperCase() + user.travelHow.slice(1) : 'Not shared'}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="font-medium text-gray-700 dark:text-gray-300">Budget:</span>
+                          <span className="ml-2 text-gray-900 dark:text-white">
+                            {user?.travelBudget ? user.travelBudget.charAt(0).toUpperCase() + user.travelBudget.slice(1) : 'Not shared'}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="font-medium text-gray-700 dark:text-gray-300">Group:</span>
+                          <span className="ml-2 text-gray-900 dark:text-white">
+                            {user?.travelGroup ? user.travelGroup.charAt(0).toUpperCase() + user.travelGroup.slice(1) : 'Not shared'}
+                          </span>
+                        </div>
                       </div>
-                      {isOwnProfile && (
-                        <Button
-                          onClick={() => setShowPersonalityAssessment(true)}
-                          className="w-full bg-gradient-to-r from-gray-500 to-gray-600 text-white border-0 hover:from-gray-600 hover:to-gray-700"
-                        >
-                          Take Assessment
-                        </Button>
+                      
+                      {/* Compatibility indicator when viewing other profiles */}
+                      {compatibilityData?.travelStyleCompatibility && (
+                        <div className="mt-3 p-2 rounded bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700">
+                          <div className="flex items-center gap-2">
+                            <Heart className="w-4 h-4 text-green-600" />
+                            <span className="text-sm font-medium text-green-700 dark:text-green-300">
+                              {compatibilityData.travelStyleCompatibility}% Travel Style Match
+                            </span>
+                          </div>
+                        </div>
                       )}
                     </div>
                   )}
                 </CardContent>
               </Card>
             )}
+
+
+
+
 
             {/* Friend Referral Widget - Only show for own profile and non-business users */}
             {isOwnProfile && user?.userType !== 'business' && (
@@ -4792,13 +5325,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           className="flex items-center gap-2 cursor-pointer flex-1 min-w-0 mr-2"
                           onClick={() => setLocation(`/profile/${request.requesterUser?.id}`)}
                         >
-                          <Avatar className="w-8 h-8 flex-shrink-0">
-                            <AvatarImage src={request.requesterUser?.profileImage || ""} />
-                            <AvatarFallback>
-                              {request.requesterUser?.name?.charAt(0).toUpperCase() || 
-                               request.requesterUser?.username?.charAt(0).toUpperCase() || "U"}
-                            </AvatarFallback>
-                          </Avatar>
+                          <SimpleAvatar 
+                            user={request.requesterUser} 
+                            size="sm" 
+                            className="flex-shrink-0"
+                          />
                           <div className="flex-1 min-w-0">
                             <p className="font-medium text-sm truncate text-gray-900 dark:text-white">@{request.requesterUser?.username}</p>
                             <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
@@ -4919,15 +5450,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           {countriesVisited.map((country: string, index: number) => (
                             <Badge 
                               key={country} 
-                              className={`text-sm border-0 text-black dark:text-black ${
-                                index % 6 === 0 ? 'bg-gradient-to-r from-blue-500 to-blue-600' :
-                                index % 6 === 1 ? 'bg-gradient-to-r from-green-500 to-green-600' :
-                                index % 6 === 2 ? 'bg-gradient-to-r from-purple-500 to-purple-600' :
-                                index % 6 === 3 ? 'bg-gradient-to-r from-orange-500 to-orange-600' :
-                                index % 6 === 4 ? 'bg-gradient-to-r from-teal-500 to-teal-600' :
-                                'bg-gradient-to-r from-pink-500 to-pink-600'
-                              }`}
-                              style={{ color: '#000000 !important' }}
+                              className="bg-blue-500 text-white border-0 px-4 py-2 text-sm font-medium whitespace-nowrap min-w-[100px] h-9 flex items-center justify-center"
                             >
                               {country}
                             </Badge>
@@ -4990,13 +5513,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               </CardContent>
             </Card>
 
-            {/* Location Sharing Widget - Temporarily disabled to fix white screen */}
-            {/* {isOwnProfile && (
+            {/* Comprehensive Geolocation System - Enhanced location sharing for users, businesses, and events */}
+            {isOwnProfile && (
               <LocationSharingWidget />
-            )} */}
+            )}
 
-            {/* Business Referral Program Widget - Temporarily commented to fix JSX error */}
-            {/* {isOwnProfile && user && user.userType !== 'business' && (
+            {/* Business Referral Program Widget */}
+            {isOwnProfile && user && user.userType !== 'business' && (
               <Card 
                 className="cursor-pointer hover:shadow-lg transition-shadow duration-200"
                 onClick={() => setLocation('/referrals')}
@@ -5005,6 +5528,17 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   <CardTitle className="flex items-center gap-2">
                     <Share2 className="w-5 h-5" />
                     Business Referral Program
+                    <Button
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setLocation('/referrals');
+                      }}
+                      className="ml-auto bg-green-600 hover:bg-green-700 text-white border-0"
+                    >
+                      <Edit className="w-3 h-3 mr-1" />
+                      Manage
+                    </Button>
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -5037,59 +5571,35 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </div>
                 </CardContent>
               </Card>
-            )} */}
-      {/* Platform Statistics - Admin Only (nearbytraveler) */}
-      {user?.username === 'nearbytraveler' && platformStats && (
-        <div className="max-w-6xl mx-auto px-4 py-8">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-xl font-bold text-center bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">
-                Platform Statistics (Admin View)
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <Card>
-                  <CardContent className="p-4 text-center">
-                    <Users className="w-8 h-8 text-blue-600 mx-auto mb-2" />
-                    <div className="text-2xl font-bold">
-                      {(platformStats as any)?.activeTravelers || 0}
-                    </div>
-                    <div className="text-sm text-gray-600">Active travelers</div>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent className="p-4 text-center">
-                    <Heart className="w-8 h-8 text-red-600 mx-auto mb-2" />
-                    <div className="text-2xl font-bold">
-                      {(platformStats as any)?.successfulMatches || 0}
-                    </div>
-                    <div className="text-sm text-gray-600">Successful matches</div>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent className="p-4 text-center">
-                    <MapPin className="w-8 h-8 text-green-600 mx-auto mb-2" />
-                    <div className="text-2xl font-bold">
-                      {(platformStats as any)?.destinationsCovered || 0}
-                    </div>
-                    <div className="text-sm text-gray-600">Destinations covered</div>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent className="p-4 text-center">
-                    <TrendingUp className="w-8 h-8 text-purple-600 mx-auto mb-2" />
-                    <div className="text-2xl font-bold">
-                      {(platformStats as any)?.eventsShared || 0}
-                    </div>
-                    <div className="text-sm text-gray-600">Events Shared</div>
-                  </CardContent>
-                </Card>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      )}
+            )}
+
+
+            {/* Boost Connections Widget - MOVED TO BOTTOM - Only show for own profile */}
+            {isOwnProfile && (
+              <Card className="border-orange-200 dark:border-orange-800 bg-gradient-to-br from-orange-50 to-blue-50 dark:from-orange-900/30 dark:to-blue-900/30 hover:shadow-lg transition-all duration-200">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <TrendingUp className="w-5 h-5 text-orange-600 dark:text-orange-400" />
+                    <Badge variant="default" className="bg-orange-600 text-white">Success Tips</Badge>
+                  </div>
+                  <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">
+                    Boost Your Connections
+                  </CardTitle>
+                  <p className="text-sm text-gray-700 dark:text-gray-300 mt-2">
+                    Get better matches and more connections with our optimization guide
+                  </p>
+                </CardHeader>
+                <CardContent className="pt-0">
+                  <Button 
+                    onClick={() => setLocation('/getting-started')}
+                    className="w-full bg-gradient-to-r from-blue-500 via-orange-500 to-violet-500 hover:from-blue-600 hover:via-orange-600 hover:to-violet-600 text-white border-0"
+                  >
+                    <Star className="w-4 h-4 mr-2" />
+                    Optimize Profile
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
           </div>
         </div>
       </div>
@@ -5254,7 +5764,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       </Dialog>
 
       {/* Travel Plan Edit Modal */}
-      <Dialog open={!!editingTravelPlan} onOpenChange={() => setEditingTravelPlan(null)}>
+      <Dialog open={!!editingTravelPlan} onOpenChange={() => {
+        // Close travel plan editing and any profile editing to avoid conflicts
+        setEditingTravelPlan(null);
+        setEditingInterests(false);
+        setEditingActivities(false);
+        setEditingEvents(false);
+      }}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Edit Travel Plan</DialogTitle>
@@ -5332,11 +5848,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 </div>
               </div>
 
-              {/* Interests Section */}
+              {/* Travel Plan Specific Interests Section */}
               <div>
                 <Label className="text-sm font-medium mb-2 block">
-                  Interests on This Trip
+                  <span className="text-orange-600">🌍 Travel Plan Specific Interests</span>
                 </Label>
+                <div className="text-xs text-gray-600 mb-3 p-2 bg-orange-50 rounded border">
+                  <strong>Note:</strong> These are interests specific to this travel plan only, separate from your main profile interests.
+                </div>
                 
                 {/* I am a Veteran checkbox */}
                 <div className="mb-4">
@@ -5372,7 +5891,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   />
                 </div>
                 
-                <div className="grid grid-cols-4 gap-1 border rounded-lg p-3 bg-blue-50">
+                <div className="grid grid-cols-4 gap-1 border rounded-lg p-3 bg-orange-50">
                   {getAllInterests().map((interest, index) => (
                     <div key={`interest-edit-${index}`} className="flex items-center space-x-1">
                       <FormField
@@ -5381,10 +5900,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         render={({ field }) => (
                           <Checkbox
                             id={`interest-edit-${interest}`}
-                            checked={field.value?.includes(interest)}
+                            checked={field.value?.includes(interest) || false}
                             onCheckedChange={(checked) => {
                               if (checked) {
-                                field.onChange([...field.value, interest]);
+                                field.onChange([...(field.value || []), interest]);
                               } else {
                                 field.onChange(field.value?.filter(i => i !== interest));
                               }
@@ -5421,10 +5940,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           render={({ field }) => (
                             <Checkbox
                               id={`activity-edit-${activity}`}
-                              checked={field.value?.includes(activity)}
+                              checked={field.value?.includes(activity) || false}
                               onCheckedChange={(checked) => {
                                 if (checked) {
-                                  field.onChange([...field.value, activity]);
+                                  field.onChange([...(field.value || []), activity]);
                                 } else {
                                   field.onChange(field.value?.filter(a => a !== activity));
                                 }
@@ -5459,10 +5978,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         render={({ field }) => (
                           <Checkbox
                             id={`event-edit-${event}`}
-                            checked={field.value?.includes(event)}
+                            checked={field.value?.includes(event) || false}
                             onCheckedChange={(checked) => {
                               if (checked) {
-                                field.onChange([...field.value, event]);
+                                field.onChange([...(field.value || []), event]);
                               } else {
                                 field.onChange(field.value?.filter(e => e !== event));
                               }
@@ -5481,42 +6000,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 </div>
               </div>
 
-              {/* Travel Style Section */}
-              <div>
-                <Label className="text-sm font-medium mb-2 block">
-                  Travel Style
-                </Label>
-                
-                <div className="grid grid-cols-3 gap-1 border rounded-lg p-3 bg-gray-50">
-                  {BASE_TRAVELER_TYPES.map((style, index) => (
-                    <div key={`style-edit-${index}`} className="flex items-center space-x-1">
-                      <FormField
-                        control={form.control}
-                        name="travelStyle"
-                        render={({ field }) => (
-                          <Checkbox
-                            id={`style-edit-${style}`}
-                            checked={field.value?.includes(style)}
-                            onCheckedChange={(checked) => {
-                              if (checked) {
-                                field.onChange([...field.value, style]);
-                              } else {
-                                field.onChange(field.value?.filter(s => s !== style));
-                              }
-                            }}
-                          />
-                        )}
-                      />
-                      <Label 
-                        htmlFor={`style-edit-${style}`} 
-                        className="text-xs cursor-pointer leading-tight font-medium"
-                      >
-                        {style}
-                      </Label>
-                    </div>
-                  ))}
-                </div>
-              </div>
+
 
               {/* Accommodation */}
               <div>
@@ -5527,7 +6011,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   control={form.control}
                   name="accommodation"
                   render={({ field }) => (
-                    <Select onValueChange={field.onChange} value={field.value}>
+                    <Select onValueChange={field.onChange} value={field.value || ""}>
                       <SelectTrigger>
                         <SelectValue placeholder="Select type" />
                       </SelectTrigger>
@@ -5594,7 +6078,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
       {/* Profile Edit Modal */}
       <Dialog open={isEditMode} onOpenChange={setIsEditMode}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="w-[calc(100vw-16px)] max-w-[calc(100vw-16px)] md:max-w-2xl max-h-[80vh] md:max-h-[90vh] overflow-y-auto mx-2 md:mx-auto p-3 md:p-6">
           <DialogHeader>
             <DialogTitle>Edit Profile</DialogTitle>
           </DialogHeader>
@@ -5688,6 +6172,32 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         {field.value?.length || 0}/500 characters
                       </div>
                       <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+
+              {/* Family Travel Field */}
+              {user?.userType !== 'business' && (
+                <FormField
+                  control={profileForm.control}
+                  name="travelingWithChildren"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                      <div className="space-y-0.5">
+                        <FormLabel className="text-base">
+                          Traveling with children
+                        </FormLabel>
+                        <div className="text-sm text-muted-foreground">
+                          Show that you're traveling with children to connect with other families
+                        </div>
+                      </div>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
                     </FormItem>
                   )}
                 />
@@ -5800,7 +6310,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Gender</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <Select onValueChange={field.onChange} defaultValue={field.value ?? ''}>
                           <FormControl>
                             <SelectTrigger>
                               <SelectValue placeholder="Select gender" />
@@ -6137,44 +6647,67 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         </DialogContent>
       </Dialog>
 
-      {/* Travel Plan Details Modal */}
+      {/* Travel Plan Details Modal - FIXED WITH PROPER BACK NAVIGATION */}
       <Dialog open={showTravelPlanDetails} onOpenChange={setShowTravelPlanDetails}>
-        <DialogContent className="max-w-2xl bg-black text-white border-gray-600">
+        <DialogContent className="max-w-2xl bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-white">
-              <MapPin className="w-5 h-5 text-white" />
+            <DialogTitle className="flex items-center gap-2 text-gray-900 dark:text-white">
+              <MapPin className="w-5 h-5" />
               {selectedTravelPlan?.destination} Trip Details
             </DialogTitle>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+              onClick={() => setShowTravelPlanDetails(false)}
+            >
+              <X className="w-4 h-4" />
+            </Button>
           </DialogHeader>
           
           {selectedTravelPlan && (
-            <div className="space-y-6">
+            <div className="space-y-4">
               {/* Trip Info */}
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="font-medium text-lg text-white">{selectedTravelPlan.destination}</h3>
-                  <p className="text-gray-300 text-sm">
+                  <h3 className="font-medium text-lg text-gray-900 dark:text-white">{selectedTravelPlan.destination}</h3>
+                  <p className="text-gray-600 dark:text-gray-400 text-sm">
                     {selectedTravelPlan.startDate ? formatDateForDisplay(selectedTravelPlan.startDate, user?.currentCity || 'UTC') : 'Start date TBD'} - {selectedTravelPlan.endDate ? formatDateForDisplay(selectedTravelPlan.endDate, user?.currentCity || 'UTC') : 'End date TBD'}
                   </p>
                 </div>
-                <Badge variant="outline" className="text-sm text-white border-gray-500">
+                <Badge variant="outline" className="text-sm">
                   Trip Details
                 </Badge>
               </div>
+              
+              {/* Close Button */}
+              <div className="flex justify-end">
+                <Button 
+                  onClick={() => setShowTravelPlanDetails(false)}
+                  className="bg-gradient-to-r from-blue-500 to-orange-500 text-white border-0 hover:from-blue-600 hover:to-orange-600"
+                >
+                  Close
+                </Button>
+              </div>
 
-              {/* Interests */}
+              {/* Interests - LIMITED TO PREVENT OVERWHELMING */}
               {selectedTravelPlan.interests && selectedTravelPlan.interests.length > 0 && (
                 <div>
-                  <h4 className="font-medium text-sm mb-3 flex items-center gap-2 text-white">
-                    <Star className="w-4 h-4 text-white" />
-                    Interests
+                  <h4 className="font-medium text-sm mb-3 flex items-center gap-2 text-gray-900 dark:text-white">
+                    <Star className="w-4 h-4" />
+                    Top Interests ({selectedTravelPlan.interests.length})
                   </h4>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                    {selectedTravelPlan.interests.map((interest) => (
-                      <Badge key={interest} variant="secondary" className="text-xs bg-blue-900 text-blue-200 border-blue-700 justify-center">
+                    {selectedTravelPlan.interests.slice(0, 9).map((interest) => (
+                      <Badge key={interest} variant="secondary" className="text-xs bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 border-blue-300 dark:border-blue-700 justify-center">
                         {interest}
                       </Badge>
                     ))}
+                    {selectedTravelPlan.interests.length > 9 && (
+                      <Badge variant="outline" className="text-xs text-gray-500 border-gray-300 justify-center">
+                        +{selectedTravelPlan.interests.length - 9} more
+                      </Badge>
+                    )}
                   </div>
                 </div>
               )}
@@ -6602,6 +7135,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           </div>
         </DialogContent>
       </Dialog>
+      
     </>
   );
 }
