@@ -3102,13 +3102,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               </div>
             ) : (
               <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto mt-4 sm:mt-0">
-                <Button
-                  className="bg-orange-600 hover:bg-orange-700 text-white border-0 w-full sm:w-auto"
-                  onClick={() => setLocation(`/?filters=open&return=${encodeURIComponent(window.location.pathname)}`)}
-                >
-                  <Search className="w-4 h-4 mr-2" />
-                  Advanced Search
-                </Button>
                 {user && (user.hometownCity || user.location) && (
                   <Button
                     onClick={() => {
