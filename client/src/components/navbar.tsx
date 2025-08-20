@@ -428,7 +428,7 @@ function Navbar() {
               </Link>
               <span className="ml-3 text-red-600 font-bold text-base">BETA VERSION</span>
             </div>
-            <div className="flex items-center space-x-8 ml-auto">
+            <div className="flex items-center space-x-4 md:space-x-8 ml-auto">
               {/* Desktop Navigation */}
               <nav className="hidden md:flex space-x-6">
                 {navItems.map((item) => (
@@ -447,24 +447,7 @@ function Navbar() {
                 ))}
               </nav>
 
-              {/* Mobile Navigation - Full Navigation */}
-              <nav className="md:hidden flex items-center space-x-1 overflow-x-auto scrollbar-hide">
-                {navItems.map((item) => (
-                  <Link
-                    key={item.path}
-                    href={item.path}
-                    className={`whitespace-nowrap px-2 py-1 rounded text-xs font-medium transition-colors flex-shrink-0 ${
-                      location === item.path
-                        ? "bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400"
-                        : "text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
-                    }`}
-                    onClick={() => console.log(`Mobile nav: ${item.path}`)}
-                  >
-                    {item.label}
-                  </Link>
-                ))}
-              </nav>
-              <div className="flex items-center space-x-3">
+              <div className="flex items-center space-x-2 md:space-x-3">
                 {directUser?.id && <NotificationBell userId={directUser.id} />}
 
                 <button 
