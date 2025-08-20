@@ -1,6 +1,24 @@
 /* Import modern mobile-optimized font */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
+/* Scoped to the hero only - prevents blue background/borders on Travelers/Locals text */
+.hero-clean h1 .hero-blue {
+  /* tailwind @apply + explicit resets */
+  color: rgb(59 130 246) !important; /* blue-500 */
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  outline: none !important;
+}
+/* Hide any decorative pseudo-elements some themes add to spans in headings */
+.hero-clean h1 .hero-blue::before,
+.hero-clean h1 .hero-blue::after {
+  display: none !important;
+  content: none !important;
+}
+
 /* --- COMPREHENSIVE MOBILE SANITY FIXES --- */
 :root { color-scheme: light; }
 

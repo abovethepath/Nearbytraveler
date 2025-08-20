@@ -1216,16 +1216,16 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
 
-{/* HERO — DROP-IN REPLACEMENT */}
+{/* HERO — SCOPED, SAFE */}
 <section
   className="
-    relative text-white overflow-hidden
+    hero-clean relative text-white overflow-hidden
     bg-cover bg-center bg-no-repeat
-    min-h-[40svh] sm:min-h-[44vh] md:min-h-[40vh] xl:min-h-[36vh]
+    min-h-[34svh] sm:min-h-[40vh] md:min-h-[36vh] xl:min-h-[32vh]
   "
   style={{ backgroundImage: "url('/attached_assets/beach travel_1754973619241.jpg')" }}
 >
-  {/* Non-interactive overlay for readability */}
+  {/* Readability overlay (non-interactive) */}
   <div
     aria-hidden
     className="pointer-events-none absolute inset-0 bg-gradient-to-br from-black/45 via-black/30 to-black/55"
@@ -1233,12 +1233,10 @@ export default function Home() {
 
   <div className="relative w-full mx-auto py-4 sm:py-6">
     <div className="mx-auto px-4 max-w-screen-md text-center">
-
-      {/* Single responsive heading */}
       <h1
         className="
           font-bold text-balance drop-shadow
-          text-[clamp(1.4rem,6vw,2rem)] sm:text-[clamp(1.25rem,3.2vw,2rem)]
+          text-[clamp(1.35rem,6vw,2rem)] sm:text-[clamp(1.25rem,3.2vw,2rem)]
           leading-tight
         "
         style={{ textShadow: "2px 2px 4px rgba(0,0,0,0.8)" }}
@@ -1246,19 +1244,18 @@ export default function Home() {
         {effectiveUser?.userType === "business" ? (
           <>
             Connect Your <span className="text-orange-400">Business</span>{" "}
-            with <span className="text-blue-500">Travelers</span> &{" "}
-            <span className="text-blue-500">Locals</span>
+            with <span className="hero-blue">Travelers</span> &{" "}
+            <span className="hero-blue">Locals</span>
           </>
         ) : (
           <>
             Connect with <span className="text-orange-400">Like-Minded</span>{" "}
-            <span className="text-blue-500">Travelers</span> &{" "}
-            <span className="text-blue-500">Locals</span>
+            <span className="hero-blue">Travelers</span> &{" "}
+            <span className="hero-blue">Locals</span>
           </>
         )}
       </h1>
 
-      {/* Subhead */}
       <p
         className="
           mt-3 sm:mt-2 mx-auto max-w-prose
@@ -1273,7 +1270,6 @@ export default function Home() {
           : "Discover amazing experiences & make meaningful connections based on demographics, activities, interests, and events."}
       </p>
 
-      {/* Business CTAs (no blue borders) */}
       {effectiveUser?.userType === "business" && (
         <div className="mt-3 sm:mt-4 flex flex-col sm:flex-row gap-2 justify-center px-4 sm:px-0">
           <Button
