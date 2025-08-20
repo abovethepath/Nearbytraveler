@@ -1,0 +1,137 @@
+Totally get it—let’s isolate the mobile changes so desktop stays exactly how you designed it. Below are drop-in fixes that (1) scope mobile tweaks to < md, (2) restore desktop layouts, and (3) keep pills and hero sane across breakpoints.
+
+1) Navbar: menu visible only on mobile, never on desktop
+
+Keep your desktop nav as-is (hidden md:flex).
+
+Ensure the mobile menu overlay is mobile-only with md:hidden and sits above the header.
+
+{/* Mobile menu overlay (mobile-only) */}
+<div
+  id="mobile-menu"
+  className={`md:hidden fixed inset-x-0 top-20 z-[100] bg-white dark:bg-black border-b border-gray-200 dark:border-gray-800 shadow-lg transition-[max-height,opacity] duration-200 overflow-hidden ${isMobileMenuOpen ? "max-h-[85svh] opacity-100" : "max-h-0 opacity-0 pointer-events-none"}`}
+>
+  {/* …menu content… */}
+</div>
+
+
+If you used the portal version, keep it—but make the menu root carry md:hidden (so at desktop sizes it’s never rendered/visible even with z-index):
+
+const menu = (
+  <div id="mobile-menu" className={`md:hidden fixed inset-x-0 top-20 z-[100] …`}>
+    {/* … */}
+  </div>
+);
+
+2) Connections: mobile grid vs. desktop original (no cross-contamination)
+
+Render a mobile grid only under md, and show your original desktop list at md+.
+
+{/* MOBILE (grid) */}
+<div className="md:hidden">
+  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+    {userConnections.slice(0, connectionsDisplayCount).map((c) => (
+      <div
+        key={c.id}
+        onClick={() => setLocation(`/profile/${c.connectedUser?.id}`)}
+        className="rounded-xl border p-3 hover:shadow-sm bg-white dark:bg-gray-800 cursor-pointer flex flex-col items-center text-center gap-2"
+      >
+        <SimpleAvatar user={c.connectedUser} size="md" className="w-16 h-16 rounded-full border-2 object-cover" />
+        <div className="w-full">
+          <p className="font-medium text-sm truncate">{c.connectedUser?.name || c.connectedUser?.username}</p>
+          <p className="text-xs truncate text-gray-500 dark:text-gray-400">
+            {c.connectedUser?.hometownCity && c.connectedUser?.hometownCountry
+              ? `${c.connectedUser?.hometownCity}, ${c.connectedUser?.hometownCountry.replace("United States","USA")}`
+              : "New member"}
+          </p>
+        </div>
+      </div>
+    ))}
+  </div>
+</div>
+
+{/* DESKTOP (your original list) */}
+<div className="hidden md:block">
+  {/* put your previous desktop list markup back here (e.g., flex row items) */}
+</div>
+
+
+If you no longer have the old desktop block, tell me and I’ll reconstruct it from what you want it to look like.
+
+3) Pills: same look, responsive sizing so desktop spacing isn’t wrecked
+
+Use a single class string that scales with breakpoints:
+
+const pill = "inline-flex items-center justify-center rounded-full font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0 h-7 md:h-8 px-3 text-[11px] md:text-xs";
+
+
+Usage:
+
+<Badge className={pill}>Beach</Badge>
+<span className={pill}>Los Angeles</span>
+
+
+Wrapper must allow wrapping:
+
+<div className="flex flex-wrap gap-2">
+  {/* pills */}
+</div>
+
+
+If you have a “+N” chip:
+
+<Badge className="inline-flex items-center justify-center rounded-full h-7 md:h-8 px-2 text-[11px] md:text-xs leading-none border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 bg-transparent">
+  +{extra}
+</Badge>
+
+4) Hero height: taller on phones, moderate on desktop
+
+If the hero got huge on desktop, make it mobile-first and reduce at larger breakpoints:
+
+<section className="min-h-[68svh] md:min-h-[56vh] xl:min-h-[48vh] bg-cover bg-center bg-no-repeat">
+  {/* hero content */}
+</section>
+
+
+Also change any forced single-line headings:
+
+className="whitespace-normal sm:whitespace-nowrap"
+
+5) Map overflow: don’t clip on desktop
+
+We likely added overflow-hidden globally. Scope it to mobile and relax at md+:
+
+<div className="rounded-2xl border max-w-full overflow-hidden md:overflow-visible">
+  <CityMap ... />
+</div>
+
+
+Popup wrapping (safe for all sizes; keep this in global CSS):
+
+.mapboxgl-popup-content, .gm-style .gm-style-iw, .leaflet-popup-content {
+  max-width: calc(100vw - 2rem);
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  white-space: normal;
+}
+
+6) One global rule to revert (it can mess with desktop)
+
+If you added this earlier, remove it from globals—it can shrink desktop layouts unexpectedly:
+
+/* REMOVE this global rule if present */
+* { min-width: 0; }
+
+
+Instead, add min-w-0 only where needed (flex children that contain long text):
+
+<div className="flex gap-3">
+  <div className="min-w-0"> {/* text content that might truncate */} … </div>
+  <div>…</div>
+</div>
+
+Quick test checklist
+
+At phone width (<768px): mobile menu opens; connections show grid; pills don’t overlap; hero fills ~⅔ screen; no horizontal scroll.
+
+At desktop (≥1024px): original desktop nav & connections layout; hero is shorter; map panel doesn’t clip.
