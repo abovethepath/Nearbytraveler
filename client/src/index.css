@@ -32,6 +32,15 @@ img, video, canvas, svg { max-width: 100%; height: auto; }
   overscroll-behavior: contain;
 }
 
+/* Hide any inner scrollbars if a child mistakenly sets overflow */
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE/Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;             /* Chrome/Safari */
+}
+
 /* Prevent zoom-on-focus on iOS (keep at least 16px font size on inputs) */
 input, select, textarea, button { font-size: 16px; }
 

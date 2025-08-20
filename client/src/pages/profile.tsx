@@ -3308,29 +3308,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       <MobileBottomNav />
       
       <div className="min-h-screen profile-page">
-      {shouldShowBackToChatroom && (
-        <div className="w-full max-w-full mx-auto px-2 pt-2">
-          <Button 
-            onClick={handleBackToChatroom}
-            variant="outline" 
-            className="mb-2"
-          >
-            Back
-          </Button>
-        </div>
-      )}
-
-      {/* Spacer not needed (header is sticky already) */}
-      <div className="h-0 md:hidden"></div>
-
-      {/* Mobile Back Button */}
-      <div className="block md:hidden px-4 pb-2">
-        <UniversalBackButton 
-          destination="/discover"
-          label="Back"
-          className="shadow-sm"
-        />
-      </div>
 
       {/* Profile Completion Warning - Only show for incomplete own profiles */}
       {isProfileIncomplete() && (
@@ -3379,14 +3356,16 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           {/* allow wrapping so CTAs drop below on small screens */}
           <div className="flex flex-row flex-wrap items-start gap-4 sm:gap-6">
 
-            {/* Avatar + camera */}
+            {/* Avatar + camera (bigger, no scrollbars) */}
             <div className="relative flex-shrink-0">
-              <div className="w-32 h-32 sm:w-36 sm:h-36 md:w-48 md:h-48 rounded-full bg-white ring-4 ring-white shadow-lg overflow-hidden">
-                <SimpleAvatar
-                  user={user}
-                  size="xl"
-                  className="w-full h-full object-cover border-0 shadow-none"
-                />
+              <div className="rounded-full bg-white ring-4 ring-white shadow-lg overflow-hidden">
+                <div className="w-36 h-36 sm:w-40 sm:h-40 md:w-56 md:h-56 rounded-full overflow-hidden no-scrollbar">
+                  <SimpleAvatar
+                    user={user}
+                    size="xl"
+                    className="w-full h-full block object-cover"
+                  />
+                </div>
               </div>
 
               {isOwnProfile && (
@@ -3402,7 +3381,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   >
                     <Camera className="h-4 w-4 sm:h-5 sm:w-5" />
                   </Button>
-                  <input id="avatar-upload-input" type="file" accept="image/*" onChange={handleAvatarUpload} className="hidden" />
+                  <input
+                    id="avatar-upload-input"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleAvatarUpload}
+                    className="hidden"
+                  />
                 </>
               )}
             </div>
