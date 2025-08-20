@@ -22,7 +22,7 @@ import { Check, ChevronsUpDown } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { MapPin, Camera, Globe, Users, Calendar, Star, Settings, ArrowLeft, Upload, Edit, Edit2, Heart, MessageSquare, X, Plus, Eye, EyeOff, MessageCircle, ImageIcon, Minus, RotateCcw, Sparkles, Package, Trash2, Home, FileText, TrendingUp, MessageCircleMore, Share2, ChevronDown, Search, Zap, History, Clock, Wifi, Shield } from "lucide-react";
+import { MapPin, Camera, Globe, Users, Calendar, Star, Settings, ArrowLeft, Upload, Edit, Edit2, Heart, MessageSquare, X, Plus, Eye, EyeOff, MessageCircle, ImageIcon, Minus, RotateCcw, Sparkles, Package, Trash2, Home, FileText, TrendingUp, MessageCircleMore, Share2, ChevronDown, Search, Zap, History, Clock, Wifi, Shield, ChevronRight } from "lucide-react";
 import { compressPhotoAdaptive } from "@/utils/photoCompression";
 import { AdaptiveCompressionIndicator } from "@/components/adaptive-compression-indicator";
 import { UniversalBackButton } from "@/components/UniversalBackButton";
@@ -530,6 +530,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const [selectedTravelPlan, setSelectedTravelPlan] = useState<TravelPlan | null>(null);
   const [showTravelPlanDetails, setShowTravelPlanDetails] = useState(false);
   const [showDestinationSuggestions, setShowDestinationSuggestions] = useState(false);
+  const [showChatroomList, setShowChatroomList] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
   const [showKeywordSearch, setShowKeywordSearch] = useState(false);
@@ -1157,6 +1158,18 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         hometownCity: user.hometownCity,
         hometownState: user.hometownState,
         hometownCountry: user.hometownCountry
+      });
+      
+      // Initialize temp values for editing
+      setTempInterests(user.interests || []);
+      setTempActivities(user.activities || []);
+      setTempEvents(user.events || []);
+      
+      // Initialize editFormData with current user preferences
+      setEditFormData({
+        interests: user.interests || [],
+        activities: user.activities || [],
+        events: user.events || []
       });
       
       // Reset form with user type-specific data
@@ -2888,7 +2901,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <>
+      <div className="min-h-screen profile-page">
       {shouldShowBackToChatroom && (
         <div className="w-full max-w-full mx-auto px-2 pt-2">
           <Button 
@@ -2900,206 +2914,131 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           </Button>
         </div>
       )}
-    
-      {/* COMPLETELY REBUILT HERO SECTION - WORKING COVER PHOTO */}
-      <div className="relative w-full h-48 md:h-64 overflow-hidden">
-        {/* Background Layer */}
-        <div 
-          key={`cover-photo-${coverPhotoKey}`}
-          className="absolute inset-0 w-full h-full bg-cover bg-center bg-no-repeat"
-          style={{
-            backgroundImage: user.coverPhoto 
-              ? `url("${user.coverPhoto}?v=${coverPhotoKey}")`
-              : 'linear-gradient(to right, #3b82f6, #8b5cf6, #f97316)'
-          }}
+
+      {/* Mobile spacing to account for global MobileTopNav */}
+      <div className="h-4 md:hidden"></div>
+
+      {/* Mobile Back Button */}
+      <div className="block md:hidden px-4 pb-2">
+        <UniversalBackButton 
+          destination="/discover"
+          label="Back"
+          className="shadow-sm"
         />
-
-        {/* Dark overlay */}
-        <div className="absolute inset-0 bg-black/20 z-10"></div>
-        
-        {/* Upload Controls */}
-        {isOwnProfile && (
-          <div className="absolute top-4 right-4 z-20">
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleCoverPhotoUpload}
-              className="hidden"
-              id="cover-photo-upload"
-            />
-            <label 
-              htmlFor="cover-photo-upload" 
-              className="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-black/60 hover:bg-black/80 rounded-md cursor-pointer transition-colors"
-            >
-              <Camera className="w-4 h-4 mr-2" />
-              {user.coverPhoto ? 'Change Cover' : 'Add Cover'}
-            </label>
-          </div>
-        )}
-        
-        {/* Loading state */}
-        {uploadingPhoto && (
-          <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-30">
-            <div className="bg-white rounded-lg p-4 text-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-2"></div>
-              <p className="text-sm font-medium">Uploading...</p>
-            </div>
-          </div>
-        )}
       </div>
-
-      {/* Profile Header */}
-      <div className="w-full max-w-full mx-auto px-4">
-        <div className="relative -mt-16 mb-6">
-          <div className="flex flex-col md:flex-row items-start gap-4 pt-4">
-              {/* Profile Avatar */}
-              <div className="relative z-20">
-                <Avatar className="w-32 h-32 md:w-40 md:h-40 border-4 border-white shadow-xl rounded-lg bg-white">
-                  <AvatarImage src={user.profileImage || photos[0]?.imageUrl} className="rounded-lg object-cover" />
-                  <AvatarFallback className="text-4xl bg-gradient-to-br from-blue-500 to-orange-500 text-white rounded-lg">
-                    {(user?.username?.charAt(0) || user?.name?.charAt(0) || 'U').toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-                {isOwnProfile && (
-                  <>
-                    {/* Avatar Upload Button */}
-                    <Button 
-                      size="sm" 
-                      className="absolute -bottom-2 -right-2 bg-blue-500 hover:bg-blue-600 text-white border-none shadow-lg"
-                      onClick={() => setShowPhotoUpload(true)}
-                      disabled={uploadingPhoto}
-                    >
-                      <Camera className="w-4 h-4 mr-1" />
-                      {uploadingPhoto ? 'Uploading...' : 'Add Photo'}
-                    </Button>
-                    {/* Hidden file input for direct avatar upload */}
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleAvatarUpload}
-                      className="hidden"
-                      id="avatar-upload-input"
-                    />
-                  </>
-                )}
-              </div>
-
-              {/* Profile Info */}
-              <div className="flex-1 space-y-2 md:space-y-3 z-20">
-                <div>
-                  <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
-                    @{user.username}
-                  </h1>
-                  {user.userType === 'business' && user.businessName && (
-                    <div className="text-lg sm:text-xl font-semibold text-gray-700 dark:text-gray-300 mb-1">
-                      {user.businessName}
-                    </div>
+    
+      {/* EXPANDED GRADIENT HEADER - MOBILE OPTIMIZED WITH RIGHT-ALIGNED PHOTO */}
+      <div className={`w-full bg-gradient-to-r ${gradientOptions[selectedGradient]} p-4 sm:p-6`}>
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-row items-start gap-4 sm:gap-6">
+            {/* Profile Avatar - Left Side */}
+            <div className="relative flex-shrink-0">
+              <Avatar className="w-20 h-20 sm:w-32 sm:h-32 md:w-40 md:h-40 border-4 border-white shadow-lg bg-white">
+                <AvatarImage src={user?.profileImage || ''} className="object-cover" />
+                <AvatarFallback className="text-lg sm:text-2xl md:text-4xl bg-gradient-to-br from-blue-600 to-orange-600 text-white">
+                  {(user?.username?.charAt(0) || user?.name?.charAt(0) || 'U').toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              {isOwnProfile && (
+                <>
+                  <Button 
+                    size="sm" 
+                    className="absolute -bottom-2 -right-2 bg-blue-600 hover:bg-blue-700 text-white border-none shadow-lg w-8 h-8 sm:w-10 sm:h-10 p-0"
+                    onClick={() => document.getElementById('avatar-upload-input')?.click()}
+                    disabled={uploadingPhoto}
+                  >
+                    <Camera className="w-3 h-3 sm:w-4 sm:h-4" />
+                  </Button>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleAvatarUpload}
+                    className="hidden"
+                    id="avatar-upload-input"
+                  />
+                </>
               )}
-              
-              {/* Clean 2-line layout - Mobile Responsive */}
-              <div className="space-y-1 text-black text-xs sm:text-sm">
-                {/* Line 1: Travel/Local status */}
-                <div className="flex items-center gap-3">
-                  <MapPin className="w-5 h-5 flex-shrink-0" />
-                  <div className="flex flex-col">
-                    <span className="text-sm font-medium">
-                      {user.userType === 'business' 
-                        ? `🏢 Nearby Business in ${user.hometownCity || 'Los Angeles'}`
-                        : (() => {
-                            // Check for active travel plans first - prioritize trip that started first
-                            if (travelPlans && travelPlans.length > 0) {
-                              const today = new Date();
-                              today.setHours(0, 0, 0, 0); // Set to start of day for accurate comparison
-                              
-                              let activeTrips = [];
-                              
-                              for (const plan of travelPlans) {
-                                if (plan.startDate && plan.endDate) {
-                                  // FIXED: Manual date parsing to prevent timezone conversion
-                                  const parseLocalDate = (dateInput: string | Date | null | undefined) => {
-                                    if (!dateInput) return null;
-                                    let dateString: string;
-                                    if (dateInput instanceof Date) {
-                                      dateString = dateInput.toISOString();
-                                    } else {
-                                      dateString = dateInput;
-                                    }
-                                    const parts = dateString.split('T')[0].split('-');
-                                    if (parts.length === 3) {
-                                      const year = parseInt(parts[0]);
-                                      const month = parseInt(parts[1]) - 1;
-                                      const day = parseInt(parts[2]);
-                                      return new Date(year, month, day);
-                                    }
-                                    return null;
-                                  };
-                                  
-                                  const startDate = parseLocalDate(plan.startDate);
-                                  const endDate = parseLocalDate(plan.endDate);
-                                  if (!startDate || !endDate) continue;
-                                  startDate.setHours(0, 0, 0, 0);
-                                  endDate.setHours(23, 59, 59, 999);
-                                  
-                                  const isCurrentlyActive = today >= startDate && today <= endDate;
-                                  if (isCurrentlyActive && plan.destination) {
-                                    activeTrips.push({
-                                      plan,
-                                      startDate
-                                    });
+            </div>
+
+            {/* Profile Info - Right Side */}
+            <div className="flex-1 min-w-0">
+              {isOwnProfile && (
+                <div className="mb-3">
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="bg-white/90 hover:bg-white text-gray-800 hover:text-gray-900 border border-white text-xs sm:text-sm px-3 py-1 font-medium shadow-sm"
+                    onClick={() => setSelectedGradient((prev) => (prev + 1) % gradientOptions.length)}
+                  >
+                    🎨 Change Color
+                  </Button>
+                </div>
+              )}
+
+              {/* EXACTLY 3 LINES as requested - moved down */}
+              <div className="space-y-1 text-black w-full mt-2">
+                {/* Line 1: Username */}
+                <h1 className="text-xl sm:text-3xl font-bold text-black">@{user.username}</h1>
+                
+                {/* Line 2: Location/Status with pin icon - Allow full width */}
+                <div className="flex items-center gap-2 w-full">
+                  <MapPin className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+                  <span className="text-sm sm:text-base font-medium flex-1">
+                    {user.userType === 'business' 
+                      ? `Nearby Business in ${user.hometownCity || 'Los Angeles'}`
+                      : (() => {
+                          // Check for active travel plans first
+                          if (travelPlans && travelPlans.length > 0) {
+                            const today = new Date();
+                            today.setHours(0, 0, 0, 0);
+                            
+                            let activeTrips = [];
+                            
+                            for (const plan of travelPlans) {
+                              if (plan.startDate && plan.endDate) {
+                                const parseLocalDate = (dateInput: string | Date | null | undefined) => {
+                                  if (!dateInput) return null;
+                                  let dateString: string;
+                                  if (dateInput instanceof Date) {
+                                    dateString = dateInput.toISOString();
+                                  } else {
+                                    dateString = dateInput;
                                   }
+                                  const parts = dateString.split('T')[0].split('-');
+                                  if (parts.length === 3) {
+                                    const year = parseInt(parts[0]);
+                                    const month = parseInt(parts[1]) - 1;
+                                    const day = parseInt(parts[2]);
+                                    return new Date(year, month, day);
+                                  }
+                                  return null;
+                                };
+                                
+                                const startDate = parseLocalDate(plan.startDate);
+                                const endDate = parseLocalDate(plan.endDate);
+                                if (!startDate || !endDate) continue;
+                                startDate.setHours(0, 0, 0, 0);
+                                endDate.setHours(23, 59, 59, 999);
+                                
+                                const isCurrentlyActive = today >= startDate && today <= endDate;
+                                if (isCurrentlyActive && plan.destination) {
+                                  activeTrips.push({
+                                    plan,
+                                    startDate
+                                  });
                                 }
                               }
-                              
-                              // If multiple active trips, prioritize the one that started first
-                              if (activeTrips.length > 0) {
-                                activeTrips.sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
-                                const currentTrip = activeTrips[0].plan;
-                                // Show full destination with state/country for better clarity
-                                const destination = currentTrip.destination || 'Unknown';
-                                return `✈️ Nearby Traveler in ${destination}`;
-                              }
                             }
                             
-                            // Show "Nearby Local" when at home - use actual hometown city
-                            const hometownCity = user.hometownCity;
-                            const hometownState = user.hometownState;
-                            const hometownCountry = user.hometownCountry;
-                            
-                            if (hometownCity) {
-                              if (hometownCountry && hometownCountry !== 'United States' && hometownCountry !== 'USA') {
-                                return `Nearby Local in ${hometownCity}, ${hometownCountry}`;
-                              } else if (hometownState && (hometownCountry === 'United States' || hometownCountry === 'USA')) {
-                                return `Nearby Local in ${hometownCity}, ${hometownState}`;
-                              } else {
-                                return `Nearby Local in ${hometownCity}`;
-                              }
-                            } else if (user.location) {
-                              return `Nearby Local in ${user.location}`;
+                            if (activeTrips.length > 0) {
+                              activeTrips.sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
+                              const currentTrip = activeTrips[0].plan;
+                              const destination = currentTrip.destination || 'Unknown';
+                              return `Nearby Traveler in ${destination}`;
                             }
-                            return "Nearby Local";
-                          })()
-                      }
-                    </span>
-
-                  </div>
-                </div>
-
-                {/* Line 2: Stats and availability */}
-                {user.userType !== 'business' && (
-                  <div className="ml-8">
-                    <div className="flex items-center gap-3">
-                      <div className="flex items-center gap-2">
-                        <Globe className="w-5 h-5 text-black" />
-                        <span className="text-sm font-medium">{countriesVisited?.length || 0} countries</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Star className="w-5 h-5 text-black" />
-                        <span className="text-sm font-medium">{references?.length || 0} references</span>
-                      </div>
-                      <span className="text-sm font-medium flex items-center gap-2">
-                        <Users className="w-5 h-5" />
-{(() => {
-                          // ALWAYS show "Nearby Local in hometown" on line 2 - NEVER CHANGE THIS
+                          }
+                          
+                          // Show "Nearby Local" when at home
                           const hometownCity = user.hometownCity;
                           const hometownState = user.hometownState;
                           const hometownCountry = user.hometownCountry;
@@ -3116,10 +3055,19 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             return `Nearby Local in ${user.location}`;
                           }
                           return "Nearby Local";
-                        })()}
-                      </span>
-                    </div>
+                        })()
+                    }
+                  </span>
+                </div>
 
+                {/* Line 3: All stats on ONE line - flexible width */}
+                {user.userType !== 'business' && (
+                  <div className="flex items-center flex-wrap gap-2 text-xs sm:text-sm w-full">
+                    <span className="font-medium">🌍 {countriesVisited?.length || 0} countries</span>
+                    <span className="font-medium">⭐ {references?.length || 0} references</span>
+                    <span className="font-medium">
+                      • Nearby Local in {user.hometownCity || 'Playa del Rey'}
+                    </span>
                   </div>
                 )}
               </div>
@@ -3146,26 +3094,24 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             ) : (
               <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto mt-4 sm:mt-0">
                 <Button
-                  className="bg-blue-600 hover:bg-blue-700 text-white border-0 w-full sm:w-auto"
-                  onClick={() => setIsEditMode(true)}
-                >
-                  <Edit className="w-4 h-4 mr-2" />
-                  Edit Profile
-                </Button>
-                <Button
-                  className="bg-purple-600 hover:bg-purple-700 text-white border-0 w-full sm:w-auto"
-                  onClick={() => setLocation('/upload-photos')}
-                >
-                  <Camera className="w-4 h-4 mr-2" />
-                  Add Photos
-                </Button>
-                <Button
                   className="bg-orange-600 hover:bg-orange-700 text-white border-0 w-full sm:w-auto"
                   onClick={() => setLocation(`/?filters=open&return=${encodeURIComponent(window.location.pathname)}`)}
                 >
                   <Search className="w-4 h-4 mr-2" />
                   Advanced Search
                 </Button>
+                {user && (user.hometownCity || user.location) && (
+                  <Button
+                    onClick={() => {
+                      const chatCity = user.hometownCity || user.location?.split(',')[0] || 'General';
+                      setLocation(`/city-chatrooms?city=${encodeURIComponent(chatCity)}`);
+                    }}
+                    className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white border-0 shadow-lg w-full sm:w-auto"
+                  >
+                    <MessageCircleMore className="w-4 h-4 mr-2" />
+                    Go to Chatrooms
+                  </Button>
+                )}
               </div>
             )}
           </div>
@@ -3220,7 +3166,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
             
             {/* About Section */}
-            <Card>
+            <Card className="mt-6">
               <CardHeader>
                 <CardTitle>About {user?.userType === 'business' ? (user?.businessName || user?.name || user?.username) : (user?.username || 'User')}</CardTitle>
               </CardHeader>
@@ -3295,6 +3241,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     </p>
                   </div>
                 )}
+
+
 
                 {/* CRITICAL: What You Have in Common - MOVED TO TOP FOR VISIBILITY */}
                 {!isOwnProfile && currentUser && user?.id && (
@@ -3857,10 +3805,15 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               setEditingInterests(false);
                               setEditingActivities(false);
                               setEditingEvents(false);
-                              // Reset temp values
+                              // Reset temp values AND editFormData to original user data
                               setTempInterests(user?.interests || []);
                               setTempActivities(user?.activities || []);
                               setTempEvents(user?.events || []);
+                              setEditFormData({
+                                interests: user?.interests || [],
+                                activities: user?.activities || [],
+                                events: user?.events || []
+                              });
                             }}
                             className="border-orange-500 text-orange-600 hover:bg-orange-50 dark:border-orange-400 dark:text-orange-400 dark:hover:bg-orange-900/20 flex-1"
                           >
@@ -4819,8 +4772,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           <div className="lg:col-span-1 space-y-2">
             {/* Quick Meetup Widget - Only show for own profile */}
             {isOwnProfile && user?.userType !== 'business' && (
-              <div className="mt-4">
-                <QuickMeetupWidget city={user?.hometownCity ?? ''} />
+              <div className="mt-6">
+                <QuickMeetupWidget city={user?.hometownCity ?? ''} profileUserId={user?.id} />
               </div>
             )}
 
@@ -4853,9 +4806,15 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     <span className="text-gray-600 dark:text-gray-300">Cumulative Trips Taken</span>
                     <span className="font-semibold dark:text-white">{travelPlans.filter(plan => plan.status === 'completed').length}</span>
                   </div>
-                  <div className="flex items-center justify-between">
+                  <div 
+                    className="flex items-center justify-between cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg p-2 -m-2 transition-colors"
+                    onClick={() => setShowChatroomList(true)}
+                  >
                     <span className="text-gray-600 dark:text-gray-300">City Chatrooms</span>
-                    <span className="font-semibold dark:text-white">{userChatrooms.length}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold dark:text-white">{userChatrooms.length}</span>
+                      <ChevronRight className="w-4 h-4 text-gray-400" />
+                    </div>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-gray-600 dark:text-gray-300 flex items-center gap-2">
@@ -6191,7 +6150,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       <FormControl>
                         <Textarea 
                           {...field} 
-                          placeholder="Secret activities you'd share with Nearby Travelers and friends..."
+                          placeholder="Fill this out for others to see secret activities, hidden gems, local spots, or insider tips that only locals know about. Example: There's a hidden waterfall behind the old mill that locals love, or try the secret menu at Joe's Diner..."
                           className="min-h-[80px] resize-none"
                           maxLength={500}
                         />
@@ -7164,7 +7123,70 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         </DialogContent>
       </Dialog>
       
-    </div>
+      {/* Chatroom List Modal */}
+      <Dialog open={showChatroomList} onOpenChange={setShowChatroomList}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Users className="w-5 h-5" />
+              {isOwnProfile ? 'Your City Chatrooms' : `${user?.username}'s City Chatrooms`}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            {userChatrooms.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                <Users className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+                <p>No city chatrooms yet</p>
+                {isOwnProfile && (
+                  <p className="text-sm mt-2">Join some city chatrooms to connect with locals and travelers!</p>
+                )}
+              </div>
+            ) : (
+              userChatrooms.map((chatroom: any) => (
+                <div 
+                  key={chatroom.id}
+                  className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+                  onClick={() => {
+                    setShowChatroomList(false);
+                    setLocation(`/simple-chatroom/${chatroom.id}`);
+                  }}
+                >
+                  <div className="flex-1 min-w-0">
+                    <div className="font-medium text-gray-800 dark:text-gray-200 truncate">
+                      {chatroom.name}
+                    </div>
+                    <div className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-2">
+                      📍 {chatroom.city}
+                      {chatroom.role === 'admin' && (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                          Admin
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="text-sm text-gray-500 dark:text-gray-400 ml-4">
+                    {chatroom.member_count} members
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+          {userChatrooms.length > 0 && (
+            <div className="text-center pt-4">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setShowChatroomList(false);
+                  setLocation('/city-chatrooms');
+                }}
+              >
+                View All City Chatrooms
+              </Button>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
 
