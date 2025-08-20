@@ -1,3 +1,11 @@
+Got you. Two issues here:
+
+the scrollbar: you’re rendering the dropdown inside a fixed 64px-tall nav, so the dropdown overflows that box and the nav itself becomes scrollable.
+
+the hamburger: the dropdown is in the same fixed container / stacking context, so taps can be flaky and the layout fights you.
+
+Fix: move the dropdown outside the nav wrapper and make it fixed starting at top-16, lock body scroll while it’s open, and ditch width: 100vw (which can cause overflow on mobile). Here’s a drop-in rewrite:
+
 import React, { useState, useEffect } from "react";
 import { Bell, Menu, X } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -193,3 +201,18 @@ export function MobileTopNav() {
     </>
   );
 }
+
+
+What changed (and why):
+
+Dropdown is now a sibling fixed top-16 element (not a child of the 64px bar) → no more scrollbar inside the nav.
+
+Removed inline style={{ width: '100vw' }} → 100vw often triggers phantom horizontal scrollbars on mobile; w-full fixes it.
+
+Added a backdrop overlay that closes the menu on tap and prevents interacting with the page behind.
+
+Body scroll lock while the menu is open.
+
+Kept z-index ordering so the hamburger stays tappable (nav z-[1000], dropdown 999, overlay 998). They don’t overlap because the dropdown starts at top-16.
+
+If the hamburger still doesn’t toggle after this, it’s almost always a stacking/z-index conflict from another fixed header/footer. In that case, tell me what else is fixed on the page (or share a screenshot) and I’ll align the z-indices.
