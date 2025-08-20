@@ -139,9 +139,9 @@ export default function EventCard({ event, compact = false, featured = false }: 
 
   return (
     <>
-      <div className="rounded-2xl bg-white dark:bg-gray-800 shadow-sm overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer"
-           onClick={() => setLocation(`/events/${event.id}`)}>
-        {/* Image + category - Mobile-first approach */}
+      <article className="rounded-2xl bg-white dark:bg-gray-800 shadow-sm overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer text-left"
+               onClick={() => setLocation(`/events/${event.id}`)}>
+        {/* Image */}
         {event.imageUrl && (
           <div className="relative">
             <img
@@ -150,40 +150,67 @@ export default function EventCard({ event, compact = false, featured = false }: 
               className="w-full aspect-[16/9] object-cover"
               loading="lazy"
             />
-            {/* Featured badge: hidden on mobile, overlay on md+ */}
-            <div className="hidden md:block">
+
+            {/* md+ overlay chips with scrim */}
+            <div className="hidden md:block absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/60 to-transparent" />
+            <div className="hidden md:flex absolute bottom-3 left-3 right-3 z-10 gap-2 flex-wrap">
               {featured && (
-                <span className="md:absolute md:top-3 md:left-3 inline-block rounded-full px-3 py-1 text-xs font-semibold bg-travel-blue text-white">
+                <span className="rounded-full px-3 py-1 text-xs font-semibold bg-travel-blue/90 text-white">
                   Featured
+                </span>
+              )}
+              {event.category && (
+                <span className="rounded-full px-3 py-1 text-xs font-semibold bg-gray-900/80 text-white">
+                  {event.category}
+                </span>
+              )}
+              {event.isSpontaneous && (
+                <span className="rounded-full px-3 py-1 text-xs font-semibold bg-orange-500/90 text-white">
+                  ⚡ Last Minute
                 </span>
               )}
             </div>
           </div>
         )}
 
-        {/* Content */}
-        <div className="p-4 md:p-5 text-left">
-          {/* Mobile featured badge (not overlay) */}
-          <div className="md:hidden mb-2">
-            {featured && (
-              <span className="inline-block rounded-full px-3 py-1 text-xs font-semibold bg-travel-blue text-white">
-                Featured
-              </span>
-            )}
-          </div>
+        {/* MOBILE chips (not overlay) */}
+        <div className="md:hidden px-4 pt-3 flex flex-wrap gap-2">
+          {featured && (
+            <span className="rounded-full px-3 py-1 text-xs font-semibold bg-travel-blue text-white">
+              Featured
+            </span>
+          )}
+          {event.category && (
+            <span className="rounded-full px-3 py-1 text-xs font-semibold bg-gray-700 dark:bg-gray-600 text-white">
+              {event.category}
+            </span>
+          )}
+          {event.isSpontaneous && (
+            <span className="rounded-full px-3 py-1 text-xs font-semibold bg-orange-500 text-white">
+              ⚡ Last Minute
+            </span>
+          )}
+          {event.isRecurring && (
+            <span className="rounded-full px-3 py-1 text-xs font-semibold bg-purple-500 text-white">
+              🔄 Recurring
+            </span>
+          )}
+        </div>
 
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white leading-snug line-clamp-2 mb-2">
+        {/* Content */}
+        <div className="p-4 md:p-5">
+          <h3 className="text-white dark:text-white text-lg font-semibold leading-snug line-clamp-2 text-gray-900 dark:text-white">
             {event.title}
           </h3>
 
           {event.description && (
-            <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed line-clamp-3 mb-3">
+            <p className="mt-1 text-sm text-gray-600 dark:text-gray-300 leading-relaxed break-words line-clamp-3">
               {event.description}
             </p>
           )}
 
-          {/* Meta row(s) — wrap on small screens to avoid overlap */}
-          <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center mb-3">
+          {/* Meta — wraps on small screens */}
+          <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
             <div className="min-w-0 flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
               <Calendar className="h-4 w-4 shrink-0 text-travel-blue" />
               <span className="truncate">{formatEventDate(event.date)}</span>
@@ -194,29 +221,15 @@ export default function EventCard({ event, compact = false, featured = false }: 
             </div>
             <div className="min-w-0 flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
               <Users className="h-4 w-4 shrink-0" />
-              <span className="truncate">
-                {(event as any).participantCount ?? 0} attending
-              </span>
+              <span className="truncate">{(event as any).participantCount ?? 0} attending</span>
             </div>
           </div>
 
-          {/* Event detail tags */}
-          <div className="flex flex-wrap gap-2 mb-4">
+          {/* Additional tags (mobile-friendly, no overlay) */}
+          <div className="mt-3 flex flex-wrap gap-2">
             {event.costEstimate && (
               <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
                 💰 {event.costEstimate}
-              </span>
-            )}
-            
-            {event.isSpontaneous && (
-              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">
-                ⚡ Last Minute
-              </span>
-            )}
-            
-            {event.isRecurring && (
-              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
-                🔄 Recurring
               </span>
             )}
             
@@ -232,7 +245,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
               </span>
             )}
 
-            {/* Show specific event tags (not category) - filter out redundant tags */}
+            {/* Show specific event tags - filter out redundant tags */}
             {event.tags && event.tags.length > 0 && event.tags
               .filter((tag: string) => {
                 if (!tag || typeof tag !== 'string') return false;
@@ -245,7 +258,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
                 if (!tagLower) return false;
                 
                 // Remove exact matches or substring matches with category keywords
-                const categoryWords = categoryLower.split(/[,&\s]+/).filter(word => word.length > 2);
+                const categoryWords = categoryLower.split(/[,&\s]+/).filter((word: string) => word.length > 2);
                 const tagWords = tagLower.split(/[\s]+/);
                 
                 // Check if any tag word matches any category word
@@ -271,39 +284,37 @@ export default function EventCard({ event, compact = false, featured = false }: 
           </div>
 
           {/* Actions */}
-          <div className="flex gap-2 sm:items-center sm:justify-between">
-            <div className="flex gap-2 flex-1 sm:flex-none">
-              <Button 
-                size="sm" 
-                variant="outline"
-                className="flex-1 sm:flex-none"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setLocation(`/event-chat/${event.id}`);
-                }}
-              >
-                Chat
-              </Button>
-              <Button 
-                size="sm" 
-                className="flex-1 sm:flex-none text-white border-0"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleJoinEvent();
-                }}
-                disabled={joinEventMutation.isPending}
-                style={{ 
-                  background: 'linear-gradient(to right, #3b82f6, #ea580c)',
-                  border: 'none',
-                  color: 'white'
-                }}
-              >
-                {joinEventMutation.isPending ? "Joining..." : "Join"}
-              </Button>
-            </div>
+          <div className="mt-4 flex gap-2">
+            <Button 
+              size="sm" 
+              variant="outline"
+              className="flex-1 sm:flex-none"
+              onClick={(e) => {
+                e.stopPropagation();
+                setLocation(`/event-chat/${event.id}`);
+              }}
+            >
+              Chat
+            </Button>
+            <Button 
+              size="sm" 
+              className="flex-1 sm:flex-none text-white border-0"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleJoinEvent();
+              }}
+              disabled={joinEventMutation.isPending}
+              style={{ 
+                background: 'linear-gradient(to right, #3b82f6, #ea580c)',
+                border: 'none',
+                color: 'white'
+              }}
+            >
+              {joinEventMutation.isPending ? "Joining..." : "Join"}
+            </Button>
           </div>
         </div>
-      </div>
+      </article>
     
       {/* Event Join Celebration Modal */}
       {celebrationData && (
