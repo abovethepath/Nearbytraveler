@@ -3433,7 +3433,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
             {/* CTAs — wrap on mobile */}
             {!isOwnProfile ? (
-              <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto mt-4 sm:mt-0">
+              <div className="flex items-center justify-between gap-3 flex-wrap min-w-0">
                 <Button className="bg-orange-500 hover:bg-orange-600 text-white border-0 w-full sm:w-auto" onClick={handleMessage}>
                   Message
                 </Button>
@@ -3447,17 +3447,21 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 </Button>
               </div>
             ) : (
-              <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto mt-4 sm:mt-0">
+              <div className="flex items-center justify-between gap-3 flex-wrap min-w-0">
                 {user && (user.hometownCity || user.location) && (
                   <Button
                     onClick={() => {
                       const chatCity = user.hometownCity || user.location?.split(',')[0] || 'General';
                       setLocation(`/city-chatrooms?city=${encodeURIComponent(chatCity)}`);
                     }}
-                    className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white border-0 shadow-lg w-full sm:w-auto"
+                    className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700
+                               text-white border-0 shadow-lg rounded-full
+                               inline-flex items-center justify-center gap-2
+                               w-full sm:w-auto max-w-full sm:max-w-none
+                               px-4 py-3 overflow-hidden"
                   >
-                    <MessageCircle className="w-4 h-4 mr-2" />
-                    Go to Chatrooms
+                    <MessageCircle className="w-4 h-4 shrink-0" />
+                    <span className="truncate">Go to Chatrooms</span>
                   </Button>
                 )}
               </div>
@@ -3477,7 +3481,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       </section>
       
       {/* Main content section - Modern Sectioned Layout */}
-      <div className="w-full max-w-full mx-auto pb-0 px-2 sm:px-4 -mt-2">
+      <div className="w-full max-w-full mx-auto pb-0 px-2 sm:px-4 -mt-2 overflow-x-hidden">
         
 
 
