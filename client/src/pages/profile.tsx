@@ -2888,8 +2888,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   }
 
   return (
-    <>
-      <div className="min-h-screen profile-page">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {shouldShowBackToChatroom && (
         <div className="w-full max-w-full mx-auto px-2 pt-2">
           <Button 
@@ -2901,71 +2900,100 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           </Button>
         </div>
       )}
-
-      {/* Mobile spacing to account for global MobileTopNav */}
-      <div className="h-4 md:hidden"></div>
-
-      {/* Mobile Back Button */}
-      <div className="block md:hidden px-4 pb-2">
-        <UniversalBackButton 
-          destination="/discover"
-          label="Back"
-          className="shadow-sm"
-        />
-      </div>
     
-      {/* EXPANDED GRADIENT HEADER - MOBILE OPTIMIZED WITH RIGHT-ALIGNED PHOTO */}
-      <div className={`w-full bg-gradient-to-r ${gradientOptions[selectedGradient]} p-4 sm:p-6`}>
-        <div className="max-w-7xl mx-auto">
-          <div className="flex flex-row items-start gap-4 sm:gap-6">
-            {/* Profile Avatar - Left Side */}
-            <div className="relative flex-shrink-0">
-              <Avatar className="w-20 h-20 sm:w-32 sm:h-32 md:w-40 md:h-40 border-4 border-white shadow-lg bg-white">
-                <AvatarImage src={user?.profileImage || ''} className="object-cover" />
-                <AvatarFallback className="text-lg sm:text-2xl md:text-4xl bg-gradient-to-br from-blue-600 to-orange-600 text-white">
-                  {(user?.username?.charAt(0) || user?.name?.charAt(0) || 'U').toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-              {isOwnProfile && (
-                <>
-                  <Button 
-                    size="sm" 
-                    className="absolute -bottom-2 -right-2 bg-blue-600 hover:bg-blue-700 text-white border-none shadow-lg w-8 h-8 sm:w-10 sm:h-10 p-0"
-                    onClick={() => document.getElementById('avatar-upload-input')?.click()}
-                    disabled={uploadingPhoto}
-                  >
-                    <Camera className="w-3 h-3 sm:w-4 sm:h-4" />
-                  </Button>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleAvatarUpload}
-                    className="hidden"
-                    id="avatar-upload-input"
-                  />
-                </>
-              )}
-            </div>
+      {/* COMPLETELY REBUILT HERO SECTION - WORKING COVER PHOTO */}
+      <div className="relative w-full h-48 md:h-64 overflow-hidden">
+        {/* Background Layer */}
+        <div 
+          key={`cover-photo-${coverPhotoKey}`}
+          className="absolute inset-0 w-full h-full bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage: user.coverPhoto 
+              ? `url("${user.coverPhoto}?v=${coverPhotoKey}")`
+              : 'linear-gradient(to right, #3b82f6, #8b5cf6, #f97316)'
+          }}
+        />
 
-            {/* Profile Info - Right Side */}
-            <div className="flex-1 min-w-0">
-              {isOwnProfile && (
-                <div className="mb-2 sm:mb-3">
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className="bg-white/90 hover:bg-white text-gray-800 hover:text-gray-900 border border-white text-xs sm:text-sm px-3 py-1 font-medium shadow-sm"
-                    onClick={() => setSelectedGradient((prev) => (prev + 1) % gradientOptions.length)}
-                  >
-                    🎨 Change Color
-                  </Button>
-                </div>
-              )}
-              <h1 className="text-xl sm:text-3xl font-bold text-black mb-1">@{user.username}</h1>
-              {user.userType === 'business' && user.businessName && (
-                <div className="text-lg sm:text-xl font-semibold text-white/90 mb-1">
-                  {user.businessName}
-                </div>
+        {/* Dark overlay */}
+        <div className="absolute inset-0 bg-black/20 z-10"></div>
+        
+        {/* Upload Controls */}
+        {isOwnProfile && (
+          <div className="absolute top-4 right-4 z-20">
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleCoverPhotoUpload}
+              className="hidden"
+              id="cover-photo-upload"
+            />
+            <label 
+              htmlFor="cover-photo-upload" 
+              className="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-black/60 hover:bg-black/80 rounded-md cursor-pointer transition-colors"
+            >
+              <Camera className="w-4 h-4 mr-2" />
+              {user.coverPhoto ? 'Change Cover' : 'Add Cover'}
+            </label>
+          </div>
+        )}
+        
+        {/* Loading state */}
+        {uploadingPhoto && (
+          <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-30">
+            <div className="bg-white rounded-lg p-4 text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-2"></div>
+              <p className="text-sm font-medium">Uploading...</p>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Profile Header */}
+      <div className="w-full max-w-full mx-auto px-4">
+        <div className="relative -mt-16 mb-6">
+          <div className="flex flex-col md:flex-row items-start gap-4 pt-4">
+              {/* Profile Avatar */}
+              <div className="relative z-20">
+                <Avatar className="w-32 h-32 md:w-40 md:h-40 border-4 border-white shadow-xl rounded-lg bg-white">
+                  <AvatarImage src={user.profileImage || photos[0]?.imageUrl} className="rounded-lg object-cover" />
+                  <AvatarFallback className="text-4xl bg-gradient-to-br from-blue-500 to-orange-500 text-white rounded-lg">
+                    {(user?.username?.charAt(0) || user?.name?.charAt(0) || 'U').toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+                {isOwnProfile && (
+                  <>
+                    {/* Avatar Upload Button */}
+                    <Button 
+                      size="sm" 
+                      className="absolute -bottom-2 -right-2 bg-blue-500 hover:bg-blue-600 text-white border-none shadow-lg"
+                      onClick={() => setShowPhotoUpload(true)}
+                      disabled={uploadingPhoto}
+                    >
+                      <Camera className="w-4 h-4 mr-1" />
+                      {uploadingPhoto ? 'Uploading...' : 'Add Photo'}
+                    </Button>
+                    {/* Hidden file input for direct avatar upload */}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleAvatarUpload}
+                      className="hidden"
+                      id="avatar-upload-input"
+                    />
+                  </>
+                )}
+              </div>
+
+              {/* Profile Info */}
+              <div className="flex-1 space-y-2 md:space-y-3 z-20">
+                <div>
+                  <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
+                    @{user.username}
+                  </h1>
+                  {user.userType === 'business' && user.businessName && (
+                    <div className="text-lg sm:text-xl font-semibold text-gray-700 dark:text-gray-300 mb-1">
+                      {user.businessName}
+                    </div>
               )}
               
               {/* Clean 2-line layout - Mobile Responsive */}
@@ -7136,7 +7164,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         </DialogContent>
       </Dialog>
       
-    </>
+    </div>
   );
 }
 
