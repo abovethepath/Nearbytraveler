@@ -1227,10 +1227,18 @@ export default function Home() {
         <div className="absolute inset-0 bg-gradient-to-br from-black/40 via-black/30 to-black/50"></div>
         <div className="relative w-full mx-auto py-1 sm:py-4 md:py-6" style={{padding: '2px 1px'}}>
           <div className="text-center mx-auto" style={{maxWidth: '180px', width: '100%', overflow: 'hidden'}}>
-            <h1 className="hero-mobile-heading font-bold mb-0.5 sm:mb-2 text-white text-center" style={{
-              fontFamily: '"Open Sans", sans-serif', 
-              fontWeight: '700', 
-              textShadow: '1px 1px 2px rgba(0,0,0,0.8)'
+            <h1 className="sm:hidden font-bold mb-0.5 text-white text-center" style={{
+              fontFamily: '"Open Sans", sans-serif !important', 
+              fontWeight: '700 !important', 
+              textShadow: '1px 1px 2px rgba(0,0,0,0.8) !important',
+              fontSize: '3px !important',
+              lineHeight: '0.8 !important',
+              maxWidth: '50px !important',
+              margin: '0 auto !important',
+              padding: '0 !important',
+              transform: 'scale(0.3) !important',
+              transformOrigin: 'center !important',
+              overflow: 'hidden !important'
             }}>
               {effectiveUser?.userType === 'business' ? (
                 <>
@@ -1269,9 +1277,25 @@ export default function Home() {
                 </>
               )}
             </h1>
-            {/* Ultra-compact mobile description with CSS class */}
-            <div className="sm:hidden mb-0.5">
-              <div className="hero-mobile-text text-white text-center">
+            {/* Inline-styled mobile description */}
+            <div className="sm:hidden mb-0.5" style={{
+              maxWidth: '40px !important',
+              margin: '0 auto !important',
+              padding: '0 !important',
+              overflow: 'hidden !important'
+            }}>
+              <div className="text-white text-center" style={{
+                fontSize: '2px !important',
+                lineHeight: '0.7 !important',
+                transform: 'scale(0.25) !important',
+                transformOrigin: 'center !important',
+                margin: '0 auto !important',
+                padding: '0 !important',
+                maxWidth: '30px !important',
+                overflow: 'hidden !important',
+                textOverflow: 'clip !important',
+                wordBreak: 'break-all !important'
+              }}>
                 {effectiveUser?.userType === 'business' ? (
                   <>
                     <div>Reach</div>
