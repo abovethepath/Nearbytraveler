@@ -1,22 +1,142 @@
 /* Import modern mobile-optimized font */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-/* Scoped to the hero only - prevents blue background/borders on Travelers/Locals text */
-.hero-clean h1 .hero-blue {
-  /* tailwind @apply + explicit resets */
+/* NUCLEAR HERO FIX - Completely override all global pill/badge styling for hero text */
+.hero-clean h1 .hero-blue,
+.hero-clean h1 span.hero-blue,
+.hero-clean h1 span[class*="hero-blue"],
+.hero-clean span.hero-blue,
+.hero-clean .hero-blue,
+/* Also target any blue text spans in hero */
+.hero-clean h1 span[class*="text-blue"],
+.hero-clean h1 .text-blue-500,
+.hero-clean span.text-blue-500,
+.hero-clean .text-blue-500 {
+  /* Force pure blue text color */
   color: rgb(59 130 246) !important; /* blue-500 */
+  
+  /* Kill all background/border/spacing styling */
   background: transparent !important;
+  background-color: transparent !important;
   border: 0 !important;
+  border-width: 0 !important;
+  border-style: none !important;
+  border-color: transparent !important;
   box-shadow: none !important;
-  padding: 0 !important;
-  border-radius: 0 !important;
   outline: none !important;
+  
+  /* Reset all spacing */
+  padding: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  margin: 0 !important;
+  
+  /* Kill pill styling */
+  border-radius: 0 !important;
+  min-width: unset !important;
+  width: auto !important;
+  height: auto !important;
+  min-height: unset !important;
+  
+  /* Text styling only */
+  display: inline !important;
+  font-size: inherit !important;
+  font-weight: inherit !important;
+  line-height: inherit !important;
+  text-align: inherit !important;
+  vertical-align: baseline !important;
+  
+  /* Kill any flex styling */
+  align-items: unset !important;
+  justify-content: unset !important;
+  flex-direction: unset !important;
 }
-/* Hide any decorative pseudo-elements some themes add to spans in headings */
+
+/* Hide any decorative pseudo-elements */
 .hero-clean h1 .hero-blue::before,
-.hero-clean h1 .hero-blue::after {
+.hero-clean h1 .hero-blue::after,
+.hero-clean .hero-blue::before,
+.hero-clean .hero-blue::after,
+.hero-clean h1 .text-blue-500::before,
+.hero-clean h1 .text-blue-500::after,
+.hero-clean .text-blue-500::before,
+.hero-clean .text-blue-500::after {
   display: none !important;
   content: none !important;
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* GLOBAL OVERRIDE - Prevent any blue text spans from getting pill styling in hero area */
+.hero-clean * span,
+.hero-clean * .text-blue-500,
+.hero-clean * .hero-blue {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  display: inline !important;
+}
+
+/* NUCLEAR OVERRIDE - Completely disable all the global pill rules for hero section */
+.hero-clean span[className*="px-2"],
+.hero-clean span[className*="px-3"], 
+.hero-clean div[className*="px-2"], 
+.hero-clean div[className*="px-3"],
+.hero-clean span[className*="text-sm"], 
+.hero-clean span[className*="text-xs"], 
+.hero-clean div[className*="text-sm"], 
+.hero-clean div[className*="text-xs"],
+.hero-clean span[className*="py-1"], 
+.hero-clean div[className*="py-1"],
+.hero-clean .inline-flex[class*="rounded-full"][class*="px-2"],
+.hero-clean .inline-flex[class*="rounded-full"][class*="px-3"], 
+.hero-clean .inline-flex[class*="rounded-full"][class*="text-xs"],
+.hero-clean .inline-flex[class*="rounded-full"][class*="text-sm"],
+.hero-clean .rounded-full[class*="px-2"], 
+.hero-clean .rounded-full[class*="px-3"], 
+.hero-clean .rounded-full[class*="text-xs"], 
+.hero-clean .rounded-full[class*="text-sm"], 
+.hero-clean .rounded-full[class*="py-1"], 
+.hero-clean .rounded-md[class*="px-2"],
+.hero-clean .rounded-md[class*="px-3"], 
+.hero-clean .rounded-md[class*="text-xs"], 
+.hero-clean .rounded-md[class*="text-sm"],
+.hero-clean [class*="text-xs"], 
+.hero-clean [class*="text-sm"]:not(.btn):not(.button):not(.card):not(.input),
+.hero-clean .inline-flex[class*="rounded"], 
+.hero-clean .inline-flex[class*="border"],
+.hero-clean .inline-flex.items-center[class*="px-"], 
+.hero-clean .inline-flex.items-center[class*="py-"],
+.hero-clean .inline-flex.items-center[class*="rounded"], 
+.hero-clean .inline-flex.items-center[class*="border"],
+.hero-clean .inline-flex.items-center[class*="bg-"], 
+.hero-clean .inline-flex[class*="font-medium"],
+.hero-clean .inline-flex[class*="items-center"][class*="justify-center"][class*="rounded"],
+.hero-clean .inline-flex[class*="items-center"][class*="border"][class*="px-"],
+.hero-clean .inline-flex[class*="items-center"][class*="font-semibold"] {
+  /* Force text-only styling */
+  background: transparent !important;
+  background-color: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  height: auto !important;
+  min-width: unset !important;
+  min-height: unset !important;
+  width: auto !important;
+  display: inline !important;
+  align-items: unset !important;
+  justify-content: unset !important;
+  font-size: inherit !important;
+  font-weight: inherit !important;
+  line-height: inherit !important;
+  box-shadow: none !important;
+  outline: none !important;
 }
 
 /* --- COMPREHENSIVE MOBILE SANITY FIXES --- */
