@@ -25,9 +25,9 @@ import { z } from "zod";
 import { MapPin, Camera, Globe, Users, Calendar, Star, Settings, ArrowLeft, Upload, Edit, Edit2, Heart, MessageSquare, X, Plus, Eye, EyeOff, MessageCircle, ImageIcon, Minus, RotateCcw, Sparkles, Package, Trash2, Home, FileText, TrendingUp, MessageCircleMore, Share2, ChevronDown, Search, Zap, History } from "lucide-react";
 import { UniversalBackButton } from "@/components/UniversalBackButton";
 import FriendReferralWidget from "@/components/friend-referral-widget";
-// import TravelPersonalityAssessment from "@/components/TravelPersonalityAssessment";
+import TravelPersonalityAssessment from "@/components/TravelPersonalityAssessment";
 import ReferencesWidgetNew from "@/components/references-widget-new";
-import { ThingsIWantToDoSection } from "@/components/ThingsIWantToDoSection";
+import { ThingsIWantToDoSection } from "@/components/things-i-want-to-do-section";
 // Removed framer-motion import for static interface
 import { useToast } from "@/hooks/use-toast";
 import { AuthContext } from "@/App";
@@ -6601,7 +6601,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           </div>
         </DialogContent>
       </Dialog>
-      </div>
     </div>
   );
 }
