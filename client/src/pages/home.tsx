@@ -1225,15 +1225,15 @@ export default function Home() {
 >
         {/* Dark overlay for text readability */}
         <div className="absolute inset-0 bg-gradient-to-br from-black/40 via-black/30 to-black/50"></div>
-        <div className="relative w-full mx-auto py-2 sm:py-4 md:py-6" style={{padding: '8px 4px'}}>
-          <div className="text-center mx-auto" style={{maxWidth: '260px', width: '100%'}}>
-            <h1 className="font-bold mb-1 sm:mb-2 text-white text-center" style={{
+        <div className="relative w-full mx-auto py-1 sm:py-4 md:py-6" style={{padding: '4px 2px'}}>
+          <div className="text-center mx-auto" style={{maxWidth: '240px', width: '100%'}}>
+            <h1 className="font-bold mb-0.5 sm:mb-2 text-white text-center" style={{
               fontFamily: '"Open Sans", sans-serif', 
               fontWeight: '700', 
-              textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
-              fontSize: '13px',
-              lineHeight: '1.1',
-              maxWidth: '280px',
+              textShadow: '1px 1px 2px rgba(0,0,0,0.8)',
+              fontSize: '11px',
+              lineHeight: '1.0',
+              maxWidth: '220px',
               margin: '0 auto'
             }}>
               {effectiveUser?.userType === 'business' ? (
@@ -1243,7 +1243,8 @@ export default function Home() {
                 </>
               ) : (
                 <>
-                  <div>Connect with <span className="text-orange-400">Like-Minded</span></div>
+                  <div>Connect with</div>
+                  <div><span className="text-orange-400">Like-Minded</span></div>
                   <div>Travelers & Locals</div>
                 </>
               )}
@@ -1269,33 +1270,39 @@ export default function Home() {
                 </>
               )}
             </h1>
-            {/* Mobile description with manual line breaks */}
-            <div className="sm:hidden mb-1" style={{maxWidth: '260px', margin: '0 auto', padding: '0 2px'}}>
+            {/* Ultra-small mobile description */}
+            <div className="sm:hidden mb-0.5" style={{maxWidth: '220px', margin: '0 auto', padding: '0 1px'}}>
               <div className="text-white text-center" style={{
-                fontSize: '8px',
-                lineHeight: '1.1'
+                fontSize: '6px',
+                lineHeight: '1.0',
+                transform: 'scale(1)',
+                transformOrigin: 'center'
               }}>
                 {effectiveUser?.userType === 'business' ? (
                   <>
-                    <div>Reach customers through</div>
-                    <div>interest-based matching,</div>
-                    <div>business notifications,</div>
-                    <div>and location-targeted</div>
+                    <div>Reach customers</div>
+                    <div>through interest-based</div>
+                    <div>matching, business</div>
+                    <div>notifications, and</div>
+                    <div>location-targeted</div>
                     <div>discovery. Grow your</div>
                     <div>business by connecting</div>
-                    <div>with travelers and locals</div>
-                    <div>who love what you offer.</div>
+                    <div>with travelers and</div>
+                    <div>locals who love</div>
+                    <div>what you offer.</div>
                   </>
                 ) : (
                   <>
                     <div>Discover amazing</div>
                     <div>experiences, make</div>
-                    <div>meaningful connections,</div>
-                    <div>and explore the world</div>
+                    <div>meaningful</div>
+                    <div>connections, and</div>
+                    <div>explore the world</div>
                     <div>with like-minded</div>
-                    <div>adventurers based on</div>
-                    <div>demographics, activities,</div>
-                    <div>interests and events</div>
+                    <div>adventurers based</div>
+                    <div>on demographics,</div>
+                    <div>activities, interests</div>
+                    <div>and events</div>
                   </>
                 )}
               </div>
