@@ -199,12 +199,12 @@ export default function EventCard({ event, compact = false, featured = false }: 
 
         {/* Content */}
         <div className="p-4 md:p-5">
-          <h3 className="text-white dark:text-white text-lg font-semibold leading-snug line-clamp-2 text-gray-900 dark:text-white">
+          <h3 className="text-gray-900 dark:text-white text-lg font-semibold leading-snug line-clamp-2">
             {event.title}
           </h3>
 
           {event.description && (
-            <p className="mt-1 text-sm text-gray-600 dark:text-gray-300 leading-relaxed break-words line-clamp-3">
+            <p className="mt-1 text-sm text-gray-600 dark:text-gray-300 leading-relaxed whitespace-normal break-words [overflow-wrap:anywhere] line-clamp-3">
               {event.description}
             </p>
           )}
@@ -213,15 +213,15 @@ export default function EventCard({ event, compact = false, featured = false }: 
           <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
             <div className="min-w-0 flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
               <Calendar className="h-4 w-4 shrink-0 text-travel-blue" />
-              <span className="truncate">{formatEventDate(event.date)}</span>
+              <span className="truncate break-words [overflow-wrap:anywhere]">{formatEventDate(event.date)}</span>
             </div>
             <div className="min-w-0 flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
               <MapPin className="h-4 w-4 shrink-0 text-travel-blue" />
-              <span className="truncate">{event.location}</span>
+              <span className="truncate break-words [overflow-wrap:anywhere]">{event.location}</span>
             </div>
             <div className="min-w-0 flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
               <Users className="h-4 w-4 shrink-0" />
-              <span className="truncate">{(event as any).participantCount ?? 0} attending</span>
+              <span className="truncate break-words [overflow-wrap:anywhere]">{(event as any).participantCount ?? 0} attending</span>
             </div>
           </div>
 
