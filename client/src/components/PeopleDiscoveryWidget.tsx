@@ -147,6 +147,11 @@ export function PeopleDiscoveryWidget({
     };
 
     const handleCardClick = () => {
+      console.log(`🔍 NAVIGATION DEBUG: Clicking on person:`, { 
+        id: person.id, 
+        username: person.username, 
+        navigateTo: `/profile/${person.id}` 
+      });
       if (onPersonClick) {
         onPersonClick(person);
       } else {
