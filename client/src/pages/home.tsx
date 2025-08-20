@@ -1225,25 +1225,37 @@ export default function Home() {
 >
         {/* Dark overlay for text readability */}
         <div className="absolute inset-0 bg-gradient-to-br from-black/40 via-black/30 to-black/50"></div>
-        <div className="relative w-full mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-6 sm:py-8 md:py-10">
-          <div className="text-center w-full max-w-sm sm:max-w-lg md:max-w-2xl lg:max-w-3xl mx-auto">
-            <h1 className="text-sm sm:text-base md:text-lg lg:text-2xl xl:text-3xl font-bold mb-2 sm:mb-3 md:mb-4 leading-tight text-white" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700', textShadow: '2px 2px 4px rgba(0,0,0,0.8)'}}>
-              <div className="flex flex-col items-center justify-center space-y-1">
-                {effectiveUser?.userType === 'business' ? (
-                  <>
-                    <div className="text-center break-words">Connect Your <span className="text-orange-400">Business</span></div>
-                    <div className="text-center break-words">with Travelers & Locals</div>
-                  </>
-                ) : (
-                  <>
-                    <div className="text-center break-words">Connect with <span className="text-orange-400">Like-Minded</span></div>
-                    <div className="text-center break-words">Travelers & Locals</div>
-                  </>
-                )}
-              </div>
+        <div className="relative w-full mx-auto px-2 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8">
+          <div className="text-center w-full mx-auto" style={{maxWidth: '100%'}}>
+            <h1 className="font-bold mb-1 sm:mb-2 md:mb-3 leading-tight text-white text-center" style={{
+              fontFamily: '"Open Sans", sans-serif', 
+              fontWeight: '700', 
+              textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
+              fontSize: 'clamp(0.875rem, 4vw, 2rem)',
+              lineHeight: '1.2'
+            }}>
+              {effectiveUser?.userType === 'business' ? (
+                <>
+                  <div>Connect Your <span className="text-orange-400">Business</span></div>
+                  <div>with Travelers & Locals</div>
+                </>
+              ) : (
+                <>
+                  <div>Connect with <span className="text-orange-400">Like-Minded</span></div>
+                  <div>Travelers & Locals</div>
+                </>
+              )}
             </h1>
-            <div className="w-full px-1 sm:px-2 mb-2 sm:mb-3">
-              <p className="text-[10px] sm:text-xs md:text-sm lg:text-base text-white text-center leading-relaxed break-words overflow-wrap-anywhere" style={{wordBreak: 'break-word', hyphens: 'auto'}}>
+            <div className="w-full mb-1 sm:mb-2 md:mb-3" style={{padding: '0 8px'}}>
+              <p className="text-white text-center leading-tight" style={{
+                fontSize: 'clamp(0.625rem, 2.5vw, 1rem)',
+                lineHeight: '1.3',
+                wordWrap: 'break-word',
+                overflowWrap: 'break-word',
+                hyphens: 'auto',
+                maxWidth: '100%',
+                margin: '0 auto'
+              }}>
                 {effectiveUser?.userType === 'business' ? (
                   'Reach customers through interest-based matching, business notifications, and location-targeted discovery. Grow your business by connecting with travelers and locals who love what you offer.'
                 ) : (
