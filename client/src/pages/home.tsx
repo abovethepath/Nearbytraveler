@@ -1218,16 +1218,16 @@ export default function Home() {
 
       {/* Hero Section with Scrolling Photo Gallery */}
 <section
-  className="relative overflow-hidden text-white min-h-[20svh] md:min-h-[25svh] bg-cover bg-center bg-no-repeat"
+  className="relative overflow-hidden text-white min-h-[35svh] md:min-h-[40svh] bg-cover bg-center bg-no-repeat"
   style={{
     backgroundImage: "url('/attached_assets/beach travel_1754973619241.jpg')",
   }}
 >
         {/* Dark overlay for text readability */}
         <div className="absolute inset-0 bg-gradient-to-br from-black/40 via-black/30 to-black/50"></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4 lg:py-6">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10">
           <div className="text-center max-w-3xl mx-auto">
-            <h1 className="text-lg sm:text-xl md:text-2xl lg:text-4xl font-bold mb-2 sm:mb-3 leading-tight text-white text-center" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700', textShadow: '2px 2px 4px rgba(0,0,0,0.8)'}}>
+            <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-5xl font-bold mb-4 sm:mb-5 leading-tight text-white text-center" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700', textShadow: '2px 2px 4px rgba(0,0,0,0.8)'}}>
               <div className="leading-tight">
                 {effectiveUser?.userType === 'business' ? (
                   <>
