@@ -427,12 +427,8 @@ function Navbar() {
                   variant="ghost"
                   className="md:hidden h-12 w-12 p-0 touch-manipulation"
                   style={{ minHeight: '48px', minWidth: '48px' }}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    console.log('Mobile menu clicked, current state:', isMobileMenuOpen);
-                    setIsMobileMenuOpen(!isMobileMenuOpen);
-                  }}
+                  onClick={() => setIsMobileMenuOpen((open) => !open)}
+                  aria-controls="mobile-menu"
                   aria-label={isMobileMenuOpen ? "Close mobile menu" : "Open mobile menu"}
                   aria-expanded={isMobileMenuOpen}
                 >
@@ -580,49 +576,47 @@ function Navbar() {
           </div>
         </div>
 
-        {/* Mobile Navigation Overlay - Enhanced for better mobile UX */}
-        {isMobileMenuOpen && (
-          <div className="md:hidden fixed top-[80px] left-0 right-0 w-full bg-white dark:bg-black border-b border-gray-200 dark:border-gray-800 z-50 shadow-lg">
-            <div className="px-4 py-6 space-y-4 max-h-[calc(100vh-80px)] overflow-y-auto">
-              {navItems.map((item) => (
-                <Link
-                  key={item.path}
-                  href={item.path}
-                  className={`block py-3 px-4 rounded-lg text-lg font-medium transition-colors ${
-                    location === item.path
-                      ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
-                      : "text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800"
-                  }`}
-                  onClick={() => {
-                    setIsMobileMenuOpen(false);
-                    // Prevent navigation to landing for authenticated users
-                    if (item.path.startsWith('/profile') && !user) {
-                      setLocation('/auth');
-                    } else {
-                      setLocation(item.path);
-                    }
-                    console.log(`Mobile nav: Navigating to ${item.path}`);
-                  }}
-                >
-                  <span className="mr-3">{item.icon}</span>
-                  {item.label}
-                </Link>
-              ))}
-
-              {/* Mobile Donate Button */}
-              <button 
+        {/* Mobile Navigation Dropdown Overlay */}
+        <div
+          id="mobile-menu"
+          className={`md:hidden fixed inset-x-0 top-20 w-full bg-white dark:bg-black border-b border-gray-200 dark:border-gray-800 shadow-lg transition-[max-height,opacity] duration-200 overflow-hidden ${
+            isMobileMenuOpen 
+              ? "max-h-[85svh] opacity-100 z-[60]" 
+              : "max-h-0 opacity-0 pointer-events-none z-[60]"
+          }`}
+        >
+          <div className="px-4 py-6 space-y-4 max-h-[calc(100vh-5rem)] overflow-y-auto">
+            {navItems.map((item) => (
+              <Link
+                key={item.path}
+                href={item.path}
+                className={`block py-3 px-4 rounded-lg text-lg font-medium transition-colors ${
+                  location === item.path
+                    ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
+                    : "text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800"
+                }`}
                 onClick={() => {
-                  setLocation('/donate');
                   setIsMobileMenuOpen(false);
+                  setLocation(item.path);
                 }}
-                className="w-full mt-4 py-3 px-4 rounded-lg text-white font-medium"
-                style={{ backgroundColor: '#10b981' }}
               >
-                Donate
-              </button>
-            </div>
+                <span className="mr-3">{item.icon}</span>
+                {item.label}
+              </Link>
+            ))}
+
+            <button
+              onClick={() => { 
+                setLocation('/donate'); 
+                setIsMobileMenuOpen(false); 
+              }}
+              className="w-full mt-4 py-3 px-4 rounded-lg text-white font-medium"
+              style={{ backgroundColor: '#10b981' }}
+            >
+              Donate
+            </button>
           </div>
-        )}
+        </div>
       </header>
 
       {/* Connect Modal */}
