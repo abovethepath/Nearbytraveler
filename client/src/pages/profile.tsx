@@ -3320,8 +3320,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         </div>
       )}
 
-      {/* Mobile spacing to account for global MobileTopNav */}
-      <div className="h-16 md:hidden"></div>
+      {/* Spacer not needed (header is sticky already) */}
+      <div className="h-0 md:hidden"></div>
 
       {/* Mobile Back Button */}
       <div className="block md:hidden px-4 pb-2">
