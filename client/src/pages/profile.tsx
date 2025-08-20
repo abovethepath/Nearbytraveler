@@ -237,6 +237,15 @@ const QUICK_TAGS_OPTIONS = [
   "Adventurous", "Helpful", "Clean", "Punctual"
 ];
 
+// PillRow component to prevent badge scrollbars
+function PillRow({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="flex flex-wrap gap-2 items-center overflow-visible max-w-full">
+      {children}
+    </div>
+  );
+}
+
 // Interface definitions
 interface EnhancedProfileProps {
   userId?: number;
@@ -274,10 +283,6 @@ const createProfileSchema = (userType: string) => {
 
 // Default schema for compatibility
 const profileSchema = createProfileSchema('traveler');
-
-interface EnhancedProfileProps {
-  userId?: number;
-}
 
 // Import shared travel options for consistency  
 import { BASE_TRAVELER_TYPES } from "@/lib/travelOptions";
@@ -397,13 +402,13 @@ function MultiSelect({ options, selected, onChange, placeholder, maxDisplay = 3 
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-full justify-between min-h-[40px] h-auto"
+          className="w-full justify-between min-h-[40px] h-auto overflow-visible"
         >
-          <div className="flex flex-wrap gap-1">
+          <div className="flex flex-wrap gap-1 items-center max-w-[calc(100%-1.5rem)]">
             {selected.length === 0 ? (
               <span className="text-muted-foreground">{placeholder}</span>
             ) : (
-              <>
+              <PillRow>
                 {selected.slice(0, maxDisplay).map((item) => (
                   <Badge key={item} variant="secondary" className="text-xs whitespace-nowrap no-scrollbar">
                     {item}
@@ -414,7 +419,7 @@ function MultiSelect({ options, selected, onChange, placeholder, maxDisplay = 3 
                     +{selected.length - maxDisplay} more
                   </Badge>
                 )}
-              </>
+              </PillRow>
             )}
           </div>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -4451,7 +4456,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           </div>
                           {plan.interests && plan.interests.length > 0 && (
                             <div className="mb-2">
-                              <div className="flex flex-wrap gap-1">
+                              <PillRow>
                                 {(expandedPlanInterests.has(plan.id) ? plan.interests : plan.interests.slice(0, 2)).map((interest: string) => (
                                   <Badge key={interest} className={`text-xs ${getInterestStyle(interest)} whitespace-nowrap no-scrollbar`}>
                                     {interest}
@@ -4460,7 +4465,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                 {plan.interests.length > 2 && (
                                   <Badge 
                                     variant="outline" 
-                                    className="text-xs dark:bg-gray-800 dark:text-gray-300 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                    className="text-xs dark:bg-gray-800 dark:text-gray-300 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors whitespace-nowrap no-scrollbar"
                                     onClick={() => {
                                       const newExpanded = new Set(expandedPlanInterests);
                                       if (expandedPlanInterests.has(plan.id)) {
@@ -4474,23 +4479,23 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                     {expandedPlanInterests.has(plan.id) ? 'Show less' : `+${plan.interests.length - 2} more`}
                                   </Badge>
                                 )}
-                              </div>
+                              </PillRow>
                             </div>
                           )}
                           {plan.travelStyle && plan.travelStyle.length > 0 && (
                             <div>
-                              <div className="flex flex-wrap gap-1">
+                              <PillRow>
                                 {plan.travelStyle.slice(0, 2).map((style: string) => (
                                   <Badge key={style} variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200 dark:bg-green-900 dark:text-green-200 dark:border-green-700 whitespace-nowrap no-scrollbar">
                                     {style}
                                   </Badge>
                                 ))}
                                 {plan.travelStyle.length > 2 && (
-                                  <Badge variant="outline" className="text-xs dark:bg-gray-800 dark:text-gray-300">
+                                  <Badge variant="outline" className="text-xs dark:bg-gray-800 dark:text-gray-300 whitespace-nowrap no-scrollbar">
                                     +{plan.travelStyle.length - 2} more
                                   </Badge>
                                 )}
-                              </div>
+                              </PillRow>
                             </div>
                           )}
                         </div>
@@ -5437,16 +5442,16 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   ) : (
                     <>
                       {countriesVisited.length > 0 ? (
-                        <div className="flex flex-wrap gap-2">
+                        <PillRow>
                           {countriesVisited.map((country: string, index: number) => (
                             <Badge 
                               key={country} 
-                              className="bg-blue-500 text-white border-0 px-4 py-2 text-sm font-medium whitespace-nowrap min-w-[100px] h-9 flex items-center justify-center"
+                              className="bg-blue-500 text-white border-0 px-4 py-2 text-sm font-medium whitespace-nowrap no-scrollbar min-w-[100px] h-9 flex items-center justify-center"
                             >
                               {country}
                             </Badge>
                           ))}
-                        </div>
+                        </PillRow>
                       ) : (
                         <p className="text-gray-500 dark:text-white text-sm">No countries visited yet</p>
                       )}
@@ -5489,13 +5494,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 ) : (
                   <>
                     {user.languagesSpoken && user.languagesSpoken.length > 0 ? (
-                      <div className="flex flex-wrap gap-2">
+                      <PillRow>
                         {user.languagesSpoken.map((language: string) => (
-                          <Badge key={language} variant="secondary" className="text-sm">
+                          <Badge key={language} variant="secondary" className="text-sm whitespace-nowrap no-scrollbar">
                             {language}
                           </Badge>
                         ))}
-                      </div>
+                      </PillRow>
                     ) : (
                       <p className="text-gray-500 text-sm">No languages listed</p>
                     )}
