@@ -1,0 +1,73 @@
+That skinny scrollbar on the right edge of the navbar comes from an ancestor (often the header itself) having overflow-y: auto/scroll with a fixed height. Let’s force the header to not be a scroll container and hide any stray inner bars.
+
+Do these two things
+1) Add a tiny helper once (global CSS)
+
+globals.css (or wherever your Tailwind base lives):
+
+.no-scrollbar{ -ms-overflow-style:none; scrollbar-width:none; }
+.no-scrollbar::-webkit-scrollbar{ display:none; }
+
+2) Update your Navbar markup/classes
+
+Make the header not scrollable and visible overflow.
+
+Ensure the inner rows don’t introduce overflow.
+
+Keep the mobile menu scrollable (that’s fine), but not the header.
+
+Header element:
+
+<header
+  ref={headerRef}
+  className="sticky top-0 z-[200] bg-white dark:bg-black shadow-sm overflow-visible no-scrollbar
+             [scrollbar-width:none] [::-webkit-scrollbar]:hidden"
+>
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 overflow-visible">
+    <div className="flex justify-between items-center h-16 md:h-20 py-1 overflow-visible">
+      {/* logo */}
+
+      {/* Desktop nav – never scroll */}
+      <nav className="hidden md:flex items-center gap-6 overflow-visible">
+        {/* links */}
+      </nav>
+
+      {/* Hamburger button */}
+      <Button
+        variant="ghost"
+        className="md:hidden h-12 w-12 p-0"
+        onClick={() => setIsMobileMenuOpen(o => !o)}
+        aria-label={isMobileMenuOpen ? "Close mobile menu" : "Open mobile menu"}
+        aria-expanded={isMobileMenuOpen}
+      >
+        {isMobileMenuOpen ? <X className="h-7 w-7" /> : <Menu className="h-7 w-7" />}
+      </Button>
+    </div>
+  </div>
+</header>
+
+
+If you’re using the portal mobile menu I gave earlier, keep this part as-is (it’s supposed to scroll):
+
+<div
+  id="mobile-menu"
+  className={`md:hidden fixed inset-x-0 transition-opacity duration-200 ${isMobileMenuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}
+  style={{ top: menuTop, zIndex: 9999 }}
+  role="dialog"
+  aria-modal="true"
+>
+  <div className="bg-white dark:bg-black border-b border-gray-200 dark:border-gray-800 shadow-lg max-h-[calc(100vh-4rem)] overflow-y-auto no-scrollbar">
+    {/* links... */}
+  </div>
+</div>
+
+One more common culprit
+
+If your page wrapper has overflow-y-auto and a fixed height, it can make the header look like it has a scrollbar. Give the outer wrappers this instead:
+
+<div className="min-h-screen overflow-x-hidden">
+  {/* page */}
+</div>
+
+
+That’s it—the header won’t create a vertical scrollbar anymore, and the only place you’ll see a scrollbar is inside the mobile menu when it’s open (correct behavior).

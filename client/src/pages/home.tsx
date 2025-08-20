@@ -1227,8 +1227,8 @@ export default function Home() {
         <div className="absolute inset-0 bg-gradient-to-br from-black/40 via-black/30 to-black/50"></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 md:py-12">
           <div className="text-center max-w-3xl mx-auto">
-            <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-5xl font-bold mb-6 sm:mb-8 leading-tight text-white text-center" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700', textShadow: '2px 2px 4px rgba(0,0,0,0.8)'}}>
-              <div className="leading-tight">
+            <h1 className="text-lg sm:text-xl md:text-2xl lg:text-4xl xl:text-5xl font-bold mb-4 sm:mb-6 md:mb-8 leading-tight text-white text-center" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700', textShadow: '2px 2px 4px rgba(0,0,0,0.8)'}}>
+              <div className="leading-tight space-y-1">
                 {effectiveUser?.userType === 'business' ? (
                   <>
                     <div className="text-center">Connect Your <span className="text-orange-400">Business</span></div>
@@ -1242,11 +1242,18 @@ export default function Home() {
                 )}
               </div>
             </h1>
-            <p className="text-sm sm:text-base md:text-lg lg:text-xl mb-3 sm:mb-4 text-white leading-relaxed px-2 sm:px-0">
+            <p className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl mb-3 sm:mb-4 text-white leading-relaxed px-3 sm:px-4 md:px-0 max-w-4xl mx-auto">
               {effectiveUser?.userType === 'business' ? (
-                'Reach customers through interest-based matching, business notifications, and location-targeted discovery. Grow your business by connecting with travelers and locals who love what you offer.'
+                <span className="block">
+                  Reach customers through interest-based matching, business notifications, and location-targeted discovery. 
+                  <span className="block sm:inline"> Grow your business by connecting with travelers and locals who love what you offer.</span>
+                </span>
               ) : (
-                'Discover amazing experiences, make meaningful connections, and explore the world with like-minded adventurers based on demographics, activities, interests and events'
+                <span className="block text-center">
+                  Discover amazing experiences, make meaningful connections, 
+                  <span className="block sm:inline"> and explore the world with like-minded adventurers </span>
+                  <span className="block sm:inline"> based on demographics, activities, interests and events</span>
+                </span>
               )}
             </p>
 
