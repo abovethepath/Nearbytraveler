@@ -176,29 +176,29 @@ export function PeopleDiscoveryWidget({
       );
     }
 
-    // Get current travel destination if different from hometown
+    // ALWAYS show both hometown AND current location - NEVER hide travel info
     const getCurrentLocation = () => {
+      const hometown = person.location?.split(',')[0] || 'Hometown';
       const activeTravelPlan = travelPlans && Array.isArray(travelPlans) ? 
         (travelPlans as any).find((plan: any) => plan.status === 'active') : null;
       
       if (activeTravelPlan) {
         const travelDestination = activeTravelPlan.destinationCity || activeTravelPlan.destination?.split(',')[0];
-        const hometown = person.location?.split(',')[0];
         
-        // Only show travel destination if it's different from hometown
-        if (travelDestination && travelDestination !== hometown) {
+        // ALWAYS show travel info when someone has an active travel plan
+        if (travelDestination) {
           return {
             isTraveling: true,
             currentLocation: travelDestination,
-            hometown: hometown || 'Hometown'
+            hometown: hometown
           };
         }
       }
       
       return {
         isTraveling: false,
-        currentLocation: person.location?.split(',')[0] || 'Hometown',
-        hometown: person.location?.split(',')[0] || 'Hometown'
+        currentLocation: hometown,
+        hometown: hometown
       };
     };
 
