@@ -1225,27 +1225,32 @@ export default function Home() {
 >
         {/* Dark overlay for text readability */}
         <div className="absolute inset-0 bg-gradient-to-br from-black/40 via-black/30 to-black/50"></div>
-        <div className="relative w-full mx-auto py-1 sm:py-4 md:py-6" style={{padding: '4px 2px'}}>
-          <div className="text-center mx-auto" style={{maxWidth: '240px', width: '100%'}}>
+        <div className="relative w-full mx-auto py-1 sm:py-4 md:py-6" style={{padding: '2px 1px'}}>
+          <div className="text-center mx-auto" style={{maxWidth: '180px', width: '100%', overflow: 'hidden'}}>
             <h1 className="font-bold mb-0.5 sm:mb-2 text-white text-center" style={{
               fontFamily: '"Open Sans", sans-serif', 
               fontWeight: '700', 
               textShadow: '1px 1px 2px rgba(0,0,0,0.8)',
-              fontSize: '11px',
-              lineHeight: '1.0',
-              maxWidth: '220px',
-              margin: '0 auto'
+              fontSize: 'max(8px, 3vw)',
+              lineHeight: '0.9',
+              maxWidth: '180px',
+              margin: '0 auto',
+              transform: 'scale(0.9)',
+              transformOrigin: 'center'
             }}>
               {effectiveUser?.userType === 'business' ? (
                 <>
-                  <div>Connect Your <span className="text-orange-400">Business</span></div>
-                  <div>with Travelers & Locals</div>
+                  <div>Connect Your</div>
+                  <div><span className="text-orange-400">Business</span></div>
+                  <div>with Travelers</div>
+                  <div>& Locals</div>
                 </>
               ) : (
                 <>
                   <div>Connect with</div>
                   <div><span className="text-orange-400">Like-Minded</span></div>
-                  <div>Travelers & Locals</div>
+                  <div>Travelers</div>
+                  <div>& Locals</div>
                 </>
               )}
             </h1>
@@ -1270,39 +1275,39 @@ export default function Home() {
                 </>
               )}
             </h1>
-            {/* Ultra-small mobile description */}
-            <div className="sm:hidden mb-0.5" style={{maxWidth: '220px', margin: '0 auto', padding: '0 1px'}}>
+            {/* Ultra-compact mobile description using viewport units */}
+            <div className="sm:hidden mb-0.5" style={{width: '100vw', maxWidth: '200px', margin: '0 auto', padding: '0'}}>
               <div className="text-white text-center" style={{
-                fontSize: '6px',
-                lineHeight: '1.0',
-                transform: 'scale(1)',
-                transformOrigin: 'center'
+                fontSize: '2.5vw',
+                minFontSize: '4px',
+                maxFontSize: '6px',
+                lineHeight: '0.9',
+                transform: 'scale(0.8)',
+                transformOrigin: 'center',
+                width: 'fit-content',
+                margin: '0 auto'
               }}>
                 {effectiveUser?.userType === 'business' ? (
                   <>
-                    <div>Reach customers</div>
-                    <div>through interest-based</div>
-                    <div>matching, business</div>
-                    <div>notifications, and</div>
-                    <div>location-targeted</div>
-                    <div>discovery. Grow your</div>
-                    <div>business by connecting</div>
-                    <div>with travelers and</div>
-                    <div>locals who love</div>
-                    <div>what you offer.</div>
+                    <div>Reach</div>
+                    <div>customers</div>
+                    <div>through</div>
+                    <div>interest</div>
+                    <div>matching</div>
+                    <div>& business</div>
+                    <div>discovery</div>
                   </>
                 ) : (
                   <>
-                    <div>Discover amazing</div>
-                    <div>experiences, make</div>
+                    <div>Discover</div>
+                    <div>amazing</div>
+                    <div>experiences</div>
+                    <div>& make</div>
                     <div>meaningful</div>
-                    <div>connections, and</div>
-                    <div>explore the world</div>
-                    <div>with like-minded</div>
-                    <div>adventurers based</div>
-                    <div>on demographics,</div>
-                    <div>activities, interests</div>
-                    <div>and events</div>
+                    <div>connections</div>
+                    <div>with</div>
+                    <div>like-minded</div>
+                    <div>adventurers</div>
                   </>
                 )}
               </div>
