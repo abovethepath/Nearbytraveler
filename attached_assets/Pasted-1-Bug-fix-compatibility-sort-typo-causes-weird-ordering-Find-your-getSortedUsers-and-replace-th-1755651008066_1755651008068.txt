@@ -1,0 +1,142 @@
+1) Bug fix: compatibility sort (typo causes weird ordering)
+
+Find your getSortedUsers and replace the compatibility case:
+
+case 'compatibility': {
+  const aShared = (a.interests?.length || 0) + (a.activities?.length || 0);
+  const bShared = (b.interests?.length || 0) + (b.activities?.length || 0); // <- was using a.activities by mistake
+  return bShared - aShared;
+}
+
+2) Mobile avatars: 2–3 per row on phones (desktop untouched)
+
+Right now you render PeopleDiscoveryWidget for both mobile and tablet+. That widget likely lays out 1 per row on small screens. Swap the mobile block for a tiny grid and keep your tablet+ widget as-is.
+
+Replace this mobile block:
+
+{/* Mobile-first avatar grid (phones) - Fixed to show usernames and travel status */}
+<div className="sm:hidden">
+  <PeopleDiscoveryWidget 
+    people={getSortedUsers(filteredUsers).slice(0, displayLimit).map((user: any) => ({
+      id: user.id,
+      username: user.username,
+      name: user.name || user.username,
+      profileImage: user.profileImage,
+      location: user.hometownCity && user.hometownCountry 
+        ? `${user.hometownCity}, ${user.hometownCountry.replace('United States', 'USA')}`
+        : user.location || "Location not set",
+      distance: user.hometownCity && user.hometownState 
+        ? `${user.hometownCity}, ${user.hometownState}`
+        : user.location || "New member",
+      commonInterests: [],
+      userType: user.userType as "traveler" | "local" | "business",
+    }))}
+    title="Nearby Travelers"
+    showSeeAll={false}
+    currentUserId={user?.id || 0}
+  />
+</div>
+
+
+…with this grid (mobile only):
+
+{/* Mobile grid: 2 cols on very small, 3 cols at ≥640px; desktop uses your widget below */}
+<div className="sm:hidden">
+  <div className="grid grid-cols-2 gap-3">
+    {getSortedUsers(filteredUsers).slice(0, displayLimit).map((u: any) => (
+      <button
+        key={u.id}
+        onClick={() => setLocation(`/profile/${u.username}`)}
+        className="group text-left rounded-xl border bg-white dark:bg-gray-800 p-2 hover:shadow-sm"
+      >
+        <div className="relative w-full aspect-[4/5] rounded-lg overflow-hidden bg-gray-100">
+          <img
+            src={u.profileImage || "/attached_assets/placeholder_user.jpg"}
+            alt={u.name || u.username}
+            className="h-full w-full object-cover"
+            loading="lazy"
+          />
+        </div>
+        <div className="mt-2 min-w-0">
+          <div className="text-sm font-semibold truncate text-gray-900 dark:text-white">
+            {u.name || u.username}
+          </div>
+          <div className="text-xs text-gray-500 dark:text-gray-400 truncate">
+            {u.hometownCity && u.hometownCountry
+              ? `${u.hometownCity}, ${u.hometownCountry.replace("United States", "USA")}`
+              : u.location || "New member"}
+          </div>
+        </div>
+      </button>
+    ))}
+  </div>
+</div>
+
+
+Keep your tablet+ block as you have it:
+
+{/* Tablet+ keeps existing widget */}
+<div className="hidden sm:block">
+  <PeopleDiscoveryWidget ... />
+</div>
+
+
+If you want 3 per row at ≥640px, you can optionally change the wrapper to grid grid-cols-2 sm:grid-cols-3 gap-3 instead.
+
+3) Hero height: make phones taller, keep desktop modest
+
+Your hero is currently:
+
+min-h-[50svh] md:min-h-[35vh] xl:min-h-[30vh]
+
+
+If the phone view feels short, bump only mobile:
+
+className="relative overflow-hidden text-white min-h-[68svh] md:min-h-[35vh] xl:min-h-[30vh] bg-cover bg-center bg-no-repeat"
+
+
+This doesn’t touch desktop.
+
+4) Event pills overlapping: keep your fix + ensure wrapper can wrap
+
+You already did this right in the events list:
+
+<div className="flex flex-wrap gap-2 mt-2">
+  <Badge className="inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none shrink-0 ...">
+    {tag}
+  </Badge>
+  {/* +N badge… */}
+</div>
+
+
+If any card still overlaps, add min-w-0 to the CardContent container line:
+
+<CardContent className="p-4 flex-1 flex flex-col min-w-0">
+
+5) Map & sidebar: prevent horizontal overflow (mobile only)
+
+You already wrap CityMap with:
+
+<div className="overflow-hidden rounded-2xl border max-w-full [&_*>*]:min-w-0">
+
+
+For desktop not to feel clipped, you can relax overflow at larger sizes:
+
+<div className="rounded-2xl border max-w-full overflow-hidden md:overflow-visible [&_*>*]:min-w-0">
+
+6) One global gotcha that often “ducks up” desktop
+
+If you previously added a global:
+
+* { min-width: 0; }
+
+
+remove it. Instead, add min-w-0 only to flex/grid children that contain text, like I showed on the avatar tile and CardContent.
+
+Quick test
+
+Phone width: 2 columns of avatars (taller), hero taller, event chips wrap, no horizontal scroll.
+
+Desktop: unchanged widgets/layout, hero not oversized, map not clipped.
+
+If you want me to wire the navbar fix next (hamburger opens under the header without affecting desktop), paste your Navbar file and I’ll give you a minimal md:hidden + z-index-safe patch.
