@@ -257,10 +257,10 @@ export function PeopleDiscoveryWidget({
                     src={person.profileImage} 
                     alt={person.name}
                     loading="lazy"
-                    className="w-48 h-48 object-cover rounded-lg border-2 border-white dark:border-gray-600 shadow-lg"
+                    className="w-32 h-32 object-cover rounded-lg border-2 border-white dark:border-gray-600 shadow-lg"
                   />
                 ) : (
-                  <div className="w-48 h-48 text-6xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-bold rounded-lg flex items-center justify-center border-2 border-white dark:border-gray-600 shadow-lg">
+                  <div className="w-32 h-32 text-5xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-bold rounded-lg flex items-center justify-center border-2 border-white dark:border-gray-600 shadow-lg">
                     {person.username?.charAt(0)?.toUpperCase() || "U"}
                   </div>
                 )}
@@ -344,11 +344,11 @@ export function PeopleDiscoveryWidget({
                 <img 
                   src={person.profileImage} 
                   alt={person.name}
-                  className="w-48 h-48 object-cover rounded-lg border-2 border-white dark:border-gray-600 shadow-lg"
+                  className="w-32 h-32 object-cover rounded-lg border-2 border-white dark:border-gray-600 shadow-lg"
                   loading="lazy"
                 />
               ) : (
-                <div className="w-48 h-48 text-6xl bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 font-bold rounded-lg flex items-center justify-center border-2 border-white dark:border-gray-600 shadow-lg">
+                <div className="w-32 h-32 text-5xl bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 font-bold rounded-lg flex items-center justify-center border-2 border-white dark:border-gray-600 shadow-lg">
                   {person.username?.charAt(0)?.toUpperCase() || "U"}
                 </div>
               )}
