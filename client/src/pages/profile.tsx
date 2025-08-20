@@ -2936,159 +2936,167 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         />
       </div>
     
-      {/* EXPANDED GRADIENT HEADER - MOBILE OPTIMIZED WITH RIGHT-ALIGNED PHOTO */}
-      <div className={`w-full bg-gradient-to-r ${gradientOptions[selectedGradient]} p-4 sm:p-6`}>
-        <div className="max-w-7xl mx-auto">
-          <div className="flex flex-row items-start gap-4 sm:gap-6">
-            {/* Profile Avatar - Left Side */}
-            <div className="relative flex-shrink-0">
-              <Avatar className="w-28 h-28 sm:w-44 sm:h-44 md:w-56 md:h-56 border-4 border-white shadow-lg bg-white">
-                <AvatarImage src={user?.profileImage || ''} className="object-cover" />
-                <AvatarFallback className="text-lg sm:text-2xl md:text-4xl bg-gradient-to-br from-blue-600 to-orange-600 text-white">
+      {/* Profile hero */}
+      <div className={`relative rounded-2xl bg-gradient-to-r ${gradientOptions[selectedGradient]} p-4 sm:p-6 overflow-hidden`}>
+        {/* 2-col on mobile, 3-col on sm+ */}
+        <div className="grid grid-cols-[auto,1fr] sm:grid-cols-[auto,1fr,auto] gap-4 sm:gap-6 items-center">
+
+          {/* AVATAR */}
+          <div className="relative shrink-0">
+            <div className="rounded-full overflow-hidden ring-4 ring-white">
+              <Avatar className="w-24 h-24 sm:w-28 sm:h-28">
+                <AvatarImage className="object-cover" src={user?.profileImage || ''} alt={user.username} />
+                <AvatarFallback className="text-lg sm:text-2xl bg-gradient-to-br from-blue-600 to-orange-600 text-white">
                   {(user?.username?.charAt(0) || user?.name?.charAt(0) || 'U').toUpperCase()}
                 </AvatarFallback>
               </Avatar>
-              {isOwnProfile && (
-                <>
-                  <Button 
-                    size="sm" 
-                    className="absolute -bottom-2 -right-2 bg-blue-600 hover:bg-blue-700 text-white border-none shadow-lg w-8 h-8 sm:w-10 sm:h-10 p-0"
-                    onClick={() => document.getElementById('avatar-upload-input')?.click()}
-                    disabled={uploadingPhoto}
-                  >
-                    <Camera className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
-                  </Button>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleAvatarUpload}
-                    className="hidden"
-                    id="avatar-upload-input"
-                  />
-                </>
-              )}
             </div>
 
-            {/* Profile Info - Right Side */}
-            <div className="flex-1 min-w-0 relative">
-              {isOwnProfile && (
-                <div className="absolute top-0 right-0">
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className="bg-white/90 hover:bg-white text-gray-800 hover:text-gray-900 border border-white text-xs px-2 py-0.5 font-medium shadow-sm"
-                    onClick={() => setSelectedGradient((prev) => (prev + 1) % gradientOptions.length)}
-                  >
-                    🎨
-                  </Button>
-                </div>
-              )}
+            {/* camera/edit photo button */}
+            {isOwnProfile && (
+              <>
+                <Button
+                  size="icon"
+                  variant="secondary"
+                  className="absolute -bottom-1 -right-1 rounded-full shadow-md"
+                  onClick={() => document.getElementById('avatar-upload-input')?.click()}
+                  disabled={uploadingPhoto}
+                >
+                  <Camera className="h-4 w-4" />
+                </Button>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleAvatarUpload}
+                  className="hidden"
+                  id="avatar-upload-input"
+                />
+              </>
+            )}
+          </div>
 
-              {/* EXACTLY 3 LINES as requested - moved down */}
-              <div className="space-y-1 text-black w-full mt-2">
-                {/* Line 1: Username */}
-                <h1 className="text-xl sm:text-3xl font-bold text-black">@{user.username}</h1>
-                
-                {/* Line 2: Location/Status with pin icon - Allow full width */}
-                <div className="flex items-center gap-2 w-full min-w-0">
-                  <MapPin className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
-                  <span className="text-sm sm:text-base font-medium flex-1 truncate max-w-[80vw] sm:max-w-none">
-                    {user.userType === 'business' 
-                      ? `Nearby Business in ${user.hometownCity || 'Los Angeles'}`
-                      : (() => {
-                          // Check for active travel plans first
-                          if (travelPlans && travelPlans.length > 0) {
-                            const today = new Date();
-                            today.setHours(0, 0, 0, 0);
-                            
-                            let activeTrips = [];
-                            
-                            for (const plan of travelPlans) {
-                              if (plan.startDate && plan.endDate) {
-                                const parseLocalDate = (dateInput: string | Date | null | undefined) => {
-                                  if (!dateInput) return null;
-                                  let dateString: string;
-                                  if (dateInput instanceof Date) {
-                                    dateString = dateInput.toISOString();
-                                  } else {
-                                    dateString = dateInput;
-                                  }
-                                  const parts = dateString.split('T')[0].split('-');
-                                  if (parts.length === 3) {
-                                    const year = parseInt(parts[0]);
-                                    const month = parseInt(parts[1]) - 1;
-                                    const day = parseInt(parts[2]);
-                                    return new Date(year, month, day);
-                                  }
-                                  return null;
-                                };
-                                
-                                const startDate = parseLocalDate(plan.startDate);
-                                const endDate = parseLocalDate(plan.endDate);
-                                if (!startDate || !endDate) continue;
-                                startDate.setHours(0, 0, 0, 0);
-                                endDate.setHours(23, 59, 59, 999);
-                                
-                                const isCurrentlyActive = today >= startDate && today <= endDate;
-                                if (isCurrentlyActive && plan.destination) {
-                                  activeTrips.push({
-                                    plan,
-                                    startDate
-                                  });
-                                }
+          {/* TEXT: username, tagline, hometown, small stats */}
+          <div className="min-w-0 flex flex-col gap-1">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-white font-semibold text-xl truncate">@{user.username}</span>
+              {/* status pill, etc */}
+            </div>
+
+            {/* Bio/tagline if exists */}
+            {user.bio && (
+              <p className="text-white/90 text-sm sm:text-base whitespace-normal break-words">
+                {user.bio}
+              </p>
+            )}
+
+            {/* Hometown / location line (wraps instead of truncating) */}
+            <div className="mt-1 flex items-start gap-2 text-white">
+              <MapPin className="h-4 w-4 mt-0.5 shrink-0" />
+              <span className="whitespace-normal break-words">
+                {user.userType === 'business' 
+                  ? `Nearby Business in ${user.hometownCity || 'Los Angeles'}`
+                  : (() => {
+                      // Check for active travel plans first
+                      if (travelPlans && travelPlans.length > 0) {
+                        const today = new Date();
+                        today.setHours(0, 0, 0, 0);
+                        
+                        let activeTrips = [];
+                        
+                        for (const plan of travelPlans) {
+                          if (plan.startDate && plan.endDate) {
+                            const parseLocalDate = (dateInput: string | Date | null | undefined) => {
+                              if (!dateInput) return null;
+                              let dateString: string;
+                              if (dateInput instanceof Date) {
+                                dateString = dateInput.toISOString();
+                              } else {
+                                dateString = dateInput;
                               }
-                            }
+                              const parts = dateString.split('T')[0].split('-');
+                              if (parts.length === 3) {
+                                const year = parseInt(parts[0]);
+                                const month = parseInt(parts[1]) - 1;
+                                const day = parseInt(parts[2]);
+                                return new Date(year, month, day);
+                              }
+                              return null;
+                            };
                             
-                            if (activeTrips.length > 0) {
-                              activeTrips.sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
-                              const currentTrip = activeTrips[0].plan;
-                              const destination = currentTrip.destination || 'Unknown';
-                              return `Nearby Traveler in ${destination}`;
+                            const startDate = parseLocalDate(plan.startDate);
+                            const endDate = parseLocalDate(plan.endDate);
+                            if (!startDate || !endDate) continue;
+                            startDate.setHours(0, 0, 0, 0);
+                            endDate.setHours(23, 59, 59, 999);
+                            
+                            const isCurrentlyActive = today >= startDate && today <= endDate;
+                            if (isCurrentlyActive && plan.destination) {
+                              activeTrips.push({
+                                plan,
+                                startDate
+                              });
                             }
                           }
-                          
-                          // Show "Nearby Local" when at home
-                          const hometownCity = user.hometownCity;
-                          const hometownState = user.hometownState;
-                          const hometownCountry = user.hometownCountry;
-                          
-                          if (hometownCity) {
-                            if (hometownCountry && hometownCountry !== 'United States' && hometownCountry !== 'USA') {
-                              return `Nearby Local in ${hometownCity}, ${hometownCountry}`;
-                            } else if (hometownState && (hometownCountry === 'United States' || hometownCountry === 'USA')) {
-                              return `Nearby Local in ${hometownCity}, ${hometownState}`;
-                            } else {
-                              return `Nearby Local in ${hometownCity}`;
-                            }
-                          } else if (user.location) {
-                            return `Nearby Local in ${user.location}`;
-                          }
-                          return "Nearby Local";
-                        })()
-                    }
-                  </span>
-                </div>
-
-                {/* Line 3: All stats on ONE line - flexible width */}
-                {user.userType !== 'business' && (
-                  <div className="flex items-center flex-wrap gap-2 text-xs sm:text-sm w-full">
-                    <span className="font-medium">🌍 {countriesVisited?.length || 0} countries</span>
-                    <span className="font-medium">⭐ {references?.length || 0} references</span>
-                    <span className="font-medium">
-                      • Nearby Local in {user.hometownCity || 'Playa del Rey'}
-                    </span>
-                  </div>
-                )}
-              </div>
+                        }
+                        
+                        if (activeTrips.length > 0) {
+                          activeTrips.sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
+                          const currentTrip = activeTrips[0].plan;
+                          const destination = currentTrip.destination || 'Unknown';
+                          return `Nearby Traveler in ${destination}`;
+                        }
+                      }
+                      
+                      // Show full hometown information
+                      const locationParts = [
+                        user.hometownCity,
+                        user.hometownState,
+                        user.hometownCountry
+                      ].filter(Boolean);
+                      
+                      if (locationParts.length > 0) {
+                        return `Nearby Local in ${locationParts.join(', ')}`;
+                      } else if (user.location) {
+                        return `Nearby Local in ${user.location}`;
+                      }
+                      return "Nearby Local";
+                    })()
+                }
+              </span>
             </div>
 
-            {/* Action Buttons - Different for own vs other profiles */}
+            {/* Small stats row */}
+            {user.userType !== 'business' && (
+              <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-white/90 text-sm">
+                <span>🌍 {countriesVisited?.length || 0} countries</span>
+                <span>⭐ {references?.length || 0} references</span>
+              </div>
+            )}
+          </div>
+
+          {/* ACTIONS (Color change, etc.) */}
+          <div className="sm:self-start flex sm:flex-col items-center sm:items-end gap-2">
+            {isOwnProfile && (
+              <Button
+                size="sm"
+                variant="secondary"
+                className="shadow"
+                onClick={() => setSelectedGradient((prev) => (prev + 1) % gradientOptions.length)}
+              >
+                🎨
+              </Button>
+            )}
+          </div>
+
+          {/* full-width CTA row (stacks under text on mobile) */}
+          <div className="col-span-2 sm:col-span-3 mt-2">
             {!isOwnProfile ? (
-              <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto mt-4 sm:mt-0">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <Button 
                   className="bg-orange-500 hover:bg-orange-600 text-white border-0 w-full sm:w-auto"
                   onClick={handleMessage}
                 >
+                  <MessageCircle className="h-4 w-4 mr-2" />
                   Message
                 </Button>
                 <Button 
@@ -3101,20 +3109,18 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 </Button>
               </div>
             ) : (
-              <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto mt-4 sm:mt-0">
-                {user && (user.hometownCity || user.location) && (
-                  <Button
-                    onClick={() => {
-                      const chatCity = user.hometownCity || user.location?.split(',')[0] || 'General';
-                      setLocation(`/city-chatrooms?city=${encodeURIComponent(chatCity)}`);
-                    }}
-                    className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white border-0 shadow-lg w-full sm:w-auto"
-                  >
-                    <MessageCircleMore className="w-4 h-4 mr-2" />
-                    Go to Chatrooms
-                  </Button>
-                )}
-              </div>
+              user && (user.hometownCity || user.location) && (
+                <Button
+                  className="w-full sm:w-auto sm:px-6 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white border-0 shadow-lg"
+                  onClick={() => {
+                    const chatCity = user.hometownCity || user.location?.split(',')[0] || 'General';
+                    setLocation(`/city-chatrooms?city=${encodeURIComponent(chatCity)}`);
+                  }}
+                >
+                  <MessageCircleMore className="h-4 w-4 mr-2" />
+                  Go to Chatrooms
+                </Button>
+              )
             )}
           </div>
         </div>
@@ -3170,7 +3176,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             {/* About Section */}
             <Card className="mt-6">
               <CardHeader>
-                <CardTitle>About {user?.userType === 'business' ? (user?.businessName || user?.name || user?.username) : (user?.username || 'User')}</CardTitle>
+                <div className="flex items-start justify-between gap-3">
+                  <h3 className="text-lg font-semibold">About {user?.userType === 'business' ? (user?.businessName || user?.name || user?.username) : (user?.username || 'User')}</h3>
+                  {isOwnProfile && (
+                    <Button size="sm" variant="secondary" onClick={() => setIsEditMode(true)}>
+                      <Edit2 className="h-4 w-4 mr-2" /> Edit Bio
+                    </Button>
+                  )}
+                </div>
               </CardHeader>
               <CardContent>
                 {/* Business Name Field for Business Users */}
@@ -3192,29 +3205,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 
 
                 
-                {/* Bio Section with Mobile-Friendly Edit Button */}
+                {/* Bio Section */}
                 <div className="mb-4">
-                  <div className="flex items-start justify-between mb-2">
-                    <div className="flex-1">
-                      <p className="text-gray-900 dark:text-white leading-relaxed font-semibold">
-                        {user?.userType === 'business' 
-                          ? (user?.businessDescription || user?.bio || "No business description available yet.")
-                          : (user?.bio || "No bio available yet.")
-                        }
-                      </p>
-                    </div>
-                    {/* Bio Edit Button - Always visible on mobile for own profile */}
-                    {isOwnProfile && (
-                      <Button
-                        size="sm"
-                        onClick={() => setIsEditMode(true)}
-                        className="ml-3 bg-blue-600 hover:bg-blue-700 text-white border-0 flex-shrink-0"
-                      >
-                        <Edit className="w-3 h-3 mr-1" />
-                        Edit Bio
-                      </Button>
-                    )}
-                  </div>
+                  <p className="text-muted-foreground whitespace-pre-wrap break-words mt-2">
+                    {user?.userType === 'business' 
+                      ? (user?.businessDescription || user?.bio || "No business description available yet.")
+                      : (user?.bio || "No bio available yet.")
+                    }
+                  </p>
                 </div>
                 
                 {/* Metropolitan Area Information for people in metro areas */}

@@ -1,0 +1,141 @@
+1) Replace your header block with this layout
+
+Bigger avatar (no inner scrollbar)
+
+Text wraps (full hometown visible)
+
+Edit button lives in its own column/row and won’t overlap
+
+{/* Profile hero */}
+<div className="relative rounded-2xl bg-gradient-to-r from-fuchsia-500 via-purple-500 to-blue-500 p-4 sm:p-6 overflow-hidden">
+  {/* 2-col on mobile, 3-col on sm+ */}
+  <div className="grid grid-cols-[auto,1fr] sm:grid-cols-[auto,1fr,auto] gap-4 sm:gap-6 items-center">
+
+    {/* AVATAR */}
+    <div className="relative shrink-0">
+      <div className="rounded-full overflow-hidden ring-4 ring-background">
+        <Avatar className="w-24 h-24 sm:w-28 sm:h-28">
+          <AvatarImage className="object-cover" src={user.avatarUrl ?? ''} alt={user.username} />
+          <AvatarFallback>{user.username?.[0]?.toUpperCase() ?? "U"}</AvatarFallback>
+        </Avatar>
+      </div>
+
+      {/* optional camera/edit photo button */}
+      <Button
+        size="icon"
+        variant="secondary"
+        className="absolute -bottom-1 -right-1 rounded-full shadow-md"
+        onClick={openPhotoDialog}
+      >
+        <Camera className="h-4 w-4" />
+      </Button>
+    </div>
+
+    {/* TEXT: username, tagline, hometown, small stats */}
+    <div className="min-w-0 flex flex-col gap-1">
+      <div className="flex items-center gap-2 flex-wrap">
+        <span className="text-white font-semibold text-xl truncate">@{user.username}</span>
+        {/* status pill, etc */}
+        {user.isVerified && (
+          <Badge className="bg-white/20 text-white">Verified</Badge>
+        )}
+      </div>
+
+      {/* Tagline */}
+      {user.tagline && (
+        <p className="text-white/90 text-sm sm:text-base whitespace-normal break-words">
+          {user.tagline}
+        </p>
+      )}
+
+      {/* Hometown / location line (wraps instead of truncating) */}
+      <div className="mt-1 flex items-start gap-2 text-white">
+        <MapPin className="h-4 w-4 mt-0.5 shrink-0" />
+        <span className="whitespace-normal break-words">
+          {[
+            user.hometownCity,
+            user.hometownState,
+            user.hometownCountry,
+          ].filter(Boolean).join(", ")}
+        </span>
+      </div>
+
+      {/* Small stats row */}
+      <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-white/90 text-sm">
+        <span>🌍 {user.countriesVisited ?? 0} countries</span>
+        <span>⭐ {user.referencesCount ?? 0} references</span>
+        {/* add more short items here */}
+      </div>
+    </div>
+
+    {/* ACTIONS (Edit, privacy switch, etc.) */}
+    <div className="sm:self-start sm:row-span-2 flex sm:flex-col items-center sm:items-end gap-2">
+      <Button
+        size="sm"
+        variant="secondary"
+        className="shadow"
+        onClick={() => setEditingProfile(true)}
+      >
+        <Edit2 className="h-4 w-4 mr-2" />
+        Edit Profile
+      </Button>
+
+      {/* example secondary control */}
+      <div className="hidden sm:flex items-center gap-2 text-white/90">
+        <span className="text-sm">Private</span>
+        <Switch checked={isPrivate} onCheckedChange={setIsPrivate} />
+      </div>
+    </div>
+
+    {/* full-width CTA row (stacks under text on mobile) */}
+    <div className="col-span-2 sm:col-span-3 mt-2">
+      <Button className="w-full sm:w-auto sm:px-6 sm:py-5">
+        <MessageCircle className="h-4 w-4 mr-2" />
+        Go to Chatrooms
+      </Button>
+    </div>
+  </div>
+</div>
+
+2) Important class fixes (kills scrollbars & overlap)
+
+Avatar scrollbars are from an inner container using overflow-auto or mismatched sizes. The wrapper above uses overflow-hidden + ring-4 so you never see a scrollbar.
+
+Ensure your page shell has no horizontal overflow:
+
+<html class="overflow-x-hidden">
+<body class="overflow-x-hidden">
+
+
+and in your app layout:
+
+<main className="min-h-screen w-full overflow-x-clip">{children}</main>
+
+
+Don’t set fixed heights on the gradient header (e.g., remove h-[180px]/max-h-*). Let content define height; that’s what prevents the Edit button from climbing over text.
+
+Anywhere you render pills/badges, wrap with a container that wraps and doesn’t scroll:
+
+<div className="flex flex-wrap gap-2 items-center overflow-visible max-w-full">
+  {/* <Badge>… */}
+</div>
+
+3) About section (Edit Bio button not overlapping)
+
+Make that header a clean two-column flex so the button never sits on top of text:
+
+<div className="flex items-start justify-between gap-3">
+  <h3 className="text-lg font-semibold">About {user.username}</h3>
+  <Button size="sm" variant="secondary" onClick={() => setEditingBio(true)}>
+    <Edit2 className="h-4 w-4 mr-2" /> Edit Bio
+  </Button>
+</div>
+<p className="text-muted-foreground whitespace-pre-wrap break-words mt-2">
+  {user.bio || "No bio available yet."}
+</p>
+
+4) If you still see truncation
+
+Make sure the text container next to the avatar has min-w-0 (included above). Without it, flex items refuse to shrink and force overflow.
+
+If you paste your current header JSX (the part that renders the gradient, avatar, username, hometown, and Edit button), I’ll patch it line-for-line. But using the snippet above should immediately make the avatar bigger, show the full hometown, and stop the Edit button from overlapping.

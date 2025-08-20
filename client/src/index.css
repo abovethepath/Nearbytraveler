@@ -147,6 +147,8 @@
 
 /* Guard rails for mobile - prevent horizontal scroll + text flex fixes */
 html, body, #root { width: 100%; overflow-x: hidden; }
+html { overflow-x: hidden; }
+body { overflow-x: hidden; }
 
 /* Images and media scale down nicely */
 img, video, canvas, svg { max-width: 100%; height: auto; }
