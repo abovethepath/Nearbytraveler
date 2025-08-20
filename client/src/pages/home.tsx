@@ -2161,7 +2161,7 @@ export default function Home() {
                     {getSortedUsers(filteredUsers).slice(0, displayLimit).map((u: any) => (
                       <button
                         key={u.id}
-                        onClick={() => setLocation(`/profile/${u.username}`)}
+                        onClick={() => setLocation(`/profile/${u.id}`)}
                         className="group text-left rounded-xl border bg-white dark:bg-gray-800 p-2 hover:shadow-sm"
                       >
                         <div className="relative w-full aspect-[4/5] rounded-lg overflow-hidden bg-gray-100">
@@ -2210,16 +2210,19 @@ export default function Home() {
                       {/* Tablets only (≥640px and <1024px): keep your widget here */}
                       <div className="hidden sm:block lg:hidden">
                         <PeopleDiscoveryWidget
-                          people={people.map((user: any) => ({
-                            id: user.id,
-                            username: user.username,
-                            name: user.username,
-                            profileImage: user.profileImage,
-                            location: user.hometownCity && user.hometownCountry ? `${user.hometownCity}, ${user.hometownCountry.replace("United States","USA")}` : user.location || "Location not set",
-                            distance: user.hometownCity && user.hometownState ? `${user.hometownCity}, ${user.hometownState}` : user.location || "New member",
-                            commonInterests: [],
-                            userType: user.userType as "traveler" | "local" | "business",
-                          }))}
+                          people={people.map((user: any) => {
+                            console.log(`🔍 MAPPING USER FOR WIDGET:`, { id: user.id, username: user.username });
+                            return {
+                              id: user.id,
+                              username: user.username,
+                              name: user.username,
+                              profileImage: user.profileImage,
+                              location: user.hometownCity && user.hometownCountry ? `${user.hometownCity}, ${user.hometownCountry.replace("United States","USA")}` : user.location || "Location not set",
+                              distance: user.hometownCity && user.hometownState ? `${user.hometownCity}, ${user.hometownState}` : user.location || "New member",
+                              commonInterests: [],
+                              userType: user.userType as "traveler" | "local" | "business",
+                            };
+                          })}
                           title="Nearby Travelers"
                           showSeeAll={false}
                           currentUserId={effectiveUser?.id || currentUserProfile?.id || user?.id}
@@ -2231,7 +2234,7 @@ export default function Home() {
                         {people.map((u: any) => (
                           <button
                             key={u.id}
-                            onClick={() => setLocation(`/profile/${u.username}`)}
+                            onClick={() => setLocation(`/profile/${u.id}`)}
                             className="group text-left rounded-xl border bg-white dark:bg-gray-800 p-3 hover:shadow-sm"
                           >
                             <div className="relative w-full aspect-[4/5] rounded-lg overflow-hidden bg-gray-100">
