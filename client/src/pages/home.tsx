@@ -1225,45 +1225,31 @@ export default function Home() {
 >
         {/* Dark overlay for text readability */}
         <div className="absolute inset-0 bg-gradient-to-br from-black/40 via-black/30 to-black/50"></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 md:py-12">
-          <div className="text-center max-w-3xl mx-auto">
-            <h1 className="text-base sm:text-lg md:text-xl lg:text-3xl xl:text-4xl font-bold mb-3 sm:mb-4 md:mb-6 leading-tight text-white text-center" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700', textShadow: '2px 2px 4px rgba(0,0,0,0.8)'}}>
-              <div className="leading-tight space-y-0.5">
+        <div className="relative w-full mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-6 sm:py-8 md:py-10">
+          <div className="text-center w-full max-w-sm sm:max-w-lg md:max-w-2xl lg:max-w-3xl mx-auto">
+            <h1 className="text-sm sm:text-base md:text-lg lg:text-2xl xl:text-3xl font-bold mb-2 sm:mb-3 md:mb-4 leading-tight text-white" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700', textShadow: '2px 2px 4px rgba(0,0,0,0.8)'}}>
+              <div className="flex flex-col items-center justify-center space-y-1">
                 {effectiveUser?.userType === 'business' ? (
                   <>
-                    <div className="text-center">Connect Your <span className="text-orange-400">Business</span></div>
-                    <div className="text-center">with Travelers & Locals</div>
+                    <div className="text-center break-words">Connect Your <span className="text-orange-400">Business</span></div>
+                    <div className="text-center break-words">with Travelers & Locals</div>
                   </>
                 ) : (
                   <>
-                    <div className="text-center">Connect with <span className="text-orange-400">Like-Minded</span></div>
-                    <div className="text-center">Travelers & Locals</div>
+                    <div className="text-center break-words">Connect with <span className="text-orange-400">Like-Minded</span></div>
+                    <div className="text-center break-words">Travelers & Locals</div>
                   </>
                 )}
               </div>
             </h1>
-            <div className="text-[11px] sm:text-xs md:text-sm lg:text-base xl:text-lg mb-2 sm:mb-3 text-white leading-tight px-2 sm:px-4 md:px-0 max-w-[280px] sm:max-w-sm md:max-w-lg lg:max-w-2xl mx-auto">
-              {effectiveUser?.userType === 'business' ? (
-                <div className="text-center space-y-0.5">
-                  <div>Reach customers through</div>
-                  <div>interest-based matching,</div>
-                  <div>business notifications,</div>
-                  <div>and location-targeted discovery.</div>
-                  <div className="mt-1">Grow your business by connecting</div>
-                  <div>with travelers and locals</div>
-                  <div>who love what you offer.</div>
-                </div>
-              ) : (
-                <div className="text-center space-y-0.5">
-                  <div>Discover amazing experiences,</div>
-                  <div>make meaningful connections,</div>
-                  <div>and explore the world with</div>
-                  <div>like-minded adventurers</div>
-                  <div>based on demographics,</div>
-                  <div>activities, interests</div>
-                  <div>and events</div>
-                </div>
-              )}
+            <div className="w-full px-1 sm:px-2 mb-2 sm:mb-3">
+              <p className="text-[10px] sm:text-xs md:text-sm lg:text-base text-white text-center leading-relaxed break-words overflow-wrap-anywhere" style={{wordBreak: 'break-word', hyphens: 'auto'}}>
+                {effectiveUser?.userType === 'business' ? (
+                  'Reach customers through interest-based matching, business notifications, and location-targeted discovery. Grow your business by connecting with travelers and locals who love what you offer.'
+                ) : (
+                  'Discover amazing experiences, make meaningful connections, and explore the world with like-minded adventurers based on demographics, activities, interests and events'
+                )}
+              </p>
             </div>
 
             {/* Business-specific CTA buttons vs Traveler/Local CTAs */}
