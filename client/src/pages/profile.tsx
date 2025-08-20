@@ -1152,17 +1152,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       return null; // Don't show events until we have proper data
     }
     
-    // Use the same logic as the location display for consistency
+    // ALWAYS use travel destination when available - NEVER hide travel info
     const currentDestination = getCurrentTravelDestination(travelPlans || []);
-    if (currentDestination && user.hometownCity) {
-      const travelDestination = currentDestination.toLowerCase();
-      const hometown = user.hometownCity.toLowerCase();
-      
-      // Only show travel destination events if destination is different from hometown
-      if (!travelDestination.includes(hometown) && !hometown.includes(travelDestination)) {
-        console.log('Profile Event discovery - FINAL CITY SELECTION (traveling):', currentDestination);
-        return currentDestination;
-      }
+    if (currentDestination) {
+      console.log('Profile Event discovery - FINAL CITY SELECTION (traveling):', currentDestination);
+      return currentDestination;
     }
     
     // Otherwise show hometown events
@@ -3407,32 +3401,42 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   {/* Username */}
                   <h1 className="text-xl sm:text-3xl font-bold text-black truncate">@{user.username}</h1>
 
-                  {/* Location/status — never cut off */}
-                  <div className="flex items-center gap-2 w-full">
+                  {/* Location/status — ALWAYS SHOW BOTH HOMETOWN AND TRAVEL STATUS */}
+                  <div className="flex flex-col gap-1 w-full">
+                    {/* ALWAYS show hometown first */}
+                    <div className="flex items-center gap-2">
+                      <MapPin className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 text-gray-500" />
+                      <span className="text-sm sm:text-base font-medium flex-1 min-w-0 truncate text-gray-600 dark:text-gray-400">
+                        From: {user.hometownCity || user.location?.split(',')[0] || 'Hometown not set'}
+                        {user.hometownState && `, ${user.hometownState}`}
+                        {user.hometownCountry && `, ${user.hometownCountry}`}
+                      </span>
+                    </div>
+                    
+                    {/* ALWAYS show travel status */}
                     {(() => {
                       const currentDestination = getCurrentTravelDestination(travelPlans || []);
                       if (currentDestination) {
                         return (
-                          <>
+                          <div className="flex items-center gap-2">
                             <Plane className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 text-blue-500" />
                             <span className="text-sm sm:text-base font-medium flex-1 min-w-0 truncate text-blue-600 dark:text-blue-400">
-                              Currently Traveling in {currentDestination}
+                              Currently traveling in {currentDestination}
                             </span>
-                          </>
+                          </div>
                         );
                       } else {
                         return (
-                          <>
-                            <MapPin className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
-                            <span className="text-sm sm:text-base font-medium flex-1 min-w-0 truncate">
-                              {user.userType === 'business' ? 'Business in' : 'Nearby Local in'} {user.hometownCity || user.location?.split(',')[0] || 'Location not set'}
-                              {user.hometownState && `, ${user.hometownState}`}
-                              {user.hometownCountry && `, ${user.hometownCountry}`}
+                          <div className="flex items-center gap-2">
+                            <MapPin className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 text-green-500" />
+                            <span className="text-sm sm:text-base font-medium flex-1 min-w-0 truncate text-green-600 dark:text-green-400">
+                              Currently home
                             </span>
-                          </>
+                          </div>
                         );
                       }
                     })()}
+                  </div>
                   </div>
 
                   {/* Stats */}
