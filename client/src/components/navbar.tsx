@@ -69,13 +69,6 @@ function MobileMenu({
           </Link>
         ))}
 
-        <button
-          onClick={() => { setLocation("/donate"); onClose(); }}
-          className="w-full mt-4 py-3 px-4 rounded-lg text-white font-medium"
-          style={{ backgroundColor: "#10b981" }}
-        >
-          Donate
-        </button>
       </div>
     </div>
   );
@@ -450,25 +443,6 @@ function Navbar() {
               <div className="flex items-center space-x-2 md:space-x-3">
                 {directUser?.id && <NotificationBell userId={directUser.id} />}
 
-                <button 
-                  onClick={() => setLocation('/donate')}
-                  className="hidden md:block"
-                  style={{ 
-                    backgroundColor: '#10b981',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '6px',
-                    padding: '8px 24px',
-                    fontSize: '14px',
-                    fontWeight: '500',
-                    cursor: 'pointer',
-                    transition: 'background-color 0.2s'
-                  }}
-                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#059669'}
-                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#10b981'}
-                >
-                  Donate
-                </button>
 
                 {/* Mobile Menu Button - Enhanced with better touch targets */}
                 <Button
