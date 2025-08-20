@@ -41,6 +41,75 @@ img, video, canvas, svg { max-width: 100%; height: auto; }
   display: none;             /* Chrome/Safari */
 }
 
+/* ULTRA-AGGRESSIVE MOBILE HERO TEXT FIXES */
+@media screen and (max-width: 640px) {
+  .hero-mobile-text {
+    font-size: 4px !important;
+    line-height: 1.0 !important;
+    max-width: 140px !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    transform: scale(0.7) !important;
+    transform-origin: center !important;
+    overflow: hidden !important;
+    text-overflow: clip !important;
+    word-break: break-all !important;
+  }
+  
+  .hero-mobile-heading {
+    font-size: 6px !important;
+    line-height: 0.9 !important;
+    max-width: 120px !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    transform: scale(0.8) !important;
+    transform-origin: center !important;
+    overflow: hidden !important;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .hero-mobile-text {
+    font-size: 3px !important;
+    max-width: 100px !important;
+    transform: scale(0.6) !important;
+  }
+  
+  .hero-mobile-heading {
+    font-size: 5px !important;
+    max-width: 90px !important;
+    transform: scale(0.7) !important;
+  }
+}
+
+@media screen and (max-width: 360px) {
+  .hero-mobile-text {
+    font-size: 2px !important;
+    max-width: 80px !important;
+    transform: scale(0.5) !important;
+  }
+  
+  .hero-mobile-heading {
+    font-size: 4px !important;
+    max-width: 70px !important;
+    transform: scale(0.6) !important;
+  }
+}
+
+@media screen and (max-width: 320px) {
+  .hero-mobile-text {
+    font-size: 2px !important;
+    max-width: 60px !important;
+    transform: scale(0.4) !important;
+  }
+  
+  .hero-mobile-heading {
+    font-size: 3px !important;
+    max-width: 50px !important;
+    transform: scale(0.5) !important;
+  }
+}
+
 /* Prevent zoom-on-focus on iOS (keep at least 16px font size on inputs) */
 input, select, textarea, button { font-size: 16px; }
 
