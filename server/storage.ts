@@ -8702,6 +8702,29 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
+  // Event Chatroom Message Methods
+  async getEventChatroomMessages(chatroomId: number): Promise<any[]> {
+    try {
+      // Since event chatrooms use the city chatroom infrastructure, 
+      // we can use the existing city chatroom message methods
+      return await this.getCityChatroomMessages(chatroomId);
+    } catch (error) {
+      console.error('Error fetching event chatroom messages:', error);
+      return [];
+    }
+  }
+
+  async createEventChatroomMessage(chatroomId: number, senderId: number, content: string): Promise<any> {
+    try {
+      // Since event chatrooms use the city chatroom infrastructure,
+      // we can use the existing city chatroom message methods
+      return await this.createCityChatroomMessage(chatroomId, senderId, content);
+    } catch (error) {
+      console.error('Error creating event chatroom message:', error);
+      throw error;
+    }
+  }
+
   async getMeetupChatroom(meetupId: number): Promise<any> {
     try {
       // Look for existing meetup chatroom using the existing infrastructure
