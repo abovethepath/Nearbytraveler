@@ -1,0 +1,41 @@
+/* ===== Global Mobile/Overlay/Text Hotfixes ===== */
+
+/* 1) HERO: force pure blue text, kill badge/pill styling on spans inside hero */
+.hero-clean h1 .hero-blue,
+.hero-clean h1 .hero-blue::before,
+.hero-clean h1 .hero-blue::after {
+  color: rgb(59 130 246) !important;    /* tailwind blue-500 */
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  outline: none !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  content: none !important;
+}
+
+/* 2) EVENTS: on phones, NEVER overlay pills on top of text */
+@media (max-width: 767.98px) {
+  .event-card .pills,
+  .event-card .pill,
+  .event-card .category-pill {
+    position: static !important;
+    inset: auto !important;
+    margin-top: .5rem !important;
+  }
+  .event-card .image-gradient {
+    display: none !important;
+  }
+}
+
+/* 3) WRAPPING: long bios/addresses/urls must wrap, never overflow */
+.wrap-any { overflow-wrap: anywhere !important; word-break: break-word !important; }
+.minw0    { min-width: 0 !important; }
+.text-left-important { text-align: left !important; }
+
+/* 4) MAP: ensure the map container has a real height the map can read */
+.map-shell { position: relative; width: 100%; min-height: 320px; border-radius: .5rem; overflow: hidden; }
+@media (min-width: 640px) { .map-shell { min-height: 400px; } }
+
+/* 5) Kill phantom horizontal scrollbars from 100vw usage */
+html, body { overflow-x: hidden; }

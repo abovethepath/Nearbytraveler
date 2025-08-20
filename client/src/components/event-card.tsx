@@ -139,7 +139,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
 
   return (
     <>
-      <article className="rounded-2xl bg-white dark:bg-gray-800 shadow-sm overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer text-left"
+      <article className="event-card rounded-2xl bg-white dark:bg-gray-800 shadow-sm overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer text-left"
                onClick={() => setLocation(`/events/${event.id}`)}>
         {/* Image */}
         {event.imageUrl && (

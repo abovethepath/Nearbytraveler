@@ -1,0 +1,313 @@
+I hear you — let’s stop the bleeding with a single, copy-paste patch set that fixes all 7 things:
+
+blue border on “Travelers & Locals”
+
+event pills overlapping text
+
+discover cards not showing “# Things in Common” or “Traveling to…”
+
+business bios/addresses overflowing
+
+event/business addresses not fully showing
+
+map not rendering
+
+misc mobile overflow
+
+Paste these in order.
+
+1) Global hotfix CSS (add once)
+
+Create src/styles/hotfix.css and import it once (e.g., in src/main.tsx after Tailwind):
+
+/* ===== Global Mobile/Overlay/Text Hotfixes ===== */
+
+/* 1) HERO: force pure blue text, kill badge/pill styling on spans inside hero */
+.hero-clean h1 .hero-blue,
+.hero-clean h1 .hero-blue::before,
+.hero-clean h1 .hero-blue::after {
+  color: rgb(59 130 246) !important;    /* tailwind blue-500 */
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  outline: none !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  content: none !important;
+}
+
+/* 2) EVENTS: on phones, NEVER overlay pills on top of text */
+@media (max-width: 767.98px) {
+  .event-card .pills,
+  .event-card .pill,
+  .event-card .category-pill {
+    position: static !important;
+    inset: auto !important;
+    margin-top: .5rem !important;
+  }
+  .event-card .image-gradient {
+    display: none !important;
+  }
+}
+
+/* 3) WRAPPING: long bios/addresses/urls must wrap, never overflow */
+.wrap-any { overflow-wrap: anywhere !important; word-break: break-word !important; }
+.minw0    { min-width: 0 !important; }
+.text-left-important { text-align: left !important; }
+
+/* 4) MAP: ensure the map container has a real height the map can read */
+.map-shell { position: relative; width: 100%; min-height: 320px; border-radius: .5rem; overflow: hidden; }
+@media (min-width: 640px) { .map-shell { min-height: 400px; } }
+
+/* 5) Kill phantom horizontal scrollbars from 100vw usage */
+html, body { overflow-x: hidden; }
+
+
+In src/main.tsx (or your Tailwind entry), after the Tailwind import:
+
+import '@/styles/hotfix.css';
+
+2) HERO (drop-in)
+
+Replace your hero with this (uses the scoped .hero-blue class). This also shortens the hero on mobile.
+
+<section
+  className="
+    hero-clean relative text-white overflow-hidden
+    bg-cover bg-center bg-no-repeat
+    min-h-[34svh] sm:min-h-[40vh] md:min-h-[36vh] xl:min-h-[32vh]
+  "
+  style={{ backgroundImage: "url('/attached_assets/beach travel_1754973619241.jpg')" }}
+>
+  <div aria-hidden className="pointer-events-none absolute inset-0 bg-gradient-to-br from-black/45 via-black/30 to-black/55" />
+  <div className="relative w-full mx-auto py-4 sm:py-6">
+    <div className="mx-auto px-4 max-w-screen-md text-center">
+      <h1
+        className="font-bold text-balance drop-shadow text-[clamp(1.35rem,6vw,2rem)] sm:text-[clamp(1.25rem,3.2vw,2rem)] leading-tight"
+        style={{ textShadow: "2px 2px 4px rgba(0,0,0,0.8)" }}
+      >
+        {effectiveUser?.userType === "business" ? (
+          <>
+            Connect Your <span className="text-orange-400">Business</span> with{" "}
+            <span className="hero-blue">Travelers</span> & <span className="hero-blue">Locals</span>
+          </>
+        ) : (
+          <>
+            Connect with <span className="text-orange-400">Like-Minded</span>{" "}
+            <span className="hero-blue">Travelers</span> & <span className="hero-blue">Locals</span>
+          </>
+        )}
+      </h1>
+
+      <p
+        className="mt-3 sm:mt-2 mx-auto max-w-prose text-white/95 text-[clamp(0.9rem,3.8vw,1rem)] sm:text-[clamp(0.8rem,2vw,1rem)] leading-snug whitespace-normal break-words [overflow-wrap:anywhere]"
+        style={{ textShadow: "1px 1px 3px rgba(0,0,0,0.7)" }}
+      >
+        {effectiveUser?.userType === "business"
+          ? "Reach customers through interest-based matching, business notifications, and location-targeted discovery."
+          : "Discover amazing experiences & make meaningful connections based on demographics, activities, interests, and events."}
+      </p>
+    </div>
+  </div>
+</section>
+
+3) EVENTS (home/local) — stop overlap on phones
+
+Wrap your event card with .event-card and use a mobile pills row (no absolute). Here’s the minimal structure to copy into your EventCard:
+
+<article className="event-card relative overflow-hidden rounded-2xl bg-gray-800/40 shadow-sm text-left-important">
+  {/* Image */}
+  <div className="relative">
+    <img src={ev.imageUrl} alt={ev.title} className="w-full aspect-[16/9] object-cover" loading="lazy" />
+    {/* md+ overlay only */}
+    <div className="hidden md:block image-gradient absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/60 to-transparent" />
+    {ev.category && (
+      <span className="hidden md:inline-flex category-pill absolute top-3 right-3 z-10 rounded-full px-3 py-1 text-xs font-semibold bg-gray-900/80 text-white">
+        {ev.category}
+      </span>
+    )}
+  </div>
+
+  {/* MOBILE pills (normal flow, won’t overlap) */}
+  <div className="md:hidden px-4 pt-3 flex flex-wrap gap-2">
+    {ev.category && <span className="rounded-full px-3 py-1 text-xs font-semibold bg-gray-900/80 text-white">{ev.category}</span>}
+    {ev.isLocal && <span className="rounded-full px-3 py-1 text-xs font-medium bg-gray-200/20 text-white">Local</span>}
+    {typeof ev.attendingCount === 'number' && (
+      <span className="rounded-full px-3 py-1 text-xs font-medium bg-purple-600 text-white">{ev.attendingCount} attending</span>
+    )}
+  </div>
+
+  {/* Content */}
+  <div className="p-4 md:p-5">
+    <h3 className="text-white text-base md:text-lg font-semibold leading-snug line-clamp-2">{ev.title}</h3>
+    {ev.description && (
+      <p className="mt-1 text-sm text-gray-300 leading-relaxed wrap-any">{ev.description}</p>
+    )}
+    <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+      {ev.address && (
+        <div className="minw0 flex items-center gap-2 text-sm text-gray-300">
+          <MapPin className="h-4 w-4 shrink-0" />
+          <span className="wrap-any whitespace-normal">{ev.address}</span>
+        </div>
+      )}
+      {ev.date && (
+        <div className="minw0 flex items-center gap-2 text-sm text-gray-300">
+          <Calendar className="h-4 w-4 shrink-0" />
+          <span className="wrap-any whitespace-normal">{ev.date}</span>
+        </div>
+      )}
+    </div>
+  </div>
+</article>
+
+
+Key: the .event-card + hotfix.css ensures no absolute pills on mobile and forces wrapping.
+
+4) DISCOVER people — show “# in common” + “Traveling to…”, and open their profile
+
+Inside your PersonWithCommonalities:
+
+// ✅ DO NOT gate this on local isLoading; just check IDs differ
+const enabledCompat = !!currentUserId && !!person.id && Number(currentUserId) !== Number(person.id);
+const { data: compatibilityData } = useQuery({
+  queryKey: [`/api/compatibility/${currentUserId}/${person.id}`],
+  enabled: enabledCompat,
+  staleTime: 5 * 60 * 1000,
+});
+
+const sharedInterests = compatibilityData?.sharedInterests ?? [];
+const sharedActivities = compatibilityData?.sharedActivities ?? [];
+const sharedEvents = (compatibilityData?.sharedEvents ?? []).map((e:any) => e?.title).filter(Boolean);
+const countInCommon = sharedInterests.length + sharedActivities.length + sharedEvents.length;
+const topCommon = [...sharedInterests, ...sharedActivities, ...sharedEvents].slice(0, 3);
+
+// Travel blurb
+const travelBlurb = useMemo(() => {
+  const plans = Array.isArray(travelPlans) ? (travelPlans as any[]) : [];
+  const active = plans.find(p => p?.status === 'active');
+  if (active) {
+    const city = active.destinationCity || active.destination?.split(',')[0];
+    const home = person.location?.split(',')[0];
+    if (city && city !== home) return `Traveling now: ${city}`;
+  }
+  const upcoming = plans.filter(p => p?.status === 'upcoming')
+    .sort((a,b)=> new Date(a.startDate||0).getTime() - new Date(b.startDate||0).getTime())[0];
+  if (upcoming) {
+    const city = upcoming.destinationCity || upcoming.destination?.split(',')[0];
+    const home = person.location?.split(',')[0];
+    if (city && city !== home) return `Next trip: ${city}`;
+  }
+  return null;
+}, [travelPlans, person.location]);
+
+// Route fix – always build /profile/:id and stop bubbling
+const profileHref = `/profile/${person.id}`;
+const handleCardClick = (e?: React.MouseEvent) => { e?.stopPropagation?.(); setLocation(profileHref); };
+const handleAvatarClick = (e: React.MouseEvent) => { e.stopPropagation(); setLocation(profileHref); };
+
+
+Render (near your bottom section):
+
+{travelBlurb && (
+  <div className="mt-1">
+    <p className="text-sm text-gray-300">{travelBlurb}</p>
+  </div>
+)}
+
+{countInCommon > 0 && (
+  <div className="mt-1">
+    <p className="text-sm text-gray-300">
+      <span className="font-semibold">{countInCommon} Things In Common:</span> {topCommon.join(' • ')}
+    </p>
+  </div>
+)}
+
+
+And confirm your routes:
+
+<Switch>
+  <Route path="/profile/:id">
+    {(p) => <PublicProfilePage userId={Number(p.id)} />}
+  </Route>
+  <Route path="/profile" component={MyProfilePage} />
+</Switch>
+
+5) BusinessesGrid — wrap bios/addresses, never overflow
+
+Use the wrappers we added:
+
+<p className="mt-3 text-sm text-gray-300 leading-relaxed wrap-any line-clamp-3 md:line-clamp-4">{bio}</p>
+
+<div className="mt-3 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+  {website && (
+    <a href={safeUrl(website)} target="_blank" rel="noopener noreferrer"
+       className="inline-flex items-center gap-2 text-sm text-blue-400 hover:underline minw0" title={website}>
+      <Globe className="h-4 w-4 shrink-0" />
+      <span className="truncate">{website}</span>
+    </a>
+  )}
+  {phone && (
+    <a href={`tel:${phone}`} className="inline-flex items-center gap-2 text-sm text-gray-300 minw0">
+      <Phone className="h-4 w-4 shrink-0" />
+      <span className="truncate">{phone}</span>
+    </a>
+  )}
+  {b.streetAddress && (
+    <div className="inline-flex items-center gap-2 text-sm text-gray-300 minw0">
+      <MapPin className="h-4 w-4 shrink-0" />
+      <span className="wrap-any whitespace-normal">{b.streetAddress}</span>
+    </div>
+  )}
+</div>
+
+
+If your address was previously truncate, switch it to wrap-any whitespace-normal to show the full address.
+
+6) CityMap — guaranteed height + wrapping + remount
+
+Use the .map-shell we defined:
+
+<CardContent className="space-y-4">
+  <p className="text-xs sm:text-sm text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-900/20 p-3 rounded-lg border border-amber-200 dark:border-amber-800 wrap-any">
+    <strong className="font-semibold">Map Notice:</strong> Interactive maps are provided for general reference only. Location accuracy and availability may vary. We are not responsible for map functionality or data accuracy.
+  </p>
+
+  <div className="map-shell">
+    <InteractiveMap
+      key={`${city}-${state ?? ''}-${country}`}   // force remount on city change
+      locations={locations}
+      center={center}
+      zoom={12}
+    />
+  </div>
+</CardContent>
+
+
+Inside your InteractiveMap, make sure there is an outer div that fills the parent:
+
+export function InteractiveMap(props){
+  return <div style={{position:'absolute', inset:0}} id="map-root">{/* map lib mounts here */}</div>;
+}
+
+
+(If your map lib needs an explicit height prop, ignore the absolute fill and set style={{height:'100%'}} on its root target.)
+
+After you paste:
+
+Restart dev server to ensure the new CSS is loaded.
+
+Hard refresh the browser (Cmd/Ctrl-Shift-R).
+
+On mobile, recheck:
+
+blue text (no blue boxes) ✅
+
+event pills stack under the image on phones ✅
+
+discover cards show “Traveling now/Next trip” + “X Things In Common” ✅
+
+business/event addresses wrap fully ✅
+
+map visible (container has height) ✅
+
+If any one item still misbehaves, tell me which page/section and I’ll target that exact component next with a micro-patch.

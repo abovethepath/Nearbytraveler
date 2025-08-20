@@ -203,14 +203,14 @@ export default function BusinessesGrid({ currentLocation, travelPlans = [] }: Bu
                   </p>
                 )}
 
-                {/* Contact row — wrap on small, truncate long URLs */}
+                {/* Contact row — wrap on small, use wrap-any for addresses */}
                 <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
                   {website && (
                     <a
                       href={safeUrl(website)}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400 hover:underline min-w-0"
+                      className="inline-flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400 hover:underline minw0"
                       title={website}
                       onClick={(e) => e.stopPropagation()}
                     >
@@ -221,15 +221,21 @@ export default function BusinessesGrid({ currentLocation, travelPlans = [] }: Bu
                   {phone && (
                     <a
                       href={`tel:${phone}`}
-                      className="inline-flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 min-w-0"
+                      className="inline-flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 minw0"
                       onClick={(e) => e.stopPropagation()}
                     >
                       <Phone className="h-4 w-4 shrink-0" />
                       <span className="truncate">{phone}</span>
                     </a>
                   )}
+                  {b.streetAddress && (
+                    <div className="inline-flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 minw0">
+                      <MapPin className="h-4 w-4 shrink-0" />
+                      <span className="wrap-any whitespace-normal">{b.streetAddress}</span>
+                    </div>
+                  )}
                   {b.openHours && (
-                    <div className="inline-flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 min-w-0">
+                    <div className="inline-flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 minw0">
                       <Clock className="h-4 w-4 shrink-0" />
                       <span className="truncate">{b.openHours}</span>
                     </div>

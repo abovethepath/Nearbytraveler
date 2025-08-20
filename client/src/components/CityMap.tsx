@@ -236,7 +236,7 @@ export function CityMap({ city, state, country }: CityMapProps) {
 
       <CardContent className="space-y-4">
         {/* ✅ Notice moved here + hard wrapping for tiny screens */}
-        <p className="text-xs sm:text-sm text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-900/20 p-3 rounded-lg border border-amber-200 dark:border-amber-800 whitespace-normal break-words [overflow-wrap:anywhere]">
+        <p className="text-xs sm:text-sm text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-900/20 p-3 rounded-lg border border-amber-200 dark:border-amber-800 wrap-any">
           <strong className="font-semibold">Map Notice:</strong> Interactive maps are provided for general reference only. Location accuracy and availability may vary. We are not responsible for map functionality or data accuracy.
         </p>
 
@@ -256,7 +256,7 @@ export function CityMap({ city, state, country }: CityMapProps) {
         </div>
 
         {/* ✅ Map needs an explicit height container */}
-        <div className="relative w-full min-h-[320px] sm:min-h-[400px] rounded-lg overflow-hidden">
+        <div className="map-shell">
           <InteractiveMap
             key={`${city}-${state ?? ''}-${country}`} // force remount when city changes
             locations={locations}
