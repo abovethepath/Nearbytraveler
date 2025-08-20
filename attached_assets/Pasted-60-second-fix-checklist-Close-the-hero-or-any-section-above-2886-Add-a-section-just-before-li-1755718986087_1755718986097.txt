@@ -1,0 +1,56 @@
+60-second fix checklist
+
+Close the hero (or any section above 2886). Add a </section> just before line 2886 as a test. If the error moves or disappears, the hero was unclosed.
+
+Ensure you’re inside a single return ( … ). If your <div className="w-full…"> at 2886 is outside the existing return, you’ll get this error. Add the missing ) and ; above it, or move this <div> inside the existing return.
+
+Wrap siblings with a fragment. You can’t have two top-level JSX siblings. Wrap multiple sections in <> … </>.
+
+Close any map blocks. Every {items.map(x => ( … ))} needs )) and a closing }.
+
+Known-good scaffold (drop-in around your content)
+
+Paste this around the area and move your blocks into the labeled spots. It guarantees a single root and all tags closed.
+
+// profile.tsx
+export default function ProfilePage() {
+  return (
+    <>
+      {/* ===== HERO (make sure this section is fully closed) ===== */}
+      {/* <section> ...your hero content... </section> */}
+
+      {/* ===== MAIN LAYOUT (the part around line ~2886) ===== */}
+      <div className="w-full max-w-full mx-auto pb-4">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          {/* Main Content Column */}
+          <div className="lg:col-span-2 space-y-4">
+            {/* Move your main content blocks here */}
+            {/* Example:
+              <SomeBlock />
+              {items.map(item => (
+                <Card key={item.id}>...</Card>
+              ))}  // <-- ensure both )) and } exist
+            */}
+          </div>
+
+          {/* Sidebar */}
+          <aside className="space-y-4">
+            {/* Move your sidebar content here */}
+          </aside>
+        </div>
+      </div>
+    </>
+  );
+}
+
+Quick “find the culprit” tricks
+
+Add a temporary </section> just before 2886. If build succeeds, you forgot to close one above.
+
+Format the file (Prettier). It often jumps to the exact unclosed block.
+
+Binary comment: comment out blocks above 2886 by halves until it compiles; the last uncommented block is the offender.
+
+Bracket match: put the cursor on each opening tag/paren above; if your editor can’t find a match, that’s the one.
+
+If you paste ~30 lines above and below 2886 (especially where your hero ends and where return ( begins), I’ll mark the exact tag/paren you need to close.
