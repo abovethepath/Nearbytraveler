@@ -3334,7 +3334,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
       {/* Profile Completion Warning - Only show for incomplete own profiles */}
       {isProfileIncomplete() && (
-        <div className="w-full bg-red-600 text-white px-4 py-3 mb-4">
+        <div className="w-full bg-red-600 text-white px-4 py-3">
           <div className="max-w-7xl mx-auto">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
               <div className="flex items-center gap-3 flex-1">
@@ -3360,7 +3360,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       )}
     
       {/* EXPANDED GRADIENT HEADER - MOBILE OPTIMIZED WITH RIGHT-ALIGNED PHOTO */}
-      <div className={`w-full bg-gradient-to-r ${gradientOptions[selectedGradient]} p-6 sm:p-8 pb-8 sm:pb-10`}>
+      <div className={`w-full bg-gradient-to-r ${gradientOptions[selectedGradient]} p-8 sm:p-10 pb-12 sm:pb-16`}>
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-row items-start gap-4 sm:gap-6">
             {/* Profile Avatar - Left Side */}
@@ -3593,13 +3593,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               </div>
             ) : (
               <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto mt-4 sm:mt-0">
-                <Button
-                  className="bg-orange-600 hover:bg-orange-700 text-white border-0 w-full sm:w-auto"
-                  onClick={() => setLocation(`/?filters=open&return=${encodeURIComponent(window.location.pathname)}`)}
-                >
-                  <Search className="w-4 h-4 mr-2" />
-                  Advanced Search
-                </Button>
                 {user && (user.hometownCity || user.location) && (
                   <Button
                     onClick={() => {
