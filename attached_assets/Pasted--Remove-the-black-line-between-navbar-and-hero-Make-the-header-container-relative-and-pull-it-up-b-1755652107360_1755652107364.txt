@@ -1,0 +1,88 @@
+) Remove the black line between navbar and hero
+
+Make the header container relative and pull it up by 1px to close the seam.
+
+Replace your header wrapper opening tag with:
+
+<div
+  className={`relative -mt-px w-full bg-gradient-to-r ${gradientOptions[selectedGradient]} p-8 sm:p-10 pb-12 sm:pb-16`}
+>
+
+🖼️ 2) Camera (edit) button shouldn’t cut the avatar
+
+Keep it outside the avatar circle and give it a white ring so it doesn’t “eat” the photo.
+
+Replace the camera button block with:
+
+{isOwnProfile && (
+  <>
+    <Button
+      size="icon"
+      className="absolute -bottom-2 -right-2 translate-x-1/4 translate-y-1/4
+                 h-10 w-10 sm:h-11 sm:w-11 rounded-full p-0
+                 bg-blue-600 hover:bg-blue-700 text-white shadow-lg
+                 ring-4 ring-white"
+      onClick={() => document.getElementById('avatar-upload-input')?.click()}
+      disabled={uploadingPhoto}
+      aria-label="Change avatar"
+    >
+      <Camera className="h-4 w-4 sm:h-5 sm:w-5" />
+    </Button>
+    <input id="avatar-upload-input" type="file" accept="image/*" onChange={handleAvatarUpload} className="hidden" />
+  </>
+)}
+
+
+(The avatar container stays the same: the button is absolutely positioned relative to the wrapper, not clipped by the round overflow-hidden image.)
+
+🎨 3) Color-change button is too big / taking layout space
+
+Make it a small floating icon in the header instead of inline content.
+
+Right inside the gradient header (because we made it relative), add:
+
+{isOwnProfile && (
+  <button
+    type="button"
+    onClick={() => setSelectedGradient((prev) => (prev + 1) % gradientOptions.length)}
+    aria-label="Change header colors"
+    className="absolute right-3 top-3 z-10 inline-flex items-center justify-center
+               h-9 w-9 rounded-full bg-white/80 hover:bg-white text-gray-700 shadow-md"
+  >
+    🎨
+  </button>
+)}
+
+
+Remove the old “🎨” button block (mb-3 … variant="ghost" …) from the Profile Info area.
+
+📍 4) Hometown line being cut off by the CTA button
+
+Let the row wrap on small screens and ensure text can shrink instead of hiding.
+
+Change the row container classes:
+
+<div className="flex flex-row flex-wrap items-start gap-4 sm:gap-6">
+
+
+In the location row, add truncation room:
+
+<div className="flex items-center gap-2 w-full">
+  <MapPin className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+  <span className="text-sm sm:text-base font-medium flex-1 min-w-0 truncate">
+    {/* location / travel status */}
+  </span>
+</div>
+
+
+CTA wrapper stays full-width on mobile, auto on desktop (already true), but ensure it starts on a new line when needed:
+
+<div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto mt-4 sm:mt-0">
+  {/* buttons */}
+</div>
+
+(Nice-to-have) Avatar sizes look cramped?
+
+You can bump the base size slightly on desktop only (mobile unchanged):
+
+<div className="w-32 h-32 sm:w-36 sm:h-36 md:w-48 md:h-48 border-4 border-white shadow-lg bg-white rounded-full overflow-hidden">

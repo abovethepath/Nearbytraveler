@@ -3360,12 +3360,24 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       )}
     
       {/* EXPANDED GRADIENT HEADER - MOBILE OPTIMIZED WITH RIGHT-ALIGNED PHOTO */}
-      <div className={`w-full bg-gradient-to-r ${gradientOptions[selectedGradient]} p-8 sm:p-10 pb-12 sm:pb-16`}>
+      <div className={`relative -mt-px w-full bg-gradient-to-r ${gradientOptions[selectedGradient]} p-8 sm:p-10 pb-12 sm:pb-16`}>
+        {isOwnProfile && (
+          <button
+            type="button"
+            onClick={() => setSelectedGradient((prev) => (prev + 1) % gradientOptions.length)}
+            aria-label="Change header colors"
+            className="absolute right-3 top-3 z-10 inline-flex items-center justify-center
+                       h-9 w-9 rounded-full bg-white/80 hover:bg-white text-gray-700 shadow-md"
+          >
+            🎨
+          </button>
+        )}
+        
         <div className="max-w-7xl mx-auto">
-          <div className="flex flex-row items-start gap-4 sm:gap-6">
+          <div className="flex flex-row flex-wrap items-start gap-4 sm:gap-6">
             {/* Profile Avatar - Left Side */}
             <div className="relative flex-shrink-0">
-              <div className="w-32 h-32 sm:w-36 sm:h-36 md:w-44 md:h-44 border-4 border-white shadow-lg bg-white rounded-full overflow-hidden">
+              <div className="w-32 h-32 sm:w-36 sm:h-36 md:w-48 md:h-48 border-4 border-white shadow-lg bg-white rounded-full overflow-hidden">
                 <SimpleAvatar 
                   user={user} 
                   size="xl" 
@@ -3374,39 +3386,25 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               </div>
               {isOwnProfile && (
                 <>
-                  <Button 
-                    size="sm" 
-                    className="absolute -bottom-1 -right-1 bg-blue-600 hover:bg-blue-700 text-white border-none shadow-lg w-8 h-8 sm:w-10 sm:h-10 p-0"
+                  <Button
+                    size="icon"
+                    className="absolute -bottom-2 -right-2 translate-x-1/4 translate-y-1/4
+                               h-10 w-10 sm:h-11 sm:w-11 rounded-full p-0
+                               bg-blue-600 hover:bg-blue-700 text-white shadow-lg
+                               ring-4 ring-white"
                     onClick={() => document.getElementById('avatar-upload-input')?.click()}
                     disabled={uploadingPhoto}
+                    aria-label="Change avatar"
                   >
-                    <Camera className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <Camera className="h-4 w-4 sm:h-5 sm:w-5" />
                   </Button>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleAvatarUpload}
-                    className="hidden"
-                    id="avatar-upload-input"
-                  />
+                  <input id="avatar-upload-input" type="file" accept="image/*" onChange={handleAvatarUpload} className="hidden" />
                 </>
               )}
             </div>
 
             {/* Profile Info - Right Side */}
             <div className="flex-1 min-w-0">
-              {isOwnProfile && (
-                <div className="mb-3">
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className="bg-white/70 hover:bg-white/90 text-gray-700 hover:text-gray-900 border-none text-xs px-2 py-1 font-normal shadow-sm rounded-full opacity-75 hover:opacity-100"
-                    onClick={() => setSelectedGradient((prev) => (prev + 1) % gradientOptions.length)}
-                  >
-                    🎨
-                  </Button>
-                </div>
-              )}
 
               {/* Business Profile Clean Display */}
               {user?.userType === 'business' ? (
@@ -3482,7 +3480,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   {/* Line 2: Location/Status with pin icon - Allow full width */}
                 <div className="flex items-center gap-2 w-full">
                   <MapPin className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
-                  <span className="text-sm sm:text-base font-medium flex-1">
+                  <span className="text-sm sm:text-base font-medium flex-1 min-w-0 truncate">
                     {user.userType === 'business' 
                       ? `Nearby Business in ${(user as any).city || (user as any).businessCity || user.hometownCity || 'Los Angeles Metro'}`
                       : (() => {
