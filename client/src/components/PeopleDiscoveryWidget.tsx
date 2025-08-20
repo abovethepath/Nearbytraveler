@@ -116,10 +116,8 @@ export function PeopleDiscoveryWidget({
       retry: false
     });
 
-    // Debug logging
+    // Debug logging for navigation issues
     React.useEffect(() => {
-      console.log(`🔍 PEOPLE DISCOVERY: User ${person.username} (${person.id}) currentUserId: ${currentUserId}, enabled: ${!!currentUserId && !!person.id && currentUserId !== person.id}`);
-      console.log(`🔍 QUERY KEY: ["/api/compatibility/${currentUserId}/${person.id}"]`);
       if (compatibilityData) {
         console.log(`✅ PEOPLE DISCOVERY: User ${person.username} (${person.id}) compatibility data:`, compatibilityData);
       } else {

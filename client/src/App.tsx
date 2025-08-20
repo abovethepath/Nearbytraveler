@@ -39,6 +39,7 @@ import { QueryClientProvider, useQueryClient } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
+import GlobalHotfixes from "@/GlobalHotfixes";
 import Home from "@/pages/home";
 import Discover from "@/pages/discover";
 import Profile from "@/pages/profile";
@@ -1025,6 +1026,7 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
+      <GlobalHotfixes />
       <ThemeProvider defaultTheme="dark" storageKey="nearby-traveler-theme">
         <TooltipProvider>
           <Toaster />

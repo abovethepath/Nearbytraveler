@@ -2211,7 +2211,6 @@ export default function Home() {
                       <div className="hidden sm:block lg:hidden">
                         <PeopleDiscoveryWidget
                           people={people.map((user: any) => {
-                            console.log(`🔍 MAPPING USER FOR WIDGET:`, { id: user.id, username: user.username });
                             return {
                               id: user.id,
                               username: user.username,
@@ -2355,106 +2354,67 @@ export default function Home() {
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                   {events.slice(0, eventsDisplayCount).map((event) => (
-                    <Card 
+                    <article 
                       key={event.id} 
-                      className="hover:shadow-lg cursor-pointer overflow-hidden bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 min-h-[400px] flex flex-col"
+                      className="event-card relative overflow-hidden rounded-2xl bg-gray-800/40 shadow-sm text-left-important hover:shadow-lg cursor-pointer"
                       onClick={() => setLocation(`/events/${event.id}`)}
                     >
-                      {/* Event Photo Header - matches user card structure */}
-                      <div 
-                        className="relative h-32 bg-cover bg-center"
-                        style={{
-                          backgroundImage: event.imageUrl ? `url('${event.imageUrl}')` : `url('https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400&h=300&fit=crop')`,
-                          backgroundSize: 'cover',
-                          backgroundPosition: 'center'
-                        }}
-                      >
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
-                        <div className="absolute top-2 right-2">
-                          <Badge variant="secondary" className="text-xs bg-white/90 dark:bg-gray-800/90 dark:text-white backdrop-blur-sm">{event.category || 'Event'}</Badge>
-                        </div>
+                      {/* Image (no overlay needed) */}
+                      <div className="relative">
+                        <img 
+                          src={event.imageUrl || 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400&h=300&fit=crop'} 
+                          alt={event.title} 
+                          className="w-full aspect-[16/9] object-cover" 
+                          loading="lazy" 
+                        />
                       </div>
 
-                      <CardContent className="p-4 flex-1 flex flex-col min-w-0">
-                        <div className="mb-2">
-                          <h3 className="font-semibold text-gray-900 dark:text-white text-sm line-clamp-2">{event.title}</h3>
-                        </div>
-                        {event.description && (
-                          <p className="text-xs text-gray-600 dark:text-gray-400 mb-2 line-clamp-2">{event.description}</p>
+                      {/* Pills live in normal flow (hotfix enforces non-absolute) */}
+                      <div className="pills px-4 pt-3 flex flex-wrap gap-2">
+                        {event.category && <span className="rounded-full px-3 py-1 text-xs font-semibold bg-gray-900/80 text-white">{event.category}</span>}
+                        {(event as any).participantCount && (
+                          <span className="rounded-full px-3 py-1 text-xs font-medium bg-purple-600 text-white">{(event as any).participantCount} attending</span>
                         )}
+                      </div>
 
+                      {/* Content */}
+                      <div className="p-4 md:p-5">
+                        <h3 className="text-white text-base md:text-lg font-semibold leading-snug line-clamp-2">{event.title}</h3>
+                        {event.description && <p className="mt-1 text-sm text-gray-300 leading-relaxed wrap-any">{event.description}</p>}
 
-
-                        <div className="space-y-1 text-xs text-gray-500 dark:text-gray-300 flex-1">
-                          <div className="flex items-center gap-1">
-                            <MapPin className="w-3 h-3 text-gray-500 dark:text-gray-400" />
-                            <span className="text-gray-500 dark:text-gray-300">{event.location}</span>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <Calendar className="w-3 h-3 text-gray-500 dark:text-gray-400" />
-                            <span className="text-gray-500 dark:text-gray-300">
-                              {(() => {
-                                const eventDate = new Date(event.date);
-                                const currentYear = new Date().getFullYear();
-                                const eventYear = eventDate.getFullYear();
-                                const dateStr = eventDate.toLocaleDateString('en-US', { 
-                                  month: 'short', 
-                                  day: 'numeric',
-                                  year: eventYear !== currentYear ? 'numeric' : undefined
-                                });
-                                const timeStr = eventDate.toLocaleTimeString('en-US', { 
-                                  hour: 'numeric', 
-                                  minute: '2-digit',
-                                  hour12: true 
-                                });
-                                return `${dateStr} at ${timeStr}`;
-                              })()}
-                            </span>
-                          </div>
-
-                          {/* Requirements */}
-                          {event.requirements && (
-                            <div className="flex items-start gap-1">
-                              <AlertCircle className="w-3 h-3 text-orange-500 dark:text-orange-400 mt-0.5 flex-shrink-0" />
-                              <span className="text-xs text-orange-600 dark:text-orange-400 line-clamp-1">{event.requirements}</span>
+                        <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+                          {event.location && (
+                            <div className="minw0 flex items-center gap-2 text-sm text-gray-300">
+                              <MapPin className="h-4 w-4 shrink-0" />
+                              <span className="wrap-any whitespace-normal">{event.location}</span>
                             </div>
                           )}
-
-                          {/* Tags */}
-                          {event.tags && event.tags.length > 0 && (
-                            <div className="flex flex-wrap gap-2 mt-2">
-                              {event.tags.slice(0, 3).map((tag: string, index: number) => (
-                                <Badge key={index} variant="outline" className="inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none shrink-0 text-gray-600 dark:text-gray-300 border-gray-300 dark:border-gray-600">
-                                  {tag}
-                                </Badge>
-                              ))}
-                              {event.tags.length > 3 && (
-                                <Badge variant="outline" className="inline-flex items-center justify-center h-7 rounded-full px-2 text-[11px] font-medium whitespace-nowrap leading-none shrink-0 text-gray-500 dark:text-gray-400 border-gray-300 dark:border-gray-600">
-                                  +{event.tags.length - 3}
-                                </Badge>
-                              )}
+                          {event.date && (
+                            <div className="minw0 flex items-center gap-2 text-sm text-gray-300">
+                              <Calendar className="h-4 w-4 shrink-0" />
+                              <span className="wrap-any whitespace-normal">
+                                {(() => {
+                                  const eventDate = new Date(event.date);
+                                  const currentYear = new Date().getFullYear();
+                                  const eventYear = eventDate.getFullYear();
+                                  const dateStr = eventDate.toLocaleDateString('en-US', { 
+                                    month: 'short', 
+                                    day: 'numeric',
+                                    year: eventYear !== currentYear ? 'numeric' : undefined
+                                  });
+                                  const timeStr = eventDate.toLocaleTimeString('en-US', { 
+                                    hour: 'numeric', 
+                                    minute: '2-digit',
+                                    hour12: true 
+                                  });
+                                  return `${dateStr} at ${timeStr}`;
+                                })()}
+                              </span>
                             </div>
                           )}
-
-                          <div className="flex items-center justify-between mt-2">
-                            <span className="text-xs text-green-600 font-medium dark:text-green-400">
-                              <Users className="w-3 h-3 inline mr-1 dark:text-green-400" />
-                              {(event as any).participantCount || 1} attending
-                            </span>
-                            <Button 
-                              size="sm" 
-                              className="h-6 px-2 text-xs bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white border-0"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setLocation(`/events/${event.id}`);
-                              }}
-                            >
-                              Join Event
-                            </Button>
-                          </div>
                         </div>
-                      </CardContent>
-                    </Card>
+                      </div>
+                    </article>
                   ))}
                 </div>
               )}
