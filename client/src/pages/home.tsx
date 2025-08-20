@@ -1225,8 +1225,8 @@ export default function Home() {
 >
         {/* Dark overlay for text readability */}
         <div className="absolute inset-0 bg-gradient-to-br from-black/40 via-black/30 to-black/50"></div>
-        <div className="relative w-full mx-auto px-1 py-3 sm:px-4 sm:py-6 md:px-6 md:py-8">
-          <div className="text-center mx-auto" style={{maxWidth: '320px', width: '100%'}}>
+        <div className="relative w-full mx-auto py-2 sm:py-4 md:py-6" style={{padding: '8px 4px'}}>
+          <div className="text-center mx-auto" style={{maxWidth: '260px', width: '100%'}}>
             <h1 className="font-bold mb-1 sm:mb-2 text-white text-center" style={{
               fontFamily: '"Open Sans", sans-serif', 
               fontWeight: '700', 
@@ -1269,21 +1269,36 @@ export default function Home() {
                 </>
               )}
             </h1>
-            {/* Mobile description - very small and constrained */}
-            <div className="sm:hidden mb-1" style={{maxWidth: '280px', margin: '0 auto', padding: '0 4px'}}>
-              <p className="text-white text-center" style={{
-                fontSize: '9px',
-                lineHeight: '1.2',
-                wordBreak: 'break-all',
-                overflowWrap: 'break-word',
-                hyphens: 'auto'
+            {/* Mobile description with manual line breaks */}
+            <div className="sm:hidden mb-1" style={{maxWidth: '260px', margin: '0 auto', padding: '0 2px'}}>
+              <div className="text-white text-center" style={{
+                fontSize: '8px',
+                lineHeight: '1.1'
               }}>
                 {effectiveUser?.userType === 'business' ? (
-                  'Reach customers through interest-based matching, business notifications, and location-targeted discovery. Grow your business by connecting with travelers and locals who love what you offer.'
+                  <>
+                    <div>Reach customers through</div>
+                    <div>interest-based matching,</div>
+                    <div>business notifications,</div>
+                    <div>and location-targeted</div>
+                    <div>discovery. Grow your</div>
+                    <div>business by connecting</div>
+                    <div>with travelers and locals</div>
+                    <div>who love what you offer.</div>
+                  </>
                 ) : (
-                  'Discover amazing experiences, make meaningful connections, and explore the world with like-minded adventurers based on demographics, activities, interests and events'
+                  <>
+                    <div>Discover amazing</div>
+                    <div>experiences, make</div>
+                    <div>meaningful connections,</div>
+                    <div>and explore the world</div>
+                    <div>with like-minded</div>
+                    <div>adventurers based on</div>
+                    <div>demographics, activities,</div>
+                    <div>interests and events</div>
+                  </>
                 )}
-              </p>
+              </div>
             </div>
             
             {/* Tablet and desktop description */}
