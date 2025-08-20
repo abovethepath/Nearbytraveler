@@ -57,7 +57,7 @@ export function PeopleDiscoveryWidget({
 
     // Fetch travel plans for this person to show travel destination
     const { data: travelPlans, isLoading: travelPlansLoading } = useQuery({
-      queryKey: [`/api/travel-plans/${person.id}`],
+      queryKey: [`/api/travel-plans/user/${person.id}`],
       enabled: !!person.id && !isLoading,
       staleTime: Infinity,
       gcTime: Infinity,
@@ -270,7 +270,7 @@ export function PeopleDiscoveryWidget({
             {/* Bottom Section */}
             <div className="text-center mt-4">
               {/* Username */}
-              <h4 className="font-bold text-gray-900 dark:text-white text-xl mb-2 truncate">
+              <h4 className="font-bold text-gray-900 dark:text-white text-xl mb-2 truncate px-2">
                 @{person.username}
               </h4>
               
@@ -280,7 +280,7 @@ export function PeopleDiscoveryWidget({
                   <>
                     <div className="flex items-center justify-center gap-1">
                       <Plane className="w-4 h-4 text-blue-500" />
-                      <p className="text-blue-600 dark:text-blue-400 text-sm font-medium">
+                      <p className="text-blue-600 dark:text-blue-400 text-sm font-medium break-words px-1 text-center">
                         Currently in {locationInfo.currentLocation}
                       </p>
                     </div>
@@ -303,7 +303,7 @@ export function PeopleDiscoveryWidget({
               
               {/* Stats */}
               <div className="mb-2">
-                <p className="text-gray-500 dark:text-gray-500 text-sm">
+                <p className="text-gray-500 dark:text-gray-500 text-sm break-words px-1 text-center">
                   {(userData?.countriesVisited && Array.isArray(userData.countriesVisited) ? userData.countriesVisited.length : 0)} countries ⭐ {(referencesData && Array.isArray(referencesData) ? referencesData.length : 0)} references
                 </p>
               </div>
@@ -311,7 +311,7 @@ export function PeopleDiscoveryWidget({
               {/* NEW: Traveling to / Next trip */}
               {travelBlurb && (
                 <div className="mb-2">
-                  <p className="text-gray-700 dark:text-gray-300 text-sm">{travelBlurb}</p>
+                  <p className="text-gray-700 dark:text-gray-300 text-sm break-words px-1 text-center">{travelBlurb}</p>
                 </div>
               )}
             </div>
@@ -358,7 +358,7 @@ export function PeopleDiscoveryWidget({
           {/* Bottom Section */}
           <div className="text-center mt-4">
             {/* Username */}
-            <h4 className="font-bold text-gray-900 dark:text-white text-xl mb-2 truncate">
+            <h4 className="font-bold text-gray-900 dark:text-white text-xl mb-2 truncate px-2">
               @{person.username}
             </h4>
             

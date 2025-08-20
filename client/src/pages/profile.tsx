@@ -3471,7 +3471,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                text-white border-0 shadow-lg rounded-full
                                inline-flex items-center justify-center gap-2
                                w-full sm:w-auto max-w-full sm:max-w-none
-                               px-4 py-3 overflow-hidden"
+                               px-4 py-3 overflow-hidden break-words"
                   >
                     <MessageCircle className="w-4 h-4 shrink-0" />
                     <span className="truncate">Go to Chatrooms</span>
@@ -3533,7 +3533,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             {/* About Section */}
             <Card className="mt-6 relative overflow-visible">
               <CardHeader className="flex items-center gap-2 flex-wrap min-w-0 w-full">
-                <CardTitle className="text-base sm:text-lg truncate max-w-[calc(100%-3rem)] sm:max-w-none">
+                <CardTitle className="text-base sm:text-lg break-words max-w-[calc(100%-3rem)] sm:max-w-none">
                   About {user?.userType === 'business'
                     ? (user?.businessName || user?.name || user?.username)
                     : (user?.username || 'User')}
@@ -3559,7 +3559,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       size="sm"
                       variant="outline"
                       onClick={() => setIsEditMode(true)}
-                      className="ml-auto hidden sm:inline-flex shrink-0 whitespace-nowrap"
+                      className="ml-auto hidden sm:inline-flex shrink-0"
                     >
                       Edit Profile
                     </Button>
