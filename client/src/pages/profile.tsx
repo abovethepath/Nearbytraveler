@@ -405,12 +405,12 @@ function MultiSelect({ options, selected, onChange, placeholder, maxDisplay = 3 
             ) : (
               <>
                 {selected.slice(0, maxDisplay).map((item) => (
-                  <Badge key={item} variant="secondary" className="text-xs">
+                  <Badge key={item} variant="secondary" className="text-xs whitespace-nowrap no-scrollbar">
                     {item}
                   </Badge>
                 ))}
                 {selected.length > maxDisplay && (
-                  <Badge variant="secondary" className="text-xs">
+                  <Badge variant="secondary" className="text-xs whitespace-nowrap no-scrollbar">
                     +{selected.length - maxDisplay} more
                   </Badge>
                 )}
@@ -420,16 +420,20 @@ function MultiSelect({ options, selected, onChange, placeholder, maxDisplay = 3 
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-full p-0" align="start">
-        <Command className="h-auto max-h-80">
-          <CommandInput placeholder={`Search ${placeholder.toLowerCase()}...`} />
+      <PopoverContent
+        align="start"
+        sideOffset={6}
+        className="w-[min(92vw,360px)] sm:w-80 p-0 max-h-[65vh] overflow-y-auto no-scrollbar"
+      >
+        <Command className="h-auto max-h-[60vh]">
+          <CommandInput placeholder={`Search ${placeholder.toLowerCase()}...`} className="min-w-0" />
 
           <CommandEmpty>
             <div className="p-4 text-sm text-gray-500 dark:text-gray-400">
               No matching options found.
             </div>
           </CommandEmpty>
-          <CommandGroup className="max-h-60 overflow-y-auto">
+          <CommandGroup className="max-h-[52vh] overflow-y-auto no-scrollbar">
             {allOptions.map((item) => (
               <CommandItem
                 key={item}
@@ -2783,7 +2787,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
   if (userLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 overflow-x-hidden">
         <div className="container mx-auto px-4 py-8">
           <div className="flex items-center justify-center h-64">
             <div className="text-lg font-medium text-gray-900 dark:text-white">
@@ -2800,7 +2804,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   if (userError && !user) {
     console.error('Profile page error:', userError);
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 overflow-x-hidden flex items-center justify-center">
         <div className="text-center p-8">
           <h1 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">Error Loading Profile</h1>
           <p className="text-gray-600 dark:text-gray-300 mb-6">Unable to load profile data</p>
@@ -2981,9 +2985,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 <h1 className="text-xl sm:text-3xl font-bold text-black">@{user.username}</h1>
                 
                 {/* Line 2: Location/Status with pin icon - Allow full width */}
-                <div className="flex items-center gap-2 w-full">
+                <div className="flex items-center gap-2 w-full min-w-0">
                   <MapPin className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
-                  <span className="text-sm sm:text-base font-medium flex-1">
+                  <span className="text-sm sm:text-base font-medium flex-1 truncate max-w-[80vw] sm:max-w-none">
                     {user.userType === 'business' 
                       ? `Nearby Business in ${user.hometownCity || 'Los Angeles'}`
                       : (() => {
@@ -4391,12 +4395,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               <div className="flex items-center gap-2 mb-1">
                                 <h4 className="font-medium text-sm">{plan.destination}</h4>
                                 {plan.status === 'active' && (
-                                  <Badge className="bg-green-500 text-white text-xs px-2 py-0.5">
+                                  <Badge className="bg-green-500 text-white text-xs px-2 py-0.5 whitespace-nowrap no-scrollbar">
                                     ✈️ Currently Traveling
                                   </Badge>
                                 )}
                                 {plan.status === 'planned' && (
-                                  <Badge className="bg-blue-500 text-white text-xs px-2 py-0.5">
+                                  <Badge className="bg-blue-500 text-white text-xs px-2 py-0.5 whitespace-nowrap no-scrollbar">
                                     📅 Upcoming
                                   </Badge>
                                 )}
@@ -4449,7 +4453,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             <div className="mb-2">
                               <div className="flex flex-wrap gap-1">
                                 {(expandedPlanInterests.has(plan.id) ? plan.interests : plan.interests.slice(0, 2)).map((interest: string) => (
-                                  <Badge key={interest} className={`text-xs ${getInterestStyle(interest)}`}>
+                                  <Badge key={interest} className={`text-xs ${getInterestStyle(interest)} whitespace-nowrap no-scrollbar`}>
                                     {interest}
                                   </Badge>
                                 ))}
@@ -4477,7 +4481,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             <div>
                               <div className="flex flex-wrap gap-1">
                                 {plan.travelStyle.slice(0, 2).map((style: string) => (
-                                  <Badge key={style} variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200 dark:bg-green-900 dark:text-green-200 dark:border-green-700">
+                                  <Badge key={style} variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200 dark:bg-green-900 dark:text-green-200 dark:border-green-700 whitespace-nowrap no-scrollbar">
                                     {style}
                                   </Badge>
                                 ))}
@@ -5643,7 +5647,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
       {/* Cover Photo Crop Modal */}
       <Dialog open={showCropModal} onOpenChange={() => setShowCropModal(false)}>
-        <DialogContent className="max-w-4xl">
+        <DialogContent className="w-[92vw] sm:max-w-4xl">
           <DialogHeader>
             <DialogTitle>Crop Cover Photo</DialogTitle>
             <DialogDescription>
@@ -5758,7 +5762,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         setEditingActivities(false);
         setEditingEvents(false);
       }}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="w-[92vw] sm:max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Edit Travel Plan</DialogTitle>
           </DialogHeader>
@@ -6686,12 +6690,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </h4>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                     {selectedTravelPlan.interests.slice(0, 9).map((interest) => (
-                      <Badge key={interest} variant="secondary" className="text-xs bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 border-blue-300 dark:border-blue-700 justify-center">
+                      <Badge key={interest} variant="secondary" className="text-xs bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 border-blue-300 dark:border-blue-700 justify-center whitespace-nowrap no-scrollbar">
                         {interest}
                       </Badge>
                     ))}
                     {selectedTravelPlan.interests.length > 9 && (
-                      <Badge variant="outline" className="text-xs text-gray-500 border-gray-300 justify-center">
+                      <Badge variant="outline" className="text-xs text-gray-500 border-gray-300 justify-center whitespace-nowrap no-scrollbar">
                         +{selectedTravelPlan.interests.length - 9} more
                       </Badge>
                     )}
@@ -6708,7 +6712,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </h4>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                     {selectedTravelPlan.activities.map((activity) => (
-                      <Badge key={activity} variant="secondary" className="text-xs bg-green-900 text-green-200 border-green-700 justify-center">
+                      <Badge key={activity} variant="secondary" className="text-xs bg-green-900 text-green-200 border-green-700 justify-center whitespace-nowrap no-scrollbar">
                         {activity}
                       </Badge>
                     ))}
@@ -6725,7 +6729,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </h4>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                     {selectedTravelPlan.events.map((event) => (
-                      <Badge key={event} variant="secondary" className="text-xs bg-purple-900 text-purple-200 border-purple-700 justify-center">
+                      <Badge key={event} variant="secondary" className="text-xs bg-purple-900 text-purple-200 border-purple-700 justify-center whitespace-nowrap no-scrollbar">
                         {event}
                       </Badge>
                     ))}
@@ -6742,7 +6746,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </h4>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                     {selectedTravelPlan.travelStyle.map((style) => (
-                      <Badge key={style} variant="secondary" className="text-xs bg-orange-900 text-orange-200 border-orange-700 justify-center">
+                      <Badge key={style} variant="secondary" className="text-xs bg-orange-900 text-orange-200 border-orange-700 justify-center whitespace-nowrap no-scrollbar">
                         {style}
                       </Badge>
                     ))}
