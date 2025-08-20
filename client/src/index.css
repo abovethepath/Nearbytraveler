@@ -1,6 +1,16 @@
 /* Import modern mobile-optimized font */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
+/* Kill double vertical scrollbars - mobile responsive layout fix */
+html, body {
+  overflow-x: hidden;
+}
+
+/* Ensure only the page scrolls, not nested containers */
+main {
+  overflow-x: clip;
+}
+
 /* NUCLEAR HERO FIX - Completely override all global pill/badge styling for hero text */
 .hero-clean h1 .hero-blue,
 .hero-clean h1 span.hero-blue,

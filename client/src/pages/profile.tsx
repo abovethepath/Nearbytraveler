@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -601,6 +602,101 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const [showWriteReferenceModal, setShowWriteReferenceModal] = useState(false);
   const [showAllReferences, setShowAllReferences] = useState(false);
   const [showPhotoUpload, setShowPhotoUpload] = useState(false);
+
+  // Mobile-friendly bio editing state
+  const [showBioEditModal, setShowBioEditModal] = useState(false);
+
+  // Hook to detect small screens for mobile-first bio editing
+  function useIsSmall() {
+    const [isSmall, setIsSmall] = useState(false);
+    useEffect(() => {
+      const mq = window.matchMedia("(max-width: 639px)"); // < sm
+      const update = () => setIsSmall(mq.matches);
+      update();
+      mq.addEventListener("change", update);
+      return () => mq.removeEventListener("change", update);
+    }, []);
+    return isSmall;
+  }
+
+  // Mobile-friendly bio editing modal component
+  function EditBioModal({
+    open,
+    onOpenChange,
+    initialBio,
+    onSave,
+    maxLength = 800
+  }: {
+    open: boolean;
+    onOpenChange: (v: boolean) => void;
+    initialBio?: string;
+    onSave: (bio: string) => Promise<void> | void;
+    maxLength?: number;
+  }) {
+    const isSmall = useIsSmall();
+    const [bio, setBio] = useState(initialBio ?? "");
+    const remaining = maxLength - bio.length;
+
+    useEffect(() => {
+      if (open) setBio(initialBio ?? "");
+    }, [open, initialBio]);
+
+    const Contents = (
+      <div className="flex flex-col h-full">
+        <div className="flex-1 overflow-y-auto p-4">
+          <label className="block text-sm font-medium mb-2">Your bio</label>
+          <Textarea
+            value={bio}
+            onChange={(e) => {
+              const v = e.target.value;
+              if (v.length <= maxLength) setBio(v);
+            }}
+            className="min-h-[160px] resize-vertical"
+            placeholder="Tell people about yourself, what you enjoy, and how you like to travel…"
+          />
+          <div className="mt-2 text-xs text-muted-foreground">{remaining} characters left</div>
+        </div>
+
+        <div className="border-t p-3 sticky bottom-0 bg-background">
+          <div className="flex items-center justify-end gap-2">
+            <Button variant="ghost" onClick={() => onOpenChange(false)}>Cancel</Button>
+            <Button
+              onClick={async () => {
+                await onSave(bio.trim());
+                onOpenChange(false);
+              }}
+            >
+              Save
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+
+    if (isSmall) {
+      return (
+        <Sheet open={open} onOpenChange={onOpenChange}>
+          <SheetContent side="bottom" className="h-[85vh] p-0 overflow-hidden">
+            <SheetHeader className="p-4 pb-0">
+              <SheetTitle>Edit Bio</SheetTitle>
+            </SheetHeader>
+            {Contents}
+          </SheetContent>
+        </Sheet>
+      );
+    }
+
+    return (
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="sm:max-w-lg w-[min(92vw,640px)] p-0 overflow-hidden">
+          <DialogHeader className="p-4 pb-0">
+            <DialogTitle>Edit Bio</DialogTitle>
+          </DialogHeader>
+          {Contents}
+        </DialogContent>
+      </Dialog>
+    );
+  }
   
   // Connection filters state
   const [connectionFilters, setConnectionFilters] = useState({
@@ -3174,18 +3270,29 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
             
             {/* About Section */}
-            <Card className="mt-6">
-              <CardHeader>
-                <div className="flex items-start justify-between gap-3">
-                  <h3 className="text-lg font-semibold">About {user?.userType === 'business' ? (user?.businessName || user?.name || user?.username) : (user?.username || 'User')}</h3>
+            <Card className="mt-6 overflow-visible">
+              <CardHeader className="pb-2">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <h3 className="text-lg font-semibold min-w-0 break-words">
+                    About {user?.userType === "business"
+                      ? (user?.businessName || user?.name || user?.username)
+                      : (user?.username || "User")}
+                  </h3>
+
                   {isOwnProfile && (
-                    <Button size="sm" variant="secondary" onClick={() => setIsEditMode(true)}>
-                      <Edit2 className="h-4 w-4 mr-2" /> Edit Bio
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      className="shrink-0"
+                      onClick={() => setShowBioEditModal(true)}
+                    >
+                      <Edit2 className="h-4 w-4 mr-2" />
+                      Edit Bio
                     </Button>
                   )}
                 </div>
               </CardHeader>
-              <CardContent>
+              <CardContent className="overflow-visible">
                 {/* Business Name Field for Business Users */}
                 {user?.userType === 'business' && (
                   <div className="mb-4 p-4 bg-gradient-to-r from-blue-50 to-orange-50 dark:from-blue-900/20 dark:to-orange-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
@@ -3252,16 +3359,18 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 )}
 
                 <div className="space-y-2 text-sm">
-                  <div>
-                    <span className="font-medium text-gray-600 dark:text-gray-400">From:</span>
-                    <span className="ml-2">
-                      {user?.userType === 'business' 
-                        ? (user?.location || user?.hometownCity || "Los Angeles, CA")
-                        : (() => {
-                            const parts = [user?.hometownCity, user?.hometownState, user?.hometownCountry].filter(Boolean);
-                            return parts.length > 0 ? parts.join(', ') : "Not specified";
-                          })()
-                      }
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                    <span className="whitespace-normal break-words">
+                      From:&nbsp;
+                      <span className="font-medium">
+                        {user?.userType === 'business' 
+                          ? (user?.location || user?.hometownCity || "Los Angeles, CA")
+                          : (() => {
+                              const parts = [user?.hometownCity, user?.hometownState, user?.hometownCountry].filter(Boolean);
+                              return parts.length > 0 ? parts.join(', ') : "Not specified";
+                            })()
+                        }
+                      </span>
                     </span>
                   </div>
 
@@ -6062,6 +6171,20 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           </Form>
         </DialogContent>
       </Dialog>
+
+      {/* Mobile-Friendly Bio Edit Modal */}
+      <EditBioModal
+        open={showBioEditModal}
+        onOpenChange={setShowBioEditModal}
+        initialBio={user?.userType === "business" ? (user?.businessDescription || user?.bio || "") : (user?.bio || "")}
+        onSave={async (bio) => {
+          const updateData = user?.userType === "business" ? { businessDescription: bio } : { bio };
+          await apiRequest("PATCH", `/api/users/${user?.id}`, updateData);
+          queryClient.invalidateQueries({ queryKey: [`/api/users/${user?.id}`] });
+          toast({ title: "Bio updated" });
+        }}
+        maxLength={800}
+      />
 
       {/* Profile Edit Modal */}
       <Dialog open={isEditMode} onOpenChange={setIsEditMode}>
