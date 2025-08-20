@@ -19,62 +19,6 @@ import { useTheme } from "@/components/theme-provider";
 import { authStorage } from "@/lib/auth";
 import { useToast } from "@/hooks/use-toast";
 
-// Portal-based Mobile Menu Component - renders outside header to avoid z-index issues
-function MobileMenu({
-  open,
-  onClose,
-  navItems,
-  location,
-  setLocation,
-}: {
-  open: boolean;
-  onClose: () => void;
-  navItems: { path: string; label: string; icon: React.ReactNode }[];
-  location: string;
-  setLocation: (p: string) => void;
-}) {
-  if (!open) return null;
-
-  // Lock body scroll while menu is open
-  useEffect(() => {
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => { document.body.style.overflow = prev; };
-  }, []);
-
-  const menu = (
-    <div
-      id="mobile-menu"
-      className={`md:hidden fixed inset-x-0 top-20 z-[100] bg-white dark:bg-black border-b border-gray-200 dark:border-gray-800 shadow-lg transition-[max-height,opacity] duration-200 overflow-hidden`}
-      role="dialog"
-      aria-modal="true"
-    >
-      <div className="px-4 py-6 space-y-4 max-h-[calc(100vh-5rem)] overflow-y-auto">
-        {navItems.map((item) => (
-          <Link
-            key={item.path}
-            href={item.path}
-            className={`block py-3 px-4 rounded-lg text-lg font-medium transition-colors ${
-              location === item.path
-                ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
-                : "text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800"
-            }`}
-            onClick={() => {
-              onClose();
-              setLocation(item.path);
-            }}
-          >
-            <span className="mr-3">{item.icon}</span>
-            {item.label}
-          </Link>
-        ))}
-
-      </div>
-    </div>
-  );
-
-  return createPortal(menu, document.body);
-}
 
 // Theme Toggle as Dropdown Menu Item
 function ThemeToggleMenuItem() {
@@ -104,6 +48,8 @@ function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  const headerRef = React.useRef<HTMLDivElement>(null);
+  const [menuTop, setMenuTop] = useState(0);
 
   // Bulletproof user data access - get from multiple sources
   const [directUser, setDirectUser] = useState<any>(null);
@@ -183,10 +129,17 @@ function Navbar() {
     }
   }, [directUser?.id, queryClient, setUser]);
 
-  // Close mobile menu on location change
+  // recalc top on load/resize & when warning banners appear/disappear
   useEffect(() => {
-    setIsMobileMenuOpen(false);
-  }, [location]);
+    const measure = () => setMenuTop(headerRef.current?.getBoundingClientRect().height ?? 0);
+    measure();
+    window.addEventListener("resize", measure);
+    const id = setInterval(measure, 300); // cheap guard if header height changes (banners)
+    return () => { window.removeEventListener("resize", measure); clearInterval(id); };
+  }, []);
+
+  // close on route change
+  useEffect(() => setIsMobileMenuOpen(false), [location]);
 
   // Listen for profile updates to refresh user data
   useEffect(() => {
@@ -399,7 +352,7 @@ function Navbar() {
         </div>
       )}
       
-      <header className="bg-white dark:bg-black shadow-sm sticky top-0 z-50">
+      <header ref={headerRef} className="sticky top-0 z-[200] bg-white dark:bg-black shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-20 py-1">
             <div className="flex items-center">
@@ -444,21 +397,16 @@ function Navbar() {
                 {directUser?.id && <NotificationBell userId={directUser.id} />}
 
 
-                {/* Mobile Menu Button - Enhanced with better touch targets */}
+                {/* Mobile Menu Button */}
                 <Button
                   variant="ghost"
-                  className="md:hidden h-12 w-12 p-0 touch-manipulation"
-                  style={{ minHeight: '48px', minWidth: '48px' }}
-                  onClick={() => setIsMobileMenuOpen((open) => !open)}
+                  className="md:hidden h-12 w-12 p-0"
+                  onClick={() => setIsMobileMenuOpen(o => !o)}
                   aria-controls="mobile-menu"
-                  aria-label={isMobileMenuOpen ? "Close mobile menu" : "Open mobile menu"}
                   aria-expanded={isMobileMenuOpen}
+                  aria-label={isMobileMenuOpen ? "Close mobile menu" : "Open mobile menu"}
                 >
-                  {isMobileMenuOpen ? (
-                    <X className="h-7 w-7" />
-                  ) : (
-                    <Menu className="h-7 w-7" />
-                  )}
+                  {isMobileMenuOpen ? <X className="h-7 w-7" /> : <Menu className="h-7 w-7" />}
                 </Button>
               </div>
               <DropdownMenu>
@@ -601,13 +549,37 @@ function Navbar() {
       </header>
 
       {/* Portal-based Mobile Menu - renders outside header to avoid z-index issues */}
-      <MobileMenu
-        open={isMobileMenuOpen}
-        onClose={() => setIsMobileMenuOpen(false)}
-        navItems={navItems}
-        location={location}
-        setLocation={setLocation}
-      />
+      {createPortal(
+        <div
+          id="mobile-menu"
+          className={`md:hidden fixed inset-x-0 transition-opacity duration-200 ${
+            isMobileMenuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+          }`}
+          style={{ top: menuTop, zIndex: 9999 }}
+          role="dialog"
+          aria-modal="true"
+        >
+          <div className="bg-white dark:bg-black border-b border-gray-200 dark:border-gray-800 shadow-lg max-h-[calc(100vh-4rem)] overflow-y-auto">
+            <div className="px-4 py-6 space-y-4">
+              {navItems.map((item) => (
+                <Link
+                  key={item.path}
+                  href={item.path}
+                  className={`block py-3 px-4 rounded-lg text-lg font-medium transition-colors ${
+                    location === item.path
+                      ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
+                      : "text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800"
+                  }`}
+                  onClick={() => { setIsMobileMenuOpen(false); setLocation(item.path); }}
+                >
+                  <span className="mr-3">{item.icon}</span>{item.label}
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
 
       {/* Connect Modal */}
       <ConnectModal 
