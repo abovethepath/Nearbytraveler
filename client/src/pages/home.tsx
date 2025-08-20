@@ -111,7 +111,7 @@ export default function Home() {
         case 'compatibility':
           // Sort by number of shared interests/activities
           const aShared = (a.interests?.length || 0) + (a.activities?.length || 0);
-          const bShared = (b.interests?.length || 0) + (a.activities?.length || 0);
+          const bShared = (b.interests?.length || 0) + (b.activities?.length || 0);
           return bShared - aShared;
         case 'travel_experience':
           // Sort by travel experience (number of countries visited)
@@ -1218,7 +1218,7 @@ export default function Home() {
 
       {/* Hero Section with Scrolling Photo Gallery */}
 <section
-  className="relative overflow-hidden text-white min-h-[50svh] md:min-h-[35vh] xl:min-h-[30vh] bg-cover bg-center bg-no-repeat"
+  className="relative overflow-hidden text-white min-h-[68svh] md:min-h-[35vh] xl:min-h-[30vh] bg-cover bg-center bg-no-repeat"
   style={{
     backgroundImage: "url('/attached_assets/beach travel_1754973619241.jpg')",
   }}
@@ -2134,27 +2134,36 @@ export default function Home() {
               </div>
             ) : (
               <div>
-                {/* Mobile-first avatar grid (phones) - Fixed to show usernames and travel status */}
+                {/* Mobile grid: 2 cols on very small, 3 cols at ≥640px; desktop uses widget below */}
                 <div className="sm:hidden">
-                  <PeopleDiscoveryWidget 
-                    people={getSortedUsers(filteredUsers).slice(0, displayLimit).map((user: any) => ({
-                      id: user.id,
-                      username: user.username,
-                      name: user.name || user.username,
-                      profileImage: user.profileImage,
-                      location: user.hometownCity && user.hometownCountry 
-                        ? `${user.hometownCity}, ${user.hometownCountry.replace('United States', 'USA')}`
-                        : user.location || "Location not set",
-                      distance: user.hometownCity && user.hometownState 
-                        ? `${user.hometownCity}, ${user.hometownState}`
-                        : user.location || "New member",
-                      commonInterests: [],
-                      userType: user.userType as "traveler" | "local" | "business",
-                    }))}
-                    title="Nearby Travelers"
-                    showSeeAll={false}
-                    currentUserId={user?.id || 0}
-                  />
+                  <div className="grid grid-cols-2 gap-3">
+                    {getSortedUsers(filteredUsers).slice(0, displayLimit).map((u: any) => (
+                      <button
+                        key={u.id}
+                        onClick={() => setLocation(`/profile/${u.username}`)}
+                        className="group text-left rounded-xl border bg-white dark:bg-gray-800 p-2 hover:shadow-sm"
+                      >
+                        <div className="relative w-full aspect-[4/5] rounded-lg overflow-hidden bg-gray-100">
+                          <img
+                            src={u.profileImage || "/attached_assets/placeholder_user.jpg"}
+                            alt={u.name || u.username}
+                            className="h-full w-full object-cover"
+                            loading="lazy"
+                          />
+                        </div>
+                        <div className="mt-2 min-w-0">
+                          <div className="text-sm font-semibold truncate text-gray-900 dark:text-white">
+                            {u.name || u.username}
+                          </div>
+                          <div className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                            {u.hometownCity && u.hometownCountry
+                              ? `${u.hometownCity}, ${u.hometownCountry.replace("United States", "USA")}`
+                              : u.location || "New member"}
+                          </div>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
                 </div>
 
                 {/* Tablet+ keeps existing widget */}
@@ -2285,7 +2294,7 @@ export default function Home() {
                         </div>
                       </div>
 
-                      <CardContent className="p-4 flex-1 flex flex-col">
+                      <CardContent className="p-4 flex-1 flex flex-col min-w-0">
                         <div className="mb-2">
                           <h3 className="font-semibold text-gray-900 dark:text-white text-sm line-clamp-2">{event.title}</h3>
                         </div>
@@ -2490,7 +2499,7 @@ export default function Home() {
                   // Use structured fields if available, otherwise parse destination string
                   if (activeTravelPlan.destinationCity) {
                     return (
-                      <div className="overflow-hidden rounded-2xl border max-w-full [&_*>*]:min-w-0">
+                      <div className="rounded-2xl border max-w-full overflow-hidden md:overflow-visible [&_*>*]:min-w-0">
                         <CityMap 
                           city={activeTravelPlan.destinationCity} 
                           state={activeTravelPlan.destinationState}
@@ -2506,7 +2515,7 @@ export default function Home() {
                     const country = parts.length > 1 ? parts[parts.length - 1] : undefined;
                     
                     return (
-                      <div className="overflow-hidden rounded-2xl border max-w-full [&_*>*]:min-w-0">
+                      <div className="rounded-2xl border max-w-full overflow-hidden md:overflow-visible [&_*>*]:min-w-0">
                         <CityMap 
                           city={city} 
                           state={state}
@@ -2520,7 +2529,7 @@ export default function Home() {
                 // Priority 2: Fallback to hometown if no active travel
                 if (effectiveUser?.hometownCity && effectiveUser?.hometownCountry) {
                   return (
-                    <div className="overflow-hidden rounded-2xl border max-w-full [&_*>*]:min-w-0">
+                    <div className="rounded-2xl border max-w-full overflow-hidden md:overflow-visible [&_*>*]:min-w-0">
                       <CityMap 
                         city={effectiveUser.hometownCity} 
                         state={effectiveUser.hometownState}
