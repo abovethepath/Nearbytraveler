@@ -73,6 +73,7 @@ import { ThingsIWantToDoSection } from "@/components/ThingsIWantToDoSection";
 
 import { PhotoAlbumWidget } from "@/components/photo-album-widget";
 import { SimpleAvatar } from "@/components/simple-avatar";
+import { VouchWidget } from "@/components/vouch-widget";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
 // Removed Navbar import since App.tsx handles navigation
 // Removed animated loading for static interface
@@ -5279,6 +5280,15 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   <ReferencesWidgetNew userId={user.id} />
                 </CardContent>
               </Card>
+            )}
+
+            {/* Vouch System Widget */}
+            {user?.id && (
+              <VouchWidget 
+                userId={user.id} 
+                isOwnProfile={isOwnProfile} 
+                currentUserId={currentUser?.id} 
+              />
             )}
 
 

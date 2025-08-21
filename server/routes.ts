@@ -10345,6 +10345,104 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // VOUCH SYSTEM API ROUTES
+  // Create a vouch
+  app.post('/api/vouches', async (req, res) => {
+    try {
+      const { voucherUserId, vouchedUserId, vouchMessage, vouchCategory } = req.body;
+      
+      if (!voucherUserId || !vouchedUserId || !vouchMessage) {
+        return res.status(400).json({ error: 'Missing required fields' });
+      }
+
+      // Check if user has already vouched for this person
+      const hasVouched = await storage.hasUserVouchedFor(voucherUserId, vouchedUserId);
+      if (hasVouched) {
+        return res.status(400).json({ error: 'You have already vouched for this person' });
+      }
+
+      const result = await storage.createVouch(voucherUserId, vouchedUserId, vouchMessage, vouchCategory || 'general');
+      res.json(result);
+    } catch (error: any) {
+      console.error('Error creating vouch:', error);
+      res.status(500).json({ error: error.message || 'Failed to create vouch' });
+    }
+  });
+
+  // Get vouches received by a user
+  app.get('/api/users/:userId/vouches', async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const vouches = await storage.getUserVouches(userId);
+      res.json(vouches);
+    } catch (error: any) {
+      console.error('Error getting user vouches:', error);
+      res.status(500).json({ error: 'Failed to get vouches' });
+    }
+  });
+
+  // Get vouches given by a user
+  app.get('/api/users/:userId/vouches-given', async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const vouchesGiven = await storage.getUserVouchesGiven(userId);
+      res.json(vouchesGiven);
+    } catch (error: any) {
+      console.error('Error getting user vouches given:', error);
+      res.status(500).json({ error: 'Failed to get vouches given' });
+    }
+  });
+
+  // Check if user can vouch
+  app.get('/api/users/:userId/can-vouch', async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const targetUserId = req.query.targetUserId ? parseInt(req.query.targetUserId as string) : undefined;
+      
+      const canVouchResult = await storage.canUserVouch(userId);
+      
+      // If checking against a specific target user, also check if already vouched
+      if (canVouchResult.canVouch && targetUserId) {
+        const hasVouched = await storage.hasUserVouchedFor(userId, targetUserId);
+        if (hasVouched) {
+          return res.json({
+            canVouch: false,
+            reason: 'You have already vouched for this person'
+          });
+        }
+      }
+      
+      res.json(canVouchResult);
+    } catch (error: any) {
+      console.error('Error checking if user can vouch:', error);
+      res.status(500).json({ error: 'Failed to check vouch eligibility' });
+    }
+  });
+
+  // Get vouch network stats
+  app.get('/api/users/:userId/vouch-network', async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const networkStats = await storage.getVouchNetworkStats(userId);
+      res.json(networkStats);
+    } catch (error: any) {
+      console.error('Error getting vouch network stats:', error);
+      res.status(500).json({ error: 'Failed to get network stats' });
+    }
+  });
+
+  // Get vouch credits
+  app.get('/api/users/:userId/vouch-credits', async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const credits = await storage.getUserVouchCredits(userId);
+      res.json(credits);
+    } catch (error: any) {
+      console.error('Error getting vouch credits:', error);
+      res.status(500).json({ error: 'Failed to get vouch credits' });
+    }
+  });
+
   // Return the configured HTTP server with WebSocket support  
   return httpServer;
 }
