@@ -1,0 +1,171 @@
+mazing progress. The mobile-hardening is done—now let’s kill the last blocker: Vite HMR WebSocket (ERR_CONNECTION_REFUSED) on Replit.
+
+You’ve got two clean ways to fix it. Pick A (recommended) for a one-port setup (no more port 5173 headaches). If you want to keep Vite standalone, use B.
+
+A) One-port dev server (recommended): Vite as Express middleware
+
+This runs everything on port 5000. HMR rides the same origin, so the WS can’t be refused.
+
+1) Patch your server to mount Vite (dev) and serve build (prod)
+
+TypeScript (server/index.ts)
+
+import path from "path";
+import express from "express";
+import { createServer as createHttpServer } from "http";
+
+async function createApp() {
+  const app = express();
+
+  // Your API routes here (before static in prod)
+  // app.use("/api", apiRouter);
+
+  if (process.env.NODE_ENV !== "production") {
+    const { createServer: createViteServer } = await import("vite");
+    const vite = await createViteServer({
+      root: path.resolve(__dirname, "../client"),
+      appType: "custom",
+      server: { middlewareMode: true }, // ← key: single-port HMR
+    });
+
+    // Vite middlewares handle index.html transform, assets, and HMR WS
+    app.use(vite.middlewares);
+  } else {
+    const dist = path.resolve(__dirname, "../dist/public");
+    app.use(express.static(dist));
+    app.get("*", (_req, res) => {
+      res.sendFile(path.join(dist, "index.html"));
+    });
+  }
+
+  return createHttpServer(app);
+}
+
+createApp().then((server) => {
+  const PORT = Number(process.env.PORT) || 5000;
+  server.listen(PORT, "0.0.0.0", () => {
+    console.log(`Server listening on http://0.0.0.0:${PORT}`);
+  });
+});
+
+
+JavaScript (server/index.js) – same idea:
+
+import path from "path";
+import express from "express";
+import { createServer as createHttpServer } from "http";
+import { fileURLToPath } from "url";
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+async function createApp() {
+  const app = express();
+
+  // app.use("/api", apiRouter);
+
+  if (process.env.NODE_ENV !== "production") {
+    const { createServer: createViteServer } = await import("vite");
+    const vite = await createViteServer({
+      root: path.resolve(__dirname, "../client"),
+      appType: "custom",
+      server: { middlewareMode: true },
+    });
+    app.use(vite.middlewares);
+  } else {
+    const dist = path.resolve(__dirname, "../dist/public");
+    app.use(express.static(dist));
+    app.get("*", (_req, res) => res.sendFile(path.join(dist, "index.html")));
+  }
+
+  return createHttpServer(app);
+}
+
+createApp().then((server) => {
+  const PORT = Number(process.env.PORT) || 5000;
+  server.listen(PORT, "0.0.0.0", () => console.log(`Server on ${PORT}`));
+});
+
+2) Trim Vite config (no separate public port)
+
+client/vite.config.ts
+
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import path from "path";
+
+export default defineConfig({
+  clearScreen: false,
+  plugins: [react()],
+  root: path.resolve(__dirname),
+  build: {
+    outDir: path.resolve(__dirname, "../dist/public"),
+    emptyOutDir: true,
+  },
+  // No server.port here; middleware mode handles it on 5000
+});
+
+3) Run a single process on Replit
+
+package.json
+
+{
+  "scripts": {
+    "dev": "NODE_ENV=development node server/index.js",
+    "build": "vite build",
+    "start": "NODE_ENV=production node server/index.js"
+  }
+}
+
+
+.replit / replit.yaml → run npm run dev (one process, one port).
+
+That’s it: HMR WS connects on the same 5000 origin. No :5173, no wss:// port mismatch.
+
+B) Keep Vite separate? Force HMR over the HTTPS proxy
+
+Only use this if you truly want Vite on its own port.
+
+client/vite.config.ts
+
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import path from "path";
+
+const isReplit = !!process.env.REPL_ID;
+
+export default defineConfig({
+  clearScreen: false,
+  plugins: [react()],
+  root: path.resolve(__dirname),
+  server: {
+    host: "0.0.0.0",
+    port: 5173,
+    hmr: isReplit
+      ? {
+          protocol: "wss",
+          clientPort: 443,         // Replit proxies HTTPS → use 443
+          path: "/hmr",            // optional custom path
+        }
+      : true,
+    // If your API runs on 5000, proxy it:
+    proxy: { "/api": "http://localhost:5000" },
+  },
+  build: {
+    outDir: path.resolve(__dirname, "../dist/public"),
+    emptyOutDir: true,
+  },
+});
+
+
+Serve the Vite server as the exposed service in Replit (not the API). Your API stays on 5000 and is proxied by Vite. If Replit won’t expose both, this gets annoying—hence option A.
+
+Quick sanity checks (either path)
+
+Only one visible scroll container (your AppShell has this already ✅).
+
+No w-screen inside padded wrappers (you fixed ✅).
+
+Dev tools → Network → WS: you should see a ws/wss connection without :5173 when using option A; or with :443 using option B.
+
+If you still see ERR_CONNECTION_REFUSED, open the page URL and confirm it matches the HMR target (same host/port for A; same host :443 for B).
+
+If you tell me whether your server entry is JS or TS and paste your current server/index.* and vite.config.ts, I’ll return a ready-to-paste diff for the approach you choose.
