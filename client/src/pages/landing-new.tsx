@@ -87,7 +87,7 @@ export default function Landing() {
       </div>
       
       {/* Top sticky bar for maximum visibility - MOBILE ONLY */}
-      <div className="md:hidden fixed top-0 left-0 right-0 bg-orange-500 text-black py-3 px-4 z-40 shadow-lg">
+      <div className="md:hidden fixed top-0 left-0 right-0 z-[60] bg-orange-500 text-black py-3 px-4 shadow-lg">
         <div className="flex items-center justify-between max-w-6xl mx-auto">
           <div className="flex-1 text-center">
             <span className="font-bold text-lg">🔥 Connect with Locals and Travelers TODAY - Sign Up Now!</span>
@@ -101,12 +101,15 @@ export default function Landing() {
         </div>
       </div>
 
-      {/* Landing Navbar with BETA badge */}
-      <header className="sticky top-12 md:top-0 z-[55] block w-full md:relative bg-white shadow-sm" style={{display: 'block', visibility: 'visible', minHeight: '64px', backgroundColor: '#ffffff'}}>
-        <div className="block w-full" style={{display: 'block', visibility: 'visible', backgroundColor: '#ffffff'}}>
+      {/* Fixed navbar that sits under the orange banner on phones */}
+      <header className="fixed inset-x-0 top-12 md:top-0 z-[70] bg-white/95 dark:bg-gray-900/95 backdrop-blur supports-[backdrop-filter]:bg-white/70 dark:supports-[backdrop-filter]:bg-gray-900/70">
+        <div className="pt-2">
           <LandingNavbar />
         </div>
       </header>
+
+      {/* spacer so content doesn't slide under the fixed header */}
+      <div className="h-[64px] md:h-[72px]" />
       
 
 
@@ -122,39 +125,30 @@ export default function Landing() {
                 className="w-full h-full object-cover"
                 style={{ objectPosition: 'center 70%' }}
               />
-              <div className="absolute inset-0 bg-gradient-to-b from-gray-900/80 via-gray-800/70 to-gray-900/90 sm:bg-gray-800/70 sm:bg-none sm:mix-blend-multiply" aria-hidden="true" />
+              <div
+                className="absolute inset-0 sm:bg-gray-800/70"
+                style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,.55), rgba(0,0,0,.25), rgba(0,0,0,0))' }}
+                aria-hidden="true"
+              />
             </div>
             <div className="relative">
               <div className="sm:pb-16 md:pb-20 lg:pb-28 xl:pb-32">
                 <main className="mt-8 sm:mt-16 md:mt-20 lg:mt-24 xl:mt-32 mx-auto max-w-full px-4">
                   <div className="text-center">
                     <div className="max-w-4xl mx-auto">
-                      <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl tracking-tight px-2 sm:px-4 leading-relaxed">
-                        <span className="block font-black" style={{
-                          fontFamily: '"Inter", sans-serif',
-                          color: isMobile ? '#ffffff' : '#000000',
-                          textShadow: isMobile ? '3px 3px 6px rgba(0,0,0,0.9), 0 0 10px rgba(0,0,0,0.5)' : 'none'
-                        }}>
+                      <h1 className="px-2 sm:px-4 leading-tight sm:leading-snug">
+                        <span className="block font-black text-[clamp(1.6rem,6vw,2.5rem)] text-white">
                           Skip the Tourist Traps.
                         </span>
-                        <span className="block font-black" style={{fontFamily: '"Inter", sans-serif'}}>
-                          <span style={{
-                            color: isMobile ? '#fde68a' : '#fb923c',
-                            textShadow: isMobile ? '3px 3px 6px rgba(0,0,0,0.9), 0 0 10px rgba(0,0,0,0.5)' : 'none'
-                          }}>Meet Locals and Other{' '}</span>
-                          <span style={{
-                            color: isMobile ? '#93c5fd' : '#2563eb',
-                            textShadow: isMobile ? '3px 3px 6px rgba(0,0,0,0.9), 0 0 10px rgba(0,0,0,0.5)' : 'none'
-                          }}>Nearby Travelers{' '}</span>
-                          <span style={{
-                            color: isMobile ? '#ffffff' : '#000000',
-                            textShadow: isMobile ? '3px 3px 6px rgba(0,0,0,0.9), 0 0 10px rgba(0,0,0,0.5)' : 'none'
-                          }}>Right Now, Today!!!</span>
+                        <span className="block font-black text-[clamp(1.4rem,5.5vw,2.25rem)]">
+                          <span className="text-amber-300 sm:text-orange-500">Meet Locals and Other </span>
+                          <span className="text-blue-300 sm:text-blue-600">Nearby Travelers </span>
+                          <span className="text-white sm:text-black">Right Now, Today!!!</span>
                         </span>
                       </h1>
                       
-                      {/* Personal credibility as founder */}
-                      <div className="mt-8 p-6 bg-black/40 backdrop-blur-sm rounded-2xl border border-white/20 animate-zoom-in" style={{animationDelay: '0.3s'}}>
+                      {/* Personal credibility as founder (hide on phones so the hero photo is visible) */}
+                      <div className="hidden sm:block mt-8 p-6 bg-black/40 backdrop-blur-sm rounded-2xl border border-white/20">
                         <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-white leading-relaxed px-2">
                           <span className="text-orange-300 font-bold">"For over 15 years I've hosted and toured 400+ travelers from over 40 countries as a local creating amazing expereinces.</span>
                           <span className="text-white"> I built Nearby Traveler to do exactly that - meet real locals and real travelers while creating amazing new travel adventures and expanding my social circle of friends."</span>

@@ -12,7 +12,7 @@ export default function BusinessLanding() {
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-blue-50 via-white to-orange-50 dark:from-gray-900 dark:via-gray-800 dark:to-orange-900">
       
       {/* Orange announcement banner */}
-      <div className="fixed top-0 left-0 right-0 z-[60] bg-orange-500 text-black py-3 px-4 shadow-lg">
+      <div className="md:hidden fixed top-0 left-0 right-0 z-[60] bg-orange-500 text-black py-3 px-4 shadow-lg">
         <div className="flex items-center justify-center max-w-6xl mx-auto">
           <div className="flex-1 text-center">
             <span className="font-bold text-lg">🔥 Connect with Locals and Travelers TODAY - Sign Up Now!</span>
@@ -26,12 +26,15 @@ export default function BusinessLanding() {
         </div>
       </div>
 
-      {/* Landing Navbar */}
-      <header className="sticky top-12 z-[55] bg-white/95 dark:bg-gray-900/95 backdrop-blur supports-[backdrop-filter]:bg-white/70 dark:supports-[backdrop-filter]:bg-gray-900/70">
+      {/* Fixed navbar that sits under the orange banner on phones */}
+      <header className="fixed inset-x-0 top-12 md:top-0 z-[70] bg-white/95 dark:bg-gray-900/95 backdrop-blur supports-[backdrop-filter]:bg-white/70 dark:supports-[backdrop-filter]:bg-gray-900/70">
         <div className="pt-2">
           <LandingNavbar />
         </div>
       </header>
+
+      {/* spacer so content doesn't slide under the fixed header */}
+      <div className="h-[64px] md:h-[72px]" />
 
       {/* HERO SECTION */}
       <div className="relative">
@@ -44,24 +47,30 @@ export default function BusinessLanding() {
                 className="w-full h-full object-cover"
                 style={{ objectPosition: 'center 70%' }}
               />
-              <div className="absolute inset-0 bg-gray-800/70 dark:bg-gray-800/40 mix-blend-multiply" aria-hidden="true" />
+              <div
+                className="absolute inset-0 sm:bg-gray-800/70"
+                style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,.55), rgba(0,0,0,.25), rgba(0,0,0,0))' }}
+                aria-hidden="true"
+              />
             </div>
             <div className="relative">
               <div className="sm:pb-16 md:pb-20 lg:pb-28 xl:pb-32">
                 <main className="mt-16 mx-auto max-w-full sm:mt-20 md:mt-24 lg:mt-28 xl:mt-32">
                   <div className="text-center">
                     <div className="max-w-4xl mx-auto">
-                      <h1 className="text-xl sm:text-2xl md:text-4xl lg:text-5xl xl:text-6xl tracking-tight leading-tight px-2">
-                        <span className="block text-white font-black" style={{fontFamily: '"Inter", sans-serif'}}>Grow Your Business</span>
-                        <span className="block font-black" style={{fontFamily: '"Inter", sans-serif'}}>
-                          <span className="text-orange-400">to Targeted Customers </span>
-                          <span style={{color: '#3b82f6'}}>with Nearby Travelers </span>
-                          <span className="text-white">and Locals Showing Direct Interest in Your Products and Services</span>
+                      <h1 className="px-2 sm:px-4 leading-tight sm:leading-snug">
+                        <span className="block font-black text-[clamp(1.6rem,6vw,2.5rem)] text-white">
+                          Grow Your Business
+                        </span>
+                        <span className="block font-black text-[clamp(1.4rem,5.5vw,2.25rem)]">
+                          <span className="text-amber-300 sm:text-orange-500">to Targeted Customers </span>
+                          <span className="text-blue-300 sm:text-blue-600">with Nearby Travelers </span>
+                          <span className="text-white sm:text-black">and Locals Showing Direct Interest in Your Products and Services</span>
                         </span>
                       </h1>
                       
-                      {/* Business value proposition */}
-                      <div className="mt-8 p-6 bg-black/40 backdrop-blur-sm rounded-2xl border border-white/20 animate-zoom-in" style={{animationDelay: '0.3s'}}>
+                      {/* Business value proposition (hide on phones so the hero photo is visible) */}
+                      <div className="hidden sm:block mt-8 p-6 bg-black/40 backdrop-blur-sm rounded-2xl border border-white/20">
                         <p className="text-sm sm:text-base md:text-lg lg:text-xl text-white leading-relaxed px-2">
                           <span className="text-orange-300 font-bold">"Connect with travelers actively exploring your area and locals seeking authentic experiences.</span>
                           <span className="text-white"> Create targeted offers, host events, and build a loyal customer base that recommends you to others."</span>
