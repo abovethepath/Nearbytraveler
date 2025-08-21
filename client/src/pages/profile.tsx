@@ -2858,7 +2858,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
   if (userLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 overflow-x-hidden">
+      <div className="min-h-[100svh] bg-gray-50 dark:bg-gray-900 overflow-x-hidden">
         <div className="container mx-auto px-4 py-8">
           <div className="flex items-center justify-center h-64">
             <div className="text-lg font-medium text-gray-900 dark:text-white">
@@ -2875,7 +2875,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   if (userError && !user) {
     console.error('Profile page error:', userError);
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 overflow-x-hidden flex items-center justify-center">
+      <div className="min-h-[100svh] bg-gray-50 dark:bg-gray-900 overflow-x-hidden flex items-center justify-center">
         <div className="text-center p-8">
           <h1 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">Error Loading Profile</h1>
           <p className="text-gray-600 dark:text-gray-300 mb-6">Unable to load profile data</p>
@@ -2911,7 +2911,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
   if (!user && !userLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="min-h-[100svh] bg-gray-50 dark:bg-gray-900">
         <div className="container mx-auto px-4 py-8 text-center">
           <h1 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">User Not Found</h1>
           <UniversalBackButton 
@@ -2927,7 +2927,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   // Safety check to ensure user exists before rendering main content
   if (!user) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+      <div className="min-h-[100svh] bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
       </div>
     );
@@ -2953,7 +2953,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   if (!user) {
     console.error('Profile render error: user is null/undefined');
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+      <div className="min-h-[100svh] bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-red-600 mb-4">User Not Found</h1>
           <p className="text-gray-600 dark:text-gray-300 mb-4">Unable to load user data</p>
@@ -2977,7 +2977,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
   return (
     <>
-      <div className="min-h-screen profile-page">
+      <div className="min-h-[100svh] profile-page">
       {shouldShowBackToChatroom && (
         <div className="w-full max-w-full mx-auto px-2 pt-2">
           <Button 
@@ -7531,7 +7531,7 @@ class ProfileErrorBoundary extends React.Component<
       };
 
       return (
-        <div className="min-h-screen bg-gray-50 p-4">
+        <div className="min-h-[100svh] bg-gray-50 p-4">
           <div className="max-w-4xl mx-auto pt-20">
             <div className="bg-white rounded-lg shadow-lg p-6">
               <h2 className="text-2xl font-bold text-red-600 mb-4">Profile Page Error</h2>

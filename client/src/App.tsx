@@ -138,6 +138,8 @@ import type { User } from "@shared/schema";
 import { authStorage } from "@/lib/auth";
 import websocketService from "@/services/websocketService";
 import { MobilePreview } from "@/components/MobilePreview";
+import AppShell from "@/ui/AppShell";
+import OverflowGuard from "@/dev/OverflowGuard";
 
 // Simple auth context
 export const AuthContext = React.createContext<{
@@ -346,7 +348,7 @@ function Router() {
               login: (userData: User, token?: string) => { setUser(userData); },
               isAuthenticated: true
             }}>
-          <div className="min-h-screen w-full max-w-full flex flex-col bg-background text-foreground overflow-x-hidden">
+          <div className="min-h-[100svh] w-full max-w-full flex flex-col bg-background text-foreground overflow-x-hidden">
                 <div className="md:hidden">
                   <MobileTopNav />
                 </div>
@@ -366,7 +368,7 @@ function Router() {
     }
 
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-[100svh] bg-gray-50 flex items-center justify-center">
         <div className="text-2xl font-semibold text-gray-700">Loading Nearby Traveler...</div>
       </div>
     );
@@ -976,7 +978,7 @@ function Router() {
         // Show full app with navbar when authenticated
         <>
           {console.log('🔍 APP ROUTING: User IS authenticated, showing authenticated app for location:', location)}
-          <div className="min-h-screen w-full max-w-full flex flex-col bg-background text-foreground overflow-x-hidden">
+          <div className="min-h-[100svh] w-full max-w-full flex flex-col bg-background text-foreground overflow-x-hidden">
             {/* Navigation - show appropriate nav based on auth and screen size */}
             {user ? (
               <>
@@ -1027,15 +1029,18 @@ function Router() {
 function App() {
   const content = (
     <QueryClientProvider client={queryClient}>
-      <GlobalHotfixes />
-      <ThemeProvider defaultTheme="dark" storageKey="nearby-traveler-theme">
-        <TooltipProvider>
-          <Toaster />
-          <Router />
-          {/* Global Floating Chat Manager */}
-          <FloatingChatManager />
-        </TooltipProvider>
-      </ThemeProvider>
+      <AppShell>
+        <GlobalHotfixes />
+        <ThemeProvider defaultTheme="dark" storageKey="nearby-traveler-theme">
+          <TooltipProvider>
+            <Toaster />
+            <Router />
+            {/* Global Floating Chat Manager */}
+            <FloatingChatManager />
+            {import.meta.env.DEV && <OverflowGuard />}
+          </TooltipProvider>
+        </ThemeProvider>
+      </AppShell>
     </QueryClientProvider>
   );
 

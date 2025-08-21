@@ -102,7 +102,7 @@ export default function WorldMap({ visitedCountries }: WorldMapProps) {
     .filter(Boolean);
 
   return (
-    <div className="w-screen bg-gradient-to-b from-blue-25 to-white py-16 -mx-[50vw] ml-[50%] mt-8 border-t border-gray-200" style={{background: 'linear-gradient(to bottom, #f8fafc, #ffffff)'}}>
+    <div className="w-full bg-gradient-to-b from-blue-25 to-white py-16 mt-8 border-t border-gray-200" style={{background: 'linear-gradient(to bottom, #f8fafc, #ffffff)'}}>
       <div className="w-full px-8">
         <div className="text-center mb-12">
           <div className="flex items-center justify-center gap-3 text-gray-800 mb-4">
