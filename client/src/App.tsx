@@ -16,6 +16,13 @@ export const AuthContext = React.createContext({
   isAuthenticated: false
 });
 
+// Export useAuth hook that your pages expect
+export const useAuth = () => ({
+  user: null,
+  setUser: () => {},
+  isAuthenticated: false
+});
+
 export default function App() {
   React.useEffect(() => {
     console.log("✅ CRITICAL MOBILE LAYOUT v6-20250705 - SITE-WIDE FIXES DEPLOYED");
