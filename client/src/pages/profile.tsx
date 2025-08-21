@@ -3455,307 +3455,63 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </h3>
 
                   {isOwnProfile && (
-                    <Button
-                      size="sm"
-                      variant="secondary"
-                      className="shrink-0"
-                      onClick={() => setIsEditMode(true)}
-                    >
-                      <Edit2 className="h-4 w-4 mr-2" />
-                      Edit Profile
+                    <Button size="sm" variant="secondary" className="shrink-0" onClick={() => setIsEditMode(true)}>
+                      <Edit2 className="h-4 w-4 mr-2" /> Edit Bio
                     </Button>
                   )}
                 </div>
               </CardHeader>
-              <CardContent className="overflow-visible">
-                {/* Business Name Field for Business Users */}
-                {user?.userType === 'business' && (
-                  <div className="mb-4 p-4 bg-gradient-to-r from-blue-50 to-orange-50 dark:from-blue-900/20 dark:to-orange-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
-                    <div className="flex items-center justify-between mb-2">
-                      <h4 className="font-semibold text-blue-800 dark:text-blue-200">Business Name</h4>
-                      {isOwnProfile && (
-                        <Button size="sm" variant="outline" onClick={() => setIsEditMode(true)} className="bg-gradient-to-r from-blue-500 to-orange-500 text-white border-0 hover:from-blue-600 hover:to-orange-600">
-                          <Edit className="w-3 h-3" />
-                        </Button>
-                      )}
+
+              <CardContent>
+                {/* 👇 single wrapper div so CardContent always closes cleanly */}
+                <div className="space-y-4">
+                  {user?.userType === "business" && (
+                    <div className="p-4 bg-gradient-to-r from-blue-50 to-orange-50 dark:from-blue-900/20 dark:to-orange-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
+                      <div className="flex items-center justify-between mb-2">
+                        <h4 className="font-semibold text-blue-800 dark:text-blue-200">Business Name</h4>
+                        {isOwnProfile && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => setIsEditMode(true)}
+                            className="bg-gradient-to-r from-blue-500 to-orange-500 text-white border-0 hover:from-blue-600 hover:to-orange-600"
+                          >
+                            <Edit2 className="w-3 h-3" />
+                          </Button>
+                        )}
+                      </div>
+                      <p className="text-lg font-bold text-blue-900 dark:text-blue-100">
+                        {user?.businessName || "Business name not set"}
+                      </p>
                     </div>
-                    <p className="text-lg font-bold text-blue-900 dark:text-blue-100">
-                      {user?.businessName || 'Business name not set'}
+                  )}
+
+                  <div>
+                    <p className="text-muted-foreground whitespace-pre-wrap break-words">
+                      {user?.userType === "business"
+                        ? (user?.businessDescription || user?.bio || "No business description available yet.")
+                        : (user?.bio || "No bio available yet.")}
                     </p>
                   </div>
-                )}
 
-
-
-                {/* Bio Section */}
-                <div className="mb-4">
-                  <p className="text-muted-foreground whitespace-pre-wrap break-words mt-2">
-                    {user?.userType === 'business' 
-                      ? (user?.businessDescription || user?.bio || "No business description available yet.")
-                      : (user?.bio || "No bio available yet.")
-                    }
-                  </p>
-                </div>
-
-                {/* Metropolitan Area Information for people in metro areas */}
-                {user.hometownCity && user.hometownState && user.hometownCountry && (
-                  (() => {
-                    const metroArea = getMetropolitanArea(user.hometownCity, user.hometownState, user.hometownCountry);
-                    if (metroArea) {
-                      return (
-                        <div className="mb-4 p-3 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg dark:from-gray-800/50 dark:to-gray-700/50">
-                          <div className="flex items-center gap-2">
-                            <MapPin className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Metropolitan Area:</span>
-                            <span className="text-sm text-gray-800 dark:text-gray-200 font-semibold">{metroArea}</span>
-                          </div>
-                        </div>
-                      );
-                    }
-                    return null;
-                  })()
-                )}
-                {user?.userType !== 'business' && user?.secretActivities && (
-                  <div className="mb-4 p-3 bg-gradient-to-br from-orange-50 to-blue-50 border-l-4 border-orange-200 rounded-r-lg">
-                    <h5 className="font-medium text-black dark:text-black mb-2">Secret things I would do if my closest friends came to town</h5>
-                    <p className="text-black dark:text-black text-sm italic">
-                      {user?.secretActivities}
-                    </p>
-                  </div>
-                )}
-
-
-
-                {/* CRITICAL: What You Have in Common - MOVED TO TOP FOR VISIBILITY */}
-                {!isOwnProfile && currentUser && user?.id && (
-                  <div className="mb-6">
-                    <WhatYouHaveInCommon currentUserId={currentUser.id} otherUserId={user.id} />
-                  </div>
-                )}
-
-                <div className="space-y-2 text-sm">
-                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                    <span className="whitespace-normal break-words">
-                      From:&nbsp;
-                      <span className="font-medium">
-                        {user?.userType === 'business' 
-                          ? (user?.location || user?.hometownCity || "Los Angeles, CA")
-                          : (() => {
-                              const parts = [user?.hometownCity, user?.hometownState, user?.hometownCountry].filter(Boolean);
-                              return parts.length > 0 ? parts.join(', ') : "Not specified";
-                            })()
-                        }
+                  <div className="text-sm text-muted-foreground flex flex-wrap items-center gap-x-3 gap-y-1">
+                    {([user?.hometownCity, user?.hometownState, user?.hometownCountry].filter(Boolean).length > 0) && (
+                      <span className="whitespace-normal break-words">
+                        From:{" "}
+                        <span className="font-medium">
+                          {[user?.hometownCity, user?.hometownState, user?.hometownCountry].filter(Boolean).join(", ")}
+                        </span>
                       </span>
-                    </span>
-                  </div>
-
-                  {user?.userType !== 'business' && user?.gender && (
-                    <div>
-                      <span className="font-medium text-gray-600 dark:text-gray-400">Gender:</span>
-                      <span className="ml-2 capitalize">{user?.gender?.replace('-', ' ')}</span>
-                    </div>
-                  )}
-                  {user.isVeteran && (
-                    <div>
-                      <span className="font-medium text-gray-600">Military Status:</span>
-                      <span className="ml-2 text-red-600 font-semibold">Veteran</span>
-                    </div>
-                  )}
-                  {user.isActiveDuty && (
-                    <div>
-                      <span className="font-medium text-gray-600">Military Status:</span>
-                      <span className="ml-2 text-blue-600 font-semibold">Active Duty</span>
-                    </div>
-                  )}
-                  {user.sexualPreferenceVisible && user.sexualPreference && (
-                    <div>
-                      <span className="font-medium text-white dark:text-white">Sexual Preference:</span>
-                      <span className="ml-2">
-                        {Array.isArray(user.sexualPreference) 
-                          ? user.sexualPreference.join(', ')
-                          : typeof user.sexualPreference === 'string'
-                          ? (user.sexualPreference as string).split(',').join(', ')
-                          : user.sexualPreference
-                        }
+                    )}
+                    {user?.age && (
+                      <span>
+                        Age: <span className="font-medium">{user.age}</span>
                       </span>
-                    </div>
-                  )}
-                  <div className="flex items-center justify-between">
-                    <div></div>
-                    {isOwnProfile && (
-                      <Button size="sm" variant="outline" onClick={() => setIsEditMode(true)}>
-                        <Edit className="w-3 h-3" />
-                      </Button>
                     )}
                   </div>
-                  {user.userType !== 'business' && user.ageVisible && user.dateOfBirth && (
-                    <div>
-                      <span className="font-medium text-gray-600 dark:text-gray-400">Age:</span>
-                      <span className="ml-2">{calculateAge(user.dateOfBirth)} years old</span>
-                    </div>
-                  )}
-
-                  {/* Business Contact Information */}
-                  {user.userType === 'business' &&
-                    <div className="space-y-3 border-t pt-4 mt-4">
-                      <h4 className="font-medium text-gray-800 dark:text-white flex items-center gap-2">
-                        <MapPin className="w-4 h-4 text-blue-500" />
-                        Business Information
-                      </h4>
-
-                      {user.streetAddress && (
-                        <div>
-                          <span className="font-medium text-gray-600 dark:text-gray-400">Address:</span>
-                          <span className="ml-2">{user.streetAddress}{user.zipCode && `, ${user.zipCode}`}</span>
-                        </div>
-                      )}
-
-                      {user.phoneNumber && (
-                        <div>
-                          <span className="font-medium text-gray-600 dark:text-gray-400">Phone:</span>
-                          <a 
-                            href={`tel:${user.phoneNumber.replace(/[^\d+]/g, '')}`}
-                            className="ml-2 text-blue-600 underline"
-                          >
-                            {(() => {
-                              const cleaned = user.phoneNumber.replace(/\D/g, '');
-                              return cleaned.length === 10 
-                                ? `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6)}`
-                                : user.phoneNumber;
-                            })()}
-                          </a>
-                        </div>
-                      )}
-
-                      {user.websiteUrl && (
-                        <div>
-                          <span className="font-medium text-gray-600 dark:text-gray-400">Website:</span>
-                          <a 
-                            href={user.websiteUrl.startsWith('http') ? user.websiteUrl : `https://${user.websiteUrl}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="ml-2 text-blue-600 underline"
-                          >
-                            {user.websiteUrl}
-                          </a>
-                        </div>
-                      )}
-
-                      {/* Business Services and Special Offers */}
-                      {(user.services || user.specialOffers || user.targetCustomers || user.certifications || isOwnProfile) && 
-                        <div className="space-y-3 border-t pt-3 mt-3">
-                          <div className="flex items-center justify-between">
-                            <h5 className="font-medium text-gray-700 dark:text-gray-300">Business Description</h5>
-                            {isOwnProfile && (
-                              <Button size="sm" variant="outline" onClick={handleEditBusinessDescription} className="bg-gradient-to-r from-blue-500 to-orange-500 text-white border-0 hover:from-blue-600 hover:to-orange-600">
-                                <Edit className="w-3 h-3" />
-                              </Button>
-                            )}
-                          </div>
-
-                          {editingBusinessDescription ? (
-                            <div className="space-y-4">
-                              <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Services Offered</label>
-                                <Textarea
-                                  value={businessDescriptionForm.services || ''}
-                                  onChange={(e) => setBusinessDescriptionForm(prev => ({ ...prev, services: e.target.value }))}
-                                  placeholder="Describe the services your business offers..."
-                                  className="min-h-[60px]"
-                                />
-                              </div>
-                              <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">What makes you special?</label>
-                                <Textarea
-                                  value={businessDescriptionForm.specialOffers || ''}
-                                  onChange={(e) => setBusinessDescriptionForm(prev => ({ ...prev, specialOffers: e.target.value }))}
-                                  placeholder="What makes your business unique and special..."
-                                  className="min-h-[60px]"
-                                />
-                              </div>
-                              <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Target Customers</label>
-                                <Textarea
-                                  value={businessDescriptionForm.targetCustomers || ''}
-                                  onChange={(e) => setBusinessDescriptionForm(prev => ({ ...prev, targetCustomers: e.target.value }))}
-                                  placeholder="Who are your ideal customers..."
-                                  className="min-h-[60px]"
-                                />
-                              </div>
-                              <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Certifications</label>
-                                <Textarea
-                                  value={businessDescriptionForm.certifications || ''}
-                                  onChange={(e) => setBusinessDescriptionForm(prev => ({ ...prev, certifications: e.target.value }))}
-                                  placeholder="List any certifications or credentials..."
-                                  className="min-h-[60px]"
-                                />
-                              </div>
-                              <div className="flex gap-2">
-                                <Button onClick={handleSaveBusinessDescription} disabled={savingBusinessDescription}>
-                                  {savingBusinessDescription ? "Saving..." : "Save Changes"}
-                                </Button>
-                                <Button variant="outline" onClick={handleCancelEditBusinessDescription} className="border-orange-500 text-orange-600 hover:bg-orange-50 dark:border-orange-400 dark:text-orange-400 dark:hover:bg-orange-900/20">
-                                  Cancel
-                                </Button>
-                              </div>
-                            </div>
-                          ) : (
-                            <div className="space-y-3">
-                              {user.services && (
-                                <div>
-                                  <span className="font-medium text-gray-600 dark:text-gray-400">Services Offered:</span>
-                                  <p className="ml-2 text-sm text-gray-700 dark:text-gray-300">{user.services}</p>
-                                </div>
-                              )}
-
-                              {user.specialOffers && (
-                                <div>
-                                  <span className="font-medium text-gray-600 dark:text-gray-400">What makes us special:</span>
-                                  <p className="ml-2 text-sm text-gray-700 dark:text-gray-300">{user.specialOffers}</p>
-                                </div>
-                              )}
-
-                              {user.targetCustomers && (
-                                <div>
-                                  <span className="font-medium text-gray-600">Target Customers:</span>
-                                  <p className="ml-2 text-sm text-gray-700">{user.targetCustomers}</p>
-                                </div>
-                              )}
-
-                              {user.certifications && (
-                                <div>
-                                  <span className="font-medium text-gray-600">Certifications:</span>
-                                  <p className="ml-2 text-sm text-gray-700">{user.certifications}</p>
-                                </div>
-                              )}
-                            </div>
-                          )}
-                        </div>
-                      }
-
-                      {/* Military Status for Business */}
-                      {(user.isVeteran || user.isActiveDuty) &&
-                        <div className="space-y-2 border-t pt-3 mt-3">
-                          <h5 className="font-medium text-gray-700">Military Status</h5>
-                          {user.isVeteran && (
-                            <div className="flex items-center gap-2">
-                              <span className="text-green-600">✓</span>
-                              <span className="text-sm">Veteran Owned Business</span>
-                            </div>
-                          )}
-                          {user.isActiveDuty && (
-                            <div className="flex items-center gap-2">
-                              <span className="text-blue-600">✓</span>
-                              <span className="text-sm">Active Duty Owned Business</span>
-                            </div>
-                          )}
-                        </div>
-                      }
-                    </div>
-                  }
+                </div>
               </CardContent>
-              </Card>
+            </Card>
 
             {/* Business Offers Section - Only for business users */}
             {user?.userType === 'business' && (

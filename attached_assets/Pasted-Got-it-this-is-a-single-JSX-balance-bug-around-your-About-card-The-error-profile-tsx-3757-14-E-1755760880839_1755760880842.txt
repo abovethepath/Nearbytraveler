@@ -1,0 +1,107 @@
+Got it—this is a single JSX balance bug around your “About” card. The error:
+
+profile.tsx:3757:14  Expected corresponding JSX closing tag for <div>
+… points at  </CardContent>
+
+
+That means there’s an open <div> inside that CardContent that never closes, plus I can see a stray } right after </Card>.
+
+Fix it fast (copy-paste)
+
+Open client/src/pages/profile.tsx.
+
+Find the About card that ends right before the comment
+/* Business Offers Section - Only for business users */.
+
+Replace that whole card with this balanced version (it closes every tag and removes the stray }):
+
+{/* About Section */}
+<Card className="mt-6 overflow-visible">
+  <CardHeader className="pb-2">
+    <div className="flex flex-wrap items-start justify-between gap-3">
+      <h3 className="text-lg font-semibold min-w-0 break-words">
+        About {user?.userType === "business"
+          ? (user?.businessName || user?.name || user?.username)
+          : (user?.username || "User")}
+      </h3>
+
+      {isOwnProfile && (
+        <Button size="sm" variant="secondary" className="shrink-0" onClick={() => setIsEditMode(true)}>
+          <Edit2 className="h-4 w-4 mr-2" /> Edit Bio
+        </Button>
+      )}
+    </div>
+  </CardHeader>
+
+  <CardContent>
+    {/* 👇 single wrapper div so CardContent always closes cleanly */}
+    <div className="space-y-4">
+      {user?.userType === "business" && (
+        <div className="p-4 bg-gradient-to-r from-blue-50 to-orange-50 dark:from-blue-900/20 dark:to-orange-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
+          <div className="flex items-center justify-between mb-2">
+            <h4 className="font-semibold text-blue-800 dark:text-blue-200">Business Name</h4>
+            {isOwnProfile && (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setIsEditMode(true)}
+                className="bg-gradient-to-r from-blue-500 to-orange-500 text-white border-0 hover:from-blue-600 hover:to-orange-600"
+              >
+                <Edit2 className="w-3 h-3" />
+              </Button>
+            )}
+          </div>
+          <p className="text-lg font-bold text-blue-900 dark:text-blue-100">
+            {user?.businessName || "Business name not set"}
+          </p>
+        </div>
+      )}
+
+      <div>
+        <p className="text-muted-foreground whitespace-pre-wrap break-words">
+          {user?.userType === "business"
+            ? (user?.businessDescription || user?.bio || "No business description available yet.")
+            : (user?.bio || "No bio available yet.")}
+        </p>
+      </div>
+
+      <div className="text-sm text-muted-foreground flex flex-wrap items-center gap-x-3 gap-y-1">
+        {([user?.hometownCity, user?.hometownState, user?.hometownCountry].filter(Boolean).length > 0) && (
+          <span className="whitespace-normal break-words">
+            From:{" "}
+            <span className="font-medium">
+              {[user?.hometownCity, user?.hometownState, user?.hometownCountry].filter(Boolean).join(", ")}
+            </span>
+          </span>
+        )}
+        {user?.age && (
+          <span>
+            Age: <span className="font-medium">{user.age}</span>
+          </span>
+        )}
+      </div>
+    </div>
+  </CardContent>
+</Card>
+
+
+Important: if there’s a lone } immediately after </Card>, delete it. It’s a leftover from converting {cond && ( … )} → {cond && …}.
+
+Quick sanity checks (takes 30 seconds)
+
+Search inside this block and make sure there are no </form>, </Form>, or </DialogContent> closers left over.
+
+Ensure every ({ … }) conditional you changed no longer leaves a trailing )} after </Card>.
+
+Run
+
+Dev: npm run dev -- --debug
+
+Or prod (no HMR):
+
+rm -rf client/node_modules/.vite .vite .replcache dist 2>/dev/null || true
+cd client && npx vite build --mode production && cd ..
+NODE_ENV=production node server/index.prod.js
+
+
+If it throws another JSX line next, paste that single line + 2 surrounding lines and I’ll point to the exact tag to wrap or remove.
