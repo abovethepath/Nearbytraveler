@@ -3437,7 +3437,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       }
                     })()}
                   </div>
-                  </div>
 
                   {/* Stats */}
                   <div className="flex items-center flex-wrap gap-2 text-xs sm:text-sm w-full">
