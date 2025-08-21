@@ -1,3 +1,4 @@
+console.log("[APP] App module imported");
 import React, { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 
@@ -1025,27 +1026,8 @@ function Router() {
 }
 
 function App() {
-  const content = (
-    <QueryClientProvider client={queryClient}>
-      <GlobalHotfixes />
-      <ThemeProvider defaultTheme="dark" storageKey="nearby-traveler-theme">
-        <TooltipProvider>
-          <Toaster />
-          <Router />
-          {/* Global Floating Chat Manager */}
-          <FloatingChatManager />
-        </TooltipProvider>
-      </ThemeProvider>
-    </QueryClientProvider>
-  );
-
-  return (
-    <MobilePreview>
-      <div className="h-full">
-        {content}
-      </div>
-    </MobilePreview>
-  );
+  console.log("[APP] App rendered");
+  return <div style={{padding:16,fontFamily:"system-ui"}}>APP OK</div>;
 }
 
 export default App;
