@@ -1,0 +1,124 @@
+Awesome—mobile infra ✅. Let’s finish the job without touching the protected files.
+
+Below is a one-port dev runner you can add alongside your current server. It forces Vite’s HMR to piggyback on port 5000, so there’s no WS to :3000 (or :5173) and no ERR_CONNECTION_REFUSED.
+
+Option A (no config edits): drop-in one-port dev server
+
+Create server/oneport-dev.js (or .ts if you prefer TS) with this:
+
+// server/oneport-dev.js
+import path from "path";
+import express from "express";
+import { createServer as createHttpServer } from "http";
+import { fileURLToPath } from "url";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const CLIENT_ROOT = path.resolve(__dirname, "../client");
+
+async function main() {
+  const app = express();
+  const httpServer = createHttpServer(app);
+
+  // Mount your API before Vite middlewares
+  // app.use("/api", apiRouter);
+
+  // 🔑 Create Vite in middleware mode and bind HMR to THIS httpServer
+  const { createServer: createViteServer } = await import("vite");
+  const vite = await createViteServer({
+    root: CLIENT_ROOT,
+    appType: "custom",
+    server: {
+      middlewareMode: true,
+      hmr: { server: httpServer }, // ← HMR uses the same :5000 socket
+    },
+  });
+
+  app.use(vite.middlewares);
+
+  const PORT = Number(process.env.PORT) || 5000;
+  httpServer.listen(PORT, "0.0.0.0", () => {
+    console.log(`One-port dev server listening on http://0.0.0.0:${PORT}`);
+  });
+}
+
+main();
+
+
+TS version? Name it oneport-dev.ts and run with tsx/ts-node, or build once.
+
+Run it from the Replit shell (no need to edit package.json):
+
+node server/oneport-dev.js
+
+
+If Replit requires a “Run” command, set it to the same. (You can switch back later.)
+
+Verify
+
+Load your app URL.
+
+DevTools → Network → WS tab: you should see a connected WebSocket to ws(s)://<your-host>/** without :3000 or :5173.
+
+No more ERR_CONNECTION_REFUSED.
+
+Prefer to keep your existing server/index.ts?
+
+If you’re allowed to edit server/index.ts (but not server/vite.ts or vite.config.ts), add a dev branch that bypasses the protected Vite helper and creates the one-port Vite server inline:
+
+// server/index.ts (only the dev branch shown)
+import path from "path";
+import express from "express";
+import { createServer as createHttpServer } from "http";
+
+async function createApp() {
+  const app = express();
+  const httpServer = createHttpServer(app);
+
+  if (process.env.NODE_ENV !== "production") {
+    const { createServer: createViteServer } = await import("vite");
+    const vite = await createViteServer({
+      root: path.resolve(__dirname, "../client"),
+      appType: "custom",
+      server: {
+        middlewareMode: true,
+        hmr: { server: httpServer }, // ✅ one-port HMR
+      },
+    });
+
+    // API first, then Vite middlewares
+    // app.use("/api", apiRouter);
+    app.use(vite.middlewares);
+
+    // IMPORTANT: Listen with the SAME httpServer Vite uses
+    const PORT = Number(process.env.PORT) || 5000;
+    httpServer.listen(PORT, "0.0.0.0", () =>
+      console.log(`Dev (one-port) on http://0.0.0.0:${PORT}`)
+    );
+    return null; // already listening
+  }
+
+  // ...production: serve built assets
+}
+
+createApp();
+
+
+That completely sidesteps whatever server/vite.ts sets (e.g., HMR on 3000), without modifying the protected files.
+
+If you still can’t change the Run command
+
+Open the shell and just run:
+
+pkill -f node || true
+node server/oneport-dev.js
+
+
+Keep the shell tab open while you work.
+
+Common gotchas (quick checks)
+
+Don’t expose Vite separately (no :5173) while this runner is active.
+
+Ensure nothing else is listening on 5000. If it is, kill it: pkill -f node.
+
+If you see a WS to :3000 again, you’re still hitting the old process—restart and confirm only one server is running.
