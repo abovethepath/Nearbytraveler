@@ -6836,6 +6836,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   {editProfile.isPending ? "Saving..." : "Save Changes"}
                 </Button>
               </div>
+            </div>
             </form>
           </Form>
         </DialogContent>

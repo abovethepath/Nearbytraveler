@@ -1,0 +1,58 @@
+You’re hitting a syntax crash in client/src/pages/profile.tsx—React is telling you there’s an unclosed <div> right before a </form>.
+
+From your log:
+
+Pre-transform error: client/src/pages/profile.tsx: Expected corresponding JSX closing tag for <div>. (6839:12)
+...
+6837 | </Button>
+6838 | </div>
+6839 | </form>   ← React expected </div> here (one more <div> is still open)
+6840 | </Form>
+6841 | </DialogContent>
+
+
+This is why the app won’t render. Let’s fix it in one paste.
+
+Drop-in fix for the Edit Bio dialog (balanced JSX)
+
+In client/src/pages/profile.tsx, replace your entire Edit Bio dialog block (from <Dialog ...> to </Dialog>) with this known-good, balanced version:
+
+{/* Edit Bio Dialog — balanced & mobile-safe */}
+<Dialog open={isEditMode} onOpenChange={setIsEditMode}>
+  <DialogContent className="max-w-lg">
+    <DialogHeader>
+      <DialogTitle>Edit Bio</DialogTitle>
+      <DialogDescription>Update the information that appears on your profile.</DialogDescription>
+    </DialogHeader>
+
+    {/* shadcn Form wraps the native <form> */}
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        {/* Example fields — keep whatever you already have, just make sure each returns ONE node */}
+        <FormField
+          control={form.control}
+          name="bio"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Bio</FormLabel>
+              <FormControl>
+                <Textarea {...field} rows={5} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* If you have more fields, keep them INSIDE this form and ensure they are closed properly */}
+
+        {/* Actions */}
+        <div className="flex justify-end gap-2 pt-2">
+          <Button type="button" variant="ghost" onClick={() => setIsEditMode(false)}>
+            Cancel
+          </Button>
+          <Button type="submit">Save</Button>
+        </div>
+      </form>
+    </Form>
+  </DialogContent>
+</Dialog>
