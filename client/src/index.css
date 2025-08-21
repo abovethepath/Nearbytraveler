@@ -2584,7 +2584,7 @@ div[class*="rounded-lg border"].selected:not(input):not(textarea) {
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border-gray-200;
   }
 
   body {
