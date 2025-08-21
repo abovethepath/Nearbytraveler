@@ -603,7 +603,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const [showReferenceForm, setShowReferenceForm] = useState(false);
   const [selectedConnection, setSelectedConnection] = useState<any>(null);
   const [showWriteReferenceModal, setShowWriteReferenceModal] = useState(false);
-  const [showEditReferenceModal, setShowEditReferenceModal] = useState(false);
   const [showAllReferences, setShowAllReferences] = useState(false);
   const [showPhotoUpload, setShowPhotoUpload] = useState(false);
 
@@ -2644,107 +2643,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     },
   });
 
-  // Reference form initialization
-  const referenceForm = useForm<z.infer<typeof referenceSchema>>({
-    resolver: zodResolver(referenceSchema),
-    defaultValues: {
-      reviewerId: currentUser?.id || 0,
-      revieweeId: user?.id || 0,
-      experience: "positive",
-      content: "",
-    },
-  });
-
-  // Edit reference form initialization
-  const editReferenceForm = useForm<z.infer<typeof referenceSchema>>({
-    resolver: zodResolver(referenceSchema),
-    defaultValues: {
-      reviewerId: currentUser?.id || 0,
-      revieweeId: user?.id || 0,
-      experience: "positive",
-      content: "",
-    },
-  });
-
-  // Create reference mutation
-  const createReference = useMutation({
-    mutationFn: async (data: z.infer<typeof referenceSchema>) => {
-      const response = await apiRequest('POST', '/api/references', data);
-      return response;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`/api/users/${user?.id}/references`] });
-      toast({
-        title: "Reference submitted",
-        description: "Your reference has been successfully submitted.",
-      });
-      setShowReferenceForm(false);
-      setShowWriteReferenceModal(false);
-      referenceForm.reset();
-    },
-    onError: (error) => {
-      toast({
-        title: "Submission failed",
-        description: `Failed to submit reference: ${error.message}`,
-        variant: "destructive",
-      });
-    },
-  });
-
-  // Update reference mutation
-  const updateReference = useMutation({
-    mutationFn: async (data: z.infer<typeof referenceSchema>) => {
-      const response = await apiRequest('PUT', `/api/references/${data.reviewerId}`, data);
-      return response;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`/api/users/${user?.id}/references`] });
-      toast({
-        title: "Reference updated",
-        description: "Your reference has been successfully updated.",
-      });
-      setShowEditReferenceModal(false);
-      editReferenceForm.reset();
-    },
-    onError: (error) => {
-      toast({
-        title: "Update failed",
-        description: `Failed to update reference: ${error.message}`,
-        variant: "destructive",
-      });
-    },
-  });
-
   const onSubmitProfile = (data: z.infer<typeof dynamicProfileSchema>) => {
     console.log('onSubmitProfile called with data:', data);
     console.log('Form validation errors:', profileForm.formState.errors);
 
     // Send dateOfBirth as string - server will handle conversion to Date
     editProfile.mutate(data);
-  };
-
-  // onSubmit function for bio edit forms
-  const onSubmit = (data: any) => {
-    console.log('onSubmit called with data:', data);
-    if (user?.userType === "business") {
-      editProfile.mutate({ 
-        bio: "",
-        businessDescription: data.bio,
-        businessName: user.businessName || "",
-        hometownCity: user.hometownCity || "",
-        hometownState: user.hometownState || "",
-        hometownCountry: user.hometownCountry || "",
-        travelStyle: user.travelStyle || []
-      });
-    } else {
-      editProfile.mutate({ 
-        bio: data.bio,
-        hometownCity: user?.hometownCity || "",
-        hometownState: user?.hometownState || "",
-        hometownCountry: user?.hometownCountry || "",
-        travelStyle: user?.travelStyle || []
-      });
-    }
   };
 
   // Get countries visited from user profile data
@@ -3211,7 +3115,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 </Button>
               )
             )}
-          </div>
           </div>
         </div>
 
@@ -3775,10 +3678,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       )}
                     </div>
                   )}
-                </div>
                 </CardContent>
               </Card>
-            </div>
+            )}
 
             {/* Business Offers Section - Only for business users */}
             {user?.userType === 'business' && (
@@ -5903,6 +5805,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               </Card>
             )}
           </div>
+        </div>
+      </div>
+
 
       {/* Photo Lightbox */}
       {photos.length > 0 && selectedPhotoIndex >= 0 && (
@@ -6389,29 +6294,551 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         maxLength={800}
       />
 
-      {/* TEMP: Minimal Edit Bio overlay to unblock build */}
-      {isEditMode ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="bg-background rounded-xl p-4 w-[min(92vw,640px)]">
-            <div className="flex items-start justify-between gap-2">
-              <h3 className="text-lg font-semibold">Edit Bio</h3>
-              <Button variant="ghost" onClick={() => setIsEditMode(false)}>Close</Button>
-            </div>
+      {/* Profile Edit Modal */}
+      <Dialog open={isEditMode} onOpenChange={setIsEditMode}>
+        <DialogContent className="w-[95vw] max-w-[95vw] sm:max-w-2xl max-h-[85vh] overflow-y-auto p-4 sm:p-6">
+          <DialogHeader>
+            <DialogTitle>Edit Profile</DialogTitle>
+          </DialogHeader>
+          <Form {...profileForm}>
+            <form onSubmit={profileForm.handleSubmit(onSubmitProfile)} className="space-y-6">
+              {user?.userType === 'business' && (
+                <FormField
+                  control={profileForm.control}
+                  name="businessName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Business Name</FormLabel>
+                      <FormControl>
+                        <Input 
+                          {...field} 
+                          placeholder="Enter your business name..."
+                          maxLength={100}
+                        />
+                      </FormControl>
+                      <div className="text-xs text-gray-500 text-right">
+                        {field.value?.length || 0}/100 characters
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
 
-            <div className="mt-4 space-y-3">
-              <Textarea
-                value={form.getValues("bio") ?? ""}
-                onChange={(e) => form.setValue("bio", e.target.value)}
-                rows={5}
-              />
-              <div className="flex justify-end gap-2">
-                <Button variant="ghost" onClick={() => setIsEditMode(false)}>Cancel</Button>
-                <Button onClick={form.handleSubmit(onSubmit)}>Save</Button>
+              {user?.userType === 'business' ? (
+                <FormField
+                  control={profileForm.control}
+                  name="businessDescription"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Business Description</FormLabel>
+                      <FormControl>
+                        <Textarea 
+                          {...field} 
+                          placeholder="Describe your business, services, and what makes you special..."
+                          className="min-h-[100px] resize-none"
+                          maxLength={1000}
+                        />
+                      </FormControl>
+                      <div className="text-xs text-gray-500 text-right">
+                        {field.value?.length || 0}/1000 characters
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              ) : (
+                <FormField
+                  control={profileForm.control}
+                  name="bio"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Bio</FormLabel>
+                      <FormControl>
+                        <Textarea 
+                          {...field} 
+                          placeholder="Tell us about yourself..."
+                          className="min-h-[100px] resize-none"
+                          maxLength={1000}
+                        />
+                      </FormControl>
+                      <div className="text-xs text-gray-500 text-right">
+                        {field.value?.length || 0}/1000 characters
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+
+              {user?.userType !== 'business' && (
+                <FormField
+                  control={profileForm.control}
+                  name="secretActivities"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>If I could list a few Secret Local things in my hometown I would say they are...</FormLabel>
+                      <FormControl>
+                        <Textarea 
+                          {...field} 
+                          placeholder="Fill this out for others to see secret activities, hidden gems, local spots, or insider tips that only locals know about. Example: There's a hidden waterfall behind the old mill that locals love, or try the secret menu at Joe's Diner..."
+                          className="min-h-[80px] resize-none"
+                          maxLength={500}
+                        />
+                      </FormControl>
+                      <div className="text-xs text-gray-500 text-right">
+                        {field.value?.length || 0}/500 characters
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+
+              {/* Family Travel Field */}
+              {user?.userType !== 'business' && (
+                <FormField
+                  control={profileForm.control}
+                  name="travelingWithChildren"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                      <div className="space-y-0.5">
+                        <FormLabel className="text-base">
+                          Traveling with children
+                        </FormLabel>
+                        <div className="text-sm text-muted-foreground">
+                          Show that you're traveling with children to connect with other families
+                        </div>
+                      </div>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              )}
+
+              <div className="space-y-4">
+                <FormLabel>Hometown Location ** ONLY CHANGE IF YOU MOVE **</FormLabel>
+                <SmartLocationInput
+                  city={profileForm.watch('hometownCity') || ''}
+                  state={profileForm.watch('hometownState') || ''}
+                  country={profileForm.watch('hometownCountry') || ''}
+                  onLocationChange={(location) => {
+                    profileForm.setValue('hometownCountry', location.country);
+                    profileForm.setValue('hometownState', location.state);
+                    profileForm.setValue('hometownCity', location.city);
+                  }}
+                  required={false}
+                  placeholder={{
+                    country: "Select your hometown country",
+                    state: "Select your hometown state/region", 
+                    city: "Select your hometown city"
+                  }}
+                />
               </div>
-            </div>
-          </div>
-        </div>
-      ) : null}
+
+              {/* Travel Style removed from general profile - it's trip-specific */}
+
+              {/* Date of Birth and Age Visibility - Only show for non-business users */}
+              {user?.userType !== 'business' && (
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white border-b pb-2">
+                    {FORM_HEADERS.DATE_OF_BIRTH}
+                  </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={profileForm.control}
+                    name="dateOfBirth"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Date of Birth</FormLabel>
+                        <FormControl>
+                          <Input 
+                            type="date" 
+                            placeholder="Your date of birth" 
+                            {...field}
+                            min={getDateInputConstraints().min}
+                            max={getDateInputConstraints().max}
+                            onChange={(e) => {
+                              const { isValid, message } = validateDateInput(e.target.value);
+                              field.onChange(e.target.value);
+                              if (!isValid && e.target.value) {
+                                toast({
+                                  title: "Invalid Date",
+                                  description: message,
+                                  variant: "destructive",
+                                });
+                              }
+                            }}
+                            className="dark:bg-gray-800 dark:border-gray-600 dark:text-white [&::-webkit-calendar-picker-indicator]:dark:invert"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={profileForm.control}
+                    name="ageVisible"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
+                        <div className="space-y-0.5">
+                          <FormLabel>Show Age</FormLabel>
+                          <div className="text-sm text-gray-500">
+                            Display your age on your profile
+                          </div>
+                          <div className="text-sm font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-2 py-1 rounded">
+                            {PRIVACY_NOTES.DATE_OF_BIRTH}
+                          </div>
+                        </div>
+                        <FormControl>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => field.onChange(!field.value)}
+                            className="flex items-center gap-2"
+                          >
+                            {field.value ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                            {field.value ? "Visible" : "Hidden"}
+                          </Button>
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                </div>
+              )}
+
+              {/* Gender and Sexual Preference Fields - Only show for non-business users */}
+              {user?.userType !== 'business' && (
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white border-b pb-2">
+                    {FORM_HEADERS.GENDER_SEXUAL_PREFERENCE}
+                  </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={profileForm.control}
+                    name="gender"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Gender</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value ?? ''}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select gender" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent className="dark:bg-gray-800 dark:border-gray-600">
+                            {GENDER_OPTIONS.map((gender) => (
+                              <SelectItem key={gender} value={gender} className="dark:text-white dark:hover:bg-gray-700">
+                                {gender}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={profileForm.control}
+                    name="sexualPreference"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Sexual Preference (Select all that apply)</FormLabel>
+                        <FormControl>
+                          <div className="space-y-2 max-h-32 overflow-y-auto border rounded-md p-3">
+                            {SEXUAL_PREFERENCE_OPTIONS.map((preference) => (
+                              <div key={preference} className="flex items-center space-x-2">
+                                <input
+                                  type="checkbox"
+                                  id={`preference-${preference}`}
+                                  checked={field.value?.includes(preference) || false}
+                                  onChange={(e) => {
+                                    const currentValue = field.value || [];
+                                    if (e.target.checked) {
+                                      field.onChange([...currentValue, preference]);
+                                    } else {
+                                      field.onChange(currentValue.filter((p: string) => p !== preference));
+                                    }
+                                  }}
+                                  className="h-4 w-4 border-gray-300 rounded text-purple-600 focus:ring-purple-500"
+                                />
+                                <label 
+                                  htmlFor={`preference-${preference}`} 
+                                  className="text-sm font-medium text-gray-700 dark:text-white cursor-pointer"
+                                >
+                                  {preference}
+                                </label>
+                              </div>
+                            ))}
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                </div>
+              )}
+
+              {/* Sexual Preference Visibility - Only show for non-business users */}
+              {user?.userType !== 'business' && (
+                <FormField
+                  control={profileForm.control}
+                  name="sexualPreferenceVisible"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
+                      <div className="space-y-0.5">
+                        <FormLabel>Show Sexual Preference</FormLabel>
+                        <div className="text-sm text-gray-500 dark:text-gray-400">
+                          Display your sexual preference on your profile
+                        </div>
+                        <div className="text-sm font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-2 py-1 rounded">
+                          {PRIVACY_NOTES.SEXUAL_PREFERENCE}
+                        </div>
+                      </div>
+                      <FormControl>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => field.onChange(!field.value)}
+                          className="flex items-center gap-2"
+                        >
+                          {field.value ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                          {field.value ? "Visible" : "Hidden"}
+                        </Button>
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              )}
+
+              {/* Business Contact Information - Only show for business users */}
+              {user?.userType === 'business' && (
+                <div className="space-y-4">
+                  <div className="border-t pt-4">
+                    <h3 className="text-lg font-semibold mb-3">Business Contact Information</h3>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <FormField
+                        control={profileForm.control}
+                        name="streetAddress"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Street Address</FormLabel>
+                            <FormControl>
+                              <Input {...field} placeholder="123 Main Street" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={profileForm.control}
+                        name="zipCode"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>ZIP Code</FormLabel>
+                            <FormControl>
+                              <Input {...field} placeholder="10001" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={profileForm.control}
+                        name="phoneNumber"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Phone Number</FormLabel>
+                            <FormControl>
+                              <Input {...field} placeholder="(555) 123-4567" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={profileForm.control}
+                        name="websiteUrl"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Website URL</FormLabel>
+                            <FormControl>
+                              <Input {...field} placeholder="https://www.yourbusiness.com" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    {/* Military Status for Business */}
+                    <div className="space-y-4 border-t pt-4 mt-4">
+                      <h4 className="font-semibold mb-3">Military Status</h4>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <FormField
+                          control={profileForm.control}
+                          name="isVeteran"
+                          render={({ field }) => (
+                            <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4">
+                              <FormControl>
+                                <input
+                                  type="checkbox"
+                                  checked={field.value || false}
+                                  onChange={field.onChange}
+                                  className="h-4 w-4"
+                                />
+                              </FormControl>
+                              <div className="space-y-1 leading-none">
+                                <FormLabel>Veteran Owned Business</FormLabel>
+                                <div className="text-sm text-gray-500">
+                                  Check if your business is veteran-owned
+                                </div>
+                              </div>
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={profileForm.control}
+                          name="isActiveDuty"
+                          render={({ field }) => (
+                            <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4">
+                              <FormControl>
+                                <input
+                                  type="checkbox"
+                                  checked={field.value || false}
+                                  onChange={field.onChange}
+                                  className="h-4 w-4"
+                                />
+                              </FormControl>
+                              <div className="space-y-1 leading-none">
+                                <FormLabel>Active Duty Owned Business</FormLabel>
+                                <div className="text-sm text-gray-500">
+                                  Check if your business is active duty-owned
+                                </div>
+                              </div>
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+              {/* Military Status Section - Only show for non-business users */}
+              {user?.userType !== 'business' && (
+                <div className="space-y-4">
+                  <div className="border-t pt-4">
+                    <h3 className="text-lg font-semibold mb-3">Military Status</h3>
+
+                  {/* Veteran Status */}
+                  <FormField
+                    control={profileForm.control}
+                    name="isVeteran"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
+                        <div className="space-y-0.5">
+                          <FormLabel>I am a Veteran</FormLabel>
+                          <div className="text-sm text-gray-500">
+                            Check if you have served in the military and are now a veteran
+                          </div>
+                        </div>
+                        <FormControl>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              const newValue = !field.value;
+                              field.onChange(newValue);
+                              // If setting veteran to true, set active duty to false
+                              if (newValue) {
+                                profileForm.setValue('isActiveDuty', false);
+                              }
+                            }}
+                            className={`flex items-center gap-2 ${field.value ? 'bg-red-100 border-red-300 text-red-700' : ''}`}
+                          >
+                            {field.value ? '✓ Veteran' : 'Not Veteran'}
+                          </Button>
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Active Duty Status */}
+                  <FormField
+                    control={profileForm.control}
+                    name="isActiveDuty"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
+                        <div className="space-y-0.5">
+                          <FormLabel>I am Active Duty</FormLabel>
+                          <div className="text-sm text-gray-500">
+                            Check if you are currently serving in the military on active duty
+                          </div>
+                        </div>
+                        <FormControl>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              const newValue = !field.value;
+                              field.onChange(newValue);
+                              // If setting active duty to true, set veteran to false
+                              if (newValue) {
+                                profileForm.setValue('isVeteran', false);
+                              }
+                            }}
+                            className={`flex items-center gap-2 ${field.value ? 'bg-blue-100 border-blue-300 text-blue-700' : ''}`}
+                          >
+                            {field.value ? '✓ Active Duty' : 'Not Active Duty'}
+                          </Button>
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+              )}
+
+              <div className="flex gap-2 pt-4">
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={() => setIsEditMode(false)}
+                  className="flex-1"
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  type="submit" 
+                  disabled={editProfile.isPending}
+                  className="flex-1"
+                >
+                  {editProfile.isPending ? "Saving..." : "Save Changes"}
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
 
       {/* Travel Plan Delete Confirmation Dialog */}
       <Dialog open={!!deletingTravelPlan} onOpenChange={() => setDeletingTravelPlan(null)}>
@@ -6786,8 +7213,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             <form onSubmit={editReferenceForm.handleSubmit((data) => {
               if (editingReference) {
                 updateReference.mutate({
-                  reviewerId: data.reviewerId,
-                  revieweeId: data.revieweeId,
+                  referenceId: editingReference.id,
                   content: data.content,
                   experience: data.experience,
                 });
