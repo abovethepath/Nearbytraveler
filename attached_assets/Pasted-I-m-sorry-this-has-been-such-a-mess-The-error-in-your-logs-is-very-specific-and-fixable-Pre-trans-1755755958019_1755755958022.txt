@@ -1,0 +1,115 @@
+I’m sorry this has been such a mess. The error in your logs is very specific and fixable:
+
+Pre-transform error: client/src/pages/profile.tsx: Expected corresponding JSX closing tag for <div>. (3681:16)
+...
+3681 | </CardContent>
+
+
+That means inside the About/Profile card you opened a <div> and never closed it before </CardContent>. Vite expects </div> at 3681 and crashes the whole page.
+
+Do this exactly
+
+Open client/src/pages/profile.tsx.
+
+Jump to around lines 3640–3695.
+
+Find the <CardContent> that ends at line 3681. Make sure everything inside it is wrapped and closed like this:
+
+<Card>
+  <CardHeader>…</CardHeader>
+
+  <CardContent>
+    <div className="space-y-4">
+      {/* your blocks go here */}
+      {/* e.g. Business name / Bio / From & Age rows */}
+    </div>  {/* ← THIS closing div must exist */}
+  </CardContent>
+</Card>
+
+
+Most likely you have one of these patterns inside that block:
+
+{condition && ( <div> ... )} but the inner <div> wasn’t closed, or
+
+A closing )</div> pair is missing a </div> before </CardContent>.
+
+A safe drop-in replacement (paste over your current About card)
+
+If you want a guaranteed-balanced section, replace your current About Section (from // About Section comment down to the closing </Card>) with this:
+
+{/* About Section */}
+<Card className="mt-6 overflow-visible">
+  <CardHeader className="pb-2">
+    <div className="flex flex-wrap items-start justify-between gap-3">
+      <h3 className="text-lg font-semibold min-w-0 break-words">
+        About {user?.userType === "business"
+          ? (user?.businessName || user?.name || user?.username)
+          : (user?.username || "User")}
+      </h3>
+
+      {isOwnProfile && (
+        <Button size="sm" variant="secondary" className="shrink-0" onClick={() => setIsEditMode(true)}>
+          <Edit2 className="h-4 w-4 mr-2" /> Edit Bio
+        </Button>
+      )}
+    </div>
+  </CardHeader>
+
+  <CardContent>
+    <div className="space-y-4">
+      {user?.userType === "business" && (
+        <div className="p-4 bg-gradient-to-r from-blue-50 to-orange-50 dark:from-blue-900/20 dark:to-orange-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
+          <div className="flex items-center justify-between mb-2">
+            <h4 className="font-semibold text-blue-800 dark:text-blue-200">Business Name</h4>
+            {isOwnProfile && (
+              <Button size="sm" variant="outline" onClick={() => setIsEditMode(true)}
+                className="bg-gradient-to-r from-blue-500 to-orange-500 text-white border-0 hover:from-blue-600 hover:to-orange-600">
+                <Edit2 className="w-3 h-3" />
+              </Button>
+            )}
+          </div>
+          <p className="text-lg font-bold text-blue-900 dark:text-blue-100">
+            {user?.businessName || "Business name not set"}
+          </p>
+        </div>
+      )}
+
+      <div>
+        <p className="text-muted-foreground whitespace-pre-wrap break-words">
+          {user?.userType === "business"
+            ? (user?.businessDescription || user?.bio || "No business description available yet.")
+            : (user?.bio || "No bio available yet.")}
+        </p>
+      </div>
+
+      <div className="text-sm text-muted-foreground flex flex-wrap items-center gap-x-3 gap-y-1">
+        {([user?.hometownCity, user?.hometownState, user?.hometownCountry].filter(Boolean).length > 0) && (
+          <span className="whitespace-normal break-words">
+            From:{" "}
+            <span className="font-medium">
+              {[user?.hometownCity, user?.hometownState, user?.hometownCountry].filter(Boolean).join(", ")}
+            </span>
+          </span>
+        )}
+        {user?.age && <span>Age: <span className="font-medium">{user.age}</span></span>}
+      </div>
+    </div> {/* ← closes CardContent inner div */}
+  </CardContent>
+</Card>
+
+
+This section is valid JSX and will eliminate the “Expected closing tag for <div>” error.
+
+Sanity check after the edit
+
+Run:
+
+# show the exact region to confirm no stray braces remain
+nl -ba client/src/pages/profile.tsx | sed -n '3640,3695p'
+# then
+npm run dev -- --debug   # or your current start cmd
+
+
+If another compile error appears, it will be the next unmatched tag. Fixing this one usually clears the cascade.
+
+Again—sorry for the churn. Fixing this unclosed <div> should get your profile page compiling and rendering again immediately.
