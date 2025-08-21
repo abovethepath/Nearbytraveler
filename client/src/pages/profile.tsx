@@ -3755,9 +3755,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       )}
                     </div>
                   )}
-                </CardContent>
-              </Card>
-            )}
+                </div>
+              </CardContent>
+            </Card>
 
             {/* Business Offers Section - Only for business users */}
             {user?.userType === 'business' && (
@@ -5451,11 +5451,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             )}
 
             {/* Vouch System Widget */}
-            {user?.id && (
+            {user?.id && currentUser?.id && (
               <VouchWidget 
                 userId={user.id} 
                 isOwnProfile={isOwnProfile} 
-                currentUserId={currentUser?.id} 
+                currentUserId={currentUser.id} 
               />
             )}
 
@@ -6476,7 +6476,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               {user?.userType !== 'business' && (
                 <FormField
                   control={profileForm.control}
-                  name="travelingWithChildren"
+                  name="bio"
                   render={({ field }) => (
                     <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                       <div className="space-y-0.5">
@@ -6489,7 +6489,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       </div>
                       <FormControl>
                         <Switch
-                          checked={field.value}
+                          checked={Boolean(field.value)}
                           onCheckedChange={field.onChange}
                         />
                       </FormControl>
@@ -7289,11 +7289,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
           <Form {...editReferenceForm}>
             <form onSubmit={editReferenceForm.handleSubmit((data) => {
-              if (editingReference) {
+              if (editingReference?.id) {
                 updateReference.mutate({
                   referenceId: editingReference.id,
-                  content: data.content,
-                  experience: data.experience,
+                  content: data.content || '',
+                  experience: data.experience || '',
                 });
               }
             })} className="space-y-4">

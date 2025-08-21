@@ -270,9 +270,8 @@ input, select, textarea, button { font-size: 16px; }
 
 @tailwind base;
 @tailwind components;
-@tailwind utilities;
-
 @import "./styles/mobile-safe.css";
+@tailwind utilities;
 
 @layer components {
   /* Updated Pill Classes - Cache Buster v12.0 VISUAL TEST OVERRIDE */

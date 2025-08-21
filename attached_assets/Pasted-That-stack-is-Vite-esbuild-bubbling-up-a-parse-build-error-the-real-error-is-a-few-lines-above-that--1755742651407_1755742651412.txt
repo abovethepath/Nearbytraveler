@@ -1,0 +1,123 @@
+That stack is Vite/esbuild bubbling up a parse/build error—the real error is a few lines above that trace but Replit clears the screen. Do this once to surface it and fix fast:
+
+1) Make Vite stop clearing logs (so you see the first error)
+
+vite.config.ts
+
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import path from "path";
+
+export default defineConfig({
+  clearScreen: false,                 // 👈 keep the first error visible
+  logLevel: "info",
+  plugins: [react()],
+  resolve: {
+    alias: {
+      "@": path.resolve(import.meta.dirname, "client", "src"),
+      "@shared": path.resolve(import.meta.dirname, "shared"),
+      "@assets": path.resolve(import.meta.dirname, "attached_assets"),
+    },
+  },
+  root: path.resolve(import.meta.dirname, "client"),
+  server: {
+    host: "0.0.0.0",
+    port: 5173,
+    hmr: { overlay: false },
+    watch: { ignored: ["**/node_modules/**","**/dist/**","**/.vite/**","**/.git/**"] },
+  },
+});
+
+
+Then run in the Replit shell:
+
+pkill -f node || true
+rm -rf client/node_modules/.vite .vite dist .replcache || true
+DEBUG=vite:* npm run dev -- --debug
+
+
+You’ll now see the original error line (likely JSX/TS).
+
+2) Quick fix the common offenders (you had them earlier)
+
+In your codebase, run these greps and fix the matches:
+
+# bad template string in JSX placeholders
+grep -R "placeholder={(Search" -n client/src || true
+# bad className without backticks/braces
+grep -R "className={[^`]*mr-2 h-4 w-4" -n client/src || true
+# missing backticks around template strings like the Check icon class
+grep -R "className={mr-2 h-4 w-4 .*}" -n client/src || true
+
+
+Correct patterns should look like:
+
+<CommandInput placeholder={`Search ${placeholder.toLowerCase()}...`} />
+<Check className={`mr-2 h-4 w-4 ${selected.includes(item) ? "opacity-100" : "opacity-0"}`} />
+
+
+Also remove the duplicate interface:
+
+// Keep only ONE of these
+interface EnhancedProfileProps { userId?: number; }
+
+3) Add a typecheck script to reveal silent syntax issues
+
+package.json
+
+{
+  "scripts": {
+    "dev": "vite",
+    "typecheck": "tsc -p client/tsconfig.json --noEmit"
+  }
+}
+
+
+Then:
+
+npm run typecheck
+
+
+This will pinpoint JSX/TS parse errors that trigger esbuild’s “on-end” failure.
+
+4) Rebuild esbuild if it’s a binary mismatch (Replit sometimes)
+npm rebuild esbuild
+npx esbuild --version
+
+
+If npx esbuild fails, install fresh:
+
+npm i -D esbuild@latest
+
+5) Version sanity (vite/plugin-react mismatch can throw inside esbuild)
+
+In package.json, keep these aligned:
+
+"vite": "^5.4.0",
+"@vitejs/plugin-react": "^4.3.0",
+"typescript": "^5.4.0"
+
+
+After edits:
+
+rm -rf node_modules package-lock.json
+npm install
+npm run dev
+
+6) If the trace still appears without a clear error
+
+Force Vite to re-optimize and show dependency errors:
+
+npm run dev -- --force --debug
+
+Why this works
+
+clearScreen:false + --debug exposes the first error line that esbuild chokes on.
+
+The grep fixes address the exact JSX typos you had (they crash the esbuild parser and produce that stack).
+
+typecheck catches any other bad JSX/syntax across the 7k-line file.
+
+Rebuilding esbuild fixes Replit-specific binary glitches.
+
+Paste the first error line you see after doing step 1, and I’ll give you the exact code fix for it.
