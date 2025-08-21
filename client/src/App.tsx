@@ -7,8 +7,8 @@ import { Route, Switch } from "wouter";
 import AppShell from "./ui/AppShell";
 import GlobalHotfixes from "./GlobalHotfixes";
 
-// ✅ Use your real Home (temporarily using SimpleHome due to import issues)
-const Home                 = lazy(() => import("./SimpleHome"));
+// ✅ Use your real Home
+const Home                 = lazy(() => import("./pages/home"));
 // Keep About but NOT as the default route
 const About                = lazy(() => import("./pages/about"));
 
