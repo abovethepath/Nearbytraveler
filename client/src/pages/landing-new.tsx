@@ -2,7 +2,7 @@ import { useLocation, Link } from "wouter";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import Footer from "@/components/footer";
-import LandingNavbar from "@/components/landing-navbar";
+import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
 
 
 
@@ -86,30 +86,8 @@ export default function Landing() {
         </Button>
       </div>
       
-      {/* Top sticky bar for maximum visibility - MOBILE ONLY */}
-      <div className="md:hidden fixed top-0 left-0 right-0 z-[60] bg-orange-500 text-black py-3 px-4 shadow-lg">
-        <div className="flex items-center justify-between max-w-6xl mx-auto">
-          <div className="flex-1 text-center">
-            <span className="font-bold text-lg">🔥 Connect with Locals and Travelers TODAY - Sign Up Now!</span>
-          </div>
-          <Button
-            onClick={() => setLocation('/join')}
-            className="bg-black text-orange-400 font-bold px-6 py-2 rounded-lg hover:bg-gray-800 ml-4"
-          >
-            SIGN UP NOW
-          </Button>
-        </div>
-      </div>
-
-      {/* Fixed navbar that sits under the orange banner on phones */}
-      <header className="fixed inset-x-0 top-12 md:top-0 z-[70] bg-white/95 dark:bg-gray-900/95 backdrop-blur supports-[backdrop-filter]:bg-white/70 dark:supports-[backdrop-filter]:bg-gray-900/70">
-        <div className="pt-2">
-          <LandingNavbar />
-        </div>
-      </header>
-
-      {/* spacer so content doesn't slide under the fixed header */}
-      <div className="h-[64px] md:h-[72px]" />
+      <LandingHeader />
+      <LandingHeaderSpacer />
       
 
 
@@ -136,11 +114,11 @@ export default function Landing() {
                 <main className="mt-8 sm:mt-16 md:mt-20 lg:mt-24 xl:mt-32 mx-auto max-w-full px-4">
                   <div className="text-center">
                     <div className="max-w-4xl mx-auto">
-                      <h1 className="px-2 sm:px-4 leading-tight sm:leading-snug">
-                        <span className="block font-black text-[clamp(1.6rem,6vw,2.5rem)] text-white">
+                      <h1 className="px-3 leading-tight sm:leading-snug">
+                        <span className="block font-black text-[clamp(1.5rem,6vw,2.25rem)] text-white">
                           Skip the Tourist Traps.
                         </span>
-                        <span className="block font-black text-[clamp(1.4rem,5.5vw,2.25rem)]">
+                        <span className="block font-black text-[clamp(1.25rem,5.5vw,2rem)]">
                           <span className="text-amber-300 sm:text-orange-500">Meet Locals and Other </span>
                           <span className="text-blue-300 sm:text-blue-600">Nearby Travelers </span>
                           <span className="text-white sm:text-black">Right Now, Today!!!</span>
