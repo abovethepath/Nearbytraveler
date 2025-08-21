@@ -129,7 +129,7 @@ export default function Landing() {
                 <main className="mt-8 sm:mt-16 md:mt-20 lg:mt-24 xl:mt-32 mx-auto max-w-full px-4">
                   <div className="text-center">
                     <div className="max-w-4xl mx-auto">
-                      <h1 className="text-xl sm:text-2xl md:text-4xl lg:text-5xl xl:text-6xl tracking-tight px-2 sm:px-4 leading-normal sm:leading-relaxed">
+                      <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl tracking-tight px-2 sm:px-4 leading-relaxed">
                         <span className="block font-black" style={{
                           fontFamily: '"Inter", sans-serif',
                           color: isMobile ? '#ffffff' : '#000000',
@@ -155,7 +155,7 @@ export default function Landing() {
                       
                       {/* Personal credibility as founder */}
                       <div className="mt-8 p-6 bg-black/40 backdrop-blur-sm rounded-2xl border border-white/20 animate-zoom-in" style={{animationDelay: '0.3s'}}>
-                        <p className="text-sm sm:text-base md:text-lg lg:text-xl text-white leading-relaxed px-2">
+                        <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-white leading-relaxed px-2">
                           <span className="text-orange-300 font-bold">"For over 15 years I've hosted and toured 400+ travelers from over 40 countries as a local creating amazing expereinces.</span>
                           <span className="text-white"> I built Nearby Traveler to do exactly that - meet real locals and real travelers while creating amazing new travel adventures and expanding my social circle of friends."</span>
                         </p>
@@ -222,7 +222,7 @@ export default function Landing() {
               </div>
               <div className="p-6 flex flex-col flex-grow">
                 <div className="mb-3">
-                  <h3 className="text-sm sm:text-base font-bold text-gray-900 mb-1 break-words">Beach Bonfire & BBQ</h3>
+                  <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-1 break-words">Beach Bonfire & BBQ</h3>
                   <p className="text-sm text-gray-600">Sunset gathering on the beach</p>
                 </div>
                 
@@ -233,7 +233,7 @@ export default function Landing() {
                   <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-medium">Music</span>
                 </div>
                 
-                <p className="text-gray-700 text-xs sm:text-sm mb-4 flex-grow leading-relaxed break-words overflow-hidden">Join locals for an authentic beach bonfire with BBQ, music, and sunset views. Experience the real LA beach culture with friendly people.</p>
+                <p className="text-gray-700 text-sm sm:text-base mb-4 flex-grow leading-relaxed break-words overflow-hidden">Join locals for an authentic beach bonfire with BBQ, music, and sunset views. Experience the real LA beach culture with friendly people.</p>
                 <Button 
                   onClick={() => setLocation('/join')}
                   className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold mt-auto"
@@ -254,7 +254,7 @@ export default function Landing() {
               </div>
               <div className="p-6 flex flex-col flex-grow">
                 <div className="mb-3">
-                  <h3 className="text-sm sm:text-base font-bold text-gray-900 mb-1 break-words">Taco Tuesday</h3>
+                  <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-1 break-words">Taco Tuesday</h3>
                   <p className="text-sm text-gray-600">Every Tuesday • $1.50 tacos</p>
                 </div>
                 
