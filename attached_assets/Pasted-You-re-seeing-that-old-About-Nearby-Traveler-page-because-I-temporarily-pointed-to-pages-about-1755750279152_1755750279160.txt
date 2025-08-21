@@ -1,3 +1,9 @@
+You’re seeing that old “About Nearby Traveler” page because I temporarily pointed / to ./pages/about (it was the only safe page that rendered when we were unblocking the white-screen). Let’s put your real home page back.
+
+Fix (1 file): point / to your actual Home
+
+Replace client/src/App.tsx with this (keeps your auth exports + routes, but sets Home = ./pages/home; the old About page is now only at /about):
+
 // client/src/App.tsx
 // Back-compat exports so existing imports still work
 export { AuthContext, useAuth, AuthProvider } from "./auth-context";
@@ -25,7 +31,7 @@ const BusinessProfile      = lazy(() => import("./pages/business-profile"));
 const BusinessRegistration = lazy(() => import("./pages/business-registration"));
 const AuthPage             = lazy(() => import("./pages/auth"));
 const AiCompanion          = lazy(() => import("./pages/ai-companion"));
-const NotFound             = lazy(() => import("./pages/home"));
+const NotFound             = lazy(() => import("./pages/NotFound").catch(() => import("./pages/home")));
 
 export default function App() {
   return (
@@ -70,3 +76,12 @@ export default function App() {
     </AppShell>
   );
 }
+
+Build & run (no WS needed)
+cd client && npx vite build --mode production --sourcemap && cd ..
+NODE_ENV=production node server/index.prod.js
+
+
+Open / — you should see your current Home (from pages/home.tsx), not the old About page. If your home file lives under a different path, swap the import to match what you saw in the Dev Page Explorer (e.g. ./pages/Home with capital H).
+
+Why this happened: during triage I mapped / → about to get something rendering. This patch restores your intended homepage while keeping everything else and your mobile infra intact.
