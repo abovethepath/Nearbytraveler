@@ -1,0 +1,65 @@
+I get it—this is maddening. The crash is still the same: the Edit Bio dialog in client/src/pages/profile.tsx has mismatched JSX (an extra <div> left open before </form>). Let’s stop fighting it and make the page compile now.
+
+Do this now (zero-risk unbreaker)
+
+Open client/src/pages/profile.tsx.
+
+Find the Edit Bio dialog section (search):
+
+<DialogTitle>Edit Bio</DialogTitle>
+
+
+Delete everything from the nearest <Dialog …> above that line through its matching </Dialog>.
+
+Paste this minimal overlay instead (no <form>, no shadcn nesting → nothing to mismatch):
+
+{/* TEMP: Minimal Edit Bio overlay to unblock build */}
+{isEditMode ? (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+    <div className="bg-background rounded-xl p-4 w-[min(92vw,640px)]">
+      <div className="flex items-start justify-between gap-2">
+        <h3 className="text-lg font-semibold">Edit Bio</h3>
+        <Button variant="ghost" onClick={() => setIsEditMode(false)}>Close</Button>
+      </div>
+
+      <div className="mt-4 space-y-3">
+        <Textarea
+          value={form.getValues("bio") ?? ""}
+          onChange={(e) => form.setValue("bio", e.target.value)}
+          rows={5}
+        />
+        <div className="flex justify-end gap-2">
+          <Button variant="ghost" onClick={() => setIsEditMode(false)}>Cancel</Button>
+          <Button onClick={form.handleSubmit(onSubmit)}>Save</Button>
+        </div>
+      </div>
+    </div>
+  </div>
+) : null}
+
+
+This renders the edit UI and calls your same onSubmit, but removes the <Form> + <form> + <DialogContent> nesting that keeps breaking. Your page compiles and works; we can re-introduce the nice shadcn dialog after you’re stable.
+
+Quick sanity checks (60 seconds)
+
+Run these to be sure no other stray tags/comments remain:
+
+# show all </form> occurrences with context
+rg -n -C2 '</form>' client/src/pages/profile.tsx
+
+# spot shadcn wrappers open/close order, just to confirm:
+rg -n -C1 '<(Dialog|DialogContent|Form|form|div)[^>]*>|</(Dialog|DialogContent|Form|form|div)>' client/src/pages/profile.tsx
+
+# make sure comment blocks are balanced (counts should match)
+rg -n '{/\*' client/src/pages/profile.tsx; rg -n '\*/}' client/src/pages/profile.tsx
+
+
+If counts don’t match, fix the odd one (a stray {/* or */} will also cause these errors).
+
+Why this works
+
+We eliminate the fragile nesting (Dialog → DialogContent → Form → form → divs), which is easy to unbalance.
+
+The overlay uses plain JSX and your existing form instance, so Save still calls onSubmit.
+
+Once you confirm the page is compiling/rendering again, I can give you a balanced shadcn dialog version you can drop back in—without risking another “expected closing tag” crash.

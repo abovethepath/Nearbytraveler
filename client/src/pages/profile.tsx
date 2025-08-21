@@ -6295,8 +6295,29 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         maxLength={800}
       />
 
-      {/* TEMP: disable Edit Bio dialog to unblock build */}
-      {/* <Dialog open={isEditMode} onOpenChange={setIsEditMode}>
+      {/* TEMP: Minimal Edit Bio overlay to unblock build */}
+      {isEditMode ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="bg-background rounded-xl p-4 w-[min(92vw,640px)]">
+            <div className="flex items-start justify-between gap-2">
+              <h3 className="text-lg font-semibold">Edit Bio</h3>
+              <Button variant="ghost" onClick={() => setIsEditMode(false)}>Close</Button>
+            </div>
+
+            <div className="mt-4 space-y-3">
+              <Textarea
+                value={form.getValues("bio") ?? ""}
+                onChange={(e) => form.setValue("bio", e.target.value)}
+                rows={5}
+              />
+              <div className="flex justify-end gap-2">
+                <Button variant="ghost" onClick={() => setIsEditMode(false)}>Cancel</Button>
+                <Button onClick={form.handleSubmit(onSubmit)}>Save</Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
         <DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle>Edit Bio</DialogTitle>
@@ -6844,48 +6865,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             </form>
           </Form>
         </DialogContent>
-      </Dialog> */}
-
-      {/* Edit Bio Dialog — fully balanced */}
-      <Dialog open={isEditMode} onOpenChange={setIsEditMode}>
-        <DialogContent className="max-w-lg">
-          <DialogHeader>
-            <DialogTitle>Edit Bio</DialogTitle>
-            <DialogDescription>
-              Update the information that appears on your profile.
-            </DialogDescription>
-          </DialogHeader>
-
-          {/* shadcn Form wraps the native <form> */}
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <FormField
-                control={form.control}
-                name="bio"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Bio</FormLabel>
-                    <FormControl>
-                      <Textarea {...field} rows={5} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* add any other fields here, each returning ONE <FormItem> */}
-
-              {/* Actions */}
-              <div className="flex justify-end gap-2 pt-2">
-                <Button type="button" variant="ghost" onClick={() => setIsEditMode(false)}>
-                  Cancel
-                </Button>
-                <Button type="submit">Save</Button>
-              </div>
-            </form>
-          </Form>
-        </DialogContent>
-      </Dialog>
 
       {/* Travel Plan Delete Confirmation Dialog */}
       <Dialog open={!!deletingTravelPlan} onOpenChange={() => setDeletingTravelPlan(null)}>
