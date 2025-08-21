@@ -1,326 +1,78 @@
-import React, { useState, useEffect } from 'react';
+// client/src/App.tsx
+// Back-compat exports so existing imports still work
+export { AuthContext, useAuth, AuthProvider } from "./auth-context";
+
+import React, { Suspense, lazy } from "react";
+import { Route, Switch } from "wouter";
+import AppShell from "./ui/AppShell";
+
+// ✅ Use your real Home
+const Home                 = lazy(() => import("./pages/home"));
+// Keep About but NOT as the default route
+const About                = lazy(() => import("./pages/about"));
+
+// Other pages you listed
+const ProfilePage          = lazy(() => import("./pages/ProfilePageResponsive"));
+const Chatroom             = lazy(() => import("./pages/chatroom"));
+const CityChatrooms        = lazy(() => import("./pages/city-chatrooms"));
+const EventsListResponsive = lazy(() => import("./pages/EventsListResponsive"));
+const TravelIntentQuiz     = lazy(() => import("./pages/TravelIntentQuiz"));
+const BusinessDashboard    = lazy(() => import("./pages/business-dashboard"));
+const BusinessLanding      = lazy(() => import("./pages/business-landing"));
+const BusinessOffers       = lazy(() => import("./pages/business-offers"));
+const BusinessProfile      = lazy(() => import("./pages/business-profile"));
+const BusinessRegistration = lazy(() => import("./pages/business-registration"));
+const AuthPage             = lazy(() => import("./pages/auth"));
+const AiCompanion          = lazy(() => import("./pages/ai-companion"));
+const NotFound             = lazy(() => import("./pages/home"));
 
 export default function App() {
-  const [users, setUsers] = useState([]);
-  const [events, setEvents] = useState([]);
-  const [offers, setOffers] = useState([]);
-  const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    // Load real data from your APIs
-    fetch('/api/users').then(r => r.json()).then(setUsers).catch(console.error);
-    fetch('/api/events').then(r => r.json()).then(setEvents).catch(console.error);
-    fetch('/api/business-offers').then(r => r.json()).then(setOffers).catch(console.error);
-    fetch('/api/users/29').then(r => r.json()).then(setUser).catch(console.error);
-  }, []);
-
   return (
-    <div style={{
-      fontFamily: 'system-ui, -apple-system, sans-serif',
-      background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
-      color: 'white',
-      minHeight: '100vh',
-      margin: 0,
-      padding: 0
-    }}>
-      {/* DESKTOP HEADER */}
-      <header style={{
-        background: 'rgba(30, 41, 59, 0.95)',
-        borderBottom: '2px solid #3b82f6',
-        padding: '20px 40px',
+    <AppShell>
+      <Suspense fallback={<div style={{
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'space-between',
-        boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
-        backdropFilter: 'blur(10px)'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '30px' }}>
-          <h1 style={{
-            fontSize: '2.5rem',
-            fontWeight: 'bold',
-            color: '#60a5fa',
-            margin: 0,
-            display: 'flex',
-            alignItems: 'center',
-            gap: '15px'
-          }}>
-            🧳 Nearby Traveler
-          </h1>
-          <nav style={{ display: 'flex', gap: '25px' }}>
-            <a href="#" style={{ color: '#94a3b8', textDecoration: 'none', fontSize: '1.1rem' }}>Home</a>
-            <a href="#" style={{ color: '#94a3b8', textDecoration: 'none', fontSize: '1.1rem' }}>Discover</a>
-            <a href="#" style={{ color: '#94a3b8', textDecoration: 'none', fontSize: '1.1rem' }}>Events</a>
-            <a href="#" style={{ color: '#94a3b8', textDecoration: 'none', fontSize: '1.1rem' }}>Chat</a>
-          </nav>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-          <button style={{
-            background: '#2563eb',
-            color: 'white',
-            border: '2px solid #60a5fa',
-            padding: '12px 24px',
-            borderRadius: '8px',
-            cursor: 'pointer',
-            fontSize: '1rem',
-            fontWeight: 'bold'
-          }}>
-            Connect
-          </button>
-          {user && (
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '12px',
-              background: 'rgba(59, 130, 246, 0.1)',
-              padding: '8px 16px',
-              borderRadius: '50px',
-              border: '1px solid #3b82f6'
-            }}>
-              <div style={{
-                width: '32px',
-                height: '32px',
-                borderRadius: '50%',
-                background: 'linear-gradient(45deg, #3b82f6, #8b5cf6)'
-              }}></div>
-              <span style={{ fontSize: '1rem', fontWeight: '500' }}>
-                {user.name || user.username}
-              </span>
-            </div>
-          )}
-        </div>
-      </header>
+        justifyContent: 'center',
+        height: '100vh',
+        background: '#0f172a',
+        color: 'white',
+        fontSize: '1.2rem'
+      }}>Loading Nearby Traveler...</div>}>
+        <Switch>
+          {/* ✅ REAL HOME */}
+          <Route path="/" component={Home} />
 
-      {/* MAIN CONTENT */}
-      <main style={{ padding: '40px', maxWidth: '1400px', margin: '0 auto' }}>
-        {/* HERO SECTION */}
-        <section style={{
-          background: 'linear-gradient(135deg, #2563eb, #8b5cf6, #ec4899)',
-          padding: '60px',
-          borderRadius: '20px',
-          marginBottom: '50px',
-          textAlign: 'center',
-          boxShadow: '0 20px 40px rgba(0,0,0,0.3)'
-        }}>
-          <h2 style={{
-            fontSize: '4rem',
-            marginBottom: '20px',
-            textShadow: '2px 2px 4px rgba(0,0,0,0.3)'
-          }}>
-            🌍 Your Travel Platform is LIVE!
-          </h2>
-          <p style={{
-            fontSize: '1.5rem',
-            opacity: 0.95,
-            maxWidth: '800px',
-            margin: '0 auto'
-          }}>
-            Connect with travelers worldwide, discover local events, and explore amazing business offers.
-            Your complete social travel network is operational!
-          </p>
-        </section>
+          {/* About is available explicitly */}
+          <Route path="/about" component={About} />
 
-        {/* STATS DASHBOARD */}
-        <section style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-          gap: '30px',
-          marginBottom: '50px'
-        }}>
-          <div style={{
-            background: 'rgba(30, 41, 59, 0.8)',
-            border: '2px solid #475569',
-            padding: '40px',
-            borderRadius: '16px',
-            textAlign: 'center',
-            boxShadow: '0 10px 30px rgba(0,0,0,0.2)',
-            backdropFilter: 'blur(10px)'
-          }}>
-            <div style={{
-              color: '#60a5fa',
-              fontSize: '1.5rem',
-              marginBottom: '15px',
-              fontWeight: '600'
-            }}>
-              🧭 Active Travelers
-            </div>
-            <div style={{
-              fontSize: '4.5rem',
-              fontWeight: 'bold',
-              margin: '20px 0',
-              background: 'linear-gradient(45deg, #60a5fa, #a78bfa)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text'
-            }}>
-              {users.length}
-            </div>
-            <div style={{ color: '#94a3b8', fontSize: '1.1rem' }}>Connected and exploring</div>
-          </div>
+          {/* Profile */}
+          <Route path="/profile/:id" component={ProfilePage} />
 
-          <div style={{
-            background: 'rgba(30, 41, 59, 0.8)',
-            border: '2px solid #475569',
-            padding: '40px',
-            borderRadius: '16px',
-            textAlign: 'center',
-            boxShadow: '0 10px 30px rgba(0,0,0,0.2)',
-            backdropFilter: 'blur(10px)'
-          }}>
-            <div style={{
-              color: '#22c55e',
-              fontSize: '1.5rem',
-              marginBottom: '15px',
-              fontWeight: '600'
-            }}>
-              📅 Live Events
-            </div>
-            <div style={{
-              fontSize: '4.5rem',
-              fontWeight: 'bold',
-              margin: '20px 0',
-              background: 'linear-gradient(45deg, #22c55e, #16a34a)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text'
-            }}>
-              {events.length}
-            </div>
-            <div style={{ color: '#94a3b8', fontSize: '1.1rem' }}>Happening worldwide</div>
-          </div>
+          {/* Chatrooms */}
+          <Route path="/chatroom" component={Chatroom} />
+          <Route path="/chatrooms/:city" component={CityChatrooms as any} />
 
-          <div style={{
-            background: 'rgba(30, 41, 59, 0.8)',
-            border: '2px solid #475569',
-            padding: '40px',
-            borderRadius: '16px',
-            textAlign: 'center',
-            boxShadow: '0 10px 30px rgba(0,0,0,0.2)',
-            backdropFilter: 'blur(10px)'
-          }}>
-            <div style={{
-              color: '#a855f7',
-              fontSize: '1.5rem',
-              marginBottom: '15px',
-              fontWeight: '600'
-            }}>
-              🏪 Business Offers
-            </div>
-            <div style={{
-              fontSize: '4.5rem',
-              fontWeight: 'bold',
-              margin: '20px 0',
-              background: 'linear-gradient(45deg, #a855f7, #8b5cf6)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text'
-            }}>
-              {offers.length}
-            </div>
-            <div style={{ color: '#94a3b8', fontSize: '1.1rem' }}>Active deals & discounts</div>
-          </div>
-        </section>
+          {/* Discovery / Events / Quiz */}
+          <Route path="/events" component={EventsListResponsive} />
+          <Route path="/quiz" component={TravelIntentQuiz} />
 
-        {/* RECENT TRAVELERS */}
-        {users.length > 0 && (
-          <section style={{
-            background: 'rgba(30, 41, 59, 0.6)',
-            padding: '40px',
-            borderRadius: '16px',
-            marginBottom: '40px',
-            backdropFilter: 'blur(10px)',
-            border: '1px solid #475569'
-          }}>
-            <h3 style={{
-              fontSize: '2rem',
-              marginBottom: '30px',
-              color: '#60a5fa',
-              textAlign: 'center'
-            }}>
-              🌟 Recent Travelers
-            </h3>
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-              gap: '20px'
-            }}>
-              {users.slice(0, 6).map((traveler, i) => (
-                <div key={i} style={{
-                  background: 'rgba(51, 65, 85, 0.8)',
-                  padding: '25px',
-                  borderRadius: '12px',
-                  border: '1px solid #64748b',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '15px'
-                }}>
-                  <div style={{
-                    width: '50px',
-                    height: '50px',
-                    borderRadius: '50%',
-                    background: 'linear-gradient(45deg, #3b82f6, #8b5cf6)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '1.5rem'
-                  }}>
-                    👤
-                  </div>
-                  <div>
-                    <div style={{ fontSize: '1.1rem', fontWeight: 'bold', marginBottom: '5px' }}>
-                      {traveler.name || traveler.username}
-                    </div>
-                    <div style={{ color: '#94a3b8', fontSize: '0.9rem' }}>
-                      {traveler.userType} • {traveler.location || traveler.hometownCity}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
+          {/* Business */}
+          <Route path="/business-dashboard" component={BusinessDashboard} />
+          <Route path="/business-landing" component={BusinessLanding} />
+          <Route path="/business-offers">
+            {() => <BusinessOffers />}
+          </Route>
+          <Route path="/business-profile" component={BusinessProfile} />
+          <Route path="/business-registration" component={BusinessRegistration} />
 
-        {/* SUCCESS MESSAGE */}
-        <section style={{
-          background: 'linear-gradient(135deg, #14532d, #16a34a)',
-          border: '3px solid #22c55e',
-          padding: '50px',
-          borderRadius: '20px',
-          textAlign: 'center',
-          boxShadow: '0 20px 40px rgba(34, 197, 94, 0.2)'
-        }}>
-          <h3 style={{
-            color: '#22c55e',
-            marginBottom: '25px',
-            fontSize: '3rem',
-            fontWeight: 'bold'
-          }}>
-            ✅ YOUR DESKTOP SITE IS RESTORED!
-          </h3>
-          <div style={{
-            color: '#bbf7d0',
-            fontSize: '1.3rem',
-            lineHeight: '1.8',
-            maxWidth: '1000px',
-            margin: '0 auto'
-          }}>
-            <div style={{ marginBottom: '15px' }}>
-              ✅ <strong>Desktop Interface:</strong> Full navigation header with all sections
-            </div>
-            <div style={{ marginBottom: '15px' }}>
-              ✅ <strong>Live Data Loading:</strong> Real users, events, and business offers
-            </div>
-            <div style={{ marginBottom: '15px' }}>
-              ✅ <strong>User Authentication:</strong> {user ? `Logged in as ${user.name || user.username}` : 'Ready for login'}
-            </div>
-            <div style={{ marginBottom: '15px' }}>
-              ✅ <strong>Backend APIs:</strong> All 13 users, 8 events, 4 offers operational
-            </div>
-            <div>
-              ✅ <strong>Travel Platform:</strong> Complete social networking functionality restored
-            </div>
-          </div>
-        </section>
-      </main>
-    </div>
+          {/* Auth & tools */}
+          <Route path="/auth" component={AuthPage} />
+          <Route path="/ai-companion" component={AiCompanion} />
+
+          {/* 404 */}
+          <Route component={NotFound} />
+        </Switch>
+      </Suspense>
+    </AppShell>
   );
 }
