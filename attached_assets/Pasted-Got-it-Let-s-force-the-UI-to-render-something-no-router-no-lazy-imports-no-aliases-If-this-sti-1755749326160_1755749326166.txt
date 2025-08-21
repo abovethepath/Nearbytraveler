@@ -1,0 +1,117 @@
+Got it. Let’s force the UI to render something (no router, no lazy imports, no aliases). If this still shows white, the problem is outside React (JS not loading / server static path). Do these three quick patches + rebuild:
+
+1) Emergency App.tsx (render Explorer directly)
+
+This removes routing/lazy-loading from the equation.
+
+// client/src/App.tsx
+// Keep re-export so old imports still work
+export { AuthContext } from "./auth-context";
+
+import AppShell from "./ui/AppShell";
+import GlobalHotfixes from "./GlobalHotfixes";
+import DevPageExplorer from "./DevPageExplorer";
+
+export default function App() {
+  return (
+    <AppShell>
+      <GlobalHotfixes />
+      <DevPageExplorer />
+    </AppShell>
+  );
+}
+
+2) Make sure the error boundary is wrapping the app
+
+(If you already have this, leave it as-is.)
+
+// client/src/main.tsx
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App";
+import "./index.css";
+import ErrorBoundary from "./ErrorBoundary";
+
+const rootEl =
+  document.getElementById("root") ||
+  (() => {
+    const el = document.createElement("div");
+    el.id = "root";
+    document.body.appendChild(el);
+    return el;
+  })();
+
+ReactDOM.createRoot(rootEl).render(
+  <ErrorBoundary>
+    <App />
+  </ErrorBoundary>
+);
+
+3) Clean build & serve (ship mode: no WebSocket)
+pkill -f node || true
+rm -rf dist client/node_modules/.vite .vite .replcache 2>/dev/null || true
+cd client && npx vite build --mode production --sourcemap && cd ..
+NODE_ENV=production node server/index.prod.js
+
+
+Open the app:
+
+If you see the Dev Page Explorer UI (left column list + right preview), you’re back in business. Click through your pages to verify, then we can re-introduce the router.
+
+If it’s still white, the JS bundle isn’t executing. That means a serving issue, not a React issue.
+
+If it’s still white (server-side fix)
+
+Check your Express prod server serves the built app correctly:
+
+// server/index.prod.js (relevant bits)
+import path from "path";
+import express from "express";
+import { fileURLToPath } from "url";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const app = express();
+const dist = path.resolve(__dirname, "../dist/public");
+
+app.use(express.static(dist, { maxAge: "0" }));     // serve assets
+app.get("*", (_req, res) =>                        // SPA fallback
+  res.sendFile(path.join(dist, "index.html"))
+);
+
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, "0.0.0.0", () =>
+  console.log(`🚀 Server successfully started on http://0.0.0.0:${PORT}`)
+);
+
+
+Then reload and open DevTools → Network:
+
+You should see index.html and JS files under /assets/*.js with 200 status.
+
+If those are 404, your dist path is wrong. Ensure your Vite build outputs to ../dist/public relative to client/ (that’s the default we’ve used). If not, either:
+
+adjust Express dist to match where your build actually ended up, or
+
+rebuild with the expected outDir.
+
+Quick sanity toggles (useful if white persists)
+
+Temporarily comment the global CSS import to rule out a CSS “all-white” issue:
+
+// in client/src/main.tsx
+// import "./index.css";
+
+
+Verify the bundle is executing by adding:
+
+console.log("BOOT OK"); // top of client/src/main.tsx
+
+
+If you don’t see it in the console → assets aren’t loading (server path issue).
+
+From DevTools → Network, open one of the /assets/*.js entries. If you can’t, it’s 404 → fix static path as above.
+
+When the Explorer shows up, go to __pages and click through your real pages. After that, I can wire the router back in with the correct relative paths (no aliases) so you land on the right home/profile routes automatically.
+
+If you still get white after the emergency App.tsx, paste the first errors from the browser console or the Network tab status for /assets/*.js, and I’ll give you the exact server path fix.

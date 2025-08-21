@@ -1,17 +1,22 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { queryClient } from "./lib/queryClient";
 import App from "./App";
-import "./index.css";
+// import "./index.css";  // Temporarily disabled to fix build
+import ErrorBoundary from "./ErrorBoundary";
 
-console.log("✅ CRITICAL MOBILE LAYOUT v6-20250705 - SITE-WIDE FIXES DEPLOYED");
-console.log("🚀 Loading full travel platform with mobile infrastructure...");
+console.log("BOOT OK - Emergency mode loading");
 
-ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <App />
-    </QueryClientProvider>
-  </React.StrictMode>
+const rootEl =
+  document.getElementById("root") ||
+  (() => {
+    const el = document.createElement("div");
+    el.id = "root";
+    document.body.appendChild(el);
+    return el;
+  })();
+
+ReactDOM.createRoot(rootEl).render(
+  <ErrorBoundary>
+    <App />
+  </ErrorBoundary>
 );
