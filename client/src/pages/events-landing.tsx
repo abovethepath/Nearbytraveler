@@ -243,7 +243,7 @@ export default function EventsLanding() {
               </div>
               <div className="p-6 flex flex-col flex-grow">
                 <div className="mb-3">
-                  <h3 className="font-bold text-gray-900 mb-1">Beach BBQ & Bonfire</h3>
+                  <h3 className="text-sm sm:text-base font-bold text-gray-900 mb-1 leading-tight">Beach BBQ & Bonfire</h3>
                   <p className="text-sm text-gray-600">Sunset BBQ with new friends</p>
                 </div>
                 
@@ -253,7 +253,7 @@ export default function EventsLanding() {
                   <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-medium">Social</span>
                 </div>
                 
-                <p className="text-gray-700 text-sm mb-4 flex-grow">Join our monthly beach BBQ where we pass a guitar, sing songs, bring pot luck food and meet new friends. Sometimes we even jump in the ocean</p>
+                <p className="text-gray-700 text-xs sm:text-sm mb-4 flex-grow leading-relaxed">Join our monthly beach BBQ where we pass a guitar, sing songs, bring pot luck food and meet new friends. Sometimes we even jump in the ocean</p>
                 <a
                   href="/join"
                   className="w-full bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white font-bold py-2 px-4 rounded text-center transition duration-200"

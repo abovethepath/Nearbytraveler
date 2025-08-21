@@ -103,7 +103,7 @@ export default function LocalsLanding() {
       <div className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-12 animate-slide-in-left">
-            <h2 className="text-4xl font-black text-gray-900 mb-4">
+            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black text-gray-900 mb-4 leading-tight px-2">
               Build Your Local Community & Welcome Travelers
             </h2>
             <p className="text-xl text-gray-600">
@@ -121,8 +121,8 @@ export default function LocalsLanding() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               <div className="bg-orange-600 p-6 rounded-xl shadow-lg text-white">
                 <div className="text-4xl mb-4">🏖️</div>
-                <h3 className="text-xl font-bold mb-3 text-white">Beach Bonfires & BBQs</h3>
-                <p className="text-white">Host or join amazing events such as beach gatherings, sunset BBQs, campfire hikes, bar crawls, and all social gatherings nearby.</p>
+                <h3 className="text-base sm:text-lg md:text-xl font-bold mb-3 text-white leading-tight">Beach Bonfires & BBQs</h3>
+                <p className="text-white text-sm sm:text-base leading-relaxed">Host or join amazing events such as beach gatherings, sunset BBQs, campfire hikes, bar crawls, and all social gatherings nearby.</p>
               </div>
               <div className="bg-teal-600 p-6 rounded-xl shadow-lg text-white">
                 <div className="text-4xl mb-4">🤝</div>

@@ -66,7 +66,7 @@ export default function TravelersLanding() {
                 <main className="mt-16 mx-auto max-w-full sm:mt-20 md:mt-24 lg:mt-28 xl:mt-32">
                   <div className="text-center">
                     <div className="max-w-4xl mx-auto">
-                      <h1 className="text-4xl tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
+                      <h1 className="text-xl sm:text-2xl md:text-4xl lg:text-5xl xl:text-6xl tracking-tight leading-tight px-2">
                         <span className="block text-black font-black" style={{fontFamily: '"Inter", sans-serif'}}>Travel Like a Local.</span>
                         <span className="block font-black" style={{fontFamily: '"Inter", sans-serif'}}>
                           <span className="text-orange-400">Skip the Tourist Traps </span>
@@ -77,7 +77,7 @@ export default function TravelersLanding() {
                       
                       {/* Traveler value proposition */}
                       <div className="mt-8 p-6 bg-black/40 backdrop-blur-sm rounded-2xl border border-white/20 animate-zoom-in" style={{animationDelay: '0.3s'}}>
-                        <p className="text-xl text-white leading-relaxed">
+                        <p className="text-sm sm:text-base md:text-lg lg:text-xl text-white leading-relaxed px-2">
                           <span className="text-orange-300 font-bold">"Skip the crowded tourist spots and overpriced restaurants.</span>
                           <span className="text-white"> Connect with real locals who'll show you the hidden gems, secret bars, and authentic experiences that make travel unforgettable."</span>
                         </p>
