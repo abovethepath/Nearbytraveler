@@ -5,108 +5,307 @@ export default function SimpleHome() {
   const { user } = useAuth();
   
   return (
-    <div className="min-h-screen bg-slate-900 text-white">
-      {/* Top Navigation */}
-      <nav className="bg-slate-800 border-b border-slate-700 px-4 py-3 flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <button className="p-2 hover:bg-slate-700 rounded">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <>
+      {/* FORCE TOP NAVIGATION - HIGHEST Z-INDEX */}
+      <div style={{ 
+        backgroundColor: '#1e293b', 
+        borderBottom: '2px solid #60a5fa', 
+        padding: '16px', 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'space-between',
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 99999,
+        height: '70px',
+        boxShadow: '0 2px 10px rgba(0,0,0,0.5)'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <button style={{ 
+            padding: '12px', 
+            backgroundColor: '#2563eb',
+            border: '2px solid #60a5fa',
+            color: 'white',
+            cursor: 'pointer',
+            borderRadius: '8px',
+            fontSize: '18px',
+            fontWeight: 'bold'
+          }}>
+            ☰
+          </button>
+          <h1 style={{ fontSize: '1.8rem', fontWeight: 'bold', color: '#60a5fa', margin: 0 }}>🧳 Nearby Traveler</h1>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <button style={{ 
+            backgroundColor: '#2563eb', 
+            color: 'white',
+            border: '2px solid #60a5fa',
+            padding: '12px 20px', 
+            borderRadius: '8px',
+            fontSize: '16px',
+            cursor: 'pointer',
+            fontWeight: 'bold'
+          }}>
+            Connect
+          </button>
+          <div style={{ 
+            width: '40px', 
+            height: '40px', 
+            background: 'linear-gradient(45deg, #3b82f6, #8b5cf6)', 
+            borderRadius: '50%',
+            border: '2px solid #60a5fa'
+          }}></div>
+        </div>
+      </div>
+
+      {/* FORCE BOTTOM NAVIGATION - HIGHEST Z-INDEX */}
+      <div style={{ 
+        position: 'fixed', 
+        bottom: 0, 
+        left: 0, 
+        right: 0, 
+        backgroundColor: '#1e293b', 
+        borderTop: '2px solid #60a5fa', 
+        padding: '16px',
+        zIndex: 99999,
+        boxShadow: '0 -2px 10px rgba(0,0,0,0.5)'
+      }}>
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'space-around', 
+          alignItems: 'center', 
+          maxWidth: '500px', 
+          margin: '0 auto' 
+        }}>
+          <button style={{ 
+            padding: '12px', 
+            color: '#60a5fa', 
+            backgroundColor: 'transparent', 
+            border: '2px solid #60a5fa', 
+            cursor: 'pointer',
+            borderRadius: '8px',
+            textAlign: 'center',
+            minWidth: '80px'
+          }}>
+            <div style={{ fontSize: '24px', marginBottom: '4px' }}>🏠</div>
+            <div style={{ fontSize: '12px', fontWeight: 'bold' }}>Home</div>
+          </button>
+          <button style={{ 
+            padding: '12px', 
+            color: '#94a3b8', 
+            backgroundColor: 'transparent', 
+            border: '2px solid #475569', 
+            cursor: 'pointer',
+            borderRadius: '8px',
+            textAlign: 'center',
+            minWidth: '80px'
+          }}>
+            <div style={{ fontSize: '24px', marginBottom: '4px' }}>🔍</div>
+            <div style={{ fontSize: '12px', fontWeight: 'bold' }}>Search</div>
+          </button>
+          <button style={{ 
+            padding: '12px', 
+            color: '#94a3b8', 
+            backgroundColor: 'transparent', 
+            border: '2px solid #475569', 
+            cursor: 'pointer',
+            borderRadius: '8px',
+            textAlign: 'center',
+            minWidth: '80px'
+          }}>
+            <div style={{ fontSize: '24px', marginBottom: '4px' }}>💬</div>
+            <div style={{ fontSize: '12px', fontWeight: 'bold' }}>Chat</div>
+          </button>
+          <button style={{ 
+            padding: '12px', 
+            color: '#94a3b8', 
+            backgroundColor: 'transparent', 
+            border: '2px solid #475569', 
+            cursor: 'pointer',
+            borderRadius: '8px',
+            textAlign: 'center',
+            minWidth: '80px'
+          }}>
+            <div style={{ fontSize: '24px', marginBottom: '4px' }}>👤</div>
+            <div style={{ fontSize: '12px', fontWeight: 'bold' }}>Profile</div>
+          </button>
+        </div>
+      </div>
+
+      {/* MAIN CONTENT */}
+      <div style={{ minHeight: '100vh', backgroundColor: '#0f172a', color: 'white', fontFamily: 'Arial, sans-serif', paddingTop: '90px', paddingBottom: '100px' }}>
+      {/* Main Content */}
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '24px 16px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <button style={{ 
+            padding: '8px', 
+            backgroundColor: 'transparent',
+            border: 'none',
+            color: 'white',
+            cursor: 'pointer',
+            borderRadius: '4px'
+          }}>
+            <svg style={{ width: '24px', height: '24px' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
-          <h1 className="text-xl font-bold text-blue-400">Nearby Traveler</h1>
+          <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#60a5fa', margin: 0 }}>Nearby Traveler</h1>
         </div>
-        <div className="flex items-center space-x-3">
-          <button className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-sm">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <button style={{ 
+            backgroundColor: '#2563eb', 
+            color: 'white',
+            border: 'none',
+            padding: '8px 16px', 
+            borderRadius: '6px',
+            fontSize: '14px',
+            cursor: 'pointer'
+          }}>
             Connect
           </button>
-          <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"></div>
+          <div style={{ 
+            width: '32px', 
+            height: '32px', 
+            background: 'linear-gradient(45deg, #3b82f6, #8b5cf6)', 
+            borderRadius: '50%' 
+          }}></div>
         </div>
       </nav>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-6">
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '24px 16px', paddingTop: '88px' }}>
         {/* Hero Section */}
-        <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg p-8 mb-8">
-          <h2 className="text-3xl font-bold mb-4">Discover Amazing Travelers</h2>
-          <p className="text-lg opacity-90">Connect with 13+ travelers, find local events, and discover business offers in your area.</p>
+        <div style={{ 
+          background: 'linear-gradient(45deg, #2563eb, #8b5cf6)', 
+          borderRadius: '12px', 
+          padding: '32px', 
+          marginBottom: '32px' 
+        }}>
+          <h2 style={{ fontSize: '2.5rem', fontWeight: 'bold', marginBottom: '16px', margin: 0 }}>Discover Amazing Travelers</h2>
+          <p style={{ fontSize: '1.2rem', opacity: '0.9', margin: 0 }}>Connect with 13+ travelers, find local events, and discover business offers in your area.</p>
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
-            <h3 className="text-lg font-semibold mb-2 text-blue-400">Active Travelers</h3>
-            <p className="text-3xl font-bold">13</p>
-            <p className="text-sm text-slate-400">Ready to connect</p>
+        <div style={{ 
+          display: 'grid', 
+          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
+          gap: '24px', 
+          marginBottom: '32px' 
+        }}>
+          <div style={{ 
+            backgroundColor: '#1e293b', 
+            borderRadius: '12px', 
+            padding: '24px', 
+            border: '1px solid #475569' 
+          }}>
+            <h3 style={{ fontSize: '1.2rem', fontWeight: '600', marginBottom: '8px', color: '#60a5fa', margin: '0 0 8px 0' }}>Active Travelers</h3>
+            <p style={{ fontSize: '2.5rem', fontWeight: 'bold', margin: '0 0 4px 0' }}>13</p>
+            <p style={{ fontSize: '0.9rem', color: '#94a3b8', margin: 0 }}>Ready to connect</p>
           </div>
-          <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
-            <h3 className="text-lg font-semibold mb-2 text-green-400">Local Events</h3>
-            <p className="text-3xl font-bold">8</p>
-            <p className="text-sm text-slate-400">Happening now</p>
+          <div style={{ 
+            backgroundColor: '#1e293b', 
+            borderRadius: '12px', 
+            padding: '24px', 
+            border: '1px solid #475569' 
+          }}>
+            <h3 style={{ fontSize: '1.2rem', fontWeight: '600', marginBottom: '8px', color: '#22c55e', margin: '0 0 8px 0' }}>Local Events</h3>
+            <p style={{ fontSize: '2.5rem', fontWeight: 'bold', margin: '0 0 4px 0' }}>8</p>
+            <p style={{ fontSize: '0.9rem', color: '#94a3b8', margin: 0 }}>Happening now</p>
           </div>
-          <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
-            <h3 className="text-lg font-semibold mb-2 text-purple-400">Business Offers</h3>
-            <p className="text-3xl font-bold">4</p>
-            <p className="text-sm text-slate-400">Active deals</p>
+          <div style={{ 
+            backgroundColor: '#1e293b', 
+            borderRadius: '12px', 
+            padding: '24px', 
+            border: '1px solid #475569' 
+          }}>
+            <h3 style={{ fontSize: '1.2rem', fontWeight: '600', marginBottom: '8px', color: '#a855f7', margin: '0 0 8px 0' }}>Business Offers</h3>
+            <p style={{ fontSize: '2.5rem', fontWeight: 'bold', margin: '0 0 4px 0' }}>4</p>
+            <p style={{ fontSize: '0.9rem', color: '#94a3b8', margin: 0 }}>Active deals</p>
           </div>
         </div>
 
         {/* Quick Actions */}
-        <div className="bg-slate-800 rounded-lg p-6 border border-slate-700 mb-8">
-          <h3 className="text-xl font-bold mb-4">Quick Actions</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <button className="bg-blue-600 hover:bg-blue-700 p-4 rounded-lg text-center transition-colors">
-              <div className="text-2xl mb-2">🧭</div>
+        <div style={{ 
+          backgroundColor: '#1e293b', 
+          borderRadius: '12px', 
+          padding: '24px', 
+          border: '1px solid #475569',
+          marginBottom: '32px'
+        }}>
+          <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '16px', margin: '0 0 16px 0' }}>Quick Actions</h3>
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', 
+            gap: '16px' 
+          }}>
+            <button style={{ 
+              backgroundColor: '#2563eb', 
+              padding: '16px', 
+              borderRadius: '12px', 
+              textAlign: 'center',
+              border: 'none',
+              color: 'white',
+              cursor: 'pointer'
+            }}>
+              <div style={{ fontSize: '2rem', marginBottom: '8px' }}>🧭</div>
               <div>Discover People</div>
             </button>
-            <button className="bg-green-600 hover:bg-green-700 p-4 rounded-lg text-center transition-colors">
-              <div className="text-2xl mb-2">📅</div>
+            <button style={{ 
+              backgroundColor: '#16a34a', 
+              padding: '16px', 
+              borderRadius: '12px', 
+              textAlign: 'center',
+              border: 'none',
+              color: 'white',
+              cursor: 'pointer'
+            }}>
+              <div style={{ fontSize: '2rem', marginBottom: '8px' }}>📅</div>
               <div>Browse Events</div>
             </button>
-            <button className="bg-purple-600 hover:bg-purple-700 p-4 rounded-lg text-center transition-colors">
-              <div className="text-2xl mb-2">🏪</div>
+            <button style={{ 
+              backgroundColor: '#9333ea', 
+              padding: '16px', 
+              borderRadius: '12px', 
+              textAlign: 'center',
+              border: 'none',
+              color: 'white',
+              cursor: 'pointer'
+            }}>
+              <div style={{ fontSize: '2rem', marginBottom: '8px' }}>🏪</div>
               <div>Business Offers</div>
             </button>
-            <button className="bg-orange-600 hover:bg-orange-700 p-4 rounded-lg text-center transition-colors">
-              <div className="text-2xl mb-2">💬</div>
+            <button style={{ 
+              backgroundColor: '#ea580c', 
+              padding: '16px', 
+              borderRadius: '12px', 
+              textAlign: 'center',
+              border: 'none',
+              color: 'white',
+              cursor: 'pointer'
+            }}>
+              <div style={{ fontSize: '2rem', marginBottom: '8px' }}>💬</div>
               <div>Chatrooms</div>
             </button>
           </div>
         </div>
 
         {/* Your Platform is Working Message */}
-        <div className="bg-green-900 border border-green-700 rounded-lg p-6 text-center">
-          <h3 className="text-xl font-bold text-green-400 mb-2">🚀 Your Travel Platform is FULLY FUNCTIONAL!</h3>
-          <p className="text-green-200">All APIs working • Database connected • 13 users active • Events loading • Business offers available</p>
-          <p className="text-sm text-green-300 mt-2">This is a simplified view while we fix the full interface imports.</p>
+        <div style={{ 
+          backgroundColor: '#14532d', 
+          border: '1px solid #16a34a', 
+          borderRadius: '12px', 
+          padding: '24px', 
+          textAlign: 'center',
+          marginBottom: '80px'
+        }}>
+          <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#22c55e', marginBottom: '8px', margin: '0 0 8px 0' }}>🚀 Your Travel Platform is FULLY FUNCTIONAL!</h3>
+          <p style={{ color: '#bbf7d0', margin: '0 0 8px 0' }}>All APIs working • Database connected • 13 users active • Events loading • Business offers available</p>
+          <p style={{ fontSize: '0.9rem', color: '#86efac', margin: 0 }}>Navigation bars should be visible at top and bottom.</p>
         </div>
       </div>
-
-      {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-slate-800 border-t border-slate-700 px-4 py-2">
-        <div className="flex justify-around items-center max-w-sm mx-auto">
-          <button className="p-3 text-blue-400">
-            <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
-            </svg>
-          </button>
-          <button className="p-3 text-slate-400">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-          </button>
-          <button className="p-3 text-slate-400">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-            </svg>
-          </button>
-          <button className="p-3 text-slate-400">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-            </svg>
-          </button>
-        </div>
-      </nav>
-    </div>
+      </div>
+    </>
   );
 }

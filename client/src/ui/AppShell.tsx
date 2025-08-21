@@ -14,7 +14,12 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <AuthProvider>
-      <div className="app-shell min-h-[calc(var(--vh)*100)] w-full overflow-x-clip">
+      <div style={{ 
+        minHeight: '100vh', 
+        width: '100%', 
+        overflowX: 'hidden',
+        position: 'relative'
+      }}>
         {children}
       </div>
     </AuthProvider>
