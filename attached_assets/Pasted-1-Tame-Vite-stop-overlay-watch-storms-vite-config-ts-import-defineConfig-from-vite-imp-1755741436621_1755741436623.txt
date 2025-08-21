@@ -1,0 +1,145 @@
+1) Tame Vite (stop overlay + watch storms)
+
+vite.config.ts
+
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+// import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal"; // ⛔️ disable
+import path from "path";
+
+export default defineConfig({
+  plugins: [
+    react(),
+    // runtimeErrorOverlay(), // ⛔️ comment out (causes endless “debugging” popups on Replit)
+    // ⛔️ also remove/disable Cartographer in dev; it's heavy + chatty on file-watch
+  ],
+  resolve: {
+    alias: {
+      "@": path.resolve(import.meta.dirname, "client", "src"),
+      "@shared": path.resolve(import.meta.dirname, "shared"),
+      "@assets": path.resolve(import.meta.dirname, "attached_assets"),
+    },
+  },
+  root: path.resolve(import.meta.dirname, "client"),
+  build: {
+    outDir: path.resolve(import.meta.dirname, "dist/public"),
+    emptyOutDir: true,
+    sourcemap: false, // keeps dev server happier on Replit
+  },
+  server: {
+    host: "0.0.0.0",
+    port: 5173,
+    hmr: { overlay: false },                 // ✅ no crash popups
+    watch: {
+      ignored: [
+        "**/node_modules/**",
+        "**/.git/**",
+        "**/dist/**",
+        "**/build/**",
+        "**/.cache/**",
+        "**/.vite/**",
+      ],
+      usePolling: false,                     // polling on Replit = hot loop; keep false
+    },
+    fs: { strict: true, deny: [] },
+  },
+});
+
+
+If you had:
+
+await import("@replit/vite-plugin-cartographer").then(m => m.cartographer())
+
+
+→ delete that whole block.
+
+2) Stop server restarts (nodemon / ts-node)
+
+Create nodemon.json at the repo root:
+
+{
+  "watch": ["server", "shared"],
+  "ext": "ts,js,json",
+  "ignore": ["client", "dist", "build", "node_modules", "**/*.map"],
+  "exec": "node --env-file=.env server/index.js"
+}
+
+
+Make sure your server ignores client builds and does not watch the Vite output.
+
+3) Make Replit run only ONE thing
+
+If you’re starting both Vite and the API in one command, use concurrently but don’t let Replit’s Debugger attach to both.
+
+package.json
+
+{
+  "scripts": {
+    "dev:client": "vite",
+    "dev:server": "nodemon",
+    "dev": "concurrently -k -n CLIENT,API -c auto \"npm:dev:client\" \"npm:dev:server\""
+  }
+}
+
+
+.replit (or replit.yaml) → run just "npm run dev" (no extra watchers, no debugger). If Replit adds debugging automatically, switch the run button to Run (not Debug).
+
+4) Kill the current runaway processes (one-time)
+
+In the Replit shell:
+
+pkill -f node || true
+rm -rf client/node_modules/.vite .vite .cache dist .replcache || true
+npm install
+npm run dev
+
+5) Prevent React infinite renders (the silent culprit)
+
+Search & fix these patterns (they trigger HMR + overlay loops):
+
+❌ useEffect(() => setX(x + 1), [x]) (self-updating dependency = infinite loop)
+
+❌ useEffect(() => doSomething()) (no deps = runs every render)
+
+✅ Use guards/debounces:
+
+useEffect(() => {
+  if (!ready) return;
+  const id = setTimeout(() => doSomething(state), 200);
+  return () => clearTimeout(id);
+}, [ready, state]);
+
+
+If needed, temporarily remove <React.StrictMode> in dev to avoid double-invocation noise.
+
+6) Turn off tiny scrollbars (global)
+
+Add mobile-safe.css and import after Tailwind:
+
+html, body { height: 100%; overflow-x: hidden; }
+*, *::before, *::after { box-sizing: border-box; min-width: 0; }
+textarea { overflow-x: hidden; resize: vertical; }
+[data-radix-popper-content-wrapper] { max-width: min(92vw, 420px); }
+
+
+Wrap your app once:
+
+function AppShell({ children }: { children: React.ReactNode }) {
+  return <div className="min-h-[100svh] w-full overflow-x-clip">{children}</div>;
+}
+
+7) Quick greps (fix in minutes)
+
+Replace h-screen → min-h-[100svh]
+
+Replace overflow-y-scroll → overflow-y-auto
+
+Change w-screen inside padded containers → w-full
+
+Remove max-h-* + overflow-* on headers/cards that shouldn’t scroll
+
+TL;DR
+
+Disable Replit’s runtime overlay + cartographer, tighten Vite watch settings, run only one dev process, ignore client builds in nodemon, kill runaway node, and fix the 3 React patterns that cause infinite renders. That stops the “debugging over and over” loop and the cascading mobile glitches—without touching every widget.
+
+If you paste your .replit (or replit.yaml) and package.json “scripts”, I’ll patch them line-by-line so you can just copy/paste.

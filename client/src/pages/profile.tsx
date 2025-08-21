@@ -2658,6 +2658,83 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   // Languages spoken (mock data - would be from user profile)
   const languages = ["English", "Spanish", "Portuguese"];
 
+  // Reference form
+  const referenceForm = useForm<z.infer<typeof referenceSchema>>({
+    resolver: zodResolver(referenceSchema),
+    defaultValues: {
+      reviewerId: currentUser?.id || 0,
+      revieweeId: user?.id || 0,
+      content: "",
+      experience: "positive",
+    },
+  });
+
+  // Edit reference form
+  const editReferenceForm = useForm<z.infer<typeof referenceSchema>>({
+    resolver: zodResolver(referenceSchema),
+    defaultValues: {
+      reviewerId: currentUser?.id || 0,
+      revieweeId: user?.id || 0,
+      content: "",
+      experience: "positive",
+    },
+  });
+
+  // Create reference mutation
+  const createReference = useMutation({
+    mutationFn: async (data: z.infer<typeof referenceSchema>) => {
+      const response = await apiRequest('POST', '/api/references', data);
+      if (!response.ok) throw new Error('Failed to create reference');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${user?.id}/references`] });
+      referenceForm.reset();
+      setShowWriteReferenceModal(false);
+      setShowReferenceForm(false);
+      toast({
+        title: "Reference submitted",
+        description: "Your reference has been successfully submitted.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Submission failed",
+        description: error.message || "Failed to submit reference. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Update reference mutation
+  const updateReference = useMutation({
+    mutationFn: async (data: { referenceId: number; content: string; experience: string }) => {
+      const response = await apiRequest('PUT', `/api/references/${data.referenceId}`, {
+        content: data.content,
+        experience: data.experience,
+      });
+      if (!response.ok) throw new Error('Failed to update reference');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${user?.id}/references`] });
+      editReferenceForm.reset();
+      setShowEditModal(false);
+      setEditingReference(null);
+      toast({
+        title: "Reference updated",
+        description: "Your reference has been successfully updated.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Update failed",
+        description: error.message || "Failed to update reference. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
   // Connect mutation
   const connectMutation = useMutation({
     mutationFn: async () => {
@@ -3392,7 +3469,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 </div>
               </CardHeader>
               <CardContent className="overflow-visible">
-                <div>
                 {/* Business Name Field for Business Users */}
                 {user?.userType === 'business' && (
                   <div className="mb-4 p-4 bg-gradient-to-r from-blue-50 to-orange-50 dark:from-blue-900/20 dark:to-orange-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
@@ -3679,6 +3755,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       )}
                     </div>
                   )}
+                </div>
                 </CardContent>
               </Card>
             )}
