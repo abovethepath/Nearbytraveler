@@ -31,7 +31,39 @@ export default function App() {
   return (
     <AppShell>
       <GlobalHotfixes />
-      <Suspense fallback={<div style={{display:'none'}}>Loading…</div>}>
+      <Suspense fallback={
+        <div style={{ 
+          padding: '40px', 
+          textAlign: 'center', 
+          fontFamily: 'Arial', 
+          backgroundColor: '#f0f8ff',
+          minHeight: '100vh'
+        }}>
+          <h1 style={{ color: '#007bff', fontSize: '2.5rem', marginBottom: '20px' }}>
+            🚀 Nearby Traveler Platform
+          </h1>
+          <div style={{ 
+            backgroundColor: 'white', 
+            padding: '30px', 
+            borderRadius: '12px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+            maxWidth: '600px',
+            margin: '0 auto'
+          }}>
+            <h2 style={{ color: '#333', marginBottom: '20px' }}>✅ Your Travel Platform is LIVE!</h2>
+            <p style={{ fontSize: '1.2rem', color: '#666', lineHeight: '1.6' }}>
+              Loading your complete travel platform with 13+ users, events, business offers, and AI recommendations...
+            </p>
+            <div style={{ 
+              background: 'linear-gradient(45deg, #007bff, #0056b3)', 
+              height: '4px', 
+              borderRadius: '2px',
+              margin: '20px 0',
+              animation: 'pulse 1.5s infinite'
+            }}></div>
+          </div>
+        </div>
+      }>
         <Switch>
           {/* ✅ REAL HOME */}
           <Route path="/" component={Home} />
@@ -40,9 +72,7 @@ export default function App() {
           <Route path="/about" component={About} />
 
           {/* Profile */}
-          <Route path="/profile/:id">
-            {(params) => <ProfilePage userId={Number(params.id)} />}
-          </Route>
+          <Route path="/profile/:id" component={ProfilePage} />
 
           {/* Chatrooms */}
           <Route path="/chatroom" component={Chatroom} />
@@ -55,7 +85,9 @@ export default function App() {
           {/* Business */}
           <Route path="/business-dashboard" component={BusinessDashboard} />
           <Route path="/business-landing" component={BusinessLanding} />
-          <Route path="/business-offers" component={BusinessOffers} />
+          <Route path="/business-offers">
+            {() => <BusinessOffers />}
+          </Route>
           <Route path="/business-profile" component={BusinessProfile} />
           <Route path="/business-registration" component={BusinessRegistration} />
 

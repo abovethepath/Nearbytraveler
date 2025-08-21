@@ -1,6 +1,19 @@
 import React, { createContext, useContext, useState } from "react";
 
-export type AuthUser = { id: number; username?: string | null } | null;
+export type AuthUser = { 
+  id: number; 
+  username?: string | null;
+  interests?: string[];
+  localActivities?: string[];
+  localEvents?: string[];
+  travelDestination?: string;
+  userType?: string;
+  name?: string;
+  location?: string;
+  bio?: string;
+  profileImage?: string;
+  [key: string]: any;
+} | null;
 
 export type AuthContextValue = {
   user: AuthUser;
