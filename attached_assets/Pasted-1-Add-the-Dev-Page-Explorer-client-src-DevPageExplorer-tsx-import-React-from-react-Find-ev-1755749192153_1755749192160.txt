@@ -1,0 +1,143 @@
+1) Add the Dev Page Explorer
+
+client/src/DevPageExplorer.tsx
+
+import React from "react";
+
+// Find every TSX/JSX in /pages
+const modules = import.meta.glob("./pages/**/*.{tsx,jsx}");
+
+function pretty(name: string) {
+  return name
+    .replace(/^\.\/pages\//, "/")
+    .replace(/\.(tsx|jsx)$/, "")
+    .replace(/index$/i, "");
+}
+
+export default function DevPageExplorer() {
+  const [current, setCurrent] = React.useState<string>("");
+  const [Comp, setComp] = React.useState<React.ComponentType | null>(null);
+
+  const entries = Object.keys(modules).sort().map((k) => ({ key: k, route: pretty(k) }));
+
+  async function load(key: string) {
+    setCurrent(key);
+    const mod: any = await (modules as any)[key]();
+    setComp(() => (mod?.default ? mod.default : () => <div>No default export</div>));
+  }
+
+  return (
+    <div style={{ padding: 16, fontFamily: "system-ui, -apple-system, Segoe UI, Roboto" }}>
+      <h2 style={{ marginTop: 0 }}>🧭 Dev Page Explorer</h2>
+      <p style={{ color: "#666" }}>
+        Click a page to render it. This lists everything under <code>client/src/pages/</code>.
+      </p>
+
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: 16 }}>
+        <div style={{ borderRight: "1px solid #eee", paddingRight: 12, maxHeight: "70vh", overflow: "auto" }}>
+          {entries.length === 0 && <div>No pages found in /pages.</div>}
+          {entries.map(({ key, route }) => (
+            <div key={key} style={{ marginBottom: 8 }}>
+              <button
+                onClick={() => load(key)}
+                style={{
+                  width: "100%", textAlign: "left", padding: "8px 10px",
+                  borderRadius: 8, border: "1px solid #ddd", background: current === key ? "#f2f6ff" : "#fff"
+                }}
+              >
+                {route}
+              </button>
+            </div>
+          ))}
+        </div>
+
+        <div style={{ minHeight: 200 }}>
+          {Comp ? <Comp /> : <div style={{ color: "#999" }}>Select a page on the left to render it here.</div>}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+2) Wire it into your app (keeps your crash guard + mobile shell)
+
+client/src/App.tsx
+
+// Keep the context re-export if other files import from "@/App"
+export { AuthContext } from "./auth-context";
+
+import React, { Suspense, lazy } from "react";
+import { Route, Switch } from "wouter";
+import AppShell from "./ui/AppShell";
+import GlobalHotfixes from "./GlobalHotfixes";
+import DevPageExplorer from "./DevPageExplorer";
+
+// Try your real pages first (relative imports; adjust if you know exact paths)
+const Home = lazy(() => import("./pages/Home").catch(() => import("./pages/Discover")));
+const Profile = lazy(() => import("./pages/Profile").catch(() => import("./pages/NotFound")));
+const Discover = lazy(() => import("./pages/Discover").catch(() => import("./pages/NotFound")));
+const Chatrooms = lazy(() => import("./pages/chat/Chatrooms").catch(() => import("./pages/NotFound")));
+const NotFound = lazy(() => import("./pages/NotFound"));
+
+export default function App() {
+  return (
+    <AppShell>
+      <GlobalHotfixes />
+      <Suspense fallback={<div className="p-4">Loading…</div>}>
+        <Switch>
+          <Route path="/" component={Home} />
+          <Route path="/profile/:id">{(p) => <Profile userId={Number(p.id)} />}</Route>
+          <Route path="/discover" component={Discover} />
+          <Route path="/chatrooms/:city" component={Chatrooms as any} />
+
+          {/* 🚀 Dev Explorer always available */}
+          <Route path="/__pages" component={DevPageExplorer} />
+
+          <Route component={NotFound} />
+        </Switch>
+      </Suspense>
+    </AppShell>
+  );
+}
+
+
+Now you can visit /__pages in the browser, click any discovered page, and it will render immediately—no more “only the stub screen”.
+
+3) (Optional) Remove our old stubs
+
+If we previously added placeholders that are masking your real pages, delete or rename them:
+
+client/src/pages/Home.tsx
+client/src/pages/Discover.tsx
+client/src/pages/Profile.tsx
+client/src/pages/chat/Chatrooms.tsx
+client/src/pages/NotFound.tsx
+
+
+(Only remove them if you see an actual page with the same name in another folder being discovered by the Explorer.)
+
+4) Run it
+
+Prod (quickest to verify):
+
+cd client && npx vite build --mode production --sourcemap && cd ..
+NODE_ENV=production node server/index.prod.js
+
+
+Dev (one-port HMR):
+
+pkill -f node || true
+node dev-oneport.mjs
+
+
+Then open:
+
+Your normal routes (/, /discover, etc.)
+
+/__pages to click into any page Vite finds under client/src/pages/**.
+
+Why this solves “I only see that one screen”
+
+Your router was still pointed at a placeholder. The Explorer removes guesswork: it lists every real page file and loads it on click. From there, we can update App.tsx imports to the correct paths permanently and delete any leftover stubs.
+
+If a page throws, your ErrorBoundary will show the exact file/line instead of a white screen—send me that stack and I’ll give you the precise fix.

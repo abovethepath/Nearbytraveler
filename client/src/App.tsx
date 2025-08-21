@@ -2,21 +2,21 @@ import React, { Suspense, lazy } from "react";
 import { Route, Switch } from "wouter";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./lib/queryClient";
+import DevPageExplorer from "./DevPageExplorer";
 
-// ✅ Use your REAL travel platform pages
-const Home = lazy(() => import("./pages/home"));
-const Profile = lazy(() => import("./pages/profile"));
-const Discover = lazy(() => import("./pages/discover"));
+// Try your real pages first with fallbacks
+const Home = lazy(() => import("./pages/home").catch(() => import("./pages/discover")));
+const Profile = lazy(() => import("./pages/profile").catch(() => import("./pages/not-found")));
+const Discover = lazy(() => import("./pages/discover").catch(() => import("./pages/not-found")));
 const NotFound = lazy(() => import("./pages/not-found"));
 
-// Minimal auth context for compatibility
+// Export auth context and hook that your pages expect
 export const AuthContext = React.createContext({
   user: null, 
   setUser: () => {}, 
   isAuthenticated: false
 });
 
-// Export useAuth hook that your pages expect
 export const useAuth = () => ({
   user: null,
   setUser: () => {},
@@ -39,6 +39,10 @@ export default function App() {
                 {(params) => <Profile userId={Number(params.id)} />}
               </Route>
               <Route path="/discover" component={Discover} />
+              
+              {/* 🚀 Dev Explorer - see ALL your pages */}
+              <Route path="/__pages" component={DevPageExplorer} />
+              
               <Route component={NotFound} />
             </Switch>
           </Suspense>
