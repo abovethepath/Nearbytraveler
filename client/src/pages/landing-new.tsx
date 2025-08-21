@@ -1,4 +1,5 @@
 import { useLocation, Link } from "wouter";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import Footer from "@/components/footer";
 import LandingNavbar from "@/components/landing-navbar";
@@ -56,6 +57,17 @@ const CustomIcon = ({ iconName, className }: { iconName: string; className?: str
 
 export default function Landing() {
   const [, setLocation] = useLocation();
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   return (
     <div className="bg-gray-50 dark:bg-gray-900 font-sans" key="landing-v2-no-copy-button">
@@ -89,9 +101,9 @@ export default function Landing() {
         </div>
       </div>
 
-      {/* Landing Navbar with BETA badge - ensure it's visible on mobile */}
-      <header className="sticky top-12 z-[55] bg-white/95 dark:bg-gray-900/95 backdrop-blur supports-[backdrop-filter]:bg-white/70 dark:supports-[backdrop-filter]:bg-gray-900/70">
-        <div className="pt-2">
+      {/* Landing Navbar with BETA badge - FORCE MOBILE VISIBILITY */}
+      <header className="sticky top-12 z-[55] bg-white/95 dark:bg-gray-900/95 backdrop-blur supports-[backdrop-filter]:bg-white/70 dark:supports-[backdrop-filter]:bg-gray-900/70 block" style={{display: 'block', visibility: 'visible', minHeight: '64px'}}>
+        <div className="pt-2 block" style={{display: 'block', visibility: 'visible'}}>
           <LandingNavbar />
         </div>
       </header>
@@ -118,13 +130,26 @@ export default function Landing() {
                   <div className="text-center">
                     <div className="max-w-4xl mx-auto">
                       <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl tracking-tight px-4">
-                        <span className="block font-black mobile-hero-text" style={{fontFamily: '"Inter", sans-serif'}}>
+                        <span className="block font-black" style={{
+                          fontFamily: '"Inter", sans-serif',
+                          color: isMobile ? '#ffffff' : '#000000',
+                          textShadow: isMobile ? '3px 3px 6px rgba(0,0,0,0.9), 0 0 10px rgba(0,0,0,0.5)' : 'none'
+                        }}>
                           Skip the Tourist Traps.
                         </span>
                         <span className="block font-black" style={{fontFamily: '"Inter", sans-serif'}}>
-                          <span className="mobile-hero-orange">Meet Locals and Other </span>
-                          <span className="mobile-hero-blue">Nearby Travelers</span>
-                          <span className="mobile-hero-text"> Right Now, Today!!!</span>
+                          <span style={{
+                            color: isMobile ? '#fde68a' : '#fb923c',
+                            textShadow: isMobile ? '3px 3px 6px rgba(0,0,0,0.9), 0 0 10px rgba(0,0,0,0.5)' : 'none'
+                          }}>Meet Locals and Other </span>
+                          <span style={{
+                            color: isMobile ? '#93c5fd' : '#2563eb',
+                            textShadow: isMobile ? '3px 3px 6px rgba(0,0,0,0.9), 0 0 10px rgba(0,0,0,0.5)' : 'none'
+                          }}>Nearby Travelers</span>
+                          <span style={{
+                            color: isMobile ? '#ffffff' : '#000000',
+                            textShadow: isMobile ? '3px 3px 6px rgba(0,0,0,0.9), 0 0 10px rgba(0,0,0,0.5)' : 'none'
+                          }}> Right Now, Today!!!</span>
                         </span>
                       </h1>
                       
