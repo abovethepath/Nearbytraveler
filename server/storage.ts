@@ -9780,31 +9780,6 @@ export class DatabaseStorage implements IStorage {
         isActive: true
       }).returning();
 
-      // Give the vouched user credits (1 credit for being vouched)
-      await db.insert(vouchCredits).values({
-        userId: vouchedUserId,
-        totalCredits: 1,
-        usedCredits: 0,
-        availableCredits: 1,
-        seedMember: false
-      }).onConflictDoUpdate({
-        target: vouchCredits.userId,
-        set: {
-          totalCredits: sql`${vouchCredits.totalCredits} + 1`,
-          availableCredits: sql`${vouchCredits.availableCredits} + 1`,
-          updatedAt: new Date()
-        }
-      });
-
-      // Deduct credit from voucher
-      await db.update(vouchCredits)
-        .set({
-          usedCredits: sql`${vouchCredits.usedCredits} + 1`,
-          availableCredits: sql`${vouchCredits.availableCredits} - 1`,
-          updatedAt: new Date()
-        })
-        .where(eq(vouchCredits.userId, voucherUserId));
-
       console.log(`✅ VOUCH: Created vouch ${newVouch.id}`);
       return newVouch;
     } catch (error) {
@@ -9899,29 +9874,43 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  async canUserVouch(userId: number): Promise<{ canVouch: boolean; availableCredits: number; reason?: string }> {
+  async canUserVouch(userId: number): Promise<{ canVouch: boolean; reason?: string }> {
     try {
-      const credits = await this.getUserVouchCredits(userId);
-      
-      if (credits.availableCredits > 0) {
+      // Check if user has received at least one vouch OR is a seed member
+      const [receivedVouchCount] = await db
+        .select({ count: count() })
+        .from(vouches)
+        .where(and(
+          eq(vouches.vouchedUserId, userId),
+          eq(vouches.isActive, true)
+        ));
+
+      // Check if user is a seed member (like nearbytraveler)
+      const [seedMember] = await db
+        .select()
+        .from(vouchCredits)
+        .where(and(
+          eq(vouchCredits.userId, userId),
+          eq(vouchCredits.seedMember, true)
+        ));
+
+      const hasVouches = receivedVouchCount.count > 0;
+      const isSeedMember = !!seedMember;
+
+      if (hasVouches || isSeedMember) {
         return {
-          canVouch: true,
-          availableCredits: credits.availableCredits
+          canVouch: true
         };
       }
 
       return {
         canVouch: false,
-        availableCredits: 0,
-        reason: credits.totalCredits === 0 
-          ? 'You must be vouched by someone to vouch for others'
-          : 'You have used all your vouch credits'
+        reason: 'You must be vouched by someone to vouch for others'
       };
     } catch (error) {
       console.error('Error checking if user can vouch:', error);
       return {
         canVouch: false,
-        availableCredits: 0,
         reason: 'Error checking vouch eligibility'
       };
     }
