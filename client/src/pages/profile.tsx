@@ -3147,7 +3147,16 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           activeTrips.sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
                           const currentTrip = activeTrips[0].plan;
                           const destination = currentTrip.destination || 'Unknown';
-                          return `Nearby Traveler in ${destination}`;
+                          
+                          // ALWAYS show hometown + current travel destination
+                          const hometownParts = [
+                            user.hometownCity,
+                            user.hometownState,
+                            user.hometownCountry
+                          ].filter(Boolean);
+                          
+                          const hometown = hometownParts.length > 0 ? hometownParts.join(', ') : 'Unknown';
+                          return `Nearby Traveler from ${hometown}, traveling in ${destination}`;
                         }
                       }
                       
