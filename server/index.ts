@@ -93,7 +93,7 @@ app.get('/api/business-deals', async (req, res) => {
     console.log('💰 DIRECT API: Fetching business deals');
     
     // Import metro consolidation helpers
-    const { isLAMetroCity, getMetroArea } = await import('../shared/constants.ts');
+    const { isLAMetroCity, getMetroArea } = await import('../shared/constants.js');
     
     // First get the business offers
     const offers = await db.select()
@@ -245,7 +245,7 @@ app.get('/api/quick-deals', async (req, res) => {
     console.log('🎯 DIRECT API: Fetching quick deals');
     
     // Import metro consolidation helpers
-    const { isLAMetroCity, getMetroArea } = await import('../shared/constants.ts');
+    const { isLAMetroCity, getMetroArea } = await import('../shared/constants.js');
     
     // Get all active quick deals that haven't expired
     const now = new Date();
@@ -422,7 +422,7 @@ app.get('/api/search-users', async (req, res) => {
       const locationTerm = location.trim();
       
       // Import metro consolidation helpers
-      const { isLAMetroCity, getMetroCities } = await import('../shared/constants.ts');
+      const { isLAMetroCity, getMetroCities } = await import('../shared/constants.js');
       
       // Extract just the city name from formatted locations like "Los Angeles, California, United States"
       const cityName = locationTerm.split(',')[0].trim();

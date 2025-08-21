@@ -1,6 +1,5 @@
 /* Import modern mobile-optimized font */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-@import "./styles/mobile-safe.css";
 
 /* Kill double vertical scrollbars - mobile responsive layout fix */
 html, body {
@@ -2584,7 +2583,7 @@ div[class*="rounded-lg border"].selected:not(input):not(textarea) {
 
 @layer base {
   * {
-    @apply border-gray-200;
+    @apply border-border;
   }
 
   body {

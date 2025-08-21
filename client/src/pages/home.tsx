@@ -1,7 +1,7 @@
 import React, { useState, useContext, useRef, useEffect, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
-import { AuthContext } from "../auth-context";
+import { AuthContext } from "@/App";
 import UserCard from "@/components/user-card";
 import EventCard from "@/components/event-card";
 import MessagePreview from "@/components/message-preview";
@@ -1219,7 +1219,7 @@ export default function Home() {
 
   // Define pageContent to wrap with MobilePreview
   const pageContent = (
-    <div className="min-h-[100svh] bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
 
 {/* HERO — SCOPED, SAFE */}
 <section

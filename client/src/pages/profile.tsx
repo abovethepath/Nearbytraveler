@@ -2658,83 +2658,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   // Languages spoken (mock data - would be from user profile)
   const languages = ["English", "Spanish", "Portuguese"];
 
-  // Reference form
-  const referenceForm = useForm<z.infer<typeof referenceSchema>>({
-    resolver: zodResolver(referenceSchema),
-    defaultValues: {
-      reviewerId: currentUser?.id || 0,
-      revieweeId: user?.id || 0,
-      content: "",
-      experience: "positive",
-    },
-  });
-
-  // Edit reference form
-  const editReferenceForm = useForm<z.infer<typeof referenceSchema>>({
-    resolver: zodResolver(referenceSchema),
-    defaultValues: {
-      reviewerId: currentUser?.id || 0,
-      revieweeId: user?.id || 0,
-      content: "",
-      experience: "positive",
-    },
-  });
-
-  // Create reference mutation
-  const createReference = useMutation({
-    mutationFn: async (data: z.infer<typeof referenceSchema>) => {
-      const response = await apiRequest('POST', '/api/references', data);
-      if (!response.ok) throw new Error('Failed to create reference');
-      return response.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`/api/users/${user?.id}/references`] });
-      referenceForm.reset();
-      setShowWriteReferenceModal(false);
-      setShowReferenceForm(false);
-      toast({
-        title: "Reference submitted",
-        description: "Your reference has been successfully submitted.",
-      });
-    },
-    onError: (error: any) => {
-      toast({
-        title: "Submission failed",
-        description: error.message || "Failed to submit reference. Please try again.",
-        variant: "destructive",
-      });
-    },
-  });
-
-  // Update reference mutation
-  const updateReference = useMutation({
-    mutationFn: async (data: { referenceId: number; content: string; experience: string }) => {
-      const response = await apiRequest('PUT', `/api/references/${data.referenceId}`, {
-        content: data.content,
-        experience: data.experience,
-      });
-      if (!response.ok) throw new Error('Failed to update reference');
-      return response.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`/api/users/${user?.id}/references`] });
-      editReferenceForm.reset();
-      setShowEditModal(false);
-      setEditingReference(null);
-      toast({
-        title: "Reference updated",
-        description: "Your reference has been successfully updated.",
-      });
-    },
-    onError: (error: any) => {
-      toast({
-        title: "Update failed",
-        description: error.message || "Failed to update reference. Please try again.",
-        variant: "destructive",
-      });
-    },
-  });
-
   // Connect mutation
   const connectMutation = useMutation({
     mutationFn: async () => {
@@ -2858,7 +2781,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
   if (userLoading) {
     return (
-      <div className="min-h-[100svh] bg-gray-50 dark:bg-gray-900 overflow-x-hidden">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 overflow-x-hidden">
         <div className="container mx-auto px-4 py-8">
           <div className="flex items-center justify-center h-64">
             <div className="text-lg font-medium text-gray-900 dark:text-white">
@@ -2875,7 +2798,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   if (userError && !user) {
     console.error('Profile page error:', userError);
     return (
-      <div className="min-h-[100svh] bg-gray-50 dark:bg-gray-900 overflow-x-hidden flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 overflow-x-hidden flex items-center justify-center">
         <div className="text-center p-8">
           <h1 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">Error Loading Profile</h1>
           <p className="text-gray-600 dark:text-gray-300 mb-6">Unable to load profile data</p>
@@ -2911,7 +2834,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
   if (!user && !userLoading) {
     return (
-      <div className="min-h-[100svh] bg-gray-50 dark:bg-gray-900">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <div className="container mx-auto px-4 py-8 text-center">
           <h1 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">User Not Found</h1>
           <UniversalBackButton 
@@ -2927,7 +2850,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   // Safety check to ensure user exists before rendering main content
   if (!user) {
     return (
-      <div className="min-h-[100svh] bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
       </div>
     );
@@ -2953,7 +2876,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   if (!user) {
     console.error('Profile render error: user is null/undefined');
     return (
-      <div className="min-h-[100svh] bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-red-600 mb-4">User Not Found</h1>
           <p className="text-gray-600 dark:text-gray-300 mb-4">Unable to load user data</p>
@@ -2977,7 +2900,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
   return (
     <>
-      <div className="min-h-[100svh] profile-page">
+      <div className="min-h-screen profile-page">
       {shouldShowBackToChatroom && (
         <div className="w-full max-w-full mx-auto px-2 pt-2">
           <Button 
@@ -3755,9 +3678,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       )}
                     </div>
                   )}
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Business Offers Section - Only for business users */}
             {user?.userType === 'business' && (
@@ -5451,11 +5374,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             )}
 
             {/* Vouch System Widget */}
-            {user?.id && currentUser?.id && (
+            {user?.id && (
               <VouchWidget 
                 userId={user.id} 
                 isOwnProfile={isOwnProfile} 
-                currentUserId={currentUser.id} 
+                currentUserId={currentUser?.id} 
               />
             )}
 
@@ -6476,7 +6399,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               {user?.userType !== 'business' && (
                 <FormField
                   control={profileForm.control}
-                  name="bio"
+                  name="travelingWithChildren"
                   render={({ field }) => (
                     <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                       <div className="space-y-0.5">
@@ -6489,7 +6412,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       </div>
                       <FormControl>
                         <Switch
-                          checked={Boolean(field.value)}
+                          checked={field.value}
                           onCheckedChange={field.onChange}
                         />
                       </FormControl>
@@ -6816,7 +6739,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       </div>
                     </div>
                   </div>
-                </div>
                 )}
 
               {/* Military Status Section - Only show for non-business users */}
@@ -6825,75 +6747,75 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   <div className="border-t pt-4">
                     <h3 className="text-lg font-semibold mb-3">Military Status</h3>
 
-                    {/* Veteran Status */}
-                    <FormField
-                      control={profileForm.control}
-                      name="isVeteran"
-                      render={({ field }) => (
-                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
-                          <div className="space-y-0.5">
-                            <FormLabel>I am a Veteran</FormLabel>
-                            <div className="text-sm text-gray-500">
-                              Check if you have served in the military and are now a veteran
-                            </div>
+                  {/* Veteran Status */}
+                  <FormField
+                    control={profileForm.control}
+                    name="isVeteran"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
+                        <div className="space-y-0.5">
+                          <FormLabel>I am a Veteran</FormLabel>
+                          <div className="text-sm text-gray-500">
+                            Check if you have served in the military and are now a veteran
                           </div>
-                          <FormControl>
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="sm"
-                              onClick={() => {
-                                const newValue = !field.value;
-                                field.onChange(newValue);
-                                // If setting veteran to true, set active duty to false
-                                if (newValue) {
-                                  profileForm.setValue('isActiveDuty', false);
-                                }
-                              }}
-                              className={`flex items-center gap-2 ${field.value ? 'bg-red-100 border-red-300 text-red-700' : ''}`}
-                            >
-                              {field.value ? '✓ Veteran' : 'Not Veteran'}
-                            </Button>
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
+                        </div>
+                        <FormControl>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              const newValue = !field.value;
+                              field.onChange(newValue);
+                              // If setting veteran to true, set active duty to false
+                              if (newValue) {
+                                profileForm.setValue('isActiveDuty', false);
+                              }
+                            }}
+                            className={`flex items-center gap-2 ${field.value ? 'bg-red-100 border-red-300 text-red-700' : ''}`}
+                          >
+                            {field.value ? '✓ Veteran' : 'Not Veteran'}
+                          </Button>
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
 
-                    {/* Active Duty Status */}
-                    <FormField
-                      control={profileForm.control}
-                      name="isActiveDuty"
-                      render={({ field }) => (
-                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
-                          <div className="space-y-0.5">
-                            <FormLabel>I am Active Duty</FormLabel>
-                            <div className="text-sm text-gray-500">
-                              Check if you are currently serving in the military on active duty
-                            </div>
+                  {/* Active Duty Status */}
+                  <FormField
+                    control={profileForm.control}
+                    name="isActiveDuty"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
+                        <div className="space-y-0.5">
+                          <FormLabel>I am Active Duty</FormLabel>
+                          <div className="text-sm text-gray-500">
+                            Check if you are currently serving in the military on active duty
                           </div>
-                          <FormControl>
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="sm"
-                              onClick={() => {
-                                const newValue = !field.value;
-                                field.onChange(newValue);
-                                // If setting active duty to true, set veteran to false
-                                if (newValue) {
-                                  profileForm.setValue('isVeteran', false);
-                                }
-                              }}
-                              className={`flex items-center gap-2 ${field.value ? 'bg-blue-100 border-blue-300 text-blue-700' : ''}`}
-                            >
-                              {field.value ? '✓ Active Duty' : 'Not Active Duty'}
-                            </Button>
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
-                  </div>
+                        </div>
+                        <FormControl>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              const newValue = !field.value;
+                              field.onChange(newValue);
+                              // If setting active duty to true, set veteran to false
+                              if (newValue) {
+                                profileForm.setValue('isVeteran', false);
+                              }
+                            }}
+                            className={`flex items-center gap-2 ${field.value ? 'bg-blue-100 border-blue-300 text-blue-700' : ''}`}
+                          >
+                            {field.value ? '✓ Active Duty' : 'Not Active Duty'}
+                          </Button>
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
                 </div>
+              </div>
               )}
 
               <div className="flex gap-2 pt-4">
@@ -7289,11 +7211,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
           <Form {...editReferenceForm}>
             <form onSubmit={editReferenceForm.handleSubmit((data) => {
-              if (editingReference?.id) {
+              if (editingReference) {
                 updateReference.mutate({
                   referenceId: editingReference.id,
-                  content: data.content || '',
-                  experience: data.experience || '',
+                  content: data.content,
+                  experience: data.experience,
                 });
               }
             })} className="space-y-4">
@@ -7531,7 +7453,7 @@ class ProfileErrorBoundary extends React.Component<
       };
 
       return (
-        <div className="min-h-[100svh] bg-gray-50 p-4">
+        <div className="min-h-screen bg-gray-50 p-4">
           <div className="max-w-4xl mx-auto pt-20">
             <div className="bg-white rounded-lg shadow-lg p-6">
               <h2 className="text-2xl font-bold text-red-600 mb-4">Profile Page Error</h2>

@@ -1389,7 +1389,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       return res.json(users);
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Failed to search users by location:", error);
-      return res.status(500).json({ message: "Failed to search users by location", error });
+      res.status(500).json({ message: "Failed to search users by location", error });
     }
   });
 

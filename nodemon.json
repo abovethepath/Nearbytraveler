@@ -1,6 +1,0 @@
-{
-  "watch": ["server", "shared"],
-  "ext": "ts,js,json",
-  "ignore": ["client", "dist", "build", "node_modules", "**/*.map"],
-  "exec": "tsx server/index.ts"
-}
