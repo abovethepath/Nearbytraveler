@@ -31,7 +31,7 @@ export default function App() {
   return (
     <AppShell>
       <GlobalHotfixes />
-      <Suspense fallback={<div className="p-4">Loading…</div>}>
+      <Suspense fallback={<div style={{display:'none'}}>Loading…</div>}>
         <Switch>
           {/* ✅ REAL HOME */}
           <Route path="/" component={Home} />
