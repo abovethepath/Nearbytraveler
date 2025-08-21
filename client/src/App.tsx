@@ -3,11 +3,11 @@ import { Route, Switch } from "wouter";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./lib/queryClient";
 
-// ✅ relative paths (no alias dependency)
-const Home = lazy(() => import("./pages/Home"));
-const Profile = lazy(() => import("./pages/Profile"));
-const Discover = lazy(() => import("./pages/Discover"));
-const NotFound = lazy(() => import("./pages/NotFound"));
+// ✅ Use your REAL travel platform pages
+const Home = lazy(() => import("./pages/home"));
+const Profile = lazy(() => import("./pages/profile"));
+const Discover = lazy(() => import("./pages/discover"));
+const NotFound = lazy(() => import("./pages/not-found"));
 
 // Minimal auth context for compatibility
 export const AuthContext = React.createContext({
