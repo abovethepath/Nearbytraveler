@@ -100,7 +100,7 @@ export default function Landing() {
       </div>
 
       {/* Landing Navbar under banner on mobile */}
-      <header className="sticky top-[52px] md:top-0 z-[60] w-full bg-white shadow-sm">
+      <header className="sticky top-[52px] md:top-0 z-[80] w-full bg-white shadow-sm" style={{ display: 'block', visibility: 'visible' }}>
         <div className="w-full bg-white">
           <LandingNavbar />
         </div>
@@ -149,12 +149,12 @@ export default function Landing() {
                       <div className="mt-6 md:mt-0">
                         <div className="md:absolute md:bottom-6 md:left-1/2 md:-translate-x-1/2 md:w-[min(92vw,720px)]">
                           <div className="bg-black/60 md:bg-black/50 text-white rounded-2xl border border-white/20 backdrop-blur p-4 sm:p-6 shadow-xl">
-                            <p className="text-sm sm:text-base md:text-lg leading-relaxed">
+                            <p className="text-sm sm:text-base md:text-lg leading-relaxed break-words">
                               <span className="text-orange-300 font-semibold">
-                                "For over 15 years I've hosted and toured 400+ travelers from over 40 countries as a local creating amazing experiences.
+                                "For over 15 years I've hosted 400+ travelers from 40+ countries creating amazing experiences.
                               </span>
                               <span className="text-white">
-                                {" "}I built Nearby Traveler to help you meet real locals and real travelers, create amazing adventures, and expand your circle of friends."
+                                {" "}I built Nearby Traveler to help you meet real locals and travelers, create adventures, and expand your circle of friends."
                               </span>
                             </p>
                             <div className="mt-3 text-center">

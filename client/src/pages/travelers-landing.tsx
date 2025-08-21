@@ -40,7 +40,7 @@ export default function TravelersLanding() {
       </div>
 
       {/* Landing Navbar under banner on mobile */}
-      <header className="sticky top-[52px] md:top-0 z-[60] w-full bg-white shadow-sm">
+      <header className="sticky top-[52px] md:top-0 z-[80] w-full bg-white shadow-sm" style={{ display: 'block', visibility: 'visible' }}>
         <div className="w-full bg-white">
           <LandingNavbar />
         </div>
@@ -86,12 +86,12 @@ export default function TravelersLanding() {
                       <div className="mt-6 md:mt-0">
                         <div className="md:absolute md:bottom-6 md:left-1/2 md:-translate-x-1/2 md:w-[min(92vw,720px)]">
                           <div className="bg-black/60 md:bg-black/50 text-white rounded-2xl border border-white/20 backdrop-blur p-4 sm:p-6 shadow-xl">
-                            <p className="text-sm sm:text-base md:text-lg leading-relaxed">
+                            <p className="text-sm sm:text-base md:text-lg leading-relaxed break-words">
                               <span className="text-orange-300 font-semibold">
-                                "Skip the crowded tourist spots and overpriced restaurants.
+                                "Skip tourist spots and overpriced restaurants.
                               </span>
                               <span className="text-white">
-                                {" "}Connect with real locals who'll show you the hidden gems, secret bars, and authentic experiences that make travel unforgettable."
+                                {" "}Connect with locals who'll show you hidden gems, secret bars, and authentic experiences."
                               </span>
                             </p>
                             <div className="mt-3 text-center">
