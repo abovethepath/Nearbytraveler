@@ -41,6 +41,8 @@ import { SmartLocationInput } from "@/components/SmartLocationInput";
 import { calculateAge, formatDateOfBirthForInput, validateDateInput, getDateInputConstraints } from "@/lib/ageUtils";
 import { isTopChoiceInterest, getInterestStyle, getActivityStyle, getEventStyle } from "@/lib/topChoicesUtils";
 
+import { MobilePreview } from '@/components/MobilePreview';
+
 // State/Province arrays - consistent with signup forms
 const US_STATES = [
   "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut",
@@ -81,7 +83,7 @@ import { MobileBottomNav } from "@/components/MobileBottomNav";
 // Helper function to get metropolitan area for a city
 const getMetropolitanArea = (city: string, state: string, country: string): string | null => {
   if (!city || !state || !country) return null;
-  
+
   // Los Angeles Metropolitan Area cities - COMPREHENSIVE LIST
   const laMetroCities = [
     // Main cities
@@ -113,11 +115,11 @@ const getMetropolitanArea = (city: string, state: string, country: string): stri
     'San Marino', 'Santa Clarita', 'Signal Hill', 'South El Monte', 'South Gate',
     'Temple City', 'Vernon', 'Walnut', 'West Covina', 'Westlake Village'
   ];
-  
+
   if (state === 'California' && laMetroCities.includes(city)) {
     return 'Los Angeles Metro';
   }
-  
+
   // San Francisco Bay Area
   const sfBayAreaCities = [
     'San Francisco', 'San Jose', 'Oakland', 'Fremont', 'Santa Clara', 'Sunnyvale',
@@ -131,11 +133,11 @@ const getMetropolitanArea = (city: string, state: string, country: string): stri
     'Hercules', 'Pinole', 'San Pablo', 'Dublin', 'Pleasanton', 'Newark',
     'Castro Valley', 'San Lorenzo', 'Hayward', 'Fremont', 'Milpitas'
   ];
-  
+
   if (state === 'California' && sfBayAreaCities.includes(city)) {
     return 'San Francisco Bay Area';
   }
-  
+
   // New York Metropolitan Area
   const nyMetroCities = [
     'New York City', 'Manhattan', 'Brooklyn', 'Queens', 'Bronx', 'Staten Island',
@@ -151,12 +153,12 @@ const getMetropolitanArea = (city: string, state: string, country: string): stri
     'Harrison', 'East Newark', 'Weehawken', 'Edgewater', 'Fort Lee',
     'Englewood', 'Teaneck', 'Bergenfield', 'New Milford', 'Dumont', 'Cresskill'
   ];
-  
+
   if ((state === 'New York' || state === 'New Jersey' || state === 'Connecticut') && 
       nyMetroCities.some(metro => metro.toLowerCase() === city.toLowerCase())) {
     return 'New York Metropolitan Area';
   }
-  
+
   // Chicago Metropolitan Area
   const chicagoMetroCities = [
     'Chicago', 'Aurora', 'Rockford', 'Joliet', 'Naperville', 'Springfield',
@@ -169,11 +171,11 @@ const getMetropolitanArea = (city: string, state: string, country: string): stri
     'Crystal Lake', 'Streamwood', 'Carol Stream', 'Romeoville', 'Rock Island',
     'Park Ridge', 'Addison', 'Calumet City'
   ];
-  
+
   if (state === 'Illinois' && chicagoMetroCities.includes(city)) {
     return 'Chicago Metropolitan Area';
   }
-  
+
   // Miami Metropolitan Area
   const miamiMetroCities = [
     'Miami', 'Fort Lauderdale', 'Pembroke Pines', 'Hollywood', 'Miramar',
@@ -184,11 +186,11 @@ const getMetropolitanArea = (city: string, state: string, country: string): stri
     'Coral Gables', 'Key Biscayne', 'Hialeah', 'Homestead', 'Kendall',
     'Doral', 'Pinecrest', 'Palmetto Bay', 'Cutler Bay', 'South Miami'
   ];
-  
+
   if (state === 'Florida' && miamiMetroCities.includes(city)) {
     return 'Miami-Dade Metropolitan Area';
   }
-  
+
   // Dallas-Fort Worth Metropolitan Area
   const dallasMetroCities = [
     'Dallas', 'Fort Worth', 'Arlington', 'Plano', 'Garland', 'Irving', 'Grand Prairie',
@@ -199,11 +201,11 @@ const getMetropolitanArea = (city: string, state: string, country: string): stri
     'Highland Park', 'Addison', 'Rowlett', 'Wylie', 'Sachse', 'Murphy',
     'Rockwall', 'Terrell', 'Corsicana', 'Ennis'
   ];
-  
+
   if (state === 'Texas' && dallasMetroCities.includes(city)) {
     return 'Dallas-Fort Worth Metropolitan Area';
   }
-  
+
   return null;
 };
 
@@ -308,7 +310,7 @@ const referenceSchema = z.object({
 const COUNTRIES_OPTIONS = [
   // North America
   "United States", "Canada", "Mexico",
-  
+
   // Caribbean Islands
   "Antigua and Barbuda", "Bahamas", "Barbados", "Belize", "Cuba", "Dominica", 
   "Dominican Republic", "Grenada", "Haiti", "Jamaica", "Saint Kitts and Nevis",
@@ -316,14 +318,14 @@ const COUNTRIES_OPTIONS = [
   "Aruba", "Curacao", "Sint Maarten", "British Virgin Islands", "US Virgin Islands",
   "Turks and Caicos", "Cayman Islands", "Anguilla", "Montserrat", "Guadeloupe",
   "Martinique", "Puerto Rico",
-  
+
   // Central America
   "Costa Rica", "El Salvador", "Guatemala", "Honduras", "Nicaragua", "Panama",
-  
+
   // South America
   "Argentina", "Bolivia", "Brazil", "Chile", "Colombia", "Ecuador", "French Guiana",
   "Guyana", "Paraguay", "Peru", "Suriname", "Uruguay", "Venezuela",
-  
+
   // Europe
   "United Kingdom", "Ireland", "France", "Germany", "Italy", "Spain", "Portugal", 
   "Netherlands", "Belgium", "Switzerland", "Austria", "Czech Republic", "Poland", 
@@ -332,7 +334,7 @@ const COUNTRIES_OPTIONS = [
   "Bulgaria", "Serbia", "Croatia", "Slovenia", "Slovakia", "Bosnia and Herzegovina",
   "Montenegro", "North Macedonia", "Albania", "Moldova", "Malta", "Cyprus", "Luxembourg",
   "Liechtenstein", "Monaco", "San Marino", "Vatican City", "Andorra",
-  
+
   // Asia
   "China", "Japan", "South Korea", "North Korea", "Mongolia", "Thailand", "Vietnam", 
   "Cambodia", "Laos", "Myanmar", "Malaysia", "Singapore", "Indonesia", "Philippines",
@@ -341,7 +343,7 @@ const COUNTRIES_OPTIONS = [
   "United Arab Emirates", "Qatar", "Bahrain", "Kuwait", "Jordan", "Lebanon", "Syria",
   "Israel", "Palestine", "Georgia", "Armenia", "Azerbaijan", "Kazakhstan", "Uzbekistan",
   "Turkmenistan", "Kyrgyzstan", "Tajikistan",
-  
+
   // Africa
   "Egypt", "Libya", "Tunisia", "Algeria", "Morocco", "Sudan", "South Sudan", "Ethiopia",
   "Eritrea", "Djibouti", "Somalia", "Kenya", "Tanzania", "Uganda", "Rwanda", "Burundi",
@@ -351,7 +353,7 @@ const COUNTRIES_OPTIONS = [
   "Gambia", "Mauritania", "Cape Verde", "Sao Tome and Principe", "Equatorial Guinea",
   "Gabon", "Angola", "Zambia", "Malawi", "Mozambique", "Zimbabwe", "Botswana", "Namibia",
   "South Africa", "Lesotho", "Eswatini", "Madagascar", "Mauritius", "Seychelles", "Comoros",
-  
+
   // Oceania
   "Australia", "New Zealand", "Papua New Guinea", "Fiji", "Solomon Islands", "Vanuatu",
   "Samoa", "Tonga", "Tuvalu", "Kiribati", "Nauru", "Palau", "Marshall Islands", 
@@ -464,10 +466,10 @@ function MultiSelect({ options, selected, onChange, placeholder, maxDisplay = 3 
 // Function to filter out travel-specific tags when user is in their hometown
 const getFilteredInterestsForProfile = (user: User, isOwnProfile: boolean) => {
   const interests = user.interests || [];
-  
+
   // Popular interests that are displayed in their own section - exclude from main interests to avoid redundancy
   const popularInterests = MOST_POPULAR_INTERESTS;
-  
+
   // Travel-specific tags that should be filtered out when user is displayed as local in hometown
   const travelSpecificTags = [
     "Solo Traveler", 
@@ -478,22 +480,22 @@ const getFilteredInterestsForProfile = (user: User, isOwnProfile: boolean) => {
     "Budget Traveler",
     "Luxury Traveler"
   ];
-  
+
   // Always filter out popular interests since they have their own section above
   let filteredInterests = interests.filter(interest => !popularInterests.includes(interest));
-  
+
   // For viewing other users' profiles (not own profile), also filter out travel tags if they're in their hometown
   if (!isOwnProfile) {
     // Check if user has no travel plans and is likely in their hometown
     const hasNoTravelPlans = !user.travelDestination;
     const isInHometown = user.hometownCity && user.location && 
       user.location.toLowerCase().includes(user.hometownCity.toLowerCase());
-    
+
     if (hasNoTravelPlans && isInHometown) {
       filteredInterests = filteredInterests.filter(interest => !travelSpecificTags.includes(interest));
     }
   }
-  
+
   return filteredInterests;
 };
 
@@ -501,11 +503,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const { user: authContextUser, setUser: setAuthUser } = useContext(AuthContext);
-  
+
   // Check for chatroom return context
   const chatroomReturnContext = localStorage.getItem('chatroom_return_context');
   const shouldShowBackToChatroom = chatroomReturnContext !== null;
-  
+
   const handleBackToChatroom = () => {
     console.log('Back button clicked, context:', chatroomReturnContext);
     if (chatroomReturnContext) {
@@ -513,13 +515,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         const context = JSON.parse(chatroomReturnContext);
         console.log('Parsed context:', context);
         localStorage.removeItem('chatroom_return_context');
-        
+
         // Set flag to auto-open member view before navigation
         if (context.chatroomId) {
           localStorage.setItem('open_chatroom_members', context.chatroomId.toString());
           console.log('Set open_chatroom_members:', context.chatroomId);
         }
-        
+
         // Navigate back to chatrooms page
         console.log('Navigating to /city-chatrooms');
         setLocation('/city-chatrooms');
@@ -548,11 +550,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const [searchKeyword, setSearchKeyword] = useState("");
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [selectedState, setSelectedState] = useState("");
-  
+
   // State for expanded interests in travel plans
   const [expandedPlanInterests, setExpandedPlanInterests] = useState<Set<number>>(new Set());
 
-  
+
   // Edit mode states for individual widgets
   const [editingInterests, setEditingInterests] = useState(false);
   const [editingActivities, setEditingActivities] = useState(false);
@@ -561,7 +563,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const [editingCountries, setEditingCountries] = useState(false);
   const [editingBio, setEditingBio] = useState(false);
   const [editingBusinessDescription, setEditingBusinessDescription] = useState(false);
-  
+
   // Temporary state for editing values
   const [tempInterests, setTempInterests] = useState<string[]>([]);
   const [tempActivities, setTempActivities] = useState<string[]>([]);
@@ -569,11 +571,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const [tempLanguages, setTempLanguages] = useState<string[]>([]);
   const [tempCountries, setTempCountries] = useState<string[]>([]);
   const [tempBio, setTempBio] = useState("");
-  
+
   // Reference modal states
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingReference, setEditingReference] = useState<any>(null);
-  
+
   // Simple edit form data (copying signup pattern)
   const [editFormData, setEditFormData] = useState({
     interests: [] as string[],
@@ -596,7 +598,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     certifications: ''
   });
   const [savingBusinessDescription, setSavingBusinessDescription] = useState(false);
-  
+
   // Controlled input states for custom entries
   const [showReferenceForm, setShowReferenceForm] = useState(false);
   const [selectedConnection, setSelectedConnection] = useState<any>(null);
@@ -705,7 +707,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       </Dialog>
     );
   }
-  
+
   // Connection filters state
   const [connectionFilters, setConnectionFilters] = useState({
     location: 'all',
@@ -719,18 +721,18 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const [eventsDisplayCount, setEventsDisplayCount] = useState(3);
   const [businessesDisplayCount, setBusinessesDisplayCount] = useState(3);
   const [expandedTravelPlan, setExpandedTravelPlan] = useState<number | null>(null);
-  
 
-  
+
+
   // Travel plan details modal state (already declared above)
-  
+
   // Cover photo state
   const [coverPhotoKey, setCoverPhotoKey] = useState(Date.now());
-  
+
   // Header gradient color selection with persistence - moved after user declaration
   const [selectedGradient, setSelectedGradient] = useState(0);
 
-  
+
   const gradientOptions = [
     "from-blue-500 via-purple-500 to-orange-500", // Original
     "from-green-500 via-emerald-500 to-orange-500", // Green to Orange
@@ -741,7 +743,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     "from-teal-500 via-blue-500 to-purple-500", // Teal to Purple
     "from-yellow-500 via-orange-500 to-red-500", // Yellow to Red
   ];
-  
+
   // Listen for cover photo refresh events
   useEffect(() => {
     const handleCoverPhotoRefresh = () => {
@@ -843,7 +845,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
   // Robust authentication with emergency recovery
   let currentUser = authContextUser || authStorage.getUser();
-  
+
   // If no user found, try to refresh from API without reload
   React.useEffect(() => {
     if (!currentUser) {
@@ -854,10 +856,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       });
     }
   }, [currentUser, setAuthUser]);
-  
+
   const effectiveUserId = propUserId || currentUser?.id;
   const isOwnProfile = propUserId ? (propUserId === currentUser?.id) : true;
-  
+
   console.log('🔧 AUTHENTICATION STATE:', {
     currentUserId: currentUser?.id,
     currentUsername: currentUser?.username,
@@ -865,7 +867,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     isOwnProfile,
     propUserId
   });
-  
+
   console.log('Profile OWNERSHIP:', {
     isOwnProfile,
     propUserId,
@@ -874,7 +876,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     comparison: `${propUserId} === ${currentUser?.id}`,
     comparisonResult: propUserId === currentUser?.id
   });
-  
+
 
 
   // Fetch user data with fallback to localStorage
@@ -885,7 +887,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       const url = viewerId && viewerId !== effectiveUserId 
         ? `/api/users/${effectiveUserId}?viewerId=${viewerId}&bust=${Date.now()}`
         : `/api/users/${effectiveUserId}?bust=${Date.now()}`;
-      
+
       const response = await fetch(url);
       if (!response.ok) {
         if (response.status === 403) {
@@ -923,7 +925,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       localStorage.setItem(`profile_gradient_${user.id}`, selectedGradient.toString());
     }
   }, [selectedGradient, user?.id]);
-  
+
   // Fetch travel plans early for event discovery logic with itinerary data
   const { data: travelPlans = [], isLoading: isLoadingTravelPlans } = useQuery<any[]>({
     queryKey: [`/api/travel-plans-with-itineraries/${effectiveUserId}`],
@@ -958,7 +960,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     enabled: !!(currentUser?.id && effectiveUserId && !isOwnProfile),
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
-  
+
   // Add debug logging
   console.log('Profile component state:', {
     propUserId,
@@ -969,13 +971,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     hasUser: !!user,
     userType: user?.userType
   });
-  
+
   // Fetch platform statistics (only for nearbytraveler admin)
   const { data: platformStats } = useQuery({
     queryKey: ["/api/stats/platform"],
     enabled: user?.username === 'nearbytraveler', // Only fetch for admin account
   });
-  
+
   // Update localStorage when fresh data is fetched to keep it in sync
   React.useEffect(() => {
     if (fetchedUser && isOwnProfile) {
@@ -1016,34 +1018,34 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     if (user.userType === "business") {
       return "business";
     }
-    
+
     // PRIORITY 1: Check current travel plans for active trips
     const currentDestination = getCurrentTravelDestination(travelPlans || []);
     if (currentDestination && user.hometownCity) {
       const travelDestination = currentDestination.toLowerCase();
       const hometown = user.hometownCity.toLowerCase();
-      
+
       // Only show as traveler if destination is different from hometown
       if (!travelDestination.includes(hometown) && !hometown.includes(travelDestination)) {
         return "traveler";
       }
     }
-    
+
     // PRIORITY 2: Fallback to old travel fields for backwards compatibility
     const now = new Date();
     const hasActiveTravelPlans = user.travelStartDate && user.travelEndDate && 
       new Date(user.travelStartDate) <= now && 
       new Date(user.travelEndDate) >= now;
-    
+
     if (hasActiveTravelPlans && user.travelDestination) {
       const travelDestination = user.travelDestination.toLowerCase();
       const hometown = user.hometownCity?.toLowerCase() || '';
-      
+
       if (!travelDestination.includes(hometown) && !hometown.includes(travelDestination)) {
         return "traveler";
       }
     }
-    
+
     // PRIORITY 3: Default based on user type
     return "local";
   };
@@ -1058,13 +1060,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       if (connectionFilters.sexualPreference?.trim() && connectionFilters.sexualPreference !== 'all') params.append('sexualPreference', connectionFilters.sexualPreference.trim());
       if (connectionFilters.minAge?.trim()) params.append('minAge', connectionFilters.minAge.trim());
       if (connectionFilters.maxAge?.trim()) params.append('maxAge', connectionFilters.maxAge.trim());
-      
+
       const queryString = params.toString();
       const url = `/api/connections/${effectiveUserId}${queryString ? `?${queryString}` : ''}`;
-      
+
       console.log('Fetching connections with filters:', connectionFilters);
       console.log('Request URL:', url);
-      
+
       const response = await fetch(url);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -1158,11 +1160,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       localStorage.removeItem(`user_${effectiveUserId}`);
       localStorage.removeItem('authStorage');
       localStorage.removeItem('travelconnect_user');
-      
+
       // Force fresh fetch from database
       queryClient.removeQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
       queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
-      
+
       // Also clear auth context and force reload
       if (setAuthUser) {
         setAuthUser(null);
@@ -1177,35 +1179,35 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const eventDiscoveryCity = useMemo(() => {
     console.log('Profile Event discovery memo - currentUserId:', effectiveUserId, 'user:', user?.username, 'loading plans:', isLoadingTravelPlans, 'loading profile:', userLoading);
     console.log('Profile Event discovery memo - travelPlans count:', travelPlans?.length || 0);
-    
+
     // Wait for authentication and data to load
     if (!effectiveUserId || isLoadingTravelPlans || userLoading || !user) {
       console.log('Profile Event discovery - still loading or no auth, returning null to prevent incorrect fallback');
       return null; // Don't show events until we have proper data
     }
-    
+
     // Use the same logic as the location display for consistency
     const currentDestination = getCurrentTravelDestination(travelPlans || []);
     if (currentDestination && user.hometownCity) {
       const travelDestination = currentDestination.toLowerCase();
       const hometown = user.hometownCity.toLowerCase();
-      
+
       // Only show travel destination events if destination is different from hometown
       if (!travelDestination.includes(hometown) && !hometown.includes(travelDestination)) {
         console.log('Profile Event discovery - FINAL CITY SELECTION (traveling):', currentDestination);
         return currentDestination;
       }
     }
-    
+
     // Otherwise show hometown events
     const hometownLocation = user.hometownCity ? 
       (user.hometownState ? `${user.hometownCity}, ${user.hometownState}` : `${user.hometownCity}, ${user.hometownCountry}`) :
       user.location;
-    
+
     console.log('Profile Event discovery - FINAL CITY SELECTION (hometown):', hometownLocation);
     return hometownLocation;
   }, [effectiveUserId, user, travelPlans, isLoadingTravelPlans, userLoading]);
-  
+
   const { data: profileEvents = [], isLoading: profileEventsLoading } = useQuery<any[]>({
     queryKey: [`/api/users/${effectiveUserId}/all-events`],
     queryFn: async () => {
@@ -1230,7 +1232,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   // Get the current user type for schema selection
   const currentUserType = user?.userType || 'traveler';
   const dynamicProfileSchema = getProfileFormSchema(currentUserType);
-  
+
   const profileForm = useForm<z.infer<typeof dynamicProfileSchema>>({
     resolver: zodResolver(dynamicProfileSchema),
     defaultValues: currentUserType === 'business' ? {
@@ -1272,19 +1274,19 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         hometownState: user.hometownState,
         hometownCountry: user.hometownCountry
       });
-      
+
       // Initialize temp values for editing
       setTempInterests(user.interests || []);
       setTempActivities(user.activities || []);
       setTempEvents(user.events || []);
-      
+
       // Initialize editFormData with current user preferences
       setEditFormData({
         interests: user.interests || [],
         activities: user.activities || [],
         events: user.events || []
       });
-      
+
       // Reset form with user type-specific data
       if (user.userType === 'business') {
         profileForm.reset({
@@ -1322,123 +1324,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     }
   }, [user, userLoading, profileForm]);
 
-  // Form for editing references
-  const editReferenceForm = useForm({
-    defaultValues: {
-      content: "",
-      experience: "positive" as const,
-    },
-  });
-
-  // Update reference mutation
-  const updateReference = useMutation({
-    mutationFn: async ({ referenceId, content, experience }: { referenceId: number; content: string; experience: string }) => {
-      const response = await fetch(`/api/references/${referenceId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content, experience }),
-      });
-      if (!response.ok) throw new Error('Failed to update reference');
-      return response.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}/references`] });
-      setShowEditModal(false);
-      setEditingReference(null);
-      editReferenceForm.reset();
-      toast({
-        title: "Reference updated",
-        description: "Your reference has been successfully updated.",
-      });
-    },
-    onError: (error) => {
-      console.error('Update reference error:', error);
-      toast({
-        title: "Update failed",
-        description: "Failed to update reference. Please try again.",
-        variant: "destructive",
-      });
-    },
-  });
-
-  // Reference form
-  const referenceForm = useForm({
-    defaultValues: {
-      content: "",
-      experience: "positive",
-    },
-  });
-
-  // Create reference mutation
-  const createReference = useMutation({
-    mutationFn: async (referenceData: any) => {
-      const payload = {
-        reviewerId: currentUser?.id,
-        revieweeId: effectiveUserId, // Use the profile user ID  
-        experience: referenceData.experience || "positive",
-        content: referenceData.content || "",
-      };
-      
-      const response = await fetch('/api/user-references', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-      });
-      if (!response.ok) throw new Error('Failed to create reference');
-      return response.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}/references`] });
-      toast({
-        title: "Reference submitted",
-        description: "Your reference has been posted successfully.",
-      });
-      setShowReferenceForm(false);
-      setShowWriteReferenceModal(false);
-      referenceForm.reset();
-    },
-    onError: (error: any) => {
-      toast({
-        title: "Submission failed",
-        description: error?.message || "Failed to submit reference. Please try again.",
-        variant: "destructive",
-      });
-    },
-  });
-
-  // Update form when user data loads
-  React.useEffect(() => {
-    if (user) {
-      profileForm.reset({
-        bio: user.bio || "",
-        ...(user?.userType === 'business' ? { businessName: (user as any).businessName || "" } : {}),
-        hometownCity: user.hometownCity || "",
-        hometownState: user.hometownState || "",
-        hometownCountry: user.hometownCountry || "",
-        dateOfBirth: user.dateOfBirth ? formatDateOfBirthForInput(user.dateOfBirth) : "",
-        ageVisible: user.ageVisible || false,
-        gender: user.gender || "",
-        secretActivities: user.secretActivities || "",
-        sexualPreference: Array.isArray(user.sexualPreference) ? user.sexualPreference : (user.sexualPreference ? [user.sexualPreference] : []),
-        sexualPreferenceVisible: user.sexualPreferenceVisible || false,
-        travelStyle: Array.isArray(user.travelStyle) ? user.travelStyle : [],
-        isVeteran: user.isVeteran || false,
-        isActiveDuty: user.isActiveDuty || false,
-        // Business contact fields - only for business users
-        ...(user?.userType === 'business' ? {
-          streetAddress: (user as any).streetAddress || "",
-        } : {}),
-        ...(user?.userType === 'business' ? {
-          zipCode: (user as any).zipCode || "",
-          phoneNumber: (user as any).phoneNumber || "",
-          websiteUrl: (user as any).websiteUrl || "",
-        } : {}),
-      });
-    }
-  }, [user, profileForm]);
-
   // Fetch user photos from photo gallery
   const { data: photos = [], isLoading: photosLoading } = useQuery<UserPhoto[]>({
     queryKey: [`/api/users/${effectiveUserId}/photos`],
@@ -1471,7 +1356,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       try {
         // Use adaptive compression before upload
         const compressedFile = await compressPhotoAdaptive(file);
-        
+
         // Convert compressed file to base64
         return new Promise((resolve, reject) => {
           const reader = new FileReader();
@@ -1490,13 +1375,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   isPublic: true
                 }),
               });
-              
+
               if (!response.ok) {
                 const errorData = await response.json();
                 throw new Error(errorData.message || 'Failed to upload photo');
               }
               const result = await response.json();
-              
+
               resolve(result);
             } catch (error) {
               reject(error);
@@ -1525,13 +1410,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   isPublic: true
                 }),
               });
-              
+
               if (!response.ok) {
                 const errorData = await response.json();
                 throw new Error(errorData.message || 'Failed to upload photo');
               }
               const result = await response.json();
-              
+
               resolve(result);
             } catch (error) {
               reject(error);
@@ -1610,7 +1495,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       // Invalidate matches page data since travel plans affect matching
       queryClient.invalidateQueries({ queryKey: ["/api/matches"] });
       queryClient.invalidateQueries({ queryKey: ["/api/users/search-by-location"] });
-      
+
       toast({
         title: "Travel plan deleted",
         description: "Your travel plan has been removed from everywhere on the site.",
@@ -1646,13 +1531,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
         const img = new Image();
-        
+
         img.onload = () => {
           try {
             // Calculate dimensions to maintain aspect ratio (max 400x400)
             const MAX_DIMENSION = 400;
             let { width, height } = img;
-            
+
             if (width > height) {
               if (width > MAX_DIMENSION) {
                 height = (height * MAX_DIMENSION) / width;
@@ -1664,16 +1549,16 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 height = MAX_DIMENSION;
               }
             }
-            
+
             canvas.width = width;
             canvas.height = height;
-            
+
             // Draw and compress the image
             ctx?.drawImage(img, 0, 0, width, height);
-            
+
             // Convert to base64 with compression (85% quality)
             const compressedBase64 = canvas.toDataURL('image/jpeg', 0.85);
-            
+
             // Final size check for base64 data (500KB limit)
             const MAX_BASE64_SIZE = 500 * 1024; // 500KB
             if (compressedBase64.length > MAX_BASE64_SIZE) {
@@ -1697,11 +1582,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             reject(error);
           }
         };
-        
+
         img.onerror = () => {
           reject(new Error('Failed to load image. Please try a different image.'));
         };
-        
+
         // Create object URL for the image
         img.src = URL.createObjectURL(file);
       });
@@ -1710,21 +1595,21 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       // API returns { user, profileImage, message } - extract the user data
       const updatedUser = response?.user || response;
       console.log('Profile upload success, user has image:', !!updatedUser?.profileImage);
-      
+
       // Update localStorage immediately
       if (updatedUser && isOwnProfile) {
         console.log('Updating auth storage and context with new profile data');
         authStorage.setUser(updatedUser);
-        
+
         // CRITICAL: Update auth context state immediately using the correct function
         if (typeof setAuthUser === 'function') {
           console.log('Calling setAuthUser with updated profile data for navbar refresh');
           setAuthUser(updatedUser);
         }
-        
+
         // Also update localStorage directly as backup
         localStorage.setItem('travelconnect_user', JSON.stringify(updatedUser));
-        
+
         // Force immediate refresh of all user data
         queryClient.setQueryData([`/api/users/${effectiveUserId}`], updatedUser);
         queryClient.setQueryData(['/api/users'], (oldData: any) => {
@@ -1733,37 +1618,37 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           }
           return oldData;
         });
-        
+
         // Trigger multiple events with immediate and delayed intervals
         window.dispatchEvent(new CustomEvent('profilePhotoUpdated', { detail: updatedUser }));
-        
+
         setTimeout(() => {
           window.dispatchEvent(new CustomEvent('userDataUpdated', { detail: updatedUser }));
         }, 50);
-        
+
         setTimeout(() => {
           window.dispatchEvent(new CustomEvent('refreshNavbar', { detail: updatedUser }));
         }, 100);
-        
+
         setTimeout(() => {
           window.dispatchEvent(new CustomEvent('forceNavbarRefresh', { detail: updatedUser }));
         }, 150);
-        
+
         setTimeout(() => {
           // Force complete page refresh of user queries
           queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
           queryClient.invalidateQueries({ queryKey: ["/api/users"] });
         }, 200);
-        
+
         console.log('Profile photo update completed with immediate context update');
       }
-      
+
       toast({
         title: "Success!",
         description: "Avatar updated successfully.",
       });
       setUploadingPhoto(false);
-      
+
       // CRITICAL: Close the photo upload modal after successful upload
       setShowPhotoUpload(false);
     },
@@ -1807,35 +1692,35 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const handlePhotoAsCoverPhoto = async (photoUrl: string) => {
     try {
       setUploadingPhoto(true);
-      
+
       const responseData = await apiRequest('PUT', `/api/users/${effectiveUserId}/cover-photo`, {
         imageData: photoUrl
       });
-      
+
       console.log('Cover photo update response:', responseData);
-      
+
       // Extract user data from API response (API returns { user, coverPhoto, message }) - SAME AS PROFILE PHOTO
       const updatedUser = (responseData as any)?.user || responseData || {};
       console.log('Gallery cover photo upload success, user has cover:', !!updatedUser?.coverPhoto);
-      
+
       // Update cache key to force immediate image refresh
       const newCacheKey = Date.now();
       setCoverPhotoKey(newCacheKey);
-      
+
       // Update localStorage immediately - SAME AS PROFILE PHOTO
       if (updatedUser && isOwnProfile) {
         console.log('Updating auth storage and context with new gallery cover photo data');
         authStorage.setUser(updatedUser);
-        
+
         // CRITICAL: Update auth context state immediately using the correct function
         if (typeof setAuthUser === 'function') {
           console.log('Calling setAuthUser with updated gallery cover photo data for navbar refresh');
           setAuthUser(updatedUser);
         }
-        
+
         // Also update localStorage directly as backup
         localStorage.setItem('travelconnect_user', JSON.stringify(updatedUser));
-        
+
         // Force immediate refresh of all user data
         queryClient.setQueryData([`/api/users/${effectiveUserId}`], updatedUser);
         queryClient.setQueryData(['/api/users'], (oldData: any) => {
@@ -1844,36 +1729,36 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           }
           return oldData;
         });
-        
+
         // Trigger multiple events with immediate and delayed intervals - SAME AS PROFILE PHOTO
         window.dispatchEvent(new CustomEvent('profilePhotoUpdated', { detail: updatedUser }));
-        
+
         setTimeout(() => {
           window.dispatchEvent(new CustomEvent('userDataUpdated', { detail: updatedUser }));
         }, 50);
-        
+
         setTimeout(() => {
           window.dispatchEvent(new CustomEvent('refreshNavbar', { detail: updatedUser }));
         }, 100);
-        
+
         setTimeout(() => {
           window.dispatchEvent(new CustomEvent('forceNavbarRefresh', { detail: updatedUser }));
         }, 150);
-        
+
         setTimeout(() => {
           // Force complete page refresh of user queries
           queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
           queryClient.invalidateQueries({ queryKey: ["/api/users"] });
         }, 200);
-        
+
         // Also trigger cover photo specific events
         setTimeout(() => {
-          window.dispatchEvent(new CustomEvent('coverPhotoUpdated', { detail: { userId: effectiveUserId, timestamp: newCacheKey } }));
+          window.dispatchEvent(new CustomEvent('coverPhotoUpdated', { detail: { userId: effectiveUserId, timestamp: newCacheKey, user: updatedUser } }));
         }, 250);
-        
+
         console.log('Gallery cover photo update completed with immediate context update');
       }
-      
+
       toast({
         title: "Success!",
         description: "Cover photo updated successfully.",
@@ -1905,7 +1790,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         });
         return;
       }
-      
+
       // Validate file type
       if (!file.type.startsWith('image/')) {
         toast({
@@ -1915,52 +1800,52 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         });
         return;
       }
-      
+
       console.log('Avatar upload starting for file:', file.name, 'size:', file.size);
       setUploadingPhoto(true);
-      
+
       // Direct upload function call with adaptive compression
       try {
         // Use adaptive compression for profile photos
         const compressedFile = await compressPhotoAdaptive(file);
-        
+
         const reader = new FileReader();
         reader.onload = async () => {
           try {
             const base64 = reader.result as string;
             console.log('Compressed file converted to base64, uploading...');
-            
+
             const response = await fetch(`/api/users/${effectiveUserId}`, {
               method: 'PUT',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ profileImage: base64 })
             });
-          
+
           if (!response.ok) {
             throw new Error(`Upload failed: ${response.statusText}`);
           }
-          
+
           const updatedUser = await response.json();
           console.log('Avatar upload successful:', updatedUser.username);
-          
+
           // Update auth immediately
           authStorage.setUser(updatedUser);
           if (setAuthUser && isOwnProfile) {
             setAuthUser(updatedUser);
           }
-          
+
           // Invalidate queries
           queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
           queryClient.invalidateQueries({ queryKey: ["/api/users"] });
-          
+
           // Trigger navbar refresh
           window.dispatchEvent(new CustomEvent('userDataUpdated', { detail: updatedUser }));
-          
+
           toast({
             title: "Success",
             description: "Avatar updated successfully!",
           });
-          
+
         } catch (error: any) {
           console.error('Avatar upload error:', error);
           toast({
@@ -1972,7 +1857,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           setUploadingPhoto(false);
         }
       };
-      
+
       reader.onerror = () => {
         console.error('Failed to read file');
         toast({
@@ -1982,7 +1867,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         });
         setUploadingPhoto(false);
       };
-      
+
       reader.readAsDataURL(compressedFile);
       } catch (compressionError: any) {
         console.warn('Photo compression failed, using original file:', compressionError);
@@ -1992,38 +1877,38 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           try {
             const base64 = reader.result as string;
             console.log('Original file converted to base64, uploading...');
-            
+
             const response = await fetch(`/api/users/${effectiveUserId}`, {
               method: 'PUT',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ profileImage: base64 })
             });
-            
+
             if (!response.ok) {
               throw new Error(`Upload failed: ${response.statusText}`);
             }
-            
+
             const updatedUser = await response.json();
             console.log('Avatar upload successful:', updatedUser.username);
-            
+
             // Update auth immediately
             authStorage.setUser(updatedUser);
             if (setAuthUser && isOwnProfile) {
               setAuthUser(updatedUser);
             }
-            
+
             // Invalidate queries
             queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
             queryClient.invalidateQueries({ queryKey: ["/api/users"] });
-            
+
             // Trigger navbar refresh
             window.dispatchEvent(new CustomEvent('userDataUpdated', { detail: updatedUser }));
-            
+
             toast({
               title: "Success",
               description: "Avatar updated successfully!",
             });
-            
+
           } catch (error: any) {
             console.error('Avatar upload error:', error);
             toast({
@@ -2035,7 +1920,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             setUploadingPhoto(false);
           }
         };
-        
+
         reader.onerror = () => {
           console.error('Failed to read file');
           toast({
@@ -2045,7 +1930,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           });
           setUploadingPhoto(false);
         };
-        
+
         reader.readAsDataURL(file);
       }
     }
@@ -2066,7 +1951,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         });
         return;
       }
-      
+
       // Validate file type
       if (!file.type.startsWith('image/')) {
         toast({
@@ -2076,7 +1961,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         });
         return;
       }
-      
+
       console.log('Profile photo upload starting for file:', file.name, 'size:', file.size);
       setUploadingPhoto(true);
       updateProfilePhoto.mutate(file);
@@ -2090,7 +1975,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     const file = event.target.files?.[0];
     if (file) {
       console.log('Cover photo file selected:', file.name, 'size:', file.size);
-      
+
       // File size validation (5MB limit)
       const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
       if (file.size > MAX_FILE_SIZE) {
@@ -2113,40 +1998,40 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       }
 
       setUploadingPhoto(true);
-      
+
       // Use canvas for compression similar to profile image
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
       const img = new Image();
-      
+
       img.onload = async () => {
         try {
           // Calculate dimensions for cover photo (max 1200x400 for wide aspect ratio)
           const MAX_WIDTH = 1200;
           const MAX_HEIGHT = 400;
           let { width, height } = img;
-          
+
           const aspectRatio = width / height;
-          
+
           if (width > MAX_WIDTH) {
             width = MAX_WIDTH;
             height = width / aspectRatio;
           }
-          
+
           if (height > MAX_HEIGHT) {
             height = MAX_HEIGHT;
             width = height * aspectRatio;
           }
-          
+
           canvas.width = width;
           canvas.height = height;
-          
+
           // Draw and compress the image
           ctx?.drawImage(img, 0, 0, width, height);
-          
+
           // Convert to base64 with compression (80% quality for cover photos)
           const compressedBase64 = canvas.toDataURL('image/jpeg', 0.80);
-          
+
           // Final size check for base64 data (800KB limit for cover photos)
           const MAX_BASE64_SIZE = 800 * 1024; // 800KB
           if (compressedBase64.length > MAX_BASE64_SIZE) {
@@ -2171,7 +2056,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           setUploadingPhoto(false);
         }
       };
-      
+
       img.onerror = () => {
         toast({
           title: "Upload failed",
@@ -2180,7 +2065,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         });
         setUploadingPhoto(false);
       };
-      
+
       img.src = URL.createObjectURL(file);
     }
   };
@@ -2189,7 +2074,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const uploadCoverPhoto = async (base64Data: string) => {
     try {
       console.log('Starting cover photo upload...', base64Data.length);
-      
+
       const response = await fetch(`/api/users/${effectiveUserId}/cover-photo`, {
         method: 'PUT',
         headers: {
@@ -2199,32 +2084,32 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           imageData: base64Data
         }),
       });
-      
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
+
       const responseData = await response.json();
       console.log('Cover photo API response:', responseData);
-      
+
       // Extract user data from response
       const updatedUser = responseData?.user || responseData;
-      
+
       if (updatedUser && isOwnProfile) {
         // Update cache key for immediate display refresh
         const newCacheKey = Date.now();
         setCoverPhotoKey(newCacheKey);
-        
+
         // Update auth context and localStorage - SAME AS PROFILE PHOTO
         authStorage.setUser(updatedUser);
         if (typeof setAuthUser === 'function') {
           console.log('Calling setAuthUser with updated cover photo data for immediate UI refresh');
           setAuthUser(updatedUser);
         }
-        
+
         // Update localStorage directly as backup
         localStorage.setItem('travelconnect_user', JSON.stringify(updatedUser));
-        
+
         // Force immediate refresh of all user data - CRITICAL FOR COVER PHOTO DISPLAY
         queryClient.setQueryData([`/api/users/${effectiveUserId}`], updatedUser);
         queryClient.setQueryData(['/api/users'], (oldData: any) => {
@@ -2233,26 +2118,26 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           }
           return oldData;
         });
-        
+
         // Trigger multiple refresh events
         window.dispatchEvent(new CustomEvent('profilePhotoUpdated', { detail: updatedUser }));
         window.dispatchEvent(new CustomEvent('userDataUpdated', { detail: updatedUser }));
         window.dispatchEvent(new CustomEvent('coverPhotoUpdated', { detail: { userId: effectiveUserId, timestamp: newCacheKey, user: updatedUser } }));
-        
+
         setTimeout(() => {
           // Force complete page refresh of user queries
           queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
           queryClient.invalidateQueries({ queryKey: ["/api/users"] });
         }, 100);
-        
+
         console.log('Cover photo update completed with immediate context update');
       }
-      
+
       toast({
         title: "Success!",
         description: "Cover photo updated successfully.",
       });
-      
+
       setUploadingPhoto(false);
     } catch (error) {
       console.error('Cover photo upload error:', error);
@@ -2270,14 +2155,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     console.log('Editing travel plan:', plan);
     console.log('Travel style from plan:', plan.travelStyle);
     setEditingTravelPlan(plan);
-    
+
     // Parse destination into separate components
     const destination = plan.destination || "";
     const parts = destination.split(', ');
     let destinationCity = "";
     let destinationState = "";
     let destinationCountry = "";
-    
+
     if (parts.length >= 3) {
       destinationCity = parts[0] || "";
       destinationState = parts[1] || "";
@@ -2288,12 +2173,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     } else if (parts.length === 1) {
       destinationCity = parts[0] || "";
     }
-    
+
     // Update local state for form controls
     setSelectedCountry(destinationCountry);
     setSelectedCity(destinationCity);
     setSelectedState(destinationState);
-    
+
     form.reset({
       destination: destination,
       destinationCountry: destinationCountry,
@@ -2317,7 +2202,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const editTravelPlan = useMutation({
     mutationFn: async (data: z.infer<typeof travelPlanSchema>) => {
       if (!editingTravelPlan) throw new Error("No travel plan selected");
-      
+
       const response = await fetch(`/api/travel-plans/${editingTravelPlan.id}`, {
         method: 'PUT',
         headers: {
@@ -2341,7 +2226,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           isActiveDuty: false,
         }),
       });
-      
+
       if (!response.ok) throw new Error('Failed to update travel plan');
       return response.json();
     },
@@ -2357,7 +2242,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       queryClient.invalidateQueries({ queryKey: ["/api/users/search-by-location"] });
       // CRITICAL: Invalidate all event queries since changing travel destination changes which events are shown
       queryClient.invalidateQueries({ queryKey: ["/api/events"] });
-      
+
       toast({
         title: "Travel plan updated",
         description: "Your changes have been applied throughout the site.",
@@ -2630,7 +2515,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const handleSaveBusinessDescription = async () => {
     if (!user) return;
     setSavingBusinessDescription(true);
-    
+
     try {
       const response = await fetch(`/api/users/${effectiveUserId}`, {
         method: 'PUT',
@@ -2649,12 +2534,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
       // Update the query cache
       queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
-      
+
       toast({
         title: "Business description updated",
         description: "Your business information has been successfully updated.",
       });
-      
+
       setEditingBusinessDescription(false);
     } catch (error) {
       console.error('Business description update error:', error);
@@ -2703,7 +2588,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     },
     onSuccess: (updatedUser) => {
       console.log('🔥 PROFILE UPDATE SUCCESS - Immediate cache refresh:', updatedUser);
-      
+
       // CRITICAL: Update ALL possible cache keys immediately
       queryClient.setQueryData([`/api/users/${effectiveUserId}`, currentUser?.id], updatedUser);
       queryClient.setQueryData([`/api/users/${effectiveUserId}`], updatedUser);
@@ -2713,35 +2598,35 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         }
         return oldData;
       });
-      
+
       // Update localStorage and auth context if editing own profile
       if (isOwnProfile) {
         console.log('🔥 Updating auth storage and context with new profile data');
         authStorage.setUser(updatedUser);
-        
+
         // CRITICAL: Update auth context state immediately
         if (typeof setAuthUser === 'function') {
           console.log('🔥 Calling setAuthUser with updated profile data');
           setAuthUser(updatedUser);
         }
-        
+
         // Also update localStorage directly as backup
         localStorage.setItem('travelconnect_user', JSON.stringify(updatedUser));
         localStorage.setItem('user', JSON.stringify(updatedUser));
-        
+
         // FORCE immediate UI refresh with state update
         window.dispatchEvent(new CustomEvent('userDataUpdated', { detail: updatedUser }));
         window.dispatchEvent(new CustomEvent('profileUpdated', { detail: updatedUser }));
       }
-      
+
       // Force immediate refetch to trigger component re-render
       refetchUser();
-      
+
       // Multiple invalidations to ensure all cached data is fresh
       queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`, currentUser?.id] });
       queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
       queryClient.invalidateQueries({ queryKey: ["/api/users"] });
-      
+
       toast({
         title: "Profile updated",
         description: "Your profile has been successfully updated.",
@@ -2761,7 +2646,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const onSubmitProfile = (data: z.infer<typeof dynamicProfileSchema>) => {
     console.log('onSubmitProfile called with data:', data);
     console.log('Form validation errors:', profileForm.formState.errors);
-    
+
     // Send dateOfBirth as string - server will handle conversion to Date
     editProfile.mutate(data);
   };
@@ -2777,17 +2662,17 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const connectMutation = useMutation({
     mutationFn: async () => {
       if (!currentUser?.id || !user?.id) throw new Error("Authentication required");
-      
+
       const requestData = {
         requesterId: currentUser.id,
         targetUserId: user.id,
         status: 'pending'
       };
-      
+
       console.log('🔵 CONNECT: Sending request data:', requestData);
-      
+
       const response = await apiRequest('POST', '/api/connections', requestData);
-      
+
       if (!response.ok) throw new Error('Failed to send connection request');
       return response.json();
     },
@@ -2802,7 +2687,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     onError: (error: any) => {
       const errorMessage = error.message || "Failed to send connection request. Please try again.";
       const isPrivacyError = errorMessage.includes("privacy settings");
-      
+
       toast({
         title: isPrivacyError ? "Privacy Restriction" : "Connection Failed",
         description: isPrivacyError 
@@ -2828,7 +2713,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       setLocation(`/messages?userId=${user?.id}`);
       return;
     }
-    
+
     if (connectionStatus?.status === 'pending') {
       // Connection request already sent - show message
       toast({
@@ -2837,7 +2722,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       });
       return;
     }
-    
+
     // Send new connection request
     connectMutation.mutate();
   };
@@ -2879,17 +2764,17 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   // Function to determine current location based on travel status
   const getCurrentLocation = () => {
     if (!user) return "Not specified";
-    
+
     // Check if user has active travel plans
     const now = new Date();
     const travelStart = user.travelStartDate ? new Date(user.travelStartDate) : null;
     const travelEnd = user.travelEndDate ? new Date(user.travelEndDate) : null;
-    
+
     // If user is currently traveling (between start and end dates)
     if (travelStart && travelEnd && now >= travelStart && now <= travelEnd && user.travelDestination) {
       return user.travelDestination;
     }
-    
+
     // Otherwise show their regular location
     return user.hometownCity || user.location || "Not specified";
   };
@@ -3039,7 +2924,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           className="shadow-sm"
         />
       </div>
-    
+
       {/* Profile hero */}
       <div className={`relative rounded-2xl bg-gradient-to-r ${gradientOptions[selectedGradient]} p-4 sm:p-6 overflow-hidden`}>
         {/* 2-col on mobile, 3-col on sm+ */}
@@ -3099,9 +2984,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       if (travelPlans && travelPlans.length > 0) {
                         const today = new Date();
                         today.setHours(0, 0, 0, 0);
-                        
+
                         let activeTrips = [];
-                        
+
                         for (const plan of travelPlans) {
                           if (plan.startDate && plan.endDate) {
                             const parseLocalDate = (dateInput: string | Date | null | undefined) => {
@@ -3121,13 +3006,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               }
                               return null;
                             };
-                            
+
                             const startDate = parseLocalDate(plan.startDate);
                             const endDate = parseLocalDate(plan.endDate);
                             if (!startDate || !endDate) continue;
                             startDate.setHours(0, 0, 0, 0);
                             endDate.setHours(23, 59, 59, 999);
-                            
+
                             const isCurrentlyActive = today >= startDate && today <= endDate;
                             if (isCurrentlyActive && plan.destination) {
                               activeTrips.push({
@@ -3137,31 +3022,31 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             }
                           }
                         }
-                        
+
                         if (activeTrips.length > 0) {
                           activeTrips.sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
                           const currentTrip = activeTrips[0].plan;
                           const destination = currentTrip.destination || 'Unknown';
-                          
+
                           // ALWAYS show hometown + current travel destination
                           const hometownParts = [
                             user.hometownCity,
                             user.hometownState,
                             user.hometownCountry
                           ].filter(Boolean);
-                          
+
                           const hometown = hometownParts.length > 0 ? hometownParts.join(', ') : 'Unknown';
                           return `Nearby Traveler from ${hometown}, traveling in ${destination}`;
                         }
                       }
-                      
+
                       // Show full hometown information
                       const locationParts = [
                         user.hometownCity,
                         user.hometownState,
                         user.hometownCountry
                       ].filter(Boolean);
-                      
+
                       if (locationParts.length > 0) {
                         return `Nearby Local in ${locationParts.join(', ')}`;
                       } else if (user.location) {
@@ -3232,7 +3117,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             )}
           </div>
         </div>
-        
+
         {/* Loading state for photo uploads */}
         {uploadingPhoto && (
           <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-30">
@@ -3243,14 +3128,216 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           </div>
         )}
       </div>
-      
+
       {/* Main content section - Modern Sectioned Layout */}
       <div className="w-full max-w-full mx-auto pb-0 px-2 sm:px-4 -mt-2">
-        
+
+
+        <MobilePreview>
+          {/* Profile hero */}
+          <div className={`relative rounded-2xl bg-gradient-to-r ${gradientOptions[selectedGradient]} p-4 sm:p-6 overflow-hidden`}>
+            {/* 2-col on mobile, 3-col on sm+ */}
+            <div className="grid grid-cols-[auto,1fr] sm:grid-cols-[auto,1fr,auto] gap-4 sm:gap-6 items-center">
+
+              {/* AVATAR */}
+              <div className="relative shrink-0">
+                <div className="rounded-full overflow-hidden ring-4 ring-white">
+                  <Avatar className="w-24 h-24 sm:w-28 sm:h-28">
+                    <AvatarImage className="object-cover" src={user?.profileImage || ''} alt={user.username} />
+                    <AvatarFallback className="text-lg sm:text-2xl bg-gradient-to-br from-blue-600 to-orange-600 text-white">
+                      {(user?.username?.charAt(0) || user?.name?.charAt(0) || 'U').toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                </div>
+
+                {/* camera/edit photo button */}
+                {isOwnProfile && (
+                  <>
+                    <Button
+                      size="icon"
+                      variant="secondary"
+                      className="absolute -bottom-1 -right-1 rounded-full shadow-md"
+                      onClick={() => document.getElementById('avatar-upload-input')?.click()}
+                      disabled={uploadingPhoto}
+                    >
+                      <Camera className="h-4 w-4" />
+                    </Button>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleAvatarUpload}
+                      className="hidden"
+                      id="avatar-upload-input"
+                    />
+                  </>
+                )}
+              </div>
+
+              {/* TEXT: username, tagline, hometown, small stats */}
+              <div className="min-w-0 flex flex-col gap-1">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-white font-semibold text-xl truncate">@{user.username}</span>
+                  {/* status pill, etc */}
+                </div>
 
 
 
+                {/* Hometown / location line (wraps instead of truncating) */}
+                <div className="mt-1 flex items-start gap-2 text-white">
+                  <MapPin className="h-4 w-4 mt-0.5 shrink-0" />
+                  <span className="whitespace-normal break-words">
+                    {user.userType === 'business' 
+                      ? `Nearby Business in ${user.hometownCity || 'Los Angeles'}`
+                      : (() => {
+                          // Check for active travel plans first
+                          if (travelPlans && travelPlans.length > 0) {
+                            const today = new Date();
+                            today.setHours(0, 0, 0, 0);
 
+                            let activeTrips = [];
+
+                            for (const plan of travelPlans) {
+                              if (plan.startDate && plan.endDate) {
+                                const parseLocalDate = (dateInput: string | Date | null | undefined) => {
+                                  if (!dateInput) return null;
+                                  let dateString: string;
+                                  if (dateInput instanceof Date) {
+                                    dateString = dateInput.toISOString();
+                                  } else {
+                                    dateString = dateInput;
+                                  }
+                                  const parts = dateString.split('T')[0].split('-');
+                                  if (parts.length === 3) {
+                                    const year = parseInt(parts[0]);
+                                    const month = parseInt(parts[1]) - 1;
+                                    const day = parseInt(parts[2]);
+                                    return new Date(year, month, day);
+                                  }
+                                  return null;
+                                };
+
+                                const startDate = parseLocalDate(plan.startDate);
+                                const endDate = parseLocalDate(plan.endDate);
+                                if (!startDate || !endDate) continue;
+                                startDate.setHours(0, 0, 0, 0);
+                                endDate.setHours(23, 59, 59, 999);
+
+                                const isCurrentlyActive = today >= startDate && today <= endDate;
+                                if (isCurrentlyActive && plan.destination) {
+                                  activeTrips.push({
+                                    plan,
+                                    startDate
+                                  });
+                                }
+                              }
+                            }
+
+                            if (activeTrips.length > 0) {
+                              activeTrips.sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
+                              const currentTrip = activeTrips[0].plan;
+                              const destination = currentTrip.destination || 'Unknown';
+
+                              // ALWAYS show hometown + current travel destination
+                              const hometownParts = [
+                                user.hometownCity,
+                                user.hometownState,
+                                user.hometownCountry
+                              ].filter(Boolean);
+
+                              const hometown = hometownParts.length > 0 ? hometownParts.join(', ') : 'Unknown';
+                              return `Nearby Traveler from ${hometown}, traveling in ${destination}`;
+                            }
+                          }
+
+                          // Show full hometown information
+                          const locationParts = [
+                            user.hometownCity,
+                            user.hometownState,
+                            user.hometownCountry
+                          ].filter(Boolean);
+
+                          if (locationParts.length > 0) {
+                            return `Nearby Local in ${locationParts.join(', ')}`;
+                          } else if (user.location) {
+                            return `Nearby Local in ${user.location}`;
+                          }
+                          return "Nearby Local";
+                        })()
+                    }
+                  </span>
+                </div>
+
+                {/* Small stats row */}
+                {user.userType !== 'business' && (
+                  <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-white/90 text-sm">
+                    <span>🌍 {countriesVisited?.length || 0} countries</span>
+                    <span>⭐ {references?.length || 0} references</span>
+                  </div>
+                )}
+              </div>
+
+              {/* ACTIONS (Color change, etc.) */}
+              <div className="sm:self-start flex sm:flex-col items-center sm:items-end gap-2">
+                {isOwnProfile && (
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    className="shadow"
+                    onClick={() => setSelectedGradient((prev) => (prev + 1) % gradientOptions.length)}
+                  >
+                    🎨
+                  </Button>
+                )}
+              </div>
+
+              {/* full-width CTA row (stacks under text on mobile) */}
+              <div className="col-span-2 sm:col-span-3 mt-2">
+                {!isOwnProfile ? (
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <Button 
+                      className="bg-orange-500 hover:bg-orange-600 text-white border-0 w-full sm:w-auto"
+                      onClick={handleMessage}
+                    >
+                      <MessageCircle className="h-4 w-4 mr-2" />
+                      Message
+                    </Button>
+                    <Button 
+                      className={`w-full sm:w-auto ${getConnectButtonState().className}`}
+                      variant={getConnectButtonState().variant}
+                      onClick={handleConnect}
+                      disabled={getConnectButtonState().disabled}
+                    >
+                      {getConnectButtonState().text}
+                    </Button>
+                  </div>
+                ) : (
+                  user && (user.hometownCity || user.location) && (
+                    <Button
+                      className="w-full sm:w-auto sm:px-6 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white border-0 shadow-lg"
+                      onClick={() => {
+                        const chatCity = user.hometownCity || user.location?.split(',')[0] || 'General';
+                        setLocation(`/city-chatrooms?city=${encodeURIComponent(chatCity)}`);
+                      }}
+                    >
+                      <MessageCircleMore className="h-4 w-4 mr-2" />
+                      Go to Chatrooms
+                    </Button>
+                  )
+                )}
+              </div>
+            </div>
+
+            {/* Loading state for photo uploads */}
+            {uploadingPhoto && (
+              <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-30">
+                <div className="bg-white rounded-lg p-4 text-center">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-2"></div>
+                  <p className="text-sm font-medium">Uploading...</p>
+                </div>
+              </div>
+            )}
+          </div>
+        </MobilePreview>
 
 
         {/* Things We Have in Common - Mobile Only */}
@@ -3277,10 +3364,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           <div className="lg:col-span-2 space-y-2">
 
 
-            
 
 
-            
+
+
             {/* About Section */}
             <Card className="mt-6 overflow-visible">
               <CardHeader className="pb-2">
@@ -3321,9 +3408,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     </p>
                   </div>
                 )}
-                
 
-                
+
+
                 {/* Bio Section */}
                 <div className="mb-4">
                   <p className="text-muted-foreground whitespace-pre-wrap break-words mt-2">
@@ -3333,7 +3420,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     }
                   </p>
                 </div>
-                
+
                 {/* Metropolitan Area Information for people in metro areas */}
                 {user.hometownCity && user.hometownState && user.hometownCountry && (
                   (() => {
@@ -3439,14 +3526,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         <MapPin className="w-4 h-4 text-blue-500" />
                         Business Information
                       </h4>
-                      
+
                       {user.streetAddress && (
                         <div>
                           <span className="font-medium text-gray-600 dark:text-gray-400">Address:</span>
                           <span className="ml-2">{user.streetAddress}{user.zipCode && `, ${user.zipCode}`}</span>
                         </div>
                       )}
-                      
+
                       {user.phoneNumber && (
                         <div>
                           <span className="font-medium text-gray-600 dark:text-gray-400">Phone:</span>
@@ -3463,7 +3550,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           </a>
                         </div>
                       )}
-                      
+
                       {user.websiteUrl && (
                         <div>
                           <span className="font-medium text-gray-600 dark:text-gray-400">Website:</span>
@@ -3483,13 +3570,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         <div className="space-y-3 border-t pt-3 mt-3">
                           <div className="flex items-center justify-between">
                             <h5 className="font-medium text-gray-700 dark:text-gray-300">Business Description</h5>
-                            {isOwnProfile && !editingBusinessDescription && (
+                            {isOwnProfile && (
                               <Button size="sm" variant="outline" onClick={handleEditBusinessDescription} className="bg-gradient-to-r from-blue-500 to-orange-500 text-white border-0 hover:from-blue-600 hover:to-orange-600">
                                 <Edit className="w-3 h-3" />
                               </Button>
                             )}
                           </div>
-                          
+
                           {editingBusinessDescription ? (
                             <div className="space-y-4">
                               <div>
@@ -3545,21 +3632,21 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                   <p className="ml-2 text-sm text-gray-700 dark:text-gray-300">{user.services}</p>
                                 </div>
                               )}
-                              
+
                               {user.specialOffers && (
                                 <div>
                                   <span className="font-medium text-gray-600 dark:text-gray-400">What makes us special:</span>
                                   <p className="ml-2 text-sm text-gray-700 dark:text-gray-300">{user.specialOffers}</p>
                                 </div>
                               )}
-                              
+
                               {user.targetCustomers && (
                                 <div>
                                   <span className="font-medium text-gray-600">Target Customers:</span>
                                   <p className="ml-2 text-sm text-gray-700">{user.targetCustomers}</p>
                                 </div>
                               )}
-                              
+
                               {user.certifications && (
                                 <div>
                                   <span className="font-medium text-gray-600">Certifications:</span>
@@ -3591,9 +3678,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       )}
                     </div>
                   )}
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Business Offers Section - Only for business users */}
             {user?.userType === 'business' && (
@@ -3750,7 +3837,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         </Button>
                       </div>
                     </div>
-                    
+
                     {/* When editing all preferences, show the unified content */}
                     {editingInterests && editingActivities && editingEvents && (
                       <div className="space-y-6 mt-6">
@@ -3760,14 +3847,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             <Heart className="w-5 h-5 text-blue-500" />
                             Top Interests
                           </h4>
-                          
+
                           {/* Top Choices for Most Travelers */}
                           <div className="mb-4">
                             <h5 className="text-sm font-medium mb-2 text-gray-900 dark:text-white">Top Choices for Most Travelers</h5>
                             <div className="flex flex-wrap gap-2 p-3 bg-gradient-to-r from-blue-100 to-orange-100 dark:from-blue-900 dark:to-orange-900 rounded-lg">
                               {MOST_POPULAR_INTERESTS.map((interest) => {
                                 const isSelected = editFormData.interests.includes(interest);
-                                
+
                                 return (
                                   <button
                                     key={interest}
@@ -3798,7 +3885,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                 const displayText = interest.startsWith("**") && interest.endsWith("**") ? 
                                   interest.slice(2, -2) : interest;
                                 const isSelected = editFormData.interests.includes(interest);
-                                
+
                                 return (
                                   <button
                                     key={interest}
@@ -3828,15 +3915,15 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             <Globe className="w-5 h-5 text-green-500" />
                             Activities
                           </h4>
-                          
+
                           <div className="text-sm text-blue-600 bg-blue-50 border border-blue-400 rounded-md p-3 mb-4 dark:bg-blue-900/20 dark:border-blue-600 dark:text-blue-300">
                             Your default preferences for trips and to match with Nearby Locals and Travelers. They can be added to and changed in the future for specific trips etc.
                           </div>
-                          
+
                           <div className="flex flex-wrap gap-2 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border">
                             {getAllActivities().map((activity, index) => {
                               const isSelected = editFormData.activities.includes(activity);
-                              
+
                               return (
                                 <button
                                   key={`activity-${activity}-${index}`}
@@ -3865,11 +3952,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             <Calendar className="w-5 h-5 text-purple-500" />
                             Events
                           </h4>
-                          
+
                           <div className="flex flex-wrap gap-2 p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg border">
                             {getAllEvents().map((event, index) => {
                               const isSelected = editFormData.events.includes(event);
-                              
+
                               return (
                                 <button
                                   key={`event-${event}-${index}`}
@@ -3891,7 +3978,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             })}
                           </div>
                         </div>
-                        
+
                         {/* Bottom Save/Cancel Buttons */}
                         <div className="flex gap-2 mt-6 pt-4 border-t border-gray-200 dark:border-gray-600">
                           <Button 
@@ -3965,7 +4052,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       </Button>
                     )}
                   </div>
-                  
+
                   {editingInterests && !(editingInterests && editingActivities && editingEvents) ? (
                     <div className="space-y-4">
                       {/* Top Choices for Most Travelers */}
@@ -3974,7 +4061,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         <div className="flex flex-wrap gap-2 p-3 bg-gradient-to-r from-blue-100 to-orange-100 dark:from-blue-900 dark:to-orange-900 rounded-lg">
                           {MOST_POPULAR_INTERESTS.map((interest) => {
                             const isSelected = tempInterests.includes(interest);
-                            
+
                             return (
                               <button
                                 key={interest}
@@ -4007,7 +4094,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             const displayText = interest.startsWith("**") && interest.endsWith("**") ? 
                               interest.slice(2, -2) : interest;
                             const isSelected = tempInterests.includes(interest);
-                            
+
                             return (
                               <button
                                 key={interest}
@@ -4031,7 +4118,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           })}
                         </div>
                       </div>
-                      
+
                       <div className="flex space-x-2 mt-4">
                         <Input
                           placeholder="Things you do, or things that you want to do NOT listed above - Hit enter after each choice"
@@ -4107,7 +4194,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               const interests = user?.interests || [];
                               const topInterests = interests.slice(0, 8); // Show only first 8
                               const remaining = interests.length - 8;
-                              
+
                               return (
                                 <>
                                   {topInterests.map((interest, index) => (
@@ -4150,20 +4237,20 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       </Button>
                     )}
                   </div>
-                  
+
                   {editingActivities && !(editingInterests && editingActivities && editingEvents) ? (
                     <div className="space-y-4">
                       <div className="text-sm text-blue-600 bg-blue-50 border border-blue-400 rounded-md p-3 mb-4 dark:bg-blue-900/20 dark:border-blue-600 dark:text-blue-300">
                         Your default preferences for trips and to match with Nearby Locals and Travelers. They can be added to and changed in the future for specific trips etc.
                       </div>
-                      
+
                       {/* All Available Activities */}
                       <div>
                         <h4 className="text-sm font-medium mb-2 text-gray-900 dark:text-white">All Available Activities</h4>
                         <div className="flex flex-wrap gap-2 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border">
                           {getAllActivities().map((activity, index) => {
                             const isSelected = editFormData.activities.includes(activity);
-                            
+
                             return (
                               <button
                                 key={`activity-${activity}-${index}`}
@@ -4185,7 +4272,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           })}
                         </div>
                       </div>
-                      
+
                       <div className="flex space-x-2 mt-4">
                         <Input
                           placeholder="Things you do, or things that you want to do NOT listed above - Hit enter after each choice"
@@ -4254,7 +4341,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               const activities = user.activities || [];
                               const topActivities = activities.slice(0, 6); // Show only first 6
                               const remaining = activities.length - 6;
-                              
+
                               return (
                                 <>
                                   {topActivities.map((activity, index) => (
@@ -4297,7 +4384,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       </Button>
                     )}
                   </div>
-                  
+
                   {editingEvents && !(editingInterests && editingActivities && editingEvents) ? (
                     <div className="space-y-4">
                       {/* All Available Events */}
@@ -4306,7 +4393,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         <div className="flex flex-wrap gap-2 p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg border">
                           {getAllEvents().map((event, index) => {
                             const isSelected = tempEvents.includes(event);
-                            
+
                             return (
                               <button
                                 key={`event-${event}-${index}`}
@@ -4330,7 +4417,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           })}
                         </div>
                       </div>
-                      
+
                       <div className="flex space-x-2 mt-4">
                         <Input
                           placeholder="List Any Events You have Not Found Above For Better Connections"
@@ -4402,7 +4489,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               const events = user.events || [];
                               const topEvents = events.slice(0, 6); // Show only first 6
                               const remaining = events.length - 6;
-                              
+
                               return (
                                 <>
                                   {topEvents.map((event, index) => (
@@ -4658,7 +4745,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                 <p className="text-gray-500 dark:text-gray-400 text-xs mb-1 font-medium">
                                   {plan.startDate ? formatDateForDisplay(plan.startDate, user?.hometownCity || 'UTC') : 'Start date TBD'} - {plan.endDate ? formatDateForDisplay(plan.endDate, user?.hometownCity || 'UTC') : 'End date TBD'}
                                 </p>
-                                
+
                                 {/* Enhanced Itinerary Summary */}
                                 {(plan.itineraryCount > 0 || plan.totalActivities > 0 || plan.totalItineraryCost > 0) && (
                                   <div className="bg-blue-50 dark:bg-blue-900/20 rounded-md p-2 mt-2 space-y-1">
@@ -4666,16 +4753,16 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                       <Calendar className="w-3 h-3" />
                                       Trip Summary
                                     </div>
-                                    
+
                                     <div className="grid grid-cols-2 gap-1 text-xs text-blue-700 dark:text-blue-300">
                                       {plan.itineraryCount > 0 && (
                                         <span>📋 {plan.itineraryCount} itinerary{plan.itineraryCount === 1 ? '' : 'ies'}</span>
                                       )}
-                                      
+
                                       {plan.totalActivities > 0 && (
                                         <span>✅ {plan.completedActivities || 0}/{plan.totalActivities} activities</span>
                                       )}
-                                      
+
                                       {plan.totalItineraryCost > 0 && (
                                         <span className="col-span-2">💰 ${plan.totalItineraryCost.toFixed(2)} spent</span>
                                       )}
@@ -4727,7 +4814,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                     </Badge>
                                   )}
                                 </div>
-                              </div>
+                                </div>
                             )}
                             {plan.travelStyle && plan.travelStyle.length > 0 && (
                               <div>
@@ -4745,7 +4832,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                 </div>
                               </div>
                             )}
-                            
+
                             {/* View Itinerary Details Button */}
                             {plan.itineraryCount > 0 && (
                               <div className="mt-2 pt-2 border-t border-gray-200 dark:border-gray-700">
@@ -4969,7 +5056,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     </Button>
                   )}
                 </CardTitle>
-                
+
                 {/* Filter Panel */}
                 {showConnectionFilters && userConnections.length > 0 && (
                   <div className="mt-4 p-4 bg-gray-50 rounded-lg space-y-3">
@@ -5104,7 +5191,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         </Button>
                       </div>
                     ))}
-                    
+
                     {/* Load More / Load Less buttons */}
                     {userConnections.length > 3 && (
                       <div className="text-center pt-2">
@@ -5151,7 +5238,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             {!isOwnProfile && userConnections.some((conn: any) => conn.status === 'accepted') && (
               <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
+                  <CardTitle className="flex items-centergap-2">
                     <Users className="w-5 h-5 text-green-500" />
                     Write a Reference
                   </CardTitle>
@@ -5179,7 +5266,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     <MessageSquare className="w-5 h-5" />
                     Write Reference for {user?.username}
                   </div>
-                  
+
                   {showReferenceForm && (
                     <div className="space-y-4 mt-4">
                       <Form {...referenceForm}>
@@ -5197,7 +5284,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         }, (errors) => {
                           console.log('Form validation errors:', errors);
                         })} className="space-y-4">
-                          
+
                           {/* Note: revieweeId and reviewerId handled in submission data */}
 
                           {/* Reference Content */}
@@ -5264,7 +5351,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             )}
 
             {/* MOBILE-FRIENDLY RIGHT-SIDE WIDGETS SECTION */}
-            
+
 
 
 
@@ -5356,7 +5443,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           </div>
                         </div>
                       </div>
-                      
+
                       <Button
                         variant="outline"
                         size="sm"
@@ -5394,7 +5481,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           </span>
                         </div>
                       </div>
-                      
+
                       {/* Compatibility indicator when viewing other profiles */}
                       {compatibilityData?.travelStyleCompatibility && (
                         <div className="mt-3 p-2 rounded bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700">
@@ -5454,7 +5541,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             </p>
                           </div>
                         </div>
-                        
+
                         <div className="flex gap-1 flex-shrink-0">
                           <Button
                             size="sm"
@@ -5831,7 +5918,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 </div>
               )}
             </div>
-            
+
             {/* Crop controls */}
             <div className="space-y-3">
               <div className="flex items-center justify-between text-sm text-gray-600">
@@ -5855,7 +5942,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </Button>
                 </div>
               </div>
-              
+
               <div className="flex justify-center">
                 <Button
                   type="button"
@@ -5924,7 +6011,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               </div>
 
 
-              
+
               <div className="grid grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
@@ -5939,7 +6026,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     </FormItem>
                   )}
                 />
-                
+
                 <FormField
                   control={form.control}
                   name="endDate"
@@ -5973,7 +6060,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 <div className="text-xs text-gray-600 mb-3 p-2 bg-orange-50 rounded border">
                   <strong>Note:</strong> These are interests specific to this travel plan only, separate from your main profile interests.
                 </div>
-                
+
                 {/* I am a Veteran checkbox */}
                 <div className="mb-4">
                   <FormField
@@ -6007,7 +6094,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     )}
                   />
                 </div>
-                
+
                 <div className="grid grid-cols-4 gap-1 border rounded-lg p-3 bg-orange-50">
                   {getAllInterests().map((interest, index) => (
                     <div key={`interest-edit-${index}`} className="flex items-center space-x-1">
@@ -6044,7 +6131,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 <Label className="text-sm font-medium mb-2 block">
                   Activities on This Trip
                 </Label>
-                
+
                 <div className="grid grid-cols-4 gap-1 border rounded-lg p-3 bg-green-50">
                   {getAllActivities().map((activity, index) => {
                     const displayText = activity.startsWith("**") && activity.endsWith("**") ? 
@@ -6085,7 +6172,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 <Label className="text-sm font-medium mb-2 block">
                   Events on This Trip
                 </Label>
-                
+
                 <div className="grid grid-cols-4 gap-1 border rounded-lg p-3 bg-orange-50">
                   {getAllEvents().map((event, index) => (
                     <div key={`event-edit-${index}`} className="flex items-center space-x-1">
@@ -6237,7 +6324,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   )}
                 />
               )}
-              
+
               {user?.userType === 'business' ? (
                 <FormField
                   control={profileForm.control}
@@ -6540,7 +6627,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 <div className="space-y-4">
                   <div className="border-t pt-4">
                     <h3 className="text-lg font-semibold mb-3">Business Contact Information</h3>
-                    
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <FormField
                         control={profileForm.control}
@@ -6555,7 +6642,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           </FormItem>
                         )}
                       />
-                      
+
                       <FormField
                         control={profileForm.control}
                         name="zipCode"
@@ -6569,7 +6656,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           </FormItem>
                         )}
                       />
-                      
+
                       <FormField
                         control={profileForm.control}
                         name="phoneNumber"
@@ -6583,7 +6670,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           </FormItem>
                         )}
                       />
-                      
+
                       <FormField
                         control={profileForm.control}
                         name="websiteUrl"
@@ -6598,11 +6685,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         )}
                       />
                     </div>
-                    
+
                     {/* Military Status for Business */}
                     <div className="space-y-4 border-t pt-4 mt-4">
                       <h4 className="font-semibold mb-3">Military Status</h4>
-                      
+
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <FormField
                           control={profileForm.control}
@@ -6626,7 +6713,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             </FormItem>
                           )}
                         />
-                        
+
                         <FormField
                           control={profileForm.control}
                           name="isActiveDuty"
@@ -6652,15 +6739,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       </div>
                     </div>
                   </div>
-                </div>
-              )}
+                )}
 
               {/* Military Status Section - Only show for non-business users */}
               {user?.userType !== 'business' && (
                 <div className="space-y-4">
                   <div className="border-t pt-4">
                     <h3 className="text-lg font-semibold mb-3">Military Status</h3>
-                  
+
                   {/* Veteran Status */}
                   <FormField
                     control={profileForm.control}
@@ -6795,7 +6881,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               <X className="w-4 h-4" />
             </Button>
           </DialogHeader>
-          
+
           {selectedTravelPlan && (
             <div className="space-y-4">
               {/* Trip Info */}
@@ -6810,7 +6896,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   Trip Details
                 </Badge>
               </div>
-              
+
               {/* Close Button */}
               <div className="flex justify-end">
                 <Button 
@@ -6924,7 +7010,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 <X className="w-5 h-5" />
               </button>
             </div>
-            
+
             <div className="p-4 space-y-4">
               {photos && photos.length > 0 ? (
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
@@ -6935,18 +7021,18 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       onClick={async () => {
                         try {
                           setUploadingPhoto(true);
-                          
+
                           const response = await fetch(`/api/users/${effectiveUserId}/cover-photo`, {
                             method: 'PUT',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ imageData: photo.imageUrl }),
                           });
-                          
+
                           if (!response.ok) throw new Error('Upload failed');
-                          
+
                           const responseData = await response.json();
                           const updatedUser = responseData?.user || responseData;
-                          
+
                           if (updatedUser && isOwnProfile) {
                             setCoverPhotoKey(Date.now());
                             authStorage.setUser(updatedUser);
@@ -6955,15 +7041,15 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             }
                             queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
                           }
-                          
+
                           setShowCoverPhotoSelector(false);
                           setUploadingPhoto(false);
-                          
+
                           toast({
                             title: "Success!",
                             description: "Cover photo updated successfully",
                           });
-                          
+
                         } catch (error) {
                           console.error('Error setting cover photo:', error);
                           setUploadingPhoto(false);
@@ -7027,7 +7113,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               Share your experience with this traveler to help others in the community
             </DialogDescription>
           </DialogHeader>
-          
+
           <Form {...referenceForm}>
             <form onSubmit={referenceForm.handleSubmit((data) => createReference.mutate(data))} className="space-y-4">
               <FormField
@@ -7122,7 +7208,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               Update your reference for this traveler
             </DialogDescription>
           </DialogHeader>
-          
+
           <Form {...editReferenceForm}>
             <form onSubmit={editReferenceForm.handleSubmit((data) => {
               if (editingReference) {
@@ -7248,7 +7334,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 </p>
               </label>
             </div>
-            
+
             {uploadingPhoto && (
               <div className="text-center">
                 <p className="text-blue-600">Uploading photo...</p>
@@ -7266,7 +7352,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           </div>
         </DialogContent>
       </Dialog>
-      
+
       {/* Chatroom List Modal */}
       <Dialog open={showChatroomList} onOpenChange={setShowChatroomList}>
         <DialogContent className="max-w-lg">
@@ -7372,18 +7458,18 @@ class ProfileErrorBoundary extends React.Component<
             <div className="bg-white rounded-lg shadow-lg p-6">
               <h2 className="text-2xl font-bold text-red-600 mb-4">Profile Page Error</h2>
               <p className="text-gray-600 mb-6">The profile page encountered a rendering error.</p>
-              
+
               <div className="bg-red-50 border border-red-200 rounded p-4 mb-6">
                 <h3 className="font-semibold text-red-800 mb-2">Error Details:</h3>
                 <p className="text-sm text-red-700 mb-2">Message: {errorDetails.message}</p>
-                
+
                 <details className="mt-3">
                   <summary className="cursor-pointer text-sm font-medium text-red-800">Show Stack Trace</summary>
                   <pre className="text-xs text-red-600 mt-2 whitespace-pre-wrap overflow-auto max-h-40">
                     {errorDetails.stack}
                   </pre>
                 </details>
-                
+
                 <details className="mt-3">
                   <summary className="cursor-pointer text-sm font-medium text-red-800">Show Component Stack</summary>
                   <pre className="text-xs text-red-600 mt-2 whitespace-pre-wrap overflow-auto max-h-40">
