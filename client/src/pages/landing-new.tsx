@@ -118,9 +118,13 @@ export default function Landing() {
                   <div className="text-center">
                     <div className="max-w-4xl mx-auto">
                       <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl tracking-tight px-4">
-                        <span className="block text-white sm:text-black font-black drop-shadow-lg sm:drop-shadow-none" style={{fontFamily: '"Inter", sans-serif', textShadow: 'clamp(0px, 2vw, 2px) clamp(0px, 2vw, 2px) clamp(0px, 2vw, 4px) rgba(0,0,0,0.8)'}}>Skip the Tourist Traps.</span>
-                        <span className="block font-black drop-shadow-lg sm:drop-shadow-none" style={{fontFamily: '"Inter", sans-serif', textShadow: 'clamp(0px, 2vw, 2px) clamp(0px, 2vw, 2px) clamp(0px, 2vw, 4px) rgba(0,0,0,0.8)'}}>
-                          <span className="text-orange-300 sm:text-orange-400">Meet Locals and Other </span><span className="text-blue-300 sm:text-blue-600">Nearby Travelers</span><span className="text-white sm:text-black"> Right Now, Today!!!</span>
+                        <span className="block font-black mobile-hero-text" style={{fontFamily: '"Inter", sans-serif'}}>
+                          Skip the Tourist Traps.
+                        </span>
+                        <span className="block font-black" style={{fontFamily: '"Inter", sans-serif'}}>
+                          <span className="mobile-hero-orange">Meet Locals and Other </span>
+                          <span className="mobile-hero-blue">Nearby Travelers</span>
+                          <span className="mobile-hero-text"> Right Now, Today!!!</span>
                         </span>
                       </h1>
                       
