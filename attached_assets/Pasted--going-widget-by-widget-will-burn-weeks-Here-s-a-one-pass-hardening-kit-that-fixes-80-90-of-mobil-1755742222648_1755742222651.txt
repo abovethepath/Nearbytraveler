@@ -1,0 +1,281 @@
+—going widget-by-widget will burn weeks. Here’s a one-pass hardening kit that fixes ~80–90% of mobile issues across your whole app (mystery scrollbars, off-screen modals/sheets, chip overflow, h-screen bugs) without touching every component.
+
+1) Global mobile-safe reset (drop in once)
+
+src/styles/mobile-safe.css (import it after Tailwind’s base in your global css)
+
+/* === Mobile-safe global reset === */
+
+/* Stop horizontal scroll app-wide */
+html, body { height: 100%; overflow-x: hidden; }
+
+/* Use dynamic viewport height to avoid address-bar jump on mobile */
+:root { --vh: 1vh; }
+@supports (height: 100svh) { :root { --vh: 1svh; } }
+
+/* Let flex/grid children actually shrink instead of forcing overflow */
+*, *::before, *::after { box-sizing: border-box; min-width: 0; }
+
+/* Media never overflow their boxes */
+img, video, canvas, svg { max-width: 100%; height: auto; display: block; }
+
+/* Textareas: never show horizontal scrollbar; allow vertical grow */
+textarea { overflow-x: hidden; resize: vertical; }
+
+/* Common Radix/shadcn popover/dialog clipping fixes */
+[data-radix-popper-content-wrapper] { max-width: min(92vw, 420px); }
+
+
+Then import it (e.g. in client/src/index.css or wherever you import tailwind):
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import "./styles/mobile-safe.css";
+
+2) Wrap the whole app in a safe shell (one file)
+
+src/ui/AppShell.tsx
+
+import { useEffect } from "react";
+
+export default function AppShell({ children }: { children: React.ReactNode }) {
+  useEffect(() => {
+    const setVH = () => {
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty("--vh", `${vh}px`);
+    };
+    setVH();
+    window.addEventListener("resize", setVH);
+    return () => window.removeEventListener("resize", setVH);
+  }, []);
+
+  return (
+    <div className="app-shell min-h-[calc(var(--vh)*100)] w-full overflow-x-clip">
+      {children}
+    </div>
+  );
+}
+
+
+Mount it once in your root (e.g. App.tsx):
+
+import AppShell from "@/ui/AppShell";
+
+export default function App() {
+  return (
+    <AppShell>
+      {/* your routers/layouts */}
+    </AppShell>
+  );
+}
+
+
+This stops the global right-edge scrollbar and the “dialog off screen” jitter from viewport height changes.
+
+3) Mobile-safe primitives (drop-in replacements)
+
+Use these instead of raw shadcn in places that keep breaking.
+
+src/ui/primitives/MobileSafe.tsx
+
+import { useEffect, useState } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+
+export function useIsSmall() {
+  const [small, setSmall] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 640px)");
+    const onChange = () => setSmall(mq.matches);
+    onChange(); mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
+  return small;
+}
+
+export function MobileSafeContainer({
+  open, onOpenChange, title, children, width = 720
+}: {
+  open: boolean; onOpenChange: (v: boolean) => void; title: string; children: React.ReactNode; width?: number;
+}) {
+  const small = useIsSmall();
+  const body = (
+    <div className="flex flex-col h-full">
+      {/* Only this area scrolls; prevents nested scrollbars */}
+      <div className="flex-1 overflow-y-auto">{children}</div>
+    </div>
+  );
+
+  if (small) {
+    return (
+      <Sheet open={open} onOpenChange={onOpenChange}>
+        <SheetContent side="bottom" className="h-[90vh] w-full max-w-full p-0 overflow-hidden">
+          <SheetHeader className="px-4 pt-4 pb-0">
+            <SheetTitle>{title}</SheetTitle>
+          </SheetHeader>
+          {body}
+        </SheetContent>
+      </Sheet>
+    );
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className={`w-[min(92vw,${width}px)] max-h-[90vh] p-0 overflow-hidden`}>
+        <DialogHeader className="px-6 pt-4 pb-0">
+          <DialogTitle>{title}</DialogTitle>
+        </DialogHeader>
+        {body}
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+/* Chips row that never creates scrollbars */
+export function PillRow({ children }: { children: React.ReactNode }) {
+  return <div className="flex flex-wrap gap-2 items-center overflow-visible max-w-full">{children}</div>;
+}
+
+/* Autosizing textarea with no horizontal scroll */
+export function AutosizeTextarea(
+  { value, onChange, rows = 3, ...rest }:
+  { value: string; onChange: (v: string)=>void; rows?: number } & React.TextareaHTMLAttributes<HTMLTextAreaElement>
+) {
+  const [h, setH] = useState<number|undefined>(undefined);
+  useEffect(() => {
+    const el = document.getElementById(rest.id || "bio-area") as HTMLTextAreaElement | null;
+    if (!el) return;
+    el.style.height = "0px";
+    el.style.height = `${el.scrollHeight}px`;
+    setH(el.scrollHeight);
+  }, [value]);
+  return (
+    <textarea
+      id={rest.id || "bio-area"}
+      value={value}
+      onChange={(e)=>onChange(e.target.value)}
+      rows={rows}
+      style={h ? { height: h } : undefined}
+      className="w-full leading-6 resize-y overflow-x-hidden rounded-md border bg-background p-3 text-sm outline-none focus:ring-2 focus:ring-primary"
+      {...rest}
+    />
+  );
+}
+
+
+Now convert your Bio, Leave Reference, or other troublesome modals to:
+
+import { MobileSafeContainer, AutosizeTextarea, PillRow } from "@/ui/primitives/MobileSafe";
+
+<MobileSafeContainer open={open} onOpenChange={setOpen} title="Edit Bio">
+  <div className="px-4 sm:px-6 py-4 space-y-4">
+    <label className="block text-sm font-medium">Your bio</label>
+    <AutosizeTextarea value={bio} onChange={setBio} />
+  </div>
+  <div className="border-t px-4 sm:px-6 py-3 bg-background flex justify-end gap-2">
+    <Button variant="ghost" onClick={()=>setOpen(false)}>Cancel</Button>
+    <Button onClick={save}>Save</Button>
+  </div>
+</MobileSafeContainer>
+
+
+This immediately fixes “opens off-screen” + inner scrollbars in one shot, everywhere you use it.
+
+4) Project-wide quick wins (search/replace once)
+
+Run these searches and fix globally (they cause most mobile bugs):
+
+Replace h-screen → min-h-[100svh]
+
+Audit w-screen inside padded containers → change to w-full
+
+Replace overflow-y-scroll → overflow-y-auto
+
+Remove any max-h-* paired with overflow-* on small content blocks (headers, chip rows)
+
+Ensure any flex sibling that contains text has min-w-0
+
+On Replit, use its global find (or locally):
+
+h-screen
+w-screen
+overflow-y-scroll
+overflow-x-auto
+max-h-
+className="flex  /* check for missing min-w-0 on siblings */
+
+
+(You don’t have to fix every instance—just the ones in layout shells, headers, navbars, and cards.)
+
+5) Dev overlay to find remaining offenders (no manual hunting)
+
+Add this once and toggle it when needed—it highlights the element causing horizontal overflow.
+
+src/dev/OverflowGuard.tsx
+
+import { useEffect, useState } from "react";
+
+export default function OverflowGuard() {
+  const [on, setOn] = useState<boolean>(() => localStorage.getItem("overflow-debug") === "1");
+
+  useEffect(() => {
+    if (!on) return;
+    const highlight = () => {
+      document.querySelectorAll<HTMLElement>(".__overflow-mark").forEach(n => n.remove());
+      const docWidth = document.documentElement.clientWidth;
+      const all = document.body.getElementsByTagName("*");
+      for (const el of Array.from(all)) {
+        const r = (el as HTMLElement).getBoundingClientRect();
+        if (r.right - 1 > docWidth) {
+          (el as HTMLElement).style.outline = "2px solid red";
+        }
+      }
+    };
+    highlight();
+    window.addEventListener("resize", highlight);
+    const id = setInterval(highlight, 1000);
+    return () => { clearInterval(id); window.removeEventListener("resize", highlight); };
+  }, [on]);
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.altKey && e.key.toLowerCase() === "o") {
+        const next = !on; setOn(next);
+        localStorage.setItem("overflow-debug", next ? "1" : "0");
+        if (!next) {
+          document.querySelectorAll<HTMLElement>("[style*='outline: 2px solid red']").forEach(n => (n.style.outline = ""));
+        }
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [on]);
+
+  return null;
+}
+
+
+Mount it once in dev:
+
+{import.meta.env.DEV && <OverflowGuard />}
+
+
+Press Alt+O → it outlines elements that stick past the viewport so you can fix just those containers.
+
+What this gives you (today)
+
+No more global right-edge scrollbar (AppShell + global reset).
+
+Modals/sheets/popovers stay on-screen on phones (MobileSafeContainer).
+
+Textareas don’t spawn horizontal scrollbars (AutosizeTextarea).
+
+Pills/chips wrap without scrollbars (PillRow).
+
+Quick search/replace eliminates the most common offenders in minutes.
+
+A dev overlay to catch the last 10% without clicking every widget.
+
+If you want, paste your App.tsx layout wrapper and your global css import lines—I’ll slot these in for you line-by-line.

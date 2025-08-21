@@ -3755,7 +3755,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       )}
                     </div>
                   )}
-                </div>
                 </CardContent>
               </Card>
             )}
@@ -6817,6 +6816,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       </div>
                     </div>
                   </div>
+                </div>
                 )}
 
               {/* Military Status Section - Only show for non-business users */}
@@ -6825,75 +6825,75 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   <div className="border-t pt-4">
                     <h3 className="text-lg font-semibold mb-3">Military Status</h3>
 
-                  {/* Veteran Status */}
-                  <FormField
-                    control={profileForm.control}
-                    name="isVeteran"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
-                        <div className="space-y-0.5">
-                          <FormLabel>I am a Veteran</FormLabel>
-                          <div className="text-sm text-gray-500">
-                            Check if you have served in the military and are now a veteran
+                    {/* Veteran Status */}
+                    <FormField
+                      control={profileForm.control}
+                      name="isVeteran"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
+                          <div className="space-y-0.5">
+                            <FormLabel>I am a Veteran</FormLabel>
+                            <div className="text-sm text-gray-500">
+                              Check if you have served in the military and are now a veteran
+                            </div>
                           </div>
-                        </div>
-                        <FormControl>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={() => {
-                              const newValue = !field.value;
-                              field.onChange(newValue);
-                              // If setting veteran to true, set active duty to false
-                              if (newValue) {
-                                profileForm.setValue('isActiveDuty', false);
-                              }
-                            }}
-                            className={`flex items-center gap-2 ${field.value ? 'bg-red-100 border-red-300 text-red-700' : ''}`}
-                          >
-                            {field.value ? '✓ Veteran' : 'Not Veteran'}
-                          </Button>
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
+                          <FormControl>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                const newValue = !field.value;
+                                field.onChange(newValue);
+                                // If setting veteran to true, set active duty to false
+                                if (newValue) {
+                                  profileForm.setValue('isActiveDuty', false);
+                                }
+                              }}
+                              className={`flex items-center gap-2 ${field.value ? 'bg-red-100 border-red-300 text-red-700' : ''}`}
+                            >
+                              {field.value ? '✓ Veteran' : 'Not Veteran'}
+                            </Button>
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
 
-                  {/* Active Duty Status */}
-                  <FormField
-                    control={profileForm.control}
-                    name="isActiveDuty"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
-                        <div className="space-y-0.5">
-                          <FormLabel>I am Active Duty</FormLabel>
-                          <div className="text-sm text-gray-500">
-                            Check if you are currently serving in the military on active duty
+                    {/* Active Duty Status */}
+                    <FormField
+                      control={profileForm.control}
+                      name="isActiveDuty"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
+                          <div className="space-y-0.5">
+                            <FormLabel>I am Active Duty</FormLabel>
+                            <div className="text-sm text-gray-500">
+                              Check if you are currently serving in the military on active duty
+                            </div>
                           </div>
-                        </div>
-                        <FormControl>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={() => {
-                              const newValue = !field.value;
-                              field.onChange(newValue);
-                              // If setting active duty to true, set veteran to false
-                              if (newValue) {
-                                profileForm.setValue('isVeteran', false);
-                              }
-                            }}
-                            className={`flex items-center gap-2 ${field.value ? 'bg-blue-100 border-blue-300 text-blue-700' : ''}`}
-                          >
-                            {field.value ? '✓ Active Duty' : 'Not Active Duty'}
-                          </Button>
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
+                          <FormControl>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                const newValue = !field.value;
+                                field.onChange(newValue);
+                                // If setting active duty to true, set veteran to false
+                                if (newValue) {
+                                  profileForm.setValue('isVeteran', false);
+                                }
+                              }}
+                              className={`flex items-center gap-2 ${field.value ? 'bg-blue-100 border-blue-300 text-blue-700' : ''}`}
+                            >
+                              {field.value ? '✓ Active Duty' : 'Not Active Duty'}
+                            </Button>
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
                 </div>
-              </div>
               )}
 
               <div className="flex gap-2 pt-4">
