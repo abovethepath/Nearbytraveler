@@ -110,17 +110,17 @@ export default function Landing() {
                 className="w-full h-full object-cover"
                 style={{ objectPosition: 'center 70%' }}
               />
-              <div className="absolute inset-0 bg-gray-800/70 dark:bg-gray-800/40 mix-blend-multiply" aria-hidden="true" />
+              <div className="absolute inset-0 bg-gradient-to-b from-gray-900/80 via-gray-800/70 to-gray-900/90 sm:bg-gray-800/70 sm:bg-none sm:mix-blend-multiply" aria-hidden="true" />
             </div>
             <div className="relative">
               <div className="sm:pb-16 md:pb-20 lg:pb-28 xl:pb-32">
-                <main className="mt-16 mx-auto max-w-full sm:mt-20 md:mt-24 lg:mt-28 xl:mt-32">
+                <main className="mt-8 sm:mt-16 md:mt-20 lg:mt-24 xl:mt-32 mx-auto max-w-full px-4">
                   <div className="text-center">
                     <div className="max-w-4xl mx-auto">
-                      <h1 className="text-4xl tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
-                        <span className="block text-black font-black" style={{fontFamily: '"Inter", sans-serif'}}>Skip the Tourist Traps.</span>
-                        <span className="block font-black" style={{fontFamily: '"Inter", sans-serif'}}>
-                          <span className="text-orange-400">Meet Locals and Other </span><span style={{color: '#3b82f6'}}>Nearby Travelers</span><span className="text-black"> Right Now, Today!!!</span>
+                      <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl tracking-tight px-4">
+                        <span className="block text-white sm:text-black font-black drop-shadow-lg sm:drop-shadow-none" style={{fontFamily: '"Inter", sans-serif', textShadow: 'clamp(0px, 2vw, 2px) clamp(0px, 2vw, 2px) clamp(0px, 2vw, 4px) rgba(0,0,0,0.8)'}}>Skip the Tourist Traps.</span>
+                        <span className="block font-black drop-shadow-lg sm:drop-shadow-none" style={{fontFamily: '"Inter", sans-serif', textShadow: 'clamp(0px, 2vw, 2px) clamp(0px, 2vw, 2px) clamp(0px, 2vw, 4px) rgba(0,0,0,0.8)'}}>
+                          <span className="text-orange-300 sm:text-orange-400">Meet Locals and Other </span><span className="text-blue-300 sm:text-blue-600">Nearby Travelers</span><span className="text-white sm:text-black"> Right Now, Today!!!</span>
                         </span>
                       </h1>
                       
