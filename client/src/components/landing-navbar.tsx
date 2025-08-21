@@ -12,10 +12,10 @@ export default function LandingNavbar() {
           <div className="flex">
             <div className="flex-shrink-0 flex items-center" style={{display: 'flex', alignItems: 'center'}}>
               <Link href="/" className="flex items-center">
-                <div className="transform scale-150">
+                <div className="transform scale-125 sm:scale-150">
                   <Logo variant="navbar" />
                 </div>
-                <span className="ml-8 text-red-600 dark:text-red-400 text-sm font-bold uppercase tracking-wide bg-red-100 dark:bg-red-900/50 px-2 py-1 rounded">BETA</span>
+                <span className="ml-4 sm:ml-8 text-red-600 dark:text-red-400 text-xs sm:text-sm font-bold uppercase tracking-wide bg-red-100 dark:bg-red-900/50 px-2 py-1 rounded">BETA</span>
               </Link>
             </div>
             <div className="hidden sm:ml-12 sm:flex sm:space-x-8">
@@ -48,8 +48,8 @@ export default function LandingNavbar() {
             <button 
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               type="button" 
-              className="inline-flex items-center justify-center p-3 rounded-xl text-gray-400 hover:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 active:scale-95 transition-all duration-200 touch-manipulation"
-              style={{ minHeight: '48px', minWidth: '48px' }}
+              className="inline-flex items-center justify-center p-3 rounded-xl text-gray-600 hover:text-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 active:scale-95 transition-all duration-200 touch-manipulation bg-gray-50"
+              style={{ minHeight: '48px', minWidth: '48px', display: 'flex', visibility: 'visible' }}
               aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
             >
               {!mobileMenuOpen ? (

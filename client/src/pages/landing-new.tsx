@@ -102,8 +102,8 @@ export default function Landing() {
       </div>
 
       {/* Landing Navbar with BETA badge */}
-      <header className="sticky top-0 md:top-0 z-[55] block w-full md:relative" style={{display: 'block', visibility: 'visible', minHeight: '64px', backgroundColor: '#ffffff', boxShadow: '0 1px 3px rgba(0,0,0,0.1)'}}>
-        <div className="block w-full mt-12 md:mt-0" style={{display: 'block', visibility: 'visible', backgroundColor: '#ffffff'}}>
+      <header className="sticky top-12 md:top-0 z-[55] block w-full md:relative bg-white shadow-sm" style={{display: 'block', visibility: 'visible', minHeight: '64px', backgroundColor: '#ffffff'}}>
+        <div className="block w-full" style={{display: 'block', visibility: 'visible', backgroundColor: '#ffffff'}}>
           <LandingNavbar />
         </div>
       </header>
