@@ -363,32 +363,11 @@ export function PeopleDiscoveryWidget({
               @{person.username}
             </h4>
             
-            {/* Location Info - ALWAYS SHOW BOTH HOMETOWN AND TRAVEL STATUS */}
-            <div className="mb-2 space-y-1">
-              {/* ALWAYS show hometown first */}
-              <div className="flex items-center justify-center gap-1">
-                <MapPin className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                <p className="text-gray-600 dark:text-gray-400 text-sm break-words px-1 text-center">
-                  From: {locationInfo.hometown}
-                </p>
-              </div>
-              
-              {/* ALWAYS show travel status */}
-              {locationInfo.isTraveling ? (
-                <div className="flex items-center justify-center gap-1">
-                  <Plane className="w-4 h-4 text-blue-500" />
-                  <p className="text-blue-600 dark:text-blue-400 text-sm font-medium break-words px-1 text-center">
-                    Currently in {locationInfo.currentLocation}
-                  </p>
-                </div>
-              ) : (
-                <div className="flex items-center justify-center gap-1">
-                  <MapPin className="w-4 h-4 text-green-500" />
-                  <p className="text-green-600 dark:text-green-400 text-sm break-words px-1 text-center">
-                    Currently home
-                  </p>
-                </div>
-              )}
+            {/* Location Info - Centralized display */}
+            <div className="mb-2">
+              <p className="text-xs text-gray-600 dark:text-gray-400 text-center break-words px-1">
+                From: {locationInfo.hometown} • {locationInfo.isTraveling ? `Currently in ${locationInfo.currentLocation}` : 'Currently home'}
+              </p>
             </div>
             
             {/* Stats */}

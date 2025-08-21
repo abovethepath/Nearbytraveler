@@ -1,0 +1,128 @@
+Let’s lock this state and quickly verify the hometown + travel display is correct everywhere.
+
+1) Save the working state (so we don’t backslide)
+git add -A && git commit -m "site renders; syntax fixed"
+git tag STABLE_PROFILE_FIX
+
+2) One small, centralized helper (drop-in)
+
+Create client/src/lib/locationDisplay.ts and use this everywhere you show location:
+
+// client/src/lib/locationDisplay.ts
+type Maybe<T> = T | null | undefined;
+
+export type TravelPlan = {
+  city?: string;
+  state?: string;
+  country?: string;
+  startDate?: string;  // ISO
+  endDate?: string;    // ISO
+};
+
+export type UserLike = {
+  hometownCity?: string;
+  hometownState?: string;
+  hometownCountry?: string;
+  travelPlans?: TravelPlan[] | null;
+  travelDestination?: string | null; // legacy bridge, if present
+};
+
+const join = (parts: Maybe<string>[]) => parts.filter(Boolean).join(", ");
+
+export function resolveCurrentTravel(planList: Maybe<TravelPlan[]>, today = new Date()): TravelPlan | null {
+  if (!planList?.length) return null;
+  const t = today.toISOString().slice(0,10);
+  // active if start <= today <= end (or open-ended)
+  return planList.find(p => {
+    const s = p.startDate ?? t;
+    const e = p.endDate ?? t;
+    return (s <= t) && (t <= e);
+  }) ?? null;
+}
+
+export function locationBadges(u: UserLike) {
+  const home = join([u.hometownCity, u.hometownState, u.hometownCountry]) || "Hometown not set";
+  const active = resolveCurrentTravel(u.travelPlans);
+  const current = active ? join([active.city, active.state, active.country]) : null;
+
+  // Support legacy single-string destination if no structured plan is active
+  const legacy = !current && u.travelDestination ? u.travelDestination : null;
+
+  const status = current
+    ? `Currently in ${current}`
+    : legacy
+    ? `Currently in ${legacy}`
+    : `Currently home`;
+
+  return { home, status };
+}
+
+3) Use it in Profile and People Discovery
+Profile (About card)
+import { locationBadges } from "/src/lib/locationDisplay";
+
+const { home, status } = locationBadges(user);
+
+<div className="text-sm text-muted-foreground flex flex-wrap items-center gap-x-3 gap-y-1">
+  <span>From: <span className="font-medium">{home}</span></span>
+  <span>{status}</span>
+</div>
+
+People Discovery cards
+const { home, status } = locationBadges(person);
+<p className="text-xs text-muted-foreground">
+  {home} • {status}
+</p>
+
+4) Quick runtime check (no more white screen guessing)
+
+Add a tiny error boundary so any crash shows on screen (not blank):
+
+// client/src/ErrorBoundary.tsx
+import React from "react";
+export default class ErrorBoundary extends React.Component<{}, {e:any}> {
+  state = { e: null as any };
+  static getDerivedStateFromError(e:any){ return { e }; }
+  render(){ return this.state.e
+    ? <pre style={{whiteSpace:"pre-wrap",padding:16,color:"crimson"}}>{String(this.state.e?.stack||this.state.e)}</pre>
+    : this.props.children as any; }
+}
+
+
+Wrap in main.tsx:
+
+import ErrorBoundary from "./ErrorBoundary";
+// ...
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <QueryClientProvider client={queryClient}>
+    <ErrorBoundary>
+      <App />
+    </ErrorBoundary>
+  </QueryClientProvider>
+);
+
+5) Sanity lint rules to catch these JSX issues next time
+
+Add to .eslintrc:
+
+{
+  "extends": ["plugin:react/recommended"],
+  "rules": {
+    "react/jsx-closing-tag-location": "error",
+    "react/jsx-no-comment-textnodes": "error",
+    "react/no-unstable-nested-components": "warn"
+  }
+}
+
+6) Verify fast (what to look at)
+
+Profile page: should show “From: …” and “Currently in …” (or “Currently home”).
+
+People Discovery: each card shows home • status.
+
+If anything crashes, the ErrorBoundary will print the exact file/line.
+
+If you want, paste the first runtime error (if any) you see after this and I’ll give the exact one-line fix. Otherwise, once this looks right, tag it again so today’s stable state is preserved:
+
+git add -A && git commit -m "location badges unified; error boundary added"
+git tag STABLE_LOCATION_BADGES

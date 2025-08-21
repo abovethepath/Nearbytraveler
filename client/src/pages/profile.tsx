@@ -3401,41 +3401,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   {/* Username */}
                   <h1 className="text-xl sm:text-3xl font-bold text-black truncate">@{user.username}</h1>
 
-                  {/* Location/status — ALWAYS SHOW BOTH HOMETOWN AND TRAVEL STATUS */}
-                  <div className="flex flex-col gap-1 w-full">
-                    {/* ALWAYS show hometown first */}
-                    <div className="flex items-center gap-2">
-                      <MapPin className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 text-gray-500" />
-                      <span className="text-sm sm:text-base font-medium flex-1 min-w-0 truncate text-gray-600 dark:text-gray-400">
-                        From: {user.hometownCity || user.location?.split(',')[0] || 'Hometown not set'}
-                        {user.hometownState && `, ${user.hometownState}`}
-                        {user.hometownCountry && `, ${user.hometownCountry}`}
-                      </span>
-                    </div>
-                    
-                    {/* ALWAYS show travel status */}
-                    {(() => {
+                  {/* Location/status — Centralized location display */}
+                  <div className="text-sm text-gray-600 dark:text-gray-400 flex flex-wrap items-center gap-x-3 gap-y-1">
+                    <span>From: <span className="font-medium">{user.hometownCity || user.location?.split(',')[0] || 'Hometown not set'}{user.hometownState ? `, ${user.hometownState}` : ''}{user.hometownCountry ? `, ${user.hometownCountry}` : ''}</span></span>
+                    <span>{(() => {
                       const currentDestination = getCurrentTravelDestination(travelPlans || []);
-                      if (currentDestination) {
-                        return (
-                          <div className="flex items-center gap-2">
-                            <Plane className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 text-blue-500" />
-                            <span className="text-sm sm:text-base font-medium flex-1 min-w-0 truncate text-blue-600 dark:text-blue-400">
-                              Currently traveling in {currentDestination}
-                            </span>
-                          </div>
-                        );
-                      } else {
-                        return (
-                          <div className="flex items-center gap-2">
-                            <MapPin className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 text-green-500" />
-                            <span className="text-sm sm:text-base font-medium flex-1 min-w-0 truncate text-green-600 dark:text-green-400">
-                              Currently home
-                            </span>
-                          </div>
-                        );
-                      }
-                    })()}
+                      return currentDestination ? `Currently in ${currentDestination}` : 'Currently home';
+                    })()}</span>
                   </div>
 
                   {/* Stats */}
