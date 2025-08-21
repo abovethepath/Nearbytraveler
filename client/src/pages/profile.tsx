@@ -6748,7 +6748,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   <div className="border-t pt-4">
                     <h3 className="text-lg font-semibold mb-3">Military Status</h3>
 
-                  {/* Veteran Status */}
+                    {/* Veteran Status */}
                   <FormField
                     control={profileForm.control}
                     name="isVeteran"
@@ -6815,8 +6815,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       </FormItem>
                     )}
                   />
+                  </div>
+                  </div>
                 </div>
-              </div>
               )}
 
               <div className="flex gap-2 pt-4">
