@@ -46,7 +46,7 @@ export function CustomModal({ isOpen, onClose, children, className, title }: Cus
       {/* Modal Content */}
       <div 
         className={cn(
-          "relative z-[99999] w-full max-w-2xl max-h-[90vh] mx-4 bg-white dark:bg-gray-800 rounded-lg shadow-2xl overflow-hidden",
+          "relative z-[99999] w-full max-w-2xl max-h-[95vh] mx-4 bg-white dark:bg-gray-800 rounded-lg shadow-2xl overflow-hidden",
           className
         )}
         onClick={(e) => e.stopPropagation()}
@@ -67,7 +67,7 @@ export function CustomModal({ isOpen, onClose, children, className, title }: Cus
         </div>
         
         {/* Content */}
-        <div className="overflow-y-auto max-h-[calc(90vh-80px)]">
+        <div className="overflow-y-auto max-h-[calc(95vh-80px)]">
           {children}
         </div>
       </div>
