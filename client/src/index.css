@@ -1,5 +1,6 @@
 /* Import modern mobile-optimized font */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import "./styles/mobile-safe.css";
 
 /* Kill double vertical scrollbars - mobile responsive layout fix */
 html, body {
@@ -268,7 +269,6 @@ input, select, textarea, button { font-size: 16px; }
   @apply max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8;
 }
 
-@import "./styles/mobile-safe.css";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
