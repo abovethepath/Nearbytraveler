@@ -3678,7 +3678,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       )}
                     </div>
                   )}
-                </CardContent>
+                </div>
+              </CardContent>
               </Card>
             )}
 
