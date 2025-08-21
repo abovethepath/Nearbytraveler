@@ -87,16 +87,6 @@ export default function BusinessLanding() {
                         </div>
                       </div>
                       
-                      {/* Hero CTA */}
-                      <div className="mt-8">
-                        <Button
-                          onClick={() => setLocation('/join')}
-                          size="lg"
-                          className="bg-orange-500 hover:bg-orange-600 text-white font-bold text-xl px-12 py-6 rounded-2xl shadow-2xl transition-all duration-200 transform hover:scale-105 animate-pulse-glow"
-                        >
-                          🚀 Join Nearby Traveler NOW!!!!
-                        </Button>
-                      </div>
                     </div>
                   </div>
                 </main>
@@ -114,6 +104,20 @@ export default function BusinessLanding() {
         >
           💼 JOIN BUSINESS
         </Button>
+      </div>
+
+      {/* Primary signup CTA - Moved to bottom of hero */}
+      <div className="bg-white py-8 px-4">
+        <div className="max-w-lg mx-auto text-center">
+          <Button
+            onClick={() => setLocation('/join')}
+            size="lg"
+            className="bg-orange-500 hover:bg-orange-600 text-white font-bold text-xl px-12 py-6 rounded-2xl shadow-2xl transition-all duration-200 w-full"
+          >
+            🚀 Join Nearby Traveler NOW!!!!
+          </Button>
+          <p className="text-gray-600 mt-3 text-base sm:text-lg font-semibold px-2">Grow your business today</p>
+        </div>
       </div>
 
       <main className="flex-1 flex flex-col items-center justify-center text-center px-4">

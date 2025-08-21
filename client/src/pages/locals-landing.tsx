@@ -92,23 +92,26 @@ export default function LocalsLanding() {
                       </div>
                     </div>
                     
-                    {/* Primary signup CTA */}
-                    <div className="mt-12 mb-8 px-4">
-                      <Button
-                        onClick={() => setLocation('/join')}
-                        size="lg"
-                        className="bg-transparent hover:bg-white/10 text-white font-bold text-lg px-8 py-3 rounded-full border-2 border-white transition-all duration-200 transform hover:scale-105"
-                      >
-                        JOIN AS A LOCAL NOW
-                      </Button>
-                      <p className="text-white mt-3 text-base sm:text-lg font-semibold px-2">Join the travel community • Connect today</p>
-                    </div>
 
                   </div>
                 </main>
               </div>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Primary signup CTA - Moved to bottom of hero */}
+      <div className="bg-white py-8 px-4">
+        <div className="max-w-lg mx-auto text-center">
+          <Button
+            onClick={() => setLocation('/join')}
+            size="lg"
+            className="bg-orange-500 hover:bg-orange-600 text-white font-bold text-lg px-8 py-4 rounded-2xl shadow-xl transition-all duration-200 w-full"
+          >
+            JOIN AS A LOCAL NOW
+          </Button>
+          <p className="text-gray-600 mt-3 text-base sm:text-lg font-semibold px-2">Join the travel community • Connect today</p>
         </div>
       </div>
 
