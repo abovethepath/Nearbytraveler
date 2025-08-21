@@ -837,6 +837,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         gender: z.string().optional(),
         sexualPreference: z.array(z.string()).optional(),
         sexualPreferenceVisible: z.boolean().default(false),
+        travelingWithChildren: z.boolean().default(false),
         isVeteran: z.boolean().default(false),
         isActiveDuty: z.boolean().default(false),
       });
@@ -1316,6 +1317,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           gender: user.gender || "",
           sexualPreference: user.sexualPreference || [],
           sexualPreferenceVisible: user.sexualPreferenceVisible || false,
+          travelingWithChildren: user.travelingWithChildren || false,
           travelStyle: user.travelStyle || [],
           isVeteran: user.isVeteran || false,
           isActiveDuty: user.isActiveDuty || false,
@@ -1323,6 +1325,80 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       }
     }
   }, [user, userLoading, profileForm]);
+
+  // Reference form for creating new references
+  const referenceForm = useForm<z.infer<typeof referenceSchema>>({
+    resolver: zodResolver(referenceSchema),
+    defaultValues: {
+      reviewerId: currentUser?.id || 0,
+      revieweeId: user?.id || 0,
+      experience: "positive",
+      content: "",
+    },
+  });
+
+  // Edit reference form for editing existing references
+  const editReferenceForm = useForm<z.infer<typeof referenceSchema>>({
+    resolver: zodResolver(referenceSchema),
+    defaultValues: {
+      reviewerId: currentUser?.id || 0,
+      revieweeId: user?.id || 0,
+      experience: "positive",
+      content: "",
+    },
+  });
+
+  // Create reference mutation
+  const createReference = useMutation({
+    mutationFn: async (data: z.infer<typeof referenceSchema>) => {
+      const response = await apiRequest('POST', '/api/references', data);
+      if (!response.ok) throw new Error('Failed to create reference');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}/references`] });
+      referenceForm.reset();
+      setShowReferenceForm(false);
+      setShowWriteReferenceModal(false);
+      toast({
+        title: "Reference created",
+        description: "Your reference has been submitted successfully.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Failed to create reference",
+        description: error.message || "Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Update reference mutation
+  const updateReference = useMutation({
+    mutationFn: async ({ id, ...data }: { id: number } & z.infer<typeof referenceSchema>) => {
+      const response = await apiRequest('PUT', `/api/references/${id}`, data);
+      if (!response.ok) throw new Error('Failed to update reference');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}/references`] });
+      editReferenceForm.reset();
+      setShowEditModal(false);
+      setEditingReference(null);
+      toast({
+        title: "Reference updated",
+        description: "Your reference has been updated successfully.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Failed to update reference",
+        description: error.message || "Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
 
   // Fetch user photos from photo gallery
   const { data: photos = [], isLoading: photosLoading } = useQuery<UserPhoto[]>({
@@ -5375,11 +5451,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             )}
 
             {/* Vouch System Widget */}
-            {user?.id && (
+            {user?.id && currentUser?.id && (
               <VouchWidget 
                 userId={user.id} 
                 isOwnProfile={isOwnProfile} 
-                currentUserId={currentUser?.id} 
+                currentUserId={currentUser.id} 
               />
             )}
 
@@ -6740,7 +6816,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       </div>
                     </div>
                   </div>
-                )}
+                </div>
+              )}
 
               {/* Military Status Section - Only show for non-business users */}
               {user?.userType !== 'business' && (
@@ -6815,7 +6892,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       </FormItem>
                     )}
                   />
-                  </div>
                   </div>
                 </div>
               )}
@@ -7215,9 +7291,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             <form onSubmit={editReferenceForm.handleSubmit((data) => {
               if (editingReference) {
                 updateReference.mutate({
-                  referenceId: editingReference.id,
-                  content: data.content,
-                  experience: data.experience,
+                  id: editingReference.id,
+                  ...data
                 });
               }
             })} className="space-y-4">
