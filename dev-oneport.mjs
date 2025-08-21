@@ -1,25 +1,23 @@
-// dev-oneport.mjs - One-port development server with fixed WebSocket
 import path from "path";
 import express from "express";
 import { createServer as createHttpServer } from "http";
 import { fileURLToPath } from "url";
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const CLIENT_ROOT = path.resolve(__dirname, "client");
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 async function main() {
   const app = express();
-  const httpServer = createHttpServer(app);
 
-  // 🔑 Create Vite in middleware mode and bind HMR to THIS httpServer
+  // OPTIONAL: mount your API router here if needed
+  // const api = (await import("./server/api.js")).default;
+  // app.use("/api", api);
+
   const { createServer: createViteServer } = await import("vite");
   const vite = await createViteServer({
-    root: CLIENT_ROOT,
+    root: path.resolve(__dirname, "client"),
     appType: "custom",
-    server: {
-      middlewareMode: true,
-      hmr: { server: httpServer }, // ← HMR uses the same :5000 socket
-    },
+    server: { middlewareMode: true }, // HMR rides same origin
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "client/src"),
@@ -28,14 +26,11 @@ async function main() {
       },
     },
   });
-
   app.use(vite.middlewares);
 
   const PORT = Number(process.env.PORT) || 5000;
-  httpServer.listen(PORT, "0.0.0.0", () => {
-    console.log(`🎉 One-port dev server listening on http://0.0.0.0:${PORT}`);
-    console.log(`✅ Mobile-safe infrastructure active - HMR WebSocket on same port!`);
+  createHttpServer(app).listen(PORT, "0.0.0.0", () => {
+    console.log(`Dev server running on http://0.0.0.0:${PORT} (Vite middleware)`);
   });
 }
-
-main();
+main().catch((e) => { console.error(e); process.exit(1); });
