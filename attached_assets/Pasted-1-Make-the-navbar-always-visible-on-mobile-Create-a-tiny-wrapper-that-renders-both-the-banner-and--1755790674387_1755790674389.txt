@@ -1,0 +1,78 @@
+1) Make the navbar always visible on mobile
+
+Create a tiny wrapper that renders both the banner and the navbar in the same fixed stack, then add a spacer so the page content doesn’t slide underneath.
+
+A) New component: client/src/components/LandingHeader.tsx
+import LandingNavbar from "@/components/landing-navbar";
+import { Button } from "@/components/ui/button";
+import { useLocation } from "wouter";
+
+export default function LandingHeader() {
+  const [, setLocation] = useLocation();
+  return (
+    <div className="fixed inset-x-0 top-0 z-[100]">
+      {/* Mobile announcement bar */}
+      <div className="md:hidden bg-orange-500 text-black py-3 px-4 shadow-lg">
+        <div className="max-w-6xl mx-auto flex items-center justify-between gap-3">
+          <span className="font-bold text-sm">🔥 Connect with Locals and Travelers TODAY - Sign Up Now!</span>
+          <Button
+            onClick={() => setLocation("/join")}
+            className="bg-black text-orange-400 font-bold px-3 py-2 rounded-lg hover:bg-gray-800 shrink-0"
+          >
+            SIGN UP
+          </Button>
+        </div>
+      </div>
+
+      {/* Navbar (always visible) */}
+      <div className="bg-white/95 dark:bg-gray-900/95 backdrop-blur shadow-sm">
+        <div className="max-w-7xl mx-auto">
+          <LandingNavbar />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** Space below the fixed header (banner+navbar on mobile, just navbar on desktop) */
+export function LandingHeaderSpacer() {
+  return <div className="h-[112px] md:h-[64px]" />;
+}
+
+B) Use it on each landing page
+
+In landing-new.tsx, locals-landing.tsx, events-landing.tsx, business-landing.tsx, travelers-landing.tsx:
+
+Import at the top:
+
+import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
+
+
+Delete your current orange banner div and the <header …><LandingNavbar/></header> block.
+
+Insert right after the top-level <div …> of the page:
+
+<LandingHeader />
+<LandingHeaderSpacer />
+
+
+That guarantees the navbar is never hidden and sits under the orange bar on phones, with correct spacing.
+
+2) Make the hero actually show the photo & fit on phones
+
+Two tiny tweaks per hero:
+
+A) Use fluid, smaller headings on xs screens
+
+Replace each hero <h1> with a fluid version like this (example for landing-new.tsx):
+
+<h1 className="px-3 leading-tight sm:leading-snug">
+  <span className="block font-black text-[clamp(1.5rem,6vw,2.25rem)] text-white">
+    Skip the Tourist Traps.
+  </span>
+  <span className="block font-black text-[clamp(1.25rem,5.5vw,2rem)]">
+    <span className="text-amber-300 sm:text-orange-500">Meet Locals and Other </span>
+    <span className="text-blue-300 sm:text-blue-600">Nearby Travelers </span>
+    <span className="text-white sm:text-black">Right Now, Today!!!</span>
+  </span>
+</h1>
