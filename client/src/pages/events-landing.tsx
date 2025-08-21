@@ -2,7 +2,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
-import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
+import LandingNavbar from "@/components/landing-navbar";
 import Footer from "@/components/footer";
 const eventHeaderImage = "/event page bbq party_1753299541268.png";
 
@@ -12,8 +12,25 @@ export default function EventsLanding() {
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900">
       
-      <LandingHeader />
-      <LandingHeaderSpacer />
+      {/* Top sticky banner */}
+      <div className="md:hidden fixed top-0 left-0 right-0 z-[70] bg-orange-500 text-black py-3 px-4 shadow-lg">
+        <div className="max-w-6xl mx-auto flex items-center justify-between gap-3">
+          <span className="font-bold text-sm">🎆 Join Amazing Events with Locals & Travelers!</span>
+          <Button
+            onClick={() => setLocation("/join")}
+            className="bg-black text-orange-400 font-bold px-3 py-2 rounded-lg hover:bg-gray-800 shrink-0"
+          >
+            JOIN NOW
+          </Button>
+        </div>
+      </div>
+
+      {/* Landing Navbar under banner on mobile */}
+      <header className="sticky top-[52px] md:top-0 z-[60] w-full bg-white shadow-sm">
+        <div className="w-full bg-white">
+          <LandingNavbar />
+        </div>
+      </header>
       
       {/* HERO SECTION */}
       <div className="relative z-0">
@@ -40,26 +57,34 @@ export default function EventsLanding() {
                 <main className="mt-16 mx-auto max-w-full sm:mt-20 md:mt-24 lg:mt-28 xl:mt-32">
                   <div className="text-center">
                     <div className="max-w-4xl mx-auto">
-                      <h1 className="px-3 leading-tight sm:leading-snug">
-                        <span className="block font-black text-[clamp(1.5rem,6vw,2.25rem)] text-white">
+                      <h1 className="text-balance text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl tracking-tight px-2 sm:px-4 leading-relaxed">
+                        <span className="block font-black text-white">
                           Join User Created Events
                         </span>
-                        <span className="block font-black text-[clamp(1.25rem,5.5vw,2rem)]">
+                        <span className="block font-black">
                           <span className="text-amber-300 sm:text-orange-500">and Make Real Connections </span>
                           <span className="text-blue-300 sm:text-blue-600">with Nearby Travelers, </span>
                           <span className="text-white sm:text-black">While Connecting with Other Locals.</span>
                         </span>
                       </h1>
                       
-                      {/* Event value proposition (hide on phones so the hero photo is visible) */}
-                      <div className="hidden sm:block mt-8 p-6 bg-black/40 backdrop-blur-sm rounded-2xl border border-white/20">
-                        <p className="text-xl text-white leading-relaxed">
-                          <span className="text-orange-300 font-bold">"Join beach bonfires, rooftop parties, food tours, and adventures.</span>
-                          <span className="text-white"> Every event is a chance to meet amazing locals and travelers who become lifelong friends."</span>
-                        </p>
-                        <div className="mt-4 text-center">
-                          <p className="text-white font-bold text-lg">— Your Community Awaits</p>
-                          <p className="text-orange-200 text-sm">From beach BBQs to secret speakeasies - join the fun today</p>
+                      {/* Event value proposition – below image on mobile, overlaid on md+ */}
+                      <div className="mt-6 md:mt-0">
+                        <div className="md:absolute md:bottom-6 md:left-1/2 md:-translate-x-1/2 md:w-[min(92vw,720px)]">
+                          <div className="bg-black/60 md:bg-black/50 text-white rounded-2xl border border-white/20 backdrop-blur p-4 sm:p-6 shadow-xl">
+                            <p className="text-sm sm:text-base md:text-lg leading-relaxed">
+                              <span className="text-orange-300 font-semibold">
+                                "Join beach bonfires, rooftop parties, food tours, and adventures.
+                              </span>
+                              <span className="text-white">
+                                {" "}Every event is a chance to meet amazing locals and travelers who become lifelong friends."
+                              </span>
+                            </p>
+                            <div className="mt-3 text-center">
+                              <p className="text-white font-bold">— Your Community Awaits</p>
+                              <p className="text-orange-200 text-xs sm:text-sm">From beach BBQs to secret speakeasies - join the fun today</p>
+                            </div>
+                          </div>
                         </div>
                       </div>
                       

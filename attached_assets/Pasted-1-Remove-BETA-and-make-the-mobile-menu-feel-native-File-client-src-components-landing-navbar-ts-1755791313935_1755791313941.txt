@@ -1,3 +1,15 @@
+1) Remove “BETA” and make the mobile menu feel native
+
+File: client/src/components/landing-navbar.tsx
+
+Delete the BETA pill.
+
+Make the mobile menu a full-screen overlay that scrolls independently.
+
+Lock page scroll when the menu is open (prevents the content behind from sliding).
+
+Keep the navbar above the orange banner.
+
 import { useEffect, useState } from "react";
 import { Link } from "wouter";
 import Logo from "@/components/logo";
@@ -9,9 +21,7 @@ export default function LandingNavbar() {
   useEffect(() => {
     const prev = document.body.style.overflow;
     document.body.style.overflow = mobileMenuOpen ? "hidden" : prev || "";
-    return () => {
-      document.body.style.overflow = prev || "";
-    };
+    return () => (document.body.style.overflow = prev || "");
   }, [mobileMenuOpen]);
 
   return (
@@ -114,3 +124,101 @@ export default function LandingNavbar() {
     </nav>
   );
 }
+
+2) Show the founder quote and keep the photo visible on mobile
+
+We’ll render the quote below the image on small screens (so it never blocks the photo), and as a bottom overlay on md+. Also, ensure the orange banner doesn’t cover the navbar.
+
+File: client/src/pages/landing-new.tsx
+
+Make these two tweaks:
+
+A. Change the header so it sits under the orange banner on mobile:
+
+{/* Top sticky banner */}
+<div className="md:hidden fixed top-0 left-0 right-0 z-[70] bg-orange-500 text-black py-3 px-4 shadow-lg">
+  ...
+</div>
+
+{/* Landing Navbar under banner on mobile */}
+<header className="sticky top-[52px] md:top-0 z-[60] w-full bg-white shadow-sm">
+  <div className="w-full bg-white">
+    <LandingNavbar />
+  </div>
+</header>
+
+
+B. Replace your existing quote block inside the hero with this version:
+
+{/* Founder quote – below image on mobile, overlaid on md+ */}
+<div className="mt-6 md:mt-0">
+  <div className="md:absolute md:bottom-6 md:left-1/2 md:-translate-x-1/2 md:w-[min(92vw,720px)]">
+    <div className="bg-black/60 md:bg-black/50 text-white rounded-2xl border border-white/20 backdrop-blur p-4 sm:p-6 shadow-xl">
+      <p className="text-sm sm:text-base md:text-lg leading-relaxed">
+        <span className="text-orange-300 font-semibold">
+          “For over 15 years I’ve hosted and toured 400+ travelers from over 40 countries as a local creating amazing experiences.
+        </span>
+        <span className="text-white">
+          {" "}I built Nearby Traveler to help you meet real locals and real travelers, create amazing adventures, and expand your circle of friends.”
+        </span>
+      </p>
+      <div className="mt-3 text-center">
+        <p className="text-white font-bold">— Aaron, Founder</p>
+        <p className="text-orange-200 text-xs sm:text-sm">400+ travelers hosted • 40+ countries • 15+ years</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+Why this fixes your screenshot issues
+
+On phones, the quote is a normal block after the photo → photo stays visible.
+
+On tablets/desktop, it becomes a nice bottom overlay so the hero still feels premium.
+
+The header is offset beneath the orange banner, so both are visible and not stacked.
+
+3) Make the “tacos / BBQ / etc.” cards truly mobile-responsive
+
+Apply these small class changes to the card text blocks in all three landing pages:
+
+Use mobile-friendly sizes and tighter line-height.
+
+Prevent long text from pushing layout with line-clamp.
+
+Keep images at a consistent aspect ratio.
+
+For each event card (e.g., in landing-new.tsx, events-landing.tsx, travelers-landing.tsx) adjust the text blocks like this:
+
+<h3 className="text-base sm:text-lg font-bold text-gray-900 mb-1 break-words">
+  Beach Bonfire & BBQ
+</h3>
+<p className="text-xs sm:text-sm text-gray-600">
+  Sunset gathering on the beach
+</p>
+
+<p className="text-gray-700 text-sm sm:text-base mb-4 flex-grow leading-relaxed break-words line-clamp-3">
+  Join locals for an authentic beach bonfire with BBQ, music, and sunset views. Experience the real LA beach culture with friendly people.
+</p>
+
+
+…and ensure the image wrapper uses a stable ratio:
+
+<div className="aspect-video">
+  <img src="/..." alt="..." className="w-full h-full object-cover" />
+</div>
+
+
+This keeps images the same height on phones and stops descriptions from overflowing.
+
+4) Little polish so the hero text never squashes
+
+In your hero <h1>, add text-balance (Tailwind v3.3+) and slightly smaller xs sizes:
+
+<h1 className="text-balance text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl tracking-tight px-2 sm:px-4 leading-relaxed">
+  ...
+</h1>
+
+
+If you don’t have text-balance, it’s fine—just keep the responsive sizes above.
