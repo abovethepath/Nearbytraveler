@@ -6295,14 +6295,16 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         maxLength={800}
       />
 
-      {/* Profile Edit Modal */}
+      {/* Edit Bio Dialog — balanced & mobile-safe */}
       <Dialog open={isEditMode} onOpenChange={setIsEditMode}>
-        <DialogContent className="w-[95vw] max-w-[95vw] sm:max-w-2xl max-h-[85vh] overflow-y-auto p-4 sm:p-6">
+        <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle>Edit Profile</DialogTitle>
+            <DialogTitle>Edit Bio</DialogTitle>
+            <DialogDescription>Update the information that appears on your profile.</DialogDescription>
           </DialogHeader>
-          <Form {...profileForm}>
-            <form onSubmit={profileForm.handleSubmit(onSubmitProfile)} className="space-y-6">
+
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               {user?.userType === 'business' && (
                 <FormField
                   control={profileForm.control}
@@ -6836,7 +6838,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   {editProfile.isPending ? "Saving..." : "Save Changes"}
                 </Button>
               </div>
-            </div>
             </form>
           </Form>
         </DialogContent>
