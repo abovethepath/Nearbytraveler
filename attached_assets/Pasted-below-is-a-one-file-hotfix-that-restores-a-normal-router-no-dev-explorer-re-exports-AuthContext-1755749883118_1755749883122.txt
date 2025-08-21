@@ -1,3 +1,14 @@
+below is a one-file hotfix that:
+
+restores a normal router (no dev explorer)
+
+re-exports AuthContext and useAuth so your existing imports keep working
+
+maps the real pages I saw in your repo (from your screenshot) using relative imports (no alias issues)
+
+keeps the crash guard you already have
+
+1) overwrite client/src/App.tsx with this
 // client/src/App.tsx
 // keep back-compat exports so code that does `import { AuthContext, useAuth } from "@/App"` keeps working
 export { AuthContext, useAuth, AuthProvider } from "./auth-context";
@@ -64,3 +75,25 @@ export default function App() {
     </AppShell>
   );
 }
+
+2) remove the dev explorer from the UI
+
+If you still have DevPageExplorer mounted directly in App.tsx, the file above removes it. Keep the file on disk if you want, but it won’t render.
+
+3) rebuild and run (no WebSocket needed)
+cd client && npx vite build --mode production --sourcemap && cd ..
+NODE_ENV=production node server/index.prod.js
+
+
+open / — you should land on your About page, not the explorer.
+check other routes (e.g. /profile/123, /chatrooms/los-angeles, /events, /business-dashboard). if any lazy import path doesn’t exist in your tree, the ErrorBoundary will show you exactly which one—tell me the file name it expected and I’ll tweak the route to the right file.
+
+what changed vs your original
+
+nothing on the server/db side.
+
+app entry was pointed at a debug screen; we’ve pointed it back to your real pages.
+
+we kept AuthContext/useAuth exported from App.tsx (via re-export), so your existing imports keep working—no widespread refactors.
+
+I get that this was frustrating. this patch should put your site back in front of you right now. if you still see white, paste the first error from the browser console and I’ll give you the exact one-line fix.
