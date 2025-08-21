@@ -1,7 +1,7 @@
 import React, { useState, useContext, useRef, useEffect, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
-import { AuthContext } from "@/App";
+import { AuthContext } from "../auth-context";
 import UserCard from "@/components/user-card";
 import EventCard from "@/components/event-card";
 import MessagePreview from "@/components/message-preview";
