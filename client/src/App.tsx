@@ -1,79 +1,102 @@
-import React from "react";
+import React, { Suspense, lazy, createContext, useContext, useState, useEffect } from "react";
+import { Route, Switch } from "wouter";
+import AppShell from "@/ui/AppShell";
+import GlobalHotfixes from "@/GlobalHotfixes";
+import { authStorage } from "@/lib/auth";
+import type { User } from "@shared/schema";
 
-// Emergency fallback - get SOMETHING visible immediately
-export default function App() {
-  React.useEffect(() => {
-    console.log("✅ CRITICAL MOBILE LAYOUT v6-20250705 - SITE-WIDE FIXES DEPLOYED");
-    console.log("🚨 EMERGENCY APP VISIBLE - Mobile infrastructure active");
-  }, []);
-  
-  return (
-    <div style={{
-      padding: "20px", 
-      fontFamily: "system-ui, sans-serif",
-      maxWidth: "100vw",
-      minHeight: "100vh",
-      overflow: "hidden",
-      background: "linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%)",
-      color: "white",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      flexDirection: "column",
-      textAlign: "center"
-    }}>
-      <h1 style={{fontSize: "2.5rem", marginBottom: "1rem", fontWeight: "bold"}}>
-        🎉 Nearby Traveler
-      </h1>
-      <p style={{fontSize: "1.3rem", marginBottom: "2rem", opacity: 0.9}}>
-        Your Social Travel Platform is LIVE!
-      </p>
-      
-      <div style={{
-        background: "rgba(255,255,255,0.1)", 
-        padding: "2rem", 
-        borderRadius: "16px",
-        marginBottom: "2rem",
-        backdropFilter: "blur(10px)"
-      }}>
-        <h2 style={{fontSize: "1.5rem", marginBottom: "1rem"}}>✅ Mobile Infrastructure ACTIVE</h2>
-        <ul style={{listStyle: "none", padding: 0, fontSize: "1.1rem"}}>
-          <li style={{marginBottom: "0.5rem"}}>🔒 White screen protection enabled</li>
-          <li style={{marginBottom: "0.5rem"}}>📱 Site-wide mobile responsiveness deployed</li>
-          <li style={{marginBottom: "0.5rem"}}>🛡️ Error boundary crash protection active</li>
-          <li style={{marginBottom: "0.5rem"}}>🚀 Server running and APIs connected</li>
-        </ul>
-      </div>
+// Lazy load pages for better performance
+const Home = lazy(() => import("@/pages/Home"));
+const Profile = lazy(() => import("@/pages/Profile"));
+const Discover = lazy(() => import("@/pages/Discover"));
+const Messages = lazy(() => import("@/pages/Messages"));
+const Events = lazy(() => import("@/pages/Events"));
+const Connect = lazy(() => import("@/pages/Connect"));
+const Auth = lazy(() => import("@/pages/Auth"));
+const NotFound = lazy(() => import("@/pages/NotFound"));
 
-      <div style={{
-        background: "rgba(255,255,255,0.05)", 
-        padding: "1.5rem", 
-        borderRadius: "12px",
-        fontSize: "1rem"
-      }}>
-        <p><strong>Your Request COMPLETED:</strong></p>
-        <p>"Fix the mobile issues sitewide - I can't keep doing this one widget at a time"</p>
-        <p style={{color: "#4ade80", fontWeight: "bold", marginTop: "1rem"}}>
-          ✅ MISSION ACCOMPLISHED
-        </p>
-      </div>
-      
-      <p style={{marginTop: "2rem", fontSize: "0.9rem", opacity: 0.7}}>
-        Mobile-safe infrastructure is protecting your entire application
-      </p>
-    </div>
-  );
-}
-
-// Export compatibility items for existing pages
-export const AuthContext = React.createContext({
-  user: null, 
-  setUser: () => {}, 
-  isAuthenticated: false
-});
-
-export const useAuth = () => ({
+// AuthContext for compatibility with existing pages
+export const AuthContext = createContext<{
+  user: User | null;
+  setUser: (user: User | null) => void;
+  isAuthenticated: boolean;
+}>({
   user: null,
   setUser: () => {},
-  isAuthenticated: false
+  isAuthenticated: false,
 });
+
+export const useAuth = () => useContext(AuthContext);
+
+export default function App() {
+  const [user, setUser] = useState<User | null>(null);
+
+  // Initialize auth on mount
+  useEffect(() => {
+    console.log("🔐 Initializing authentication...");
+    const initAuth = async () => {
+      try {
+        const userData = await authStorage.getUser();
+        if (userData) {
+          setUser(userData);
+          console.log("✅ User authenticated:", userData.username);
+        }
+      } catch (error) {
+        console.warn("⚠️ Auth initialization failed:", error);
+      }
+    };
+    initAuth();
+  }, []);
+
+  const authValue = {
+    user,
+    setUser: (userData: User | null) => {
+      setUser(userData);
+      if (userData) {
+        authStorage.setUser(userData);
+        console.log("✅ User session updated:", userData.username);
+      } else {
+        authStorage.clearUser();
+        console.log("🔐 User logged out");
+      }
+    },
+    isAuthenticated: !!user,
+  };
+
+  console.log("🚀 Rendering full travel platform...");
+
+  return (
+    <AuthContext.Provider value={authValue}>
+      <AppShell>
+        <GlobalHotfixes />
+        <Suspense fallback={
+          <div className="flex items-center justify-center min-h-screen">
+            <div className="text-center">
+              <div className="animate-pulse text-2xl font-bold text-blue-600 mb-2">
+                🧳 Nearby Traveler
+              </div>
+              <div className="text-gray-600">Loading your travel platform...</div>
+            </div>
+          </div>
+        }>
+          <Switch>
+            <Route path="/" component={Home} />
+            <Route path="/profile/:id?">
+              {(params) => <Profile userId={params.id ? Number(params.id) : undefined} />}
+            </Route>
+            <Route path="/discover" component={Discover} />
+            <Route path="/messages" component={Messages} />
+            <Route path="/events" component={Events} />
+            <Route path="/connect" component={Connect} />
+            <Route path="/auth" component={Auth} />
+            
+            {/* Fallback */}
+            <Route>
+              <NotFound />
+            </Route>
+          </Switch>
+        </Suspense>
+      </AppShell>
+    </AuthContext.Provider>
+  );
+}
