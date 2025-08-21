@@ -3392,6 +3392,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 </div>
               </CardHeader>
               <CardContent className="overflow-visible">
+                <div>
                 {/* Business Name Field for Business Users */}
                 {user?.userType === 'business' && (
                   <div className="mb-4 p-4 bg-gradient-to-r from-blue-50 to-orange-50 dark:from-blue-900/20 dark:to-orange-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
