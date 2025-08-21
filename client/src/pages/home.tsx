@@ -51,10 +51,6 @@ import QuickDealsDiscovery from "@/components/QuickDealsDiscovery";
 import CityMap from "@/components/CityMap";
 import PeopleDiscoveryWidget from "@/components/PeopleDiscoveryWidget";
 
-import { MobileOptimizedWrapper } from '@/components/mobile-optimized-wrapper';
-import { BackButton } from '@/components/BackButton';
-import { MobilePreview } from '@/components/MobilePreview';
-
 
 // Import centralized constants for consistency
 import { GENDER_OPTIONS, SEXUAL_PREFERENCE_OPTIONS, PRIVACY_NOTES } from "@/lib/formConstants";
@@ -208,7 +204,7 @@ export default function Home() {
   const staticHeroImage = '/travelers%20coffee_1750995178947.png';
 
   console.log('🖼️ Home Hero: Using static image:', staticHeroImage);
-
+  
   // Verify image exists
   const checkImageExists = async (url: string) => {
     try {
@@ -220,7 +216,7 @@ export default function Home() {
       return false;
     }
   };
-
+  
   React.useEffect(() => {
     checkImageExists(staticHeroImage);
   }, []);
@@ -245,7 +241,7 @@ export default function Home() {
   const handleCloseFilters = () => {
     const urlParams = new URLSearchParams(window.location.search);
     const returnUrl = urlParams.get('return');
-
+    
     if (returnUrl) {
       // Navigate back to the return URL
       setLocation(returnUrl);
@@ -1020,7 +1016,7 @@ export default function Home() {
         otherUser.travelStyle?.some(style => style.toLowerCase().includes(searchTerm)) ||
         otherUser.localExpertise?.some(expertise => expertise.toLowerCase().includes(searchTerm)) ||
         otherUser.languagesSpoken?.some(language => language.toLowerCase().includes(searchTerm)) ||
-        otherUser.sexualPreference?.some(pref => pref.toLowerCase().includes(pref));
+        otherUser.sexualPreference?.some(pref => pref.toLowerCase().includes(searchTerm));
       if (!matchesSearch) return false;
     }
 
@@ -1217,8 +1213,7 @@ export default function Home() {
     }
   };
 
-  // Define pageContent to wrap with MobilePreview
-  const pageContent = (
+  return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
 
 {/* HERO — SCOPED, SAFE */}
@@ -1781,7 +1776,7 @@ export default function Home() {
                         {getAllInterests().filter(interest => !getMostPopularInterests().includes(interest)).map((interest) => {
                           const displayText = interest.startsWith("**") && interest.endsWith("**") ? 
                             interest.slice(2, -2) : interest;
-
+                          
                           return (
                             <button
                               key={interest}
@@ -2037,7 +2032,7 @@ export default function Home() {
                     : "Discover People"
                   }
                 </h2>
-
+                
                 {/* Quick Clear All Button - Show when any filters are active */}
                 {(activeFilter !== "all" || 
                   filters.location || 
@@ -2209,7 +2204,7 @@ export default function Home() {
 
                 {(() => {
                   const people = getSortedUsers(filteredUsers).slice(0, displayLimit);
-
+                  
                   return (
                     <>
                       {/* Tablets only (≥640px and <1024px): keep your widget here */}
@@ -2540,7 +2535,7 @@ export default function Home() {
               {(() => {
                 // Priority 1: If user has active travel plans, show current travel destination
                 const activeTravelPlan = travelPlans?.find(plan => plan.status === 'active');
-
+                
                 if (activeTravelPlan) {
                   // Use structured fields if available, otherwise parse destination string
                   if (activeTravelPlan.destinationCity) {
@@ -2559,7 +2554,7 @@ export default function Home() {
                     const city = parts[0];
                     const state = parts.length > 2 ? parts[1] : undefined;
                     const country = parts.length > 1 ? parts[parts.length - 1] : undefined;
-
+                    
                     return (
                       <div className="rounded-2xl border max-w-full overflow-hidden md:overflow-visible [&_*>*]:min-w-0">
                         <CityMap 
@@ -2571,7 +2566,7 @@ export default function Home() {
                     );
                   }
                 }
-
+                
                 // Priority 2: Fallback to hometown if no active travel
                 if (effectiveUser?.hometownCity && effectiveUser?.hometownCountry) {
                   return (
@@ -2584,7 +2579,7 @@ export default function Home() {
                     </div>
                   );
                 }
-
+                
                 return null;
               })()}
             </div>
@@ -2615,11 +2610,5 @@ export default function Home() {
       {/* AI Chat Bot */}
       <AIChatBot />
     </div>
-  );
-
-  return (
-    <MobilePreview>
-      {pageContent}
-    </MobilePreview>
   );
 }

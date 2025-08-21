@@ -178,32 +178,20 @@ export function PeopleDiscoveryWidget({
 
     // ALWAYS show both hometown AND current location - NEVER hide travel info
     const getCurrentLocation = () => {
-      // Extract hometown from location field or fallback
-      const locationParts = person.location?.split(',') || [];
-      const hometown = locationParts[0]?.trim() || 'Unknown';
+      const hometown = person.location?.split(',')[0] || 'Hometown';
+      const activeTravelPlan = travelPlans && Array.isArray(travelPlans) ? 
+        (travelPlans as any).find((plan: any) => plan.status === 'active') : null;
       
-      // Check for active travel plans based on current date
-      if (travelPlans && Array.isArray(travelPlans)) {
-        const now = new Date();
+      if (activeTravelPlan) {
+        const travelDestination = activeTravelPlan.destinationCity || activeTravelPlan.destination?.split(',')[0];
         
-        for (const plan of travelPlans) {
-          if (plan?.startDate && plan?.endDate) {
-            const startDate = new Date(plan.startDate);
-            const endDate = new Date(plan.endDate);
-            
-            // Check if currently within travel dates
-            if (now >= startDate && now <= endDate) {
-              const travelDestination = plan.destinationCity || plan.destination?.split(',')[0]?.trim();
-              
-              if (travelDestination && travelDestination !== hometown) {
-                return {
-                  isTraveling: true,
-                  currentLocation: travelDestination,
-                  hometown: hometown
-                };
-              }
-            }
-          }
+        // ALWAYS show travel info when someone has an active travel plan
+        if (travelDestination) {
+          return {
+            isTraveling: true,
+            currentLocation: travelDestination,
+            hometown: hometown
+          };
         }
       }
       
@@ -232,34 +220,20 @@ export function PeopleDiscoveryWidget({
     // NEW: figure out an upcoming/active destination
     const getTravelBlurb = () => {
       const plans = Array.isArray(travelPlans) ? (travelPlans as any[]) : [];
-      const now = new Date();
 
-      // Check for active travel plans (currently traveling)
-      for (const plan of plans) {
-        if (plan?.startDate && plan?.endDate) {
-          const startDate = new Date(plan.startDate);
-          const endDate = new Date(plan.endDate);
-          
-          if (now >= startDate && now <= endDate) {
-            const city = plan.destinationCity || plan.destination?.split(',')[0]?.trim();
-            if (city && city !== locationInfo.hometown) {
-              return `Traveling now: ${city}`;
-            }
-          }
-        }
+      const active = plans.find(p => p?.status === 'active');
+      if (active) {
+        const city = active.destinationCity || active.destination?.split(',')[0];
+        if (city && city !== locationInfo.hometown) return `Traveling now: ${city}`;
       }
 
-      // Check for upcoming travel plans
-      const upcomingPlans = plans
-        .filter(p => p?.startDate && new Date(p.startDate) > now)
-        .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime());
+      const upcoming = plans
+        .filter(p => p?.status === 'upcoming')
+        .sort((a, b) => new Date(a.startDate || 0).getTime() - new Date(b.startDate || 0).getTime())[0];
 
-      if (upcomingPlans.length > 0) {
-        const upcoming = upcomingPlans[0];
-        const city = upcoming.destinationCity || upcoming.destination?.split(',')[0]?.trim();
-        if (city && city !== locationInfo.hometown) {
-          return `Next trip: ${city}`;
-        }
+      if (upcoming) {
+        const city = upcoming.destinationCity || upcoming.destination?.split(',')[0];
+        if (city && city !== locationInfo.hometown) return `Next trip: ${city}`;
       }
 
       return null;

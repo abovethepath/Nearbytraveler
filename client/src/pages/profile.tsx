@@ -5,14 +5,12 @@ import { useLocation } from "wouter";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -23,7 +21,7 @@ import { Check, ChevronsUpDown } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { MapPin, Camera, Globe, Users, Calendar, Star, Settings, ArrowLeft, Upload, Edit, Edit2, Heart, MessageSquare, X, Plus, Eye, EyeOff, MessageCircle, ImageIcon, Minus, RotateCcw, Sparkles, Package, Trash2, Home, FileText, TrendingUp, MessageCircleMore, Share2, ChevronDown, Search, Zap, History, Clock, Wifi, Shield, ChevronRight } from "lucide-react";
+import { MapPin, Camera, Globe, Users, Calendar, Star, Settings, ArrowLeft, Upload, Edit, Edit2, Heart, MessageSquare, X, Plus, Eye, EyeOff, MessageCircle, ImageIcon, Minus, RotateCcw, Sparkles, Package, Trash2, Home, FileText, TrendingUp, MessageCircleMore, Share2, ChevronDown, Search, Zap, History, Clock, Wifi, Shield, ChevronRight, AlertCircle, Phone, Plane } from "lucide-react";
 import { compressPhotoAdaptive } from "@/utils/photoCompression";
 import { AdaptiveCompressionIndicator } from "@/components/adaptive-compression-indicator";
 import { UniversalBackButton } from "@/components/UniversalBackButton";
@@ -39,9 +37,8 @@ import { formatDateForDisplay, getCurrentTravelDestination } from "@/lib/dateUti
 import { COUNTRIES, CITIES_BY_COUNTRY } from "@/lib/locationData";
 import { SmartLocationInput } from "@/components/SmartLocationInput";
 import { calculateAge, formatDateOfBirthForInput, validateDateInput, getDateInputConstraints } from "@/lib/ageUtils";
-import { isTopChoiceInterest, getInterestStyle, getActivityStyle, getEventStyle } from "@/lib/topChoicesUtils";
-
-import { MobilePreview } from '@/components/MobilePreview';
+import { isTopChoiceInterest } from "@/lib/topChoicesUtils";
+import { BUSINESS_TYPES } from "../../../shared/base-options";
 
 // State/Province arrays - consistent with signup forms
 const US_STATES = [
@@ -68,22 +65,23 @@ const AUSTRALIAN_STATES = [
 
 import WorldMap from "@/components/world-map";
 import { QuickMeetupWidget } from "@/components/QuickMeetupWidget";
+import { QuickDealsWidget } from "@/components/QuickDealsWidget";
 import TravelItinerary from "@/components/travel-itinerary";
 import { ThingsIWantToDoSection } from "@/components/ThingsIWantToDoSection";
 
 
 
 import { PhotoAlbumWidget } from "@/components/photo-album-widget";
-import { SimpleAvatar } from "@/components/simple-avatar";
-import { VouchWidget } from "@/components/vouch-widget";
+import { MobileTopNav } from "@/components/MobileTopNav";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
+import { SimpleAvatar } from "@/components/simple-avatar";
 // Removed Navbar import since App.tsx handles navigation
 // Removed animated loading for static interface
 
 // Helper function to get metropolitan area for a city
 const getMetropolitanArea = (city: string, state: string, country: string): string | null => {
   if (!city || !state || !country) return null;
-
+  
   // Los Angeles Metropolitan Area cities - COMPREHENSIVE LIST
   const laMetroCities = [
     // Main cities
@@ -115,11 +113,11 @@ const getMetropolitanArea = (city: string, state: string, country: string): stri
     'San Marino', 'Santa Clarita', 'Signal Hill', 'South El Monte', 'South Gate',
     'Temple City', 'Vernon', 'Walnut', 'West Covina', 'Westlake Village'
   ];
-
+  
   if (state === 'California' && laMetroCities.includes(city)) {
     return 'Los Angeles Metro';
   }
-
+  
   // San Francisco Bay Area
   const sfBayAreaCities = [
     'San Francisco', 'San Jose', 'Oakland', 'Fremont', 'Santa Clara', 'Sunnyvale',
@@ -133,11 +131,11 @@ const getMetropolitanArea = (city: string, state: string, country: string): stri
     'Hercules', 'Pinole', 'San Pablo', 'Dublin', 'Pleasanton', 'Newark',
     'Castro Valley', 'San Lorenzo', 'Hayward', 'Fremont', 'Milpitas'
   ];
-
+  
   if (state === 'California' && sfBayAreaCities.includes(city)) {
     return 'San Francisco Bay Area';
   }
-
+  
   // New York Metropolitan Area
   const nyMetroCities = [
     'New York City', 'Manhattan', 'Brooklyn', 'Queens', 'Bronx', 'Staten Island',
@@ -153,12 +151,12 @@ const getMetropolitanArea = (city: string, state: string, country: string): stri
     'Harrison', 'East Newark', 'Weehawken', 'Edgewater', 'Fort Lee',
     'Englewood', 'Teaneck', 'Bergenfield', 'New Milford', 'Dumont', 'Cresskill'
   ];
-
+  
   if ((state === 'New York' || state === 'New Jersey' || state === 'Connecticut') && 
       nyMetroCities.some(metro => metro.toLowerCase() === city.toLowerCase())) {
     return 'New York Metropolitan Area';
   }
-
+  
   // Chicago Metropolitan Area
   const chicagoMetroCities = [
     'Chicago', 'Aurora', 'Rockford', 'Joliet', 'Naperville', 'Springfield',
@@ -171,11 +169,11 @@ const getMetropolitanArea = (city: string, state: string, country: string): stri
     'Crystal Lake', 'Streamwood', 'Carol Stream', 'Romeoville', 'Rock Island',
     'Park Ridge', 'Addison', 'Calumet City'
   ];
-
+  
   if (state === 'Illinois' && chicagoMetroCities.includes(city)) {
     return 'Chicago Metropolitan Area';
   }
-
+  
   // Miami Metropolitan Area
   const miamiMetroCities = [
     'Miami', 'Fort Lauderdale', 'Pembroke Pines', 'Hollywood', 'Miramar',
@@ -186,11 +184,11 @@ const getMetropolitanArea = (city: string, state: string, country: string): stri
     'Coral Gables', 'Key Biscayne', 'Hialeah', 'Homestead', 'Kendall',
     'Doral', 'Pinecrest', 'Palmetto Bay', 'Cutler Bay', 'South Miami'
   ];
-
+  
   if (state === 'Florida' && miamiMetroCities.includes(city)) {
     return 'Miami-Dade Metropolitan Area';
   }
-
+  
   // Dallas-Fort Worth Metropolitan Area
   const dallasMetroCities = [
     'Dallas', 'Fort Worth', 'Arlington', 'Plano', 'Garland', 'Irving', 'Grand Prairie',
@@ -201,11 +199,11 @@ const getMetropolitanArea = (city: string, state: string, country: string): stri
     'Highland Park', 'Addison', 'Rowlett', 'Wylie', 'Sachse', 'Murphy',
     'Rockwall', 'Terrell', 'Corsicana', 'Ennis'
   ];
-
+  
   if (state === 'Texas' && dallasMetroCities.includes(city)) {
     return 'Dallas-Fort Worth Metropolitan Area';
   }
-
+  
   return null;
 };
 
@@ -213,7 +211,7 @@ const getMetropolitanArea = (city: string, state: string, country: string): stri
 
 import { WhatYouHaveInCommon } from "@/components/what-you-have-in-common";
 
-import { LocationSharingWidget } from "@/components/LocationSharingWidget";
+// import { LocationSharingWidgetFixed } from "@/components/LocationSharingWidgetFixed";
 import { CustomerUploadedPhotos } from "@/components/customer-uploaded-photos";
 import BusinessEventsWidget from "@/components/business-events-widget";
 import ReferralWidget from "@/components/referral-widget";
@@ -229,7 +227,7 @@ import { getAllInterests, getAllActivities, getAllEvents, getAllLanguages, valid
 const REFERENCE_TYPES = [
   { value: "general", label: "General" },
   { value: "travel_buddy", label: "Travel Buddy" },
-  { value: "local_guide", label: "Local Guide" },
+  { value: "local_host", label: "Local Host" },
   { value: "event_companion", label: "Event Companion" },
   { value: "host", label: "Host" },
   { value: "guest", label: "Guest" }
@@ -240,15 +238,6 @@ const QUICK_TAGS_OPTIONS = [
   "Organized", "Flexible", "Communicative", "Respectful", 
   "Adventurous", "Helpful", "Clean", "Punctual"
 ];
-
-// PillRow component to prevent badge scrollbars
-function PillRow({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="flex flex-wrap gap-2 items-center overflow-visible max-w-full">
-      {children}
-    </div>
-  );
-}
 
 // Interface definitions
 interface EnhancedProfileProps {
@@ -271,6 +260,27 @@ const createProfileSchema = (userType: string) => {
       businessDescription: z.string().optional(),
       businessType: z.string().optional(),
       location: z.string().optional(),
+      city: z.string().optional(),
+      state: z.string().optional(),
+      country: z.string().optional(),
+      streetAddress: z.string().optional(),
+      zipCode: z.string().optional(),
+      phoneNumber: z.string().optional(),
+      websiteUrl: z.string().optional(),
+      interests: z.array(z.string()).default([]),
+      activities: z.array(z.string()).default([]),
+      events: z.array(z.string()).default([]),
+      customInterests: z.string().optional(),
+      customActivities: z.string().optional(),
+      customEvents: z.string().optional(),
+      isVeteran: z.boolean().default(false),
+      isActiveDuty: z.boolean().default(false),
+      isMinorityOwned: z.boolean().default(false),
+      isFemaleOwned: z.boolean().default(false),
+      isLGBTQIAOwned: z.boolean().default(false),
+      showMinorityOwned: z.boolean().default(true),
+      showFemaleOwned: z.boolean().default(true),
+      showLGBTQIAOwned: z.boolean().default(true),
     });
   } else {
     return baseSchema.extend({
@@ -281,12 +291,23 @@ const createProfileSchema = (userType: string) => {
       sexualPreferenceVisible: z.boolean().default(false),
       secretActivities: z.string().optional(),
       travelingWithChildren: z.boolean().default(false),
+      travelWhy: z.string().optional(),
+      travelHow: z.string().optional(),
+      travelBudget: z.string().optional(),
+      travelGroup: z.string().optional(),
     });
   }
 };
 
+// Dynamic schema based on user type
+const getDynamicProfileSchema = (userType: string) => createProfileSchema(userType);
+
 // Default schema for compatibility
 const profileSchema = createProfileSchema('traveler');
+
+interface EnhancedProfileProps {
+  userId?: number;
+}
 
 // Import shared travel options for consistency  
 import { BASE_TRAVELER_TYPES } from "@/lib/travelOptions";
@@ -310,7 +331,7 @@ const referenceSchema = z.object({
 const COUNTRIES_OPTIONS = [
   // North America
   "United States", "Canada", "Mexico",
-
+  
   // Caribbean Islands
   "Antigua and Barbuda", "Bahamas", "Barbados", "Belize", "Cuba", "Dominica", 
   "Dominican Republic", "Grenada", "Haiti", "Jamaica", "Saint Kitts and Nevis",
@@ -318,14 +339,14 @@ const COUNTRIES_OPTIONS = [
   "Aruba", "Curacao", "Sint Maarten", "British Virgin Islands", "US Virgin Islands",
   "Turks and Caicos", "Cayman Islands", "Anguilla", "Montserrat", "Guadeloupe",
   "Martinique", "Puerto Rico",
-
+  
   // Central America
   "Costa Rica", "El Salvador", "Guatemala", "Honduras", "Nicaragua", "Panama",
-
+  
   // South America
   "Argentina", "Bolivia", "Brazil", "Chile", "Colombia", "Ecuador", "French Guiana",
   "Guyana", "Paraguay", "Peru", "Suriname", "Uruguay", "Venezuela",
-
+  
   // Europe
   "United Kingdom", "Ireland", "France", "Germany", "Italy", "Spain", "Portugal", 
   "Netherlands", "Belgium", "Switzerland", "Austria", "Czech Republic", "Poland", 
@@ -334,7 +355,7 @@ const COUNTRIES_OPTIONS = [
   "Bulgaria", "Serbia", "Croatia", "Slovenia", "Slovakia", "Bosnia and Herzegovina",
   "Montenegro", "North Macedonia", "Albania", "Moldova", "Malta", "Cyprus", "Luxembourg",
   "Liechtenstein", "Monaco", "San Marino", "Vatican City", "Andorra",
-
+  
   // Asia
   "China", "Japan", "South Korea", "North Korea", "Mongolia", "Thailand", "Vietnam", 
   "Cambodia", "Laos", "Myanmar", "Malaysia", "Singapore", "Indonesia", "Philippines",
@@ -343,7 +364,7 @@ const COUNTRIES_OPTIONS = [
   "United Arab Emirates", "Qatar", "Bahrain", "Kuwait", "Jordan", "Lebanon", "Syria",
   "Israel", "Palestine", "Georgia", "Armenia", "Azerbaijan", "Kazakhstan", "Uzbekistan",
   "Turkmenistan", "Kyrgyzstan", "Tajikistan",
-
+  
   // Africa
   "Egypt", "Libya", "Tunisia", "Algeria", "Morocco", "Sudan", "South Sudan", "Ethiopia",
   "Eritrea", "Djibouti", "Somalia", "Kenya", "Tanzania", "Uganda", "Rwanda", "Burundi",
@@ -353,7 +374,7 @@ const COUNTRIES_OPTIONS = [
   "Gambia", "Mauritania", "Cape Verde", "Sao Tome and Principe", "Equatorial Guinea",
   "Gabon", "Angola", "Zambia", "Malawi", "Mozambique", "Zimbabwe", "Botswana", "Namibia",
   "South Africa", "Lesotho", "Eswatini", "Madagascar", "Mauritius", "Seychelles", "Comoros",
-
+  
   // Oceania
   "Australia", "New Zealand", "Papua New Guinea", "Fiji", "Solomon Islands", "Vanuatu",
   "Samoa", "Tonga", "Tuvalu", "Kiribati", "Nauru", "Palau", "Marshall Islands", 
@@ -384,9 +405,10 @@ interface MultiSelectProps {
   onChange: (selected: string[]) => void;
   placeholder: string;
   maxDisplay?: number;
+  pillType?: string;
 }
 
-function MultiSelect({ options, selected, onChange, placeholder, maxDisplay = 3 }: MultiSelectProps) {
+function MultiSelect({ options, selected, onChange, placeholder, maxDisplay = 3, pillType = 'pill' }: MultiSelectProps) {
   const [open, setOpen] = useState(false);
 
   const handleSelect = (item: string) => {
@@ -406,43 +428,39 @@ function MultiSelect({ options, selected, onChange, placeholder, maxDisplay = 3 
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-full justify-between min-h-[40px] h-auto overflow-visible"
+          className="w-full justify-between min-h-[40px] h-auto"
         >
-          <div className="flex flex-wrap gap-1 items-center max-w-[calc(100%-1.5rem)]">
+          <div className="flex flex-wrap gap-2">
             {selected.length === 0 ? (
               <span className="text-muted-foreground">{placeholder}</span>
             ) : (
-              <PillRow>
+              <>
                 {selected.slice(0, maxDisplay).map((item) => (
-                  <Badge key={item} variant="secondary" className="text-xs whitespace-nowrap no-scrollbar">
+                  <div key={item} className={pillType === 'pill-interests' ? 'inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0' : pillType === 'pill-activities' ? 'inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none bg-green-500 text-white border-0' : 'inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none bg-purple-500 text-white border-0'}>
                     {item}
-                  </Badge>
+                  </div>
                 ))}
                 {selected.length > maxDisplay && (
-                  <Badge variant="secondary" className="text-xs whitespace-nowrap no-scrollbar">
+                  <div className="inline-flex items-center justify-center h-7 rounded-full px-2 text-[11px] font-medium whitespace-nowrap leading-none border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 bg-transparent">
                     +{selected.length - maxDisplay} more
-                  </Badge>
+                  </div>
                 )}
-              </PillRow>
+              </>
             )}
           </div>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent
-        align="start"
-        sideOffset={6}
-        className="w-[min(92vw,360px)] sm:w-80 p-0 max-h-[65vh] overflow-y-auto no-scrollbar"
-      >
-        <Command className="h-auto max-h-[60vh]">
-          <CommandInput placeholder={`Search ${placeholder.toLowerCase()}...`} className="min-w-0" />
+      <PopoverContent className="w-full p-0" align="start">
+        <Command className="h-auto max-h-80">
+          <CommandInput placeholder={`Search ${placeholder.toLowerCase()}...`} />
 
           <CommandEmpty>
             <div className="p-4 text-sm text-gray-500 dark:text-gray-400">
               No matching options found.
             </div>
           </CommandEmpty>
-          <CommandGroup className="max-h-[52vh] overflow-y-auto no-scrollbar">
+          <CommandGroup className="max-h-60 overflow-y-auto no-scrollbar">
             {allOptions.map((item) => (
               <CommandItem
                 key={item}
@@ -466,10 +484,10 @@ function MultiSelect({ options, selected, onChange, placeholder, maxDisplay = 3 
 // Function to filter out travel-specific tags when user is in their hometown
 const getFilteredInterestsForProfile = (user: User, isOwnProfile: boolean) => {
   const interests = user.interests || [];
-
+  
   // Popular interests that are displayed in their own section - exclude from main interests to avoid redundancy
   const popularInterests = MOST_POPULAR_INTERESTS;
-
+  
   // Travel-specific tags that should be filtered out when user is displayed as local in hometown
   const travelSpecificTags = [
     "Solo Traveler", 
@@ -480,22 +498,22 @@ const getFilteredInterestsForProfile = (user: User, isOwnProfile: boolean) => {
     "Budget Traveler",
     "Luxury Traveler"
   ];
-
+  
   // Always filter out popular interests since they have their own section above
   let filteredInterests = interests.filter(interest => !popularInterests.includes(interest));
-
+  
   // For viewing other users' profiles (not own profile), also filter out travel tags if they're in their hometown
   if (!isOwnProfile) {
     // Check if user has no travel plans and is likely in their hometown
     const hasNoTravelPlans = !user.travelDestination;
     const isInHometown = user.hometownCity && user.location && 
       user.location.toLowerCase().includes(user.hometownCity.toLowerCase());
-
+    
     if (hasNoTravelPlans && isInHometown) {
       filteredInterests = filteredInterests.filter(interest => !travelSpecificTags.includes(interest));
     }
   }
-
+  
   return filteredInterests;
 };
 
@@ -503,11 +521,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const { user: authContextUser, setUser: setAuthUser } = useContext(AuthContext);
-
+  
   // Check for chatroom return context
   const chatroomReturnContext = localStorage.getItem('chatroom_return_context');
   const shouldShowBackToChatroom = chatroomReturnContext !== null;
-
+  
   const handleBackToChatroom = () => {
     console.log('Back button clicked, context:', chatroomReturnContext);
     if (chatroomReturnContext) {
@@ -515,13 +533,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         const context = JSON.parse(chatroomReturnContext);
         console.log('Parsed context:', context);
         localStorage.removeItem('chatroom_return_context');
-
+        
         // Set flag to auto-open member view before navigation
         if (context.chatroomId) {
           localStorage.setItem('open_chatroom_members', context.chatroomId.toString());
           console.log('Set open_chatroom_members:', context.chatroomId);
         }
-
+        
         // Navigate back to chatrooms page
         console.log('Navigating to /city-chatrooms');
         setLocation('/city-chatrooms');
@@ -539,6 +557,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const [isEditMode, setIsEditMode] = useState(false);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [editingTravelPlan, setEditingTravelPlan] = useState<TravelPlan | null>(null);
+  const [showCreateDeal, setShowCreateDeal] = useState(false);
   const [deletingTravelPlan, setDeletingTravelPlan] = useState<TravelPlan | null>(null);
   const [selectedTravelPlan, setSelectedTravelPlan] = useState<TravelPlan | null>(null);
   const [showTravelPlanDetails, setShowTravelPlanDetails] = useState(false);
@@ -550,11 +569,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const [searchKeyword, setSearchKeyword] = useState("");
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [selectedState, setSelectedState] = useState("");
-
+  
   // State for expanded interests in travel plans
   const [expandedPlanInterests, setExpandedPlanInterests] = useState<Set<number>>(new Set());
 
-
+  
   // Edit mode states for individual widgets
   const [editingInterests, setEditingInterests] = useState(false);
   const [editingActivities, setEditingActivities] = useState(false);
@@ -563,7 +582,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const [editingCountries, setEditingCountries] = useState(false);
   const [editingBio, setEditingBio] = useState(false);
   const [editingBusinessDescription, setEditingBusinessDescription] = useState(false);
-
+  
   // Temporary state for editing values
   const [tempInterests, setTempInterests] = useState<string[]>([]);
   const [tempActivities, setTempActivities] = useState<string[]>([]);
@@ -571,11 +590,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const [tempLanguages, setTempLanguages] = useState<string[]>([]);
   const [tempCountries, setTempCountries] = useState<string[]>([]);
   const [tempBio, setTempBio] = useState("");
-
+  
   // Reference modal states
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingReference, setEditingReference] = useState<any>(null);
-
+  
   // Simple edit form data (copying signup pattern)
   const [editFormData, setEditFormData] = useState({
     interests: [] as string[],
@@ -598,116 +617,23 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     certifications: ''
   });
   const [savingBusinessDescription, setSavingBusinessDescription] = useState(false);
-
+  
+  // Owner contact information state
+  const [editingOwnerInfo, setEditingOwnerInfo] = useState(false);
+  const [ownerContactForm, setOwnerContactForm] = useState({
+    ownerName: '',
+    contactName: '',
+    ownerEmail: '',
+    ownerPhone: ''
+  });
+  
   // Controlled input states for custom entries
   const [showReferenceForm, setShowReferenceForm] = useState(false);
   const [selectedConnection, setSelectedConnection] = useState<any>(null);
   const [showWriteReferenceModal, setShowWriteReferenceModal] = useState(false);
   const [showAllReferences, setShowAllReferences] = useState(false);
   const [showPhotoUpload, setShowPhotoUpload] = useState(false);
-
-  // Mobile-friendly bio editing state
-  const [showBioEditModal, setShowBioEditModal] = useState(false);
-
-  // Hook to detect small screens for mobile-first bio editing
-  function useIsSmall() {
-    const [isSmall, setIsSmall] = useState(false);
-    useEffect(() => {
-      const mq = window.matchMedia("(max-width: 639px)"); // < sm
-      const update = () => setIsSmall(mq.matches);
-      update();
-      mq.addEventListener("change", update);
-      return () => mq.removeEventListener("change", update);
-    }, []);
-    return isSmall;
-  }
-
-  // Mobile-friendly bio editing modal component
-  function EditBioModal({
-    open,
-    onOpenChange,
-    initialBio,
-    onSave,
-    maxLength = 800
-  }: {
-    open: boolean;
-    onOpenChange: (v: boolean) => void;
-    initialBio?: string;
-    onSave: (bio: string) => Promise<void> | void;
-    maxLength?: number;
-  }) {
-    const isSmall = useIsSmall();
-    const [bio, setBio] = useState(initialBio ?? "");
-    const remaining = maxLength - bio.length;
-
-    useEffect(() => {
-      if (open) setBio(initialBio ?? "");
-    }, [open, initialBio]);
-
-    const Contents = (
-      <div className="flex flex-col h-full min-h-0">
-        <div className="flex-1 overflow-y-auto p-4 pb-2">
-          <label className="block text-sm font-medium mb-2">Your bio</label>
-          <Textarea
-            value={bio}
-            onChange={(e) => {
-              const v = e.target.value;
-              if (v.length <= maxLength) setBio(v);
-            }}
-            className="min-h-[120px] sm:min-h-[160px] resize-vertical w-full"
-            placeholder="Tell people about yourself, what you enjoy, and how you like to travel…"
-          />
-          <div className="mt-2 text-xs text-muted-foreground">{remaining} characters left</div>
-        </div>
-
-        <div className="border-t p-4 bg-background flex-shrink-0">
-          <div className="flex items-center justify-end gap-2">
-            <Button variant="ghost" onClick={() => onOpenChange(false)} className="min-w-[80px]">
-              Cancel
-            </Button>
-            <Button
-              onClick={async () => {
-                await onSave(bio.trim());
-                onOpenChange(false);
-              }}
-              className="min-w-[80px]"
-            >
-              Save
-            </Button>
-          </div>
-        </div>
-      </div>
-    );
-
-    if (isSmall) {
-      return (
-        <Sheet open={open} onOpenChange={onOpenChange}>
-          <SheetContent side="bottom" className="h-[75vh] p-0 overflow-hidden flex flex-col">
-            <SheetHeader className="p-4 pb-2 flex-shrink-0">
-              <SheetTitle>Edit Bio</SheetTitle>
-            </SheetHeader>
-            <div className="flex-1 min-h-0">
-              {Contents}
-            </div>
-          </SheetContent>
-        </Sheet>
-      );
-    }
-
-    return (
-      <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-lg w-[min(92vw,640px)] max-h-[80vh] p-0 overflow-hidden flex flex-col">
-          <DialogHeader className="p-4 pb-2 flex-shrink-0">
-            <DialogTitle>Edit Bio</DialogTitle>
-          </DialogHeader>
-          <div className="flex-1 min-h-0">
-            {Contents}
-          </div>
-        </DialogContent>
-      </Dialog>
-    );
-  }
-
+  
   // Connection filters state
   const [connectionFilters, setConnectionFilters] = useState({
     location: 'all',
@@ -721,18 +647,18 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const [eventsDisplayCount, setEventsDisplayCount] = useState(3);
   const [businessesDisplayCount, setBusinessesDisplayCount] = useState(3);
   const [expandedTravelPlan, setExpandedTravelPlan] = useState<number | null>(null);
+  
 
-
-
+  
   // Travel plan details modal state (already declared above)
-
+  
   // Cover photo state
   const [coverPhotoKey, setCoverPhotoKey] = useState(Date.now());
-
+  
   // Header gradient color selection with persistence - moved after user declaration
   const [selectedGradient, setSelectedGradient] = useState(0);
 
-
+  
   const gradientOptions = [
     "from-blue-500 via-purple-500 to-orange-500", // Original
     "from-green-500 via-emerald-500 to-orange-500", // Green to Orange
@@ -743,7 +669,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     "from-teal-500 via-blue-500 to-purple-500", // Teal to Purple
     "from-yellow-500 via-orange-500 to-red-500", // Yellow to Red
   ];
-
+  
   // Listen for cover photo refresh events
   useEffect(() => {
     const handleCoverPhotoRefresh = () => {
@@ -810,26 +736,60 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
   // Dynamic profile schema based on user type
   const getProfileFormSchema = (userType: string) => {
-    const baseSchema = z.object({
-      bio: z.string().max(1000, "Bio must be 1000 characters or less"),
-      hometownCity: z.string().optional(),
-      hometownState: z.string().optional(),
-      hometownCountry: z.string().optional(),
-      travelStyle: z.array(z.string()).optional(),
-    });
-
     if (userType === 'business') {
-      return baseSchema.extend({
+      // Business profiles have more lenient bio requirements
+      const businessSchema = z.object({
+        bio: z.string().min(10, "Bio must be at least 10 characters").max(1000, "Bio must be 1000 characters or less"),
+        hometownCity: z.string().optional(),
+        hometownState: z.string().optional(),
+        hometownCountry: z.string().optional(),
+        travelStyle: z.array(z.string()).optional(),
+      });
+      
+      return businessSchema.extend({
         businessName: z.string().max(100, "Business name must be 100 characters or less").optional(),
         businessDescription: z.string().optional(),
         businessType: z.string().optional(),
+        city: z.string().optional(),
+        state: z.string().optional(),
+        country: z.string().optional(),
         location: z.string().optional(),
         streetAddress: z.string().optional(),
         zipCode: z.string().optional(),
-        phoneNumber: z.string().optional(),
+        phoneNumber: z.string().optional().refine((val) => {
+          if (!val || val === '') return true; // Allow empty
+          // Accept various international phone formats
+          const phoneRegex = /^[\+]?[1-9][\d]{0,15}$|^[\+]?[\d\s\-\(\)]{7,20}$/;
+          return phoneRegex.test(val.replace(/[\s\-\(\)]/g, ''));
+        }, "Please enter a valid phone number (supports international formats)"),
         websiteUrl: z.string().optional(),
+        // Owner/Internal Contact Information
+        ownerName: z.string().optional(),
+        ownerPhone: z.string().optional().refine((val) => {
+          if (!val || val === '') return true; // Allow empty
+          // Accept various international phone formats
+          const phoneRegex = /^[\+]?[1-9][\d]{0,15}$|^[\+]?[\d\s\-\(\)]{7,20}$/;
+          return phoneRegex.test(val.replace(/[\s\-\(\)]/g, ''));
+        }, "Please enter a valid phone number (supports international formats)"),
+        interests: z.array(z.string()).default([]),
+        activities: z.array(z.string()).default([]),
+        events: z.array(z.string()).default([]),
+        customInterests: z.string().optional(),
+        customActivities: z.string().optional(),
+        customEvents: z.string().optional(),
+        isVeteran: z.boolean().default(false),
+        isActiveDuty: z.boolean().default(false),
       });
     } else {
+      // Regular users have standard bio requirements
+      const baseSchema = z.object({
+        bio: z.string().min(30, "Bio must be at least 30 characters").max(1000, "Bio must be 1000 characters or less"),
+        hometownCity: z.string().optional(),
+        hometownState: z.string().optional(),
+        hometownCountry: z.string().optional(),
+        travelStyle: z.array(z.string()).optional(),
+      });
+      
       return baseSchema.extend({
         secretActivities: z.string().max(500, "Secret activities must be 500 characters or less").optional(),
         dateOfBirth: z.string().optional(),
@@ -838,6 +798,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         sexualPreference: z.array(z.string()).optional(),
         sexualPreferenceVisible: z.boolean().default(false),
         travelingWithChildren: z.boolean().default(false),
+        childrenAges: z.string().max(100, "Children ages must be 100 characters or less").optional(),
         isVeteran: z.boolean().default(false),
         isActiveDuty: z.boolean().default(false),
       });
@@ -846,7 +807,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
   // Robust authentication with emergency recovery
   let currentUser = authContextUser || authStorage.getUser();
-
+  
   // If no user found, try to refresh from API without reload
   React.useEffect(() => {
     if (!currentUser) {
@@ -857,27 +818,31 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       });
     }
   }, [currentUser, setAuthUser]);
-
+  
   const effectiveUserId = propUserId || currentUser?.id;
-  const isOwnProfile = propUserId ? (propUserId === currentUser?.id) : true;
-
+  const isOwnProfile = propUserId ? (parseInt(propUserId) === currentUser?.id) : true;
+  
   console.log('🔧 AUTHENTICATION STATE:', {
     currentUserId: currentUser?.id,
     currentUsername: currentUser?.username,
     effectiveUserId,
     isOwnProfile,
-    propUserId
+    propUserId,
+    propUserIdType: typeof propUserId,
+    currentUserIdType: typeof currentUser?.id
   });
-
+  
   console.log('Profile OWNERSHIP:', {
     isOwnProfile,
     propUserId,
     currentUserId: currentUser?.id,
     effectiveUserId,
     comparison: `${propUserId} === ${currentUser?.id}`,
-    comparisonResult: propUserId === currentUser?.id
+    comparisonResult: propUserId === currentUser?.id,
+    parsedComparison: `parseInt(${propUserId}) === ${currentUser?.id}`,
+    parsedResult: parseInt(propUserId || '') === currentUser?.id
   });
-
+  
 
 
   // Fetch user data with fallback to localStorage
@@ -888,7 +853,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       const url = viewerId && viewerId !== effectiveUserId 
         ? `/api/users/${effectiveUserId}?viewerId=${viewerId}&bust=${Date.now()}`
         : `/api/users/${effectiveUserId}?bust=${Date.now()}`;
-
+      
       const response = await fetch(url);
       if (!response.ok) {
         if (response.status === 403) {
@@ -926,7 +891,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       localStorage.setItem(`profile_gradient_${user.id}`, selectedGradient.toString());
     }
   }, [selectedGradient, user?.id]);
-
+  
   // Fetch travel plans early for event discovery logic with itinerary data
   const { data: travelPlans = [], isLoading: isLoadingTravelPlans } = useQuery<any[]>({
     queryKey: [`/api/travel-plans-with-itineraries/${effectiveUserId}`],
@@ -951,17 +916,17 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
   // Fetch compatibility score when viewing other users' profiles
   const { data: compatibilityData } = useQuery({
-    queryKey: ['/api/users', currentUser?.id, 'compatibility', effectiveUserId],
+    queryKey: [`/api/compatibility/${currentUser?.id}/${effectiveUserId}`],
     queryFn: async () => {
       if (!currentUser?.id || !effectiveUserId || isOwnProfile) return null;
-      const response = await fetch(`/api/users/${currentUser.id}/compatibility/${effectiveUserId}`);
+      const response = await fetch(`/api/compatibility/${currentUser.id}/${effectiveUserId}`);
       if (!response.ok) return null;
       return response.json();
     },
     enabled: !!(currentUser?.id && effectiveUserId && !isOwnProfile),
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
-
+  
   // Add debug logging
   console.log('Profile component state:', {
     propUserId,
@@ -972,13 +937,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     hasUser: !!user,
     userType: user?.userType
   });
-
+  
   // Fetch platform statistics (only for nearbytraveler admin)
   const { data: platformStats } = useQuery({
     queryKey: ["/api/stats/platform"],
     enabled: user?.username === 'nearbytraveler', // Only fetch for admin account
   });
-
+  
   // Update localStorage when fresh data is fetched to keep it in sync
   React.useEffect(() => {
     if (fetchedUser && isOwnProfile) {
@@ -1019,34 +984,34 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     if (user.userType === "business") {
       return "business";
     }
-
+    
     // PRIORITY 1: Check current travel plans for active trips
     const currentDestination = getCurrentTravelDestination(travelPlans || []);
     if (currentDestination && user.hometownCity) {
       const travelDestination = currentDestination.toLowerCase();
       const hometown = user.hometownCity.toLowerCase();
-
+      
       // Only show as traveler if destination is different from hometown
       if (!travelDestination.includes(hometown) && !hometown.includes(travelDestination)) {
         return "traveler";
       }
     }
-
+    
     // PRIORITY 2: Fallback to old travel fields for backwards compatibility
     const now = new Date();
     const hasActiveTravelPlans = user.travelStartDate && user.travelEndDate && 
       new Date(user.travelStartDate) <= now && 
       new Date(user.travelEndDate) >= now;
-
+    
     if (hasActiveTravelPlans && user.travelDestination) {
       const travelDestination = user.travelDestination.toLowerCase();
       const hometown = user.hometownCity?.toLowerCase() || '';
-
+      
       if (!travelDestination.includes(hometown) && !hometown.includes(travelDestination)) {
         return "traveler";
       }
     }
-
+    
     // PRIORITY 3: Default based on user type
     return "local";
   };
@@ -1061,13 +1026,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       if (connectionFilters.sexualPreference?.trim() && connectionFilters.sexualPreference !== 'all') params.append('sexualPreference', connectionFilters.sexualPreference.trim());
       if (connectionFilters.minAge?.trim()) params.append('minAge', connectionFilters.minAge.trim());
       if (connectionFilters.maxAge?.trim()) params.append('maxAge', connectionFilters.maxAge.trim());
-
+      
       const queryString = params.toString();
       const url = `/api/connections/${effectiveUserId}${queryString ? `?${queryString}` : ''}`;
-
+      
       console.log('Fetching connections with filters:', connectionFilters);
       console.log('Request URL:', url);
-
+      
       const response = await fetch(url);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -1133,7 +1098,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   });
 
   // Fetch business offers for business users
-  const { data: businessOffers = [], isLoading: businessOffersLoading } = useQuery<any[]>({
+  const { data: businessDeals = [], isLoading: businessDealsLoading } = useQuery<any[]>({
     queryKey: [`/api/business-deals/business/${effectiveUserId}`],
     enabled: !!user && user.userType === 'business' && user.id.toString() === effectiveUserId?.toString(),
     staleTime: 0,
@@ -1161,11 +1126,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       localStorage.removeItem(`user_${effectiveUserId}`);
       localStorage.removeItem('authStorage');
       localStorage.removeItem('travelconnect_user');
-
+      
       // Force fresh fetch from database
       queryClient.removeQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
       queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
-
+      
       // Also clear auth context and force reload
       if (setAuthUser) {
         setAuthUser(null);
@@ -1180,35 +1145,29 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const eventDiscoveryCity = useMemo(() => {
     console.log('Profile Event discovery memo - currentUserId:', effectiveUserId, 'user:', user?.username, 'loading plans:', isLoadingTravelPlans, 'loading profile:', userLoading);
     console.log('Profile Event discovery memo - travelPlans count:', travelPlans?.length || 0);
-
+    
     // Wait for authentication and data to load
     if (!effectiveUserId || isLoadingTravelPlans || userLoading || !user) {
       console.log('Profile Event discovery - still loading or no auth, returning null to prevent incorrect fallback');
       return null; // Don't show events until we have proper data
     }
-
-    // Use the same logic as the location display for consistency
+    
+    // ALWAYS use travel destination when available - NEVER hide travel info
     const currentDestination = getCurrentTravelDestination(travelPlans || []);
-    if (currentDestination && user.hometownCity) {
-      const travelDestination = currentDestination.toLowerCase();
-      const hometown = user.hometownCity.toLowerCase();
-
-      // Only show travel destination events if destination is different from hometown
-      if (!travelDestination.includes(hometown) && !hometown.includes(travelDestination)) {
-        console.log('Profile Event discovery - FINAL CITY SELECTION (traveling):', currentDestination);
-        return currentDestination;
-      }
+    if (currentDestination) {
+      console.log('Profile Event discovery - FINAL CITY SELECTION (traveling):', currentDestination);
+      return currentDestination;
     }
-
+    
     // Otherwise show hometown events
     const hometownLocation = user.hometownCity ? 
       (user.hometownState ? `${user.hometownCity}, ${user.hometownState}` : `${user.hometownCity}, ${user.hometownCountry}`) :
       user.location;
-
+    
     console.log('Profile Event discovery - FINAL CITY SELECTION (hometown):', hometownLocation);
     return hometownLocation;
   }, [effectiveUserId, user, travelPlans, isLoadingTravelPlans, userLoading]);
-
+  
   const { data: profileEvents = [], isLoading: profileEventsLoading } = useQuery<any[]>({
     queryKey: [`/api/users/${effectiveUserId}/all-events`],
     queryFn: async () => {
@@ -1232,24 +1191,44 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
   // Get the current user type for schema selection
   const currentUserType = user?.userType || 'traveler';
-  const dynamicProfileSchema = getProfileFormSchema(currentUserType);
-
+  const dynamicProfileSchema = getDynamicProfileSchema(currentUserType);
+  
   const profileForm = useForm<z.infer<typeof dynamicProfileSchema>>({
     resolver: zodResolver(dynamicProfileSchema),
     defaultValues: currentUserType === 'business' ? {
       bio: "",
       businessName: "",
-      hometownCity: "",
-      hometownState: "",
-      hometownCountry: "",
-      travelStyle: [],
       businessDescription: "",
       businessType: "",
       location: "",
+      city: "",
+      state: "",
+      country: "",
+      hometownCity: "",
+      hometownState: "",
+      hometownCountry: "",
       streetAddress: "",
       zipCode: "",
       phoneNumber: "",
       websiteUrl: "",
+      // Owner/Internal Contact Information
+      ownerName: "",
+      ownerPhone: "",
+      travelStyle: [],
+      interests: [],
+      activities: [],
+      events: [],
+      customInterests: "",
+      customActivities: "",
+      customEvents: "",
+      isVeteran: false,
+      isActiveDuty: false,
+      isMinorityOwned: false,
+      isFemaleOwned: false,
+      isLGBTQIAOwned: false,
+      showMinorityOwned: true,
+      showFemaleOwned: true,
+      showLGBTQIAOwned: true,
     } : {
       bio: "",
       secretActivities: "",
@@ -1262,6 +1241,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       sexualPreference: [],
       sexualPreferenceVisible: false,
       travelStyle: [],
+      travelingWithChildren: false,
+      childrenAges: "",
       isVeteran: false,
       isActiveDuty: false,
     },
@@ -1275,37 +1256,69 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         hometownState: user.hometownState,
         hometownCountry: user.hometownCountry
       });
-
+      
       // Initialize temp values for editing
       setTempInterests(user.interests || []);
       setTempActivities(user.activities || []);
       setTempEvents(user.events || []);
-
+      
       // Initialize editFormData with current user preferences
       setEditFormData({
         interests: user.interests || [],
         activities: user.activities || [],
         events: user.events || []
       });
-
+      
       // Reset form with user type-specific data
       if (user.userType === 'business') {
+        // Extract custom entries from the arrays (entries not in predefined lists)
+        const customInterests = (user.interests || [])
+          .filter((item: string) => !getAllInterests().includes(item))
+          .join(', ');
+        const customActivities = (user.activities || [])
+          .filter((item: string) => !getAllActivities().includes(item))
+          .join(', ');
+        const customEvents = (user.events || [])
+          .filter((item: string) => !getAllEvents().includes(item))
+          .join(', ');
+        
+        // Only include predefined entries in the checkbox arrays
+        const predefinedInterests = (user.interests || [])
+          .filter((item: string) => getAllInterests().includes(item));
+        const predefinedActivities = (user.activities || [])
+          .filter((item: string) => getAllActivities().includes(item));
+        const predefinedEvents = (user.events || [])
+          .filter((item: string) => getAllEvents().includes(item));
+        
         profileForm.reset({
           bio: user.bio || "",
-          businessName: (user as any).businessName || "",
+          businessName: (user as any).business_name || (user as any).businessName || "",
           hometownCity: user.hometownCity || "",
           hometownState: user.hometownState || "",
           hometownCountry: user.hometownCountry || "",
           travelStyle: user.travelStyle || [],
-          businessDescription: (user as any).businessDescription || "",
-          businessType: (user as any).businessType || "",
+          businessDescription: (user as any).business_description || (user as any).businessDescription || "",
+          businessType: (user as any).business_type || (user as any).businessType || "",
+          city: user.city || "",
+          state: user.state || "",
+          country: user.country || "",
           location: user.location || "",
-          streetAddress: (user as any).streetAddress || "",
-          zipCode: (user as any).zipCode || "",
-          phoneNumber: (user as any).phoneNumber || "",
-          websiteUrl: (user as any).websiteUrl || "",
+          streetAddress: (user as any).street_address || (user as any).streetAddress || "",
+          zipCode: (user as any).zip_code || (user as any).zipCode || "",
+          phoneNumber: (user as any).phone_number || (user as any).phoneNumber || "",
+          websiteUrl: (user as any).website_url || (user as any).websiteUrl || (user as any).website || "",
+          interests: predefinedInterests,
+          activities: predefinedActivities,
+          events: predefinedEvents,
+          isVeteran: Boolean((user as any).is_veteran || user.isVeteran),
+          isActiveDuty: Boolean((user as any).is_active_duty || user.isActiveDuty),
+          customInterests: (user as any).customInterests || "",
+          customActivities: (user as any).customActivities || "",
+          customEvents: (user as any).customEvents || "",
         });
       } else {
+        const travelingWithChildrenValue = !!(user as any).travelingWithChildren;
+        
         profileForm.reset({
           bio: user.bio || "",
           secretActivities: user.secretActivities || "",
@@ -1313,92 +1326,234 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           hometownState: user.hometownState || "",
           hometownCountry: user.hometownCountry || "",
           dateOfBirth: user.dateOfBirth ? new Date(user.dateOfBirth).toISOString().split('T')[0] : "",
-          ageVisible: user.ageVisible || false,
+          ageVisible: Boolean(user.ageVisible),
           gender: user.gender || "",
           sexualPreference: user.sexualPreference || [],
-          sexualPreferenceVisible: user.sexualPreferenceVisible || false,
-          travelingWithChildren: user.travelingWithChildren || false,
+          sexualPreferenceVisible: Boolean(user.sexualPreferenceVisible),
           travelStyle: user.travelStyle || [],
-          isVeteran: user.isVeteran || false,
-          isActiveDuty: user.isActiveDuty || false,
+          travelWhy: user.travelWhy || "",
+          travelHow: user.travelHow || "",
+          travelBudget: user.travelBudget || "",
+          travelGroup: user.travelGroup || "",
+          travelingWithChildren: travelingWithChildrenValue,
+          childrenAges: (user as any).childrenAges || "",
+          isVeteran: Boolean(user.isVeteran),
+          isActiveDuty: Boolean(user.isActiveDuty),
+          // interests: user.interests || [],
+          // activities: user.activities || [],
+          // events: user.events || [],
+          customInterests: (user as any).customInterests || (user as any).custom_interests || "",
+          customActivities: (user as any).customActivities || (user as any).custom_activities || "",
+          customEvents: (user as any).customEvents || (user as any).custom_events || "",
         });
+        
+        // Force set the value after reset to ensure React Hook Form properly registers it
+        setTimeout(() => {
+          profileForm.setValue('travelingWithChildren', travelingWithChildrenValue);
+        }, 100);
       }
     }
   }, [user, userLoading, profileForm]);
 
-  // Reference form for creating new references
-  const referenceForm = useForm<z.infer<typeof referenceSchema>>({
-    resolver: zodResolver(referenceSchema),
-    defaultValues: {
-      reviewerId: currentUser?.id || 0,
-      revieweeId: user?.id || 0,
-      experience: "positive",
-      content: "",
-    },
-  });
+  // Re-populate form when dialog opens to ensure latest data is shown
+  React.useEffect(() => {
+    if (isEditMode && user && !userLoading) {
+      console.log('🔥 Re-syncing form with updated user data');
+      
+      // For business users, extract and set custom fields
+      if (user.userType === 'business') {
+        const customInterests = (user.interests || [])
+          .filter((item: string) => !getAllInterests().includes(item))
+          .join(', ');
+        const customActivities = (user.activities || [])
+          .filter((item: string) => !getAllActivities().includes(item))
+          .join(', ');
+        const customEvents = (user.events || [])
+          .filter((item: string) => !getAllEvents().includes(item))
+          .join(', ');
+        
+        const predefinedInterests = (user.interests || [])
+          .filter((item: string) => getAllInterests().includes(item));
+        const predefinedActivities = (user.activities || [])
+          .filter((item: string) => getAllActivities().includes(item));
+        const predefinedEvents = (user.events || [])
+          .filter((item: string) => getAllEvents().includes(item));
+        
+        profileForm.reset({
+          bio: user.bio || "",
+          businessName: (user as any).business_name || (user as any).businessName || "",
+          businessDescription: (user as any).business_description || (user as any).businessDescription || "",
+          businessType: (user as any).business_type || (user as any).businessType || "",
+          hometownCity: user.hometownCity || "",
+          hometownState: user.hometownState || "",
+          hometownCountry: user.hometownCountry || "",
+          travelStyle: user.travelStyle || [],
+          city: user.city || "",
+          state: user.state || "",
+          country: user.country || "",
+          location: user.location || "",
+          streetAddress: (user as any).street_address || (user as any).streetAddress || "",
+          zipCode: (user as any).zip_code || (user as any).zipCode || "",
+          phoneNumber: (user as any).phone_number || (user as any).phoneNumber || "",
+          websiteUrl: (user as any).website_url || (user as any).websiteUrl || (user as any).website || "",
 
-  // Edit reference form for editing existing references
-  const editReferenceForm = useForm<z.infer<typeof referenceSchema>>({
-    resolver: zodResolver(referenceSchema),
-    defaultValues: {
-      reviewerId: currentUser?.id || 0,
-      revieweeId: user?.id || 0,
-      experience: "positive",
-      content: "",
-    },
-  });
+          interests: predefinedInterests,
+          activities: predefinedActivities,
+          events: predefinedEvents,
+          customInterests: customInterests || user.customInterests || "",
+          customActivities: customActivities || user.customActivities || "",
+          customEvents: customEvents || user.customEvents || "",
+          isVeteran: !!user.isVeteran,
+          isActiveDuty: !!user.isActiveDuty,
+          isMinorityOwned: !!user.isMinorityOwned,
+          isFemaleOwned: !!user.isFemaleOwned,
+          isLGBTQIAOwned: !!user.isLGBTQIAOwned,
+          showMinorityOwned: user.showMinorityOwned !== false,
+          showFemaleOwned: user.showFemaleOwned !== false,
+          showLGBTQIAOwned: user.showLGBTQIAOwned !== false,
+        });
+      } else {
+        // For non-business users, reset with their data
+        profileForm.reset({
+          bio: user.bio || "",
+          secretActivities: user.secretActivities || "",
+          hometownCity: user.hometownCity || "",
+          hometownState: user.hometownState || "",
+          hometownCountry: user.hometownCountry || "",
+          dateOfBirth: user.dateOfBirth || "",
+          ageVisible: !!user.ageVisible,
+          gender: user.gender || "",
+          sexualPreference: user.sexualPreference || [],
+          sexualPreferenceVisible: !!user.sexualPreferenceVisible,
+          travelStyle: user.travelStyle || [],
+          travelingWithChildren: !!user.travelingWithChildren,
+          childrenAges: user.childrenAges || "",
+          isVeteran: !!user.isVeteran,
+          isActiveDuty: !!user.isActiveDuty,
+        });
+      }
+    }
+  }, [isEditMode, user, userLoading, profileForm]);
 
-  // Create reference mutation
-  const createReference = useMutation({
-    mutationFn: async (data: z.infer<typeof referenceSchema>) => {
-      const response = await apiRequest('POST', '/api/references', data);
-      if (!response.ok) throw new Error('Failed to create reference');
-      return response.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}/references`] });
-      referenceForm.reset();
-      setShowReferenceForm(false);
-      setShowWriteReferenceModal(false);
-      toast({
-        title: "Reference created",
-        description: "Your reference has been submitted successfully.",
-      });
-    },
-    onError: (error: any) => {
-      toast({
-        title: "Failed to create reference",
-        description: error.message || "Please try again.",
-        variant: "destructive",
-      });
+  // Form for editing references
+  const editReferenceForm = useForm({
+    defaultValues: {
+      content: "",
+      experience: "positive" as const,
     },
   });
 
   // Update reference mutation
   const updateReference = useMutation({
-    mutationFn: async ({ id, ...data }: { id: number } & z.infer<typeof referenceSchema>) => {
-      const response = await apiRequest('PUT', `/api/references/${id}`, data);
+    mutationFn: async ({ referenceId, content, experience }: { referenceId: number; content: string; experience: string }) => {
+      const response = await fetch(`/api/references/${referenceId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content, experience }),
+      });
       if (!response.ok) throw new Error('Failed to update reference');
       return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}/references`] });
-      editReferenceForm.reset();
       setShowEditModal(false);
       setEditingReference(null);
+      editReferenceForm.reset();
       toast({
         title: "Reference updated",
-        description: "Your reference has been updated successfully.",
+        description: "Your reference has been successfully updated.",
       });
     },
-    onError: (error: any) => {
+    onError: (error) => {
+      console.error('Update reference error:', error);
       toast({
-        title: "Failed to update reference",
-        description: error.message || "Please try again.",
+        title: "Update failed",
+        description: "Failed to update reference. Please try again.",
         variant: "destructive",
       });
     },
   });
+
+  // Reference form
+  const referenceForm = useForm({
+    defaultValues: {
+      content: "",
+      experience: "positive",
+    },
+  });
+
+  // Create reference mutation
+  const createReference = useMutation({
+    mutationFn: async (referenceData: any) => {
+      const payload = {
+        reviewerId: currentUser?.id,
+        revieweeId: effectiveUserId, // Use the profile user ID  
+        experience: referenceData.experience || "positive",
+        content: referenceData.content || "",
+      };
+      
+      const response = await fetch('/api/user-references', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+      if (!response.ok) throw new Error('Failed to create reference');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}/references`] });
+      toast({
+        title: "Reference submitted",
+        description: "Your reference has been posted successfully.",
+      });
+      setShowReferenceForm(false);
+      setShowWriteReferenceModal(false);
+      referenceForm.reset();
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Submission failed",
+        description: error?.message || "Failed to submit reference. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Update form when user data loads
+  React.useEffect(() => {
+    if (user) {
+      profileForm.reset({
+        bio: user.bio || "",
+        ...(user?.userType === 'business' ? { 
+          businessName: (user as any).business_name || (user as any).businessName || "",
+          businessDescription: (user as any).business_description || (user as any).businessDescription || "",
+        } : {}),
+        hometownCity: user.hometownCity || "",
+        hometownState: user.hometownState || "",
+        hometownCountry: user.hometownCountry || "",
+        dateOfBirth: user.dateOfBirth ? formatDateOfBirthForInput(user.dateOfBirth) : "",
+        ageVisible: user.ageVisible || false,
+        gender: user.gender || "",
+        secretActivities: user.secretActivities || "",
+        sexualPreference: Array.isArray(user.sexualPreference) ? user.sexualPreference : (user.sexualPreference ? [user.sexualPreference] : []),
+        sexualPreferenceVisible: user.sexualPreferenceVisible || false,
+        travelStyle: Array.isArray(user.travelStyle) ? user.travelStyle : [],
+        isVeteran: (user as any).is_veteran || user.isVeteran || false,
+        isActiveDuty: (user as any).is_active_duty || user.isActiveDuty || false,
+        // Business contact fields - only for business users
+        ...(user?.userType === 'business' ? {
+          streetAddress: (user as any).streetAddress || "",
+        } : {}),
+        ...(user?.userType === 'business' ? {
+          zipCode: (user as any).zipCode || "",
+          phoneNumber: (user as any).phoneNumber || "",
+          websiteUrl: (user as any).websiteUrl || "",
+        } : {}),
+      });
+    }
+  }, [user, profileForm]);
 
   // Fetch user photos from photo gallery
   const { data: photos = [], isLoading: photosLoading } = useQuery<UserPhoto[]>({
@@ -1432,7 +1587,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       try {
         // Use adaptive compression before upload
         const compressedFile = await compressPhotoAdaptive(file);
-
+        
         // Convert compressed file to base64
         return new Promise((resolve, reject) => {
           const reader = new FileReader();
@@ -1451,13 +1606,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   isPublic: true
                 }),
               });
-
+              
               if (!response.ok) {
                 const errorData = await response.json();
                 throw new Error(errorData.message || 'Failed to upload photo');
               }
               const result = await response.json();
-
+              
               resolve(result);
             } catch (error) {
               reject(error);
@@ -1486,13 +1641,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   isPublic: true
                 }),
               });
-
+              
               if (!response.ok) {
                 const errorData = await response.json();
                 throw new Error(errorData.message || 'Failed to upload photo');
               }
               const result = await response.json();
-
+              
               resolve(result);
             } catch (error) {
               reject(error);
@@ -1571,7 +1726,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       // Invalidate matches page data since travel plans affect matching
       queryClient.invalidateQueries({ queryKey: ["/api/matches"] });
       queryClient.invalidateQueries({ queryKey: ["/api/users/search-by-location"] });
-
+      
       toast({
         title: "Travel plan deleted",
         description: "Your travel plan has been removed from everywhere on the site.",
@@ -1607,13 +1762,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
         const img = new Image();
-
+        
         img.onload = () => {
           try {
             // Calculate dimensions to maintain aspect ratio (max 400x400)
             const MAX_DIMENSION = 400;
             let { width, height } = img;
-
+            
             if (width > height) {
               if (width > MAX_DIMENSION) {
                 height = (height * MAX_DIMENSION) / width;
@@ -1625,16 +1780,16 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 height = MAX_DIMENSION;
               }
             }
-
+            
             canvas.width = width;
             canvas.height = height;
-
+            
             // Draw and compress the image
             ctx?.drawImage(img, 0, 0, width, height);
-
+            
             // Convert to base64 with compression (85% quality)
             const compressedBase64 = canvas.toDataURL('image/jpeg', 0.85);
-
+            
             // Final size check for base64 data (500KB limit)
             const MAX_BASE64_SIZE = 500 * 1024; // 500KB
             if (compressedBase64.length > MAX_BASE64_SIZE) {
@@ -1658,11 +1813,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             reject(error);
           }
         };
-
+        
         img.onerror = () => {
           reject(new Error('Failed to load image. Please try a different image.'));
         };
-
+        
         // Create object URL for the image
         img.src = URL.createObjectURL(file);
       });
@@ -1671,21 +1826,21 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       // API returns { user, profileImage, message } - extract the user data
       const updatedUser = response?.user || response;
       console.log('Profile upload success, user has image:', !!updatedUser?.profileImage);
-
+      
       // Update localStorage immediately
       if (updatedUser && isOwnProfile) {
         console.log('Updating auth storage and context with new profile data');
         authStorage.setUser(updatedUser);
-
+        
         // CRITICAL: Update auth context state immediately using the correct function
         if (typeof setAuthUser === 'function') {
           console.log('Calling setAuthUser with updated profile data for navbar refresh');
           setAuthUser(updatedUser);
         }
-
+        
         // Also update localStorage directly as backup
         localStorage.setItem('travelconnect_user', JSON.stringify(updatedUser));
-
+        
         // Force immediate refresh of all user data
         queryClient.setQueryData([`/api/users/${effectiveUserId}`], updatedUser);
         queryClient.setQueryData(['/api/users'], (oldData: any) => {
@@ -1694,37 +1849,37 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           }
           return oldData;
         });
-
+        
         // Trigger multiple events with immediate and delayed intervals
         window.dispatchEvent(new CustomEvent('profilePhotoUpdated', { detail: updatedUser }));
-
+        
         setTimeout(() => {
           window.dispatchEvent(new CustomEvent('userDataUpdated', { detail: updatedUser }));
         }, 50);
-
+        
         setTimeout(() => {
           window.dispatchEvent(new CustomEvent('refreshNavbar', { detail: updatedUser }));
         }, 100);
-
+        
         setTimeout(() => {
           window.dispatchEvent(new CustomEvent('forceNavbarRefresh', { detail: updatedUser }));
         }, 150);
-
+        
         setTimeout(() => {
           // Force complete page refresh of user queries
           queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
           queryClient.invalidateQueries({ queryKey: ["/api/users"] });
         }, 200);
-
+        
         console.log('Profile photo update completed with immediate context update');
       }
-
+      
       toast({
         title: "Success!",
         description: "Avatar updated successfully.",
       });
       setUploadingPhoto(false);
-
+      
       // CRITICAL: Close the photo upload modal after successful upload
       setShowPhotoUpload(false);
     },
@@ -1768,35 +1923,35 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const handlePhotoAsCoverPhoto = async (photoUrl: string) => {
     try {
       setUploadingPhoto(true);
-
+      
       const responseData = await apiRequest('PUT', `/api/users/${effectiveUserId}/cover-photo`, {
         imageData: photoUrl
       });
-
+      
       console.log('Cover photo update response:', responseData);
-
+      
       // Extract user data from API response (API returns { user, coverPhoto, message }) - SAME AS PROFILE PHOTO
       const updatedUser = (responseData as any)?.user || responseData || {};
       console.log('Gallery cover photo upload success, user has cover:', !!updatedUser?.coverPhoto);
-
+      
       // Update cache key to force immediate image refresh
       const newCacheKey = Date.now();
       setCoverPhotoKey(newCacheKey);
-
+      
       // Update localStorage immediately - SAME AS PROFILE PHOTO
       if (updatedUser && isOwnProfile) {
         console.log('Updating auth storage and context with new gallery cover photo data');
         authStorage.setUser(updatedUser);
-
+        
         // CRITICAL: Update auth context state immediately using the correct function
         if (typeof setAuthUser === 'function') {
           console.log('Calling setAuthUser with updated gallery cover photo data for navbar refresh');
           setAuthUser(updatedUser);
         }
-
+        
         // Also update localStorage directly as backup
         localStorage.setItem('travelconnect_user', JSON.stringify(updatedUser));
-
+        
         // Force immediate refresh of all user data
         queryClient.setQueryData([`/api/users/${effectiveUserId}`], updatedUser);
         queryClient.setQueryData(['/api/users'], (oldData: any) => {
@@ -1805,36 +1960,36 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           }
           return oldData;
         });
-
+        
         // Trigger multiple events with immediate and delayed intervals - SAME AS PROFILE PHOTO
         window.dispatchEvent(new CustomEvent('profilePhotoUpdated', { detail: updatedUser }));
-
+        
         setTimeout(() => {
           window.dispatchEvent(new CustomEvent('userDataUpdated', { detail: updatedUser }));
         }, 50);
-
+        
         setTimeout(() => {
           window.dispatchEvent(new CustomEvent('refreshNavbar', { detail: updatedUser }));
         }, 100);
-
+        
         setTimeout(() => {
           window.dispatchEvent(new CustomEvent('forceNavbarRefresh', { detail: updatedUser }));
         }, 150);
-
+        
         setTimeout(() => {
           // Force complete page refresh of user queries
           queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
           queryClient.invalidateQueries({ queryKey: ["/api/users"] });
         }, 200);
-
+        
         // Also trigger cover photo specific events
         setTimeout(() => {
-          window.dispatchEvent(new CustomEvent('coverPhotoUpdated', { detail: { userId: effectiveUserId, timestamp: newCacheKey, user: updatedUser } }));
+          window.dispatchEvent(new CustomEvent('coverPhotoUpdated', { detail: { userId: effectiveUserId, timestamp: newCacheKey } }));
         }, 250);
-
+        
         console.log('Gallery cover photo update completed with immediate context update');
       }
-
+      
       toast({
         title: "Success!",
         description: "Cover photo updated successfully.",
@@ -1866,7 +2021,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         });
         return;
       }
-
+      
       // Validate file type
       if (!file.type.startsWith('image/')) {
         toast({
@@ -1876,52 +2031,52 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         });
         return;
       }
-
+      
       console.log('Avatar upload starting for file:', file.name, 'size:', file.size);
       setUploadingPhoto(true);
-
+      
       // Direct upload function call with adaptive compression
       try {
         // Use adaptive compression for profile photos
         const compressedFile = await compressPhotoAdaptive(file);
-
+        
         const reader = new FileReader();
         reader.onload = async () => {
           try {
             const base64 = reader.result as string;
             console.log('Compressed file converted to base64, uploading...');
-
+            
             const response = await fetch(`/api/users/${effectiveUserId}`, {
               method: 'PUT',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ profileImage: base64 })
             });
-
+          
           if (!response.ok) {
             throw new Error(`Upload failed: ${response.statusText}`);
           }
-
+          
           const updatedUser = await response.json();
           console.log('Avatar upload successful:', updatedUser.username);
-
+          
           // Update auth immediately
           authStorage.setUser(updatedUser);
           if (setAuthUser && isOwnProfile) {
             setAuthUser(updatedUser);
           }
-
+          
           // Invalidate queries
           queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
           queryClient.invalidateQueries({ queryKey: ["/api/users"] });
-
+          
           // Trigger navbar refresh
           window.dispatchEvent(new CustomEvent('userDataUpdated', { detail: updatedUser }));
-
+          
           toast({
             title: "Success",
             description: "Avatar updated successfully!",
           });
-
+          
         } catch (error: any) {
           console.error('Avatar upload error:', error);
           toast({
@@ -1933,7 +2088,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           setUploadingPhoto(false);
         }
       };
-
+      
       reader.onerror = () => {
         console.error('Failed to read file');
         toast({
@@ -1943,7 +2098,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         });
         setUploadingPhoto(false);
       };
-
+      
       reader.readAsDataURL(compressedFile);
       } catch (compressionError: any) {
         console.warn('Photo compression failed, using original file:', compressionError);
@@ -1953,38 +2108,38 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           try {
             const base64 = reader.result as string;
             console.log('Original file converted to base64, uploading...');
-
+            
             const response = await fetch(`/api/users/${effectiveUserId}`, {
               method: 'PUT',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ profileImage: base64 })
             });
-
+            
             if (!response.ok) {
               throw new Error(`Upload failed: ${response.statusText}`);
             }
-
+            
             const updatedUser = await response.json();
             console.log('Avatar upload successful:', updatedUser.username);
-
+            
             // Update auth immediately
             authStorage.setUser(updatedUser);
             if (setAuthUser && isOwnProfile) {
               setAuthUser(updatedUser);
             }
-
+            
             // Invalidate queries
             queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
             queryClient.invalidateQueries({ queryKey: ["/api/users"] });
-
+            
             // Trigger navbar refresh
             window.dispatchEvent(new CustomEvent('userDataUpdated', { detail: updatedUser }));
-
+            
             toast({
               title: "Success",
               description: "Avatar updated successfully!",
             });
-
+            
           } catch (error: any) {
             console.error('Avatar upload error:', error);
             toast({
@@ -1996,7 +2151,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             setUploadingPhoto(false);
           }
         };
-
+        
         reader.onerror = () => {
           console.error('Failed to read file');
           toast({
@@ -2006,7 +2161,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           });
           setUploadingPhoto(false);
         };
-
+        
         reader.readAsDataURL(file);
       }
     }
@@ -2027,7 +2182,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         });
         return;
       }
-
+      
       // Validate file type
       if (!file.type.startsWith('image/')) {
         toast({
@@ -2037,7 +2192,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         });
         return;
       }
-
+      
       console.log('Profile photo upload starting for file:', file.name, 'size:', file.size);
       setUploadingPhoto(true);
       updateProfilePhoto.mutate(file);
@@ -2051,7 +2206,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     const file = event.target.files?.[0];
     if (file) {
       console.log('Cover photo file selected:', file.name, 'size:', file.size);
-
+      
       // File size validation (5MB limit)
       const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
       if (file.size > MAX_FILE_SIZE) {
@@ -2074,40 +2229,40 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       }
 
       setUploadingPhoto(true);
-
+      
       // Use canvas for compression similar to profile image
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
       const img = new Image();
-
+      
       img.onload = async () => {
         try {
           // Calculate dimensions for cover photo (max 1200x400 for wide aspect ratio)
           const MAX_WIDTH = 1200;
           const MAX_HEIGHT = 400;
           let { width, height } = img;
-
+          
           const aspectRatio = width / height;
-
+          
           if (width > MAX_WIDTH) {
             width = MAX_WIDTH;
             height = width / aspectRatio;
           }
-
+          
           if (height > MAX_HEIGHT) {
             height = MAX_HEIGHT;
             width = height * aspectRatio;
           }
-
+          
           canvas.width = width;
           canvas.height = height;
-
+          
           // Draw and compress the image
           ctx?.drawImage(img, 0, 0, width, height);
-
+          
           // Convert to base64 with compression (80% quality for cover photos)
           const compressedBase64 = canvas.toDataURL('image/jpeg', 0.80);
-
+          
           // Final size check for base64 data (800KB limit for cover photos)
           const MAX_BASE64_SIZE = 800 * 1024; // 800KB
           if (compressedBase64.length > MAX_BASE64_SIZE) {
@@ -2132,7 +2287,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           setUploadingPhoto(false);
         }
       };
-
+      
       img.onerror = () => {
         toast({
           title: "Upload failed",
@@ -2141,7 +2296,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         });
         setUploadingPhoto(false);
       };
-
+      
       img.src = URL.createObjectURL(file);
     }
   };
@@ -2150,7 +2305,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const uploadCoverPhoto = async (base64Data: string) => {
     try {
       console.log('Starting cover photo upload...', base64Data.length);
-
+      
       const response = await fetch(`/api/users/${effectiveUserId}/cover-photo`, {
         method: 'PUT',
         headers: {
@@ -2160,32 +2315,32 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           imageData: base64Data
         }),
       });
-
+      
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-
+      
       const responseData = await response.json();
       console.log('Cover photo API response:', responseData);
-
+      
       // Extract user data from response
       const updatedUser = responseData?.user || responseData;
-
+      
       if (updatedUser && isOwnProfile) {
         // Update cache key for immediate display refresh
         const newCacheKey = Date.now();
         setCoverPhotoKey(newCacheKey);
-
+        
         // Update auth context and localStorage - SAME AS PROFILE PHOTO
         authStorage.setUser(updatedUser);
         if (typeof setAuthUser === 'function') {
           console.log('Calling setAuthUser with updated cover photo data for immediate UI refresh');
           setAuthUser(updatedUser);
         }
-
+        
         // Update localStorage directly as backup
         localStorage.setItem('travelconnect_user', JSON.stringify(updatedUser));
-
+        
         // Force immediate refresh of all user data - CRITICAL FOR COVER PHOTO DISPLAY
         queryClient.setQueryData([`/api/users/${effectiveUserId}`], updatedUser);
         queryClient.setQueryData(['/api/users'], (oldData: any) => {
@@ -2194,26 +2349,26 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           }
           return oldData;
         });
-
+        
         // Trigger multiple refresh events
         window.dispatchEvent(new CustomEvent('profilePhotoUpdated', { detail: updatedUser }));
         window.dispatchEvent(new CustomEvent('userDataUpdated', { detail: updatedUser }));
         window.dispatchEvent(new CustomEvent('coverPhotoUpdated', { detail: { userId: effectiveUserId, timestamp: newCacheKey, user: updatedUser } }));
-
+        
         setTimeout(() => {
           // Force complete page refresh of user queries
           queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
           queryClient.invalidateQueries({ queryKey: ["/api/users"] });
         }, 100);
-
+        
         console.log('Cover photo update completed with immediate context update');
       }
-
+      
       toast({
         title: "Success!",
         description: "Cover photo updated successfully.",
       });
-
+      
       setUploadingPhoto(false);
     } catch (error) {
       console.error('Cover photo upload error:', error);
@@ -2231,14 +2386,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     console.log('Editing travel plan:', plan);
     console.log('Travel style from plan:', plan.travelStyle);
     setEditingTravelPlan(plan);
-
+    
     // Parse destination into separate components
     const destination = plan.destination || "";
     const parts = destination.split(', ');
     let destinationCity = "";
     let destinationState = "";
     let destinationCountry = "";
-
+    
     if (parts.length >= 3) {
       destinationCity = parts[0] || "";
       destinationState = parts[1] || "";
@@ -2249,12 +2404,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     } else if (parts.length === 1) {
       destinationCity = parts[0] || "";
     }
-
+    
     // Update local state for form controls
     setSelectedCountry(destinationCountry);
     setSelectedCity(destinationCity);
     setSelectedState(destinationState);
-
+    
     form.reset({
       destination: destination,
       destinationCountry: destinationCountry,
@@ -2278,7 +2433,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const editTravelPlan = useMutation({
     mutationFn: async (data: z.infer<typeof travelPlanSchema>) => {
       if (!editingTravelPlan) throw new Error("No travel plan selected");
-
+      
       const response = await fetch(`/api/travel-plans/${editingTravelPlan.id}`, {
         method: 'PUT',
         headers: {
@@ -2302,7 +2457,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           isActiveDuty: false,
         }),
       });
-
+      
       if (!response.ok) throw new Error('Failed to update travel plan');
       return response.json();
     },
@@ -2318,7 +2473,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       queryClient.invalidateQueries({ queryKey: ["/api/users/search-by-location"] });
       // CRITICAL: Invalidate all event queries since changing travel destination changes which events are shown
       queryClient.invalidateQueries({ queryKey: ["/api/events"] });
-
+      
       toast({
         title: "Travel plan updated",
         description: "Your changes have been applied throughout the site.",
@@ -2591,7 +2746,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const handleSaveBusinessDescription = async () => {
     if (!user) return;
     setSavingBusinessDescription(true);
-
+    
     try {
       const response = await fetch(`/api/users/${effectiveUserId}`, {
         method: 'PUT',
@@ -2610,12 +2765,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
       // Update the query cache
       queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
-
+      
       toast({
         title: "Business description updated",
         description: "Your business information has been successfully updated.",
       });
-
+      
       setEditingBusinessDescription(false);
     } catch (error) {
       console.error('Business description update error:', error);
@@ -2650,11 +2805,109 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     setEditingBusinessDescription(true);
   };
 
+  // Owner contact mutation and handlers
+  const updateOwnerContact = useMutation({
+    mutationFn: async (data: { ownerName: string; ownerEmail: string; ownerPhone: string }) => {
+      const response = await fetch(`/api/users/${effectiveUserId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      });
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText);
+      }
+      return response.json();
+    },
+    onSuccess: (updatedUser) => {
+      queryClient.setQueryData([`/api/users/${effectiveUserId}`], updatedUser);
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
+      
+      authStorage.setUser(updatedUser);
+      if (typeof setAuthUser === 'function') {
+        setAuthUser(updatedUser);
+      }
+      
+      toast({
+        title: "Owner contact updated",
+        description: "Internal contact information has been successfully updated.",
+      });
+      setEditingOwnerInfo(false);
+    },
+    onError: (error) => {
+      toast({
+        title: "Update failed",
+        description: `Failed to update owner contact: ${error.message}`,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleSaveOwnerContact = () => {
+    updateOwnerContact.mutate(ownerContactForm);
+  };
+
+  // Initialize owner contact form when user data loads
+  useEffect(() => {
+    if (user && user.userType === 'business') {
+      setOwnerContactForm({
+        ownerName: user.ownerName || "",
+        contactName: user.contactName || "",
+        ownerEmail: user.ownerEmail || "",
+        ownerPhone: user.ownerPhone || ""
+      });
+    }
+  }, [user]);
+
   // Profile edit mutation
   const editProfile = useMutation({
     mutationFn: async (data: z.infer<typeof dynamicProfileSchema>) => {
-      console.log('Profile edit data being sent:', data);
-      const response = await apiRequest('PUT', `/api/users/${effectiveUserId}`, data);
+      console.log('🔥 BUSINESS SAVE: Data being sent:', data);
+      console.log('🔥 MUTATION: User type is:', user?.userType);
+      
+      // For business users, use simpler payload structure
+      const payload = user?.userType === 'business' ? {
+        ...data,
+        isVeteran: !!data.isVeteran,
+        isActiveDuty: !!data.isActiveDuty,
+        isMinorityOwned: !!data.isMinorityOwned,
+        isFemaleOwned: !!data.isFemaleOwned,
+        isLGBTQIAOwned: !!data.isLGBTQIAOwned,
+        showMinorityOwned: data.showMinorityOwned !== false,
+        showFemaleOwned: data.showFemaleOwned !== false,
+        showLGBTQIAOwned: data.showLGBTQIAOwned !== false,
+      } : {
+        ...data,
+        // Only include traveler fields if they exist in the data
+        ...((data as any).hasOwnProperty('travelingWithChildren') && { travelingWithChildren: !!(data as any).travelingWithChildren }),
+        ...((data as any).hasOwnProperty('ageVisible') && { ageVisible: !!(data as any).ageVisible }),
+        ...((data as any).hasOwnProperty('sexualPreferenceVisible') && { sexualPreferenceVisible: !!(data as any).sexualPreferenceVisible }),
+        // Always include veteran status fields
+        isVeteran: !!data.isVeteran,
+        isActiveDuty: !!data.isActiveDuty,
+        isMinorityOwned: !!data.isMinorityOwned,
+        isFemaleOwned: !!data.isFemaleOwned,
+        isLGBTQIAOwned: !!data.isLGBTQIAOwned,
+        showMinorityOwned: data.showMinorityOwned !== false,
+        showFemaleOwned: data.showFemaleOwned !== false,
+        showLGBTQIAOwned: data.showLGBTQIAOwned !== false,
+      };
+      
+      console.log('🔥 MUTATION: Profile payload with explicit booleans:', payload);
+      
+      const response = await fetch(`/api/users/${effectiveUserId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-user-id': currentUser?.id?.toString(),
+          'x-user-type': 'business'
+        },
+        body: JSON.stringify(payload)
+      });
+      
       if (!response.ok) {
         const errorText = await response.text();
         console.error('Profile edit error response:', errorText);
@@ -2663,66 +2916,113 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       return response.json();
     },
     onSuccess: (updatedUser) => {
-      console.log('🔥 PROFILE UPDATE SUCCESS - Immediate cache refresh:', updatedUser);
-
-      // CRITICAL: Update ALL possible cache keys immediately
-      queryClient.setQueryData([`/api/users/${effectiveUserId}`, currentUser?.id], updatedUser);
+      console.log('✅ BUSINESS SAVE SUCCESS:', updatedUser);
+      
+      // Update all caches
       queryClient.setQueryData([`/api/users/${effectiveUserId}`], updatedUser);
-      queryClient.setQueryData(['/api/users'], (oldData: any) => {
-        if (Array.isArray(oldData)) {
-          return oldData.map(u => u.id === updatedUser.id ? updatedUser : u);
-        }
-        return oldData;
-      });
-
-      // Update localStorage and auth context if editing own profile
-      if (isOwnProfile) {
-        console.log('🔥 Updating auth storage and context with new profile data');
-        authStorage.setUser(updatedUser);
-
-        // CRITICAL: Update auth context state immediately
-        if (typeof setAuthUser === 'function') {
-          console.log('🔥 Calling setAuthUser with updated profile data');
-          setAuthUser(updatedUser);
-        }
-
-        // Also update localStorage directly as backup
-        localStorage.setItem('travelconnect_user', JSON.stringify(updatedUser));
-        localStorage.setItem('user', JSON.stringify(updatedUser));
-
-        // FORCE immediate UI refresh with state update
-        window.dispatchEvent(new CustomEvent('userDataUpdated', { detail: updatedUser }));
-        window.dispatchEvent(new CustomEvent('profileUpdated', { detail: updatedUser }));
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
+      
+      // Update auth storage
+      authStorage.setUser(updatedUser);
+      if (typeof setAuthUser === 'function') {
+        setAuthUser(updatedUser);
       }
-
+      
+      // FORCE immediate UI refresh with state update
+      window.dispatchEvent(new CustomEvent('userDataUpdated', { detail: updatedUser }));
+      window.dispatchEvent(new CustomEvent('profileUpdated', { detail: updatedUser }));
+      
+      // CRITICAL: Reset form with updated values immediately to prevent toggle drift
+      setTimeout(() => {
+        console.log('🔥 Re-syncing form with updated user data');
+        if (user?.userType !== 'business') {
+          profileForm.reset({
+            bio: updatedUser.bio || "",
+            secretActivities: updatedUser.secretActivities || "",
+            hometownCity: updatedUser.hometownCity || "",
+            hometownState: updatedUser.hometownState || "",
+            hometownCountry: updatedUser.hometownCountry || "",
+            dateOfBirth: updatedUser.dateOfBirth ? new Date(updatedUser.dateOfBirth).toISOString().split('T')[0] : "",
+            ageVisible: updatedUser.ageVisible !== undefined ? updatedUser.ageVisible : false,
+            gender: updatedUser.gender || "",
+            sexualPreference: updatedUser.sexualPreference || [],
+            sexualPreferenceVisible: updatedUser.sexualPreferenceVisible !== undefined ? updatedUser.sexualPreferenceVisible : false,
+            travelStyle: updatedUser.travelStyle || [],
+            travelingWithChildren: updatedUser.travelingWithChildren === true,
+            childrenAges: (updatedUser as any).childrenAges || "",
+            isVeteran: updatedUser.isVeteran !== undefined ? updatedUser.isVeteran : false,
+            isActiveDuty: updatedUser.isActiveDuty !== undefined ? updatedUser.isActiveDuty : false,
+            isMinorityOwned: updatedUser.isMinorityOwned !== undefined ? updatedUser.isMinorityOwned : false,
+            isFemaleOwned: updatedUser.isFemaleOwned !== undefined ? updatedUser.isFemaleOwned : false,
+            isLGBTQIAOwned: updatedUser.isLGBTQIAOwned !== undefined ? updatedUser.isLGBTQIAOwned : false,
+            showMinorityOwned: updatedUser.showMinorityOwned !== undefined ? updatedUser.showMinorityOwned : true,
+            showFemaleOwned: updatedUser.showFemaleOwned !== undefined ? updatedUser.showFemaleOwned : true,
+            showLGBTQIAOwned: updatedUser.showLGBTQIAOwned !== undefined ? updatedUser.showLGBTQIAOwned : true,
+          });
+        }
+      }, 100);
+      
       // Force immediate refetch to trigger component re-render
       refetchUser();
-
+      
       // Multiple invalidations to ensure all cached data is fresh
       queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`, currentUser?.id] });
       queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
       queryClient.invalidateQueries({ queryKey: ["/api/users"] });
-
+      
       toast({
-        title: "Profile updated",
-        description: "Your profile has been successfully updated.",
+        title: "Business profile updated",
+        description: "Your business profile has been successfully updated.",
       });
       setIsEditMode(false);
     },
     onError: (error) => {
-      console.error('Profile edit mutation error:', error);
+      console.error('Save failed:', error);
       toast({
-        title: "Update failed",
-        description: `Failed to update profile: ${error.message}`,
+        title: "Save failed",
+        description: `Failed to save: ${error.message}`,
         variant: "destructive",
       });
     },
   });
 
   const onSubmitProfile = (data: z.infer<typeof dynamicProfileSchema>) => {
-    console.log('onSubmitProfile called with data:', data);
-    console.log('Form validation errors:', profileForm.formState.errors);
-
+    console.log('🔥 BUSINESS FORM SUBMIT:', data);
+    console.log('🔥 FORM SUBMIT: User type is:', user?.userType);
+    console.log('🔥 Form errors:', profileForm.formState.errors);
+    console.log('🔥 Form valid:', profileForm.formState.isValid);
+    
+    // Clear children ages if traveling with children is turned off (only for non-business users)
+    if (user?.userType !== 'business' && 'travelingWithChildren' in data && !data.travelingWithChildren) {
+      (data as any).childrenAges = "";
+      console.log('🔥 FORM SUBMIT: Cleared childrenAges because travelingWithChildren is false');
+    }
+    
+    // Process custom text entries for business users
+    if (user?.userType === 'business') {
+      const formData = data as any;
+      
+      // Process custom interests
+      if (formData.customInterests) {
+        const customInterestsList = formData.customInterests.split(',').map((item: string) => item.trim()).filter((item: string) => item);
+        formData.interests = [...(formData.interests || []).filter((item: string) => getAllInterests().includes(item)), ...customInterestsList];
+      }
+      
+      // Process custom activities
+      if (formData.customActivities) {
+        const customActivitiesList = formData.customActivities.split(',').map((item: string) => item.trim()).filter((item: string) => item);
+        formData.activities = [...(formData.activities || []).filter((item: string) => getAllActivities().includes(item)), ...customActivitiesList];
+      }
+      
+      // Process custom events
+      if (formData.customEvents) {
+        const customEventsList = formData.customEvents.split(',').map((item: string) => item.trim()).filter((item: string) => item);
+        formData.events = [...(formData.events || []).filter((item: string) => getAllEvents().includes(item)), ...customEventsList];
+      }
+      
+      console.log('🔥 BUSINESS SUBMIT: Final data with custom fields processed:', formData);
+    }
+    
     // Send dateOfBirth as string - server will handle conversion to Date
     editProfile.mutate(data);
   };
@@ -2738,17 +3038,17 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const connectMutation = useMutation({
     mutationFn: async () => {
       if (!currentUser?.id || !user?.id) throw new Error("Authentication required");
-
+      
       const requestData = {
         requesterId: currentUser.id,
         targetUserId: user.id,
         status: 'pending'
       };
-
+      
       console.log('🔵 CONNECT: Sending request data:', requestData);
-
+      
       const response = await apiRequest('POST', '/api/connections', requestData);
-
+      
       if (!response.ok) throw new Error('Failed to send connection request');
       return response.json();
     },
@@ -2763,7 +3063,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     onError: (error: any) => {
       const errorMessage = error.message || "Failed to send connection request. Please try again.";
       const isPrivacyError = errorMessage.includes("privacy settings");
-
+      
       toast({
         title: isPrivacyError ? "Privacy Restriction" : "Connection Failed",
         description: isPrivacyError 
@@ -2789,7 +3089,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       setLocation(`/messages?userId=${user?.id}`);
       return;
     }
-
+    
     if (connectionStatus?.status === 'pending') {
       // Connection request already sent - show message
       toast({
@@ -2798,7 +3098,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       });
       return;
     }
-
+    
     // Send new connection request
     connectMutation.mutate();
   };
@@ -2840,24 +3140,20 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   // Function to determine current location based on travel status
   const getCurrentLocation = () => {
     if (!user) return "Not specified";
-
-    // Check if user has active travel plans
-    const now = new Date();
-    const travelStart = user.travelStartDate ? new Date(user.travelStartDate) : null;
-    const travelEnd = user.travelEndDate ? new Date(user.travelEndDate) : null;
-
-    // If user is currently traveling (between start and end dates)
-    if (travelStart && travelEnd && now >= travelStart && now <= travelEnd && user.travelDestination) {
-      return user.travelDestination;
+    
+    // Use the modern travel plans system (same as all other components)
+    const currentDestination = getCurrentTravelDestination(travelPlans || []);
+    if (currentDestination) {
+      return currentDestination;
     }
-
+    
     // Otherwise show their regular location
     return user.hometownCity || user.location || "Not specified";
   };
 
   if (userLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 overflow-x-hidden">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <div className="container mx-auto px-4 py-8">
           <div className="flex items-center justify-center h-64">
             <div className="text-lg font-medium text-gray-900 dark:text-white">
@@ -2874,7 +3170,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   if (userError && !user) {
     console.error('Profile page error:', userError);
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 overflow-x-hidden flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center p-8">
           <h1 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">Error Loading Profile</h1>
           <p className="text-gray-600 dark:text-gray-300 mb-6">Unable to load profile data</p>
@@ -2937,6 +3233,27 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     return 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
   };
 
+  // Check if user profile is incomplete and needs completion
+  const isProfileIncomplete = () => {
+    if (!user || !isOwnProfile) return false;
+    
+    // For business users, check business-specific required fields
+    if (user.userType === 'business') {
+      const hasBusinessInfo = user.businessName && user.businessDescription && user.businessType;
+      const hasBusinessLocation = user.city && user.state && user.country;
+      const hasBusinessInterests = user.interests && Array.isArray(user.interests) && user.interests.length >= 3;
+      
+      return !hasBusinessInfo || !hasBusinessLocation || !hasBusinessInterests;
+    }
+    
+    // For regular users (travelers/locals)
+    const hasBasicInfo = user.bio && user.bio.trim().length > 0;
+    const hasInterests = user.interests && Array.isArray(user.interests) && user.interests.length >= 3;
+    const hasLocation = user.hometownCity && user.hometownState && user.hometownCountry;
+    
+    return !hasBasicInfo || !hasInterests || !hasLocation;
+  };
+
 
 
   // Add debug logging before render
@@ -2976,199 +3293,168 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
   return (
     <>
+      {/* Mobile Navigation */}
+      <MobileTopNav />
+      <MobileBottomNav />
+      
       <div className="min-h-screen profile-page">
-      {shouldShowBackToChatroom && (
-        <div className="w-full max-w-full mx-auto px-2 pt-2">
-          <Button 
-            onClick={handleBackToChatroom}
-            variant="outline" 
-            className="mb-2"
-          >
-            Back
-          </Button>
-        </div>
-      )}
 
-      {/* Mobile spacing to account for global MobileTopNav */}
-      <div className="h-4 md:hidden"></div>
-
-      {/* Mobile Back Button */}
-      <div className="block md:hidden px-4 pb-2">
-        <UniversalBackButton 
-          destination="/discover"
-          label="Back"
-          className="shadow-sm"
-        />
-      </div>
-
-      {/* Profile hero */}
-      <div className={`relative rounded-2xl bg-gradient-to-r ${gradientOptions[selectedGradient]} p-4 sm:p-6 overflow-hidden`}>
-        {/* 2-col on mobile, 3-col on sm+ */}
-        <div className="grid grid-cols-[auto,1fr] sm:grid-cols-[auto,1fr,auto] gap-4 sm:gap-6 items-center">
-
-          {/* AVATAR */}
-          <div className="relative shrink-0">
-            <div className="rounded-full overflow-hidden ring-4 ring-white">
-              <Avatar className="w-24 h-24 sm:w-28 sm:h-28">
-                <AvatarImage className="object-cover" src={user?.profileImage || ''} alt={user.username} />
-                <AvatarFallback className="text-lg sm:text-2xl bg-gradient-to-br from-blue-600 to-orange-600 text-white">
-                  {(user?.username?.charAt(0) || user?.name?.charAt(0) || 'U').toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-            </div>
-
-            {/* camera/edit photo button */}
-            {isOwnProfile && (
-              <>
-                <Button
-                  size="icon"
-                  variant="secondary"
-                  className="absolute -bottom-1 -right-1 rounded-full shadow-md"
-                  onClick={() => document.getElementById('avatar-upload-input')?.click()}
-                  disabled={uploadingPhoto}
-                >
-                  <Camera className="h-4 w-4" />
-                </Button>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleAvatarUpload}
-                  className="hidden"
-                  id="avatar-upload-input"
-                />
-              </>
-            )}
-          </div>
-
-          {/* TEXT: username, tagline, hometown, small stats */}
-          <div className="min-w-0 flex flex-col gap-1">
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-white font-semibold text-xl truncate">@{user.username}</span>
-              {/* status pill, etc */}
-            </div>
-
-
-
-            {/* Hometown / location line (wraps instead of truncating) */}
-            <div className="mt-1 flex items-start gap-2 text-white">
-              <MapPin className="h-4 w-4 mt-0.5 shrink-0" />
-              <span className="whitespace-normal break-words">
-                {user.userType === 'business' 
-                  ? `Nearby Business in ${user.hometownCity || 'Los Angeles'}`
-                  : (() => {
-                      // Check for active travel plans first
-                      if (travelPlans && travelPlans.length > 0) {
-                        const today = new Date();
-                        today.setHours(0, 0, 0, 0);
-
-                        let activeTrips = [];
-
-                        for (const plan of travelPlans) {
-                          if (plan.startDate && plan.endDate) {
-                            const parseLocalDate = (dateInput: string | Date | null | undefined) => {
-                              if (!dateInput) return null;
-                              let dateString: string;
-                              if (dateInput instanceof Date) {
-                                dateString = dateInput.toISOString();
-                              } else {
-                                dateString = dateInput;
-                              }
-                              const parts = dateString.split('T')[0].split('-');
-                              if (parts.length === 3) {
-                                const year = parseInt(parts[0]);
-                                const month = parseInt(parts[1]) - 1;
-                                const day = parseInt(parts[2]);
-                                return new Date(year, month, day);
-                              }
-                              return null;
-                            };
-
-                            const startDate = parseLocalDate(plan.startDate);
-                            const endDate = parseLocalDate(plan.endDate);
-                            if (!startDate || !endDate) continue;
-                            startDate.setHours(0, 0, 0, 0);
-                            endDate.setHours(23, 59, 59, 999);
-
-                            const isCurrentlyActive = today >= startDate && today <= endDate;
-                            if (isCurrentlyActive && plan.destination) {
-                              activeTrips.push({
-                                plan,
-                                startDate
-                              });
-                            }
-                          }
-                        }
-
-                        if (activeTrips.length > 0) {
-                          activeTrips.sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
-                          const currentTrip = activeTrips[0].plan;
-                          const destination = currentTrip.destination || 'Unknown';
-
-                          // ALWAYS show hometown + current travel destination
-                          const hometownParts = [
-                            user.hometownCity,
-                            user.hometownState,
-                            user.hometownCountry
-                          ].filter(Boolean);
-
-                          const hometown = hometownParts.length > 0 ? hometownParts.join(', ') : 'Unknown';
-                          return `Nearby Traveler from ${hometown}, traveling in ${destination}`;
-                        }
-                      }
-
-                      // Show full hometown information
-                      const locationParts = [
-                        user.hometownCity,
-                        user.hometownState,
-                        user.hometownCountry
-                      ].filter(Boolean);
-
-                      if (locationParts.length > 0) {
-                        return `Nearby Local in ${locationParts.join(', ')}`;
-                      } else if (user.location) {
-                        return `Nearby Local in ${user.location}`;
-                      }
-                      return "Nearby Local";
-                    })()
-                }
-              </span>
-            </div>
-
-            {/* Small stats row */}
-            {user.userType !== 'business' && (
-              <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-white/90 text-sm">
-                <span>🌍 {countriesVisited?.length || 0} countries</span>
-                <span>⭐ {references?.length || 0} references</span>
+      {/* Profile Completion Warning - Only show for incomplete own profiles */}
+      {isProfileIncomplete() && (
+        <div className="w-full bg-red-600 text-white px-4 py-3">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-3 flex-1">
+                <div className="bg-white/20 rounded-full p-2 flex-shrink-0">
+                  <Zap className="w-5 h-5 text-white" />
+                </div>
+                <div className="min-w-0">
+                  <p className="font-bold text-base sm:text-lg">PLEASE FILL OUT PROFILE NOW TO MATCH WELL WITH OTHERS</p>
+                  <p className="text-red-100 text-xs sm:text-sm">Complete your bio, interests, and location to improve your compatibility with other travelers</p>
+                </div>
               </div>
-            )}
-          </div>
-
-          {/* ACTIONS (Color change, etc.) */}
-          <div className="sm:self-start flex sm:flex-col items-center sm:items-end gap-2">
-            {isOwnProfile && (
               <Button
                 size="sm"
                 variant="secondary"
-                className="shadow"
-                onClick={() => setSelectedGradient((prev) => (prev + 1) % gradientOptions.length)}
+                className="bg-white text-red-600 hover:bg-red-50 font-semibold flex-shrink-0 w-full sm:w-auto"
+                onClick={() => setIsEditMode(true)}
               >
-                🎨
+                Complete Profile
               </Button>
-            )}
+            </div>
           </div>
+        </div>
+      )}
+    
+      {/* PROFILE HEADER */}
+      <section
+        className={`relative -mt-px isolate w-full bg-gradient-to-r ${gradientOptions[selectedGradient]} px-6 sm:px-10 py-8 sm:py-12`}
+      >
+        {/* floating color button */}
+        {isOwnProfile && (
+          <button
+            type="button"
+            onClick={() => setSelectedGradient((prev) => (prev + 1) % gradientOptions.length)}
+            aria-label="Change header colors"
+            className="absolute right-3 top-3 z-10 inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/85 text-gray-700 shadow-md hover:bg-white"
+          >
+            🎨
+          </button>
+        )}
 
-          {/* full-width CTA row (stacks under text on mobile) */}
-          <div className="col-span-2 sm:col-span-3 mt-2">
+        <div className="max-w-7xl mx-auto">
+          {/* allow wrapping so CTAs drop below on small screens */}
+          <div className="flex flex-row flex-wrap items-start gap-4 sm:gap-6">
+
+            {/* Avatar + camera (bigger, no scrollbars) */}
+            <div className="relative flex-shrink-0">
+              <div className="rounded-full bg-white ring-4 ring-white shadow-lg overflow-hidden">
+                <div className="w-36 h-36 sm:w-40 sm:h-40 md:w-56 md:h-56 rounded-full overflow-hidden no-scrollbar">
+                  <SimpleAvatar
+                    user={user}
+                    size="xl"
+                    className="w-full h-full block object-cover"
+                  />
+                </div>
+              </div>
+
+              {isOwnProfile && (
+                <>
+                  <Button
+                    size="icon"
+                    aria-label="Change avatar"
+                    className="absolute -bottom-2 -right-2 translate-x-1/4 translate-y-1/4
+                               h-10 w-10 sm:h-11 sm:w-11 rounded-full p-0
+                               bg-blue-600 hover:bg-blue-700 text-white shadow-lg ring-4 ring-white z-10"
+                    onClick={() => document.getElementById('avatar-upload-input')?.click()}
+                    disabled={uploadingPhoto}
+                  >
+                    <Camera className="h-4 w-4 sm:h-5 sm:w-5" />
+                  </Button>
+                  <input
+                    id="avatar-upload-input"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleAvatarUpload}
+                    className="hidden"
+                  />
+                </>
+              )}
+            </div>
+
+            {/* Profile text */}
+            <div className="flex-1 min-w-0">
+              {user?.userType === 'business' ? (
+                <div className="space-y-2 text-black w-full mt-2">
+                  <h1 className="text-2xl sm:text-4xl font-bold text-black">
+                    {user.businessName || user.name || `@${user.username}`}
+                  </h1>
+                  <div className="flex items-center gap-2 text-sm sm:text-base">
+                    <span className="inline-flex items-center justify-center h-7 rounded-full px-3 text-xs font-medium bg-blue-500 text-white">
+                      Nearby Business
+                    </span>
+                    {user.businessType && <span className="text-black/80">• {user.businessType}</span>}
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-1 text-black w-full mt-2">
+                  {/* Username */}
+                  <h1 className="text-xl sm:text-3xl font-bold text-black truncate">@{user.username}</h1>
+
+                  {/* Location/status — ALWAYS SHOW BOTH HOMETOWN AND TRAVEL STATUS */}
+                  <div className="flex flex-col gap-1 w-full">
+                    {/* ALWAYS show hometown first */}
+                    <div className="flex items-center gap-2">
+                      <MapPin className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 text-gray-500" />
+                      <span className="text-sm sm:text-base font-medium flex-1 min-w-0 truncate text-gray-600 dark:text-gray-400">
+                        From: {user.hometownCity || user.location?.split(',')[0] || 'Hometown not set'}
+                        {user.hometownState && `, ${user.hometownState}`}
+                        {user.hometownCountry && `, ${user.hometownCountry}`}
+                      </span>
+                    </div>
+                    
+                    {/* ALWAYS show travel status */}
+                    {(() => {
+                      const currentDestination = getCurrentTravelDestination(travelPlans || []);
+                      if (currentDestination) {
+                        return (
+                          <div className="flex items-center gap-2">
+                            <Plane className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 text-blue-500" />
+                            <span className="text-sm sm:text-base font-medium flex-1 min-w-0 truncate text-blue-600 dark:text-blue-400">
+                              Currently traveling in {currentDestination}
+                            </span>
+                          </div>
+                        );
+                      } else {
+                        return (
+                          <div className="flex items-center gap-2">
+                            <MapPin className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 text-green-500" />
+                            <span className="text-sm sm:text-base font-medium flex-1 min-w-0 truncate text-green-600 dark:text-green-400">
+                              Currently home
+                            </span>
+                          </div>
+                        );
+                      }
+                    })()}
+                  </div>
+                  </div>
+
+                  {/* Stats */}
+                  <div className="flex items-center flex-wrap gap-2 text-xs sm:text-sm w-full">
+                    <span className="font-medium">🌍 {countriesVisited?.length || 0} countries</span>
+                    <span className="font-medium">⭐ {references?.length || 0} references</span>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* CTAs — wrap on mobile */}
             {!isOwnProfile ? (
-              <div className="flex flex-col sm:flex-row gap-2">
-                <Button 
-                  className="bg-orange-500 hover:bg-orange-600 text-white border-0 w-full sm:w-auto"
-                  onClick={handleMessage}
-                >
-                  <MessageCircle className="h-4 w-4 mr-2" />
+              <div className="flex items-center justify-between gap-3 flex-wrap min-w-0">
+                <Button className="bg-orange-500 hover:bg-orange-600 text-white border-0 w-full sm:w-auto" onClick={handleMessage}>
                   Message
                 </Button>
-                <Button 
+                <Button
                   className={`w-full sm:w-auto ${getConnectButtonState().className}`}
                   variant={getConnectButtonState().variant}
                   onClick={handleConnect}
@@ -3178,23 +3464,29 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 </Button>
               </div>
             ) : (
-              user && (user.hometownCity || user.location) && (
-                <Button
-                  className="w-full sm:w-auto sm:px-6 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white border-0 shadow-lg"
-                  onClick={() => {
-                    const chatCity = user.hometownCity || user.location?.split(',')[0] || 'General';
-                    setLocation(`/city-chatrooms?city=${encodeURIComponent(chatCity)}`);
-                  }}
-                >
-                  <MessageCircleMore className="h-4 w-4 mr-2" />
-                  Go to Chatrooms
-                </Button>
-              )
+              <div className="flex items-center justify-between gap-3 flex-wrap min-w-0">
+                {user && (user.hometownCity || user.location) && (
+                  <Button
+                    onClick={() => {
+                      const chatCity = user.hometownCity || user.location?.split(',')[0] || 'General';
+                      setLocation(`/city-chatrooms?city=${encodeURIComponent(chatCity)}`);
+                    }}
+                    className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700
+                               text-white border-0 shadow-lg rounded-full
+                               inline-flex items-center justify-center gap-2
+                               w-full sm:w-auto max-w-full sm:max-w-none
+                               px-4 py-3 overflow-hidden break-words"
+                  >
+                    <MessageCircle className="w-4 h-4 shrink-0" />
+                    <span className="truncate">Go to Chatrooms</span>
+                  </Button>
+                )}
+              </div>
             )}
           </div>
         </div>
 
-        {/* Loading state for photo uploads */}
+        {/* Upload overlay (unchanged) */}
         {uploadingPhoto && (
           <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-30">
             <div className="bg-white rounded-lg p-4 text-center">
@@ -3203,217 +3495,15 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             </div>
           </div>
         )}
-      </div>
-
+      </section>
+      
       {/* Main content section - Modern Sectioned Layout */}
-      <div className="w-full max-w-full mx-auto pb-0 px-2 sm:px-4 -mt-2">
-
-
-        <MobilePreview>
-          {/* Profile hero */}
-          <div className={`relative rounded-2xl bg-gradient-to-r ${gradientOptions[selectedGradient]} p-4 sm:p-6 overflow-hidden`}>
-            {/* 2-col on mobile, 3-col on sm+ */}
-            <div className="grid grid-cols-[auto,1fr] sm:grid-cols-[auto,1fr,auto] gap-4 sm:gap-6 items-center">
-
-              {/* AVATAR */}
-              <div className="relative shrink-0">
-                <div className="rounded-full overflow-hidden ring-4 ring-white">
-                  <Avatar className="w-24 h-24 sm:w-28 sm:h-28">
-                    <AvatarImage className="object-cover" src={user?.profileImage || ''} alt={user.username} />
-                    <AvatarFallback className="text-lg sm:text-2xl bg-gradient-to-br from-blue-600 to-orange-600 text-white">
-                      {(user?.username?.charAt(0) || user?.name?.charAt(0) || 'U').toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                </div>
-
-                {/* camera/edit photo button */}
-                {isOwnProfile && (
-                  <>
-                    <Button
-                      size="icon"
-                      variant="secondary"
-                      className="absolute -bottom-1 -right-1 rounded-full shadow-md"
-                      onClick={() => document.getElementById('avatar-upload-input')?.click()}
-                      disabled={uploadingPhoto}
-                    >
-                      <Camera className="h-4 w-4" />
-                    </Button>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleAvatarUpload}
-                      className="hidden"
-                      id="avatar-upload-input"
-                    />
-                  </>
-                )}
-              </div>
-
-              {/* TEXT: username, tagline, hometown, small stats */}
-              <div className="min-w-0 flex flex-col gap-1">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-white font-semibold text-xl truncate">@{user.username}</span>
-                  {/* status pill, etc */}
-                </div>
+      <div className="w-full max-w-full mx-auto pb-0 px-2 sm:px-4 -mt-2 overflow-x-hidden">
+        
 
 
 
-                {/* Hometown / location line (wraps instead of truncating) */}
-                <div className="mt-1 flex items-start gap-2 text-white">
-                  <MapPin className="h-4 w-4 mt-0.5 shrink-0" />
-                  <span className="whitespace-normal break-words">
-                    {user.userType === 'business' 
-                      ? `Nearby Business in ${user.hometownCity || 'Los Angeles'}`
-                      : (() => {
-                          // Check for active travel plans first
-                          if (travelPlans && travelPlans.length > 0) {
-                            const today = new Date();
-                            today.setHours(0, 0, 0, 0);
 
-                            let activeTrips = [];
-
-                            for (const plan of travelPlans) {
-                              if (plan.startDate && plan.endDate) {
-                                const parseLocalDate = (dateInput: string | Date | null | undefined) => {
-                                  if (!dateInput) return null;
-                                  let dateString: string;
-                                  if (dateInput instanceof Date) {
-                                    dateString = dateInput.toISOString();
-                                  } else {
-                                    dateString = dateInput;
-                                  }
-                                  const parts = dateString.split('T')[0].split('-');
-                                  if (parts.length === 3) {
-                                    const year = parseInt(parts[0]);
-                                    const month = parseInt(parts[1]) - 1;
-                                    const day = parseInt(parts[2]);
-                                    return new Date(year, month, day);
-                                  }
-                                  return null;
-                                };
-
-                                const startDate = parseLocalDate(plan.startDate);
-                                const endDate = parseLocalDate(plan.endDate);
-                                if (!startDate || !endDate) continue;
-                                startDate.setHours(0, 0, 0, 0);
-                                endDate.setHours(23, 59, 59, 999);
-
-                                const isCurrentlyActive = today >= startDate && today <= endDate;
-                                if (isCurrentlyActive && plan.destination) {
-                                  activeTrips.push({
-                                    plan,
-                                    startDate
-                                  });
-                                }
-                              }
-                            }
-
-                            if (activeTrips.length > 0) {
-                              activeTrips.sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
-                              const currentTrip = activeTrips[0].plan;
-                              const destination = currentTrip.destination || 'Unknown';
-
-                              // ALWAYS show hometown + current travel destination
-                              const hometownParts = [
-                                user.hometownCity,
-                                user.hometownState,
-                                user.hometownCountry
-                              ].filter(Boolean);
-
-                              const hometown = hometownParts.length > 0 ? hometownParts.join(', ') : 'Unknown';
-                              return `Nearby Traveler from ${hometown}, traveling in ${destination}`;
-                            }
-                          }
-
-                          // Show full hometown information
-                          const locationParts = [
-                            user.hometownCity,
-                            user.hometownState,
-                            user.hometownCountry
-                          ].filter(Boolean);
-
-                          if (locationParts.length > 0) {
-                            return `Nearby Local in ${locationParts.join(', ')}`;
-                          } else if (user.location) {
-                            return `Nearby Local in ${user.location}`;
-                          }
-                          return "Nearby Local";
-                        })()
-                    }
-                  </span>
-                </div>
-
-                {/* Small stats row */}
-                {user.userType !== 'business' && (
-                  <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-white/90 text-sm">
-                    <span>🌍 {countriesVisited?.length || 0} countries</span>
-                    <span>⭐ {references?.length || 0} references</span>
-                  </div>
-                )}
-              </div>
-
-              {/* ACTIONS (Color change, etc.) */}
-              <div className="sm:self-start flex sm:flex-col items-center sm:items-end gap-2">
-                {isOwnProfile && (
-                  <Button
-                    size="sm"
-                    variant="secondary"
-                    className="shadow"
-                    onClick={() => setSelectedGradient((prev) => (prev + 1) % gradientOptions.length)}
-                  >
-                    🎨
-                  </Button>
-                )}
-              </div>
-
-              {/* full-width CTA row (stacks under text on mobile) */}
-              <div className="col-span-2 sm:col-span-3 mt-2">
-                {!isOwnProfile ? (
-                  <div className="flex flex-col sm:flex-row gap-2">
-                    <Button 
-                      className="bg-orange-500 hover:bg-orange-600 text-white border-0 w-full sm:w-auto"
-                      onClick={handleMessage}
-                    >
-                      <MessageCircle className="h-4 w-4 mr-2" />
-                      Message
-                    </Button>
-                    <Button 
-                      className={`w-full sm:w-auto ${getConnectButtonState().className}`}
-                      variant={getConnectButtonState().variant}
-                      onClick={handleConnect}
-                      disabled={getConnectButtonState().disabled}
-                    >
-                      {getConnectButtonState().text}
-                    </Button>
-                  </div>
-                ) : (
-                  user && (user.hometownCity || user.location) && (
-                    <Button
-                      className="w-full sm:w-auto sm:px-6 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white border-0 shadow-lg"
-                      onClick={() => {
-                        const chatCity = user.hometownCity || user.location?.split(',')[0] || 'General';
-                        setLocation(`/city-chatrooms?city=${encodeURIComponent(chatCity)}`);
-                      }}
-                    >
-                      <MessageCircleMore className="h-4 w-4 mr-2" />
-                      Go to Chatrooms
-                    </Button>
-                  )
-                )}
-              </div>
-            </div>
-
-            {/* Loading state for photo uploads */}
-            {uploadingPhoto && (
-              <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-30">
-                <div className="bg-white rounded-lg p-4 text-center">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-2"></div>
-                  <p className="text-sm font-medium">Uploading...</p>
-                </div>
-              </div>
-            )}
-          </div>
-        </MobilePreview>
 
 
         {/* Things We Have in Common - Mobile Only */}
@@ -3440,89 +3530,270 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           <div className="lg:col-span-2 space-y-2">
 
 
+            
 
 
-
-
+            
             {/* About Section */}
-            <Card className="mt-6 overflow-visible">
-              <CardHeader className="pb-2">
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <h3 className="text-lg font-semibold min-w-0 break-words">
-                    About {user?.userType === "business"
-                      ? (user?.businessName || user?.name || user?.username)
-                      : (user?.username || "User")}
-                  </h3>
+            <Card className="mt-6 relative overflow-visible">
+              <CardHeader className="flex items-center gap-2 flex-wrap min-w-0 w-full">
+                <CardTitle className="text-base sm:text-lg break-words max-w-[calc(100%-3rem)] sm:max-w-none">
+                  About {user?.userType === 'business'
+                    ? (user?.businessName || user?.name || user?.username)
+                    : (user?.username || 'User')}
+                </CardTitle>
 
-                  {isOwnProfile && (
-                    <Button size="sm" variant="secondary" className="shrink-0" onClick={() => setIsEditMode(true)}>
-                      <Edit2 className="h-4 w-4 mr-2" /> Edit Bio
+                {isOwnProfile && (
+                  <>
+                    {/* Icon-only on phones */}
+                    <Button
+                      size="icon"
+                      variant="outline"
+                      onClick={() => setIsEditMode(true)}
+                      className="ml-auto sm:hidden shrink-0"
+                      aria-label="Edit Profile"
+                    >
+                      <svg viewBox="0 0 24 24" className="w-4 h-4" fill="currentColor">
+                        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zm2.92 2.33H5v-.92l8.06-8.06.92.92L5.92 19.58zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                      </svg>
                     </Button>
-                  )}
-                </div>
+
+                    {/* Labeled button on ≥ sm */}
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setIsEditMode(true)}
+                      className="ml-auto hidden sm:inline-flex shrink-0"
+                    >
+                      Edit Profile
+                    </Button>
+                  </>
+                )}
               </CardHeader>
 
-              <CardContent>
-                {/* 👇 single wrapper div so CardContent always closes cleanly */}
-                <div className="space-y-4">
-                  {user?.userType === "business" && (
-                    <div className="p-4 bg-gradient-to-r from-blue-50 to-orange-50 dark:from-blue-900/20 dark:to-orange-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
-                      <div className="flex items-center justify-between mb-2">
-                        <h4 className="font-semibold text-blue-800 dark:text-blue-200">Business Name</h4>
-                        {isOwnProfile && (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => setIsEditMode(true)}
-                            className="bg-gradient-to-r from-blue-500 to-orange-500 text-white border-0 hover:from-blue-600 hover:to-orange-600"
-                          >
-                            <Edit2 className="w-3 h-3" />
-                          </Button>
-                        )}
+              <CardContent className="space-y-4 pr-3 sm:pr-4 min-w-0 break-words overflow-visible">
+                {/* Bio / Business Description */}
+                <div>
+                  <p className="text-gray-900 dark:text-white leading-relaxed whitespace-pre-wrap break-words">
+                    {user?.userType === 'business'
+                      ? (user?.businessDescription || "No business description available yet.")
+                      : (user?.bio || "No bio available yet.")
+                    }
+                  </p>
+                </div>
+
+                {/* Metropolitan Area (optional) */}
+                {user.hometownCity && user.hometownState && user.hometownCountry && (() => {
+                  const metroArea = getMetropolitanArea(user.hometownCity, user.hometownState, user.hometownCountry);
+                  if (!metroArea) return null;
+                  return (
+                    <div className="p-3 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg dark:from-gray-800/50 dark:to-gray-700/50">
+                      <div className="flex items-center gap-2">
+                        <MapPin className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Metropolitan Area:</span>
+                        <span className="text-sm text-gray-800 dark:text-gray-200 font-semibold">{metroArea}</span>
                       </div>
-                      <p className="text-lg font-bold text-blue-900 dark:text-blue-100">
-                        {user?.businessName || "Business name not set"}
-                      </p>
+                    </div>
+                  );
+                })()}
+
+                {/* Secret Activities (non-business) */}
+                {user?.userType !== 'business' && user?.secretActivities && (
+                  <div className="p-3 bg-gradient-to-br from-orange-50 to-blue-50 border-l-4 border-orange-200 rounded-r-lg">
+                    <h5 className="font-medium text-black mb-2">
+                      Secret things I would do if my closest friends came to town
+                    </h5>
+                    <p className="text-black text-sm italic whitespace-pre-wrap break-words">
+                      {user?.secretActivities}
+                    </p>
+                  </div>
+                )}
+
+                {/* What you have in common (for other profiles) */}
+                {!isOwnProfile && currentUser && user?.id && (
+                  <div>
+                    <WhatYouHaveInCommon currentUserId={currentUser.id} otherUserId={user.id} />
+                  </div>
+                )}
+
+                {/* Basic Info — grid so lines never run together */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2 text-sm">
+                  <div className="flex items-start">
+                    <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">From:</span>
+                    <span className="text-gray-900 dark:text-gray-100 flex-1 break-words">
+                      {user?.userType === 'business'
+                        ? (user?.location || user?.hometownCity || "Los Angeles, CA")
+                        : (() => {
+                            const parts = [user?.hometownCity, user?.hometownState, user?.hometownCountry].filter(Boolean);
+                            return parts.length > 0 ? parts.join(', ') : "Not specified";
+                          })()
+                      }
+                    </span>
+                  </div>
+
+                  {user?.userType !== 'business' && user?.gender && (
+                    <div className="flex items-start">
+                      <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">Gender:</span>
+                      <span className="capitalize flex-1 break-words">{user?.gender?.replace('-', ' ')}</span>
                     </div>
                   )}
 
-                  <div>
-                    <p className="text-muted-foreground whitespace-pre-wrap break-words">
-                      {user?.userType === "business"
-                        ? (user?.businessDescription || user?.bio || "No business description available yet.")
-                        : (user?.bio || "No bio available yet.")}
-                    </p>
-                  </div>
+                  {/* Military Status for non-business users */}
+                  {user?.userType !== 'business' && user.isVeteran && (
+                    <div className="flex items-start">
+                      <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">Military:</span>
+                      <span className="text-red-600 font-semibold flex-1 break-words">Veteran</span>
+                    </div>
+                  )}
+                  {user?.userType !== 'business' && user.isActiveDuty && (
+                    <div className="flex items-start">
+                      <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">Military:</span>
+                      <span className="text-blue-600 font-semibold flex-1 break-words">Active Duty</span>
+                    </div>
+                  )}
 
-                  <div className="text-sm text-muted-foreground flex flex-wrap items-center gap-x-3 gap-y-1">
-                    {([user?.hometownCity, user?.hometownState, user?.hometownCountry].filter(Boolean).length > 0) && (
-                      <span className="whitespace-normal break-words">
-                        From:{" "}
-                        <span className="font-medium">
-                          {[user?.hometownCity, user?.hometownState, user?.hometownCountry].filter(Boolean).join(", ")}
-                        </span>
+                  {user.sexualPreferenceVisible && user.sexualPreference && (
+                    <div className="flex items-start">
+                      <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">Preference:</span>
+                      <span className="flex-1 break-words">
+                        {Array.isArray(user.sexualPreference) 
+                          ? user.sexualPreference.join(', ')
+                          : typeof user.sexualPreference === 'string'
+                          ? (user.sexualPreference as string).split(',').join(', ')
+                          : user.sexualPreference
+                        }
                       </span>
-                    )}
-                    {user?.age && (
-                      <span>
-                        Age: <span className="font-medium">{user.age}</span>
+                    </div>
+                  )}
+
+                  {user.userType !== 'business' && user.ageVisible && user.dateOfBirth && (
+                    <div className="flex items-start">
+                      <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">Age:</span>
+                      <span className="flex-1 break-words">{calculateAge(user.dateOfBirth)} years old</span>
+                    </div>
+                  )}
+
+                  {user.userType !== 'business' && user.travelingWithChildren && (
+                    <div className="flex items-start">
+                      <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">Family:</span>
+                      <span className="flex-1 break-words flex items-center gap-1">
+                        <Users className="w-4 h-4" /> Traveling with children
+                        {(user as any).childrenAges && (
+                          <span className="text-sm text-gray-500 dark:text-gray-400">
+                            (Ages: {(user as any).childrenAges})
+                          </span>
+                        )}
                       </span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Business Contact Information */}
+                {user.userType === 'business' && (
+                  <div className="space-y-3 border-t pt-4 mt-4">
+                    <h4 className="font-medium text-gray-800 dark:text-white flex items-center gap-2">
+                      <MapPin className="w-4 h-4 text-blue-500" />
+                      Business Information
+                    </h4>
+                    
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2 text-sm">
+                      {user.streetAddress && (
+                        <div className="flex items-start">
+                          <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">Address:</span>
+                          <span className="flex-1 break-words">{user.streetAddress}{user.zipCode && `, ${user.zipCode}`}</span>
+                        </div>
+                      )}
+                      
+                      {user.phoneNumber && (
+                        <div className="flex items-start">
+                          <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">Phone:</span>
+                          <a 
+                            href={`tel:${user.phoneNumber.replace(/[^\d+]/g, '')}`}
+                            className="text-blue-600 underline flex-1 break-words"
+                          >
+                            {(() => {
+                              const cleaned = user.phoneNumber.replace(/\D/g, '');
+                              return cleaned.length === 10 
+                                ? `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6)}`
+                                : user.phoneNumber;
+                            })()}
+                          </a>
+                        </div>
+                      )}
+                      
+                      {user.websiteUrl && (
+                        <div className="flex items-start">
+                          <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">Website:</span>
+                          <a 
+                            href={user.websiteUrl.startsWith('http') ? user.websiteUrl : `https://${user.websiteUrl}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 underline flex-1 break-words"
+                          >
+                            {user.websiteUrl}
+                          </a>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Business Ownership Categories */}
+                    {(user.isVeteran || user.isActiveDuty || (user.isMinorityOwned && user.showMinorityOwned) || (user.isFemaleOwned && user.showFemaleOwned) || (user.isLGBTQIAOwned && user.showLGBTQIAOwned)) && (
+                      <div className="space-y-2 border-t pt-3 mt-3">
+                        <h5 className="font-medium text-gray-700 dark:text-gray-300">Business Ownership</h5>
+                        
+                        {/* Military Status */}
+                        {user.isVeteran && (
+                          <div className="flex items-center gap-2">
+                            <span className="text-green-600">✓</span>
+                            <span className="text-sm">Veteran Owned Business</span>
+                          </div>
+                        )}
+                        {user.isActiveDuty && (
+                          <div className="flex items-center gap-2">
+                            <span className="text-blue-600">✓</span>
+                            <span className="text-sm">Active Duty Owned Business</span>
+                          </div>
+                        )}
+                        
+                        {/* Diversity Categories */}
+                        {user.isMinorityOwned && user.showMinorityOwned && (
+                          <div className="flex items-center gap-2">
+                            <span className="text-purple-600">✓</span>
+                            <span className="text-sm">Minority Owned Business</span>
+                          </div>
+                        )}
+                        {user.isFemaleOwned && user.showFemaleOwned && (
+                          <div className="flex items-center gap-2">
+                            <span className="text-pink-600">✓</span>
+                            <span className="text-sm">Female Owned Business</span>
+                          </div>
+                        )}
+                        {user.isLGBTQIAOwned && user.showLGBTQIAOwned && (
+                          <div className="flex items-center gap-2">
+                            <span className="text-rainbow bg-gradient-to-r from-red-500 via-yellow-500 via-green-500 via-blue-500 to-purple-500 bg-clip-text text-transparent font-bold">✓</span>
+                            <span className="text-sm">LGBTQIA+ Owned Business</span>
+                          </div>
+                        )}
+                      </div>
                     )}
                   </div>
-                </div>
+                )}
               </CardContent>
             </Card>
 
-            {/* Business Offers Section - Only for business users */}
+            {/* Business Deals Section - Only for business users */}
             {user?.userType === 'business' && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center justify-between">
-                    <span>Business Offers & Deals</span>
+              <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
+                <CardHeader className="bg-white dark:bg-gray-900">
+                  <CardTitle className="flex items-center justify-between text-gray-900 dark:text-white">
+                    <span>Business Deals</span>
                     {isOwnProfile && (
                       <Button 
                         size="sm" 
-                        onClick={() => setLocation('/deals')}
+                        onClick={() => {
+                          console.log('🔥 CREATE OFFER clicked, navigating to business dashboard');
+                          setLocation('/business-dashboard');
+                        }}
                         className="bg-gradient-to-r from-green-500 to-blue-500 text-white border-0 hover:from-green-600 hover:to-blue-600"
                       >
                         <Plus className="w-3 h-3 mr-1" />
@@ -3531,8 +3802,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     )}
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
-                  {businessOffersLoading ? (
+                <CardContent className="bg-white dark:bg-gray-900 p-6">
+                  {businessDealsLoading ? (
                     <div className="space-y-3">
                       {[1, 2].map(i => (
                         <div key={i} className="animate-pulse">
@@ -3540,39 +3811,40 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         </div>
                       ))}
                     </div>
-                  ) : businessOffers.length === 0 ? (
+                  ) : businessDeals.length === 0 ? (
                     <div className="text-center py-8 text-gray-500 dark:text-gray-400">
                       <Package className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                      <p>No business offers created yet</p>
+                      <p>No business deals created yet</p>
                       {isOwnProfile && (
-                        <p className="text-sm mt-2">Create your first offer to attract customers!</p>
+                        <p className="text-sm mt-2">Create your first deal to attract customers!</p>
                       )}
                     </div>
                   ) : (
                     <div className="space-y-4">
-                      {businessOffers.slice(0, 3).map((offer: any) => (
-                        <div key={offer.id} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-md transition-shadow">
+                      {businessDeals.slice(0, 3).map((deal: any) => (
+                        <div key={deal.id} className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 hover:shadow-md dark:hover:shadow-gray-800/50 transition-shadow bg-white dark:bg-gray-800">
                           <div className="flex items-start justify-between mb-2">
-                            <h4 className="font-semibold text-gray-900 dark:text-white">{offer.title}</h4>
-                            <Badge variant="secondary" className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                              {offer.discountValue} {offer.discountType === 'percentage' ? '%' : ''} off
-                            </Badge>
+                            <h4 className="font-semibold text-gray-900 dark:text-white">{deal.title}</h4>
+                            <div className="inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0">
+                              {deal.discountValue} {deal.discountType === 'percentage' ? '%' : ''} off
+                            </div>
                           </div>
-                          <p className="text-gray-600 dark:text-gray-300 text-sm mb-3 line-clamp-2">{offer.description}</p>
+                          <p className="text-gray-600 dark:text-gray-300 text-sm mb-3 line-clamp-2">{deal.description}</p>
                           <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
-                            <span>Valid until {new Date(offer.validUntil).toLocaleDateString()}</span>
-                            <span className="capitalize">{offer.category}</span>
+                            <span>Valid until {new Date(deal.validUntil).toLocaleDateString()}</span>
+                            <span className="capitalize">{deal.category}</span>
                           </div>
                         </div>
                       ))}
-                      {businessOffers.length > 3 && (
+                      {businessDeals.length > 3 && (
                         <div className="text-center pt-2">
                           <Button 
                             variant="outline" 
                             size="sm"
                             onClick={() => setLocation('/deals')}
+                            className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
                           >
-                            View All {businessOffers.length} Offers
+                            View All {businessDeals.length} Deals
                           </Button>
                         </div>
                       )}
@@ -3584,7 +3856,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
             {/* What You Have in Common Section - MOVED TO ABOUT SECTION FOR BETTER VISIBILITY */}
 
-            {/* Local Interests, Activities & Events Section */}
+
+
+            {/* Local Interests, Activities & Events Section - For non-business users only */}
+            {user?.userType !== 'business' && (
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -3592,7 +3867,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   Local Interests, Activities & Events
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-6">
+              <CardContent className="space-y-6 break-words overflow-hidden">
                 {/* Single Edit Button for All Preferences */}
                 {isOwnProfile && !editingInterests && !editingActivities && !editingEvents && (
                   <div className="flex justify-center mb-4">
@@ -3602,11 +3877,53 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         setEditingInterests(true);
                         setEditingActivities(true);
                         setEditingEvents(true);
-                        // Initialize form data
+                        // Initialize form data with custom field support
+                        const userInterests = user?.interests || [];
+                        const userActivities = user?.activities || [];
+                        const userEvents = user?.events || [];
+                        
                         setEditFormData({
-                          interests: user?.interests || [],
-                          activities: user?.activities || [],
-                          events: user?.events || []
+                          interests: userInterests,
+                          activities: userActivities,
+                          events: userEvents
+                        });
+                        
+                        // Initialize custom fields from database or empty arrays
+                        const customInterests = user?.customInterests || "";
+                        const customActivities = user?.customActivities || "";
+                        const customEvents = user?.customEvents || "";
+                        
+                        // Parse custom fields (comma-separated) and add to arrays if not already present
+                        if (customInterests) {
+                          const parsed = customInterests.split(',').map(s => s.trim()).filter(s => s);
+                          parsed.forEach(item => {
+                            if (!userInterests.includes(item)) {
+                              userInterests.push(item);
+                            }
+                          });
+                        }
+                        if (customActivities) {
+                          const parsed = customActivities.split(',').map(s => s.trim()).filter(s => s);
+                          parsed.forEach(item => {
+                            if (!userActivities.includes(item)) {
+                              userActivities.push(item);
+                            }
+                          });
+                        }
+                        if (customEvents) {
+                          const parsed = customEvents.split(',').map(s => s.trim()).filter(s => s);
+                          parsed.forEach(item => {
+                            if (!userEvents.includes(item)) {
+                              userEvents.push(item);
+                            }
+                          });
+                        }
+                        
+                        // Update form data with combined arrays
+                        setEditFormData({
+                          interests: userInterests,
+                          activities: userActivities,
+                          events: userEvents
                         });
                       }}
                       className="bg-blue-600 hover:bg-blue-700 text-white"
@@ -3627,10 +3944,31 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           onClick={async () => {
                             try {
                               console.log('🔧 SAVING DATA:', editFormData);
+                              
+                              // Separate predefined vs custom entries for proper database storage
+                              const predefinedInterests = INTERESTS_OPTIONS.filter(opt => editFormData.interests.includes(opt));
+                              const predefinedActivities = ACTIVITIES_OPTIONS.filter(opt => editFormData.activities.includes(opt));
+                              const predefinedEvents = EVENTS_OPTIONS.filter(opt => editFormData.events.includes(opt));
+                              
+                              const customInterests = editFormData.interests.filter(int => !INTERESTS_OPTIONS.includes(int));
+                              const customActivities = editFormData.activities.filter(act => !ACTIVITIES_OPTIONS.includes(act));
+                              const customEvents = editFormData.events.filter(evt => !EVENTS_OPTIONS.includes(evt));
+                              
+                              const saveData = {
+                                interests: predefinedInterests,
+                                activities: predefinedActivities, 
+                                events: predefinedEvents,
+                                customInterests: customInterests.join(', '),
+                                customActivities: customActivities.join(', '),
+                                customEvents: customEvents.join(', ')
+                              };
+                              
+                              console.log('🔧 SAVE - Separated data:', saveData);
+                              
                               const response = await fetch(`/api/users/${user.id}`, {
                                 method: 'PUT',
                                 headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify(editFormData)
+                                body: JSON.stringify(saveData)
                               });
                               if (!response.ok) throw new Error('Failed to save');
                               // Refresh data instead of page reload
@@ -3639,8 +3977,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               setEditingInterests(false);
                               setEditingActivities(false);
                               setEditingEvents(false);
+                              console.log('✅ Successfully saved user preferences');
                             } catch (error) {
-                              console.error('Failed to update preferences:', error);
+                              console.error('❌ Failed to update preferences:', error);
                             }
                           }}
                           disabled={false}
@@ -3668,7 +4007,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         </Button>
                       </div>
                     </div>
-
+                    
                     {/* When editing all preferences, show the unified content */}
                     {editingInterests && editingActivities && editingEvents && (
                       <div className="space-y-6 mt-6">
@@ -3678,14 +4017,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             <Heart className="w-5 h-5 text-blue-500" />
                             Top Interests
                           </h4>
-
+                          
                           {/* Top Choices for Most Travelers */}
                           <div className="mb-4">
                             <h5 className="text-sm font-medium mb-2 text-gray-900 dark:text-white">Top Choices for Most Travelers</h5>
-                            <div className="flex flex-wrap gap-2 p-3 bg-gradient-to-r from-blue-100 to-orange-100 dark:from-blue-900 dark:to-orange-900 rounded-lg">
+                            <div className="flex flex-wrap gap-2 p-3 bg-gradient-to-r from-blue-100 to-orange-100 dark:from-blue-900 dark:to-orange-900 rounded-lg overflow-hidden break-words">
                               {MOST_POPULAR_INTERESTS.map((interest) => {
                                 const isSelected = editFormData.interests.includes(interest);
-
+                                
                                 return (
                                   <button
                                     key={interest}
@@ -3695,7 +4034,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                         setEditFormData({ ...editFormData, interests: newInterests })
                                       );
                                     }}
-                                    className={`px-3 py-2 rounded-md text-sm font-medium transition-all ${
+                                    className={`inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none border-0 transition-all ${
                                       isSelected
                                         ? 'bg-green-600 text-white font-bold transform scale-105'
                                         : 'bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-800 dark:text-blue-200 dark:hover:bg-blue-700'
@@ -3711,12 +4050,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           {/* All Available Interests */}
                           <div>
                             <h5 className="text-sm font-medium mb-2 text-gray-900 dark:text-white">All Available Interests</h5>
-                            <div className="flex flex-wrap gap-2 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border">
+                            <div className="flex flex-wrap gap-2 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border overflow-hidden break-words">
                               {getAllInterests().filter(interest => !MOST_POPULAR_INTERESTS.includes(interest)).map((interest) => {
                                 const displayText = interest.startsWith("**") && interest.endsWith("**") ? 
                                   interest.slice(2, -2) : interest;
                                 const isSelected = editFormData.interests.includes(interest);
-
+                                
                                 return (
                                   <button
                                     key={interest}
@@ -3726,7 +4065,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                         setEditFormData({ ...editFormData, interests: newInterests })
                                       );
                                     }}
-                                    className={`px-3 py-2 rounded-md text-sm font-medium transition-all ${
+                                    className={`inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none border-0 transition-all ${
                                       isSelected
                                         ? 'bg-green-600 text-white font-bold transform scale-105'
                                         : 'bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-800 dark:text-blue-200 dark:hover:bg-blue-700'
@@ -3746,15 +4085,15 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             <Globe className="w-5 h-5 text-green-500" />
                             Activities
                           </h4>
-
+                          
                           <div className="text-sm text-blue-600 bg-blue-50 border border-blue-400 rounded-md p-3 mb-4 dark:bg-blue-900/20 dark:border-blue-600 dark:text-blue-300">
                             Your default preferences for trips and to match with Nearby Locals and Travelers. They can be added to and changed in the future for specific trips etc.
                           </div>
-
-                          <div className="flex flex-wrap gap-2 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border">
+                          
+                          <div className="flex flex-wrap gap-2 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border overflow-hidden break-words">
                             {getAllActivities().map((activity, index) => {
                               const isSelected = editFormData.activities.includes(activity);
-
+                              
                               return (
                                 <button
                                   key={`activity-${activity}-${index}`}
@@ -3764,7 +4103,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                       setEditFormData({ ...editFormData, activities: newActivities })
                                     );
                                   }}
-                                  className={`px-3 py-2 rounded-md text-sm font-medium transition-all ${
+                                  className={`inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none border-0 transition-all ${
                                     isSelected
                                       ? 'bg-green-600 text-white font-bold transform scale-105'
                                       : 'bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-800 dark:text-green-200 dark:hover:bg-green-700'
@@ -3783,11 +4122,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             <Calendar className="w-5 h-5 text-purple-500" />
                             Events
                           </h4>
-
+                          
                           <div className="flex flex-wrap gap-2 p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg border">
                             {getAllEvents().map((event, index) => {
                               const isSelected = editFormData.events.includes(event);
-
+                              
                               return (
                                 <button
                                   key={`event-${event}-${index}`}
@@ -3797,7 +4136,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                       setEditFormData({ ...editFormData, events: newEvents })
                                     );
                                   }}
-                                  className={`px-3 py-2 rounded-md text-sm font-medium transition-all ${
+                                  className={`inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none border-0 transition-all ${
                                     isSelected
                                       ? 'bg-green-600 text-white font-bold transform scale-105'
                                       : 'bg-orange-100 text-orange-800 hover:bg-orange-200 dark:bg-orange-800 dark:text-orange-200 dark:hover:bg-orange-700'
@@ -3809,7 +4148,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             })}
                           </div>
                         </div>
-
+                        
                         {/* Bottom Save/Cancel Buttons */}
                         <div className="flex gap-2 mt-6 pt-4 border-t border-gray-200 dark:border-gray-600">
                           <Button 
@@ -3883,7 +4222,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       </Button>
                     )}
                   </div>
-
+                  
                   {editingInterests && !(editingInterests && editingActivities && editingEvents) ? (
                     <div className="space-y-4">
                       {/* Top Choices for Most Travelers */}
@@ -3892,7 +4231,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         <div className="flex flex-wrap gap-2 p-3 bg-gradient-to-r from-blue-100 to-orange-100 dark:from-blue-900 dark:to-orange-900 rounded-lg">
                           {MOST_POPULAR_INTERESTS.map((interest) => {
                             const isSelected = tempInterests.includes(interest);
-
+                            
                             return (
                               <button
                                 key={interest}
@@ -3904,7 +4243,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                     setTempInterests([...tempInterests, interest]);
                                   }
                                 }}
-                                className={`px-3 py-2 rounded-md text-sm font-medium transition-all ${
+                                className={`inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none border-0 transition-all ${
                                   isSelected
                                     ? 'bg-green-600 text-white font-bold transform scale-105'
                                     : 'bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-800 dark:text-blue-200 dark:hover:bg-blue-700'
@@ -3925,7 +4264,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             const displayText = interest.startsWith("**") && interest.endsWith("**") ? 
                               interest.slice(2, -2) : interest;
                             const isSelected = tempInterests.includes(interest);
-
+                            
                             return (
                               <button
                                 key={interest}
@@ -3937,7 +4276,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                     setTempInterests([...tempInterests, interest]);
                                   }
                                 }}
-                                className={`px-3 py-2 rounded-md text-sm font-medium transition-all ${
+                                className={`inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none border-0 transition-all ${
                                   isSelected
                                     ? 'bg-green-600 text-white font-bold transform scale-105'
                                     : 'bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-800 dark:text-green-200 dark:hover:bg-green-700'
@@ -3949,7 +4288,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           })}
                         </div>
                       </div>
-
+                      
                       <div className="flex space-x-2 mt-4">
                         <Input
                           placeholder="Things you do, or things that you want to do NOT listed above - Hit enter after each choice"
@@ -3959,8 +4298,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             if (e.key === 'Enter') {
                               e.preventDefault();
                               const trimmed = customInterestInput.trim();
-                              if (trimmed && !tempInterests.includes(trimmed)) {
-                                setTempInterests(prev => [...prev, trimmed]);
+                              if (trimmed && !editFormData.interests.includes(trimmed)) {
+                                setEditFormData(prev => ({ ...prev, interests: [...prev.interests, trimmed] }));
                                 setCustomInterestInput('');
                               }
                             }
@@ -3972,8 +4311,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           size="sm"
                           onClick={() => {
                             const trimmed = customInterestInput.trim();
-                            if (trimmed && !tempInterests.includes(trimmed)) {
-                              setTempInterests([...tempInterests, trimmed]);
+                            if (trimmed && !editFormData.interests.includes(trimmed)) {
+                              setEditFormData(prev => ({ ...prev, interests: [...prev.interests, trimmed] }));
                               setCustomInterestInput('');
                             }
                           }}
@@ -3988,15 +4327,15 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           <p className="text-sm font-medium text-gray-700 mb-2">Selected Interests:</p>
                           <div className="flex flex-wrap gap-2">
                             {tempInterests.map((interest) => (
-                              <Badge key={interest} className="bg-blue-100 text-blue-800 border-blue-300">
+                              <div key={interest} className="inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0">
                                 {interest}
                                 <button
                                   onClick={() => setTempInterests(tempInterests.filter(i => i !== interest))}
-                                  className="ml-1 text-blue-600 hover:text-blue-800"
+                                  className="ml-1 text-blue-200 hover:text-white"
                                 >
                                   ×
                                 </button>
-                              </Badge>
+                              </div>
                             ))}
                           </div>
                         </div>
@@ -4025,18 +4364,18 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               const interests = user?.interests || [];
                               const topInterests = interests.slice(0, 8); // Show only first 8
                               const remaining = interests.length - 8;
-
+                              
                               return (
                                 <>
                                   {topInterests.map((interest, index) => (
-                                    <Badge key={`interest-${index}`} className="bg-blue-500 text-white font-medium border-0">
+                                    <div key={`interest-${index}`} className="inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0">
                                       {interest}
-                                    </Badge>
+                                    </div>
                                   ))}
                                   {remaining > 0 && (
-                                    <Badge className="bg-gray-200 text-gray-600 font-medium border-0">
+                                    <div className="inline-flex items-center justify-center h-7 rounded-full px-2 text-[11px] font-medium whitespace-nowrap leading-none border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 bg-transparent">
                                       +{remaining} more
-                                    </Badge>
+                                    </div>
                                   )}
                                 </>
                               );
@@ -4068,20 +4407,20 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       </Button>
                     )}
                   </div>
-
+                  
                   {editingActivities && !(editingInterests && editingActivities && editingEvents) ? (
                     <div className="space-y-4">
                       <div className="text-sm text-blue-600 bg-blue-50 border border-blue-400 rounded-md p-3 mb-4 dark:bg-blue-900/20 dark:border-blue-600 dark:text-blue-300">
                         Your default preferences for trips and to match with Nearby Locals and Travelers. They can be added to and changed in the future for specific trips etc.
                       </div>
-
+                      
                       {/* All Available Activities */}
                       <div>
                         <h4 className="text-sm font-medium mb-2 text-gray-900 dark:text-white">All Available Activities</h4>
                         <div className="flex flex-wrap gap-2 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border">
                           {getAllActivities().map((activity, index) => {
                             const isSelected = editFormData.activities.includes(activity);
-
+                            
                             return (
                               <button
                                 key={`activity-${activity}-${index}`}
@@ -4091,7 +4430,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                     setEditFormData({ ...editFormData, activities: newActivities })
                                   );
                                 }}
-                                className={`px-3 py-2 rounded-md text-sm font-medium transition-all ${
+                                className={`pill inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap border-0 appearance-none select-none gap-1.5 transition-all ${
                                   isSelected
                                     ? 'bg-green-600 text-white font-bold transform scale-105'
                                     : 'bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-800 dark:text-blue-200 dark:hover:bg-blue-700'
@@ -4103,7 +4442,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           })}
                         </div>
                       </div>
-
+                      
                       <div className="flex space-x-2 mt-4">
                         <Input
                           placeholder="Things you do, or things that you want to do NOT listed above - Hit enter after each choice"
@@ -4113,8 +4452,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             if (e.key === 'Enter') {
                               e.preventDefault();
                               const trimmed = customActivityInput.trim();
-                              if (trimmed && !tempActivities.includes(trimmed)) {
-                                setTempActivities(prev => [...prev, trimmed]);
+                              if (trimmed && !editFormData.activities.includes(trimmed)) {
+                                setEditFormData(prev => ({ ...prev, activities: [...prev.activities, trimmed] }));
                                 setCustomActivityInput('');
                               }
                             }
@@ -4122,8 +4461,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         />
                         <Button type="button" onClick={() => {
                           const trimmed = customActivityInput.trim();
-                            if (trimmed && !tempActivities.includes(trimmed)) {
-                              setTempActivities([...tempActivities, trimmed]);
+                            if (trimmed && !editFormData.activities.includes(trimmed)) {
+                              setEditFormData(prev => ({ ...prev, activities: [...prev.activities, trimmed] }));
                               setCustomActivityInput('');
                             }
                           }} variant="outline">Add</Button>
@@ -4134,7 +4473,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           <p className="text-sm font-medium text-gray-700 mb-2">Current Activities:</p>
                           <div className="flex flex-wrap gap-2">
                             {tempActivities.map((activity, index) => (
-                              <span key={`activity-${activity}-${index}`} className="inline-flex items-center gap-1 px-2 py-1 bg-green-100 text-green-800 rounded text-sm">
+                              <span key={`activity-${activity}-${index}`} className="inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0">
                                 {activity}
                                 <button
                                   onClick={() => setTempActivities(tempActivities.filter(a => a !== activity))}
@@ -4172,18 +4511,18 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               const activities = user.activities || [];
                               const topActivities = activities.slice(0, 6); // Show only first 6
                               const remaining = activities.length - 6;
-
+                              
                               return (
                                 <>
                                   {topActivities.map((activity, index) => (
-                                    <Badge key={`activity-${index}`} className="bg-green-500 text-white font-medium border-0">
+                                    <div key={`activity-${index}`} className="pill pill-activities inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-green-500 text-white border-0 appearance-none select-none gap-1.5" style={{height: '2.5rem', minWidth: '8rem', padding: '0 1rem', fontSize: '1rem'}}>
                                       {activity}
-                                    </Badge>
+                                    </div>
                                   ))}
                                   {remaining > 0 && (
-                                    <Badge className="bg-gray-200 text-gray-600 font-medium border-0">
+                                    <div className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-green-500 text-white border-0 appearance-none select-none gap-1.5">
                                       +{remaining} more
-                                    </Badge>
+                                    </div>
                                   )}
                                 </>
                               );
@@ -4215,7 +4554,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       </Button>
                     )}
                   </div>
-
+                  
                   {editingEvents && !(editingInterests && editingActivities && editingEvents) ? (
                     <div className="space-y-4">
                       {/* All Available Events */}
@@ -4224,7 +4563,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         <div className="flex flex-wrap gap-2 p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg border">
                           {getAllEvents().map((event, index) => {
                             const isSelected = tempEvents.includes(event);
-
+                            
                             return (
                               <button
                                 key={`event-${event}-${index}`}
@@ -4236,7 +4575,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                     setTempEvents([...tempEvents, event]);
                                   }
                                 }}
-                                className={`px-3 py-2 rounded-md text-sm font-medium transition-all ${
+                                className={`pill inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap border-0 appearance-none select-none gap-1.5 transition-all ${
                                   isSelected
                                     ? 'bg-green-600 text-white font-bold transform scale-105'
                                     : 'bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-800 dark:text-blue-200 dark:hover:bg-blue-700'
@@ -4248,7 +4587,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           })}
                         </div>
                       </div>
-
+                      
                       <div className="flex space-x-2 mt-4">
                         <Input
                           placeholder="List Any Events You have Not Found Above For Better Connections"
@@ -4258,8 +4597,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             if (e.key === 'Enter') {
                               e.preventDefault();
                               const trimmed = customEventInput.trim();
-                              if (trimmed && !tempEvents.includes(trimmed)) {
-                                setTempEvents(prev => [...prev, trimmed]);
+                              if (trimmed && !editFormData.events.includes(trimmed)) {
+                                setEditFormData(prev => ({ ...prev, events: [...prev.events, trimmed] }));
                                 setCustomEventInput('');
                               }
                             }
@@ -4267,8 +4606,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         />
                         <Button type="button" onClick={() => {
                           const trimmed = customEventInput.trim();
-                            if (trimmed && !tempEvents.includes(trimmed)) {
-                              setTempEvents([...tempEvents, trimmed]);
+                            if (trimmed && !editFormData.events.includes(trimmed)) {
+                              setEditFormData(prev => ({ ...prev, events: [...prev.events, trimmed] }));
                               setCustomEventInput('');
                             }
                           }} variant="outline">Add</Button>
@@ -4279,7 +4618,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           <p className="text-sm font-medium text-gray-700 mb-2">Current Events:</p>
                           <div className="flex flex-wrap gap-2">
                             {tempEvents.map((event, index) => (
-                              <span key={`event-${event}-${index}`} className="inline-flex items-center gap-1 px-2 py-1 bg-purple-100 text-purple-800 rounded text-sm">
+                              <span key={`event-${event}-${index}`} className="inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0">
                                 {event}
                                 <button
                                   onClick={() => setTempEvents(tempEvents.filter(e => e !== event))}
@@ -4320,18 +4659,18 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               const events = user.events || [];
                               const topEvents = events.slice(0, 6); // Show only first 6
                               const remaining = events.length - 6;
-
+                              
                               return (
                                 <>
                                   {topEvents.map((event, index) => (
-                                    <Badge key={`event-${index}`} className="bg-purple-500 text-white font-medium border-0">
+                                    <div key={`event-${index}`} className="pill pill-events inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-purple-500 text-white border-0 appearance-none select-none gap-1.5" style={{height: '2.5rem', minWidth: '8rem', padding: '0 1rem', fontSize: '1rem'}}>
                                       {event}
-                                    </Badge>
+                                    </div>
                                   ))}
                                   {remaining > 0 && (
-                                    <Badge className="bg-gray-200 text-gray-600 font-medium border-0">
+                                    <div className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-purple-500 text-white border-0 appearance-none select-none gap-1.5">
                                       +{remaining} more
-                                    </Badge>
+                                    </div>
                                   )}
                                 </>
                               );
@@ -4346,6 +4685,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 </div>
               </CardContent>
             </Card>
+            )}
 
 
             {/* Things I Want to Do Widget - Show for all non-business profiles */}
@@ -4354,6 +4694,671 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 userId={effectiveUserId || 0}
                 isOwnProfile={isOwnProfile}
               />
+            )}
+
+            {/* Business Interests, Activities & Events Section - For business users only */}
+            {user?.userType === 'business' && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Heart className="w-5 h-5 text-orange-500" />
+                  Business Interests, Activities & Events
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6 break-words overflow-hidden">
+                {/* Single Edit Button for All Business Preferences */}
+                {isOwnProfile && !editingInterests && !editingActivities && !editingEvents && (
+                  <div className="flex justify-center mb-4">
+                    <Button
+                      onClick={() => {
+                        console.log('🔧 BUSINESS EDIT - Starting:', { 
+                          user,
+                          hasCustomInterests: !!user?.customInterests,
+                          hasCustomActivities: !!user?.customActivities,
+                          hasCustomEvents: !!user?.customEvents,
+                          customInterests: user?.customInterests,
+                          customActivities: user?.customActivities,
+                          customEvents: user?.customEvents
+                        });
+                        
+                        // Open ALL editing modes at once for business users
+                        setEditingInterests(true);
+                        setEditingActivities(true);
+                        setEditingEvents(true);
+                        
+                        // Initialize form data with combined predefined + custom entries
+                        const userInterests = [...(user?.interests || [])];
+                        const userActivities = [...(user?.activities || [])];
+                        const userEvents = [...(user?.events || [])];
+                        
+                        // Add custom fields from database to the arrays for display
+                        if (user?.customInterests) {
+                          const customInterests = user.customInterests.split(',').map(s => s.trim()).filter(s => s);
+                          console.log('🔧 Processing custom interests:', customInterests);
+                          customInterests.forEach(item => {
+                            if (!userInterests.includes(item)) {
+                              userInterests.push(item);
+                            }
+                          });
+                        }
+                        if (user?.customActivities) {
+                          const customActivities = user.customActivities.split(',').map(s => s.trim()).filter(s => s);
+                          console.log('🔧 Processing custom activities:', customActivities);
+                          customActivities.forEach(item => {
+                            if (!userActivities.includes(item)) {
+                              userActivities.push(item);
+                            }
+                          });
+                        }
+                        if (user?.customEvents) {
+                          const customEvents = user.customEvents.split(',').map(s => s.trim()).filter(s => s);
+                          console.log('🔧 Processing custom events:', customEvents);
+                          customEvents.forEach(item => {
+                            if (!userEvents.includes(item)) {
+                              userEvents.push(item);
+                            }
+                          });
+                        }
+                        
+                        console.log('🔧 BUSINESS EDIT - Final arrays:', { 
+                          finalInterests: userInterests,
+                          finalActivities: userActivities,
+                          finalEvents: userEvents
+                        });
+                        
+                        setEditFormData({
+                          interests: userInterests,
+                          activities: userActivities,
+                          events: userEvents
+                        });
+                      }}
+                      className="bg-orange-600 hover:bg-orange-700 text-white"
+                    >
+                      <Edit className="w-4 h-4 mr-2" />
+                      Edit Business Preferences
+                    </Button>
+                  </div>
+                )}
+
+                {/* Display current business interests/activities/events when not editing */}
+                {(!editingInterests || !editingActivities || !editingEvents) && (
+                  <div className="space-y-4">
+                    {(() => {
+                      // Combine predefined and custom fields for display
+                      const allInterests = [...(user?.interests || [])];
+                      const allActivities = [...(user?.activities || [])];
+                      const allEvents = [...(user?.events || [])];
+                      
+                      // Add custom interests
+                      if (user?.customInterests) {
+                        const customInterests = user.customInterests.split(',').map(s => s.trim()).filter(s => s);
+                        customInterests.forEach(item => {
+                          if (!allInterests.includes(item)) {
+                            allInterests.push(item);
+                          }
+                        });
+                      }
+                      
+                      // Add custom activities
+                      if (user?.customActivities) {
+                        const customActivities = user.customActivities.split(',').map(s => s.trim()).filter(s => s);
+                        customActivities.forEach(item => {
+                          if (!allActivities.includes(item)) {
+                            allActivities.push(item);
+                          }
+                        });
+                      }
+                      
+                      // Add custom events
+                      if (user?.customEvents) {
+                        const customEvents = user.customEvents.split(',').map(s => s.trim()).filter(s => s);
+                        customEvents.forEach(item => {
+                          if (!allEvents.includes(item)) {
+                            allEvents.push(item);
+                          }
+                        });
+                      }
+                      
+                      return (
+                        <>
+                          {allInterests.length > 0 && (
+                            <div>
+                              <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Business Interests</h4>
+                              <div className="flex flex-wrap gap-2">
+                                {allInterests.map((interest, index) => (
+                                  <div key={`interest-${index}`} className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
+                                    {interest}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          {allActivities.length > 0 && (
+                            <div>
+                              <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Business Activities</h4>
+                              <div className="flex flex-wrap gap-2">
+                                {allActivities.map((activity, index) => (
+                                  <div key={`activity-${index}`} className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-green-500 text-white border-0 appearance-none select-none gap-1.5">
+                                    {activity}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          {allEvents.length > 0 && (
+                            <div>
+                              <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Business Events</h4>
+                              <div className="flex flex-wrap gap-2">
+                                {allEvents.map((event, index) => (
+                                  <div key={`event-${index}`} className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-purple-500 text-white border-0 appearance-none select-none gap-1.5">
+                                    {event}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          {(allInterests.length === 0 && allActivities.length === 0 && allEvents.length === 0) && (
+                            <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                              <Heart className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+                              <p>Click "Edit Business Preferences" to add your business interests, activities, and events</p>
+                            </div>
+                          )}
+                        </>
+                      );
+                    })()}
+                  </div>
+                )}
+
+                {/* Business Edit Form - Reuse the same unified editing system */}
+                {isOwnProfile && (editingInterests && editingActivities && editingEvents) && (
+                  <div className="bg-orange-50 dark:bg-orange-900/20 p-4 rounded-lg border border-orange-200 dark:border-orange-600">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Edit Business Preferences</h3>
+                      <div className="flex gap-2">
+                        <Button 
+                          onClick={async () => {
+                            try {
+                              console.log('🔧 BUSINESS SAVING DATA:', editFormData);
+                              
+                              // Separate predefined vs custom entries for proper database storage
+                              const predefinedInterests = getAllInterests().filter(opt => editFormData.interests.includes(opt));
+                              const predefinedActivities = getAllActivities().filter(opt => editFormData.activities.includes(opt));
+                              const predefinedEvents = getAllEvents().filter(opt => editFormData.events.includes(opt));
+                              
+                              const customInterests = editFormData.interests.filter(int => !getAllInterests().includes(int));
+                              const customActivities = editFormData.activities.filter(act => !getAllActivities().includes(act));
+                              const customEvents = editFormData.events.filter(evt => !getAllEvents().includes(evt));
+                              
+                              const saveData = {
+                                interests: predefinedInterests,
+                                activities: predefinedActivities, 
+                                events: predefinedEvents,
+                                customInterests: customInterests.join(', '),
+                                customActivities: customActivities.join(', '),
+                                customEvents: customEvents.join(', ')
+                              };
+                              
+                              console.log('🔧 BUSINESS SAVE - Separated data:', saveData);
+                              
+                              const response = await fetch(`/api/users/${effectiveUserId}`, {
+                                method: 'PUT',
+                                headers: {
+                                  'Content-Type': 'application/json',
+                                  // CRITICAL FIX: Remove massive x-user-data header causing 431 error
+                                  'x-user-id': effectiveUserId?.toString() || '',
+                                  'x-user-type': user?.userType || 'business'
+                                },
+                                body: JSON.stringify(saveData)
+                              });
+                              
+                              if (!response.ok) {
+                                const errorText = await response.text();
+                                throw new Error(`Failed to save: ${errorText}`);
+                              }
+                              
+                              // Refresh data
+                              queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
+                              // Close editing modes
+                              setEditingInterests(false);
+                              setEditingActivities(false);
+                              setEditingEvents(false);
+                              
+                              // Clear custom inputs
+                              setCustomInterestInput('');
+                              setCustomActivityInput('');
+                              setCustomEventInput('');
+                              
+                              toast({
+                                title: "Success!",
+                                description: "Business preferences saved successfully.",
+                              });
+                            } catch (error: any) {
+                              console.error('Failed to update business preferences:', error);
+                              toast({
+                                title: "Error",
+                                description: error.message || "Failed to save business preferences. Please try again.",
+                                variant: "destructive",
+                              });
+                            }
+                          }}
+                          disabled={false}
+                          className="bg-green-600 hover:bg-green-700 text-white"
+                        >
+                          Save Business Changes
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          onClick={() => {
+                            // Cancel edits and close editing modes
+                            setEditingInterests(false);
+                            setEditingActivities(false);
+                            setEditingEvents(false);
+                            setEditFormData({
+                              interests: user?.interests || [],
+                              activities: user?.activities || [],
+                              events: user?.events || []
+                            });
+                          }}
+                        >
+                          Cancel
+                        </Button>
+                      </div>
+                    </div>
+                    
+                    {/* Reuse the same editing interface structure from non-business users */}
+                    <div className="space-y-6">
+                      {/* Business Interests Section */}
+                      <div>
+                        <h4 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white flex items-center gap-2">
+                          <Heart className="w-5 h-5 text-orange-500" />
+                          Business Interests
+                        </h4>
+                        <div className="flex flex-wrap gap-2 p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
+                          {getAllInterests().map((interest, index) => {
+                            const isSelected = editFormData.interests.includes(interest);
+                            console.log(`🔍 Interest "${interest}" is ${isSelected ? 'SELECTED' : 'not selected'} in:`, editFormData.interests);
+                            return (
+                              <button
+                                key={`business-interest-${interest}-${index}`}
+                                type="button"
+                                onClick={() => {
+                                  const newInterests = isSelected
+                                    ? editFormData.interests.filter((i: string) => i !== interest)
+                                    : [...editFormData.interests, interest];
+                                  setEditFormData({ ...editFormData, interests: newInterests });
+                                }}
+                                className={`inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none border-0 transition-all ${
+                                  isSelected
+                                    ? 'bg-green-600 text-white font-bold transform scale-105'
+                                    : 'bg-orange-100 text-orange-800 hover:bg-orange-200 dark:bg-orange-800 dark:text-orange-200 dark:hover:bg-orange-700'
+                                }`}
+                              >
+                                {interest}
+                              </button>
+                            );
+                          })}
+                        </div>
+                        
+                        {/* Custom Business Interests Input */}
+                        <div className="mt-3">
+                          <label className="text-xs font-medium mb-1 block text-gray-600 dark:text-gray-400">
+                            Add Custom Business Interests (hit Enter after each)
+                          </label>
+                          <div className="flex space-x-2">
+                            <Input
+                              placeholder="e.g., Sustainable Tourism, Local Partnerships"
+                              value={customInterestInput}
+                              onChange={(e) => setCustomInterestInput(e.target.value)}
+                              onKeyPress={(e) => {
+                                if (e.key === 'Enter') {
+                                  e.preventDefault();
+                                  const trimmed = customInterestInput.trim();
+                                  if (trimmed && !editFormData.interests.includes(trimmed)) {
+                                    setEditFormData({ ...editFormData, interests: [...editFormData.interests, trimmed] });
+                                    setCustomInterestInput('');
+                                  }
+                                }
+                              }}
+                              className="text-xs dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+                            />
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                const trimmed = customInterestInput.trim();
+                                if (trimmed && !editFormData.interests.includes(trimmed)) {
+                                  setEditFormData({ ...editFormData, interests: [...editFormData.interests, trimmed] });
+                                  setCustomInterestInput('');
+                                }
+                              }}
+                              className="h-8 px-2"
+                            >
+                              <Plus className="w-3 h-3" />
+                            </Button>
+                          </div>
+
+                          {/* Display Custom Interests with Delete Option */}
+                          {editFormData.interests.filter(interest => !getAllInterests().includes(interest)).length > 0 && (
+                            <div className="mt-2">
+                              <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Your Custom Interests (click X to remove):</p>
+                              <div className="flex flex-wrap gap-2">
+                                {editFormData.interests.filter(interest => !getAllInterests().includes(interest)).map((interest, index) => (
+                                  <span
+                                    key={`custom-interest-${index}`}
+                                    className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5"
+                                  >
+                                    {interest}
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        const newInterests = editFormData.interests.filter(i => i !== interest);
+                                        setEditFormData({ ...editFormData, interests: newInterests });
+                                      }}
+                                      className="ml-1 text-blue-600 hover:text-blue-800 dark:text-blue-300 dark:hover:text-blue-100"
+                                    >
+                                      ×
+                                    </button>
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Business Activities Section */}
+                      <div>
+                        <h4 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white flex items-center gap-2">
+                          <Globe className="w-5 h-5 text-green-500" />
+                          Business Activities
+                        </h4>
+                        <div className="flex flex-wrap gap-2 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                          {getAllActivities().map((activity, index) => {
+                            const isSelected = editFormData.activities.includes(activity);
+                            return (
+                              <button
+                                key={`business-activity-${activity}-${index}`}
+                                type="button"
+                                onClick={() => {
+                                  const newActivities = isSelected
+                                    ? editFormData.activities.filter((a: string) => a !== activity)
+                                    : [...editFormData.activities, activity];
+                                  setEditFormData({ ...editFormData, activities: newActivities });
+                                }}
+                                className={`inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none border-0 transition-all ${
+                                  isSelected
+                                    ? 'bg-green-600 text-white font-bold transform scale-105'
+                                    : 'bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-800 dark:text-green-200 dark:hover:bg-green-700'
+                                }`}
+                              >
+                                {activity}
+                              </button>
+                            );
+                          })}
+                        </div>
+                        
+                        {/* Custom Business Activities Input */}
+                        <div className="mt-3">
+                          <label className="text-xs font-medium mb-1 block text-gray-600 dark:text-gray-400">
+                            Add Custom Business Activities (hit Enter after each)
+                          </label>
+                          <div className="flex space-x-2">
+                            <Input
+                              placeholder="e.g., Private Tours, Corporate Events"
+                              value={customActivityInput}
+                              onChange={(e) => setCustomActivityInput(e.target.value)}
+                              onKeyPress={(e) => {
+                                if (e.key === 'Enter') {
+                                  e.preventDefault();
+                                  const trimmed = customActivityInput.trim();
+                                  if (trimmed && !editFormData.activities.includes(trimmed)) {
+                                    setEditFormData({ ...editFormData, activities: [...editFormData.activities, trimmed] });
+                                    setCustomActivityInput('');
+                                  }
+                                }
+                              }}
+                              className="text-xs dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+                            />
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                const trimmed = customActivityInput.trim();
+                                if (trimmed && !editFormData.activities.includes(trimmed)) {
+                                  setEditFormData({ ...editFormData, activities: [...editFormData.activities, trimmed] });
+                                  setCustomActivityInput('');
+                                }
+                              }}
+                              className="h-8 px-2"
+                            >
+                              <Plus className="w-3 h-3" />
+                            </Button>
+                          </div>
+
+                          {/* Display Custom Activities with Delete Option */}
+                          {editFormData.activities.filter(activity => !getAllActivities().includes(activity)).length > 0 && (
+                            <div className="mt-2">
+                              <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Custom Activities (click X to remove):</p>
+                              <div className="flex flex-wrap gap-2">
+                                {editFormData.activities.filter(activity => !getAllActivities().includes(activity)).map((activity, index) => (
+                                  <span
+                                    key={`custom-activity-${index}`}
+                                    className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-green-500 text-white border-0 appearance-none select-none gap-1.5"
+                                  >
+                                    {activity}
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        const newActivities = editFormData.activities.filter(a => a !== activity);
+                                        setEditFormData({ ...editFormData, activities: newActivities });
+                                      }}
+                                      className="ml-1 text-green-600 hover:text-green-800 dark:text-green-300 dark:hover:text-green-100"
+                                    >
+                                      ×
+                                    </button>
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Business Events Section */}
+                      <div>
+                        <h4 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white flex items-center gap-2">
+                          <Calendar className="w-5 h-5 text-purple-500" />
+                          Business Events
+                        </h4>
+                        <div className="flex flex-wrap gap-2 p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                          {getAllEvents().map((event, index) => {
+                            const isSelected = editFormData.events.includes(event);
+                            return (
+                              <button
+                                key={`business-event-${event}-${index}`}
+                                type="button"
+                                onClick={() => {
+                                  const newEvents = isSelected
+                                    ? editFormData.events.filter((e: string) => e !== event)
+                                    : [...editFormData.events, event];
+                                  setEditFormData({ ...editFormData, events: newEvents });
+                                }}
+                                className={`inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none border-0 transition-all ${
+                                  isSelected
+                                    ? 'bg-green-600 text-white font-bold transform scale-105'
+                                    : 'bg-purple-100 text-purple-800 hover:bg-purple-200 dark:bg-purple-800 dark:text-purple-200 dark:hover:bg-purple-700'
+                                }`}
+                              >
+                                {event}
+                              </button>
+                            );
+                          })}
+                        </div>
+                        
+                        {/* Custom Business Events Input */}
+                        <div className="mt-3">
+                          <label className="text-xs font-medium mb-1 block text-gray-600 dark:text-gray-400">
+                            Add Custom Business Events (hit Enter after each)
+                          </label>
+                          <div className="flex space-x-2">
+                            <Input
+                              placeholder="e.g., Wine Tastings, Art Shows, Workshops"
+                              value={customEventInput}
+                              onChange={(e) => setCustomEventInput(e.target.value)}
+                              onKeyPress={(e) => {
+                                if (e.key === 'Enter') {
+                                  e.preventDefault();
+                                  const trimmed = customEventInput.trim();
+                                  if (trimmed && !editFormData.events.includes(trimmed)) {
+                                    setEditFormData({ ...editFormData, events: [...editFormData.events, trimmed] });
+                                    setCustomEventInput('');
+                                  }
+                                }
+                              }}
+                              className="text-xs dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+                            />
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                const trimmed = customEventInput.trim();
+                                if (trimmed && !editFormData.events.includes(trimmed)) {
+                                  setEditFormData({ ...editFormData, events: [...editFormData.events, trimmed] });
+                                  setCustomEventInput('');
+                                }
+                              }}
+                              className="h-8 px-2"
+                            >
+                              <Plus className="w-3 h-3" />
+                            </Button>
+                          </div>
+
+                          {/* Display Custom Events with Delete Option */}
+                          {editFormData.events.filter(event => !getAllEvents().includes(event)).length > 0 && (
+                            <div className="mt-2">
+                              <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Custom Events (click X to remove):</p>
+                              <div className="flex flex-wrap gap-2">
+                                {editFormData.events.filter(event => !getAllEvents().includes(event)).map((event, index) => (
+                                  <span
+                                    key={`custom-event-${index}`}
+                                    className="pill inline-flex items-center"
+                                  >
+                                    {event}
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        const newEvents = editFormData.events.filter(e => e !== event);
+                                        setEditFormData({ ...editFormData, events: newEvents });
+                                      }}
+                                      className="ml-1 text-purple-600 hover:text-purple-800 dark:text-purple-300 dark:hover:text-purple-100"
+                                    >
+                                      ×
+                                    </button>
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Bottom Save Button for Business Preferences */}
+                {isOwnProfile && (editingInterests && editingActivities && editingEvents) && (
+                  <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border-t border-gray-200 dark:border-gray-600">
+                    <div className="flex justify-center">
+                      <Button 
+                        onClick={async () => {
+                          try {
+                            console.log('🔧 BUSINESS SAVING DATA (Bottom Button):', editFormData);
+                            
+                            // Separate predefined vs custom entries for proper database storage
+                            const predefinedInterests = getAllInterests().filter(opt => editFormData.interests.includes(opt));
+                            const predefinedActivities = getAllActivities().filter(opt => editFormData.activities.includes(opt));
+                            const predefinedEvents = getAllEvents().filter(opt => editFormData.events.includes(opt));
+                            
+                            const customInterests = editFormData.interests.filter(int => !getAllInterests().includes(int));
+                            const customActivities = editFormData.activities.filter(act => !getAllActivities().includes(act));
+                            const customEvents = editFormData.events.filter(evt => !getAllEvents().includes(evt));
+                            
+                            const saveData = {
+                              interests: predefinedInterests,
+                              activities: predefinedActivities, 
+                              events: predefinedEvents,
+                              customInterests: customInterests.join(', '),
+                              customActivities: customActivities.join(', '),
+                              customEvents: customEvents.join(', ')
+                            };
+                            
+                            console.log('🔧 BUSINESS SAVE - Final payload:', JSON.stringify(saveData, null, 2));
+                            
+                            const response = await fetch(`/api/users/${effectiveUserId}`, {
+                              method: 'PUT',
+                              headers: {
+                                'Content-Type': 'application/json',
+                                // CRITICAL FIX: Remove massive x-user-data header causing 431 error
+                                'x-user-id': effectiveUserId?.toString() || '',
+                                'x-user-type': user?.userType || 'business'
+                              },
+                              body: JSON.stringify(saveData)
+                            });
+                            
+                            console.log('🔧 BUSINESS SAVE - Response status:', response.status);
+                            
+                            if (!response.ok) {
+                              const errorText = await response.text();
+                              console.error('🔴 BUSINESS SAVE - Error response:', errorText);
+                              throw new Error(`Failed to save: ${response.status} ${errorText}`);
+                            }
+                            
+                            const responseData = await response.json();
+                            console.log('🔧 BUSINESS SAVE - Response data:', responseData);
+                            
+                            if (!response.ok) {
+                              throw new Error(`Failed to save: ${response.status} ${response.statusText}`);
+                            }
+                            
+                            // Update cache and UI
+                            queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
+                            
+                            // Close editing modes
+                            setEditingInterests(false);
+                            setEditingActivities(false);
+                            setEditingEvents(false);
+                            
+                            // Clear custom inputs
+                            setCustomInterestInput('');
+                            setCustomActivityInput('');
+                            setCustomEventInput('');
+                            
+                            toast({
+                              title: "Success!",
+                              description: "Business preferences saved successfully.",
+                            });
+                          } catch (error: any) {
+                            console.error('Failed to update business preferences:', error);
+                            toast({
+                              title: "Error",
+                              description: error.message || "Failed to save business preferences. Please try again.",
+                              variant: "destructive",
+                            });
+                          }
+                        }}
+                        className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 text-lg font-semibold"
+                        size="lg"
+                      >
+                        💾 Save Business Changes
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
             )}
 
             {/* Travel Plans - Hidden for business profiles */}
@@ -4430,14 +5435,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               <div className="flex items-center gap-2 mb-1">
                                 <h4 className="font-medium text-sm">{plan.destination}</h4>
                                 {plan.status === 'active' && (
-                                  <Badge className="bg-green-500 text-white text-xs px-2 py-0.5 whitespace-nowrap no-scrollbar">
+                                  <div className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
                                     ✈️ Currently Traveling
-                                  </Badge>
+                                  </div>
                                 )}
                                 {plan.status === 'planned' && (
-                                  <Badge className="bg-blue-500 text-white text-xs px-2 py-0.5 whitespace-nowrap no-scrollbar">
+                                  <div className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-orange-500 text-white border-0 appearance-none select-none gap-1.5">
                                     📅 Upcoming
-                                  </Badge>
+                                  </div>
                                 )}
                               </div>
                               <p className="text-black dark:text-white text-xs mb-1 font-medium">
@@ -4486,16 +5491,15 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           </div>
                           {plan.interests && plan.interests.length > 0 && (
                             <div className="mb-2">
-                              <PillRow>
+                              <div className="flex flex-wrap gap-2">
                                 {(expandedPlanInterests.has(plan.id) ? plan.interests : plan.interests.slice(0, 2)).map((interest: string) => (
-                                  <Badge key={interest} className={`text-xs ${getInterestStyle(interest)} whitespace-nowrap no-scrollbar`}>
+                                  <div key={interest} className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
                                     {interest}
-                                  </Badge>
+                                  </div>
                                 ))}
                                 {plan.interests.length > 2 && (
-                                  <Badge 
-                                    variant="outline" 
-                                    className="text-xs dark:bg-gray-800 dark:text-gray-300 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors whitespace-nowrap no-scrollbar"
+                                  <div 
+                                    className="pill-interests cursor-pointer"
                                     onClick={() => {
                                       const newExpanded = new Set(expandedPlanInterests);
                                       if (expandedPlanInterests.has(plan.id)) {
@@ -4507,25 +5511,25 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                     }}
                                   >
                                     {expandedPlanInterests.has(plan.id) ? 'Show less' : `+${plan.interests.length - 2} more`}
-                                  </Badge>
+                                  </div>
                                 )}
-                              </PillRow>
+                              </div>
                             </div>
                           )}
                           {plan.travelStyle && plan.travelStyle.length > 0 && (
                             <div>
-                              <PillRow>
+                              <div className="flex flex-wrap gap-2">
                                 {plan.travelStyle.slice(0, 2).map((style: string) => (
-                                  <Badge key={style} variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200 dark:bg-green-900 dark:text-green-200 dark:border-green-700 whitespace-nowrap no-scrollbar">
+                                  <div key={style} className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
                                     {style}
-                                  </Badge>
+                                  </div>
                                 ))}
                                 {plan.travelStyle.length > 2 && (
-                                  <Badge variant="outline" className="text-xs dark:bg-gray-800 dark:text-gray-300 whitespace-nowrap no-scrollbar">
+                                  <div className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
                                     +{plan.travelStyle.length - 2} more
-                                  </Badge>
+                                  </div>
                                 )}
-                              </PillRow>
+                              </div>
                             </div>
                           )}
                         </div>
@@ -4569,14 +5573,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               <div className="flex-1">
                                 <div className="flex items-center gap-2 mb-1">
                                   <h4 className="font-medium text-sm text-gray-600 dark:text-gray-300">{plan.destination}</h4>
-                                  <Badge className="bg-gray-500 text-white text-xs px-2 py-0.5">
+                                  <div className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-gray-500 text-white border-0 appearance-none select-none gap-1.5">
                                     ✓ Completed
-                                  </Badge>
+                                  </div>
                                 </div>
                                 <p className="text-gray-500 dark:text-gray-400 text-xs mb-1 font-medium">
                                   {plan.startDate ? formatDateForDisplay(plan.startDate, user?.hometownCity || 'UTC') : 'Start date TBD'} - {plan.endDate ? formatDateForDisplay(plan.endDate, user?.hometownCity || 'UTC') : 'End date TBD'}
                                 </p>
-
+                                
                                 {/* Enhanced Itinerary Summary */}
                                 {(plan.itineraryCount > 0 || plan.totalActivities > 0 || plan.totalItineraryCost > 0) && (
                                   <div className="bg-blue-50 dark:bg-blue-900/20 rounded-md p-2 mt-2 space-y-1">
@@ -4584,16 +5588,16 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                       <Calendar className="w-3 h-3" />
                                       Trip Summary
                                     </div>
-
+                                    
                                     <div className="grid grid-cols-2 gap-1 text-xs text-blue-700 dark:text-blue-300">
                                       {plan.itineraryCount > 0 && (
                                         <span>📋 {plan.itineraryCount} itinerary{plan.itineraryCount === 1 ? '' : 'ies'}</span>
                                       )}
-
+                                      
                                       {plan.totalActivities > 0 && (
                                         <span>✅ {plan.completedActivities || 0}/{plan.totalActivities} activities</span>
                                       )}
-
+                                      
                                       {plan.totalItineraryCost > 0 && (
                                         <span className="col-span-2">💰 ${plan.totalItineraryCost.toFixed(2)} spent</span>
                                       )}
@@ -4621,16 +5625,15 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             </div>
                             {plan.interests && plan.interests.length > 0 && (
                               <div className="mb-2">
-                                <div className="flex flex-wrap gap-1">
+                                <div className="flex flex-wrap gap-2">
                                   {(expandedPlanInterests.has(plan.id) ? plan.interests : plan.interests.slice(0, 2)).map((interest: string) => (
-                                    <Badge key={interest} className="text-xs bg-gray-100 text-gray-600 border-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600">
+                                    <div key={interest} className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
                                       {interest}
-                                    </Badge>
+                                    </div>
                                   ))}
                                   {plan.interests.length > 2 && (
-                                    <Badge 
-                                      variant="outline" 
-                                      className="text-xs dark:bg-gray-800 dark:text-gray-300 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                    <div 
+                                      className="pill-interests cursor-pointer"
                                       onClick={() => {
                                         const newExpanded = new Set(expandedPlanInterests);
                                         if (expandedPlanInterests.has(plan.id)) {
@@ -4642,28 +5645,28 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                       }}
                                     >
                                       {expandedPlanInterests.has(plan.id) ? 'Show less' : `+${plan.interests.length - 2} more`}
-                                    </Badge>
-                                  )}
-                                </div>
-                                </div>
-                            )}
-                            {plan.travelStyle && plan.travelStyle.length > 0 && (
-                              <div>
-                                <div className="flex flex-wrap gap-1">
-                                  {plan.travelStyle.slice(0, 2).map((style: string) => (
-                                    <Badge key={style} variant="outline" className="text-xs bg-gray-50 text-gray-600 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600">
-                                      {style}
-                                    </Badge>
-                                  ))}
-                                  {plan.travelStyle.length > 2 && (
-                                    <Badge variant="outline" className="text-xs dark:bg-gray-800 dark:text-gray-300">
-                                      +{plan.travelStyle.length - 2} more
-                                    </Badge>
+                                    </div>
                                   )}
                                 </div>
                               </div>
                             )}
-
+                            {plan.travelStyle && plan.travelStyle.length > 0 && (
+                              <div>
+                                <div className="flex flex-wrap gap-2">
+                                  {plan.travelStyle.slice(0, 2).map((style: string) => (
+                                    <div key={style} className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
+                                      {style}
+                                    </div>
+                                  ))}
+                                  {plan.travelStyle.length > 2 && (
+                                    <div className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
+                                      +{plan.travelStyle.length - 2} more
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            )}
+                            
                             {/* View Itinerary Details Button */}
                             {plan.itineraryCount > 0 && (
                               <div className="mt-2 pt-2 border-t border-gray-200 dark:border-gray-700">
@@ -4809,10 +5812,25 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
           {/* Right Sidebar */}
           <div className="lg:col-span-1 space-y-2">
-            {/* Quick Meetup Widget - Only show for own profile */}
-            {isOwnProfile && user?.userType !== 'business' && (
+            {/* Quick Meetup Widget - Only show for own profile (travelers/locals only, NOT business) */}
+            {isOwnProfile && user && user.userType !== 'business' && (
               <div className="mt-6">
                 <QuickMeetupWidget city={user?.hometownCity ?? ''} profileUserId={user?.id} />
+              </div>
+            )}
+
+            {/* Quick Deals Widget for Business Users */}
+            {isOwnProfile && user?.userType === 'business' && (
+              <div className="mt-6">
+                <QuickDealsWidget 
+                  city={user?.hometownCity ?? ''} 
+                  profileUserId={user?.id} 
+                  showCreateForm={showCreateDeal}
+                  onCloseCreateForm={() => {
+                    console.log('🔥 CLOSING create deal form');
+                    setShowCreateDeal(false);
+                  }}
+                />
               </div>
             )}
 
@@ -4825,7 +5843,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 <CardHeader>
                   <CardTitle className="dark:text-white">Travel Stats</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-4 break-words overflow-hidden">
                   <div className="flex items-center justify-between">
                     <span className="text-gray-600 dark:text-gray-300 flex items-center gap-2">
                       <Sparkles className="w-4 h-4 text-orange-500" />
@@ -4858,10 +5876,16 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   <div className="flex items-center justify-between">
                     <span className="text-gray-600 dark:text-gray-300 flex items-center gap-2">
                       <Shield className="w-4 h-4 text-blue-500" />
-                      Vouches
+                      <span className="hidden sm:inline">Vouches</span>
+                      <span className="sm:hidden">Vouches {(vouches?.length || 0) === 0 ? '• Get vouched by community' : ''}</span>
                     </span>
                     <span className="font-semibold text-blue-600 dark:text-blue-400">{vouches?.length || 0}</span>
                   </div>
+                  {(vouches?.length || 0) === 0 && (
+                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1 ml-6 hidden sm:block">
+                      Get vouched by vouched community members who know you personally
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             )}
@@ -4887,7 +5911,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     </Button>
                   )}
                 </CardTitle>
-
+                
                 {/* Filter Panel */}
                 {showConnectionFilters && userConnections.length > 0 && (
                   <div className="mt-4 p-4 bg-gray-50 rounded-lg space-y-3">
@@ -4994,35 +6018,42 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               <CardContent>
                 {userConnections.length > 0 ? (
                   <div className="space-y-3">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                     {userConnections.slice(0, connectionsDisplayCount).map((connection: any) => (
-                      <div key={connection.id} className="flex items-center justify-between">
-                        <div 
-                          className="flex items-center gap-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg p-2 -m-2 transition-colors flex-1"
-                          onClick={() => setLocation(`/profile/${connection.connectedUser?.id}`)}
-                        >
-                          <SimpleAvatar 
-                            user={connection.connectedUser} 
-                            size="md" 
-                            className="flex-shrink-0"
-                          />
-                          <div>
-                            <p className="font-medium text-sm text-gray-900 dark:text-white">{connection.connectedUser?.username || connection.connectedUser?.name}</p>
-                            <p className="text-xs text-gray-500 dark:text-gray-400">
-                              {connection.connectedUser?.location || "Location not set"}
-                            </p>
-                          </div>
+                      <div
+                        key={connection.id}
+                        onClick={() => setLocation(`/profile/${connection.connectedUser?.id}`)}
+                        className="rounded-xl border p-3 hover:shadow-sm bg-white dark:bg-gray-800 cursor-pointer flex flex-col items-center text-center gap-2"
+                      >
+                        <SimpleAvatar
+                          user={connection.connectedUser}
+                          size="md"
+                          className="w-16 h-16 sm:w-14 sm:h-14 rounded-full border-2 object-cover"
+                        />
+                        <div className="w-full">
+                          <p className="font-medium text-sm truncate text-gray-900 dark:text-white">
+                            {connection.connectedUser?.name || connection.connectedUser?.username}
+                          </p>
+                          <p className="text-xs truncate text-gray-500 dark:text-gray-400">
+                            {connection.connectedUser?.hometownCity && connection.connectedUser?.hometownCountry
+                              ? `${connection.connectedUser?.hometownCity}, ${connection.connectedUser?.hometownCountry.replace("United States", "USA")}`
+                              : "New member"}
+                          </p>
                         </div>
+
+                        {/* Show the button on ≥sm only; on mobile the whole tile is tappable */}
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => setLocation(`/profile/${connection.connectedUser?.id}`)}
-                          className="h-8 px-3 text-xs bg-blue-500 hover:bg-blue-600 text-white border-0"
+                          className="hidden sm:inline-flex h-8 px-3 text-xs bg-blue-500 hover:bg-blue-600 text-white border-0"
+                          onClick={(e) => { e.stopPropagation(); setLocation(`/profile/${connection.connectedUser?.id}`); }}
                         >
                           View
                         </Button>
                       </div>
                     ))}
-
+                  </div>
+                    
                     {/* Load More / Load Less buttons */}
                     {userConnections.length > 3 && (
                       <div className="text-center pt-2">
@@ -5069,7 +6100,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             {!isOwnProfile && userConnections.some((conn: any) => conn.status === 'accepted') && (
               <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-centergap-2">
+                  <CardTitle className="flex items-center gap-2">
                     <Users className="w-5 h-5 text-green-500" />
                     Write a Reference
                   </CardTitle>
@@ -5097,7 +6128,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     <MessageSquare className="w-5 h-5" />
                     Write Reference for {user?.username}
                   </div>
-
+                  
                   {showReferenceForm && (
                     <div className="space-y-4 mt-4">
                       <Form {...referenceForm}>
@@ -5115,7 +6146,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         }, (errors) => {
                           console.log('Form validation errors:', errors);
                         })} className="space-y-4">
-
+                          
                           {/* Note: revieweeId and reviewerId handled in submission data */}
 
                           {/* Reference Content */}
@@ -5182,12 +6213,57 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             )}
 
             {/* MOBILE-FRIENDLY RIGHT-SIDE WIDGETS SECTION */}
-
-
-
-
-
-
+            
+            {/* Languages Widget - Top Priority for Customer Visibility */}
+            <Card className="hover:shadow-lg transition-all duration-200 border-2 border-blue-200 dark:border-blue-700 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20">
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-2">
+                    <Globe className="w-5 h-5 text-blue-600" />
+                    Languages I Speak
+                  </CardTitle>
+                  {isOwnProfile && !editingLanguages && (
+                    <Button size="sm" variant="outline" onClick={handleEditLanguages} className="border-blue-300 text-blue-700 hover:bg-blue-100 dark:border-blue-600 dark:text-blue-300">
+                      <Edit className="w-3 h-3" />
+                    </Button>
+                  )}
+                </div>
+              </CardHeader>
+              <CardContent>
+                {editingLanguages ? (
+                  <div className="space-y-3">
+                    <MultiSelect
+                      options={LANGUAGES_OPTIONS}
+                      selected={tempLanguages}
+                      onChange={setTempLanguages}
+                      placeholder="Select languages"
+                    />
+                    <div className="flex gap-2">
+                      <Button size="sm" onClick={handleSaveLanguages} disabled={updateLanguages.isPending} className="bg-blue-600 hover:bg-blue-700">
+                        {updateLanguages.isPending ? "Saving..." : "Save"}
+                      </Button>
+                      <Button size="sm" variant="outline" onClick={handleCancelLanguages}>
+                        Cancel
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    {user.languagesSpoken && user.languagesSpoken.length > 0 ? (
+                      <div className="flex flex-wrap gap-2">
+                        {user.languagesSpoken.map((language: string) => (
+                          <div key={language} className="inline-flex items-center justify-center h-10 min-w-[8.5rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-gradient-to-r from-orange-400 to-pink-500 text-white border-0 appearance-none select-none gap-1.5 shadow-md">
+                            {language}
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-gray-500 text-sm">No languages listed</p>
+                    )}
+                  </>
+                )}
+              </CardContent>
+            </Card>
 
             {/* References Widget */}
             {user?.id && (
@@ -5202,15 +6278,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   <ReferencesWidgetNew userId={user.id} />
                 </CardContent>
               </Card>
-            )}
-
-            {/* Vouch System Widget */}
-            {user?.id && currentUser?.id && (
-              <VouchWidget 
-                userId={user.id} 
-                isOwnProfile={isOwnProfile} 
-                currentUserId={currentUser.id} 
-              />
             )}
 
 
@@ -5274,7 +6341,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           </div>
                         </div>
                       </div>
-
+                      
                       <Button
                         variant="outline"
                         size="sm"
@@ -5312,7 +6379,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           </span>
                         </div>
                       </div>
-
+                      
                       {/* Compatibility indicator when viewing other profiles */}
                       {compatibilityData?.travelStyleCompatibility && (
                         <div className="mt-3 p-2 rounded bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700">
@@ -5372,7 +6439,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             </p>
                           </div>
                         </div>
-
+                        
                         <div className="flex gap-1 flex-shrink-0">
                           <Button
                             size="sm"
@@ -5481,16 +6548,16 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   ) : (
                     <>
                       {countriesVisited.length > 0 ? (
-                        <PillRow>
+                        <div className="flex flex-wrap gap-2">
                           {countriesVisited.map((country: string, index: number) => (
-                            <Badge 
+                            <div 
                               key={country} 
-                              className="bg-blue-500 text-white border-0 px-4 py-2 text-sm font-medium whitespace-nowrap no-scrollbar min-w-[100px] h-9 flex items-center justify-center"
+                              className="pill-interests"
                             >
                               {country}
-                            </Badge>
+                            </div>
                           ))}
-                        </PillRow>
+                        </div>
                       ) : (
                         <p className="text-gray-500 dark:text-white text-sm">No countries visited yet</p>
                       )}
@@ -5500,57 +6567,179 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               </Card>
             )}
 
-            {/* Languages */}
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle>Languages I Speak</CardTitle>
-                  {isOwnProfile && !editingLanguages && (
-                    <Button size="sm" variant="outline" onClick={handleEditLanguages}>
-                      <Edit className="w-3 h-3" />
-                    </Button>
-                  )}
-                </div>
-              </CardHeader>
-              <CardContent>
-                {editingLanguages ? (
-                  <div className="space-y-3">
-                    <MultiSelect
-                      options={LANGUAGES_OPTIONS}
-                      selected={tempLanguages}
-                      onChange={setTempLanguages}
-                      placeholder="Select languages"
-                    />
-                    <div className="flex gap-2">
-                      <Button size="sm" onClick={handleSaveLanguages} disabled={updateLanguages.isPending}>
-                        {updateLanguages.isPending ? "Saving..." : "Save"}
-                      </Button>
-                      <Button size="sm" variant="outline" onClick={handleCancelLanguages}>
-                        Cancel
-                      </Button>
-                    </div>
-                  </div>
-                ) : (
-                  <>
-                    {user.languagesSpoken && user.languagesSpoken.length > 0 ? (
-                      <PillRow>
-                        {user.languagesSpoken.map((language: string) => (
-                          <Badge key={language} variant="secondary" className="text-sm whitespace-nowrap no-scrollbar">
-                            {language}
-                          </Badge>
-                        ))}
-                      </PillRow>
-                    ) : (
-                      <p className="text-gray-500 text-sm">No languages listed</p>
-                    )}
-                  </>
-                )}
-              </CardContent>
-            </Card>
+
 
             {/* Comprehensive Geolocation System - Enhanced location sharing for users, businesses, and events */}
-            {isOwnProfile && (
-              <LocationSharingWidget />
+            {console.log('🔧 Profile: Checking if location sharing should render:', { isOwnProfile, userId: user?.id })}
+            {isOwnProfile && user && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <MapPin className="h-5 w-5" />
+                    Location Sharing
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4 break-words overflow-hidden">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      {user.locationSharingEnabled ? (
+                        <Eye className="h-4 w-4 text-green-600" />
+                      ) : (
+                        <EyeOff className="h-4 w-4 text-gray-400" />
+                      )}
+                      <span className="text-sm font-medium">
+                        Share location on city map
+                      </span>
+                    </div>
+                    <Switch
+                      checked={user.locationSharingEnabled || false}
+                      onCheckedChange={async (enabled) => {
+                        console.log('🔧 DIRECT: Location sharing toggle clicked:', { enabled, userId: user.id });
+                        
+                        // Update user data immediately for responsive UI
+                        const updatedUserData = { ...user, locationSharingEnabled: enabled };
+                        queryClient.setQueryData([`/api/users/${user.id}`], updatedUserData);
+                        
+                        if (enabled) {
+                          // Request location permission first
+                          if (!navigator.geolocation) {
+                            // Revert the optimistic update
+                            queryClient.setQueryData([`/api/users/${user.id}`], user);
+                            toast({
+                              title: "Location not supported",
+                              description: "Your browser doesn't support location services",
+                              variant: "destructive",
+                            });
+                            return;
+                          }
+                          
+                          // Get current location before enabling sharing
+                          navigator.geolocation.getCurrentPosition(
+                            async (position) => {
+                              const { latitude, longitude } = position.coords;
+                              console.log('🔧 DIRECT: Got location:', { latitude, longitude });
+                              
+                              try {
+                                // Update location sharing with coordinates
+                                const response = await apiRequest('PUT', `/api/users/${user.id}`, {
+                                  locationSharingEnabled: enabled,
+                                  currentLatitude: latitude,
+                                  currentLongitude: longitude
+                                });
+                                
+                                console.log('🔧 DIRECT: Location sharing updated successfully');
+                                
+                                // Update the cache with the response data
+                                queryClient.setQueryData([`/api/users/${user.id}`], response);
+                                
+                                // Also refetch to ensure consistency
+                                await queryClient.refetchQueries({ queryKey: [`/api/users/${user.id}`] });
+                                
+                                toast({
+                                  title: "Location sharing enabled",
+                                  description: "Your location is now visible on city maps",
+                                });
+                              } catch (error) {
+                                console.error('🔧 DIRECT: Error updating location sharing:', error);
+                                // Revert the optimistic update on error
+                                queryClient.setQueryData([`/api/users/${user.id}`], user);
+                                toast({
+                                  title: "Error", 
+                                  description: "Failed to update location sharing",
+                                  variant: "destructive",
+                                });
+                              }
+                            },
+                            (error) => {
+                              console.error('🔧 DIRECT: Location error:', error);
+                              // Revert the optimistic update on location error
+                              queryClient.setQueryData([`/api/users/${user.id}`], user);
+                              
+                              let message = "Unable to get your location";
+                              
+                              switch (error.code) {
+                                case error.PERMISSION_DENIED:
+                                  message = "Location access denied. Please enable location permissions in your browser settings.";
+                                  break;
+                                case error.POSITION_UNAVAILABLE:
+                                  message = "Location information unavailable.";
+                                  break;
+                                case error.TIMEOUT:
+                                  message = "Location request timed out.";
+                                  break;
+                              }
+                              
+                              toast({
+                                title: "Location Error",
+                                description: message,
+                                variant: "destructive",
+                              });
+                            },
+                            {
+                              enableHighAccuracy: true,
+                              timeout: 10000,
+                              maximumAge: 300000 // 5 minutes
+                            }
+                          );
+                        } else {
+                          // Simply disable location sharing
+                          try {
+                            const response = await apiRequest('PUT', `/api/users/${user.id}`, {
+                              locationSharingEnabled: enabled
+                            });
+                            
+                            console.log('🔧 DIRECT: Location sharing disabled');
+                            
+                            // Update the cache with the response data
+                            queryClient.setQueryData([`/api/users/${user.id}`], response);
+                            
+                            // Also refetch to ensure consistency
+                            await queryClient.refetchQueries({ queryKey: [`/api/users/${user.id}`] });
+                            
+                            toast({
+                              title: "Location sharing disabled",
+                              description: "Your location is no longer visible on city maps",
+                            });
+                          } catch (error) {
+                            console.error('🔧 DIRECT: Error disabling location sharing:', error);
+                            // Revert the optimistic update on error
+                            queryClient.setQueryData([`/api/users/${user.id}`], user);
+                            toast({
+                              title: "Error", 
+                              description: "Failed to update location sharing",
+                              variant: "destructive",
+                            });
+                          }
+                        }
+                      }}
+                      data-testid="location-sharing-toggle"
+                    />
+                  </div>
+
+                  {user.locationSharingEnabled && (
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                        <AlertCircle className="h-4 w-4" />
+                        <span>
+                          Your location will be visible to other users on the city map
+                          {user.userType === 'business' && ' while you are running deals and events'}
+                        </span>
+                      </div>
+                      {user.currentLatitude && user.currentLongitude && (
+                        <div className="text-xs text-gray-500 bg-gray-50 dark:bg-gray-800 p-2 rounded">
+                          Current location: {user.currentLatitude.toFixed(4)}, {user.currentLongitude.toFixed(4)}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {!user.locationSharingEnabled && (
+                    <div className="text-sm text-gray-500 dark:text-gray-400">
+                      Enable location sharing to appear on city maps and help other travelers find you
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
             )}
 
             {/* Business Referral Program Widget */}
@@ -5609,13 +6798,166 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             )}
 
 
+            {/* Owner/Admin Contact Information - Only visible to business owner */}
+            {isOwnProfile && user?.userType === 'business' && (
+              <Card className="border-purple-200 dark:border-purple-800 bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-900/30 dark:to-indigo-900/30">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <Shield className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                      <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">
+                        Admin Information
+                      </CardTitle>
+                      <div className="inline-flex items-center justify-center h-6 min-w-[4rem] rounded-full px-2 text-xs font-medium leading-none whitespace-nowrap bg-purple-100 text-purple-700 dark:bg-purple-800 dark:text-purple-200 border-0 appearance-none select-none gap-1">
+                        Private
+                      </div>
+                    </div>
+                    {!editingOwnerInfo && (
+                      <Button
+                        size="sm"
+                        onClick={() => setEditingOwnerInfo(true)}
+                        className="bg-purple-600 hover:bg-purple-700 text-white border-0"
+                      >
+                        <Edit className="w-3 h-3 mr-1" />
+                        Edit
+                      </Button>
+                    )}
+                  </div>
+                  <p className="text-sm text-gray-700 dark:text-gray-300 mt-2">
+                    Internal contact information for platform communications
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  {editingOwnerInfo ? (
+                    <div className="space-y-4">
+                      <div>
+                        <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Business Name</Label>
+                        <Input 
+                          value={ownerContactForm.ownerName}
+                          onChange={(e) => setOwnerContactForm(prev => ({ ...prev, ownerName: e.target.value }))}
+                          placeholder="Enter business name"
+                          className="mt-1"
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Contact Name</Label>
+                        <Input 
+                          value={ownerContactForm.contactName}
+                          onChange={(e) => setOwnerContactForm(prev => ({ ...prev, contactName: e.target.value }))}
+                          placeholder="Enter main contact person name"
+                          className="mt-1"
+                        />
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                          The person we should contact (may be different from owner)
+                        </p>
+                      </div>
+                      <div>
+                        <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Contact Email</Label>
+                        <Input 
+                          value={ownerContactForm.ownerEmail}
+                          onChange={(e) => setOwnerContactForm(prev => ({ ...prev, ownerEmail: e.target.value }))}
+                          placeholder="owner@business.com"
+                          type="email"
+                          className="mt-1"
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Contact Person Phone Number</Label>
+                        <Input 
+                          value={ownerContactForm.ownerPhone}
+                          onChange={(e) => setOwnerContactForm(prev => ({ ...prev, ownerPhone: e.target.value }))}
+                          placeholder="(555) 123-4567"
+                          className="mt-1"
+                        />
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          onClick={handleSaveOwnerContact}
+                          disabled={updateOwnerContact.isPending}
+                          className="bg-purple-600 hover:bg-purple-700 text-white"
+                        >
+                          {updateOwnerContact.isPending ? "Saving..." : "Save"}
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => {
+                            setEditingOwnerInfo(false);
+                            setOwnerContactForm({
+                              ownerName: user?.ownerName || "",
+                              contactName: user?.contactName || "",
+                              ownerEmail: user?.ownerEmail || "",
+                              ownerPhone: user?.ownerPhone || ""
+                            });
+                          }}
+                          className="border-purple-500 text-purple-600 hover:bg-purple-50 dark:border-purple-400 dark:text-purple-400 dark:hover:bg-purple-900/20"
+                        >
+                          Cancel
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-gray-600 dark:text-gray-400">Business Name:</span>
+                        <span className="text-sm font-medium text-gray-900 dark:text-white">
+                          {user?.ownerName || "Not set"}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-gray-600 dark:text-gray-400">Contact Name:</span>
+                        <span className="text-sm font-medium text-gray-900 dark:text-white">
+                          {user?.contactName || "Not set"}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-gray-600 dark:text-gray-400">Contact Email:</span>
+                        {user?.ownerEmail ? (
+                          <a 
+                            href={`mailto:${user.ownerEmail}`} 
+                            className="text-sm font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 underline transition-colors"
+                          >
+                            {user.ownerEmail}
+                          </a>
+                        ) : (
+                          <span className="text-sm font-medium text-gray-900 dark:text-white">
+                            Not set
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-gray-600 dark:text-gray-400">Contact Person Phone:</span>
+                        {user?.ownerPhone ? (
+                          <a 
+                            href={`tel:${user.ownerPhone}`} 
+                            className="text-sm font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 underline transition-colors"
+                          >
+                            {user.ownerPhone}
+                          </a>
+                        ) : (
+                          <span className="text-sm font-medium text-gray-900 dark:text-white">
+                            Not set
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400 bg-purple-100 dark:bg-purple-900/50 p-2 rounded">
+                        <AlertCircle className="w-3 h-3 inline mr-1" />
+                        This information is only visible to you and used for platform communications
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
             {/* Boost Connections Widget - MOVED TO BOTTOM - Only show for own profile */}
             {isOwnProfile && (
               <Card className="border-orange-200 dark:border-orange-800 bg-gradient-to-br from-orange-50 to-blue-50 dark:from-orange-900/30 dark:to-blue-900/30 hover:shadow-lg transition-all duration-200">
                 <CardHeader className="pb-3">
                   <div className="flex items-center space-x-2 mb-2">
                     <TrendingUp className="w-5 h-5 text-orange-600 dark:text-orange-400" />
-                    <Badge variant="default" className="bg-orange-600 text-white">Success Tips</Badge>
+                    <div className="inline-flex items-center justify-center h-6 min-w-[4rem] rounded-full px-2 text-xs font-medium leading-none whitespace-nowrap bg-orange-600 text-white border-0 appearance-none select-none gap-1">Success Tips</div>
                   </div>
                   <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">
                     Boost Your Connections
@@ -5691,7 +7033,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
       {/* Cover Photo Crop Modal */}
       <Dialog open={showCropModal} onOpenChange={() => setShowCropModal(false)}>
-        <DialogContent className="w-[92vw] sm:max-w-4xl">
+        <DialogContent className="max-w-4xl">
           <DialogHeader>
             <DialogTitle>Crop Cover Photo</DialogTitle>
             <DialogDescription>
@@ -5749,7 +7091,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 </div>
               )}
             </div>
-
+            
             {/* Crop controls */}
             <div className="space-y-3">
               <div className="flex items-center justify-between text-sm text-gray-600">
@@ -5773,7 +7115,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </Button>
                 </div>
               </div>
-
+              
               <div className="flex justify-center">
                 <Button
                   type="button"
@@ -5806,7 +7148,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         setEditingActivities(false);
         setEditingEvents(false);
       }}>
-        <DialogContent className="w-[92vw] sm:max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="w-[calc(100vw-16px)] max-w-[calc(100vw-16px)] md:max-w-4xl max-h-[85vh] md:max-h-[90vh] overflow-y-auto no-scrollbar mx-2 md:mx-auto p-4 md:p-6 safe-area-inset-bottom">
           <DialogHeader>
             <DialogTitle>Edit Travel Plan</DialogTitle>
           </DialogHeader>
@@ -5842,7 +7184,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               </div>
 
 
-
+              
               <div className="grid grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
@@ -5857,7 +7199,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     </FormItem>
                   )}
                 />
-
+                
                 <FormField
                   control={form.control}
                   name="endDate"
@@ -5891,7 +7233,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 <div className="text-xs text-gray-600 mb-3 p-2 bg-orange-50 rounded border">
                   <strong>Note:</strong> These are interests specific to this travel plan only, separate from your main profile interests.
                 </div>
-
+                
                 {/* I am a Veteran checkbox */}
                 <div className="mb-4">
                   <FormField
@@ -5925,7 +7267,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     )}
                   />
                 </div>
-
+                
                 <div className="grid grid-cols-4 gap-1 border rounded-lg p-3 bg-orange-50">
                   {getAllInterests().map((interest, index) => (
                     <div key={`interest-edit-${index}`} className="flex items-center space-x-1">
@@ -5955,6 +7297,44 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     </div>
                   ))}
                 </div>
+                
+                {/* Custom Interests Input */}
+                <div className="mt-3">
+                  <Label className="text-xs font-medium mb-1 block text-gray-600">
+                    Add Custom Interests (comma-separated)
+                  </Label>
+                  <FormField
+                    control={form.control}
+                    name="customInterests"
+                    render={({ field }) => (
+                      <Input
+                        placeholder="e.g., Photography, Rock Climbing, Local Cuisine"
+                        value={field.value || ''}
+                        onChange={(e) => field.onChange(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            const value = field.value?.trim();
+                            if (value) {
+                              // Process custom interests by adding them to the interests array
+                              const customItems = value.split(',').map(item => item.trim()).filter(item => item);
+                              const currentInterests = form.getValues('interests') || [];
+                              const newInterests = [...currentInterests];
+                              customItems.forEach(item => {
+                                if (!newInterests.includes(item)) {
+                                  newInterests.push(item);
+                                }
+                              });
+                              form.setValue('interests', newInterests);
+                              field.onChange(''); // Clear the input
+                            }
+                          }
+                        }}
+                        className="text-xs"
+                      />
+                    )}
+                  />
+                </div>
               </div>
 
               {/* Activities Section */}
@@ -5962,7 +7342,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 <Label className="text-sm font-medium mb-2 block">
                   Activities on This Trip
                 </Label>
-
+                
                 <div className="grid grid-cols-4 gap-1 border rounded-lg p-3 bg-green-50">
                   {getAllActivities().map((activity, index) => {
                     const displayText = activity.startsWith("**") && activity.endsWith("**") ? 
@@ -5996,6 +7376,44 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     );
                   })}
                 </div>
+                
+                {/* Custom Activities Input */}
+                <div className="mt-3">
+                  <Label className="text-xs font-medium mb-1 block text-gray-600">
+                    Add Custom Activities (comma-separated)
+                  </Label>
+                  <FormField
+                    control={form.control}
+                    name="customActivities"
+                    render={({ field }) => (
+                      <Input
+                        placeholder="e.g., Surfing Lessons, Wine Tasting, Museum Tours"
+                        value={field.value || ''}
+                        onChange={(e) => field.onChange(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            const value = field.value?.trim();
+                            if (value) {
+                              // Process custom activities by adding them to the activities array
+                              const customItems = value.split(',').map(item => item.trim()).filter(item => item);
+                              const currentActivities = form.getValues('activities') || [];
+                              const newActivities = [...currentActivities];
+                              customItems.forEach(item => {
+                                if (!newActivities.includes(item)) {
+                                  newActivities.push(item);
+                                }
+                              });
+                              form.setValue('activities', newActivities);
+                              field.onChange(''); // Clear the input
+                            }
+                          }
+                        }}
+                        className="text-xs"
+                      />
+                    )}
+                  />
+                </div>
               </div>
 
               {/* Events Section */}
@@ -6003,7 +7421,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 <Label className="text-sm font-medium mb-2 block">
                   Events on This Trip
                 </Label>
-
+                
                 <div className="grid grid-cols-4 gap-1 border rounded-lg p-3 bg-orange-50">
                   {getAllEvents().map((event, index) => (
                     <div key={`event-edit-${index}`} className="flex items-center space-x-1">
@@ -6033,9 +7451,45 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     </div>
                   ))}
                 </div>
+                
+                {/* Custom Events Input */}
+                <div className="mt-3">
+                  <Label className="text-xs font-medium mb-1 block text-gray-600">
+                    Add Custom Events (comma-separated)
+                  </Label>
+                  <FormField
+                    control={form.control}
+                    name="customEvents"
+                    render={({ field }) => (
+                      <Input
+                        placeholder="e.g., Jazz Festival, Food Market, Art Exhibition"
+                        value={field.value || ''}
+                        onChange={(e) => field.onChange(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            const value = field.value?.trim();
+                            if (value) {
+                              // Process custom events by adding them to the events array
+                              const customItems = value.split(',').map(item => item.trim()).filter(item => item);
+                              const currentEvents = form.getValues('events') || [];
+                              const newEvents = [...currentEvents];
+                              customItems.forEach(item => {
+                                if (!newEvents.includes(item)) {
+                                  newEvents.push(item);
+                                }
+                              });
+                              form.setValue('events', newEvents);
+                              field.onChange(''); // Clear the input
+                            }
+                          }
+                        }}
+                        className="text-xs"
+                      />
+                    )}
+                  />
+                </div>
               </div>
-
-
 
               {/* Accommodation */}
               <div>
@@ -6111,149 +7565,312 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         </DialogContent>
       </Dialog>
 
-      {/* Mobile-Friendly Bio Edit Modal */}
-      <EditBioModal
-        open={showBioEditModal}
-        onOpenChange={setShowBioEditModal}
-        initialBio={user?.userType === "business" ? (user?.businessDescription || user?.bio || "") : (user?.bio || "")}
-        onSave={async (bio) => {
-          const updateData = user?.userType === "business" ? { businessDescription: bio } : { bio };
-          await apiRequest("PATCH", `/api/users/${user?.id}`, updateData);
-          queryClient.invalidateQueries({ queryKey: [`/api/users/${user?.id}`] });
-          toast({ title: "Bio updated" });
-        }}
-        maxLength={800}
-      />
-
       {/* Profile Edit Modal */}
       <Dialog open={isEditMode} onOpenChange={setIsEditMode}>
-        <DialogContent className="w-[95vw] max-w-[95vw] sm:max-w-2xl max-h-[85vh] overflow-y-auto p-4 sm:p-6">
+        <DialogContent className="w-[calc(100vw-16px)] max-w-[calc(100vw-16px)] md:max-w-2xl max-h-[85vh] md:max-h-[90vh] overflow-y-auto no-scrollbar mx-2 md:mx-auto p-4 md:p-6 safe-area-inset-bottom">
           <DialogHeader>
-            <DialogTitle>Edit Profile</DialogTitle>
+            <div className="flex items-center justify-between">
+              <DialogTitle>Edit Profile</DialogTitle>
+              <Button
+                type="button"
+                size="sm"
+                onClick={() => {
+                  console.log('🔥 SAVE BUTTON CLICKED - Header');
+                  console.log('🔥 Form errors:', profileForm.formState.errors);
+                  console.log('🔥 Form values:', profileForm.getValues());
+                  console.log('🔥 Form valid:', profileForm.formState.isValid);
+                  profileForm.handleSubmit(onSubmitProfile, (errors) => {
+                    console.log('🔥 VALIDATION ERRORS:', errors);
+                  })();
+                }}
+                disabled={editProfile.isPending}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                {editProfile.isPending ? "Saving..." : "Save"}
+              </Button>
+            </div>
           </DialogHeader>
           <Form {...profileForm}>
             <form onSubmit={profileForm.handleSubmit(onSubmitProfile)} className="space-y-6">
-              {user?.userType === 'business' && (
-                <FormField
-                  control={profileForm.control}
-                  name="businessName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Business Name</FormLabel>
-                      <FormControl>
-                        <Input 
-                          {...field} 
-                          placeholder="Enter your business name..."
-                          maxLength={100}
-                        />
-                      </FormControl>
-                      <div className="text-xs text-gray-500 text-right">
-                        {field.value?.length || 0}/100 characters
-                      </div>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )}
-
+              {/* Business Profile Fields */}
               {user?.userType === 'business' ? (
-                <FormField
-                  control={profileForm.control}
-                  name="businessDescription"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Business Description</FormLabel>
-                      <FormControl>
-                        <Textarea 
-                          {...field} 
-                          placeholder="Describe your business, services, and what makes you special..."
-                          className="min-h-[100px] resize-none"
-                          maxLength={1000}
-                        />
-                      </FormControl>
-                      <div className="text-xs text-gray-500 text-right">
-                        {field.value?.length || 0}/1000 characters
-                      </div>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              ) : (
-                <FormField
-                  control={profileForm.control}
-                  name="bio"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Bio</FormLabel>
-                      <FormControl>
-                        <Textarea 
-                          {...field} 
-                          placeholder="Tell us about yourself..."
-                          className="min-h-[100px] resize-none"
-                          maxLength={1000}
-                        />
-                      </FormControl>
-                      <div className="text-xs text-gray-500 text-right">
-                        {field.value?.length || 0}/1000 characters
-                      </div>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )}
-
-              {user?.userType !== 'business' && (
-                <FormField
-                  control={profileForm.control}
-                  name="secretActivities"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>If I could list a few Secret Local things in my hometown I would say they are...</FormLabel>
-                      <FormControl>
-                        <Textarea 
-                          {...field} 
-                          placeholder="Fill this out for others to see secret activities, hidden gems, local spots, or insider tips that only locals know about. Example: There's a hidden waterfall behind the old mill that locals love, or try the secret menu at Joe's Diner..."
-                          className="min-h-[80px] resize-none"
-                          maxLength={500}
-                        />
-                      </FormControl>
-                      <div className="text-xs text-gray-500 text-right">
-                        {field.value?.length || 0}/500 characters
-                      </div>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )}
-
-              {/* Family Travel Field */}
-              {user?.userType !== 'business' && (
-                <FormField
-                  control={profileForm.control}
-                  name="travelingWithChildren"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                      <div className="space-y-0.5">
-                        <FormLabel className="text-base">
-                          Traveling with children
-                        </FormLabel>
-                        <div className="text-sm text-muted-foreground">
-                          Show that you're traveling with children to connect with other families
+                <div className="space-y-6">
+                  <FormField
+                    control={profileForm.control}
+                    name="businessName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Business Name</FormLabel>
+                        <FormControl>
+                          <Input 
+                            {...field} 
+                            placeholder="Enter your business name..."
+                            maxLength={100}
+                          />
+                        </FormControl>
+                        <div className="text-xs text-gray-500 text-right">
+                          {field.value?.length || 0}/100 characters
                         </div>
-                      </div>
-                      <FormControl>
-                        <Switch
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+
+
+                  <FormField
+                    control={profileForm.control}
+                    name="businessType"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Business Type</FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value || ''}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select business type" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent className="dark:bg-gray-800 dark:border-gray-600">
+                            {BUSINESS_TYPES.map((type) => (
+                              <SelectItem key={type} value={type} className="dark:text-white dark:hover:bg-gray-700">
+                                {type}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={profileForm.control}
+                    name="phoneNumber"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Phone Number</FormLabel>
+                        <FormControl>
+                          <Input 
+                            {...field} 
+                            placeholder="(555) 123-4567"
+                            type="tel"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={profileForm.control}
+                    name="websiteUrl"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Website URL</FormLabel>
+                        <FormControl>
+                          <Input 
+                            {...field} 
+                            placeholder="www.yourwebsite.com"
+                            type="text"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+
+
+
+                  {/* Business Description Field */}
+                  <FormField
+                    control={profileForm.control}
+                    name="businessDescription"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Business Description</FormLabel>
+                        <FormControl>
+                          <Textarea 
+                            {...field} 
+                            placeholder="Describe your business and services..."
+                            className="min-h-[100px] resize-none"
+                            maxLength={1000}
+                          />
+                        </FormControl>
+                        <div className="text-xs text-gray-500 text-right">
+                          {field.value?.length || 0}/1000 characters {(field.value?.length || 0) < 30 && '(minimum 30 required)'}
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              ) : (
+                /* Traveler Profile Fields */
+                <div className="space-y-6">
+                  <FormField
+                    control={profileForm.control}
+                    name="bio"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Bio</FormLabel>
+                        <FormControl>
+                          <Textarea 
+                            {...field} 
+                            placeholder="Tell us about yourself..."
+                            className="min-h-[100px] resize-none"
+                            maxLength={1000}
+                          />
+                        </FormControl>
+                        <div className="text-xs text-gray-500 text-right">
+                          {field.value?.length || 0}/1000 characters {(field.value?.length || 0) < 30 && '(minimum 30 required)'}
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={profileForm.control}
+                    name="secretActivities"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>If I could list a few Secret Local things in my hometown I would say they are...</FormLabel>
+                        <FormControl>
+                          <Textarea 
+                            {...field} 
+                            placeholder="Fill this out for others to see secret activities, hidden gems, local spots, or insider tips that only locals know about. Example: There's a hidden waterfall behind the old mill that locals love, or try the secret menu at Joe's Diner..."
+                            className="min-h-[80px] resize-none"
+                            maxLength={500}
+                          />
+                        </FormControl>
+                        <div className="text-xs text-gray-500 text-right">
+                          {field.value?.length || 0}/500 characters
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Family Travel Section */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white border-b pb-2">
+                      Family Travel
+                    </h3>
+                    
+                    <FormField
+                      control={profileForm.control}
+                      name="travelingWithChildren"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Are you traveling with children?</FormLabel>
+                          <FormControl>
+                            <div className="space-y-2 border rounded-md p-3">
+                              <div className="flex items-center space-x-2">
+                                <input
+                                  type="checkbox"
+                                  id="traveling-with-children"
+                                  checked={!!field.value}
+                                  onChange={(e) => {
+                                    const checked = e.target.checked;
+                                    field.onChange(checked);
+                                    if (!checked) {
+                                      // Clear ages when unchecked
+                                      profileForm.setValue('childrenAges', '');
+                                    }
+                                  }}
+                                  className="h-4 w-4 border-gray-300 rounded text-purple-600 focus:ring-purple-500"
+                                  data-testid="checkbox-traveling-with-children"
+                                />
+                                <label 
+                                  htmlFor="traveling-with-children" 
+                                  className="text-sm font-medium text-gray-700 dark:text-white cursor-pointer"
+                                >
+                                  Yes, I'm traveling with children
+                                </label>
+                              </div>
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    {/* Children Ages Field - Only show if traveling with children is checked */}
+                    {profileForm.watch('travelingWithChildren') && (
+                      <FormField
+                        control={profileForm.control}
+                        name="childrenAges"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Children's Ages</FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder="e.g., 3, 7, 12"
+                                {...field}
+                                className="dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+                              />
+                            </FormControl>
+                            <FormDescription>
+                              Enter the ages of your children (separated by commas)
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    )}
+                  </div>
+                </div>
               )}
 
+              {/* Location Section - Different for Business vs Traveler */}
               <div className="space-y-4">
-                <FormLabel>Hometown Location ** ONLY CHANGE IF YOU MOVE **</FormLabel>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white border-b pb-2">
+                  {user?.userType === 'business' ? 'Business Location' : 'Hometown Location ** ONLY CHANGE IF YOU MOVE **'}
+                </h3>
+                
+                {/* Business users get street address and ZIP code fields first */}
+                {user?.userType === 'business' && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      control={profileForm.control}
+                      name="streetAddress"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Street Address</FormLabel>
+                          <FormControl>
+                            <Input 
+                              {...field} 
+                              placeholder="123 Main Street"
+                              className="dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={profileForm.control}
+                      name="zipCode"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>ZIP Code</FormLabel>
+                          <FormControl>
+                            <Input 
+                              {...field} 
+                              placeholder="12345"
+                              className="dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                )}
+                
+                {/* Standard location dropdowns for all users */}
                 <SmartLocationInput
                   city={profileForm.watch('hometownCity') || ''}
                   state={profileForm.watch('hometownState') || ''}
@@ -6265,9 +7882,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   }}
                   required={false}
                   placeholder={{
-                    country: "Select your hometown country",
-                    state: "Select your hometown state/region", 
-                    city: "Select your hometown city"
+                    country: user?.userType === 'business' ? "Select your business country" : "Select your hometown country",
+                    state: user?.userType === 'business' ? "Select your business state/region" : "Select your hometown state/region", 
+                    city: user?.userType === 'business' ? "Select your business city" : "Select your hometown city"
                   }}
                 />
               </div>
@@ -6295,15 +7912,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             min={getDateInputConstraints().min}
                             max={getDateInputConstraints().max}
                             onChange={(e) => {
-                              const { isValid, message } = validateDateInput(e.target.value);
                               field.onChange(e.target.value);
-                              if (!isValid && e.target.value) {
-                                toast({
-                                  title: "Invalid Date",
-                                  description: message,
-                                  variant: "destructive",
-                                });
-                              }
                             }}
                             className="dark:bg-gray-800 dark:border-gray-600 dark:text-white [&::-webkit-calendar-picker-indicator]:dark:invert"
                           />
@@ -6317,7 +7926,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     control={profileForm.control}
                     name="ageVisible"
                     render={({ field }) => (
-                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
+                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-600">
                         <div className="space-y-0.5">
                           <FormLabel>Show Age</FormLabel>
                           <div className="text-sm text-gray-500">
@@ -6385,7 +7994,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       <FormItem>
                         <FormLabel>Sexual Preference (Select all that apply)</FormLabel>
                         <FormControl>
-                          <div className="space-y-2 max-h-32 overflow-y-auto border rounded-md p-3">
+                          <div className="space-y-2 border rounded-md p-3">
                             {SEXUAL_PREFERENCE_OPTIONS.map((preference) => (
                               <div key={preference} className="flex items-center space-x-2">
                                 <input
@@ -6426,7 +8035,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   control={profileForm.control}
                   name="sexualPreferenceVisible"
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
+                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-600">
                       <div className="space-y-0.5">
                         <FormLabel>Show Sexual Preference</FormLabel>
                         <div className="text-sm text-gray-500 dark:text-gray-400">
@@ -6453,202 +8062,497 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 />
               )}
 
-              {/* Business Contact Information - Only show for business users */}
-              {user?.userType === 'business' && (
-                <div className="space-y-4">
-                  <div className="border-t pt-4">
-                    <h3 className="text-lg font-semibold mb-3">Business Contact Information</h3>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <FormField
-                        control={profileForm.control}
-                        name="streetAddress"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Street Address</FormLabel>
-                            <FormControl>
-                              <Input {...field} placeholder="123 Main Street" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
 
-                      <FormField
-                        control={profileForm.control}
-                        name="zipCode"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>ZIP Code</FormLabel>
-                            <FormControl>
-                              <Input {...field} placeholder="10001" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={profileForm.control}
-                        name="phoneNumber"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Phone Number</FormLabel>
-                            <FormControl>
-                              <Input {...field} placeholder="(555) 123-4567" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={profileForm.control}
-                        name="websiteUrl"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Website URL</FormLabel>
-                            <FormControl>
-                              <Input {...field} placeholder="https://www.yourbusiness.com" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-
-                    {/* Military Status for Business */}
-                    <div className="space-y-4 border-t pt-4 mt-4">
-                      <h4 className="font-semibold mb-3">Military Status</h4>
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <FormField
-                          control={profileForm.control}
-                          name="isVeteran"
-                          render={({ field }) => (
-                            <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4">
-                              <FormControl>
-                                <input
-                                  type="checkbox"
-                                  checked={field.value || false}
-                                  onChange={field.onChange}
-                                  className="h-4 w-4"
-                                />
-                              </FormControl>
-                              <div className="space-y-1 leading-none">
-                                <FormLabel>Veteran Owned Business</FormLabel>
-                                <div className="text-sm text-gray-500">
-                                  Check if your business is veteran-owned
-                                </div>
-                              </div>
-                            </FormItem>
-                          )}
-                        />
-
-                        <FormField
-                          control={profileForm.control}
-                          name="isActiveDuty"
-                          render={({ field }) => (
-                            <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4">
-                              <FormControl>
-                                <input
-                                  type="checkbox"
-                                  checked={field.value || false}
-                                  onChange={field.onChange}
-                                  className="h-4 w-4"
-                                />
-                              </FormControl>
-                              <div className="space-y-1 leading-none">
-                                <FormLabel>Active Duty Owned Business</FormLabel>
-                                <div className="text-sm text-gray-500">
-                                  Check if your business is active duty-owned
-                                </div>
-                              </div>
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Military Status Section - Only show for non-business users */}
+              {/* Profile Interests, Activities, and Events Section - For non-business users only */}
               {user?.userType !== 'business' && (
-                <div className="space-y-4">
-                  <div className="border-t pt-4">
-                    <h3 className="text-lg font-semibold mb-3">Military Status</h3>
-
-                    {/* Veteran Status */}
-                  <FormField
-                    control={profileForm.control}
-                    name="isVeteran"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
-                        <div className="space-y-0.5">
-                          <FormLabel>I am a Veteran</FormLabel>
-                          <div className="text-sm text-gray-500">
-                            Check if you have served in the military and are now a veteran
-                          </div>
+              <div className="space-y-6">
+                <div className="border-t pt-4">
+                  <h3 className="text-lg font-semibold mb-4 text-orange-600">Local Interests, Activities & Events</h3>
+                  <div className="text-sm text-gray-600 mb-4 p-3 bg-orange-50 rounded border">
+                    <strong>Tell us what you're interested in!</strong> Select categories that match your interests to connect with like-minded travelers and locals.
+                  </div>
+                  
+                  {/* Main Profile Interests Section */}
+                  <div className="mb-6">
+                    <Label className="text-sm font-medium mb-2 block">
+                      <span className="text-orange-600">🌟 My Local Interests</span>
+                    </Label>
+                    
+                    <div className="grid grid-cols-4 gap-1 border rounded-lg p-3 bg-orange-50">
+                      {getAllInterests().map((interest, index) => (
+                        <div key={`profile-interest-${index}`} className="flex items-center space-x-1">
+                          <FormField
+                            control={profileForm.control}
+                            name="interests"
+                            render={({ field }) => (
+                              <Checkbox
+                                id={`profile-interest-${interest}`}
+                                checked={field.value?.includes(interest) || false}
+                                onCheckedChange={(checked) => {
+                                  if (checked) {
+                                    field.onChange([...(field.value || []), interest]);
+                                  } else {
+                                    field.onChange(field.value?.filter(i => i !== interest));
+                                  }
+                                }}
+                              />
+                            )}
+                          />
+                          <Label 
+                            htmlFor={`profile-interest-${interest}`} 
+                            className="text-xs cursor-pointer leading-tight font-medium"
+                          >
+                            {interest}
+                          </Label>
                         </div>
-                        <FormControl>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={() => {
-                              const newValue = !field.value;
-                              field.onChange(newValue);
-                              // If setting veteran to true, set active duty to false
-                              if (newValue) {
-                                profileForm.setValue('isActiveDuty', false);
+                      ))}
+                    </div>
+                    
+                    {/* Custom Interests Input */}
+                    <div className="mt-3">
+                      <Label className="text-xs font-medium mb-1 block text-gray-600">
+                        Add Custom Interests (comma-separated)
+                      </Label>
+                      <FormField
+                        control={profileForm.control}
+                        name="customInterests"
+                        render={({ field }) => (
+                          <Input
+                            placeholder="e.g., Photography, Rock Climbing, Local Cuisine, Art History"
+                            value={field.value || ''}
+                            onChange={(e) => field.onChange(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault();
+                                const value = field.value?.trim();
+                                if (value) {
+                                  // Process custom interests by adding them to the interests array
+                                  const customItems = value.split(',').map(item => item.trim()).filter(item => item);
+                                  const currentInterests = profileForm.getValues('interests') || [];
+                                  const newInterests = [...currentInterests];
+                                  customItems.forEach(item => {
+                                    if (!newInterests.includes(item)) {
+                                      newInterests.push(item);
+                                    }
+                                  });
+                                  profileForm.setValue('interests', newInterests);
+                                  field.onChange(''); // Clear the input
+                                }
                               }
                             }}
-                            className={`flex items-center gap-2 ${field.value ? 'bg-red-100 border-red-300 text-red-700' : ''}`}
-                          >
-                            {field.value ? '✓ Veteran' : 'Not Veteran'}
-                          </Button>
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
+                            className="text-xs"
+                          />
+                        )}
+                      />
+                    </div>
+                  </div>
 
-                  {/* Active Duty Status */}
-                  <FormField
-                    control={profileForm.control}
-                    name="isActiveDuty"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
-                        <div className="space-y-0.5">
-                          <FormLabel>I am Active Duty</FormLabel>
-                          <div className="text-sm text-gray-500">
-                            Check if you are currently serving in the military on active duty
+                  {/* Main Profile Activities Section */}
+                  <div className="mb-6">
+                    <Label className="text-sm font-medium mb-2 block">
+                      <span className="text-green-600">🏃‍♂️ Activities I Enjoy</span>
+                    </Label>
+                    
+                    <div className="grid grid-cols-4 gap-1 border rounded-lg p-3 bg-green-50">
+                      {getAllActivities().map((activity, index) => {
+                        const displayText = activity.startsWith("**") && activity.endsWith("**") ? 
+                          activity.slice(2, -2) : activity;
+                        return (
+                          <div key={`profile-activity-${index}`} className="flex items-center space-x-1">
+                            <FormField
+                              control={profileForm.control}
+                              name="activities"
+                              render={({ field }) => (
+                                <Checkbox
+                                  id={`profile-activity-${activity}`}
+                                  checked={field.value?.includes(activity) || false}
+                                  onCheckedChange={(checked) => {
+                                    if (checked) {
+                                      field.onChange([...(field.value || []), activity]);
+                                    } else {
+                                      field.onChange(field.value?.filter(a => a !== activity));
+                                    }
+                                  }}
+                                />
+                              )}
+                            />
+                            <Label 
+                              htmlFor={`profile-activity-${activity}`} 
+                              className="text-xs cursor-pointer leading-tight font-medium"
+                            >
+                              {displayText}
+                            </Label>
                           </div>
-                        </div>
-                        <FormControl>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={() => {
-                              const newValue = !field.value;
-                              field.onChange(newValue);
-                              // If setting active duty to true, set veteran to false
-                              if (newValue) {
-                                profileForm.setValue('isVeteran', false);
+                        );
+                      })}
+                    </div>
+                    
+                    {/* Custom Activities Input */}
+                    <div className="mt-3">
+                      <Label className="text-xs font-medium mb-1 block text-gray-600">
+                        Add Custom Activities (comma-separated)
+                      </Label>
+                      <FormField
+                        control={profileForm.control}
+                        name="customActivities"
+                        render={({ field }) => (
+                          <Input
+                            placeholder="e.g., Surfing Lessons, Wine Tasting, Museum Tours, Rock Concerts"
+                            value={field.value || ''}
+                            onChange={(e) => field.onChange(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault();
+                                const value = field.value?.trim();
+                                if (value) {
+                                  // Process custom activities by adding them to the activities array
+                                  const customItems = value.split(',').map(item => item.trim()).filter(item => item);
+                                  const currentActivities = profileForm.getValues('activities') || [];
+                                  const newActivities = [...currentActivities];
+                                  customItems.forEach(item => {
+                                    if (!newActivities.includes(item)) {
+                                      newActivities.push(item);
+                                    }
+                                  });
+                                  profileForm.setValue('activities', newActivities);
+                                  field.onChange(''); // Clear the input
+                                }
                               }
                             }}
-                            className={`flex items-center gap-2 ${field.value ? 'bg-blue-100 border-blue-300 text-blue-700' : ''}`}
+                            className="text-xs"
+                          />
+                        )}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Main Profile Events Section */}
+                  <div className="mb-6">
+                    <Label className="text-sm font-medium mb-2 block">
+                      <span className="text-blue-600">🎪 Events I Like to Attend</span>
+                    </Label>
+                    
+                    <div className="grid grid-cols-4 gap-1 border rounded-lg p-3 bg-blue-50">
+                      {getAllEvents().map((event, index) => (
+                        <div key={`profile-event-${index}`} className="flex items-center space-x-1">
+                          <FormField
+                            control={profileForm.control}
+                            name="events"
+                            render={({ field }) => (
+                              <Checkbox
+                                id={`profile-event-${event}`}
+                                checked={field.value?.includes(event) || false}
+                                onCheckedChange={(checked) => {
+                                  if (checked) {
+                                    field.onChange([...(field.value || []), event]);
+                                  } else {
+                                    field.onChange(field.value?.filter(e => e !== event));
+                                  }
+                                }}
+                              />
+                            )}
+                          />
+                          <Label 
+                            htmlFor={`profile-event-${event}`} 
+                            className="text-xs cursor-pointer leading-tight font-medium"
                           >
-                            {field.value ? '✓ Active Duty' : 'Not Active Duty'}
-                          </Button>
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
+                            {event}
+                          </Label>
+                        </div>
+                      ))}
+                    </div>
+                    
+                    {/* Custom Events Input */}
+                    <div className="mt-3">
+                      <Label className="text-xs font-medium mb-1 block text-gray-600">
+                        Add Custom Events (comma-separated)
+                      </Label>
+                      <FormField
+                        control={profileForm.control}
+                        name="customEvents"
+                        render={({ field }) => (
+                          <Input
+                            placeholder="e.g., Jazz Festival, Food Market, Art Exhibition, Tech Conferences"
+                            value={field.value || ''}
+                            onChange={(e) => field.onChange(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault();
+                                const value = field.value?.trim();
+                                if (value) {
+                                  // Process custom events by adding them to the events array
+                                  const customItems = value.split(',').map(item => item.trim()).filter(item => item);
+                                  const currentEvents = profileForm.getValues('events') || [];
+                                  const newEvents = [...currentEvents];
+                                  customItems.forEach(item => {
+                                    if (!newEvents.includes(item)) {
+                                      newEvents.push(item);
+                                    }
+                                  });
+                                  profileForm.setValue('events', newEvents);
+                                  field.onChange(''); // Clear the input
+                                }
+                              }
+                            }}
+                            className="text-xs"
+                          />
+                        )}
+                      />
+                    </div>
                   </div>
                 </div>
+              </div>
               )}
+
+              {/* Military Status Section */}
+              <div className="space-y-4">
+                <div className="border-t pt-4">
+                  <h3 className="text-lg font-semibold mb-3 text-gray-900 dark:text-white">Military Status</h3>
+                
+                {/* Veteran Status */}
+                <FormField
+                  control={profileForm.control}
+                  name="isVeteran"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-600">
+                      <div className="space-y-0.5">
+                        <FormLabel className="text-gray-900 dark:text-white">{user?.userType === 'business' ? 'Veteran Owned Business' : 'I am a Veteran'}</FormLabel>
+                        <div className="text-sm text-gray-500 dark:text-gray-400">
+                          {user?.userType === 'business' 
+                            ? 'Check if your business is veteran-owned'
+                            : 'Check if you have served in the military and are now a veteran'
+                          }
+                        </div>
+                      </div>
+                      <FormControl>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            const newValue = !field.value;
+                            field.onChange(newValue);
+                            // If setting veteran to true, set active duty to false
+                            if (newValue) {
+                              profileForm.setValue('isActiveDuty', false);
+                            }
+                          }}
+                          className={`flex items-center gap-2 ${field.value ? 'bg-red-100 border-red-300 text-red-700 dark:bg-red-900/20 dark:border-red-600 dark:text-red-200' : 'dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200'}`}
+                        >
+                          {field.value ? '✓ Veteran' : 'Not Veteran'}
+                        </Button>
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+
+                {/* Active Duty Status */}
+                <FormField
+                  control={profileForm.control}
+                  name="isActiveDuty"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-600">
+                      <div className="space-y-0.5">
+                        <FormLabel className="text-gray-900 dark:text-white">{user?.userType === 'business' ? 'Active Duty Owned Business' : 'I am Active Duty'}</FormLabel>
+                        <div className="text-sm text-gray-500 dark:text-gray-400">
+                          {user?.userType === 'business'
+                            ? 'Check if your business is active duty-owned'
+                            : 'Check if you are currently serving in the military on active duty'
+                          }
+                        </div>
+                      </div>
+                      <FormControl>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            const newValue = !field.value;
+                            field.onChange(newValue);
+                            // If setting active duty to true, set veteran to false
+                            if (newValue) {
+                              profileForm.setValue('isVeteran', false);
+                            }
+                          }}
+                          className={`flex items-center gap-2 ${field.value ? 'bg-blue-100 border-blue-300 text-blue-700 dark:bg-blue-900/20 dark:border-blue-600 dark:text-blue-200' : 'dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200'}`}
+                        >
+                          {field.value ? '✓ Active Duty' : 'Not Active Duty'}
+                        </Button>
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+
+            {/* Diversity Business Ownership - Only show for business users */}
+            {user?.userType === 'business' && (
+              <div className="space-y-4">
+                <div className="border-t pt-4">
+                  <h3 className="text-lg font-semibold mb-3 text-gray-900 dark:text-white">Diversity Business Ownership</h3>
+                  <div className="text-sm text-gray-600 dark:text-gray-300 mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                    These categories can be hidden from public view but will still appear in keyword searches to help customers find diverse businesses.
+                  </div>
+                
+                {/* Minority Owned Business */}
+                <FormField
+                  control={profileForm.control}
+                  name="isMinorityOwned"
+                  render={({ field }) => (
+                    <FormItem className="space-y-3 rounded-lg border p-4 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-600">
+                      <div className="flex flex-row items-center justify-between">
+                        <div className="space-y-0.5">
+                          <FormLabel className="text-gray-900 dark:text-white">Minority Owned Business</FormLabel>
+                          <div className="text-sm text-gray-500 dark:text-gray-400">
+                            Check if your business is minority-owned
+                          </div>
+                        </div>
+                        <FormControl>
+                          <input
+                            type="checkbox"
+                            checked={field.value}
+                            onChange={(e) => field.onChange(e.target.checked)}
+                            className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:checked:bg-purple-600 rounded"
+                          />
+                        </FormControl>
+                      </div>
+                      {field.value && (
+                        <FormField
+                          control={profileForm.control}
+                          name="showMinorityOwned"
+                          render={({ field: publicField }) => (
+                            <FormItem className="flex flex-row items-center space-x-3 space-y-0 ml-6">
+                              <FormControl>
+                                <input
+                                  type="checkbox"
+                                  checked={publicField.value}
+                                  onChange={(e) => publicField.onChange(e.target.checked)}
+                                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                />
+                              </FormControl>
+                              <div className="space-y-1 leading-none">
+                                <FormLabel className="text-sm font-normal text-gray-600 dark:text-gray-300">
+                                  Show publicly (uncheck to hide but keep searchable)
+                                </FormLabel>
+                              </div>
+                            </FormItem>
+                          )}
+                        />
+                      )}
+                    </FormItem>
+                  )}
+                />
+
+                {/* Female Owned Business */}
+                <FormField
+                  control={profileForm.control}
+                  name="isFemaleOwned"
+                  render={({ field }) => (
+                    <FormItem className="space-y-3 rounded-lg border p-4 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-600">
+                      <div className="flex flex-row items-center justify-between">
+                        <div className="space-y-0.5">
+                          <FormLabel className="text-gray-900 dark:text-white">Female Owned Business</FormLabel>
+                          <div className="text-sm text-gray-500 dark:text-gray-400">
+                            Check if your business is female-owned
+                          </div>
+                        </div>
+                        <FormControl>
+                          <input
+                            type="checkbox"
+                            checked={field.value}
+                            onChange={(e) => field.onChange(e.target.checked)}
+                            className="h-4 w-4 text-pink-600 focus:ring-pink-500 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:checked:bg-pink-600 rounded"
+                          />
+                        </FormControl>
+                      </div>
+                      {field.value && (
+                        <FormField
+                          control={profileForm.control}
+                          name="showFemaleOwned"
+                          render={({ field: publicField }) => (
+                            <FormItem className="flex flex-row items-center space-x-3 space-y-0 ml-6">
+                              <FormControl>
+                                <input
+                                  type="checkbox"
+                                  checked={publicField.value}
+                                  onChange={(e) => publicField.onChange(e.target.checked)}
+                                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                />
+                              </FormControl>
+                              <div className="space-y-1 leading-none">
+                                <FormLabel className="text-sm font-normal text-gray-600 dark:text-gray-300">
+                                  Show publicly (uncheck to hide but keep searchable)
+                                </FormLabel>
+                              </div>
+                            </FormItem>
+                          )}
+                        />
+                      )}
+                    </FormItem>
+                  )}
+                />
+
+                {/* LGBTQIA+ Owned Business */}
+                <FormField
+                  control={profileForm.control}
+                  name="isLGBTQIAOwned"
+                  render={({ field }) => (
+                    <FormItem className="space-y-3 rounded-lg border p-4 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-600">
+                      <div className="flex flex-row items-center justify-between">
+                        <div className="space-y-0.5">
+                          <FormLabel className="text-gray-900 dark:text-white">LGBTQIA+ Owned Business</FormLabel>
+                          <div className="text-sm text-gray-500 dark:text-gray-400">
+                            Check if your business is LGBTQIA+ owned
+                          </div>
+                        </div>
+                        <FormControl>
+                          <input
+                            type="checkbox"
+                            checked={field.value}
+                            onChange={(e) => field.onChange(e.target.checked)}
+                            className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:checked:bg-purple-600 rounded"
+                            style={{ accentColor: '#8B5CF6' }}
+                          />
+                        </FormControl>
+                      </div>
+                      {field.value && (
+                        <FormField
+                          control={profileForm.control}
+                          name="showLGBTQIAOwned"
+                          render={({ field: publicField }) => (
+                            <FormItem className="flex flex-row items-center space-x-3 space-y-0 ml-6">
+                              <FormControl>
+                                <input
+                                  type="checkbox"
+                                  checked={publicField.value}
+                                  onChange={(e) => publicField.onChange(e.target.checked)}
+                                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                />
+                              </FormControl>
+                              <div className="space-y-1 leading-none">
+                                <FormLabel className="text-sm font-normal text-gray-600 dark:text-gray-300">
+                                  Show publicly (uncheck to hide but keep searchable)
+                                </FormLabel>
+                              </div>
+                            </FormItem>
+                          )}
+                        />
+                      )}
+                    </FormItem>
+                  )}
+                />
+
+                <div className="mt-4 p-3 bg-gray-100 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
+                  <h4 className="text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Privacy & Search Information:</h4>
+                  <ul className="text-xs text-gray-600 dark:text-gray-300 space-y-1">
+                    <li>• Even if unchecked for public display, these categories remain searchable</li>
+                    <li>• Customers can find your business using keywords like "minority owned", "female owned", etc.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            )}
 
               <div className="flex gap-2 pt-4">
                 <Button 
@@ -6663,6 +8567,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   type="submit" 
                   disabled={editProfile.isPending}
                   className="flex-1"
+                  onClick={() => {
+                    console.log('🔥 SAVE BUTTON CLICKED');
+                    console.log('🔥 Form errors:', profileForm.formState.errors);
+                    console.log('🔥 Form values:', profileForm.getValues());
+                    console.log('🔥 Form valid:', profileForm.formState.isValid);
+                  }}
                 >
                   {editProfile.isPending ? "Saving..." : "Save Changes"}
                 </Button>
@@ -6713,7 +8623,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               <X className="w-4 h-4" />
             </Button>
           </DialogHeader>
-
+          
           {selectedTravelPlan && (
             <div className="space-y-4">
               {/* Trip Info */}
@@ -6724,11 +8634,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     {selectedTravelPlan.startDate ? formatDateForDisplay(selectedTravelPlan.startDate, user?.currentCity || 'UTC') : 'Start date TBD'} - {selectedTravelPlan.endDate ? formatDateForDisplay(selectedTravelPlan.endDate, user?.currentCity || 'UTC') : 'End date TBD'}
                   </p>
                 </div>
-                <Badge variant="outline" className="text-sm">
+                <div className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-purple-500 text-white border-0 appearance-none select-none gap-1.5">
                   Trip Details
-                </Badge>
+                </div>
               </div>
-
+              
               {/* Close Button */}
               <div className="flex justify-end">
                 <Button 
@@ -6748,14 +8658,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </h4>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                     {selectedTravelPlan.interests.slice(0, 9).map((interest) => (
-                      <Badge key={interest} variant="secondary" className="text-xs bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 border-blue-300 dark:border-blue-700 justify-center whitespace-nowrap no-scrollbar">
+                      <div key={interest} className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
                         {interest}
-                      </Badge>
+                      </div>
                     ))}
                     {selectedTravelPlan.interests.length > 9 && (
-                      <Badge variant="outline" className="text-xs text-gray-500 border-gray-300 justify-center whitespace-nowrap no-scrollbar">
+                      <div className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
                         +{selectedTravelPlan.interests.length - 9} more
-                      </Badge>
+                      </div>
                     )}
                   </div>
                 </div>
@@ -6770,9 +8680,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </h4>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                     {selectedTravelPlan.activities.map((activity) => (
-                      <Badge key={activity} variant="secondary" className="text-xs bg-green-900 text-green-200 border-green-700 justify-center whitespace-nowrap no-scrollbar">
+                      <div key={activity} className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-green-500 text-white border-0 appearance-none select-none gap-1.5">
                         {activity}
-                      </Badge>
+                      </div>
                     ))}
                   </div>
                 </div>
@@ -6787,9 +8697,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </h4>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                     {selectedTravelPlan.events.map((event) => (
-                      <Badge key={event} variant="secondary" className="text-xs bg-purple-900 text-purple-200 border-purple-700 justify-center whitespace-nowrap no-scrollbar">
+                      <div key={event} className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-purple-500 text-white border-0 appearance-none select-none gap-1.5">
                         {event}
-                      </Badge>
+                      </div>
                     ))}
                   </div>
                 </div>
@@ -6804,9 +8714,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </h4>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                     {selectedTravelPlan.travelStyle.map((style) => (
-                      <Badge key={style} variant="secondary" className="text-xs bg-orange-900 text-orange-200 border-orange-700 justify-center whitespace-nowrap no-scrollbar">
+                      <div key={style} className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
                         {style}
-                      </Badge>
+                      </div>
                     ))}
                   </div>
                 </div>
@@ -6832,7 +8742,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       {/* Simplified Cover Photo Selector Dialog */}
       {showCoverPhotoSelector && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto no-scrollbar">
             <div className="p-4 border-b flex justify-between items-center">
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Choose Cover Photo</h2>
               <button
@@ -6842,7 +8752,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 <X className="w-5 h-5" />
               </button>
             </div>
-
+            
             <div className="p-4 space-y-4">
               {photos && photos.length > 0 ? (
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
@@ -6853,18 +8763,18 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       onClick={async () => {
                         try {
                           setUploadingPhoto(true);
-
+                          
                           const response = await fetch(`/api/users/${effectiveUserId}/cover-photo`, {
                             method: 'PUT',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ imageData: photo.imageUrl }),
                           });
-
+                          
                           if (!response.ok) throw new Error('Upload failed');
-
+                          
                           const responseData = await response.json();
                           const updatedUser = responseData?.user || responseData;
-
+                          
                           if (updatedUser && isOwnProfile) {
                             setCoverPhotoKey(Date.now());
                             authStorage.setUser(updatedUser);
@@ -6873,15 +8783,15 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             }
                             queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
                           }
-
+                          
                           setShowCoverPhotoSelector(false);
                           setUploadingPhoto(false);
-
+                          
                           toast({
                             title: "Success!",
                             description: "Cover photo updated successfully",
                           });
-
+                          
                         } catch (error) {
                           console.error('Error setting cover photo:', error);
                           setUploadingPhoto(false);
@@ -6945,7 +8855,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               Share your experience with this traveler to help others in the community
             </DialogDescription>
           </DialogHeader>
-
+          
           <Form {...referenceForm}>
             <form onSubmit={referenceForm.handleSubmit((data) => createReference.mutate(data))} className="space-y-4">
               <FormField
@@ -7040,13 +8950,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               Update your reference for this traveler
             </DialogDescription>
           </DialogHeader>
-
+          
           <Form {...editReferenceForm}>
             <form onSubmit={editReferenceForm.handleSubmit((data) => {
               if (editingReference) {
                 updateReference.mutate({
-                  id: editingReference.id,
-                  ...data
+                  referenceId: editingReference.id,
+                  content: data.content,
+                  experience: data.experience,
                 });
               }
             })} className="space-y-4">
@@ -7165,7 +9076,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 </p>
               </label>
             </div>
-
+            
             {uploadingPhoto && (
               <div className="text-center">
                 <p className="text-blue-600">Uploading photo...</p>
@@ -7183,7 +9094,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           </div>
         </DialogContent>
       </Dialog>
-
+      
       {/* Chatroom List Modal */}
       <Dialog open={showChatroomList} onOpenChange={setShowChatroomList}>
         <DialogContent className="max-w-lg">
@@ -7219,7 +9130,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     <div className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-2">
                       📍 {chatroom.city}
                       {chatroom.role === 'admin' && (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                        <span className="inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0">
                           Admin
                         </span>
                       )}
@@ -7289,18 +9200,18 @@ class ProfileErrorBoundary extends React.Component<
             <div className="bg-white rounded-lg shadow-lg p-6">
               <h2 className="text-2xl font-bold text-red-600 mb-4">Profile Page Error</h2>
               <p className="text-gray-600 mb-6">The profile page encountered a rendering error.</p>
-
+              
               <div className="bg-red-50 border border-red-200 rounded p-4 mb-6">
                 <h3 className="font-semibold text-red-800 mb-2">Error Details:</h3>
                 <p className="text-sm text-red-700 mb-2">Message: {errorDetails.message}</p>
-
+                
                 <details className="mt-3">
                   <summary className="cursor-pointer text-sm font-medium text-red-800">Show Stack Trace</summary>
                   <pre className="text-xs text-red-600 mt-2 whitespace-pre-wrap overflow-auto max-h-40">
                     {errorDetails.stack}
                   </pre>
                 </details>
-
+                
                 <details className="mt-3">
                   <summary className="cursor-pointer text-sm font-medium text-red-800">Show Component Stack</summary>
                   <pre className="text-xs text-red-600 mt-2 whitespace-pre-wrap overflow-auto max-h-40">

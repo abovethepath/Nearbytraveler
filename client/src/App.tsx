@@ -1,4 +1,3 @@
-console.log("[APP] App module imported");
 import React, { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 
@@ -16,7 +15,7 @@ if (typeof window !== 'undefined') {
       }
     });
   }
-
+  
   // Clear all caches
   if ('caches' in window) {
     caches.keys().then(names => {
@@ -138,7 +137,6 @@ import IMNotificationManager from "@/components/instant-messaging/IMNotification
 import type { User } from "@shared/schema";
 import { authStorage } from "@/lib/auth";
 import websocketService from "@/services/websocketService";
-import { MobilePreview } from "@/components/MobilePreview";
 
 // Simple auth context
 export const AuthContext = React.createContext<{
@@ -365,7 +363,7 @@ function Router() {
         console.error('Error parsing stored user during loading:', error);
       }
     }
-
+    
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-2xl font-semibold text-gray-700">Loading Nearby Traveler...</div>
@@ -475,7 +473,7 @@ function Router() {
         return <Auth />;
       }
 
-      // Show landing page for /landing route too
+      // Show landing page
       if (location === '/landing-new') {
         return <LandingNew />;
       }
@@ -609,7 +607,7 @@ function Router() {
         setLocation('/home');
         return null;
       }
-
+      
       // For business users accessing /auth, allow them to see the auth page for account management
       if (location === '/auth' && user && (user as any).userType === 'business') {
         console.log('✅ Business user accessing auth page - allowing access for account management');
@@ -621,7 +619,7 @@ function Router() {
         console.log('🏠 CACHE BUST v2 - Root path for unauthenticated user - showing landing page');
         return <LandingNew />;
       }
-
+      
       // Force all unknown routes to landing page for unauthenticated users
       console.log('❌ CACHE BUST v2 - Unknown route for unauthenticated user, showing landing page:', location);
       return <LandingNew />;
@@ -710,7 +708,7 @@ function Router() {
       if (!cityName || cityName.trim() === '') {
         return <NotFound />;
       }
-
+      
       // METROPOLITAN AREA CONSOLIDATION - Only redirect if user is explicitly accessing a city page
       // This prevents business users from being forced to city pages when they want to stay on profile
       const LA_METRO_CITIES = [
@@ -721,19 +719,19 @@ function Router() {
         'Sherman Oaks', 'Encino', 'Van Nuys', 'Northridge', 'Malibu',
         'Pacific Palisades', 'Brentwood', 'Westwood', 'Century City'
       ];
-
+      
       // Check if this is a LA metro city that should be consolidated
       const isLAMetroCity = LA_METRO_CITIES.some(metroCity => 
         cityName.toLowerCase() === metroCity.toLowerCase() ||
         cityName.toLowerCase().includes(metroCity.toLowerCase())
       );
-
+      
       if (isLAMetroCity) {
         console.log(`🌍 METRO CONSOLIDATION: ${cityName} → Los Angeles Metro (preventing separate suburb pages)`);
         setLocation('/city/Los Angeles Metro');
         return null;
       }
-
+      
       return <CityPage cityName={cityName} />;
     }
 
@@ -932,7 +930,7 @@ function Router() {
           setLocation('/');
           return null;
         }
-
+        
         // MOBILE FIX: If unknown route but user is authenticated, redirect to home
         console.log('🚫 UNKNOWN ROUTE FOR AUTHENTICATED USER:', location);
         console.log('🔄 MOBILE: Redirecting unknown authenticated route to home');
@@ -1026,8 +1024,19 @@ function Router() {
 }
 
 function App() {
-  console.log("[APP] App rendered");
-  return <div style={{padding:16,fontFamily:"system-ui"}}>APP OK</div>;
+  return (
+    <QueryClientProvider client={queryClient}>
+      <GlobalHotfixes />
+      <ThemeProvider defaultTheme="dark" storageKey="nearby-traveler-theme">
+        <TooltipProvider>
+          <Toaster />
+          <Router />
+          {/* Global Floating Chat Manager */}
+          <FloatingChatManager />
+        </TooltipProvider>
+      </ThemeProvider>
+    </QueryClientProvider>
+  );
 }
 
 export default App;

@@ -21,7 +21,6 @@ User report fix: "Things in common" display was broken on discover people cards 
 User request: NEVER require bio during signup - removed bio requirement from all three signup forms (traveling, local, business) to maintain fast registration process. Users add bio later in profile editing (January 2025).
 User request: Red profile completion reminder bar restored to navbar - displays when users have incomplete profiles (missing bio, profile image, or less than 3 interests) with direct link to complete profile (January 2025).
 User fix: Date of birth now properly carries over from signup forms to user profile - fixed storage.createUser method to ensure DOB field is preserved during user creation (January 2025).
-User clarification: VOUCH system implementation - simplified credit system where anyone with at least one vouch can vouch for others unlimited times, no credit limitations, only requirement is having received at least one vouch to be able to vouch for others, @nearbytraveler is the founding seed member (January 2025).
 
 ## System Architecture
 

@@ -1,12 +1,6 @@
-console.log("[BOOT] main.tsx loaded");
 import { createRoot } from "react-dom/client";
 import App from "./App";
-import ErrorBoundary from "./ErrorBoundary";
 import "./index.css";
 import "@/styles/hotfix.css";
 
-createRoot(document.getElementById("root")!).render(
-  <ErrorBoundary>
-    <App />
-  </ErrorBoundary>
-);
+createRoot(document.getElementById("root")!).render(<App />);
