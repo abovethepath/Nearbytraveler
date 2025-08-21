@@ -268,9 +268,9 @@ input, select, textarea, button { font-size: 16px; }
   @apply max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8;
 }
 
+@import "./styles/mobile-safe.css";
 @tailwind base;
 @tailwind components;
-@import "./styles/mobile-safe.css";
 @tailwind utilities;
 
 @layer components {
