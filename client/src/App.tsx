@@ -22,7 +22,7 @@ const BusinessRegistration  = lazy(() => import("./pages/business-registration")
 const AuthPage              = lazy(() => import("./pages/auth"));
 const AiCompanion           = lazy(() => import("./pages/ai-companion"));
 // Fallback if a page is missing
-const NotFound              = lazy(() => import("./pages/NotFound").catch(() => import("./pages/about")));
+const NotFound              = lazy(() => import("./pages/about"));
 
 export default function App() {
   return (

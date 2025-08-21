@@ -1,0 +1,71 @@
+0) Known-good prod run (no WS)
+pkill -f node || true
+cd client && npx vite build --mode production --sourcemap && cd ..
+NODE_ENV=production node server/index.prod.js
+
+
+Open the app. If it’s still blank, run the checks below.
+
+1) Providers mounted (fixes the last error)
+
+In client/src/main.tsx you should have:
+
+import { QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from "./lib/queryClient";
+import ErrorBoundary from "./ErrorBoundary";
+import App from "./App";
+
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <ErrorBoundary>
+    <QueryClientProvider client={queryClient}>
+      <App />
+    </QueryClientProvider>
+  </ErrorBoundary>
+);
+
+2) App entry is the real router (not the explorer)
+
+In client/src/App.tsx confirm:
+
+You export back-compat auth symbols:
+
+export { AuthContext, useAuth, AuthProvider } from "./auth-context";
+
+
+You render your routes (about/profile/chatrooms/etc.) and no DevPageExplorer, except optionally at /__pages.
+
+3) Assets actually load (rules out server issues)
+
+DevTools → Network:
+
+index.html → 200
+
+/assets/*.js → 200
+If the JS files are 404, adjust the static path in server/index.prod.js:
+
+const dist = path.resolve(__dirname, "../dist/public");
+app.use(express.static(dist));
+app.get("*", (_req, res) => res.sendFile(path.join(dist, "index.html")));
+
+4) See what’s crashing (no white screen anymore)
+
+The ErrorBoundary should render an error panel if something throws. If you only see white, add at the top of client/src/main.tsx:
+
+console.log("BOOT OK");
+
+
+If you don’t see “BOOT OK” → assets aren’t executing (Step 3).
+
+If you do and still white → a component crash; the boundary should show it. Grab the first 10 lines of that error.
+
+5) Quick route sanity
+
+Use relative lazy imports that match files you actually have (from your pages list):
+
+const About = lazy(() => import("./pages/about"));
+const ProfilePage = lazy(() => import("./pages/ProfilePageResponsive"));
+const Chatroom = lazy(() => import("./pages/chatroom"));
+const CityChatrooms = lazy(() => import("./pages/city-chatrooms"));
+
+
+If you want, paste the first error from the ErrorBoundary or the Network status for /assets/*.js, and I’ll give you the exact one-line fix.
