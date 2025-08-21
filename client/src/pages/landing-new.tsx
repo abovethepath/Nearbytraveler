@@ -76,7 +76,7 @@ export default function Landing() {
         <Button
           onClick={() => setLocation('/join')}
           size="lg"
-          className="bg-orange-500 hover:bg-orange-600 text-black font-black px-8 py-4 rounded-2xl shadow-2xl transition-colors duration-200 border-3 border-white"
+          className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white font-black px-8 py-4 rounded-2xl shadow-2xl transition-all duration-200 border-3 border-white"
           style={{
             boxShadow: '0 12px 35px rgba(0,0,0,0.4), 0 0 0 3px rgba(255,255,255,0.9)',
             animation: 'gentle-pulse 2.5s ease-in-out infinite',
