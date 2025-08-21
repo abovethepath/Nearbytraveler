@@ -3596,7 +3596,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   )}
 
                   {/* Business Contact Information */}
-                  {user.userType === 'business' && (
+                  {user.userType === 'business' &&
                     <div className="space-y-3 border-t pt-4 mt-4">
                       <h4 className="font-medium text-gray-800 dark:text-white flex items-center gap-2">
                         <MapPin className="w-4 h-4 text-blue-500" />
@@ -3642,7 +3642,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       )}
 
                       {/* Business Services and Special Offers */}
-                      {(user.services || user.specialOffers || user.targetCustomers || user.certifications || isOwnProfile) && (
+                      {(user.services || user.specialOffers || user.targetCustomers || user.certifications || isOwnProfile) && 
                         <div className="space-y-3 border-t pt-3 mt-3">
                           <div className="flex items-center justify-between">
                             <h5 className="font-medium text-gray-700 dark:text-gray-300">Business Description</h5>
@@ -3732,10 +3732,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             </div>
                           )}
                         </div>
-                      )}
+                      }
 
                       {/* Military Status for Business */}
-                      {(user.isVeteran || user.isActiveDuty) && (
+                      {(user.isVeteran || user.isActiveDuty) &&
                         <div className="space-y-2 border-t pt-3 mt-3">
                           <h5 className="font-medium text-gray-700">Military Status</h5>
                           {user.isVeteran && (
@@ -3751,13 +3751,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             </div>
                           )}
                         </div>
-                      )}
+                      }
                     </div>
-                  )}
-                </div>
+                  }
               </CardContent>
               </Card>
-            )}
 
             {/* Business Offers Section - Only for business users */}
             {user?.userType === 'business' && (
