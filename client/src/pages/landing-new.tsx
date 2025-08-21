@@ -129,7 +129,7 @@ export default function Landing() {
                 <main className="mt-8 sm:mt-16 md:mt-20 lg:mt-24 xl:mt-32 mx-auto max-w-full px-4">
                   <div className="text-center">
                     <div className="max-w-4xl mx-auto">
-                      <h1 className="text-xl sm:text-2xl md:text-4xl lg:text-5xl xl:text-6xl tracking-tight px-2 sm:px-4 leading-tight">
+                      <h1 className="text-xl sm:text-2xl md:text-4xl lg:text-5xl xl:text-6xl tracking-tight px-2 sm:px-4 leading-normal sm:leading-relaxed">
                         <span className="block font-black" style={{
                           fontFamily: '"Inter", sans-serif',
                           color: isMobile ? '#ffffff' : '#000000',
@@ -141,15 +141,15 @@ export default function Landing() {
                           <span style={{
                             color: isMobile ? '#fde68a' : '#fb923c',
                             textShadow: isMobile ? '3px 3px 6px rgba(0,0,0,0.9), 0 0 10px rgba(0,0,0,0.5)' : 'none'
-                          }}>Meet Locals and Other </span>
+                          }}>Meet Locals and Other{' '}</span>
                           <span style={{
                             color: isMobile ? '#93c5fd' : '#2563eb',
                             textShadow: isMobile ? '3px 3px 6px rgba(0,0,0,0.9), 0 0 10px rgba(0,0,0,0.5)' : 'none'
-                          }}>Nearby Travelers</span>
+                          }}>Nearby Travelers{' '}</span>
                           <span style={{
                             color: isMobile ? '#ffffff' : '#000000',
                             textShadow: isMobile ? '3px 3px 6px rgba(0,0,0,0.9), 0 0 10px rgba(0,0,0,0.5)' : 'none'
-                          }}> Right Now, Today!!!</span>
+                          }}>Right Now, Today!!!</span>
                         </span>
                       </h1>
                       
@@ -171,12 +171,12 @@ export default function Landing() {
                       <Button
                         onClick={() => setLocation('/join')}
                         size="lg"
-                        className="bg-orange-500 hover:bg-orange-600 text-black font-black text-lg sm:text-xl md:text-2xl px-6 sm:px-12 md:px-16 py-4 sm:py-5 md:py-6 rounded-2xl shadow-xl transition-colors duration-200 border-2 sm:border-4 border-white w-full max-w-lg mx-auto"
+                        className="bg-orange-500 hover:bg-orange-600 text-white font-black text-lg sm:text-xl md:text-2xl px-6 sm:px-12 md:px-16 py-4 sm:py-5 md:py-6 rounded-2xl shadow-xl transition-colors duration-200 border-2 sm:border-4 border-white w-full max-w-lg mx-auto"
                         style={{
                           fontSize: 'clamp(1.1rem, 3.5vw, 1.8rem)',
                           minHeight: 'clamp(60px, 12vw, 80px)',
                           boxShadow: '0 8px 30px rgba(0,0,0,0.3), 0 0 0 2px rgba(255,255,255,0.9)',
-                          animation: 'gentle-pulse 2.5s ease-in-out infinite',
+                          animation: 'gentle-pulse 3s ease-in-out infinite',
                         }}
                       >
                         JOIN NEARBY TRAVELER NOW!!!
@@ -200,7 +200,7 @@ export default function Landing() {
       <div className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-12 animate-slide-in-left">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-gray-900 mb-4 leading-tight px-2">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-gray-900 mb-4 leading-normal px-2">
               Connect with Locals and other Travelers
             </h2>
             <p className="text-base sm:text-lg md:text-xl text-gray-600 px-2">
@@ -212,7 +212,7 @@ export default function Landing() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 
             {/* Beach Bonfire Event Card */}
-            <div className="bg-white rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-2xl transform transition-all duration-300 flex flex-col">
+            <div className="bg-white rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-xl transition-all duration-300 flex flex-col">
               <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-orange-400 to-red-500">
                 <img 
                   src="/event page bbq party_1753299541268.png" 
@@ -222,7 +222,7 @@ export default function Landing() {
               </div>
               <div className="p-6 flex flex-col flex-grow">
                 <div className="mb-3">
-                  <h3 className="text-sm sm:text-base font-bold text-gray-900 mb-1 leading-tight">Beach Bonfire & BBQ</h3>
+                  <h3 className="text-sm sm:text-base font-bold text-gray-900 mb-1 break-words">Beach Bonfire & BBQ</h3>
                   <p className="text-sm text-gray-600">Sunset gathering on the beach</p>
                 </div>
                 
@@ -233,7 +233,7 @@ export default function Landing() {
                   <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-medium">Music</span>
                 </div>
                 
-                <p className="text-gray-700 text-xs sm:text-sm mb-4 flex-grow leading-relaxed">Join locals for an authentic beach bonfire with BBQ, music, and sunset views. Experience the real LA beach culture with friendly people.</p>
+                <p className="text-gray-700 text-xs sm:text-sm mb-4 flex-grow leading-relaxed break-words overflow-hidden">Join locals for an authentic beach bonfire with BBQ, music, and sunset views. Experience the real LA beach culture with friendly people.</p>
                 <Button 
                   onClick={() => setLocation('/join')}
                   className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold mt-auto"
@@ -254,7 +254,7 @@ export default function Landing() {
               </div>
               <div className="p-6 flex flex-col flex-grow">
                 <div className="mb-3">
-                  <h3 className="text-sm sm:text-base font-bold text-gray-900 mb-1 leading-tight">Taco Tuesday</h3>
+                  <h3 className="text-sm sm:text-base font-bold text-gray-900 mb-1 break-words">Taco Tuesday</h3>
                   <p className="text-sm text-gray-600">Every Tuesday • $1.50 tacos</p>
                 </div>
                 
@@ -265,7 +265,7 @@ export default function Landing() {
                   <span className="bg-red-100 text-red-700 px-2 py-1 rounded-full text-xs font-medium">Weekly</span>
                 </div>
                 
-                <p className="text-gray-700 text-xs sm:text-sm mb-4 flex-grow leading-relaxed">Join locals every Tuesday for authentic street tacos at unbeatable prices. Meet fellow taco lovers and discover the best Mexican spots in the city.</p>
+                <p className="text-gray-700 text-xs sm:text-sm mb-4 flex-grow leading-relaxed break-words overflow-hidden">Join locals every Tuesday for authentic street tacos at unbeatable prices. Meet fellow taco lovers and discover the best Mexican spots in the city.</p>
                 <Button 
                   onClick={() => setLocation('/join')}
                   className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold mt-auto"

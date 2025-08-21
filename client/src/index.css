@@ -822,12 +822,12 @@ body {
   0%, 100% {
     opacity: 1;
     transform: scale(1);
-    box-shadow: 0 15px 40px rgba(0,0,0,0.4), 0 0 0 4px rgba(255,255,255,0.9);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.3), 0 0 0 2px rgba(255,255,255,0.9);
   }
   50% {
-    opacity: 0.9;
-    transform: scale(1.05);
-    box-shadow: 0 20px 50px rgba(0,0,0,0.5), 0 0 0 6px rgba(255,255,255,1);
+    opacity: 1;
+    transform: scale(1.01);
+    box-shadow: 0 10px 35px rgba(0,0,0,0.35), 0 0 0 2px rgba(255,255,255,0.95);
   }
 }
 
