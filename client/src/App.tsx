@@ -1,40 +1,87 @@
-import React from "react";
+import React, { Suspense, lazy, createContext, useContext, useState, useEffect } from "react";
+import { Route, Switch } from "wouter";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from "./lib/queryClient";
+import AppShell from "@/ui/AppShell";
+import GlobalHotfixes from "@/GlobalHotfixes";
+import { authStorage } from "@/lib/auth";
+import type { User } from "@shared/schema";
 
-// Temporary smoke test - minimal App to prove infrastructure works
-function App() {
-  React.useEffect(() => {
-    console.log("✅ CRITICAL MOBILE LAYOUT v6-20250705 - SITE-WIDE FIXES DEPLOYED");
+// AuthContext for compatibility with existing pages
+export const AuthContext = createContext<{
+  user: User | null;
+  setUser: (user: User | null) => void;
+  isAuthenticated: boolean;
+}>({
+  user: null,
+  setUser: () => {},
+  isAuthenticated: false,
+});
+
+// useAuth hook for compatibility
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth must be used within an AuthContext provider");
+  }
+  return context;
+};
+
+// 🔽 Lazy pages - safely loaded with your existing pages
+const Home = lazy(() => import("@/pages/home"));
+const Profile = lazy(() => import("@/pages/ProfilePageResponsive"));
+const Discover = lazy(() => import("@/pages/discover"));
+const Messages = lazy(() => import("@/pages/messages"));
+const Events = lazy(() => import("@/pages/events"));
+const Connect = lazy(() => import("@/pages/connect"));
+const Auth = lazy(() => import("@/pages/auth"));
+const NotFound = lazy(() => import("@/pages/NotFound"));
+
+export default function App() {
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    // Initialize user from storage
+    const storedUser = authStorage.getUser();
+    if (storedUser) {
+      setUser(storedUser);
+    }
   }, []);
-  
+
+  const authValue = {
+    user,
+    setUser: (newUser: User | null) => {
+      setUser(newUser);
+      authStorage.setUser(newUser);
+    },
+    isAuthenticated: !!user,
+  };
+
   return (
-    <div style={{
-      padding: 20, 
-      fontFamily: "system-ui, sans-serif",
-      maxWidth: "100vw",
-      minHeight: "100vh",
-      overflow: "hidden",
-      background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-      color: "white",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      flexDirection: "column",
-      textAlign: "center"
-    }}>
-      <h1 style={{fontSize: "2rem", marginBottom: "1rem"}}>🎉 App Shell Renders Successfully!</h1>
-      <p style={{fontSize: "1.2rem", marginBottom: "1rem"}}>✅ Mobile Infrastructure: ACTIVE</p>
-      <p style={{fontSize: "1rem", opacity: 0.9}}>White screen rescue kit deployed - ErrorBoundary catches crashes</p>
-      <div style={{marginTop: "2rem", padding: "1rem", background: "rgba(255,255,255,0.1)", borderRadius: "8px"}}>
-        <p><strong>Mobile-Safe Infrastructure Confirmed:</strong></p>
-        <ul style={{listStyle: "none", padding: 0}}>
-          <li>✅ Global overflow-x prevention</li>
-          <li>✅ AppShell viewport handling</li> 
-          <li>✅ Mobile-safe CSS deployed</li>
-          <li>✅ Error boundary protection</li>
-        </ul>
-      </div>
-    </div>
+    <QueryClientProvider client={queryClient}>
+      <AuthContext.Provider value={authValue}>
+        <AppShell>
+          <GlobalHotfixes />
+          <Suspense fallback={<div className="p-4 text-center">Loading…</div>}>
+            <Switch>
+              <Route path="/" component={Home} />
+              <Route path="/profile/:id?">
+                {(params) => <Profile userId={params.id ? Number(params.id) : undefined} />}
+              </Route>
+              <Route path="/discover" component={Discover} />
+              <Route path="/messages" component={Messages} />
+              <Route path="/events" component={Events} />
+              <Route path="/connect" component={Connect} />
+              <Route path="/auth" component={Auth} />
+              
+              {/* Fallback */}
+              <Route>
+                <NotFound />
+              </Route>
+            </Switch>
+          </Suspense>
+        </AppShell>
+      </AuthContext.Provider>
+    </QueryClientProvider>
   );
 }
-
-export default App;

@@ -1,0 +1,83 @@
+Yes—let’s restore the full app (safely) and keep your mobile infra + crash guard in place. Drop these two files in, rebuild, and you’ll be back to the full UI with HMR/WS or ship mode.
+
+1) Replace client/src/App.tsx with a safe, lazy-loaded router
+
+(Uses wouter, keeps your AppShell, GlobalHotfixes, and ErrorBoundary you already added.)
+
+// client/src/App.tsx
+import React, { Suspense, lazy } from "react";
+import { Route, Switch } from "wouter";
+import AppShell from "@/ui/AppShell";
+import GlobalHotfixes from "@/GlobalHotfixes";
+
+// 🔽 Lazy pages (adjust import paths to your actual files)
+const Home = lazy(() => import("@/pages/Home"));                      // e.g. client/src/pages/Home.tsx
+const ProfilePage = lazy(() => import("@/pages/profile/ProfilePage")); // e.g. client/src/pages/profile/ProfilePage.tsx
+const Discover = lazy(() => import("@/pages/Discover"));
+const Chatrooms = lazy(() => import("@/pages/chat/Chatrooms"));
+const NotFound = lazy(() => import("@/pages/NotFound"));
+
+export default function App() {
+  return (
+    <AppShell>
+      <GlobalHotfixes />
+      <Suspense fallback={<div className="p-4">Loading…</div>}>
+        <Switch>
+          <Route path="/" component={Home} />
+
+          {/* Profile (id optional—use your existing param style) */}
+          <Route path="/profile/:id">
+            {(params) => <ProfilePage userId={Number(params.id)} />}
+          </Route>
+
+          <Route path="/discover" component={Discover} />
+          <Route path="/chatrooms/:city" component={Chatrooms as any} />
+
+          {/* Fallback */}
+          <Route>
+            <NotFound />
+          </Route>
+        </Switch>
+      </Suspense>
+    </AppShell>
+  );
+}
+
+
+If you don’t have these exact page files, keep the structure and just fix the import() targets to match your repo. The ErrorBoundary you already installed will catch any missing import and show the exact file/line.
+
+2) (If missing) tiny NotFound stub
+// client/src/pages/NotFound.tsx
+export default function NotFound() {
+  return <div className="p-6">Page not found.</div>;
+}
+
+3) Build & run
+Ship mode (no WS, quickest to verify)
+pkill -f node || true
+cd client && npx vite build --mode production --sourcemap && cd ..
+NODE_ENV=production node server/index.prod.js
+
+Dev (one-port HMR)
+pkill -f node || true
+node dev-oneport.mjs
+
+
+Open the app. You should see your real UI again.
+If anything throws at runtime, your ErrorBoundary will render a friendly error panel with the exact stack—no more white screens.
+
+If a page still crashes
+
+Copy the top lines of the ErrorBoundary stack and I’ll give you the exact patch (file + line).
+
+Common quick fixes:
+
+Change any @/… import with a wrong path to the correct file.
+
+Wrap any window/document usage in useEffect.
+
+Ensure every lazy() page renders something even when data is loading (use your skeletons or guards).
+
+Keep min-w-0 on flex text containers near avatars to prevent overflow (you already have this in the new header).
+
+You’re set—turn the app back on. If anything noisy pops, send me the boundary’s stack and I’ll zero it out.
