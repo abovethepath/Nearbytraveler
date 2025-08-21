@@ -3086,12 +3086,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               {/* status pill, etc */}
             </div>
 
-            {/* Bio/tagline if exists */}
-            {user.bio && (
-              <p className="text-white/90 text-sm sm:text-base whitespace-normal break-words">
-                {user.bio}
-              </p>
-            )}
+
 
             {/* Hometown / location line (wraps instead of truncating) */}
             <div className="mt-1 flex items-start gap-2 text-white">
