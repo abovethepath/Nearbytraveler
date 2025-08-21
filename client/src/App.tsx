@@ -2,7 +2,7 @@ import React, { Suspense, lazy } from "react";
 import { Route, Switch } from "wouter";
 import AppShell from "./ui/AppShell";
 
-// ✅ REAL PAGES - Your 4-month project
+// ✅ YOUR REAL PAGES - All your 4-month work
 const Home = lazy(() => import("./pages/home"));
 const About = lazy(() => import("./pages/about"));
 const ProfilePage = lazy(() => import("./pages/ProfilePageResponsive"));
@@ -18,7 +18,7 @@ const BusinessRegistration = lazy(() => import("./pages/business-registration"))
 const AuthPage = lazy(() => import("./pages/auth"));
 const AiCompanion = lazy(() => import("./pages/ai-companion"));
 
-// Export your auth context for other files
+// Export auth context for compatibility
 export { AuthContext, useAuth, AuthProvider } from "./auth-context";
 
 export default function App() {
@@ -39,6 +39,7 @@ export default function App() {
         </div>
       }>
         <Switch>
+          {/* YOUR REAL HOME PAGE */}
           <Route path="/" component={Home} />
           <Route path="/about" component={About} />
           <Route path="/profile/:id" component={ProfilePage} />
