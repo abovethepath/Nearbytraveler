@@ -6,11 +6,11 @@ export default function LandingNavbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <nav className="bg-white dark:bg-gray-800 shadow-sm relative z-10">
+    <nav className="bg-white dark:bg-gray-800 shadow-sm relative z-10 block w-full" style={{display: 'block', visibility: 'visible', minHeight: '64px', backgroundColor: '#ffffff'}}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
+        <div className="flex justify-between h-16" style={{display: 'flex', minHeight: '64px'}}>
           <div className="flex">
-            <div className="flex-shrink-0 flex items-center">
+            <div className="flex-shrink-0 flex items-center" style={{display: 'flex', alignItems: 'center'}}>
               <Link href="/" className="flex items-center">
                 <div className="transform scale-150">
                   <Logo variant="navbar" />

@@ -102,8 +102,8 @@ export default function Landing() {
       </div>
 
       {/* Landing Navbar with BETA badge - FORCE MOBILE VISIBILITY */}
-      <header className="sticky top-12 z-[55] bg-white/95 dark:bg-gray-900/95 backdrop-blur supports-[backdrop-filter]:bg-white/70 dark:supports-[backdrop-filter]:bg-gray-900/70 block" style={{display: 'block', visibility: 'visible', minHeight: '64px'}}>
-        <div className="pt-2 block" style={{display: 'block', visibility: 'visible'}}>
+      <header className="sticky top-12 z-[55] block w-full" style={{display: 'block', visibility: 'visible', minHeight: '64px', backgroundColor: '#ffffff', boxShadow: '0 1px 3px rgba(0,0,0,0.1)'}}>
+        <div className="block w-full" style={{display: 'block', visibility: 'visible', backgroundColor: '#ffffff'}}>
           <LandingNavbar />
         </div>
       </header>
