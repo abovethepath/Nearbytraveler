@@ -15,7 +15,7 @@ export default function BusinessLanding() {
       <LandingHeaderSpacer />
 
       {/* HERO SECTION */}
-      <div className="relative">
+      <div className="relative z-0">
         <div className="bg-gray-800 dark:bg-gray-900 border-4 border-orange-500 shadow-lg">
           <div className="relative bg-gray-800 dark:bg-gray-900 pb-32 overflow-hidden min-h-[600px]">
             <div className="absolute inset-0 h-full min-h-[600px]">
@@ -26,8 +26,11 @@ export default function BusinessLanding() {
                 style={{ objectPosition: 'center 70%' }}
               />
               <div
-                className="absolute inset-0 sm:bg-gray-800/70"
-                style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,.55), rgba(0,0,0,.25), rgba(0,0,0,0))' }}
+                className="absolute inset-0"
+                style={{
+                  background:
+                    "linear-gradient(to bottom, rgba(0,0,0,.55), rgba(0,0,0,.25), rgba(0,0,0,0))"
+                }}
                 aria-hidden="true"
               />
             </div>
