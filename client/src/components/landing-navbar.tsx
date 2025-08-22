@@ -35,7 +35,7 @@ export default function LandingNavbar() {
               </Link>
             </div>
           </div>
-          <div className="hidden xl:ml-4 xl:flex xl:items-center xl:space-x-2 2xl:space-x-3 flex-shrink-0">
+          <div className="hidden xl:ml-12 xl:flex xl:items-center xl:space-x-3 2xl:ml-16 2xl:space-x-4 flex-shrink-0">
             <Link href="/auth" className="bg-blue-600 hover:bg-blue-700 text-white px-3 xl:px-4 py-2 rounded-md text-xs xl:text-sm font-medium transition duration-150 ease-in-out whitespace-nowrap">
               Sign In
             </Link>
