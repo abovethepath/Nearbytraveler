@@ -25,7 +25,7 @@ export default function BusinessLanding() {
       </div>
 
       {/* Landing Navbar under banner on mobile */}
-      <header className="sticky top-[52px] md:top-0 z-[80] w-full bg-white shadow-sm" style={{ display: 'block', visibility: 'visible' }}>
+      <header className="sticky top-[52px] md:top-0 z-[60] w-full bg-white shadow-sm">
         <div className="w-full bg-white">
           <LandingNavbar />
         </div>
