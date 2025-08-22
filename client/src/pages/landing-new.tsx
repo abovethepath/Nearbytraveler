@@ -112,7 +112,7 @@ export default function Landing() {
       {/* HERO SECTION */}
       <div className="relative z-0">
         <div className="bg-gray-800 dark:bg-gray-900 border-4 border-orange-500 shadow-lg">
-          <div className="relative bg-gray-800 dark:bg-gray-900 pb-32 overflow-hidden min-h-[600px]">
+          <div className="relative bg-gray-800 dark:bg-gray-900 pb-32 md:pb-48 overflow-hidden min-h-[600px] md:min-h-[700px]">
             <div className="absolute inset-0 h-full min-h-[600px]">
               <img
                 src="/travelers together hugging_1754971726997.avif"
@@ -147,14 +147,14 @@ export default function Landing() {
                       
                       {/* Founder quote – below image on mobile, overlaid on md+ */}
                       <div className="mt-6 md:mt-0">
-                        <div className="md:absolute md:bottom-6 md:left-1/2 md:-translate-x-1/2 md:w-[min(92vw,720px)]">
-                          <div className="bg-black/60 md:bg-black/50 text-white rounded-2xl border border-white/20 backdrop-blur p-4 sm:p-6 shadow-xl">
+                        <div className="md:absolute md:bottom-[-120px] md:left-1/2 md:-translate-x-1/2 md:w-[min(92vw,800px)]">
+                          <div className="bg-black/60 md:bg-black/50 text-white rounded-2xl border-2 border-orange-500 backdrop-blur p-4 sm:p-6 shadow-xl">
                             <p className="text-sm sm:text-base md:text-lg leading-relaxed break-words">
                               <span className="text-orange-300 font-semibold">
-                                "For over 15 years I've hosted 400+ travelers from 40+ countries creating amazing experiences.
+                                "For over 15 years I've hosted and toured 400+ travelers from over 40 countries as a local creating amazing experiences.
                               </span>
                               <span className="text-white">
-                                {" "}I built Nearby Traveler to help you meet real locals and travelers, create adventures, and expand your circle of friends."
+                                {" "}I built Nearby Traveler to help you meet real locals and real travelers, create amazing adventures, and expand your circle of friends."
                               </span>
                             </p>
                             <div className="mt-3 text-center">
