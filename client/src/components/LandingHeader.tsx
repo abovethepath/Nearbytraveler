@@ -8,7 +8,7 @@ export default function LandingHeader() {
   return (
     <div className="fixed inset-x-0 top-0 z-[100]">
       {/* Mobile announcement bar */}
-      <div className="lg:hidden bg-orange-500 text-black py-3 px-4 shadow-lg">
+      <div className="2xl:hidden bg-orange-500 text-black py-3 px-4 shadow-lg">
         <div className="max-w-6xl mx-auto flex flex-col items-center">
           <Button
             onClick={() => setLocation("/join")}
@@ -20,7 +20,7 @@ export default function LandingHeader() {
       </div>
 
       {/* Desktop announcement bar */}
-      <div className="hidden lg:block bg-orange-500 text-black py-3 px-4 text-center">
+      <div className="hidden 2xl:block bg-orange-500 text-black py-3 px-4 text-center">
         <Button
           onClick={() => setLocation("/join")}
           className="bg-black text-orange-400 font-bold text-xl px-8 py-3 rounded-xl hover:bg-gray-800 transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-lg"
@@ -44,9 +44,9 @@ export function LandingHeaderSpacer() {
   return (
     <>
       {/* Mobile spacer: announcement bar (56px) + navbar (64px) + borders (8px) = 128px */}
-      <div className="h-32 lg:hidden" />
+      <div className="h-32 2xl:hidden" />
       {/* Desktop spacer: announcement bar (60px) + navbar (64px) + borders (8px) = 132px */}
-      <div className="hidden lg:block h-[132px]" />
+      <div className="hidden 2xl:block h-[132px]" />
     </>
   );
 }
