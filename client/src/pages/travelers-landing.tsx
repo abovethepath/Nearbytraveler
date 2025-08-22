@@ -40,7 +40,7 @@ export default function TravelersLanding() {
       </div>
 
       {/* Landing Navbar under banner on mobile */}
-      <header className="sticky top-[52px] md:top-0 z-[60] w-full bg-white shadow-sm">
+      <header className="sticky top-[52px] md:top-0 z-[100] w-full bg-white shadow-sm">
         <div className="w-full bg-white">
           <LandingNavbar />
         </div>
@@ -76,9 +76,9 @@ export default function TravelersLanding() {
                           Travel Like a Local.
                         </span>
                         <span className="block font-black">
-                          <span className="text-amber-300 sm:text-orange-500">Skip the Tourist Traps </span>
-                          <span className="text-blue-300 sm:text-blue-600">with Nearby Travelers</span>
-                          <span className="text-white sm:text-black"> While Connecting with Other Locals.</span>
+                          <span className="text-orange-400">Skip the Tourist Traps </span>
+                          <span className="text-blue-400">with Nearby Travelers</span>
+                          <span className="text-white"> While Connecting with Other Locals.</span>
                         </span>
                       </h1>
                       

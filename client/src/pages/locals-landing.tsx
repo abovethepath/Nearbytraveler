@@ -25,7 +25,7 @@ export default function LocalsLanding() {
       </div>
 
       {/* Landing Navbar under banner on mobile */}
-      <header className="sticky top-[52px] md:top-0 z-[60] w-full bg-white shadow-sm">
+      <header className="sticky top-[52px] md:top-0 z-[100] w-full bg-white shadow-sm">
         <div className="w-full bg-white">
           <LandingNavbar />
         </div>
@@ -61,9 +61,9 @@ export default function LocalsLanding() {
                           Be the Local You'd Want to Meet.
                         </span>
                         <span className="block font-black">
-                          <span className="text-amber-300 sm:text-orange-500">Share Your City's Hidden Gems </span>
-                          <span className="text-blue-300 sm:text-blue-600">with Nearby Travelers</span>
-                          <span className="text-white sm:text-black"> and Connect with Like-Minded Locals</span>
+                          <span className="text-orange-400">Share Your City's Hidden Gems </span>
+                          <span className="text-blue-400">with Nearby Travelers</span>
+                          <span className="text-white"> and Connect with Like-Minded Locals</span>
                         </span>
                       </h1>
                       
