@@ -19,8 +19,13 @@ export default function LandingHeader() {
         </div>
       </div>
 
-      {/* Navbar (always visible) */}
-      <div className="bg-white/95 dark:bg-gray-900/95 backdrop-blur shadow-sm">
+      {/* Desktop orange border and announcement */}
+      <div className="hidden md:block bg-orange-500 text-black py-2 px-4 text-center font-bold text-sm">
+        🔥 Connect with Locals and Travelers TODAY - Sign Up Now!
+      </div>
+
+      {/* Navbar (always visible) with orange border */}
+      <div className="bg-white/95 dark:bg-gray-900/95 backdrop-blur shadow-sm border-4 border-orange-500">
         <div className="max-w-7xl mx-auto">
           <LandingNavbar />
         </div>
@@ -29,7 +34,7 @@ export default function LandingHeader() {
   );
 }
 
-/** Space below the fixed header (banner+navbar on mobile, just navbar on desktop) */
+/** Space below the fixed header (banner+navbar on mobile, banner+navbar+border on desktop) */
 export function LandingHeaderSpacer() {
-  return <div className="h-[112px] md:h-[64px]" />;
+  return <div className="h-[112px] md:h-[104px]" />;
 }
