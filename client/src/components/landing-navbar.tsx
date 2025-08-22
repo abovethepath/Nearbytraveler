@@ -35,11 +35,11 @@ export default function LandingNavbar() {
               </Link>
             </div>
           </div>
-          <div className="hidden xl:ml-12 xl:flex xl:items-center xl:space-x-3 2xl:ml-16 2xl:space-x-4 flex-shrink-0">
-            <Link href="/auth" className="bg-blue-600 hover:bg-blue-700 text-white px-3 xl:px-4 py-2 rounded-md text-xs xl:text-sm font-medium transition duration-150 ease-in-out whitespace-nowrap">
+          <div className="hidden xl:ml-16 xl:flex xl:items-center xl:space-x-2 2xl:ml-20 2xl:space-x-3 flex-shrink-0">
+            <Link href="/auth" className="bg-blue-600 hover:bg-blue-700 text-white px-2 xl:px-3 py-1.5 rounded-md text-xs font-medium transition duration-150 ease-in-out whitespace-nowrap">
               Sign In
             </Link>
-            <Link href="/join" className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white px-3 xl:px-4 py-2 rounded-md text-xs xl:text-sm font-medium transition duration-150 ease-in-out whitespace-nowrap">
+            <Link href="/join" className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white px-2 xl:px-3 py-1.5 rounded-md text-xs font-medium transition duration-150 ease-in-out whitespace-nowrap">
               Join Now
             </Link>
           </div>
