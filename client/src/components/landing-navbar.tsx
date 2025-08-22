@@ -18,33 +18,33 @@ export default function LandingNavbar() {
                 <span className="ml-4 sm:ml-8 text-red-600 dark:text-red-400 text-xs sm:text-sm font-bold uppercase tracking-wide bg-red-100 dark:bg-red-900/50 px-2 py-1 rounded">BETA</span>
               </Link>
             </div>
-            <div className="hidden lg:ml-8 lg:flex lg:space-x-4 xl:space-x-6">
+            <div className="hidden xl:ml-8 xl:flex xl:space-x-6 2xl:space-x-8">
               <Link href="/" className="border-teal-500 text-gray-900 dark:text-white inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
                 Home
               </Link>
               <Link href="/locals-landing" className="border-transparent text-gray-500 dark:text-gray-400 hover:border-gray-300 hover:text-gray-700 dark:hover:text-gray-300 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium whitespace-nowrap">
-                For Locals
+                Locals
               </Link>
               <Link href="/travelers-landing" className="border-transparent text-gray-500 dark:text-gray-400 hover:border-gray-300 hover:text-gray-700 dark:hover:text-gray-300 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium whitespace-nowrap">
-                For Travelers
+                Travelers
               </Link>
               <Link href="/events-landing" className="border-transparent text-gray-500 dark:text-gray-400 hover:border-gray-300 hover:text-gray-700 dark:hover:text-gray-300 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium whitespace-nowrap">
-                For Events
+                Events
               </Link>
               <Link href="/business-landing" className="border-transparent text-gray-500 dark:text-gray-400 hover:border-gray-300 hover:text-gray-700 dark:hover:text-gray-300 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium whitespace-nowrap">
-                For Businesses
+                Business
               </Link>
             </div>
           </div>
-          <div className="hidden lg:ml-6 lg:flex lg:items-center lg:space-x-3 flex-shrink-0">
-            <Link href="/auth" className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out whitespace-nowrap">
+          <div className="hidden xl:ml-6 xl:flex xl:items-center xl:space-x-3 flex-shrink-0">
+            <Link href="/auth" className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out whitespace-nowrap">
               Sign In
             </Link>
-            <Link href="/join" className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white px-3 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out whitespace-nowrap">
+            <Link href="/join" className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white px-4 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out whitespace-nowrap">
               Join Now
             </Link>
           </div>
-          <div className="-mr-2 flex items-center lg:hidden">
+          <div className="-mr-2 flex items-center xl:hidden">
             <button 
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               type="button" 
@@ -68,7 +68,7 @@ export default function LandingNavbar() {
       
       {/* Enhanced Mobile menu */}
       {mobileMenuOpen && (
-        <div className="lg:hidden bg-white dark:bg-gray-800 shadow-lg">
+        <div className="xl:hidden bg-white dark:bg-gray-800 shadow-lg">
           <div className="pt-3 pb-3 space-y-1 px-4">
             <Link href="/" 
               className="bg-gradient-to-r from-blue-50 to-orange-50 dark:from-blue-900/20 dark:to-orange-900/20 border-l-4 border-blue-500 text-blue-700 dark:text-blue-400 block pl-4 pr-4 py-4 text-lg font-medium rounded-r-lg transition-all duration-200"
