@@ -2,7 +2,7 @@ import { useLocation, Link } from "wouter";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import Footer from "@/components/footer";
-import LandingNavbar from "@/components/landing-navbar";
+import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
 
 
 
@@ -86,25 +86,8 @@ export default function Landing() {
         </Button>
       </div>
       
-      {/* Landing Navbar - Always at top */}
-      <header className="sticky top-0 z-[100] w-full bg-white shadow-sm">
-        <div className="w-full bg-white">
-          <LandingNavbar />
-        </div>
-      </header>
-      
-      {/* Mobile banner below navbar */}
-      <div className="md:hidden bg-orange-500 text-black py-3 px-4 shadow-lg">
-        <div className="max-w-6xl mx-auto flex items-center justify-between gap-3">
-          <span className="font-bold text-sm">🔥 Connect with Locals and Travelers TODAY - Sign Up Now!</span>
-          <Button
-            onClick={() => setLocation("/join")}
-            className="bg-black text-orange-400 font-bold px-3 py-2 rounded-lg hover:bg-gray-800 shrink-0"
-          >
-            SIGN UP
-          </Button>
-        </div>
-      </div>
+      <LandingHeader />
+      <LandingHeaderSpacer />
       
 
 
@@ -134,38 +117,47 @@ export default function Landing() {
                 <main className="mt-8 sm:mt-16 md:mt-20 lg:mt-24 xl:mt-32 mx-auto max-w-full px-4">
                   <div className="text-center">
                     <div className="max-w-4xl mx-auto">
-                      <h1 className="text-balance text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl tracking-tight px-2 sm:px-4 leading-relaxed">
-                        <span className="block font-black text-white">
+                      <h1 className="px-3 leading-tight sm:leading-snug">
+                        <span className="block font-black text-[clamp(1.5rem,6vw,2.25rem)] text-white">
                           Skip the Tourist Traps.
                         </span>
-                        <span className="block font-black">
-                          <span className="text-orange-400">Meet Locals and Other </span>
-                          <span className="text-blue-400">Nearby Travelers </span>
-                          <span className="text-white">Right Now, Today!!!</span>
+                        <span className="block font-black text-[clamp(1.25rem,5.5vw,2rem)]">
+                          <span className="text-amber-300 sm:text-orange-500">Meet Locals and Other </span>
+                          <span className="text-blue-300 sm:text-blue-600">Nearby Travelers </span>
+                          <span className="text-white sm:text-black">Right Now, Today!!!</span>
                         </span>
                       </h1>
                       
-                      {/* Founder quote – below image on mobile, overlaid on md+ */}
-                      <div className="mt-6 md:mt-0">
-                        <div className="md:absolute md:bottom-6 md:left-1/2 md:-translate-x-1/2 md:w-[min(92vw,720px)]">
-                          <div className="bg-black/60 md:bg-black/50 text-white rounded-2xl border-2 border-orange-500 backdrop-blur p-4 sm:p-6 shadow-xl">
-                            <p className="text-sm sm:text-base md:text-lg leading-relaxed">
-                              <span className="text-orange-300 font-semibold">
-                                "For over 15 years I've hosted and toured 400+ travelers from over 40 countries as a local creating amazing experiences.
-                              </span>
-                              <span className="text-white">
-                                {" "}I built Nearby Traveler to help you meet real locals and real travelers, create amazing adventures, and expand your circle of friends."
-                              </span>
-                            </p>
-                            <div className="mt-3 text-center">
-                              <p className="text-white font-bold">— Aaron, Founder</p>
-                              <p className="text-orange-200 text-xs sm:text-sm">400+ travelers hosted • 40+ countries • 15+ years</p>
-                            </div>
-                          </div>
+                      {/* Personal credibility as founder (hide on phones so the hero photo is visible) */}
+                      <div className="hidden sm:block mt-8 p-6 bg-black/40 backdrop-blur-sm rounded-2xl border border-white/20">
+                        <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-white leading-relaxed px-2">
+                          <span className="text-orange-300 font-bold">"For over 15 years I've hosted and toured 400+ travelers from over 40 countries as a local creating amazing expereinces.</span>
+                          <span className="text-white"> I built Nearby Traveler to do exactly that - meet real locals and real travelers while creating amazing new travel adventures and expanding my social circle of friends."</span>
+                        </p>
+                        <div className="mt-4 text-center">
+                          <p className="text-white font-bold text-lg">— Aaron, Founder</p>
+                          <p className="text-orange-200 text-sm">400+ travelers hosted • 40+ countries • 15+ years</p>
                         </div>
                       </div>
                     </div>
                     
+                    {/* Primary signup CTA */}
+                    <div className="mt-12 mb-8 px-4">
+                      <Button
+                        onClick={() => setLocation('/join')}
+                        size="lg"
+                        className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white font-black text-lg sm:text-xl md:text-2xl px-6 sm:px-12 md:px-16 py-4 sm:py-5 md:py-6 rounded-2xl shadow-xl transition-all duration-200 border-2 sm:border-4 border-white w-full max-w-lg mx-auto"
+                        style={{
+                          fontSize: 'clamp(1.1rem, 3.5vw, 1.8rem)',
+                          minHeight: 'clamp(60px, 12vw, 80px)',
+                          boxShadow: '0 8px 30px rgba(0,0,0,0.3), 0 0 0 2px rgba(255,255,255,0.9)',
+                          animation: 'gentle-pulse 3s ease-in-out infinite',
+                        }}
+                      >
+                        JOIN NEARBY TRAVELER NOW!!!
+                      </Button>
+                      <p className="text-white mt-3 text-base sm:text-lg font-semibold px-2">Join the Community</p>
+                    </div>
 
                   </div>
                 </main>
@@ -178,26 +170,6 @@ export default function Landing() {
 
 
 
-
-      {/* Primary signup CTA - Moved to bottom of hero */}
-      <div className="bg-white py-8 px-4">
-        <div className="max-w-lg mx-auto text-center">
-          <Button
-            onClick={() => setLocation('/join')}
-            size="lg"
-            className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white font-black text-lg sm:text-xl md:text-2xl px-6 sm:px-12 md:px-16 py-4 sm:py-5 md:py-6 rounded-2xl shadow-xl transition-all duration-200 border-2 sm:border-4 border-white w-full"
-            style={{
-              fontSize: 'clamp(1.1rem, 3.5vw, 1.8rem)',
-              minHeight: 'clamp(60px, 12vw, 80px)',
-              boxShadow: '0 8px 30px rgba(0,0,0,0.3), 0 0 0 2px rgba(255,255,255,0.9)',
-              animation: 'gentle-pulse 3s ease-in-out infinite',
-            }}
-          >
-            JOIN NEARBY TRAVELER NOW!!!
-          </Button>
-          <p className="text-gray-600 mt-3 text-base sm:text-lg font-semibold px-2">Join the Community</p>
-        </div>
-      </div>
 
       {/* Live Events - Lu.ma style */}
       <div className="py-16 bg-white">
@@ -216,16 +188,16 @@ export default function Landing() {
 
             {/* Beach Bonfire Event Card */}
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-xl transition-all duration-300 flex flex-col">
-              <div className="aspect-video">
+              <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-orange-400 to-red-500">
                 <img 
                   src="/event page bbq party_1753299541268.png" 
                   alt="Beach bonfire event" 
-                  className="w-full h-full object-cover"
+                  className="w-full h-48 object-cover"
                 />
               </div>
               <div className="p-6 flex flex-col flex-grow">
                 <div className="mb-3">
-                  <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-1">Beach Bonfire & BBQ</h3>
+                  <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-1 break-words">Beach Bonfire & BBQ</h3>
                   <p className="text-sm text-gray-600">Sunset gathering on the beach</p>
                 </div>
                 
@@ -236,7 +208,7 @@ export default function Landing() {
                   <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-medium">Music</span>
                 </div>
                 
-                <p className="text-gray-700 text-sm sm:text-base mb-4 flex-grow leading-relaxed line-clamp-3">Join locals for an authentic beach bonfire with BBQ, music, and sunset views. Experience the real LA beach culture with friendly people.</p>
+                <p className="text-gray-700 text-sm sm:text-base mb-4 flex-grow leading-relaxed break-words overflow-hidden">Join locals for an authentic beach bonfire with BBQ, music, and sunset views. Experience the real LA beach culture with friendly people.</p>
                 <Button 
                   onClick={() => setLocation('/join')}
                   className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold mt-auto"
@@ -248,17 +220,17 @@ export default function Landing() {
             
             {/* Taco Tuesday Event Card */}
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-2xl transform transition-all duration-300 flex flex-col" style={{animationDelay: '0.2s'}}>
-              <div className="aspect-video">
+              <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-yellow-400 to-orange-500">
                 <img 
                   src="/image_1754973365104.png" 
                   alt="Authentic taco stand with vintage neon sign" 
-                  className="w-full h-full object-cover"
+                  className="w-full h-48 object-cover"
                 />
               </div>
               <div className="p-6 flex flex-col flex-grow">
                 <div className="mb-3">
-                  <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-1">Taco Tuesday</h3>
-                  <p className="text-xs sm:text-sm text-gray-600">Every Tuesday • $1.50 tacos</p>
+                  <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-1 break-words">Taco Tuesday</h3>
+                  <p className="text-sm text-gray-600">Every Tuesday • $1.50 tacos</p>
                 </div>
                 
                 {/* Tags */}
@@ -268,7 +240,7 @@ export default function Landing() {
                   <span className="bg-red-100 text-red-700 px-2 py-1 rounded-full text-xs font-medium">Weekly</span>
                 </div>
                 
-                <p className="text-gray-700 text-sm sm:text-base mb-4 flex-grow leading-relaxed line-clamp-3">Join locals every Tuesday for authentic street tacos at unbeatable prices. Meet fellow taco lovers and discover the best Mexican spots in the city.</p>
+                <p className="text-gray-700 text-xs sm:text-sm mb-4 flex-grow leading-relaxed break-words overflow-hidden">Join locals every Tuesday for authentic street tacos at unbeatable prices. Meet fellow taco lovers and discover the best Mexican spots in the city.</p>
                 <Button 
                   onClick={() => setLocation('/join')}
                   className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold mt-auto"
@@ -280,17 +252,17 @@ export default function Landing() {
             
             {/* Hollywood Sign Hike Event Card */}
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-2xl transform transition-all duration-300 flex flex-col" style={{animationDelay: '0.3s'}}>
-              <div className="aspect-video">
+              <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-blue-500 to-indigo-600">
                 <img 
                   src="/image_1754974796221.png" 
                   alt="Hollywood Sign at sunrise with mountain views" 
-                  className="w-full h-full object-cover"
+                  className="w-full h-48 object-cover"
                 />
               </div>
               <div className="p-6 flex flex-col flex-grow">
                 <div className="mb-3">
-                  <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-1">Hollywood Sign Hike</h3>
-                  <p className="text-xs sm:text-sm text-gray-600">Every Saturday • 9:00 AM</p>
+                  <h3 className="font-bold text-gray-900 mb-1">Hollywood Sign Hike</h3>
+                  <p className="text-sm text-gray-600">Every Saturday • 9:00 AM</p>
                 </div>
                 
                 {/* Tags */}
@@ -300,7 +272,7 @@ export default function Landing() {
                   <span className="bg-purple-100 text-purple-700 px-2 py-1 rounded-full text-xs font-medium">Photos</span>
                 </div>
                 
-                <p className="text-gray-700 text-sm sm:text-base mb-4 flex-grow leading-relaxed line-clamp-3">Weekly hike to the iconic Hollywood Sign with locals and travelers. Amazing city views, great photos, and authentic LA hiking culture.</p>
+                <p className="text-gray-700 text-sm mb-4 flex-grow">Weekly hike to the iconic Hollywood Sign with locals and travelers. Amazing city views, great photos, and authentic LA hiking culture.</p>
                 <Button 
                   onClick={() => setLocation('/join')}
                   className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold mt-auto"
@@ -312,17 +284,17 @@ export default function Landing() {
 
             {/* Happy Hour at Jameson Pub Event Card */}
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-2xl transform transition-all duration-300 flex flex-col" style={{animationDelay: '0.4s'}}>
-              <div className="aspect-video">
+              <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-amber-500 to-orange-600">
                 <img 
                   src="/image_1754975666980.png" 
                   alt="Jameson's Pub exterior with green storefront and traditional Irish pub atmosphere" 
-                  className="w-full h-full object-cover"
+                  className="w-full h-48 object-cover"
                 />
               </div>
               <div className="p-6 flex flex-col flex-grow">
                 <div className="mb-3">
-                  <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-1">Happy Hour Thursday</h3>
-                  <p className="text-xs sm:text-sm text-gray-600">Jameson Pub • Live Music</p>
+                  <h3 className="font-bold text-gray-900 mb-1">Happy Hour Thursday</h3>
+                  <p className="text-sm text-gray-600">Jameson Pub • Live Music</p>
                 </div>
                 
                 {/* Tags */}
@@ -332,7 +304,7 @@ export default function Landing() {
                   <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs font-medium">21+</span>
                 </div>
                 
-                <p className="text-gray-700 text-sm sm:text-base mb-4 flex-grow leading-relaxed break-words line-clamp-3">Join locals and travelers for Thursday happy hour with live music at Jameson Pub. Great drinks, live bands, and authentic LA nightlife.</p>
+                <p className="text-gray-700 text-sm mb-4 flex-grow">Join locals and travelers for Thursday happy hour with live music at Jameson Pub. Great drinks, live bands, and authentic LA nightlife.</p>
                 <Button 
                   onClick={() => setLocation('/join')}
                   className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold mt-auto"
