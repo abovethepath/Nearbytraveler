@@ -208,7 +208,7 @@ export default function Landing() {
                   <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-medium">Music</span>
                 </div>
                 
-                <p className="text-gray-700 text-sm sm:text-base mb-4 flex-grow leading-relaxed break-words overflow-hidden">Join locals for an authentic beach bonfire with BBQ, music, and sunset views. Experience the real LA beach culture with friendly people.</p>
+                <p className="text-gray-700 text-sm sm:text-base mb-4 flex-grow leading-relaxed break-words">Join locals for an authentic beach bonfire with BBQ, music, and sunset views. Experience the real LA beach culture with friendly people.</p>
                 <Button 
                   onClick={() => setLocation('/join')}
                   className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold mt-auto"
@@ -240,7 +240,7 @@ export default function Landing() {
                   <span className="bg-red-100 text-red-700 px-2 py-1 rounded-full text-xs font-medium">Weekly</span>
                 </div>
                 
-                <p className="text-gray-700 text-xs sm:text-sm mb-4 flex-grow leading-relaxed break-words overflow-hidden">Join locals every Tuesday for authentic street tacos at unbeatable prices. Meet fellow taco lovers and discover the best Mexican spots in the city.</p>
+                <p className="text-gray-700 text-xs sm:text-sm mb-4 flex-grow leading-relaxed break-words">Join locals every Tuesday for authentic street tacos at unbeatable prices. Meet fellow taco lovers and discover the best Mexican spots in the city.</p>
                 <Button 
                   onClick={() => setLocation('/join')}
                   className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold mt-auto"
