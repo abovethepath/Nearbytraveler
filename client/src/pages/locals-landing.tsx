@@ -109,10 +109,10 @@ export default function LocalsLanding() {
               What Makes Nearby Traveler Special
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              <div className="bg-orange-600 p-6 rounded-xl shadow-lg text-white">
+              <div className="bg-orange-600 p-6 rounded-xl shadow-lg text-white min-h-[200px] flex flex-col">
                 <div className="text-4xl mb-4">🏖️</div>
                 <h3 className="text-base sm:text-lg md:text-xl font-bold mb-3 text-white leading-tight">Beach Bonfires & BBQs</h3>
-                <p className="text-white text-sm sm:text-base leading-relaxed">Host or join amazing events such as beach gatherings, sunset BBQs, campfire hikes, bar crawls, and all social gatherings nearby.</p>
+                <p className="text-white text-sm sm:text-base leading-relaxed break-words flex-grow">Host or join amazing events such as beach gatherings, sunset BBQs, campfire hikes, bar crawls, and all social gatherings nearby.</p>
               </div>
               <div className="bg-teal-600 p-6 rounded-xl shadow-lg text-white">
                 <div className="text-4xl mb-4">🤝</div>
