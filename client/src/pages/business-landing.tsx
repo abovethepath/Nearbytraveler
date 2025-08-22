@@ -46,7 +46,7 @@ export default function BusinessLanding() {
                         <span className="block font-black text-[clamp(1.25rem,5.5vw,2rem)]">
                           <span className="text-amber-300 sm:text-orange-500">to Targeted Customers </span>
                           <span className="text-blue-300 sm:text-blue-600">with Nearby Travelers </span>
-                          <span className="text-white sm:text-black">and Locals Showing Direct Interest in Your Products and Services</span>
+                          <span className="text-white">and Locals Showing Direct Interest in Your Products and Services</span>
                         </span>
                       </h1>
                       
