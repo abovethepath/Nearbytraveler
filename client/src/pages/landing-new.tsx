@@ -86,8 +86,15 @@ export default function Landing() {
         </Button>
       </div>
       
-      {/* Top sticky banner */}
-      <div className="md:hidden fixed top-0 left-0 right-0 z-[70] bg-orange-500 text-black py-3 px-4 shadow-lg">
+      {/* Landing Navbar - Always at top */}
+      <header className="sticky top-0 z-[100] w-full bg-white shadow-sm">
+        <div className="w-full bg-white">
+          <LandingNavbar />
+        </div>
+      </header>
+      
+      {/* Mobile banner below navbar */}
+      <div className="md:hidden bg-orange-500 text-black py-3 px-4 shadow-lg">
         <div className="max-w-6xl mx-auto flex items-center justify-between gap-3">
           <span className="font-bold text-sm">🔥 Connect with Locals and Travelers TODAY - Sign Up Now!</span>
           <Button
@@ -98,13 +105,6 @@ export default function Landing() {
           </Button>
         </div>
       </div>
-
-      {/* Landing Navbar under banner on mobile */}
-      <header className="sticky top-[52px] md:top-0 z-[100] w-full bg-white shadow-sm">
-        <div className="w-full bg-white">
-          <LandingNavbar />
-        </div>
-      </header>
       
 
 
