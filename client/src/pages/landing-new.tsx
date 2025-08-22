@@ -100,7 +100,7 @@ export default function Landing() {
       </div>
 
       {/* Landing Navbar under banner on mobile */}
-      <header className="sticky top-[52px] md:top-0 z-[60] w-full bg-white shadow-sm">
+      <header className="sticky top-[52px] md:top-0 z-[100] w-full bg-white shadow-sm">
         <div className="w-full bg-white">
           <LandingNavbar />
         </div>
@@ -139,9 +139,9 @@ export default function Landing() {
                           Skip the Tourist Traps.
                         </span>
                         <span className="block font-black">
-                          <span className="text-amber-300 sm:text-orange-500">Meet Locals and Other </span>
-                          <span className="text-blue-300 sm:text-blue-600">Nearby Travelers </span>
-                          <span className="text-white sm:text-black">Right Now, Today!!!</span>
+                          <span className="text-orange-400">Meet Locals and Other </span>
+                          <span className="text-blue-400">Nearby Travelers </span>
+                          <span className="text-white">Right Now, Today!!!</span>
                         </span>
                       </h1>
                       

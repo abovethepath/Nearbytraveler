@@ -16,7 +16,7 @@ export default function LandingNavbar() {
 
   return (
     <nav
-      className="bg-white dark:bg-gray-800 shadow-sm relative z-[60] block w-full"
+      className="bg-white dark:bg-gray-800 shadow-sm relative z-[100] block w-full"
       style={{ minHeight: 64 }}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
