@@ -225,7 +225,7 @@ export default function Landing() {
               </div>
               <div className="p-6 flex flex-col flex-grow">
                 <div className="mb-3">
-                  <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-1 break-words">Beach Bonfire & BBQ</h3>
+                  <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-1">Beach Bonfire & BBQ</h3>
                   <p className="text-sm text-gray-600">Sunset gathering on the beach</p>
                 </div>
                 
@@ -236,7 +236,7 @@ export default function Landing() {
                   <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-medium">Music</span>
                 </div>
                 
-                <p className="text-gray-700 text-sm sm:text-base mb-4 flex-grow leading-relaxed break-words line-clamp-3">Join locals for an authentic beach bonfire with BBQ, music, and sunset views. Experience the real LA beach culture with friendly people.</p>
+                <p className="text-gray-700 text-sm sm:text-base mb-4 flex-grow leading-relaxed line-clamp-3">Join locals for an authentic beach bonfire with BBQ, music, and sunset views. Experience the real LA beach culture with friendly people.</p>
                 <Button 
                   onClick={() => setLocation('/join')}
                   className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold mt-auto"
@@ -257,7 +257,7 @@ export default function Landing() {
               </div>
               <div className="p-6 flex flex-col flex-grow">
                 <div className="mb-3">
-                  <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-1 break-words">Taco Tuesday</h3>
+                  <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-1">Taco Tuesday</h3>
                   <p className="text-xs sm:text-sm text-gray-600">Every Tuesday • $1.50 tacos</p>
                 </div>
                 
@@ -268,7 +268,7 @@ export default function Landing() {
                   <span className="bg-red-100 text-red-700 px-2 py-1 rounded-full text-xs font-medium">Weekly</span>
                 </div>
                 
-                <p className="text-gray-700 text-sm sm:text-base mb-4 flex-grow leading-relaxed break-words line-clamp-3">Join locals every Tuesday for authentic street tacos at unbeatable prices. Meet fellow taco lovers and discover the best Mexican spots in the city.</p>
+                <p className="text-gray-700 text-sm sm:text-base mb-4 flex-grow leading-relaxed line-clamp-3">Join locals every Tuesday for authentic street tacos at unbeatable prices. Meet fellow taco lovers and discover the best Mexican spots in the city.</p>
                 <Button 
                   onClick={() => setLocation('/join')}
                   className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold mt-auto"
@@ -289,7 +289,7 @@ export default function Landing() {
               </div>
               <div className="p-6 flex flex-col flex-grow">
                 <div className="mb-3">
-                  <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-1 break-words">Hollywood Sign Hike</h3>
+                  <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-1">Hollywood Sign Hike</h3>
                   <p className="text-xs sm:text-sm text-gray-600">Every Saturday • 9:00 AM</p>
                 </div>
                 
@@ -300,7 +300,7 @@ export default function Landing() {
                   <span className="bg-purple-100 text-purple-700 px-2 py-1 rounded-full text-xs font-medium">Photos</span>
                 </div>
                 
-                <p className="text-gray-700 text-sm sm:text-base mb-4 flex-grow leading-relaxed break-words line-clamp-3">Weekly hike to the iconic Hollywood Sign with locals and travelers. Amazing city views, great photos, and authentic LA hiking culture.</p>
+                <p className="text-gray-700 text-sm sm:text-base mb-4 flex-grow leading-relaxed line-clamp-3">Weekly hike to the iconic Hollywood Sign with locals and travelers. Amazing city views, great photos, and authentic LA hiking culture.</p>
                 <Button 
                   onClick={() => setLocation('/join')}
                   className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold mt-auto"
@@ -321,7 +321,7 @@ export default function Landing() {
               </div>
               <div className="p-6 flex flex-col flex-grow">
                 <div className="mb-3">
-                  <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-1 break-words">Happy Hour Thursday</h3>
+                  <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-1">Happy Hour Thursday</h3>
                   <p className="text-xs sm:text-sm text-gray-600">Jameson Pub • Live Music</p>
                 </div>
                 

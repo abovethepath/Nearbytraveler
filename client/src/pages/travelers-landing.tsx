@@ -86,12 +86,12 @@ export default function TravelersLanding() {
                       <div className="mt-6 md:mt-0">
                         <div className="md:absolute md:bottom-6 md:left-1/2 md:-translate-x-1/2 md:w-[min(92vw,720px)]">
                           <div className="bg-black/60 md:bg-black/50 text-white rounded-2xl border border-white/20 backdrop-blur p-4 sm:p-6 shadow-xl">
-                            <p className="text-sm sm:text-base md:text-lg leading-relaxed break-words">
+                            <p className="text-sm sm:text-base md:text-lg leading-relaxed">
                               <span className="text-orange-300 font-semibold">
-                                "Skip tourist spots and overpriced restaurants.
+                                "Skip the crowded tourist spots and overpriced restaurants.
                               </span>
                               <span className="text-white">
-                                {" "}Connect with locals who'll show you hidden gems, secret bars, and authentic experiences."
+                                {" "}Connect with real locals who'll show you the hidden gems, secret bars, and authentic experiences that make travel unforgettable."
                               </span>
                             </p>
                             <div className="mt-3 text-center">

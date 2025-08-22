@@ -72,9 +72,9 @@ export default function EventsLanding() {
                       <div className="mt-6 md:mt-0">
                         <div className="md:absolute md:bottom-6 md:left-1/2 md:-translate-x-1/2 md:w-[min(92vw,720px)]">
                           <div className="bg-black/60 md:bg-black/50 text-white rounded-2xl border border-white/20 backdrop-blur p-4 sm:p-6 shadow-xl">
-                            <p className="text-sm sm:text-base md:text-lg leading-relaxed break-words">
+                            <p className="text-sm sm:text-base md:text-lg leading-relaxed">
                               <span className="text-orange-300 font-semibold">
-                                "Join beach bonfires, parties, food tours, and adventures.
+                                "Join beach bonfires, rooftop parties, food tours, and adventures.
                               </span>
                               <span className="text-white">
                                 {" "}Every event is a chance to meet amazing locals and travelers who become lifelong friends."

@@ -78,9 +78,9 @@ export default function LocalsLanding() {
                               <span className="text-white"> —Aaron, Founder</span>
                             </p>
                             <div className="mt-3">
-                              <p className="text-sm sm:text-base leading-relaxed break-words">
-                                <span className="text-orange-300 font-semibold">"Share your city's secrets and hidden gems.</span>
-                                <span className="text-white"> Connect with travelers who want authentic experiences. Be the local friend you'd want to meet."</span>
+                              <p className="text-sm sm:text-base leading-relaxed">
+                                <span className="text-orange-300 font-semibold">"Share your city's best-kept secrets and hidden gems.</span>
+                                <span className="text-white"> Connect with genuine travelers who want authentic local experiences, not tourist traps. Be the local friend you'd want to meet."</span>
                               </p>
                             </div>
                             <div className="mt-3 text-center">
