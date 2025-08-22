@@ -109,24 +109,24 @@ export default function LocalsLanding() {
               What Makes Nearby Traveler Special
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 items-stretch">
-              <div className="bg-orange-600 p-6 rounded-xl shadow-lg text-white flex flex-col h-full">
+              <div className="bg-orange-600 p-6 rounded-xl shadow-lg text-white flex flex-col h-full overflow-hidden">
                 <div className="text-4xl mb-4">🏖️</div>
-                <h3 className="text-lg sm:text-xl font-bold mb-3 text-white leading-tight">Beach Bonfires & BBQs</h3>
-                <p className="text-white text-sm sm:text-base leading-relaxed flex-grow hyphens-auto">
+                <h3 className="text-lg sm:text-xl font-bold mb-3 text-white leading-tight break-words">Beach Bonfires & BBQs</h3>
+                <p className="text-white text-sm sm:text-base leading-relaxed flex-grow break-words overflow-wrap-anywhere">
                   Host or join amazing events like beach gatherings, sunset BBQs, campfire hikes, bar crawls, and social gatherings nearby.
                 </p>
               </div>
-              <div className="bg-teal-600 p-6 rounded-xl shadow-lg text-white flex flex-col h-full">
+              <div className="bg-teal-600 p-6 rounded-xl shadow-lg text-white flex flex-col h-full overflow-hidden">
                 <div className="text-4xl mb-4">🤝</div>
-                <h3 className="text-lg sm:text-xl font-bold mb-3 text-white leading-tight">Local Connections</h3>
-                <p className="text-white text-sm sm:text-base leading-relaxed flex-grow hyphens-auto">
+                <h3 className="text-lg sm:text-xl font-bold mb-3 text-white leading-tight break-words">Local Connections</h3>
+                <p className="text-white text-sm sm:text-base leading-relaxed flex-grow break-words overflow-wrap-anywhere">
                   Build lasting friendships with locals who share your interests and travel style.
                 </p>
               </div>
-              <div className="bg-orange-700 p-6 rounded-xl shadow-lg text-white flex flex-col h-full">
+              <div className="bg-orange-700 p-6 rounded-xl shadow-lg text-white flex flex-col h-full overflow-hidden">
                 <div className="text-4xl mb-4">🎉</div>
-                <h3 className="text-lg sm:text-xl font-bold mb-3 text-white leading-tight">Join or Host Events</h3>
-                <p className="text-white text-sm sm:text-base leading-relaxed flex-grow hyphens-auto">
+                <h3 className="text-lg sm:text-xl font-bold mb-3 text-white leading-tight break-words">Join or Host Events</h3>
+                <p className="text-white text-sm sm:text-base leading-relaxed flex-grow break-words overflow-wrap-anywhere">
                   Host events and activities you love doing in your city to meet like-minded locals and travelers.
                 </p>
               </div>
