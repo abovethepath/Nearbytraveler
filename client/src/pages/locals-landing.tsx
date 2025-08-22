@@ -46,7 +46,7 @@ export default function LocalsLanding() {
                         <span className="block font-black text-[clamp(1.25rem,5.5vw,2rem)]">
                           <span className="text-amber-300 sm:text-orange-500">Share Your City's Hidden Gems </span>
                           <span className="text-blue-300 sm:text-blue-600">with Nearby Travelers</span>
-                          <span className="text-white sm:text-black"> and Connect with Like-Minded Locals</span>
+                          <span className="text-white"> and Connect with Like-Minded Locals</span>
                         </span>
                       </h1>
                       
