@@ -18,7 +18,7 @@ export default function LandingNavbar() {
                 <span className="ml-4 sm:ml-8 text-red-600 dark:text-red-400 text-xs sm:text-sm font-bold uppercase tracking-wide bg-red-100 dark:bg-red-900/50 px-2 py-1 rounded">BETA</span>
               </Link>
             </div>
-            <div className="hidden sm:ml-8 sm:flex sm:space-x-4">
+            <div className="hidden sm:ml-12 sm:flex sm:space-x-6">
               <Link href="/" className="border-teal-500 text-gray-900 dark:text-white inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
                 Home
               </Link>
@@ -36,12 +36,12 @@ export default function LandingNavbar() {
               </Link>
             </div>
           </div>
-          <div className="hidden sm:ml-4 sm:flex sm:items-center sm:space-x-2">
-            <Link href="/auth" className="bg-blue-600 hover:bg-blue-700 text-white px-2 py-1.5 rounded-md text-xs font-medium transition duration-150 ease-in-out">
+          <div className="hidden sm:ml-6 sm:flex sm:items-center sm:space-x-3">
+            <Link href="/auth" className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out">
               Sign In
             </Link>
-            <Link href="/join" className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white px-2 py-1.5 rounded-md text-xs font-medium transition duration-150 ease-in-out whitespace-nowrap">
-              Join Now
+            <Link href="/join" className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white px-4 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out">
+              Join Nearby Traveler
             </Link>
           </div>
           <div className="-mr-2 flex items-center sm:hidden">
