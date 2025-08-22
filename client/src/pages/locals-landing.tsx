@@ -108,18 +108,18 @@ export default function LocalsLanding() {
             <h2 className="text-3xl sm:text-4xl font-bold mb-8 text-gray-900" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700'}}>
               What Makes Nearby Traveler Special
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              <div className="bg-orange-600 p-6 rounded-xl shadow-lg text-white min-h-[200px] flex flex-col">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-start">
+              <div className="bg-orange-600 p-6 rounded-xl shadow-lg text-white min-h-[250px] flex flex-col">
                 <div className="text-4xl mb-4">🏖️</div>
                 <h3 className="text-base sm:text-lg md:text-xl font-bold mb-3 text-white leading-tight">Beach Bonfires & BBQs</h3>
                 <p className="text-white text-sm sm:text-base leading-relaxed break-words flex-grow">Host or join amazing events such as beach gatherings, sunset BBQs, campfire hikes, bar crawls, and all social gatherings nearby.</p>
               </div>
-              <div className="bg-teal-600 p-6 rounded-xl shadow-lg text-white">
+              <div className="bg-teal-600 p-6 rounded-xl shadow-lg text-white min-h-[250px] flex flex-col">
                 <div className="text-4xl mb-4">🤝</div>
                 <h3 className="text-xl font-bold mb-3 text-white">Local Connections</h3>
                 <p className="text-white">Build lasting friendships with locals who share your interests and travel style.</p>
               </div>
-              <div className="bg-orange-700 p-6 rounded-xl shadow-lg text-white">
+              <div className="bg-orange-700 p-6 rounded-xl shadow-lg text-white min-h-[250px] flex flex-col">
                 <div className="text-4xl mb-4">🎉</div>
                 <h3 className="text-xl font-bold mb-3 text-white">Join or Host Events</h3>
                 <p className="text-white">Host events and activities you love doing in your city to meet like-minded locals and travelers.</p>
