@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Calendar, Clock, MapPin, Users, Search, Filter, Plus, Info, X, Heart, UserCheck, CheckCircle } from "lucide-react";
+import { useIsMobile, useIsDesktop } from "@/hooks/useDeviceType";
 
 import { type Event, type EventParticipant, type User as UserType } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
@@ -39,6 +40,8 @@ export default function Events() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [, setLocation] = useLocation();
+  const isMobile = useIsMobile();
+  const isDesktop = useIsDesktop();
 
   // Add/remove body class for modal
   React.useEffect(() => {

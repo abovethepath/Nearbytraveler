@@ -9,6 +9,7 @@ import { useLocation } from "wouter";
 import { ArrowLeft } from "lucide-react";
 import { AuthContext } from "@/App";
 import { MobilePreview } from "@/components/MobilePreview";
+import { useIsMobile, useIsDesktop } from "@/hooks/useDeviceType";
 // MobileNav removed - using global mobile navigation
 
 
@@ -29,6 +30,8 @@ export default function DiscoverPage() {
   const [location, setLocation] = useLocation();
   const [searchQuery, setSearchQuery] = useState("");
   const { user } = useContext(AuthContext);
+  const isMobile = useIsMobile();
+  const isDesktop = useIsDesktop();
 
   // Redirect business users away from destination discovery page
   useEffect(() => {

@@ -22,6 +22,7 @@ import { AuthContext } from "@/App";
 import { authStorage } from "@/lib/auth";
 import InstantDealCreator from "@/components/InstantDealCreator";
 import { QuickDealsWidget } from "@/components/QuickDealsWidget";
+import { useIsMobile, useIsDesktop } from "@/hooks/useDeviceType";
 
 // Helper function to extract city from street address
 function extractCityFromAddress(address: string | null | undefined): string {

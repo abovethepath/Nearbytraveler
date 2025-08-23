@@ -2,6 +2,7 @@ import React, { useState, useContext, useRef, useEffect, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { AuthContext } from "@/App";
+import { useIsMobile, useIsDesktop } from "@/hooks/useDeviceType";
 import UserCard from "@/components/user-card";
 import EventCard from "@/components/event-card";
 import MessagePreview from "@/components/message-preview";
@@ -175,6 +176,8 @@ export default function Home() {
   };
 
   const { user, setUser } = useContext(AuthContext);
+  const isMobile = useIsMobile();
+  const isDesktop = useIsDesktop();
 
   // Helper function to get current user location for widgets
   const getCurrentUserLocation = () => {
@@ -2086,13 +2089,14 @@ export default function Home() {
                 )}
               </div>
 
-              {/* Sort By Dropdown */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="ml-2 bg-white/70 dark:bg-gray-700/70 backdrop-blur-sm border border-gray-200/50 dark:border-gray-600/50 text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 dark:hover:from-blue-900/30 dark:hover:to-purple-900/30 rounded-xl"
+              {/* Sort By Dropdown - Desktop Only */}
+              {isDesktop && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="ml-2 bg-white/70 dark:bg-gray-700/70 backdrop-blur-sm border border-gray-200/50 dark:border-gray-600/50 text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 dark:hover:from-blue-900/30 dark:hover:to-purple-900/30 rounded-xl"
                   >
                     <ArrowUpDown className="w-4 h-4 mr-2" />
                     Sort By
@@ -2133,7 +2137,8 @@ export default function Home() {
                     Alphabetical
                   </DropdownMenuItem>
                 </DropdownMenuContent>
-              </DropdownMenu>
+                </DropdownMenu>
+              )}
             </div>
 
             {(usersLoading || (activeFilter === "best-matches" && matchedUsersLoading)) ? (
@@ -2462,7 +2467,20 @@ export default function Home() {
                   </Button>
                 </div>
 
-                <QuickMeetupWidget />
+                {/* Quick Meetup Widget - Simplified on Mobile */}
+                {isMobile ? (
+                  <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border shadow-sm">
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="font-semibold text-sm">Quick Meetups</h3>
+                      <Button size="sm" variant="ghost" onClick={() => setLocation('/quick-meetups')}>
+                        View All
+                      </Button>
+                    </div>
+                    <p className="text-xs text-gray-600 dark:text-gray-400">Find spontaneous meetups nearby</p>
+                  </div>
+                ) : (
+                  <QuickMeetupWidget />
+                )}
               </div>
             )}
 
@@ -2494,14 +2512,34 @@ export default function Home() {
                 </Button>
               </div>
 
-              <BusinessesGrid 
-                currentLocation={{
-                  city: effectiveUser?.hometownCity || "",
-                  state: effectiveUser?.hometownState || "",
-                  country: effectiveUser?.hometownCountry || "United States"
-                }}
-                travelPlans={travelPlans}
-              />
+              {/* Business Grid - Simplified on Mobile */}
+              {isMobile ? (
+                <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border shadow-sm">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="font-semibold text-sm">Local Deals</h3>
+                    <Button size="sm" variant="ghost" onClick={() => setLocation('/deals')}>
+                      <Briefcase className="w-4 h-4 mr-1" />
+                      View All
+                    </Button>
+                  </div>
+                  <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">Discover local business offers and deals</p>
+                  <Button 
+                    className="w-full text-sm bg-gradient-to-r from-green-500 to-orange-500 text-white hover:from-green-600 hover:to-orange-600"
+                    onClick={() => setLocation('/deals')}
+                  >
+                    Browse Local Deals
+                  </Button>
+                </div>
+              ) : (
+                <BusinessesGrid 
+                  currentLocation={{
+                    city: effectiveUser?.hometownCity || "",
+                    state: effectiveUser?.hometownState || "",
+                    country: effectiveUser?.hometownCountry || "United States"
+                  }}
+                  travelPlans={travelPlans}
+                />
+              )}
             </div>
 
             {/* Load More / Load Less buttons for Businesses */}
@@ -2518,20 +2556,23 @@ export default function Home() {
             )}
           </div>
 
-          {/* Right Sidebar - Widgets - Always visible on mobile and desktop */}
+          {/* Right Sidebar - Widgets - Simplified on Mobile */}
           <div className="col-span-1 lg:col-span-1 space-y-3 sm:space-y-6 min-w-0">
-            {/* Weather Widget */}
-            <div>
-              <CurrentLocationWeatherWidget />
-            </div>
+            {/* Weather Widget - Desktop Only */}
+            {isDesktop && (
+              <div>
+                <CurrentLocationWeatherWidget />
+              </div>
+            )}
 
-            {/* Messages Widget */}
+            {/* Messages Widget - Always Show */}
             <div>
               <MessagesWidget userId={currentUserId} />
             </div>
 
-            {/* City Map Widget - Interactive map showing users, events, and businesses */}
-            <div>
+            {/* City Map Widget - Desktop Only - Interactive map showing users, events, and businesses */}
+            {isDesktop && (
+              <div>
               {(() => {
                 // Priority 1: If user has active travel plans, show current travel destination
                 const activeTravelPlan = travelPlans?.find(plan => plan.status === 'active');
@@ -2582,7 +2623,8 @@ export default function Home() {
                 
                 return null;
               })()}
-            </div>
+              </div>
+            )}
 
           </div>
         </div>
