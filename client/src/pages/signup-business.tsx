@@ -163,9 +163,13 @@ export default function SignupBusinessSimple() {
     mutationFn: async (data: BusinessSignupData) => {
       // Check for referral information
       const referralCode = sessionStorage.getItem('referralCode');
+      const connectionNote = sessionStorage.getItem('connectionNote');
       
       if (referralCode) {
         console.log('✅ Found referral code from QR signup:', referralCode);
+        if (connectionNote) {
+          console.log('📝 Found connection note:', connectionNote);
+        }
       }
 
       // Process custom business type
@@ -205,7 +209,8 @@ export default function SignupBusinessSimple() {
           businessName: accountData?.businessName || "", // Include businessName from step 1
           websiteUrl: (processedData as any).websiteUrl, // Ensure websiteUrl is included
           // Include referral information if available
-          ...(referralCode && { referralCode })
+          ...(referralCode && { referralCode }),
+          ...(connectionNote && { connectionNote })
         })
       });
 
@@ -259,6 +264,7 @@ export default function SignupBusinessSimple() {
       if (referralCode) {
         sessionStorage.removeItem('referralCode');
         sessionStorage.removeItem('referrerInfo');
+        sessionStorage.removeItem('connectionNote');
       }
       
       // Small delay to ensure context update, then redirect to welcome page

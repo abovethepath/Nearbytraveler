@@ -121,9 +121,13 @@ export default function SignupTraveling() {
       // Check for referral information
       const referralCode = sessionStorage.getItem('referralCode');
       const referrerInfo = sessionStorage.getItem('referrerInfo');
+      const connectionNote = sessionStorage.getItem('connectionNote');
       
       if (referralCode) {
         console.log('✅ Found referral code from QR signup:', referralCode);
+        if (connectionNote) {
+          console.log('📝 Found connection note:', connectionNote);
+        }
       }
 
       // Merge account data
@@ -134,7 +138,8 @@ export default function SignupTraveling() {
         username: accountData.username || formData.username,
         name: accountData.name || formData.name,
         // Include referral information if available
-        ...(referralCode && { referralCode })
+        ...(referralCode && { referralCode }),
+        ...(connectionNote && { connectionNote })
       };
 
       // Validate required fields
@@ -271,6 +276,7 @@ export default function SignupTraveling() {
           // Clean up referral data
           sessionStorage.removeItem('referralCode');
           sessionStorage.removeItem('referrerInfo');
+          sessionStorage.removeItem('connectionNote');
         }
         
         toast({

@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { UserPlus, QrCode, ArrowRight } from "lucide-react";
 
@@ -26,6 +28,7 @@ export default function QRSignup({ referralCode }: QRSignupProps) {
   const [referrer, setReferrer] = useState<Referrer | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [connectionNote, setConnectionNote] = useState<string>('');
 
   useEffect(() => {
     const fetchReferrerInfo = async () => {
@@ -63,6 +66,11 @@ export default function QRSignup({ referralCode }: QRSignupProps) {
     // Store referral code in session storage to use during signup
     sessionStorage.setItem('referralCode', referralCode);
     sessionStorage.setItem('referrerInfo', JSON.stringify(referrer));
+    
+    // Store connection note if provided
+    if (connectionNote.trim()) {
+      sessionStorage.setItem('connectionNote', connectionNote.trim());
+    }
     
     // Navigate to appropriate signup form
     if (userType === 'business') {
@@ -168,6 +176,25 @@ export default function QRSignup({ referralCode }: QRSignupProps) {
             {referrer?.bio && (
               <p className="text-sm text-gray-700 italic">"{referrer.bio}"</p>
             )}
+          </div>
+
+          {/* Connection Note */}
+          <div className="space-y-2">
+            <Label htmlFor="connectionNote" className="text-sm font-medium text-gray-700">
+              How do you know {referrer?.name}? (optional)
+            </Label>
+            <Input
+              id="connectionNote"
+              type="text"
+              placeholder="e.g., met at Barcelona conference, friends from college..."
+              value={connectionNote}
+              onChange={(e) => setConnectionNote(e.target.value)}
+              className="w-full"
+              data-testid="input-connection-note"
+            />
+            <p className="text-xs text-gray-500">
+              This note will help you both remember how you connected!
+            </p>
           </div>
 
           {/* Signup Options */}

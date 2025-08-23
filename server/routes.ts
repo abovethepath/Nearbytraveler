@@ -2211,11 +2211,15 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
               .set({ referredBy: referrer.id })
               .where(eq(users.id, user.id));
 
+            // Get connection note from request body if provided
+            const connectionNote = req.body.connectionNote || 'Connected through QR code share';
+
             // Create automatic connection between referrer and new user
             await db.insert(connections).values({
               requesterId: referrer.id,
               receiverId: user.id,
-              status: 'accepted' // Auto-accept referral connections
+              status: 'accepted', // Auto-accept referral connections
+              connectionNote: connectionNote
             });
 
             // Update referrer's referral count
@@ -2223,7 +2227,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
               .set({ referralCount: (referrer.referralCount || 0) + 1 })
               .where(eq(users.id, referrer.id));
 
-            console.log(`✅ Referral connection created: ${referrer.username} → ${user.username}`);
+            console.log(`✅ Referral connection created: ${referrer.username} → ${user.username} (${connectionNote})`);
           } else {
             console.log('❌ Invalid referral code:', req.body.referralCode);
           }
@@ -10493,6 +10497,44 @@ Questions? Just reply to this message. Welcome aboard!
     } catch (error: any) {
       console.error('Error fetching referral info:', error);
       res.status(500).json({ error: 'Failed to fetch referral information' });
+    }
+  });
+
+  // Connection note management
+  app.patch('/api/connections/:connectionId/note', isAuthenticated, async (req: any, res) => {
+    try {
+      const connectionId = parseInt(req.params.connectionId);
+      const { connectionNote } = req.body;
+      const userId = req.user.claims.sub;
+
+      // Verify the user is part of this connection
+      const [connection] = await db
+        .select()
+        .from(connections)
+        .where(
+          and(
+            eq(connections.id, connectionId),
+            or(
+              eq(connections.requesterId, userId),
+              eq(connections.receiverId, userId)
+            )
+          )
+        )
+        .limit(1);
+
+      if (!connection) {
+        return res.status(404).json({ error: 'Connection not found or access denied' });
+      }
+
+      // Update the connection note
+      await db.update(connections)
+        .set({ connectionNote: connectionNote || null })
+        .where(eq(connections.id, connectionId));
+
+      res.json({ success: true, message: 'Connection note updated' });
+    } catch (error) {
+      console.error('Error updating connection note:', error);
+      res.status(500).json({ error: 'Failed to update connection note' });
     }
   });
 

@@ -206,6 +206,7 @@ export const connections = pgTable("connections", {
   requesterId: integer("requester_id").notNull(),
   receiverId: integer("receiver_id").notNull(),
   status: text("status").notNull().default("pending"), // 'pending', 'accepted', 'rejected'
+  connectionNote: text("connection_note"), // Optional note about how they met (e.g., "met at xyz event", "met in Spain")
   createdAt: timestamp("created_at").defaultNow(),
 });
 
