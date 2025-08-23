@@ -122,6 +122,8 @@ import TravelAgentPage from "@/pages/travel-agent-page";
 import WelcomeTravelAgent from "@/pages/welcome-travel-agent";
 import QuickLogin from "@/pages/quick-login";
 import MatchInCity from "@/pages/match-in-city";
+import QRSignup from "@/pages/qr-signup";
+import ShareQR from "@/pages/share-qr";
 
 
 import Navbar from "@/components/navbar";
@@ -529,6 +531,15 @@ function Router() {
         }
         return <LandingNew />;
       }
+      // QR code signup route
+      if (location.startsWith('/signup/qr/')) {
+        const referralCode = location.split('/')[3];
+        if (referralCode) {
+          console.log('Showing QRSignup for referral code:', referralCode);
+          return <QRSignup referralCode={referralCode} />;
+        }
+      }
+
       // Allow access to signup pages without authentication
       // Three separate signup forms: Local, Traveling, Business
       if (location === '/signup/local' || location === '/signup/traveler') {
@@ -818,6 +829,8 @@ function Router() {
         return <Discover />;
       case '/match-in-city':
         return <MatchInCity />;
+      case '/share-qr':
+        return <ShareQR />;
 
       case '/connect':
         return <Connect />;

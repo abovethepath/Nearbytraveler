@@ -23,6 +23,7 @@ import { eventReminderService } from "./services/eventReminderService";
 import { TravelMatchingService } from "./services/matching";
 import { businessProximityEngine } from "./businessProximityNotificationEngine";
 import { smsService } from "./services/smsService";
+import QRCode from "qrcode";
 
 import { 
   secretLocalExperienceLikes, 
@@ -129,6 +130,16 @@ const getCityCoordinates = (city: string): [number, number] => {
     console.log(`🗺️ NOT FOUND: No match for "${cleanCity}", using default LA coordinates`);
   }
   return [34.0522, -118.2437];
+};
+
+// Generate a unique referral code for QR sharing
+const generateReferralCode = (): string => {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let result = '';
+  for (let i = 0; i < 8; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
 };
 
 // Aura Points Helper Function - Production Optimized
@@ -2177,6 +2188,50 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         travelStartDate: user.travelStartDate,
         travelEndDate: user.travelEndDate
       });
+
+      // HANDLE REFERRAL CONNECTIONS
+      if (req.body.referralCode) {
+        try {
+          console.log('🔗 Processing referral signup with code:', req.body.referralCode);
+          
+          // Find the referrer by their referral code
+          const [referrer] = await db
+            .select({
+              id: users.id,
+              username: users.username,
+              referralCount: users.referralCount
+            })
+            .from(users)
+            .where(eq(users.referralCode, req.body.referralCode))
+            .limit(1);
+
+          if (referrer) {
+            // Update the new user's referredBy field
+            await db.update(users)
+              .set({ referredBy: referrer.id })
+              .where(eq(users.id, user.id));
+
+            // Create automatic connection between referrer and new user
+            await db.insert(connections).values({
+              requesterId: referrer.id,
+              receiverId: user.id,
+              status: 'accepted' // Auto-accept referral connections
+            });
+
+            // Update referrer's referral count
+            await db.update(users)
+              .set({ referralCount: (referrer.referralCount || 0) + 1 })
+              .where(eq(users.id, referrer.id));
+
+            console.log(`✅ Referral connection created: ${referrer.username} → ${user.username}`);
+          } else {
+            console.log('❌ Invalid referral code:', req.body.referralCode);
+          }
+        } catch (error) {
+          console.error('Error processing referral:', error);
+          // Don't fail registration if referral processing fails
+        }
+      }
 
       // IMPORTANT: Award 1 aura point to all new users for signing up
       try {
@@ -10342,6 +10397,102 @@ Questions? Just reply to this message. Welcome aboard!
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error('Error in keyword search:', error);
       res.status(500).json({ error: 'Failed to perform keyword search' });
+    }
+  });
+
+  // QR CODE & REFERRAL SYSTEM ROUTES
+  
+  // Generate referral code and QR code for user
+  app.get('/api/user/qr-code', async (req: any, res) => {
+    if (!req.session.user) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
+
+    try {
+      const userId = req.session.user.id;
+      let user = await storage.getUser(userId);
+      
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      // Generate referral code if user doesn't have one
+      if (!user.referralCode) {
+        const referralCode = generateReferralCode();
+        await db.update(users)
+          .set({ 
+            referralCode: referralCode,
+            qrCodeGeneratedAt: new Date()
+          })
+          .where(eq(users.id, userId));
+        
+        user = await storage.getUser(userId); // Refresh user data
+      }
+
+      const signupUrl = `${req.protocol}://${req.get('host')}/signup/qr/${user.referralCode}`;
+      
+      // Generate QR code as data URL
+      const qrCodeDataUrl = await QRCode.toDataURL(signupUrl, {
+        width: 300,
+        margin: 2,
+        color: {
+          dark: '#000000',
+          light: '#FFFFFF'
+        }
+      });
+
+      res.json({
+        referralCode: user.referralCode,
+        qrCodeUrl: qrCodeDataUrl,
+        signupUrl: signupUrl,
+        referralCount: user.referralCount || 0
+      });
+
+    } catch (error: any) {
+      console.error('Error generating QR code:', error);
+      res.status(500).json({ error: 'Failed to generate QR code' });
+    }
+  });
+
+  // Get user info by referral code (for preview before signup)
+  app.get('/api/referral/:code', async (req, res) => {
+    try {
+      const { code } = req.params;
+      
+      const [referrer] = await db
+        .select({
+          id: users.id,
+          username: users.username,
+          name: users.name,
+          profileImage: users.profileImage,
+          userType: users.userType,
+          city: users.city,
+          state: users.state,
+          country: users.country,
+          bio: users.bio
+        })
+        .from(users)
+        .where(eq(users.referralCode, code))
+        .limit(1);
+
+      if (!referrer) {
+        return res.status(404).json({ error: 'Invalid referral code' });
+      }
+
+      res.json({
+        referrer: {
+          name: referrer.name,
+          username: referrer.username,
+          profileImage: referrer.profileImage,
+          userType: referrer.userType,
+          location: [referrer.city, referrer.state, referrer.country].filter(Boolean).join(', '),
+          bio: referrer.bio
+        }
+      });
+
+    } catch (error: any) {
+      console.error('Error fetching referral info:', error);
+      res.status(500).json({ error: 'Failed to fetch referral information' });
     }
   });
 

@@ -173,6 +173,12 @@ export const users = pgTable("users", {
   avatarColor: text("avatar_color").default("#3B82F6"), // User's chosen avatar color (default blue)
   avatarGradient: text("avatar_gradient"), // Optional gradient preference for future use
   
+  // QR Code & Referral System
+  referralCode: varchar("referral_code", { length: 12 }).unique(), // Unique 6-8 char code for QR sharing
+  referredBy: integer("referred_by"), // User ID of who referred this user
+  referralCount: integer("referral_count").default(0), // How many users they've referred
+  qrCodeGeneratedAt: timestamp("qr_code_generated_at"), // When QR code was last generated
+  
   createdAt: timestamp("created_at").defaultNow(),
 });
 

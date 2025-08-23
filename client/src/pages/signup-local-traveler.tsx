@@ -118,13 +118,23 @@ export default function SignupLocalTraveler() {
         }
       }
 
+      // Check for referral information
+      const referralCode = sessionStorage.getItem('referralCode');
+      const referrerInfo = sessionStorage.getItem('referrerInfo');
+      
+      if (referralCode) {
+        console.log('✅ Found referral code from QR signup:', referralCode);
+      }
+
       // Merge account data
       const finalFormData = {
         ...formData,
         email: accountData.email || formData.email,
         password: accountData.password || formData.password,
         username: accountData.username || formData.username,
-        name: accountData.name || formData.name
+        name: accountData.name || formData.name,
+        // Include referral information if available
+        ...(referralCode && { referralCode })
       };
 
       // Validate required fields
@@ -230,9 +240,24 @@ export default function SignupLocalTraveler() {
         // Clear stored account data
         sessionStorage.removeItem('accountData');
         
+        // Handle referral success and cleanup
+        let successMessage = "Setting up your local profile...";
+        if (referralCode && referrerInfo) {
+          try {
+            const referrer = JSON.parse(referrerInfo);
+            successMessage = `You're now connected with ${referrer.name}! Setting up your profile...`;
+          } catch (error) {
+            console.error('Error parsing referrer info:', error);
+          }
+          
+          // Clean up referral data
+          sessionStorage.removeItem('referralCode');
+          sessionStorage.removeItem('referrerInfo');
+        }
+        
         toast({
           title: "Account created successfully!",
-          description: "Setting up your local profile...",
+          description: successMessage,
           variant: "default",
         });
 

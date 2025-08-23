@@ -161,6 +161,13 @@ export default function SignupBusinessSimple() {
 
   const signupMutation = useMutation({
     mutationFn: async (data: BusinessSignupData) => {
+      // Check for referral information
+      const referralCode = sessionStorage.getItem('referralCode');
+      
+      if (referralCode) {
+        console.log('✅ Found referral code from QR signup:', referralCode);
+      }
+
       // Process custom business type
       const processedData = { ...data };
       
@@ -197,6 +204,8 @@ export default function SignupBusinessSimple() {
           userType: "business",
           businessName: accountData?.businessName || "", // Include businessName from step 1
           websiteUrl: (processedData as any).websiteUrl, // Ensure websiteUrl is included
+          // Include referral information if available
+          ...(referralCode && { referralCode })
         })
       });
 
@@ -208,9 +217,23 @@ export default function SignupBusinessSimple() {
       return response.json();
     },
     onSuccess: (response) => {
+      // Handle referral success message
+      const referralCode = sessionStorage.getItem('referralCode');
+      const referrerInfo = sessionStorage.getItem('referrerInfo');
+      
+      let successMessage = "Welcome to Nearby Traveler Business Network!";
+      if (referralCode && referrerInfo) {
+        try {
+          const referrer = JSON.parse(referrerInfo);
+          successMessage = `You're now connected with ${referrer.name}! Welcome to the Business Network!`;
+        } catch (error) {
+          console.error('Error parsing referrer info:', error);
+        }
+      }
+
       toast({
         title: "Business Registration Successful!",
-        description: "Welcome to Nearby Traveler Business Network!",
+        description: successMessage,
       });
       
       // CRITICAL: Update the authentication context first
@@ -231,6 +254,12 @@ export default function SignupBusinessSimple() {
       
       // Clear sessionStorage account data since signup is complete
       sessionStorage.removeItem('accountData');
+      
+      // Clean up referral data if it exists
+      if (referralCode) {
+        sessionStorage.removeItem('referralCode');
+        sessionStorage.removeItem('referrerInfo');
+      }
       
       // Small delay to ensure context update, then redirect to welcome page
       setTimeout(() => {
