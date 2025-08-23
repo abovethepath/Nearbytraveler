@@ -3452,6 +3452,18 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     <span className="truncate">Go to Chatrooms</span>
                   </Button>
                 )}
+                <Button
+                  onClick={() => setLocation('/share-qr')}
+                  className="bg-gradient-to-r from-orange-600 to-blue-600 hover:from-orange-700 hover:to-blue-700
+                             text-white border-0 shadow-lg rounded-full
+                             inline-flex items-center justify-center gap-2
+                             w-full sm:w-auto max-w-full sm:max-w-none
+                             px-4 py-3 overflow-hidden break-words"
+                  data-testid="button-share-qr-code"
+                >
+                  <Share2 className="w-4 h-4 shrink-0" />
+                  <span className="truncate">Invite Friends</span>
+                </Button>
               </div>
             )}
           </div>
