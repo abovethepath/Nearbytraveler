@@ -2989,155 +2989,110 @@ article,
 }
 
 /* 
- * COMPREHENSIVE MOBILE TEXT WRAPPING FIXES 
- * Ensure ALL text content wraps properly on mobile screens
+ * TARGETED MOBILE TEXT WRAPPING FIXES 
+ * Fix text overflow issues while preserving navigation layout
  */
 
-/* Universal text wrapping for mobile screens */
 @media (max-width: 768px) {
-  /* Force text to wrap in containers */
+  /* EXCLUSIONS - Do NOT apply text wrapping to critical navigation elements */
+  /* Navbar and header elements should maintain their layout */
+  
+  /* Content area text wrapping - cards and widgets */
   .user-card,
   .event-card,
   .business-card,
-  .widget-card,
-  [class*="card"],
-  [class*="widget"] {
-    /* Ensure text breaks properly */
+  .widget-card {
     word-wrap: break-word !important;
     overflow-wrap: break-word !important;
     word-break: break-word !important;
     hyphens: auto !important;
-    /* Remove any fixed widths that prevent wrapping */
-    max-width: 100% !important;
   }
 
-  /* Fix text elements that commonly overflow */
-  h1, h2, h3, h4, h5, h6,
-  p, span, div,
-  .text-lg, .text-xl, .text-2xl, .text-3xl,
-  [class*="text-"],
-  .font-semibold, .font-bold, .font-medium {
-    /* Force long words to break */
+  /* Content text elements - but exclude navbar elements */
+  .user-card h1, .user-card h2, .user-card h3, .user-card h4, .user-card h5, .user-card h6,
+  .user-card p, .user-card span, .user-card div,
+  .event-card h1, .event-card h2, .event-card h3, .event-card h4, .event-card h5, .event-card h6,
+  .event-card p, .event-card span, .event-card div,
+  .business-card h1, .business-card h2, .business-card h3, .business-card h4, .business-card h5, .business-card h6,
+  .business-card p, .business-card span, .business-card div,
+  .widget-card h1, .widget-card h2, .widget-card h3, .widget-card h4, .widget-card h5, .widget-card h6,
+  .widget-card p, .widget-card span, .widget-card div {
     word-wrap: break-word !important;
     overflow-wrap: break-word !important;
     word-break: break-word !important;
     hyphens: auto !important;
-    /* Ensure they don't exceed container width */
     max-width: 100% !important;
-    /* Allow text to wrap naturally */
     white-space: normal !important;
   }
 
-  /* Fix pill/badge elements that use whitespace-nowrap */
-  .pill,
-  [class*="pill"],
-  .badge,
-  [class*="badge"],
-  .chip,
-  [class*="chip"],
-  .inline-flex[class*="rounded-full"],
-  .inline-flex[class*="px-"],
-  [class*="whitespace-nowrap"] {
-    /* Allow text to wrap in pills on mobile */
+  /* Fix CONTENT pills/badges only - not navigation badges */
+  .user-card .badge,
+  .event-card .badge,
+  .business-card .badge,
+  .widget-card .badge,
+  .user-card .pill,
+  .event-card .pill,
+  .business-card .pill,
+  .widget-card .pill,
+  .content-area .badge,
+  .content-area .pill {
     white-space: normal !important;
     word-wrap: break-word !important;
     overflow-wrap: break-word !important;
     word-break: break-word !important;
-    /* Remove fixed min-widths that cause overflow */
     min-width: auto !important;
-    /* Ensure responsive sizing */
     max-width: 100% !important;
     width: auto !important;
-    /* Allow height to adjust */
     height: auto !important;
     min-height: 2rem !important;
     padding: 0.25rem 0.75rem !important;
-    /* Center content vertically */
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    text-align: center !important;
   }
 
-  /* Fix input fields and selects */
-  input, select, textarea,
-  .input, .select, .textarea,
-  [class*="input"], [class*="select"] {
-    max-width: 100% !important;
-    width: 100% !important;
-    word-wrap: break-word !important;
-    overflow-wrap: break-word !important;
-  }
-
-  /* Fix button text */
-  button, .button, .btn,
-  [class*="button"], [class*="btn"] {
+  /* Fix CONTENT button text - but preserve navbar buttons */
+  .user-card button,
+  .event-card button,
+  .business-card button,
+  .widget-card button,
+  .content-area button {
     word-wrap: break-word !important;
     overflow-wrap: break-word !important;
     white-space: normal !important;
     text-align: center !important;
-    max-width: 100% !important;
-    /* Allow buttons to grow in height if text wraps */
     height: auto !important;
     min-height: 2.5rem !important;
     padding: 0.5rem 1rem !important;
   }
 
-  /* Fix flex containers that might prevent wrapping */
-  .flex[class*="gap-"],
-  .flex[class*="space-x-"],
-  [class*="flex "] {
-    /* Allow flex items to wrap */
-    flex-wrap: wrap !important;
-    /* Prevent overflow */
-    overflow: visible !important;
-    max-width: 100% !important;
-  }
-
-  /* Fix flex items in wrapped containers */
-  .flex > *,
-  [class*="flex "] > * {
-    /* Prevent flex items from overflowing */
-    max-width: 100% !important;
-    min-width: 0 !important;
-    /* Allow flex shrinking */
-    flex-shrink: 1 !important;
-  }
-
-  /* Fix grid containers that might cause overflow */
-  .grid,
-  [class*="grid-"] {
-    /* Ensure grid doesn't create horizontal overflow */
-    max-width: 100% !important;
-    overflow: visible !important;
-  }
-
-  /* Fix grid items */
-  .grid > *,
-  [class*="grid-"] > * {
-    max-width: 100% !important;
-    min-width: 0 !important;
-  }
-
-  /* Fix truncate classes that prevent proper mobile wrapping */
-  .truncate,
-  [class*="truncate"] {
-    /* On mobile, show full text instead of truncating */
+  /* Fix CONTENT truncate classes - but preserve navbar truncation */
+  .user-card .truncate,
+  .event-card .truncate,
+  .business-card .truncate,
+  .widget-card .truncate,
+  .content-area .truncate {
     white-space: normal !important;
     overflow: visible !important;
     text-overflow: clip !important;
-    /* Enable word breaking */
     word-wrap: break-word !important;
     overflow-wrap: break-word !important;
     word-break: break-word !important;
   }
 
-  /* Fix line-clamp classes on mobile */
-  .line-clamp-1,
-  .line-clamp-2, 
-  .line-clamp-3,
-  [class*="line-clamp-"] {
-    /* Show more text on mobile instead of clamping */
+  /* Fix CONTENT line-clamp classes */
+  .user-card .line-clamp-1,
+  .user-card .line-clamp-2, 
+  .user-card .line-clamp-3,
+  .event-card .line-clamp-1,
+  .event-card .line-clamp-2, 
+  .event-card .line-clamp-3,
+  .business-card .line-clamp-1,
+  .business-card .line-clamp-2, 
+  .business-card .line-clamp-3,
+  .widget-card .line-clamp-1,
+  .widget-card .line-clamp-2, 
+  .widget-card .line-clamp-3,
+  .content-area .line-clamp-1,
+  .content-area .line-clamp-2, 
+  .content-area .line-clamp-3 {
     -webkit-line-clamp: unset !important;
     display: block !important;
     overflow: visible !important;
@@ -3147,40 +3102,49 @@ article,
     word-break: break-word !important;
   }
 
-  /* Fix specific overflow issues in metadata */
-  .meta-info,
-  [class*="meta-"],
-  .text-sm,
-  .text-xs {
-    /* Ensure meta text wraps properly */
+  /* Specific fixes for known problematic elements */
+  .user-card .username,
+  .user-card .event-title,
+  .user-card .description,
+  .event-card .event-title,
+  .event-card .event-description,
+  .event-card .location,
+  .business-card .business-name,
+  .business-card .description,
+  .widget-card .widget-title,
+  .widget-card .widget-content {
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+    word-break: break-word !important;
+    max-width: 100% !important;
     white-space: normal !important;
+  }
+
+  /* Fix long usernames, emails, and URLs in content areas */
+  .content-area .username,
+  .content-area .email,
+  .content-area .url,
+  .content-area .long-text {
     word-wrap: break-word !important;
     overflow-wrap: break-word !important;
+    word-break: break-all !important;
     max-width: 100% !important;
   }
 
-  /* Fix icon + text combinations */
-  .flex[class*="items-center"] > svg + span,
-  .flex[class*="items-center"] > svg + * {
-    /* Allow text next to icons to wrap */
-    word-wrap: break-word !important;
-    overflow-wrap: break-word !important;
-    max-width: calc(100% - 2rem) !important;
-    min-width: 0 !important;
-    flex-shrink: 1 !important;
-  }
-
-  /* Prevent any element from causing horizontal scroll */
-  * {
-    max-width: 100vw !important;
-  }
-
-  /* Fix containers that might be too wide */
-  .container,
-  .w-full,
-  [class*="w-"],
-  [class*="max-w-"] {
-    max-width: 100% !important;
-    overflow-x: visible !important;
+  /* PRESERVE NAVBAR LAYOUT - Explicitly exclude navbar elements */
+  .navbar, .navbar *, 
+  .mobile-nav, .mobile-nav *,
+  .header, .header *,
+  .top-bar, .top-bar *,
+  [class*="nav"], [class*="nav"] * {
+    /* Do not override navbar styling */
+    max-width: unset !important;
+    white-space: unset !important;
+    word-break: unset !important;
+    overflow-wrap: unset !important;
+    word-wrap: unset !important;
+    flex-wrap: unset !important;
+    height: unset !important;
+    min-height: unset !important;
   }
 }
