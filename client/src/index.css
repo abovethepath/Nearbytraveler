@@ -2987,3 +2987,200 @@ article,
 [class*="dialog"] {
   z-index: 300 !important;
 }
+
+/* 
+ * COMPREHENSIVE MOBILE TEXT WRAPPING FIXES 
+ * Ensure ALL text content wraps properly on mobile screens
+ */
+
+/* Universal text wrapping for mobile screens */
+@media (max-width: 768px) {
+  /* Force text to wrap in containers */
+  .user-card,
+  .event-card,
+  .business-card,
+  .widget-card,
+  [class*="card"],
+  [class*="widget"] {
+    /* Ensure text breaks properly */
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+    word-break: break-word !important;
+    hyphens: auto !important;
+    /* Remove any fixed widths that prevent wrapping */
+    max-width: 100% !important;
+  }
+
+  /* Fix text elements that commonly overflow */
+  h1, h2, h3, h4, h5, h6,
+  p, span, div,
+  .text-lg, .text-xl, .text-2xl, .text-3xl,
+  [class*="text-"],
+  .font-semibold, .font-bold, .font-medium {
+    /* Force long words to break */
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+    word-break: break-word !important;
+    hyphens: auto !important;
+    /* Ensure they don't exceed container width */
+    max-width: 100% !important;
+    /* Allow text to wrap naturally */
+    white-space: normal !important;
+  }
+
+  /* Fix pill/badge elements that use whitespace-nowrap */
+  .pill,
+  [class*="pill"],
+  .badge,
+  [class*="badge"],
+  .chip,
+  [class*="chip"],
+  .inline-flex[class*="rounded-full"],
+  .inline-flex[class*="px-"],
+  [class*="whitespace-nowrap"] {
+    /* Allow text to wrap in pills on mobile */
+    white-space: normal !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+    word-break: break-word !important;
+    /* Remove fixed min-widths that cause overflow */
+    min-width: auto !important;
+    /* Ensure responsive sizing */
+    max-width: 100% !important;
+    width: auto !important;
+    /* Allow height to adjust */
+    height: auto !important;
+    min-height: 2rem !important;
+    padding: 0.25rem 0.75rem !important;
+    /* Center content vertically */
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+  }
+
+  /* Fix input fields and selects */
+  input, select, textarea,
+  .input, .select, .textarea,
+  [class*="input"], [class*="select"] {
+    max-width: 100% !important;
+    width: 100% !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+  }
+
+  /* Fix button text */
+  button, .button, .btn,
+  [class*="button"], [class*="btn"] {
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+    white-space: normal !important;
+    text-align: center !important;
+    max-width: 100% !important;
+    /* Allow buttons to grow in height if text wraps */
+    height: auto !important;
+    min-height: 2.5rem !important;
+    padding: 0.5rem 1rem !important;
+  }
+
+  /* Fix flex containers that might prevent wrapping */
+  .flex[class*="gap-"],
+  .flex[class*="space-x-"],
+  [class*="flex "] {
+    /* Allow flex items to wrap */
+    flex-wrap: wrap !important;
+    /* Prevent overflow */
+    overflow: visible !important;
+    max-width: 100% !important;
+  }
+
+  /* Fix flex items in wrapped containers */
+  .flex > *,
+  [class*="flex "] > * {
+    /* Prevent flex items from overflowing */
+    max-width: 100% !important;
+    min-width: 0 !important;
+    /* Allow flex shrinking */
+    flex-shrink: 1 !important;
+  }
+
+  /* Fix grid containers that might cause overflow */
+  .grid,
+  [class*="grid-"] {
+    /* Ensure grid doesn't create horizontal overflow */
+    max-width: 100% !important;
+    overflow: visible !important;
+  }
+
+  /* Fix grid items */
+  .grid > *,
+  [class*="grid-"] > * {
+    max-width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  /* Fix truncate classes that prevent proper mobile wrapping */
+  .truncate,
+  [class*="truncate"] {
+    /* On mobile, show full text instead of truncating */
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    /* Enable word breaking */
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+    word-break: break-word !important;
+  }
+
+  /* Fix line-clamp classes on mobile */
+  .line-clamp-1,
+  .line-clamp-2, 
+  .line-clamp-3,
+  [class*="line-clamp-"] {
+    /* Show more text on mobile instead of clamping */
+    -webkit-line-clamp: unset !important;
+    display: block !important;
+    overflow: visible !important;
+    white-space: normal !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+    word-break: break-word !important;
+  }
+
+  /* Fix specific overflow issues in metadata */
+  .meta-info,
+  [class*="meta-"],
+  .text-sm,
+  .text-xs {
+    /* Ensure meta text wraps properly */
+    white-space: normal !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+    max-width: 100% !important;
+  }
+
+  /* Fix icon + text combinations */
+  .flex[class*="items-center"] > svg + span,
+  .flex[class*="items-center"] > svg + * {
+    /* Allow text next to icons to wrap */
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+    max-width: calc(100% - 2rem) !important;
+    min-width: 0 !important;
+    flex-shrink: 1 !important;
+  }
+
+  /* Prevent any element from causing horizontal scroll */
+  * {
+    max-width: 100vw !important;
+  }
+
+  /* Fix containers that might be too wide */
+  .container,
+  .w-full,
+  [class*="w-"],
+  [class*="max-w-"] {
+    max-width: 100% !important;
+    overflow-x: visible !important;
+  }
+}
