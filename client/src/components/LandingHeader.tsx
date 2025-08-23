@@ -12,7 +12,7 @@ export default function LandingHeader() {
         <div className="max-w-6xl mx-auto flex flex-col items-center">
           <Button
             onClick={() => setLocation("/join")}
-            className="w-full bg-black text-orange-400 font-bold text-base sm:text-lg px-4 py-3 sm:px-6 sm:py-4 rounded-xl hover:bg-gray-800 transition-all duration-200 transform hover:scale-[1.02] active:scale-95 shadow-lg touch-manipulation"
+            className="w-full bg-black text-orange-400 font-bold text-base sm:text-lg px-4 py-3 sm:px-6 sm:py-4 rounded-xl hover:bg-gray-800 transition-all duration-200 transform hover:scale-[1.02] active:scale-95 shadow-lg touch-manipulation landing-header-cta"
           >
             🔥 CONNECT WITH LOCALS & TRAVELERS TODAY!
           </Button>
