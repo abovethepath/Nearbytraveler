@@ -2924,3 +2924,66 @@ div[class*="rounded-lg border"].selected:not(input):not(textarea) {
 .animate-slide-down {
   animation: slideDown 0.3s ease-out;
 }
+
+/* 
+ * GLOBAL Z-INDEX LAYERING SYSTEM 
+ * Fix for content going over navbar when scrolling on mobile
+ */
+
+/* Navigation layers - highest priority */
+header,
+nav,
+.navbar,
+[class*="navbar"],
+.sticky,
+.fixed {
+  z-index: 200 !important;
+}
+
+/* Content sections - must be below navigation */
+main,
+section,
+article,
+.content,
+[class*="hero"],
+[class*="section"],
+.relative {
+  position: relative;
+  z-index: 10 !important;
+}
+
+/* Ensure all page content containers have proper z-index */
+.page-content,
+.container,
+.max-w-7xl,
+.max-w-6xl,
+.max-w-5xl,
+.max-w-4xl,
+.mx-auto {
+  position: relative;
+  z-index: 10 !important;
+}
+
+/* Backdrop and overlay elements */
+.backdrop-blur,
+[class*="backdrop-blur"] {
+  z-index: 5 !important;
+}
+
+/* Floating elements but still below navbar */
+.floating,
+[class*="floating"],
+.tooltip,
+[class*="tooltip"] {
+  z-index: 50 !important;
+}
+
+/* Modals and popups - above everything except critical navigation */
+.modal,
+[class*="modal"],
+.popup,
+[class*="popup"],
+.dialog,
+[class*="dialog"] {
+  z-index: 300 !important;
+}

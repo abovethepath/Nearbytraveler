@@ -93,7 +93,7 @@ export default function Landing() {
 
 
       {/* HERO SECTION */}
-      <div className="relative z-0">
+      <div className="relative z-10">
         <div className="bg-gray-800 dark:bg-gray-900 border-4 border-orange-500 shadow-lg">
           <div className="relative bg-gray-800 dark:bg-gray-900 pb-32 overflow-hidden min-h-[600px]">
             <div className="absolute inset-0 h-full min-h-[600px]">
@@ -172,7 +172,7 @@ export default function Landing() {
 
 
       {/* Live Events - Lu.ma style */}
-      <div className="py-16 bg-white">
+      <div className="relative z-10 py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-12 animate-slide-in-left">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-gray-900 mb-4 leading-normal px-2">
@@ -333,7 +333,7 @@ export default function Landing() {
 
 
       {/* FROM THE FOUNDER SECTION */}
-      <div className="relative py-16 sm:py-20 overflow-hidden">
+      <div className="relative z-10 py-16 sm:py-20 overflow-hidden">
         {/* Blue to orange gradient background */}
         <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-blue-500 to-orange-500"></div>
         
@@ -397,7 +397,7 @@ export default function Landing() {
       </div>
 
       {/* HOW IT WORKS SECTION - SEXY REDESIGN */}
-      <div className="py-20 bg-gradient-to-br from-gray-50 via-blue-50 to-orange-50 dark:from-gray-900 dark:via-blue-900/20 dark:to-orange-900/20">
+      <div className="relative z-10 py-20 bg-gradient-to-br from-gray-50 via-blue-50 to-orange-50 dark:from-gray-900 dark:via-blue-900/20 dark:to-orange-900/20">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-16">
             <span className="inline-block px-6 py-2 bg-gradient-to-r from-blue-100 to-orange-100 text-blue-800 text-sm font-bold rounded-full mb-4 animate-pulse">
@@ -511,7 +511,7 @@ export default function Landing() {
       </div>
 
       {/* FOR LOCALS SECTION - REDESIGNED */}
-      <div id="locals" className="py-20 bg-gradient-to-br from-white via-blue-50 to-teal-50 dark:from-gray-800 dark:via-blue-900/10 dark:to-teal-900/10">
+      <div id="locals" className="relative z-10 py-20 bg-gradient-to-br from-white via-blue-50 to-teal-50 dark:from-gray-800 dark:via-blue-900/10 dark:to-teal-900/10">
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div className="space-y-8">
@@ -598,7 +598,7 @@ export default function Landing() {
       </div>
 
       {/* FOR TRAVELERS SECTION - REDESIGNED */}
-      <div id="travelers" className="py-20 bg-gradient-to-br from-gray-50 via-orange-50 to-red-50 dark:from-gray-900 dark:via-orange-900/10 dark:to-red-900/10">
+      <div id="travelers" className="relative z-10 py-20 bg-gradient-to-br from-gray-50 via-orange-50 to-red-50 dark:from-gray-900 dark:via-orange-900/10 dark:to-red-900/10">
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div className="relative order-2 lg:order-1">
@@ -686,7 +686,7 @@ export default function Landing() {
       </div>
 
       {/* CALL TO ACTION SECTION */}
-      <div className="py-16 bg-gradient-to-r from-blue-600 to-orange-600">
+      <div className="relative z-10 py-16 bg-gradient-to-r from-blue-600 to-orange-600">
         <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl sm:text-4xl font-extrabold text-white mb-6" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700'}}>
             <span className="drop-shadow-[0_0_8px_rgba(0,0,0,0.8)]">
@@ -710,7 +710,7 @@ export default function Landing() {
       </div>
 
       {/* Exclusive Beta Access */}
-      <div className="py-12 bg-gradient-to-r from-orange-100 to-red-100 dark:from-orange-900/30 dark:to-red-900/30">
+      <div className="relative z-10 py-12 bg-gradient-to-r from-orange-100 to-red-100 dark:from-orange-900/30 dark:to-red-900/30">
         <div className="max-w-4xl mx-auto px-4">
           <div className="p-8 bg-gradient-to-r from-orange-600 to-red-600 dark:from-orange-700 dark:to-red-700 rounded-xl shadow-2xl">
             <div className="flex items-center justify-center mb-4">
