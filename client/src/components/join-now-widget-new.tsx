@@ -5,8 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import PhoneInput from 'react-phone-number-input';
-import 'react-phone-number-input/style.css';
+import { getCountryCallingCode } from 'libphonenumber-js';
 
 export default function JoinNowWidgetNew() {
   const [, setLocation] = useLocation();
@@ -388,21 +387,76 @@ export default function JoinNowWidgetNew() {
             
             <div>
               <Label htmlFor="phoneNumber" className="text-base md:text-lg font-medium text-gray-900 dark:text-white text-crisp">Phone Number *</Label>
-              <PhoneInput
-                international
-                countryCallingCodeEditable={false}
-                defaultCountry="US"
-                value={formData.phoneNumber}
-                onChange={(value) => setFormData({ ...formData, phoneNumber: value || '' })}
-                className="phone-input text-base py-3 text-crisp font-medium"
-                style={{ 
-                  '--PhoneInputCountryFlag-height': '1.2em',
-                  '--PhoneInputCountrySelectArrow-opacity': '0.8'
-                }}
-                data-testid="input-phone"
-              />
+              <div className="flex">
+                <select 
+                  className="flex h-12 items-center justify-center whitespace-nowrap rounded-l-md border border-r-0 border-input bg-background px-3 text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  onChange={(e) => {
+                    const country = e.target.value;
+                    if (country) {
+                      const callingCode = getCountryCallingCode(country as any);
+                      setFormData({ ...formData, phoneNumber: `+${callingCode}` });
+                    }
+                  }}
+                >
+                  <option value="US">🇺🇸 +1</option>
+                  <option value="CA">🇨🇦 +1</option>
+                  <option value="GB">🇬🇧 +44</option>
+                  <option value="FR">🇫🇷 +33</option>
+                  <option value="DE">🇩🇪 +49</option>
+                  <option value="ES">🇪🇸 +34</option>
+                  <option value="IT">🇮🇹 +39</option>
+                  <option value="JP">🇯🇵 +81</option>
+                  <option value="AU">🇦🇺 +61</option>
+                  <option value="BR">🇧🇷 +55</option>
+                  <option value="MX">🇲🇽 +52</option>
+                  <option value="IN">🇮🇳 +91</option>
+                  <option value="CN">🇨🇳 +86</option>
+                  <option value="KR">🇰🇷 +82</option>
+                  <option value="RU">🇷🇺 +7</option>
+                  <option value="TR">🇹🇷 +90</option>
+                  <option value="SA">🇸🇦 +966</option>
+                  <option value="AE">🇦🇪 +971</option>
+                  <option value="SG">🇸🇬 +65</option>
+                  <option value="HK">🇭🇰 +852</option>
+                  <option value="NL">🇳🇱 +31</option>
+                  <option value="BE">🇧🇪 +32</option>
+                  <option value="CH">🇨🇭 +41</option>
+                  <option value="AT">🇦🇹 +43</option>
+                  <option value="SE">🇸🇪 +46</option>
+                  <option value="NO">🇳🇴 +47</option>
+                  <option value="DK">🇩🇰 +45</option>
+                  <option value="FI">🇫🇮 +358</option>
+                  <option value="PL">🇵🇱 +48</option>
+                  <option value="PT">🇵🇹 +351</option>
+                  <option value="GR">🇬🇷 +30</option>
+                  <option value="IE">🇮🇪 +353</option>
+                  <option value="AR">🇦🇷 +54</option>
+                  <option value="CL">🇨🇱 +56</option>
+                  <option value="CO">🇨🇴 +57</option>
+                  <option value="PE">🇵🇪 +51</option>
+                  <option value="ZA">🇿🇦 +27</option>
+                  <option value="EG">🇪🇬 +20</option>
+                  <option value="NG">🇳🇬 +234</option>
+                  <option value="KE">🇰🇪 +254</option>
+                  <option value="MA">🇲🇦 +212</option>
+                  <option value="TH">🇹🇭 +66</option>
+                  <option value="VN">🇻🇳 +84</option>
+                  <option value="PH">🇵🇭 +63</option>
+                  <option value="ID">🇮🇩 +62</option>
+                  <option value="MY">🇲🇾 +60</option>
+                  <option value="NZ">🇳🇿 +64</option>
+                </select>
+                <Input
+                  type="tel"
+                  value={formData.phoneNumber}
+                  onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
+                  placeholder="Phone number"
+                  className="rounded-l-none text-base py-3 text-crisp font-medium"
+                  data-testid="input-phone"
+                />
+              </div>
               <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                📱 International format - for SMS notifications worldwide
+                📱 Select your country and enter phone number - for SMS notifications worldwide
               </p>
             </div>
             
