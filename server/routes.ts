@@ -3376,144 +3376,54 @@ Questions? Just reply to this message. Welcome aboard!
 
 
 
-  // CRITICAL: Get all users endpoint with FULL SEARCH FILTERING and LA Metro consolidation
+  // CRITICAL: Get all users endpoint with FULL SEARCH FILTERING and TRAVELER PRIORITY
   app.get("/api/users", async (req, res) => {
     try {
       const { location, interests, activities, userType, gender, sexualPreference, minAge, maxAge, search } = req.query;
       
       if (process.env.NODE_ENV === 'development') console.log(`🔍 USERS SEARCH FILTERS:`, { location, interests, activities, userType, gender, sexualPreference, minAge, maxAge, search });
       
-      // Start with base query
-      let query = db.select().from(users);
-      const conditions = [];
+      // Get current user info for smart prioritization
+      const currentUserId = req.headers['x-user-id'] ? parseInt(req.headers['x-user-id'] as string) : null;
+      let currentUser = null;
+      if (currentUserId) {
+        currentUser = await storage.getUser(currentUserId);
+      }
       
-      // LOCATION FILTER with LA Metro consolidation
-      if (location && typeof location === 'string' && location.trim() !== '' && location !== ', United States') {
-        const searchLocation = location.toString().trim();
-        const locationParts = searchLocation.split(',').map(part => part.trim());
-        const [searchCity] = locationParts;
+      // TRAVELER PRIORITY LOGIC: Show destination users first, then hometown users
+      let prioritizedUsers = [];
+      
+      if (currentUser && currentUser.isCurrentlyTraveling && currentUser.travelDestination) {
+        if (process.env.NODE_ENV === 'development') console.log(`🧭 TRAVELER PRIORITY: User ${currentUser.username} is traveling to ${currentUser.travelDestination}, prioritizing search`);
         
-        if (process.env.NODE_ENV === 'development') console.log(`🌍 USERS: Filtering by location: ${searchLocation}, searchCity: ${searchCity}`);
+        // FIRST: Get users in current travel destination (Rome)
+        const destinationUsers = await searchUsersByDestination(currentUser.travelDestination, { interests, activities, userType, gender, sexualPreference, minAge, maxAge, search });
+        prioritizedUsers.push(...destinationUsers);
         
-        // Check if this is a metro city that should be consolidated to Los Angeles
-        const { METRO_AREAS } = await import('../shared/constants');
-        const isLAMetroCity = METRO_AREAS['Los Angeles'].cities.includes(searchCity);
+        if (process.env.NODE_ENV === 'development') console.log(`🏛️ DESTINATION FIRST: Found ${destinationUsers.length} users in ${currentUser.travelDestination}`);
         
-        if (isLAMetroCity) {
-          // Search for ALL LA metro cities
-          const allLACities = METRO_AREAS['Los Angeles'].cities;
-          if (process.env.NODE_ENV === 'development') console.log(`🌍 LA METRO SEARCH: Searching for users in ALL LA metro cities:`, allLACities.length, 'cities');
-          
-          const locationConditions = allLACities.map(city => 
-            or(
-              ilike(users.location, `%${city}%`),
-              ilike(users.hometownCity, `%${city}%`)
-            )
-          );
-          conditions.push(or(...locationConditions));
-        } else {
-          // Regular city search
-          conditions.push(
-            or(
-              ilike(users.location, `%${searchCity}%`),
-              ilike(users.hometownCity, `%${searchCity}%`)
-            )
-          );
-        }
-      }
-      
-      // INTERESTS FILTER
-      if (interests && typeof interests === 'string' && interests.trim() !== '') {
-        const interestsList = interests.split(',').map(i => i.trim()).filter(Boolean);
-        if (interestsList.length > 0) {
-          if (process.env.NODE_ENV === 'development') console.log(`🎯 USERS: Filtering by interests:`, interestsList);
-          
-          const interestConditions = interestsList.map(interest => 
-            ilike(users.interests, `%${interest}%`)
-          );
-          conditions.push(or(...interestConditions));
-        }
-      }
-      
-      // USER TYPE FILTER
-      if (userType && typeof userType === 'string' && userType.trim() !== '') {
-        const userTypesList = userType.split(',').map(t => t.trim()).filter(Boolean);
-        if (userTypesList.length > 0) {
-          if (process.env.NODE_ENV === 'development') console.log(`👤 USERS: Filtering by userType:`, userTypesList);
-          
-          const typeConditions = userTypesList.map(type => 
-            eq(users.userType, type)
-          );
-          conditions.push(or(...typeConditions));
-        }
-      }
-      
-      // AGE FILTER
-      if (minAge && !isNaN(parseInt(minAge as string))) {
-        const minAgeNum = parseInt(minAge as string);
-        conditions.push(gte(users.age, minAgeNum));
-        if (process.env.NODE_ENV === 'development') console.log(`🎂 USERS: Min age filter: ${minAgeNum}`);
-      }
-      
-      if (maxAge && !isNaN(parseInt(maxAge as string))) {
-        const maxAgeNum = parseInt(maxAge as string);
-        conditions.push(lte(users.age, maxAgeNum));
-        if (process.env.NODE_ENV === 'development') console.log(`🎂 USERS: Max age filter: ${maxAgeNum}`);
-      }
-      
-      // GENDER FILTER
-      if (gender && typeof gender === 'string' && gender.trim() !== '') {
-        const gendersList = gender.split(',').map(g => g.trim()).filter(Boolean);
-        if (gendersList.length > 0) {
-          if (process.env.NODE_ENV === 'development') console.log(`⚧️ USERS: Filtering by gender:`, gendersList);
-          
-          const genderConditions = gendersList.map(g => 
-            eq(users.gender, g)
-          );
-          conditions.push(or(...genderConditions));
-        }
-      }
-      
-      // TEXT SEARCH (name, username, bio)
-      if (search && typeof search === 'string' && search.trim() !== '') {
-        const searchTerm = search.trim();
-        if (process.env.NODE_ENV === 'development') console.log(`🔍 USERS: Text search for: ${searchTerm}`);
+        // SECOND: Get users from hometown (LA Metro) - but exclude ones already found
+        const foundUserIds = new Set(destinationUsers.map(u => u.id));
+        const hometown = `${currentUser.hometownCity}, ${currentUser.hometownState}`;
+        const hometownUsers = await searchUsersByDestination(hometown, { interests, activities, userType, gender, sexualPreference, minAge, maxAge, search });
+        const newHometownUsers = hometownUsers.filter(u => !foundUserIds.has(u.id));
+        prioritizedUsers.push(...newHometownUsers);
         
-        conditions.push(
-          or(
-            ilike(users.name, `%${searchTerm}%`),
-            ilike(users.username, `%${searchTerm}%`),
-            ilike(users.bio, `%${searchTerm}%`)
-          )
-        );
-      }
-      
-      // Apply all conditions
-      if (conditions.length > 0) {
-        query = query.where(and(...conditions));
-      }
-      
-      const filteredUsers = await query;
-      
-      if (!filteredUsers || filteredUsers.length === 0) {
-        if (process.env.NODE_ENV === 'development') console.log(`🔍 USERS SEARCH: No users found with current filters`);
-        return res.json([]);
-      }
-      
-      // Remove passwords and prepare response
-      const consolidatedUsers = filteredUsers.map(user => {
-        if (!user) return null;
+        if (process.env.NODE_ENV === 'development') console.log(`🏠 HOMETOWN SECOND: Found ${newHometownUsers.length} new users from ${hometown} (${hometownUsers.length} total minus duplicates)`);
         
-        const { password: _, ...userWithoutPassword } = user;
-        
-        return {
-          ...userWithoutPassword,
-          hometownCity: user.hometownCity || '',
-          location: user.location
-        };
-      }).filter(Boolean);
+        // Return prioritized results for travelers
+        const consolidatedUsers = prioritizedUsers.filter(Boolean);
+        if (process.env.NODE_ENV === 'development') console.log(`🧭 TRAVELER PRIORITY RESULT: ${consolidatedUsers.length} total users (destination + hometown)`);
+        return res.json(consolidatedUsers);
+      } else {
+        // Regular search for non-travelers - use location-based search
+        const searchFilters = { location, interests, activities, userType, gender, sexualPreference, minAge, maxAge, search };
+        prioritizedUsers = await searchUsersByDestination(location || '', searchFilters);
+      }
       
-      if (process.env.NODE_ENV === 'development') console.log(`🔍 USERS SEARCH RESULT: ${consolidatedUsers.length} users found with filters`);
+      // Return final results (both traveler priority and regular search)
+      const consolidatedUsers = prioritizedUsers.filter(Boolean);
+      if (process.env.NODE_ENV === 'development') console.log(`🔍 FINAL SEARCH RESULT: ${consolidatedUsers.length} users found`);
       return res.json(consolidatedUsers);
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error fetching filtered users:", error);
@@ -3563,6 +3473,115 @@ Questions? Just reply to this message. Welcome aboard!
       return res.status(500).json({ message: "Failed to fetch enhanced travel plans" });
     }
   });
+
+  // Helper function for priority search by destination
+  async function searchUsersByDestination(destination: string, filters: any) {
+    try {
+      let query = db.select().from(users);
+      const conditions = [];
+      
+      // Location filter
+      if (destination) {
+        const locationParts = destination.split(',').map(part => part.trim());
+        const [searchCity] = locationParts;
+        
+        // Check for LA Metro consolidation
+        const { METRO_AREAS } = await import('../shared/constants');
+        const isLAMetroCity = METRO_AREAS['Los Angeles'].cities.includes(searchCity);
+        
+        if (isLAMetroCity) {
+          const allLACities = METRO_AREAS['Los Angeles'].cities;
+          const locationConditions = allLACities.map(city => 
+            or(
+              ilike(users.location, `%${city}%`),
+              ilike(users.hometownCity, `%${city}%`),
+              ilike(users.travelDestination, `%${city}%`)
+            )
+          );
+          conditions.push(or(...locationConditions));
+        } else {
+          conditions.push(
+            or(
+              ilike(users.location, `%${searchCity}%`),
+              ilike(users.hometownCity, `%${searchCity}%`),
+              ilike(users.travelDestination, `%${searchCity}%`)
+            )
+          );
+        }
+      }
+      
+      // Apply other filters
+      if (filters.interests && typeof filters.interests === 'string' && filters.interests.trim() !== '') {
+        const interestsList = filters.interests.split(',').map(i => i.trim()).filter(Boolean);
+        if (interestsList.length > 0) {
+          const interestConditions = interestsList.map(interest => 
+            ilike(users.interests, `%${interest}%`)
+          );
+          conditions.push(or(...interestConditions));
+        }
+      }
+      
+      if (filters.userType && typeof filters.userType === 'string' && filters.userType.trim() !== '') {
+        const userTypesList = filters.userType.split(',').map(t => t.trim()).filter(Boolean);
+        if (userTypesList.length > 0) {
+          const typeConditions = userTypesList.map(type => 
+            eq(users.userType, type)
+          );
+          conditions.push(or(...typeConditions));
+        }
+      }
+      
+      if (filters.minAge && !isNaN(parseInt(filters.minAge))) {
+        conditions.push(gte(users.age, parseInt(filters.minAge)));
+      }
+      
+      if (filters.maxAge && !isNaN(parseInt(filters.maxAge))) {
+        conditions.push(lte(users.age, parseInt(filters.maxAge)));
+      }
+      
+      if (filters.gender && typeof filters.gender === 'string' && filters.gender.trim() !== '') {
+        const gendersList = filters.gender.split(',').map(g => g.trim()).filter(Boolean);
+        if (gendersList.length > 0) {
+          const genderConditions = gendersList.map(g => 
+            eq(users.gender, g)
+          );
+          conditions.push(or(...genderConditions));
+        }
+      }
+      
+      if (filters.search && typeof filters.search === 'string' && filters.search.trim() !== '') {
+        const searchTerm = filters.search.trim();
+        conditions.push(
+          or(
+            ilike(users.name, `%${searchTerm}%`),
+            ilike(users.username, `%${searchTerm}%`),
+            ilike(users.bio, `%${searchTerm}%`)
+          )
+        );
+      }
+      
+      // Apply all conditions
+      if (conditions.length > 0) {
+        query = query.where(and(...conditions));
+      }
+      
+      const foundUsers = await query;
+      
+      // Remove passwords
+      return foundUsers.map(user => {
+        if (!user) return null;
+        const { password: _, ...userWithoutPassword } = user;
+        return {
+          ...userWithoutPassword,
+          hometownCity: user.hometownCity || '',
+          location: user.location
+        };
+      }).filter(Boolean);
+    } catch (error) {
+      if (process.env.NODE_ENV === 'development') console.error('Error in searchUsersByDestination:', error);
+      return [];
+    }
+  }
 
   // User References API Endpoints
   // Get all references for a user
