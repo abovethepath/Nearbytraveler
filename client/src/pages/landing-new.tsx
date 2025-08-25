@@ -815,7 +815,7 @@ export default function Landing() {
                 </div>
                 <div className="flex items-center space-x-2">
                   <span className="text-black font-bold">•</span>
-                  <span className="text-black text-base">Spot familiar names in future events</span>
+                  <span className="text-black text-base">Spot familiar names in future events or cities</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <span className="text-black font-bold">•</span>
