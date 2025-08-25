@@ -5,6 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import PhoneInput from 'react-phone-number-input';
+import 'react-phone-number-input/style.css';
 
 export default function JoinNowWidgetNew() {
   const [, setLocation] = useLocation();
@@ -386,17 +388,21 @@ export default function JoinNowWidgetNew() {
             
             <div>
               <Label htmlFor="phoneNumber" className="text-base md:text-lg font-medium text-gray-900 dark:text-white text-crisp">Phone Number *</Label>
-              <Input
-                id="phoneNumber"
-                type="tel"
+              <PhoneInput
+                international
+                countryCallingCodeEditable={false}
+                defaultCountry="US"
                 value={formData.phoneNumber}
-                onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
-                placeholder="(555) 123-4567"
-                className="text-base py-3 text-crisp font-medium"
-                required
+                onChange={(value) => setFormData({ ...formData, phoneNumber: value || '' })}
+                className="phone-input text-base py-3 text-crisp font-medium"
+                style={{ 
+                  '--PhoneInputCountryFlag-height': '1.2em',
+                  '--PhoneInputCountrySelectArrow-opacity': '0.8'
+                }}
+                data-testid="input-phone"
               />
               <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                For future SMS notifications (optional features)
+                📱 International format - for SMS notifications worldwide
               </p>
             </div>
             

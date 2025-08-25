@@ -3023,3 +3023,58 @@ article,
 [class*="dialog"] {
   z-index: 300 !important;
 }
+/* International Phone Input Styling */
+.PhoneInput {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem;
+  border: 2px solid hsl(var(--border));
+  border-radius: 0.375rem;
+  background-color: hsl(var(--background));
+  transition: border-color 0.2s ease-in-out;
+}
+
+.PhoneInput:focus-within {
+  border-color: hsl(var(--ring));
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+
+.PhoneInput .PhoneInputCountry {
+  margin-right: 0.5rem;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+}
+
+.PhoneInput .PhoneInputCountryIcon {
+  display: inline-block;
+  width: 1.5em;
+  height: 1.2em;
+  margin-right: 0.5rem;
+}
+
+.PhoneInput .PhoneInputInput {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 1rem;
+  color: hsl(var(--foreground));
+  padding: 0;
+}
+
+.PhoneInput .PhoneInputInput::placeholder {
+  color: hsl(var(--muted-foreground));
+}
+
+/* Dark mode support */
+.dark .PhoneInput {
+  background-color: hsl(var(--background));
+  border-color: hsl(var(--border));
+}
+
+.dark .PhoneInput .PhoneInputInput {
+  color: hsl(var(--foreground));
+}
