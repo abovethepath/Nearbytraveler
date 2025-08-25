@@ -490,7 +490,7 @@ function MultiSelect({ options, selected, onChange, placeholder, maxDisplay = 3,
                   </div>
                 ))}
                 {selected.length > maxDisplay && (
-                  <div className="inline-flex items-center justify-center h-7 rounded-full px-2 text-[11px] font-medium whitespace-nowrap leading-none border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 dark:text-gray-300 bg-transparent">
+                  <div className="inline-flex items-center justify-center h-7 rounded-full px-2 text-[11px] font-medium whitespace-nowrap leading-none border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 bg-transparent">
                     +{selected.length - maxDisplay} more
                   </div>
                 )}
@@ -3225,7 +3225,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center p-8">
           <h1 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">Error Loading Profile</h1>
-          <p className="text-gray-600 dark:text-gray-300 dark:text-gray-300 mb-6">Unable to load profile data</p>
+          <p className="text-gray-600 dark:text-gray-300 mb-6">Unable to load profile data</p>
           <div className="flex gap-3 justify-center">
             <Button 
               onClick={() => {
@@ -3324,7 +3324,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-red-600 mb-4">User Not Found</h1>
-          <p className="text-gray-600 dark:text-gray-300 dark:text-gray-300 mb-4">Unable to load user data</p>
+          <p className="text-gray-600 dark:text-gray-300 mb-4">Unable to load user data</p>
           <button 
             onClick={() => {
               const referrer = document.referrer;
@@ -3368,7 +3368,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               <Button
                 size="sm"
                 variant="secondary"
-                className="bg-white text-red-600 hover:bg-red-50 font-semibold flex-shrink-0 w-full sm:w-auto"
+                className="bg-white dark:bg-gray-800 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-gray-700 font-semibold flex-shrink-0 w-full sm:w-auto border border-red-200 dark:border-red-800"
                 onClick={() => setIsEditMode(true)}
               >
                 Complete Profile
@@ -3388,7 +3388,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             type="button"
             onClick={() => setSelectedGradient((prev) => (prev + 1) % gradientOptions.length)}
             aria-label="Change header colors"
-            className="absolute right-3 top-3 z-10 inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/85 text-gray-700 shadow-md hover:bg-white"
+            className="absolute right-3 top-3 z-10 inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/85 dark:bg-gray-800/85 text-gray-700 dark:text-gray-200 shadow-md hover:bg-white dark:hover:bg-gray-800"
           >
             🎨
           </button>
@@ -3400,7 +3400,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
             {/* Avatar + camera (bigger, no scrollbars) */}
             <div className="relative flex-shrink-0">
-              <div className="rounded-full bg-white ring-4 ring-white shadow-lg overflow-hidden">
+              <div className="rounded-full bg-white dark:bg-gray-800 ring-4 ring-white dark:ring-gray-700 shadow-lg overflow-hidden">
                 <div className="w-36 h-36 sm:w-40 sm:h-40 md:w-56 md:h-56 rounded-full overflow-hidden no-scrollbar">
                   <SimpleAvatar
                     user={user}
@@ -3454,7 +3454,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   <h1 className="text-xl sm:text-3xl font-bold text-black truncate">@{user.username}</h1>
 
                   {/* Location/status — Centralized location display */}
-                  <div className="text-sm text-gray-600 dark:text-gray-300 dark:text-gray-400 flex flex-wrap items-center gap-x-3 gap-y-1">
+                  <div className="text-sm text-gray-600 dark:text-gray-300 flex flex-wrap items-center gap-x-3 gap-y-1">
                     <span>From: <span className="font-medium">{user.hometownCity || user.location?.split(',')[0] || 'Hometown not set'}{user.hometownState ? `, ${user.hometownState}` : ''}{user.hometownCountry ? `, ${user.hometownCountry}` : ''}</span></span>
                     <span>{(() => {
                       const currentDestination = getCurrentTravelDestination(travelPlans || []);
@@ -3524,7 +3524,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         {/* Upload overlay (unchanged) */}
         {uploadingPhoto && (
           <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-30">
-            <div className="bg-white rounded-lg p-4 text-center">
+            <div className="bg-white dark:bg-gray-800 rounded-lg p-4 text-center border border-gray-200 dark:border-gray-700">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-2"></div>
               <p className="text-sm font-medium">Uploading...</p>
             </div>
@@ -3543,7 +3543,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
         {/* Things We Have in Common - Mobile Only */}
         {!isOwnProfile && currentUser && user?.id && (
-          <div className="lg:hidden bg-white dark:bg-gray-800 rounded-2xl p-3 sm:p-4 mb-4 shadow-sm">
+          <div className="lg:hidden bg-white dark:bg-gray-800 rounded-2xl p-3 sm:p-4 mb-4 shadow-sm border border-gray-200 dark:border-gray-700">
             <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2 mb-3">
               <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-red-500" />
               Things We Have in Common
@@ -3654,7 +3654,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 {/* Basic Info — grid so lines never run together */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2 text-sm">
                   <div className="flex items-start">
-                    <span className="font-medium text-gray-600 dark:text-gray-300 dark:text-gray-400 w-20 flex-shrink-0">From:</span>
+                    <span className="font-medium text-gray-600 dark:text-gray-300 w-20 flex-shrink-0">From:</span>
                     <span className="text-gray-900 dark:text-gray-100 flex-1 break-words">
                       {user?.userType === 'business'
                         ? (user?.location || user?.hometownCity || "Los Angeles, CA")
@@ -3668,7 +3668,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
                   {user?.userType !== 'business' && user?.gender && (
                     <div className="flex items-start">
-                      <span className="font-medium text-gray-600 dark:text-gray-300 dark:text-gray-400 w-20 flex-shrink-0">Gender:</span>
+                      <span className="font-medium text-gray-600 dark:text-gray-300 w-20 flex-shrink-0">Gender:</span>
                       <span className="capitalize flex-1 break-words">{user?.gender?.replace('-', ' ')}</span>
                     </div>
                   )}
@@ -3676,20 +3676,20 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   {/* Military Status for non-business users */}
                   {user?.userType !== 'business' && (user as ExtendedUser).isVeteran && (
                     <div className="flex items-start">
-                      <span className="font-medium text-gray-600 dark:text-gray-300 dark:text-gray-400 w-20 flex-shrink-0">Military:</span>
+                      <span className="font-medium text-gray-600 dark:text-gray-300 w-20 flex-shrink-0">Military:</span>
                       <span className="text-red-600 font-semibold flex-1 break-words">Veteran</span>
                     </div>
                   )}
                   {user?.userType !== 'business' && (user as ExtendedUser).isActiveDuty && (
                     <div className="flex items-start">
-                      <span className="font-medium text-gray-600 dark:text-gray-300 dark:text-gray-400 w-20 flex-shrink-0">Military:</span>
+                      <span className="font-medium text-gray-600 dark:text-gray-300 w-20 flex-shrink-0">Military:</span>
                       <span className="text-blue-600 font-semibold flex-1 break-words">Active Duty</span>
                     </div>
                   )}
 
                   {user.sexualPreferenceVisible && user.sexualPreference && (
                     <div className="flex items-start">
-                      <span className="font-medium text-gray-600 dark:text-gray-300 dark:text-gray-400 w-20 flex-shrink-0">Preference:</span>
+                      <span className="font-medium text-gray-600 dark:text-gray-300 w-20 flex-shrink-0">Preference:</span>
                       <span className="flex-1 break-words">
                         {Array.isArray(user.sexualPreference) 
                           ? user.sexualPreference.join(', ')
@@ -3703,14 +3703,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
                   {user.userType !== 'business' && user.ageVisible && user.dateOfBirth && (
                     <div className="flex items-start">
-                      <span className="font-medium text-gray-600 dark:text-gray-300 dark:text-gray-400 w-20 flex-shrink-0">Age:</span>
+                      <span className="font-medium text-gray-600 dark:text-gray-300 w-20 flex-shrink-0">Age:</span>
                       <span className="flex-1 break-words">{calculateAge(user.dateOfBirth)} years old</span>
                     </div>
                   )}
 
                   {user.userType !== 'business' && user.travelingWithChildren && (
                     <div className="flex items-start">
-                      <span className="font-medium text-gray-600 dark:text-gray-300 dark:text-gray-400 w-20 flex-shrink-0">Family:</span>
+                      <span className="font-medium text-gray-600 dark:text-gray-300 w-20 flex-shrink-0">Family:</span>
                       <span className="flex-1 break-words flex items-center gap-1">
                         <Users className="w-4 h-4" /> Traveling with children
                         {(user as ExtendedUser)?.childrenAges && (
@@ -3734,7 +3734,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2 text-sm">
                       {user.streetAddress && (
                         <div className="flex items-start">
-                          <span className="font-medium text-gray-600 dark:text-gray-300 dark:text-gray-400 w-20 flex-shrink-0">Address:</span>
+                          <span className="font-medium text-gray-600 dark:text-gray-300 w-20 flex-shrink-0">Address:</span>
                           <span className="flex-1 break-words">{user.streetAddress}{user.zipCode && `, ${user.zipCode}`}</span>
                         </div>
                       )}
@@ -3742,7 +3742,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       
                       {user.websiteUrl && (
                         <div className="flex items-start">
-                          <span className="font-medium text-gray-600 dark:text-gray-300 dark:text-gray-400 w-20 flex-shrink-0">Website:</span>
+                          <span className="font-medium text-gray-600 dark:text-gray-300 w-20 flex-shrink-0">Website:</span>
                           <a 
                             href={user.websiteUrl.startsWith('http') ? user.websiteUrl : `https://${user.websiteUrl}`}
                             target="_blank"
@@ -3802,8 +3802,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
             {/* Business Deals Section - Only for business users */}
             {user?.userType === 'business' && (
-              <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 dark:border-gray-700">
-                <CardHeader className="bg-white dark:bg-gray-900">
+              <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm">
+                <CardHeader className="bg-white dark:bg-gray-800">
                   <CardTitle className="flex items-center justify-between text-gray-900 dark:text-gray-100">
                     <span>Business Deals</span>
                     {isOwnProfile && (
@@ -3821,7 +3821,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     )}
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="bg-white dark:bg-gray-900 p-6">
+                <CardContent className="bg-white dark:bg-gray-800 p-6">
                   {businessDealsLoading ? (
                     <div className="space-y-3">
                       {[1, 2].map(i => (
@@ -3848,7 +3848,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               {deal.discountValue} {deal.discountType === 'percentage' ? '%' : ''} off
                             </div>
                           </div>
-                          <p className="text-gray-600 dark:text-gray-300 dark:text-gray-300 text-sm mb-3 line-clamp-2">{deal.description}</p>
+                          <p className="text-gray-600 dark:text-gray-300 text-sm mb-3 line-clamp-2">{deal.description}</p>
                           <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
                             <span>Valid until {new Date(deal.validUntil).toLocaleDateString()}</span>
                             <span className="capitalize">{deal.category}</span>
@@ -4374,7 +4374,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       {true ? (
                         <div>
                           <div className="flex items-center justify-between mb-2">
-                            <span className="text-sm text-gray-600 dark:text-gray-300 dark:text-gray-400">
+                            <span className="text-sm text-gray-600 dark:text-gray-300">
                               {(user?.interests || []).length} interests selected
                             </span>
                           </div>
@@ -4392,7 +4392,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                     </div>
                                   ))}
                                   {remaining > 0 && (
-                                    <div className="inline-flex items-center justify-center h-7 rounded-full px-2 text-[11px] font-medium whitespace-nowrap leading-none border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 dark:text-gray-300 bg-transparent">
+                                    <div className="inline-flex items-center justify-center h-7 rounded-full px-2 text-[11px] font-medium whitespace-nowrap leading-none border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 bg-transparent">
                                       +{remaining} more
                                     </div>
                                   )}
@@ -4521,7 +4521,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       {(user.activities && user.activities.length > 0) ? (
                         <div>
                           <div className="flex items-center justify-between mb-2">
-                            <span className="text-sm text-gray-600 dark:text-gray-300 dark:text-gray-400">
+                            <span className="text-sm text-gray-600 dark:text-gray-300">
                               {user.activities.length} activities selected
                             </span>
                           </div>
@@ -4669,7 +4669,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       {(user.events && user.events.length > 0) ? (
                         <div>
                           <div className="flex items-center justify-between mb-2">
-                            <span className="text-sm text-gray-600 dark:text-gray-300 dark:text-gray-400">
+                            <span className="text-sm text-gray-600 dark:text-gray-300">
                               {user.events.length} event types selected
                             </span>
                           </div>
@@ -5020,7 +5020,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         
                         {/* Custom Business Interests Input */}
                         <div className="mt-3">
-                          <label className="text-xs font-medium mb-1 block text-gray-600 dark:text-gray-300 dark:text-gray-400">
+                          <label className="text-xs font-medium mb-1 block text-gray-600 dark:text-gray-300">
                             Add Custom Business Interests (hit Enter after each)
                           </label>
                           <div className="flex space-x-2">
@@ -5060,7 +5060,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           {/* Display Custom Interests with Delete Option */}
                           {editFormData.interests.filter(interest => !getAllInterests().includes(interest)).length > 0 && (
                             <div className="mt-2">
-                              <p className="text-xs font-medium text-gray-600 dark:text-gray-300 dark:text-gray-400 mb-1">Your Custom Interests (click X to remove):</p>
+                              <p className="text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">Your Custom Interests (click X to remove):</p>
                               <div className="flex flex-wrap gap-2">
                                 {editFormData.interests.filter(interest => !getAllInterests().includes(interest)).map((interest, index) => (
                                   <span
@@ -5119,7 +5119,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         
                         {/* Custom Business Activities Input */}
                         <div className="mt-3">
-                          <label className="text-xs font-medium mb-1 block text-gray-600 dark:text-gray-300 dark:text-gray-400">
+                          <label className="text-xs font-medium mb-1 block text-gray-600 dark:text-gray-300">
                             Add Custom Business Activities (hit Enter after each)
                           </label>
                           <div className="flex space-x-2">
@@ -5159,7 +5159,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           {/* Display Custom Activities with Delete Option */}
                           {editFormData.activities.filter(activity => !getAllActivities().includes(activity)).length > 0 && (
                             <div className="mt-2">
-                              <p className="text-xs font-medium text-gray-600 dark:text-gray-300 dark:text-gray-400 mb-1">Custom Activities (click X to remove):</p>
+                              <p className="text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">Custom Activities (click X to remove):</p>
                               <div className="flex flex-wrap gap-2">
                                 {editFormData.activities.filter(activity => !getAllActivities().includes(activity)).map((activity, index) => (
                                   <span
@@ -5218,7 +5218,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         
                         {/* Custom Business Events Input */}
                         <div className="mt-3">
-                          <label className="text-xs font-medium mb-1 block text-gray-600 dark:text-gray-300 dark:text-gray-400">
+                          <label className="text-xs font-medium mb-1 block text-gray-600 dark:text-gray-300">
                             Add Custom Business Events (hit Enter after each)
                           </label>
                           <div className="flex space-x-2">
@@ -5258,7 +5258,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           {/* Display Custom Events with Delete Option */}
                           {editFormData.events.filter(event => !getAllEvents().includes(event)).length > 0 && (
                             <div className="mt-2">
-                              <p className="text-xs font-medium text-gray-600 dark:text-gray-300 dark:text-gray-400 mb-1">Custom Events (click X to remove):</p>
+                              <p className="text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">Custom Events (click X to remove):</p>
                               <div className="flex flex-wrap gap-2">
                                 {editFormData.events.filter(event => !getAllEvents().includes(event)).map((event, index) => (
                                   <span
@@ -5437,7 +5437,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         {travelPlans.filter(plan => plan.status === 'planned' || plan.status === 'active').map((plan) => (
                         <div 
                           key={plan.id} 
-                          className="border rounded-lg p-3 transition-colors hover:border-blue-300 dark:hover:border-blue-500 cursor-pointer border-gray-200 dark:border-gray-700 dark:border-gray-700"
+                          className="border rounded-lg p-3 transition-colors hover:border-blue-300 dark:hover:border-blue-500 cursor-pointer border-gray-200 dark:border-gray-700"
                           title={isOwnProfile ? "Click to view details" : "Click to view travel details, dates, and destinations"}
                           onClick={(e) => {
                             e.preventDefault();
@@ -5591,7 +5591,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             <div className="flex items-start justify-between mb-2">
                               <div className="flex-1">
                                 <div className="flex items-center gap-2 mb-1">
-                                  <h4 className="font-medium text-sm text-gray-600 dark:text-gray-300 dark:text-gray-300">{plan.destination}</h4>
+                                  <h4 className="font-medium text-sm text-gray-600 dark:text-gray-300">{plan.destination}</h4>
                                   <div className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-gray-500 text-white border-0 appearance-none select-none gap-1.5">
                                     ✓ Completed
                                   </div>
@@ -5688,7 +5688,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             
                             {/* View Itinerary Details Button */}
                             {plan.itineraryCount > 0 && (
-                              <div className="mt-2 pt-2 border-t border-gray-200 dark:border-gray-700 dark:border-gray-700">
+                              <div className="mt-2 pt-2 border-t border-gray-200 dark:border-gray-700">
                                 <Button
                                   size="sm"
                                   variant="outline"
@@ -5864,36 +5864,36 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 </CardHeader>
                 <CardContent className="space-y-4 break-words overflow-hidden">
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-600 dark:text-gray-300 dark:text-gray-300 flex items-center gap-2">
+                    <span className="text-gray-600 dark:text-gray-300 flex items-center gap-2">
                       <Sparkles className="w-4 h-4 text-orange-500" />
                       Travel Aura
                     </span>
                     <span className="font-semibold text-orange-600 dark:text-orange-400">{user?.aura || 0}</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-600 dark:text-gray-300 dark:text-gray-300">Connections</span>
+                    <span className="text-gray-600 dark:text-gray-300">Connections</span>
                     <span className="font-semibold dark:text-white">{userConnections.length}</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-600 dark:text-gray-300 dark:text-gray-300">Active Travel Plans</span>
+                    <span className="text-gray-600 dark:text-gray-300">Active Travel Plans</span>
                     <span className="font-semibold dark:text-white">{travelPlans.filter(plan => plan.status === 'planned' || plan.status === 'active').length}</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-600 dark:text-gray-300 dark:text-gray-300">Cumulative Trips Taken</span>
+                    <span className="text-gray-600 dark:text-gray-300">Cumulative Trips Taken</span>
                     <span className="font-semibold dark:text-white">{travelPlans.filter(plan => plan.status === 'completed').length}</span>
                   </div>
                   <div 
                     className="flex items-center justify-between cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg p-2 -m-2 transition-colors"
                     onClick={() => setShowChatroomList(true)}
                   >
-                    <span className="text-gray-600 dark:text-gray-300 dark:text-gray-300">City Chatrooms</span>
+                    <span className="text-gray-600 dark:text-gray-300">City Chatrooms</span>
                     <div className="flex items-center gap-2">
                       <span className="font-semibold dark:text-white">{userChatrooms.length}</span>
                       <ChevronRight className="w-4 h-4 text-gray-400" />
                     </div>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-600 dark:text-gray-300 dark:text-gray-300 flex items-center gap-2">
+                    <span className="text-gray-600 dark:text-gray-300 flex items-center gap-2">
                       <Shield className="w-4 h-4 text-blue-500" />
                       <span className="hidden sm:inline">Vouches</span>
                       <span className="sm:hidden">Vouches {(vouches?.length || 0) === 0 ? '• Get vouched by community' : ''}</span>
@@ -6318,7 +6318,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       </Button>
                     )}
                   </CardTitle>
-                  <p className="text-sm text-gray-600 dark:text-gray-300 dark:text-gray-300">
+                  <p className="text-sm text-gray-600 dark:text-gray-300">
                     What drives your travel and how you like to explore
                   </p>
                 </CardHeader>
@@ -6737,7 +6737,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
                   {user.locationSharingEnabled && (
                     <div className="space-y-3">
-                      <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 dark:text-gray-400">
+                      <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
                         <AlertCircle className="h-4 w-4" />
                         <span>
                           Your location will be visible to other users on the city map
@@ -6800,7 +6800,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     </p>
                   </div>
                   <div className="text-center py-4">
-                    <p className="text-gray-600 dark:text-gray-300 dark:text-gray-300 mb-2">Invite businesses to join Nearby Traveler and earn rewards when they subscribe!</p>
+                    <p className="text-gray-600 dark:text-gray-300 mb-2">Invite businesses to join Nearby Traveler and earn rewards when they subscribe!</p>
                     <Button
                       onClick={(e) => {
                         e.stopPropagation();
@@ -6919,19 +6919,19 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   ) : (
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600 dark:text-gray-300 dark:text-gray-400">Business Name:</span>
+                        <span className="text-sm text-gray-600 dark:text-gray-300">Business Name:</span>
                         <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
                           {user?.ownerName || "Not set"}
                         </span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600 dark:text-gray-300 dark:text-gray-400">Contact Name:</span>
+                        <span className="text-sm text-gray-600 dark:text-gray-300">Contact Name:</span>
                         <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
                           {user?.contactName || "Not set"}
                         </span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600 dark:text-gray-300 dark:text-gray-400">Contact Email:</span>
+                        <span className="text-sm text-gray-600 dark:text-gray-300">Contact Email:</span>
                         {user?.ownerEmail ? (
                           <a 
                             href={`mailto:${(user as ExtendedUser)?.ownerEmail}`} 
@@ -6946,7 +6946,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         )}
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600 dark:text-gray-300 dark:text-gray-400">Contact Person Phone:</span>
+                        <span className="text-sm text-gray-600 dark:text-gray-300">Contact Person Phone:</span>
                         {user?.ownerPhone ? (
                           <a 
                             href={`tel:${(user as ExtendedUser)?.ownerPhone}`} 
@@ -7035,7 +7035,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               >
                 Previous
               </Button>
-              <span className="text-sm text-gray-600 dark:text-gray-300 dark:text-gray-400">
+              <span className="text-sm text-gray-600 dark:text-gray-300">
                 {photos[selectedPhotoIndex]?.caption}
               </span>
               <Button 
@@ -8410,7 +8410,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               <div className="space-y-4">
                 <div className="border-t pt-4">
                   <h3 className="text-lg font-semibold mb-3 text-gray-900 dark:text-gray-100">Diversity Business Ownership</h3>
-                  <div className="text-sm text-gray-600 dark:text-gray-300 dark:text-gray-300 mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                  <div className="text-sm text-gray-600 dark:text-gray-300 mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
                     These categories can be hidden from public view but will still appear in keyword searches to help customers find diverse businesses.
                   </div>
                 
@@ -8451,7 +8451,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                 />
                               </FormControl>
                               <div className="space-y-1 leading-none">
-                                <FormLabel className="text-sm font-normal text-gray-600 dark:text-gray-300 dark:text-gray-300">
+                                <FormLabel className="text-sm font-normal text-gray-600 dark:text-gray-300">
                                   Show publicly (uncheck to hide but keep searchable)
                                 </FormLabel>
                               </div>
@@ -8500,7 +8500,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                 />
                               </FormControl>
                               <div className="space-y-1 leading-none">
-                                <FormLabel className="text-sm font-normal text-gray-600 dark:text-gray-300 dark:text-gray-300">
+                                <FormLabel className="text-sm font-normal text-gray-600 dark:text-gray-300">
                                   Show publicly (uncheck to hide but keep searchable)
                                 </FormLabel>
                               </div>
@@ -8550,7 +8550,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                 />
                               </FormControl>
                               <div className="space-y-1 leading-none">
-                                <FormLabel className="text-sm font-normal text-gray-600 dark:text-gray-300 dark:text-gray-300">
+                                <FormLabel className="text-sm font-normal text-gray-600 dark:text-gray-300">
                                   Show publicly (uncheck to hide but keep searchable)
                                 </FormLabel>
                               </div>
@@ -8564,7 +8564,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
                 <div className="mt-4 p-3 bg-gray-100 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-700 dark:border-gray-600">
                   <h4 className="text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Privacy & Search Information:</h4>
-                  <ul className="text-xs text-gray-600 dark:text-gray-300 dark:text-gray-300 space-y-1">
+                  <ul className="text-xs text-gray-600 dark:text-gray-300 space-y-1">
                     <li>• Even if unchecked for public display, these categories remain searchable</li>
                     <li>• Customers can find your business using keywords like "minority owned", "female owned", etc.</li>
                   </ul>
@@ -8649,7 +8649,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="font-medium text-lg text-gray-900 dark:text-gray-100">{selectedTravelPlan.destination}</h3>
-                  <p className="text-gray-600 dark:text-gray-300 dark:text-gray-400 text-sm">
+                  <p className="text-gray-600 dark:text-gray-300 text-sm">
                     {selectedTravelPlan.startDate ? formatDateForDisplay(selectedTravelPlan.startDate, user?.currentCity || 'UTC') : 'Start date TBD'} - {selectedTravelPlan.endDate ? formatDateForDisplay(selectedTravelPlan.endDate, user?.currentCity || 'UTC') : 'End date TBD'}
                   </p>
                 </div>
