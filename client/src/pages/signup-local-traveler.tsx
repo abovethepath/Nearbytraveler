@@ -422,18 +422,6 @@ export default function SignupLocalTraveler() {
                     />
                   </div>
 
-                  <div>
-                    <Label className="text-gray-900 dark:text-white">Phone Number (Optional)</Label>
-                    <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                      Get text notifications when events you RSVP to are starting or have updates
-                    </div>
-                    <Input
-                      type="tel"
-                      value={formData.phoneNumber || ""}
-                      onChange={(e) => setFormData(prev => ({ ...prev, phoneNumber: e.target.value }))}
-                      placeholder="(555) 123-4567"
-                    />
-                  </div>
                 </div>
               </div>
 
