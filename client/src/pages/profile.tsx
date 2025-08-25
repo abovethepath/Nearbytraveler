@@ -25,8 +25,9 @@ import { z } from "zod";
 import { MapPin, Camera, Globe, Users, Calendar, Star, Settings, ArrowLeft, Upload, Edit, Edit2, Heart, MessageSquare, X, Plus, Eye, EyeOff, MessageCircle, ImageIcon, Minus, RotateCcw, Sparkles, Package, Trash2, Home, FileText, TrendingUp, MessageCircleMore, Share2, ChevronDown, Search, Zap, History } from "lucide-react";
 import { UniversalBackButton } from "@/components/UniversalBackButton";
 import FriendReferralWidget from "@/components/friend-referral-widget";
-import TravelPersonalityAssessment from "@/components/TravelPersonalityAssessment";
 import ReferencesWidgetNew from "@/components/references-widget-new";
+import { VouchWidget } from "@/components/vouch-widget";
+import { CityStatsWidget } from "@/components/CityStatsWidget";
 // Removed framer-motion import for static interface
 import { useToast } from "@/hooks/use-toast";
 import { AuthContext } from "@/App";
@@ -3865,7 +3866,21 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               </CardContent>
             </Card>
 
-            {/* Things I Want to Do in... Section - Component temporarily removed */}
+            {/* Vouch System */}
+            {currentUser?.id && (
+              <VouchWidget 
+                userId={effectiveUserId} 
+                isOwnProfile={isOwnProfile} 
+                currentUserId={currentUser.id}
+              />
+            )}
+
+            {/* City Stats with Chatroom Links */}
+            <CityStatsWidget
+              city={user?.hometownCity || ''}
+              state={user?.hometownState || ''}
+              country={user?.hometownCountry || 'United States'}
+            />
 
             {/* Travel Plans - Hidden for business profiles */}
             {user?.userType !== 'business' && (
