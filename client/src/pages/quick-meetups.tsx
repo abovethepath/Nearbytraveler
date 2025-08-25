@@ -79,12 +79,12 @@ function QuickMeetupsPage() {
       // Transform backend data to match frontend interface
       return data.map((meetup: any) => ({
         ...meetup,
-        creator: meetup.organizerUsername ? {
+        creator: {
           id: meetup.organizerId,
-          username: meetup.organizerUsername,
-          name: meetup.organizerName,
-          profileImage: meetup.organizerProfileImage
-        } : null
+          username: meetup.organizerUsername || 'unknown',
+          name: meetup.organizerName || 'Unknown User',
+          profileImage: meetup.organizerProfileImage || ''
+        }
       }));
     },
     refetchInterval: 30000, // Refresh every 30 seconds
@@ -324,6 +324,13 @@ function QuickMeetupsPage() {
               <MessageCircle className="w-3 h-3 mr-1" />
               Chat
             </Button>
+            
+            {/* DEBUG: Show ownership info */}
+            {process.env.NODE_ENV === 'development' && (
+              <div className="text-xs bg-yellow-100 p-1 rounded mb-1">
+                Organizer: {meetup.organizerId}, Current: {actualUser?.id}, IsOwn: {isOwn.toString()}
+              </div>
+            )}
             
             {isOwn ? (
               isExpired ? (
