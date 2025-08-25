@@ -331,7 +331,6 @@ export default function Landing() {
                 {/* Tags - Smaller and limited to 2 max */}
                 <div className="flex gap-1 mb-6">
                   <span className="bg-orange-100 text-orange-700 px-1.5 py-0.5 rounded-full text-xs">Wellness</span>
-                  <span className="bg-pink-100 text-pink-700 px-1.5 py-0.5 rounded-full text-xs">Free</span>
                 </div>
                 
                 <p className="text-gray-700 text-sm mb-8 flex-grow" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Unwind with peaceful yoga as the sun sets over the Pacific. Perfect for connecting with wellness-focused travelers and locals. All levels welcome.</p>
