@@ -379,7 +379,7 @@ function QuickMeetupChat() {
                           {/* Name and Time */}
                           <div className="flex items-center gap-2 mb-1">
                             <h4 className="font-semibold text-gray-900 dark:text-gray-100 text-sm">
-                              {msg.sender?.name || msg.sender?.username || 'Unknown User'}
+                              {msg.sender?.username || msg.sender?.name || 'Unknown User'}
                               {msg.senderId === meetup?.organizerId && (
                                 <span className="ml-2 px-2 py-0.5 bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 text-xs rounded-full font-normal">
                                   Organizer
