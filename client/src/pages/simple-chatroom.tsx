@@ -85,8 +85,8 @@ export default function SimpleChatroomPage() {
   const { data: members = [], refetch: refetchMembers } = useQuery<ChatMember[]>({
     queryKey: [`/api/simple-chatrooms/${chatroomId}/members`],
     enabled: !!(currentUserId && chatroomId && !isNaN(chatroomId)),
-    refetchInterval: 60000, // 60 seconds - longer interval to reduce load
-    staleTime: 120000, // 2 minutes - members don't change frequently
+    refetchInterval: 10000, // 10 seconds
+    staleTime: 0, // Always fetch fresh data
     refetchOnWindowFocus: false,
   });
 
@@ -97,8 +97,8 @@ export default function SimpleChatroomPage() {
   const { data: memberCountResp, refetch: refetchMemberCount } = useQuery<{memberCount: number}>({
     queryKey: [`/api/simple-chatrooms/${chatroomId}/members/count`],
     enabled: !!(currentUserId && chatroomId && !isNaN(chatroomId)),
-    refetchInterval: 30000, // 30 seconds
-    staleTime: 60000, // 1 minute
+    refetchInterval: 10000, // 10 seconds
+    staleTime: 0, // Always fetch fresh data
     refetchOnWindowFocus: false,
   });
 
@@ -137,15 +137,13 @@ export default function SimpleChatroomPage() {
           description: "You have successfully joined the chatroom",
           className: "bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100",
         });
-        // Refresh data efficiently - force immediate refetch
-        queryClient.invalidateQueries({ queryKey: [`/api/simple-chatrooms/${chatroomId}/members/count`] });
-        queryClient.invalidateQueries({ queryKey: [`/api/simple-chatrooms/${chatroomId}/members`] });
+        // Refresh data immediately - clear cache and refetch
+        queryClient.removeQueries({ queryKey: [`/api/simple-chatrooms/${chatroomId}/members/count`] });
+        queryClient.removeQueries({ queryKey: [`/api/simple-chatrooms/${chatroomId}/members`] });
         
         // Force immediate refresh to update UI
-        setTimeout(() => {
-          refetchMembers();
-          refetchMemberCount();
-        }, 100);
+        refetchMembers();
+        refetchMemberCount();
       } else {
         throw new Error("Failed to join chatroom");
       }
