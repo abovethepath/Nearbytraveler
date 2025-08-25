@@ -85,13 +85,19 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
     queryFn: async () => {
       if (!effectiveUser?.id) return null;
       console.log(`🔄 CONNECTION API: Checking connection between user ${effectiveUser.id} and ${user.id}`);
-      const response = await fetch(`/api/connections/status/${effectiveUser.id}/${user.id}`);
-      if (!response.ok) return null;
-      const result = await response.json();
-      console.log(`🔄 CONNECTION API: Result for ${effectiveUser.id} <-> ${user.id}:`, result);
-      return result;
+      
+      try {
+        const result = await apiRequest("GET", `/api/connections/status/${effectiveUser.id}/${user.id}`);
+        console.log(`🔄 CONNECTION API: Result for ${effectiveUser.id} <-> ${user.id}:`, result);
+        return result;
+      } catch (error) {
+        console.log(`🔄 CONNECTION API: Error checking status:`, error);
+        return null;
+      }
     },
     enabled: !!effectiveUser?.id && effectiveUser.id !== user.id,
+    staleTime: 0, // Force fresh data
+    gcTime: 0, // Don't cache
   });
 
 
@@ -177,23 +183,20 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
         description: "Your connection request has been sent successfully!",
       });
       
-      // Immediately refetch the connection status
-      refetchConnectionStatus();
-      
-      // Invalidate connection status to refresh the button state
-      queryClient.invalidateQueries({
+      // Force immediate cache invalidation and refetch
+      queryClient.removeQueries({
         queryKey: ['/api/connections/status', effectiveUser?.id, user.id]
       });
       
-      // Also invalidate the broader connection queries
+      // Invalidate all connection-related queries
       queryClient.invalidateQueries({
-        queryKey: ['/api/connections/status']
+        queryKey: ['/api/connections']
       });
       
       // Force immediate re-fetch with fresh data
       setTimeout(() => {
         refetchConnectionStatus();
-      }, 100);
+      }, 50);
       
       // Don't show celebration animation for requests - only for accepted connections
     },
