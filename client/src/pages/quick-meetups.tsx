@@ -325,12 +325,6 @@ function QuickMeetupsPage() {
               Chat
             </Button>
             
-            {/* DEBUG: Show ownership info */}
-            {process.env.NODE_ENV === 'development' && (
-              <div className="text-xs bg-yellow-100 p-1 rounded mb-1">
-                Organizer: {meetup.organizerId}, Current: {actualUser?.id}, IsOwn: {isOwn.toString()}
-              </div>
-            )}
             
             {isOwn ? (
               isExpired ? (

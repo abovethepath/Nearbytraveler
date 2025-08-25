@@ -3371,38 +3371,147 @@ Questions? Just reply to this message. Welcome aboard!
 
 
 
-  // CRITICAL: Get all users endpoint with LA Metro consolidation
+  // CRITICAL: Get all users endpoint with FULL SEARCH FILTERING and LA Metro consolidation
   app.get("/api/users", async (req, res) => {
     try {
-      // Use direct database query since getUsers doesn't exist
-      const allUsers = await db.select().from(users);
-      if (!allUsers || allUsers.length === 0) {
+      const { location, interests, activities, userType, gender, sexualPreference, minAge, maxAge, search } = req.query;
+      
+      if (process.env.NODE_ENV === 'development') console.log(`🔍 USERS SEARCH FILTERS:`, { location, interests, activities, userType, gender, sexualPreference, minAge, maxAge, search });
+      
+      // Start with base query
+      let query = db.select().from(users);
+      const conditions = [];
+      
+      // LOCATION FILTER with LA Metro consolidation
+      if (location && typeof location === 'string' && location.trim() !== '' && location !== ', United States') {
+        const searchLocation = location.toString().trim();
+        const locationParts = searchLocation.split(',').map(part => part.trim());
+        const [searchCity] = locationParts;
+        
+        if (process.env.NODE_ENV === 'development') console.log(`🌍 USERS: Filtering by location: ${searchLocation}, searchCity: ${searchCity}`);
+        
+        // Check if this is a metro city that should be consolidated to Los Angeles
+        const { METRO_AREAS } = await import('../shared/constants');
+        const isLAMetroCity = METRO_AREAS['Los Angeles'].cities.includes(searchCity);
+        
+        if (isLAMetroCity) {
+          // Search for ALL LA metro cities
+          const allLACities = METRO_AREAS['Los Angeles'].cities;
+          if (process.env.NODE_ENV === 'development') console.log(`🌍 LA METRO SEARCH: Searching for users in ALL LA metro cities:`, allLACities.length, 'cities');
+          
+          const locationConditions = allLACities.map(city => 
+            or(
+              ilike(users.location, `%${city}%`),
+              ilike(users.hometownCity, `%${city}%`)
+            )
+          );
+          conditions.push(or(...locationConditions));
+        } else {
+          // Regular city search
+          conditions.push(
+            or(
+              ilike(users.location, `%${searchCity}%`),
+              ilike(users.hometownCity, `%${searchCity}%`)
+            )
+          );
+        }
+      }
+      
+      // INTERESTS FILTER
+      if (interests && typeof interests === 'string' && interests.trim() !== '') {
+        const interestsList = interests.split(',').map(i => i.trim()).filter(Boolean);
+        if (interestsList.length > 0) {
+          if (process.env.NODE_ENV === 'development') console.log(`🎯 USERS: Filtering by interests:`, interestsList);
+          
+          const interestConditions = interestsList.map(interest => 
+            ilike(users.interests, `%${interest}%`)
+          );
+          conditions.push(or(...interestConditions));
+        }
+      }
+      
+      // USER TYPE FILTER
+      if (userType && typeof userType === 'string' && userType.trim() !== '') {
+        const userTypesList = userType.split(',').map(t => t.trim()).filter(Boolean);
+        if (userTypesList.length > 0) {
+          if (process.env.NODE_ENV === 'development') console.log(`👤 USERS: Filtering by userType:`, userTypesList);
+          
+          const typeConditions = userTypesList.map(type => 
+            eq(users.userType, type)
+          );
+          conditions.push(or(...typeConditions));
+        }
+      }
+      
+      // AGE FILTER
+      if (minAge && !isNaN(parseInt(minAge as string))) {
+        const minAgeNum = parseInt(minAge as string);
+        conditions.push(gte(users.age, minAgeNum));
+        if (process.env.NODE_ENV === 'development') console.log(`🎂 USERS: Min age filter: ${minAgeNum}`);
+      }
+      
+      if (maxAge && !isNaN(parseInt(maxAge as string))) {
+        const maxAgeNum = parseInt(maxAge as string);
+        conditions.push(lte(users.age, maxAgeNum));
+        if (process.env.NODE_ENV === 'development') console.log(`🎂 USERS: Max age filter: ${maxAgeNum}`);
+      }
+      
+      // GENDER FILTER
+      if (gender && typeof gender === 'string' && gender.trim() !== '') {
+        const gendersList = gender.split(',').map(g => g.trim()).filter(Boolean);
+        if (gendersList.length > 0) {
+          if (process.env.NODE_ENV === 'development') console.log(`⚧️ USERS: Filtering by gender:`, gendersList);
+          
+          const genderConditions = gendersList.map(g => 
+            eq(users.gender, g)
+          );
+          conditions.push(or(...genderConditions));
+        }
+      }
+      
+      // TEXT SEARCH (name, username, bio)
+      if (search && typeof search === 'string' && search.trim() !== '') {
+        const searchTerm = search.trim();
+        if (process.env.NODE_ENV === 'development') console.log(`🔍 USERS: Text search for: ${searchTerm}`);
+        
+        conditions.push(
+          or(
+            ilike(users.name, `%${searchTerm}%`),
+            ilike(users.username, `%${searchTerm}%`),
+            ilike(users.bio, `%${searchTerm}%`)
+          )
+        );
+      }
+      
+      // Apply all conditions
+      if (conditions.length > 0) {
+        query = query.where(and(...conditions));
+      }
+      
+      const filteredUsers = await query;
+      
+      if (!filteredUsers || filteredUsers.length === 0) {
+        if (process.env.NODE_ENV === 'development') console.log(`🔍 USERS SEARCH: No users found with current filters`);
         return res.json([]);
       }
       
-      // Apply LA Metro area consolidation to all users
-      const consolidatedUsers = allUsers.map(user => {
+      // Remove passwords and prepare response
+      const consolidatedUsers = filteredUsers.map(user => {
         if (!user) return null;
         
-        // Remove password
         const { password: _, ...userWithoutPassword } = user;
         
-        // PRESERVE original user location data - NO consolidation for API responses
-        const consolidatedUser = {
+        return {
           ...userWithoutPassword,
-          // Keep original hometown city - never consolidate stored user data
           hometownCity: user.hometownCity || '',
-          // Keep original location field - preserve individual city identity
           location: user.location
         };
-        
-        return consolidatedUser;
       }).filter(Boolean);
       
-      if (process.env.NODE_ENV === 'development') console.log(`Users API response: ${consolidatedUsers.length} users for all locations`);
+      if (process.env.NODE_ENV === 'development') console.log(`🔍 USERS SEARCH RESULT: ${consolidatedUsers.length} users found with filters`);
       return res.json(consolidatedUsers);
     } catch (error: any) {
-      if (process.env.NODE_ENV === 'development') console.error("Error fetching users:", error);
+      if (process.env.NODE_ENV === 'development') console.error("Error fetching filtered users:", error);
       return res.json([]);
     }
   });
