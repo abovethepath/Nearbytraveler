@@ -347,72 +347,72 @@ export default function Landing() {
             
             {/* Before Events */}
             <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:bg-gray-800 rounded-2xl p-8 shadow-lg border-2 border-blue-300 dark:border-blue-600 text-center">
-              <div className="text-4xl mb-4">📱</div>
+              <div className="text-4xl mb-4">🎉</div>
               <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Before Events</h3>
               <div className="grid grid-cols-1 gap-3 text-left">
                 <div className="flex items-center space-x-2">
                   <span className="text-orange-500 font-bold">•</span>
-                  <span className="text-black dark:text-gray-300 text-base">See Profiles of others going to same events or cities</span>
+                  <span className="text-black dark:text-gray-300 text-base">Browse profiles of people headed to the same event or city</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <span className="text-orange-500 font-bold">•</span>
-                  <span className="text-black dark:text-gray-300 text-base">Chat and plan</span>
+                  <span className="text-black dark:text-gray-300 text-base">Break the ice with a quick chat or group plan</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <span className="text-orange-500 font-bold">•</span>
-                  <span className="text-black dark:text-gray-300 text-base">Share backgrounds</span>
+                  <span className="text-black dark:text-gray-300 text-base">Swap stories, backgrounds, and tips</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <span className="text-orange-500 font-bold">•</span>
-                  <span className="text-black dark:text-gray-300 text-base">Build excitement</span>
+                  <span className="text-black dark:text-gray-300 text-base">Show up already excited and connected</span>
                 </div>
               </div>
             </div>
             
             {/* During Events */}
             <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border-2 border-blue-200 dark:border-blue-600 text-center">
-              <div className="text-4xl mb-4">🎉</div>
+              <div className="text-4xl mb-4">💫</div>
               <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">During Events</h3>
               <div className="grid grid-cols-1 gap-3 text-left">
                 <div className="flex items-center space-x-2">
                   <span className="text-blue-500 font-bold">•</span>
-                  <span className="text-black dark:text-gray-300 text-base">Instantly recognize</span>
+                  <span className="text-black dark:text-gray-300 text-base">Recognize familiar faces right away</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <span className="text-blue-500 font-bold">•</span>
-                  <span className="text-black dark:text-gray-300 text-base">Skip introductions</span>
+                  <span className="text-black dark:text-gray-300 text-base">Skip the awkward introductions</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <span className="text-blue-500 font-bold">•</span>
-                  <span className="text-black dark:text-gray-300 text-base">Share real-time</span>
+                  <span className="text-black dark:text-gray-300 text-base">Share updates and moments in real time</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <span className="text-blue-500 font-bold">•</span>
-                  <span className="text-black dark:text-gray-300 text-base">Create memories</span>
+                  <span className="text-black dark:text-gray-300 text-base">Create memories together, not alone</span>
                 </div>
               </div>
             </div>
             
             {/* After Events */}
             <div className="bg-gradient-to-br from-green-50 to-emerald-100 dark:bg-gray-800 rounded-2xl p-8 shadow-lg border-2 border-green-300 dark:border-green-600 text-center">
-              <div className="text-4xl mb-4">💫</div>
+              <div className="text-4xl mb-4">🌍</div>
               <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">After Events</h3>
               <div className="grid grid-cols-1 gap-3 text-left">
                 <div className="flex items-center space-x-2">
                   <span className="text-orange-500 font-bold">•</span>
-                  <span className="text-black dark:text-gray-300 text-base">Stay connected</span>
+                  <span className="text-black dark:text-gray-300 text-base">Keep the new friendships alive</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <span className="text-orange-500 font-bold">•</span>
-                  <span className="text-black dark:text-gray-300 text-base">Plan future meetups</span>
+                  <span className="text-black dark:text-gray-300 text-base">Plan your next meetup or trip together</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <span className="text-orange-500 font-bold">•</span>
-                  <span className="text-black dark:text-gray-300 text-base">Recognize friends</span>
+                  <span className="text-black dark:text-gray-300 text-base">Spot familiar names in future events</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <span className="text-orange-500 font-bold">•</span>
-                  <span className="text-black dark:text-gray-300 text-base">Build community</span>
+                  <span className="text-black dark:text-gray-300 text-base">Grow your own global community</span>
                 </div>
               </div>
             </div>
