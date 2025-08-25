@@ -183,63 +183,63 @@ export default function TravelersLanding() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <div className="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/30 dark:to-orange-800/30 p-6 rounded-xl shadow-lg border dark:border-orange-700/50">
               <div className="text-4xl mb-4">🗺️</div>
-              <h3 className="text-xl font-bold mb-3 text-black dark:text-white">Hidden Gems</h3>
-              <p className="text-black dark:text-gray-300">Discover secret spots, local hangouts, and authentic experiences that guidebooks never mention.</p>
+              <h3 className="text-xl font-bold mb-3 text-black">Hidden Gems</h3>
+              <p className="text-black">Discover secret spots, local hangouts, and authentic experiences that guidebooks never mention.</p>
             </div>
             <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 p-6 rounded-xl shadow-lg border dark:border-blue-700/50">
               <div className="text-4xl mb-4">🤝</div>
-              <h3 className="text-xl font-bold mb-3 text-black dark:text-white">Local Connections</h3>
-              <p className="text-black dark:text-gray-300">Connect with locals who share your interests and get insider tips from people who actually live there.</p>
+              <h3 className="text-xl font-bold mb-3 text-black">Local Connections</h3>
+              <p className="text-black">Connect with locals who share your interests and get insider tips from people who actually live there.</p>
             </div>
             <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/30 dark:to-green-800/30 p-6 rounded-xl shadow-lg border dark:border-green-700/50">
               <div className="text-4xl mb-4">🎯</div>
-              <h3 className="text-xl font-bold mb-3 text-black dark:text-white">Smart Matching</h3>
-              <p className="text-black dark:text-gray-300">Our AI matches you with locals and travelers based on shared interests, travel dates, and compatibility.</p>
+              <h3 className="text-xl font-bold mb-3 text-black">Smart Matching</h3>
+              <p className="text-black">Our AI matches you with locals and travelers based on shared interests, travel dates, and compatibility.</p>
             </div>
             <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/30 dark:to-purple-800/30 p-6 rounded-xl shadow-lg border dark:border-purple-700/50">
               <div className="text-4xl mb-4">⚡</div>
-              <h3 className="text-xl font-bold mb-3 text-black dark:text-white">Instant Meetups</h3>
-              <p className="text-black dark:text-gray-300">Create "meet now" events for instant connections when you arrive in a new city and want to explore.</p>
+              <h3 className="text-xl font-bold mb-3 text-black">Instant Meetups</h3>
+              <p className="text-black">Create "meet now" events for instant connections when you arrive in a new city and want to explore.</p>
             </div>
             <div className="bg-gradient-to-br from-pink-50 to-pink-100 dark:from-pink-900/30 dark:to-pink-800/30 p-6 rounded-xl shadow-lg border dark:border-pink-700/50">
               <div className="text-4xl mb-4">🌍</div>
-              <h3 className="text-xl font-bold mb-3 text-black dark:text-white">Cultural Immersion</h3>
-              <p className="text-black dark:text-gray-300">Experience authentic local culture through community events and personal connections with residents.</p>
+              <h3 className="text-xl font-bold mb-3 text-black">Cultural Immersion</h3>
+              <p className="text-black">Experience authentic local culture through community events and personal connections with residents.</p>
             </div>
             <div className="bg-gradient-to-br from-teal-50 to-teal-100 dark:from-teal-900/30 dark:to-teal-800/30 p-6 rounded-xl shadow-lg border dark:border-teal-700/50">
               <div className="text-4xl mb-4">💡</div>
-              <h3 className="text-xl font-bold mb-3 text-black dark:text-white">Personalized Tips</h3>
-              <p className="text-black dark:text-gray-300">Get customized recommendations based on your interests, budget, and travel style from real locals.</p>
+              <h3 className="text-xl font-bold mb-3 text-black">Personalized Tips</h3>
+              <p className="text-black">Get customized recommendations based on your interests, budget, and travel style from real locals.</p>
             </div>
             <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 dark:from-indigo-900/30 dark:to-indigo-800/30 p-6 rounded-xl shadow-lg border dark:border-indigo-700/50">
               <div className="text-4xl mb-4">💬</div>
-              <h3 className="text-xl font-bold mb-3 text-black dark:text-white">Real-Time Messaging</h3>
-              <p className="text-black dark:text-gray-300">Instant messaging with typing indicators, read receipts, and online status like AOL Messenger.</p>
+              <h3 className="text-xl font-bold mb-3 text-black">Real-Time Messaging</h3>
+              <p className="text-black">Instant messaging with typing indicators, read receipts, and online status like AOL Messenger.</p>
             </div>
             <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-900/30 dark:to-yellow-800/30 p-6 rounded-xl shadow-lg border dark:border-yellow-700/50">
               <div className="text-4xl mb-4">📅</div>
-              <h3 className="text-xl font-bold mb-3 text-black dark:text-white">Travel Date Matching</h3>
-              <p className="text-black dark:text-gray-300">Find travelers with overlapping dates in the same destination for coordinated adventures.</p>
+              <h3 className="text-xl font-bold mb-3 text-black">Travel Date Matching</h3>
+              <p className="text-black">Find travelers with overlapping dates in the same destination for coordinated adventures.</p>
             </div>
             <div className="bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/30 dark:to-red-800/30 p-6 rounded-xl shadow-lg border dark:border-red-700/50">
               <div className="text-4xl mb-4">🎨</div>
-              <h3 className="text-xl font-bold mb-3 text-black dark:text-white">AI Trip Planning</h3>
-              <p className="text-black dark:text-gray-300">Claude AI companion creates personalized itineraries based on your interests and travel style.</p>
+              <h3 className="text-xl font-bold mb-3 text-black">AI Trip Planning</h3>
+              <p className="text-black">Claude AI companion creates personalized itineraries based on your interests and travel style.</p>
             </div>
             <div className="bg-gradient-to-br from-cyan-50 to-cyan-100 dark:from-cyan-900/30 dark:to-cyan-800/30 p-6 rounded-xl shadow-lg border dark:border-cyan-700/50">
               <div className="text-4xl mb-4">📸</div>
-              <h3 className="text-xl font-bold mb-3 text-black dark:text-white">Travel Memories</h3>
-              <p className="text-black dark:text-gray-300">Photo sharing, travel stories, and memory timeline to document your adventures.</p>
+              <h3 className="text-xl font-bold mb-3 text-black">Travel Memories</h3>
+              <p className="text-black">Photo sharing, travel stories, and memory timeline to document your adventures.</p>
             </div>
             <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/30 dark:to-emerald-800/30 p-6 rounded-xl shadow-lg border dark:border-emerald-700/50">
               <div className="text-4xl mb-4">🏆</div>
-              <h3 className="text-xl font-bold mb-3 text-black dark:text-white">Travel Aura System</h3>
-              <p className="text-black dark:text-gray-300">Earn points for participating, sharing photos, and connecting with other travelers who share your interests.</p>
+              <h3 className="text-xl font-bold mb-3 text-black">Travel Aura System</h3>
+              <p className="text-black">Earn points for participating, sharing photos, and connecting with other travelers who share your interests.</p>
             </div>
             <div className="bg-gradient-to-br from-violet-50 to-violet-100 dark:from-violet-900/30 dark:to-violet-800/30 p-6 rounded-xl shadow-lg border dark:border-violet-700/50">
               <div className="text-4xl mb-4">🔒</div>
-              <h3 className="text-xl font-bold mb-3 text-black dark:text-white">Safety & References</h3>
-              <p className="text-black dark:text-gray-300">Reference system, user verification, and safety features to ensure trustworthy connections.</p>
+              <h3 className="text-xl font-bold mb-3 text-black">Safety & References</h3>
+              <p className="text-black">Reference system, user verification, and safety features to ensure trustworthy connections.</p>
             </div>
           </div>
         </div>
