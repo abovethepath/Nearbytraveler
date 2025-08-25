@@ -1,24 +1,16 @@
+import networkingHeroImage from "@assets/netowrking hereo page_1756130525285.png";
+
 export default function NetworkingHero() {
   return (
     <section className="relative isolate min-h-[68vh] flex items-end md:items-center">
       {/* Background image */}
       <div
         className="absolute inset-0 bg-cover bg-center"
-        style={{ backgroundImage: "url('/images/hero-networking.jpg')" }}
+        style={{ backgroundImage: `url(${networkingHeroImage})` }}
         aria-hidden="true"
       />
       {/* Dark gradient for text legibility */}
       <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/30 to-black/60 md:from-black/30 md:via-black/20 md:to-black/40" />
-      
-      {/* Red X overlay */}
-      <svg
-        className="absolute inset-0 m-auto w-32 h-32 md:w-56 md:h-56 drop-shadow-xl animate-[fadein_250ms_ease-out]"
-        viewBox="0 0 100 100"
-        aria-hidden="true"
-      >
-        <line x1="10" y1="10" x2="90" y2="90" stroke="#E11D48" strokeWidth="10" strokeLinecap="round" />
-        <line x1="90" y1="10" x2="10" y2="90" stroke="#E11D48" strokeWidth="10" strokeLinecap="round" />
-      </svg>
 
       {/* Content */}
       <div className="relative z-10 w-full px-5 md:px-8 pb-10 md:pb-0">
