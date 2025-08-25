@@ -120,7 +120,7 @@ export default function Landing() {
                         <span className="block font-black text-[clamp(1.25rem,5.5vw,2rem)] break-words">
                           <span className="text-amber-300 sm:text-orange-500 break-words">Meet Locals and Other </span>
                           <span className="text-blue-300 sm:text-blue-600 break-words">Nearby Travelers </span>
-                          <span className="text-white sm:text-black break-words">Right Now, Today!!!</span>
+                          <span className="text-white break-words">Right Now, Today!!!</span>
                         </span>
                       </h1>
                       
