@@ -158,8 +158,30 @@
     background-color: #1a1a1a !important;
   }
   
-  /* MAKE SURE ALL TEXT IS READABLE ON DARK BACKGROUNDS */
-  * {
+  /* NUCLEAR OPTION: FORCE ALL TEXT TO WHITE */
+  *,
+  *::before,
+  *::after,
+  div,
+  span,
+  p,
+  h1, h2, h3, h4, h5, h6,
+  button,
+  input,
+  textarea,
+  select,
+  label,
+  a,
+  li,
+  td,
+  th,
+  .text-sm,
+  .text-base,
+  .text-lg,
+  .text-xl,
+  .font-medium,
+  .font-semibold,
+  .font-bold {
     color: white !important;
   }
   
@@ -170,8 +192,31 @@
   }
   
   /* CARD AND CONTAINER OVERRIDES */
-  .card, .bg-card {
+  .card, 
+  .bg-card,
+  [class*="card"],
+  [class*="bg-"],
+  .business-card,
+  .deal-card {
     background-color: #1e1e1e !important;
+    color: white !important;
+  }
+  
+  /* FORCE ALL CHILDREN OF CARDS TO BE WHITE */
+  .card *,
+  .bg-card *,
+  [class*="card"] *,
+  .business-card *,
+  .deal-card * {
+    color: white !important;
+  }
+  
+  /* SPECIFIC BUSINESS CARD FIXES */
+  .business-name,
+  .business-category,
+  .business-address,
+  .business-phone,
+  .business-description {
     color: white !important;
   }
 }
