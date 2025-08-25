@@ -3,12 +3,20 @@
 // USED ACROSS: All signup pages, profile editing, trip planning, advanced search, matching algorithms
 // DO NOT CREATE SEPARATE LISTS - ALWAYS IMPORT FROM HERE
 
-// Most Popular interests for travelers and locals - reordered for business relevance
+// Most Popular interests for travelers and locals - reordered for solo and younger travelers
 export const MOST_POPULAR_INTERESTS = [
-  // Family/Kids first (very business-friendly)
-  "Family Activities",
+  // Solo/Dating first (top priority for younger solo travelers)
+  "Single and Looking",
   
-  // Food/Dining second (major business category)
+  // Social/Nightlife second (key for young solo travelers)
+  "Nightlife & Dancing",
+  "Meet Locals/Travelers",
+  "Craft Beer & Breweries",
+  "Cocktail Bars",
+  "Happy Hour Deals",
+  "Wine & Vineyards",
+  
+  // Food/Dining third (major social category)
   "Local Food Specialties", 
   "Cheap Eats",
   "Fine Dining",
@@ -17,7 +25,7 @@ export const MOST_POPULAR_INTERESTS = [
   "Food Tours / Trucks",
   "Local Coffee Shops",
   
-  // Cultural/Tourism third (tourism businesses)
+  // Cultural/Tourism fourth (popular with solo travelers)
   "Museums",
   "City Tours & Sightseeing",
   "Historical / Walking Tours",
@@ -27,27 +35,19 @@ export const MOST_POPULAR_INTERESTS = [
   "Street Art",
   "Cultural Sites",
   "Photography",
-  "Meet Locals/Travelers",
   
-  // Entertainment/Activities fourth (entertainment businesses)
+  // Entertainment/Activities fifth (entertainment businesses)
   "Festivals & Events",
   "Live Music Venues",
   
-  // Health/Fitness fifth (wellness businesses)
+  // Health/Fitness sixth (wellness businesses)
   "Hiking & Nature",
   "Beach Activities",
   "Boat & Water Tours",
   "Off the Path Adventures",
   
-  // Nightlife/Adult sixth (adult-oriented businesses)
-  "Craft Beer & Breweries",
-  "Cocktail Bars",
-  "Happy Hour Deals",
-  "Nightlife & Dancing",
-  "Wine & Vineyards",
-  
-  // Dating/Relationships last (less business-relevant)
-  "Single and Looking"
+  // Family/Kids last (less relevant for solo/young travelers)
+  "Family Activities"
 ];
 
 // Additional interests - organized by similarity
