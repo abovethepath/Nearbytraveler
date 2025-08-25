@@ -475,7 +475,7 @@ export default function SimpleChatroomPage() {
         </Card>
 
         {/* Messages Container */}
-        <Card className="mb-4">
+        <Card className="mb-6">
           <CardContent className="p-4">
             <div className="h-96 overflow-y-auto space-y-3 mb-4">
               {isJoined === null ? (
@@ -582,6 +582,77 @@ export default function SimpleChatroomPage() {
             </form>
           </CardContent>
         </Card>
+
+        {/* All Members List - Complete List at Bottom */}
+        {Array.isArray(members) && members.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Users className="w-5 h-5" />
+                All Chatroom Members ({members.length})
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                {members.map((member) => (
+                  <div 
+                    key={member.user_id} 
+                    className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-600/50 transition-colors"
+                  >
+                    <Avatar className="w-10 h-10 border-2 border-white dark:border-gray-600 shadow-sm">
+                      {member.profile_image ? (
+                        <AvatarImage src={member.profile_image} alt={member.username} />
+                      ) : (
+                        <AvatarFallback className="text-sm font-medium bg-gradient-to-br from-blue-400 to-purple-500 text-white">
+                          {member.username.slice(0, 2).toUpperCase()}
+                        </AvatarFallback>
+                      )}
+                    </Avatar>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium text-gray-900 dark:text-white truncate">
+                          {member.username}
+                        </span>
+                        {member.role === 'admin' && (
+                          <span className="text-xs bg-blue-500 text-white rounded px-2 py-1">
+                            Admin
+                          </span>
+                        )}
+                        {member.user_id === currentUserId && (
+                          <span className="text-xs bg-green-500 text-white rounded px-2 py-1">
+                            You
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400 truncate">
+                        {member.name || 'No display name'}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              
+              {/* Member Statistics */}
+              <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
+                <div className="flex flex-wrap gap-4 text-sm text-gray-600 dark:text-gray-400">
+                  <span>
+                    <strong className="text-gray-900 dark:text-white">{members.length}</strong> total members
+                  </span>
+                  <span>
+                    <strong className="text-gray-900 dark:text-white">
+                      {members.filter(m => m.role === 'admin').length}
+                    </strong> admin{members.filter(m => m.role === 'admin').length !== 1 ? 's' : ''}
+                  </span>
+                  <span>
+                    <strong className="text-gray-900 dark:text-white">
+                      {members.filter(m => m.role !== 'admin').length}
+                    </strong> regular member{members.filter(m => m.role !== 'admin').length !== 1 ? 's' : ''}
+                  </span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );
