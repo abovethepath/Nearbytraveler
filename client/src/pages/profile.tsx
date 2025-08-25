@@ -5,13 +5,12 @@ import { useLocation } from "wouter";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -22,12 +21,13 @@ import { Check, ChevronsUpDown } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { MapPin, Camera, Globe, Users, Calendar, Star, Settings, ArrowLeft, Upload, Edit, Edit2, Heart, MessageSquare, X, Plus, Eye, EyeOff, MessageCircle, ImageIcon, Minus, RotateCcw, Sparkles, Package, Trash2, Home, FileText, TrendingUp, MessageCircleMore, Share2, ChevronDown, Search, Zap, History } from "lucide-react";
+import { MapPin, Camera, Globe, Users, Calendar, Star, Settings, ArrowLeft, Upload, Edit, Edit2, Heart, MessageSquare, X, Plus, Eye, EyeOff, MessageCircle, ImageIcon, Minus, RotateCcw, Sparkles, Package, Trash2, Home, FileText, TrendingUp, MessageCircleMore, Share2, ChevronDown, Search, Zap, History, Clock, Wifi, Shield, ChevronRight, AlertCircle, Phone, Plane } from "lucide-react";
+import { compressPhotoAdaptive } from "@/utils/photoCompression";
+import { AdaptiveCompressionIndicator } from "@/components/adaptive-compression-indicator";
 import { UniversalBackButton } from "@/components/UniversalBackButton";
 import FriendReferralWidget from "@/components/friend-referral-widget";
+
 import ReferencesWidgetNew from "@/components/references-widget-new";
-import { VouchWidget } from "@/components/vouch-widget";
-import { CityStatsWidget } from "@/components/CityStatsWidget";
 // Removed framer-motion import for static interface
 import { useToast } from "@/hooks/use-toast";
 import { AuthContext } from "@/App";
@@ -37,7 +37,8 @@ import { formatDateForDisplay, getCurrentTravelDestination } from "@/lib/dateUti
 import { COUNTRIES, CITIES_BY_COUNTRY } from "@/lib/locationData";
 import { SmartLocationInput } from "@/components/SmartLocationInput";
 import { calculateAge, formatDateOfBirthForInput, validateDateInput, getDateInputConstraints } from "@/lib/ageUtils";
-import { isTopChoiceInterest, getInterestStyle, getActivityStyle, getEventStyle } from "@/lib/topChoicesUtils";
+import { isTopChoiceInterest } from "@/lib/topChoicesUtils";
+import { BUSINESS_TYPES } from "../../../shared/base-options";
 
 // State/Province arrays - consistent with signup forms
 const US_STATES = [
@@ -64,18 +65,153 @@ const AUSTRALIAN_STATES = [
 
 import WorldMap from "@/components/world-map";
 import { QuickMeetupWidget } from "@/components/QuickMeetupWidget";
+import { QuickDealsWidget } from "@/components/QuickDealsWidget";
 import TravelItinerary from "@/components/travel-itinerary";
+import { ThingsIWantToDoSection } from "@/components/ThingsIWantToDoSection";
 
 
-import { TravelMemoryTimeline } from "@/components/travel-memory-timeline-updated";
+
+import { PhotoAlbumWidget } from "@/components/photo-album-widget";
+import { MobileTopNav } from "@/components/MobileTopNav";
+import { MobileBottomNav } from "@/components/MobileBottomNav";
+import { SimpleAvatar } from "@/components/simple-avatar";
 // Removed Navbar import since App.tsx handles navigation
 // Removed animated loading for static interface
+
+// Helper function to get metropolitan area for a city
+const getMetropolitanArea = (city: string, state: string, country: string): string | null => {
+  if (!city || !state || !country) return null;
+  
+  // Los Angeles Metropolitan Area cities - COMPREHENSIVE LIST
+  const laMetroCities = [
+    // Main cities
+    'Los Angeles', 'Santa Monica', 'Venice', 'Beverly Hills', 'West Hollywood',
+    'Pasadena', 'Burbank', 'Glendale', 'Long Beach', 'Torrance', 'Inglewood',
+    'Compton', 'Downey', 'Pomona', 'Playa del Rey', 'Redondo Beach', 'Culver City',
+    'Marina del Rey', 'Hermosa Beach', 'Manhattan Beach', 'El Segundo', 'Hawthorne',
+    'Gardena', 'Carson', 'Lakewood', 'Norwalk', 'Whittier', 'Montebello',
+    'East Los Angeles', 'Monterey Park', 'Alhambra', 'South Pasadena', 'San Fernando',
+    'North Hollywood', 'Hollywood', 'Studio City', 'Sherman Oaks', 'Encino',
+    'Reseda', 'Van Nuys', 'Northridge', 'Malibu', 'Pacific Palisades', 'Brentwood',
+    'Westwood', 'Century City', 'West LA', 'Koreatown', 'Mid-City', 'Miracle Mile',
+    'Los Feliz', 'Silver Lake', 'Echo Park', 'Downtown LA', 'Arts District',
+    'Little Tokyo', 'Chinatown', 'Boyle Heights', 'East LA', 'Highland Park',
+    'Eagle Rock', 'Atwater Village', 'Glassell Park', 'Mount Washington',
+    'Cypress Park', 'Sun Valley', 'Pacoima', 'Sylmar', 'Granada Hills',
+    'Porter Ranch', 'Chatsworth', 'Canoga Park', 'Woodland Hills', 'Tarzana',
+    'Panorama City', 'Mission Hills', 'Sepulveda', 'Arleta', 'San Pedro',
+    'Wilmington', 'Harbor City', 'Harbor Gateway', 'Watts', 'South LA',
+    'Crenshaw', 'Leimert Park', 'View Park', 'Baldwin Hills', 'Ladera Heights',
+    'Venice Beach', 'Altadena', 'Arcadia', 'Azusa', 'Bell', 'Bell Gardens',
+    'Bellflower', 'Bradbury', 'Calabasas', 'Cerritos', 'Claremont', 'Commerce',
+    'Covina', 'Cudahy', 'Diamond Bar', 'Duarte', 'El Monte', 'Glendora',
+    'Hidden Hills', 'Huntington Park', 'Industry', 'Irwindale', 'La Canada Flintridge',
+    'La Habra Heights', 'La Mirada', 'La Puente', 'La Verne', 'Lancaster',
+    'Lawndale', 'Lomita', 'Lynwood', 'Maywood', 'Monrovia', 'Palmdale',
+    'Palos Verdes Estates', 'Paramount', 'Pico Rivera', 'Rancho Palos Verdes',
+    'Rolling Hills', 'Rolling Hills Estates', 'Rosemead', 'San Dimas', 'San Gabriel',
+    'San Marino', 'Santa Clarita', 'Signal Hill', 'South El Monte', 'South Gate',
+    'Temple City', 'Vernon', 'Walnut', 'West Covina', 'Westlake Village'
+  ];
+  
+  if (state === 'California' && laMetroCities.includes(city)) {
+    return 'Los Angeles Metro';
+  }
+  
+  // San Francisco Bay Area
+  const sfBayAreaCities = [
+    'San Francisco', 'San Jose', 'Oakland', 'Fremont', 'Santa Clara', 'Sunnyvale',
+    'Berkeley', 'Hayward', 'Palo Alto', 'Mountain View', 'Redwood City', 'Cupertino',
+    'San Mateo', 'Daly City', 'Milpitas', 'Union City', 'San Leandro', 'Alameda',
+    'Richmond', 'Vallejo', 'Antioch', 'Concord', 'Fairfield', 'Livermore',
+    'San Rafael', 'Petaluma', 'Napa', 'Sausalito', 'Half Moon Bay', 'Foster City',
+    'Belmont', 'Burlingame', 'Menlo Park', 'Los Altos', 'Campbell', 'Los Gatos',
+    'Saratoga', 'Monte Sereno', 'Milbrae', 'South San Francisco', 'Pacifica',
+    'Brisbane', 'Colma', 'Emeryville', 'Piedmont', 'Albany', 'El Cerrito',
+    'Hercules', 'Pinole', 'San Pablo', 'Dublin', 'Pleasanton', 'Newark',
+    'Castro Valley', 'San Lorenzo', 'Hayward', 'Fremont', 'Milpitas'
+  ];
+  
+  if (state === 'California' && sfBayAreaCities.includes(city)) {
+    return 'San Francisco Bay Area';
+  }
+  
+  // New York Metropolitan Area
+  const nyMetroCities = [
+    'New York City', 'Manhattan', 'Brooklyn', 'Queens', 'Bronx', 'Staten Island',
+    'Jersey City', 'Newark', 'Hoboken', 'Yonkers', 'White Plains', 'Stamford',
+    'Bridgeport', 'New Rochelle', 'Mount Vernon', 'Scarsdale', 'Rye', 'Mamaroneck',
+    'Port Chester', 'Harrison', 'Larchmont', 'Bronxville', 'Tuckahoe', 'Eastchester',
+    'Pelham', 'Pelham Manor', 'Hastings-on-Hudson', 'Dobbs Ferry', 'Irvington',
+    'Tarrytown', 'Sleepy Hollow', 'Ossining', 'Croton-on-Hudson', 'Buchanan',
+    'Peekskill', 'Cortlandt', 'Yorktown', 'Somers', 'North Salem', 'Lewisboro',
+    'Pound Ridge', 'Bedford', 'Mount Kisco', 'Pleasantville', 'Chappaqua',
+    'Millwood', 'Briarcliff Manor', 'Jersey City', 'Bayonne', 'Union City',
+    'West New York', 'North Bergen', 'Guttenberg', 'Secaucus', 'Kearny',
+    'Harrison', 'East Newark', 'Weehawken', 'Edgewater', 'Fort Lee',
+    'Englewood', 'Teaneck', 'Bergenfield', 'New Milford', 'Dumont', 'Cresskill'
+  ];
+  
+  if ((state === 'New York' || state === 'New Jersey' || state === 'Connecticut') && 
+      nyMetroCities.some(metro => metro.toLowerCase() === city.toLowerCase())) {
+    return 'New York Metropolitan Area';
+  }
+  
+  // Chicago Metropolitan Area
+  const chicagoMetroCities = [
+    'Chicago', 'Aurora', 'Rockford', 'Joliet', 'Naperville', 'Springfield',
+    'Peoria', 'Elgin', 'Waukegan', 'Cicero', 'Champaign', 'Bloomington',
+    'Arlington Heights', 'Evanston', 'Decatur', 'Schaumburg', 'Bolingbrook',
+    'Palatine', 'Skokie', 'Des Plaines', 'Orland Park', 'Tinley Park',
+    'Oak Lawn', 'Berwyn', 'Mount Prospect', 'Normal', 'Wheaton', 'Hoffman Estates',
+    'Oak Park', 'Downers Grove', 'Elmhurst', 'Glenview', 'DeKalb', 'Lombard',
+    'Belleville', 'Moline', 'Buffalo Grove', 'Bartlett', 'Urbana', 'Quincy',
+    'Crystal Lake', 'Streamwood', 'Carol Stream', 'Romeoville', 'Rock Island',
+    'Park Ridge', 'Addison', 'Calumet City'
+  ];
+  
+  if (state === 'Illinois' && chicagoMetroCities.includes(city)) {
+    return 'Chicago Metropolitan Area';
+  }
+  
+  // Miami Metropolitan Area
+  const miamiMetroCities = [
+    'Miami', 'Fort Lauderdale', 'Pembroke Pines', 'Hollywood', 'Miramar',
+    'Coral Springs', 'Miami Gardens', 'Davie', 'Sunrise', 'Plantation',
+    'Boca Raton', 'Delray Beach', 'Boynton Beach', 'Pompano Beach',
+    'Deerfield Beach', 'Coconut Creek', 'Margate', 'Tamarac', 'Lauderhill',
+    'Weston', 'Aventura', 'North Miami', 'North Miami Beach', 'Miami Beach',
+    'Coral Gables', 'Key Biscayne', 'Hialeah', 'Homestead', 'Kendall',
+    'Doral', 'Pinecrest', 'Palmetto Bay', 'Cutler Bay', 'South Miami'
+  ];
+  
+  if (state === 'Florida' && miamiMetroCities.includes(city)) {
+    return 'Miami-Dade Metropolitan Area';
+  }
+  
+  // Dallas-Fort Worth Metropolitan Area
+  const dallasMetroCities = [
+    'Dallas', 'Fort Worth', 'Arlington', 'Plano', 'Garland', 'Irving', 'Grand Prairie',
+    'McKinney', 'Frisco', 'Richardson', 'Lewisville', 'Allen', 'Flower Mound',
+    'Carrollton', 'Denton', 'Mesquite', 'Grapevine', 'Coppell', 'Duncanville',
+    'Euless', 'Bedford', 'Hurst', 'Southlake', 'Colleyville', 'Keller',
+    'Cedar Hill', 'DeSoto', 'Lancaster', 'Farmers Branch', 'University Park',
+    'Highland Park', 'Addison', 'Rowlett', 'Wylie', 'Sachse', 'Murphy',
+    'Rockwall', 'Terrell', 'Corsicana', 'Ennis'
+  ];
+  
+  if (state === 'Texas' && dallasMetroCities.includes(city)) {
+    return 'Dallas-Fort Worth Metropolitan Area';
+  }
+  
+  return null;
+};
 
 
 
 import { WhatYouHaveInCommon } from "@/components/what-you-have-in-common";
 
-import { LocationSharingWidget } from "@/components/LocationSharingWidget";
+// import { LocationSharingWidgetFixed } from "@/components/LocationSharingWidgetFixed";
 import { CustomerUploadedPhotos } from "@/components/customer-uploaded-photos";
 import BusinessEventsWidget from "@/components/business-events-widget";
 import ReferralWidget from "@/components/referral-widget";
@@ -83,15 +219,44 @@ import { BlockUserButton } from "@/components/block-user-button";
 
 
 
-import type { User, UserPhoto, PassportStamp, TravelPlan, TravelMemory } from "@shared/schema";
+import type { User, UserPhoto, PassportStamp, TravelPlan } from "@shared/schema";
 import { insertUserReferenceSchema } from "@shared/schema";
-import { getAllInterests, getAllActivities, getAllEvents } from "@/lib/travelOptions";
+import { getAllInterests, getAllActivities, getAllEvents, getAllLanguages, validateSelections, MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS } from "../../../shared/base-options";
+
+// Extended user interface for additional properties
+interface ExtendedUser extends User {
+  isVeteran?: boolean;
+  isActiveDuty?: boolean;
+  isMinorityOwned?: boolean;
+  isFemaleOwned?: boolean;
+  isLGBTQIAOwned?: boolean;
+  showMinorityOwned?: boolean;
+  showFemaleOwned?: boolean;
+  showLGBTQIAOwned?: boolean;
+  childrenAges?: string;
+  ownerName?: string;
+  contactName?: string;
+  ownerEmail?: string;
+  ownerPhone?: string;
+  services?: string;
+  specialOffers?: string;
+  targetCustomers?: string;
+  certifications?: string;
+  customInterests?: string;
+  customActivities?: string;
+  customEvents?: string;
+}
+
+// Add missing constants
+const INTERESTS_OPTIONS = getAllInterests();
+const ACTIVITIES_OPTIONS = getAllActivities();
+const EVENTS_OPTIONS = getAllEvents();
 
 // Reference constants
 const REFERENCE_TYPES = [
   { value: "general", label: "General" },
   { value: "travel_buddy", label: "Travel Buddy" },
-  { value: "local_guide", label: "Local Guide" },
+  { value: "local_host", label: "Local Host" },
   { value: "event_companion", label: "Event Companion" },
   { value: "host", label: "Host" },
   { value: "guest", label: "Guest" }
@@ -124,6 +289,27 @@ const createProfileSchema = (userType: string) => {
       businessDescription: z.string().optional(),
       businessType: z.string().optional(),
       location: z.string().optional(),
+      city: z.string().optional(),
+      state: z.string().optional(),
+      country: z.string().optional(),
+      streetAddress: z.string().optional(),
+      zipCode: z.string().optional(),
+      phoneNumber: z.string().optional(),
+      websiteUrl: z.string().optional(),
+      interests: z.array(z.string()).default([]),
+      activities: z.array(z.string()).default([]),
+      events: z.array(z.string()).default([]),
+      customInterests: z.string().optional(),
+      customActivities: z.string().optional(),
+      customEvents: z.string().optional(),
+      isVeteran: z.boolean().default(false),
+      isActiveDuty: z.boolean().default(false),
+      isMinorityOwned: z.boolean().default(false),
+      isFemaleOwned: z.boolean().default(false),
+      isLGBTQIAOwned: z.boolean().default(false),
+      showMinorityOwned: z.boolean().default(true),
+      showFemaleOwned: z.boolean().default(true),
+      showLGBTQIAOwned: z.boolean().default(true),
     });
   } else {
     return baseSchema.extend({
@@ -133,9 +319,17 @@ const createProfileSchema = (userType: string) => {
       sexualPreference: z.array(z.string()).default([]),
       sexualPreferenceVisible: z.boolean().default(false),
       secretActivities: z.string().optional(),
+      travelingWithChildren: z.boolean().default(false),
+      travelWhy: z.string().optional(),
+      travelHow: z.string().optional(),
+      travelBudget: z.string().optional(),
+      travelGroup: z.string().optional(),
     });
   }
 };
+
+// Dynamic schema based on user type
+const getDynamicProfileSchema = (userType: string) => createProfileSchema(userType);
 
 // Default schema for compatibility
 const profileSchema = createProfileSchema('traveler');
@@ -240,24 +434,17 @@ interface MultiSelectProps {
   onChange: (selected: string[]) => void;
   placeholder: string;
   maxDisplay?: number;
+  pillType?: string;
 }
 
-function MultiSelect({ options, selected, onChange, placeholder, maxDisplay = 3 }: MultiSelectProps) {
+function MultiSelect({ options, selected, onChange, placeholder, maxDisplay = 3, pillType = 'pill' }: MultiSelectProps) {
   const [open, setOpen] = useState(false);
-  const [newItem, setNewItem] = useState("");
 
   const handleSelect = (item: string) => {
     if (selected.includes(item)) {
       onChange(selected.filter(s => s !== item));
     } else {
       onChange([...selected, item]);
-    }
-  };
-
-  const handleAddNew = () => {
-    if (newItem.trim() && !selected.includes(newItem.trim()) && !options.includes(newItem.trim())) {
-      onChange([...selected, newItem.trim()]);
-      setNewItem("");
     }
   };
 
@@ -272,20 +459,20 @@ function MultiSelect({ options, selected, onChange, placeholder, maxDisplay = 3 
           aria-expanded={open}
           className="w-full justify-between min-h-[40px] h-auto"
         >
-          <div className="flex flex-wrap gap-1">
+          <div className="flex flex-wrap gap-2">
             {selected.length === 0 ? (
               <span className="text-muted-foreground">{placeholder}</span>
             ) : (
               <>
                 {selected.slice(0, maxDisplay).map((item) => (
-                  <Badge key={item} variant="secondary" className="text-xs">
+                  <div key={item} className={pillType === 'pill-interests' ? 'inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0' : pillType === 'pill-activities' ? 'inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none bg-green-500 text-white border-0' : 'inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none bg-purple-500 text-white border-0'}>
                     {item}
-                  </Badge>
+                  </div>
                 ))}
                 {selected.length > maxDisplay && (
-                  <Badge variant="secondary" className="text-xs">
+                  <div className="inline-flex items-center justify-center h-7 rounded-full px-2 text-[11px] font-medium whitespace-nowrap leading-none border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 bg-transparent">
                     +{selected.length - maxDisplay} more
-                  </Badge>
+                  </div>
                 )}
               </>
             )}
@@ -296,40 +483,13 @@ function MultiSelect({ options, selected, onChange, placeholder, maxDisplay = 3 
       <PopoverContent className="w-full p-0" align="start">
         <Command className="h-auto max-h-80">
           <CommandInput placeholder={`Search ${placeholder.toLowerCase()}...`} />
-          
-          {/* Always visible custom input section */}
-          <div className="p-3 border-b bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700">
-            <div className="text-xs text-gray-600 dark:text-gray-400 mb-2">Add your own:</div>
-            <div className="flex gap-2">
-              <Input
-                placeholder="Type custom option..."
-                value={newItem}
-                onChange={(e) => setNewItem(e.target.value)}
-                onKeyPress={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault();
-                    handleAddNew();
-                  }
-                }}
-                className="text-sm"
-              />
-              <Button
-                onClick={handleAddNew}
-                size="sm"
-                disabled={!newItem.trim()}
-                className="whitespace-nowrap"
-              >
-                Add
-              </Button>
-            </div>
-          </div>
 
           <CommandEmpty>
             <div className="p-4 text-sm text-gray-500 dark:text-gray-400">
-              No matching options found. Use the custom input above to add your own.
+              No matching options found.
             </div>
           </CommandEmpty>
-          <CommandGroup className="max-h-60 overflow-y-auto">
+          <CommandGroup className="max-h-60 overflow-y-auto no-scrollbar">
             {allOptions.map((item) => (
               <CommandItem
                 key={item}
@@ -355,15 +515,7 @@ const getFilteredInterestsForProfile = (user: User, isOwnProfile: boolean) => {
   const interests = user.interests || [];
   
   // Popular interests that are displayed in their own section - exclude from main interests to avoid redundancy
-  const popularInterests = [
-    "Single and Looking", "Craft Beer & Breweries", "Coffee Culture", "Cocktails & Bars",
-    "Nightlife & Dancing", "Photography", "Street Art", "Food Trucks", 
-    "Rooftop Bars", "Pub Crawls & Bar Tours", "Local Food Specialties", "Walking Tours",
-    "Happy Hour Deals", "Discounts For Travelers", "Boat & Water Tours", "Food Tours",
-    "Adventure Tours", "City Tours & Sightseeing", "Hiking & Nature", "Museums",
-    "Local Unknown Hotspots", "Meet Locals/Travelers", "Yoga & Wellness", "Live Music Venues",
-    "Beach Activities", "Fine Dining", "Historical Tours", "Festivals & Events"
-  ];
+  const popularInterests = MOST_POPULAR_INTERESTS;
   
   // Travel-specific tags that should be filtered out when user is displayed as local in hometown
   const travelSpecificTags = [
@@ -434,21 +586,25 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const [isEditMode, setIsEditMode] = useState(false);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [editingTravelPlan, setEditingTravelPlan] = useState<TravelPlan | null>(null);
+  const [showCreateDeal, setShowCreateDeal] = useState(false);
   const [deletingTravelPlan, setDeletingTravelPlan] = useState<TravelPlan | null>(null);
   const [selectedTravelPlan, setSelectedTravelPlan] = useState<TravelPlan | null>(null);
   const [showTravelPlanDetails, setShowTravelPlanDetails] = useState(false);
   const [showDestinationSuggestions, setShowDestinationSuggestions] = useState(false);
+  const [showChatroomList, setShowChatroomList] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
   const [showKeywordSearch, setShowKeywordSearch] = useState(false);
   const [searchKeyword, setSearchKeyword] = useState("");
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [selectedState, setSelectedState] = useState("");
+  
+  // State for expanded interests in travel plans
+  const [expandedPlanInterests, setExpandedPlanInterests] = useState<Set<number>>(new Set());
 
   
   // Edit mode states for individual widgets
   const [editingInterests, setEditingInterests] = useState(false);
-  const [editingPopularInterests, setEditingPopularInterests] = useState(false);
   const [editingActivities, setEditingActivities] = useState(false);
   const [editingEvents, setEditingEvents] = useState(false);
   const [editingLanguages, setEditingLanguages] = useState(false);
@@ -456,17 +612,33 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const [editingBio, setEditingBio] = useState(false);
   const [editingBusinessDescription, setEditingBusinessDescription] = useState(false);
   
-  // Reference modal states
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [editingReference, setEditingReference] = useState<any>(null);
-  
-  // Temporary state for editing
+  // Temporary state for editing values
   const [tempInterests, setTempInterests] = useState<string[]>([]);
   const [tempActivities, setTempActivities] = useState<string[]>([]);
   const [tempEvents, setTempEvents] = useState<string[]>([]);
   const [tempLanguages, setTempLanguages] = useState<string[]>([]);
   const [tempCountries, setTempCountries] = useState<string[]>([]);
   const [tempBio, setTempBio] = useState("");
+  
+  // Reference modal states
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingReference, setEditingReference] = useState<any>(null);
+  
+  // Simple edit form data (copying signup pattern)
+  const [editFormData, setEditFormData] = useState({
+    interests: [] as string[],
+    activities: [] as string[],
+    events: [] as string[]
+  });
+
+  // Simple toggle function copied from signup
+  const toggleArrayValue = (array: string[], value: string, setter: (newArray: string[]) => void) => {
+    if (array.includes(value)) {
+      setter(array.filter(item => item !== value));
+    } else {
+      setter([...array, value]);
+    }
+  };
   const [businessDescriptionForm, setBusinessDescriptionForm] = useState({
     services: '',
     specialOffers: '',
@@ -475,10 +647,16 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   });
   const [savingBusinessDescription, setSavingBusinessDescription] = useState(false);
   
+  // Owner contact information state
+  const [editingOwnerInfo, setEditingOwnerInfo] = useState(false);
+  const [ownerContactForm, setOwnerContactForm] = useState({
+    ownerName: '',
+    contactName: '',
+    ownerEmail: '',
+    ownerPhone: ''
+  });
+  
   // Controlled input states for custom entries
-  const [customInterestInput, setCustomInterestInput] = useState("");
-  const [customActivityInput, setCustomActivityInput] = useState("");
-  const [customEventInput, setCustomEventInput] = useState("");
   const [showReferenceForm, setShowReferenceForm] = useState(false);
   const [selectedConnection, setSelectedConnection] = useState<any>(null);
   const [showWriteReferenceModal, setShowWriteReferenceModal] = useState(false);
@@ -499,13 +677,27 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const [businessesDisplayCount, setBusinessesDisplayCount] = useState(3);
   const [expandedTravelPlan, setExpandedTravelPlan] = useState<number | null>(null);
   
-  // Travel Personality Assessment state
-  const [showPersonalityAssessment, setShowPersonalityAssessment] = useState(false);
+
   
   // Travel plan details modal state (already declared above)
   
   // Cover photo state
   const [coverPhotoKey, setCoverPhotoKey] = useState(Date.now());
+  
+  // Header gradient color selection with persistence - moved after user declaration
+  const [selectedGradient, setSelectedGradient] = useState(0);
+
+  
+  const gradientOptions = [
+    "from-blue-500 via-purple-500 to-orange-500", // Original
+    "from-green-500 via-emerald-500 to-orange-500", // Green to Orange
+    "from-blue-500 via-cyan-500 to-orange-500", // Blue to Orange
+    "from-purple-500 via-pink-500 to-red-500", // Purple to Red
+    "from-indigo-500 via-blue-500 to-green-500", // Indigo to Green
+    "from-orange-500 via-red-500 to-pink-500", // Orange to Pink
+    "from-teal-500 via-blue-500 to-purple-500", // Teal to Purple
+    "from-yellow-500 via-orange-500 to-red-500", // Yellow to Red
+  ];
   
   // Listen for cover photo refresh events
   useEffect(() => {
@@ -518,6 +710,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     return () => window.removeEventListener('coverPhotoUpdated', handleCoverPhotoRefresh);
   }, []);
   const [showCropModal, setShowCropModal] = useState(false);
+  const [customInterestInput, setCustomInterestInput] = useState("");
+  const [customActivityInput, setCustomActivityInput] = useState("");
+  const [customEventInput, setCustomEventInput] = useState("");
   const [showCoverPhotoSelector, setShowCoverPhotoSelector] = useState(false);
   const [cropImageSrc, setCropImageSrc] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -570,26 +765,60 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
   // Dynamic profile schema based on user type
   const getProfileFormSchema = (userType: string) => {
-    const baseSchema = z.object({
-      bio: z.string().max(1000, "Bio must be 1000 characters or less"),
-      hometownCity: z.string().optional(),
-      hometownState: z.string().optional(),
-      hometownCountry: z.string().optional(),
-      travelStyle: z.array(z.string()).optional(),
-    });
-
     if (userType === 'business') {
-      return baseSchema.extend({
+      // Business profiles have more lenient bio requirements
+      const businessSchema = z.object({
+        bio: z.string().min(10, "Bio must be at least 10 characters").max(1000, "Bio must be 1000 characters or less"),
+        hometownCity: z.string().optional(),
+        hometownState: z.string().optional(),
+        hometownCountry: z.string().optional(),
+        travelStyle: z.array(z.string()).optional(),
+      });
+      
+      return businessSchema.extend({
         businessName: z.string().max(100, "Business name must be 100 characters or less").optional(),
         businessDescription: z.string().optional(),
         businessType: z.string().optional(),
+        city: z.string().optional(),
+        state: z.string().optional(),
+        country: z.string().optional(),
         location: z.string().optional(),
         streetAddress: z.string().optional(),
         zipCode: z.string().optional(),
-        phoneNumber: z.string().optional(),
+        phoneNumber: z.string().optional().refine((val) => {
+          if (!val || val === '') return true; // Allow empty
+          // Accept various international phone formats
+          const phoneRegex = /^[\+]?[1-9][\d]{0,15}$|^[\+]?[\d\s\-\(\)]{7,20}$/;
+          return phoneRegex.test(val.replace(/[\s\-\(\)]/g, ''));
+        }, "Please enter a valid phone number (supports international formats)"),
         websiteUrl: z.string().optional(),
+        // Owner/Internal Contact Information
+        ownerName: z.string().optional(),
+        ownerPhone: z.string().optional().refine((val) => {
+          if (!val || val === '') return true; // Allow empty
+          // Accept various international phone formats
+          const phoneRegex = /^[\+]?[1-9][\d]{0,15}$|^[\+]?[\d\s\-\(\)]{7,20}$/;
+          return phoneRegex.test(val.replace(/[\s\-\(\)]/g, ''));
+        }, "Please enter a valid phone number (supports international formats)"),
+        interests: z.array(z.string()).default([]),
+        activities: z.array(z.string()).default([]),
+        events: z.array(z.string()).default([]),
+        customInterests: z.string().optional(),
+        customActivities: z.string().optional(),
+        customEvents: z.string().optional(),
+        isVeteran: z.boolean().default(false),
+        isActiveDuty: z.boolean().default(false),
       });
     } else {
+      // Regular users have standard bio requirements
+      const baseSchema = z.object({
+        bio: z.string().min(30, "Bio must be at least 30 characters").max(1000, "Bio must be 1000 characters or less"),
+        hometownCity: z.string().optional(),
+        hometownState: z.string().optional(),
+        hometownCountry: z.string().optional(),
+        travelStyle: z.array(z.string()).optional(),
+      });
+      
       return baseSchema.extend({
         secretActivities: z.string().max(500, "Secret activities must be 500 characters or less").optional(),
         dateOfBirth: z.string().optional(),
@@ -597,6 +826,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         gender: z.string().optional(),
         sexualPreference: z.array(z.string()).optional(),
         sexualPreferenceVisible: z.boolean().default(false),
+        travelingWithChildren: z.boolean().default(false),
+        childrenAges: z.string().max(100, "Children ages must be 100 characters or less").optional(),
         isVeteran: z.boolean().default(false),
         isActiveDuty: z.boolean().default(false),
       });
@@ -606,33 +837,39 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   // Robust authentication with emergency recovery
   let currentUser = authContextUser || authStorage.getUser();
   
-  // If no user found, try to refresh from API
+  // If no user found, try to refresh from API without reload
   React.useEffect(() => {
     if (!currentUser) {
       authStorage.forceRefreshUser().then(refreshedUser => {
         if (refreshedUser) {
-          window.location.reload(); // Force refresh to update state
+          setAuthUser(refreshedUser); // Update context instead of reload
         }
       });
     }
-  }, []);
+  }, [currentUser, setAuthUser]);
   
   const effectiveUserId = propUserId || currentUser?.id;
-  const isOwnProfile = propUserId ? (propUserId === currentUser?.id) : true;
+  const isOwnProfile = propUserId ? (parseInt(propUserId) === currentUser?.id) : true;
   
   console.log('🔧 AUTHENTICATION STATE:', {
     currentUserId: currentUser?.id,
     currentUsername: currentUser?.username,
     effectiveUserId,
     isOwnProfile,
-    propUserId
+    propUserId,
+    propUserIdType: typeof propUserId,
+    currentUserIdType: typeof currentUser?.id
   });
   
   console.log('Profile OWNERSHIP:', {
     isOwnProfile,
     propUserId,
     currentUserId: currentUser?.id,
-    effectiveUserId
+    effectiveUserId,
+    comparison: `${propUserId} === ${currentUser?.id}`,
+    comparisonResult: propUserId === currentUser?.id,
+    parsedComparison: `parseInt(${propUserId}) === ${currentUser?.id}`,
+    parsedResult: parseInt(propUserId || '') === currentUser?.id
   });
   
 
@@ -666,6 +903,23 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
   // Always prioritize fetched user data over localStorage cache
   const user = fetchedUser || currentUser;
+
+  // Load and save gradient selection from localStorage after user is defined
+  useEffect(() => {
+    if (user?.id) {
+      const saved = localStorage.getItem(`profile_gradient_${user.id}`);
+      if (saved) {
+        setSelectedGradient(parseInt(saved, 10));
+      }
+    }
+  }, [user?.id]);
+
+  // Save gradient selection when it changes
+  useEffect(() => {
+    if (user?.id && selectedGradient !== 0) {
+      localStorage.setItem(`profile_gradient_${user.id}`, selectedGradient.toString());
+    }
+  }, [selectedGradient, user?.id]);
   
   // Fetch travel plans early for event discovery logic with itinerary data
   const { data: travelPlans = [], isLoading: isLoadingTravelPlans } = useQuery<any[]>({
@@ -691,10 +945,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
   // Fetch compatibility score when viewing other users' profiles
   const { data: compatibilityData } = useQuery({
-    queryKey: ['/api/users', currentUser?.id, 'compatibility', effectiveUserId],
+    queryKey: [`/api/compatibility/${currentUser?.id}/${effectiveUserId}`],
     queryFn: async () => {
       if (!currentUser?.id || !effectiveUserId || isOwnProfile) return null;
-      const response = await fetch(`/api/users/${currentUser.id}/compatibility/${effectiveUserId}`);
+      const response = await fetch(`/api/compatibility/${currentUser.id}/${effectiveUserId}`);
       if (!response.ok) return null;
       return response.json();
     },
@@ -873,7 +1127,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   });
 
   // Fetch business offers for business users
-  const { data: businessOffers = [], isLoading: businessOffersLoading } = useQuery<any[]>({
+  const { data: businessDeals = [], isLoading: businessDealsLoading } = useQuery<any[]>({
     queryKey: [`/api/business-deals/business/${effectiveUserId}`],
     enabled: !!user && user.userType === 'business' && user.id.toString() === effectiveUserId?.toString(),
     staleTime: 0,
@@ -927,17 +1181,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       return null; // Don't show events until we have proper data
     }
     
-    // Use the same logic as the location display for consistency
+    // ALWAYS use travel destination when available - NEVER hide travel info
     const currentDestination = getCurrentTravelDestination(travelPlans || []);
-    if (currentDestination && user.hometownCity) {
-      const travelDestination = currentDestination.toLowerCase();
-      const hometown = user.hometownCity.toLowerCase();
-      
-      // Only show travel destination events if destination is different from hometown
-      if (!travelDestination.includes(hometown) && !hometown.includes(travelDestination)) {
-        console.log('Profile Event discovery - FINAL CITY SELECTION (traveling):', currentDestination);
-        return currentDestination;
-      }
+    if (currentDestination) {
+      console.log('Profile Event discovery - FINAL CITY SELECTION (traveling):', currentDestination);
+      return currentDestination;
     }
     
     // Otherwise show hometown events
@@ -968,67 +1216,48 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     refetchOnWindowFocus: true, // Ensure fresh data when returning to tab
   });
 
-  // Travel Personality Assessment queries and mutations
-  const { data: userPersonalityProfile, isLoading: personalityLoading, refetch: refetchPersonality } = useQuery({
-    queryKey: [`/api/users/${effectiveUserId}/personality-profile`],
-    queryFn: async () => {
-      if (!effectiveUserId) return null;
-      const response = await fetch(`/api/users/${effectiveUserId}/personality-profile`);
-      if (response.status === 404) return null;
-      if (!response.ok) throw new Error('Failed to fetch personality profile');
-      return response.json();
-    },
-    enabled: !!effectiveUserId,
-    staleTime: 30 * 60 * 1000, // Cache for 30 minutes
-  });
 
-  const createPersonalityProfile = useMutation({
-    mutationFn: async (profileData: any) => {
-      const response = await fetch(`/api/users/${effectiveUserId}/personality-profile`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(profileData),
-      });
-      if (!response.ok) throw new Error('Failed to create personality profile');
-      return response.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}/personality-profile`] });
-      setShowPersonalityAssessment(false);
-      toast({
-        title: "Assessment Complete!",
-        description: "Your travel personality profile has been saved successfully.",
-      });
-    },
-    onError: (error: Error) => {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to save personality profile",
-        variant: "destructive",
-      });
-    },
-  });
 
   // Get the current user type for schema selection
   const currentUserType = user?.userType || 'traveler';
-  const dynamicProfileSchema = getProfileFormSchema(currentUserType);
+  const dynamicProfileSchema = getDynamicProfileSchema(currentUserType);
   
   const profileForm = useForm<z.infer<typeof dynamicProfileSchema>>({
     resolver: zodResolver(dynamicProfileSchema),
     defaultValues: currentUserType === 'business' ? {
       bio: "",
       businessName: "",
-      hometownCity: "",
-      hometownState: "",
-      hometownCountry: "",
-      travelStyle: [],
       businessDescription: "",
       businessType: "",
       location: "",
+      city: "",
+      state: "",
+      country: "",
+      hometownCity: "",
+      hometownState: "",
+      hometownCountry: "",
       streetAddress: "",
       zipCode: "",
       phoneNumber: "",
       websiteUrl: "",
+      // Owner/Internal Contact Information
+      ownerName: "",
+      ownerPhone: "",
+      travelStyle: [],
+      interests: [],
+      activities: [],
+      events: [],
+      customInterests: "",
+      customActivities: "",
+      customEvents: "",
+      isVeteran: false,
+      isActiveDuty: false,
+      isMinorityOwned: false,
+      isFemaleOwned: false,
+      isLGBTQIAOwned: false,
+      showMinorityOwned: true,
+      showFemaleOwned: true,
+      showLGBTQIAOwned: true,
     } : {
       bio: "",
       secretActivities: "",
@@ -1041,6 +1270,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       sexualPreference: [],
       sexualPreferenceVisible: false,
       travelStyle: [],
+      travelingWithChildren: false,
+      childrenAges: "",
       isVeteran: false,
       isActiveDuty: false,
     },
@@ -1055,42 +1286,184 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         hometownCountry: user.hometownCountry
       });
       
+      // Initialize temp values for editing
+      setTempInterests(user.interests || []);
+      setTempActivities(user.activities || []);
+      setTempEvents(user.events || []);
+      
+      // Initialize editFormData with current user preferences
+      setEditFormData({
+        interests: user.interests || [],
+        activities: user.activities || [],
+        events: user.events || []
+      });
+      
       // Reset form with user type-specific data
       if (user.userType === 'business') {
+        // Extract custom entries from the arrays (entries not in predefined lists)
+        const customInterests = (user.interests || [])
+          .filter((item: string) => !getAllInterests().includes(item))
+          .join(', ');
+        const customActivities = (user.activities || [])
+          .filter((item: string) => !getAllActivities().includes(item))
+          .join(', ');
+        const customEvents = (user.events || [])
+          .filter((item: string) => !getAllEvents().includes(item))
+          .join(', ');
+        
+        // Only include predefined entries in the checkbox arrays
+        const predefinedInterests = (user.interests || [])
+          .filter((item: string) => getAllInterests().includes(item));
+        const predefinedActivities = (user.activities || [])
+          .filter((item: string) => getAllActivities().includes(item));
+        const predefinedEvents = (user.events || [])
+          .filter((item: string) => getAllEvents().includes(item));
+        
         profileForm.reset({
           bio: user.bio || "",
-          businessName: (user as any).businessName || "",
+          businessName: (user as any).business_name || (user as any).businessName || "",
           hometownCity: user.hometownCity || "",
           hometownState: user.hometownState || "",
           hometownCountry: user.hometownCountry || "",
           travelStyle: user.travelStyle || [],
-          businessDescription: (user as any).businessDescription || "",
-          businessType: (user as any).businessType || "",
+          businessDescription: (user as any).business_description || (user as any).businessDescription || "",
+          businessType: (user as any).business_type || (user as any).businessType || "",
+          city: user.city || "",
+          state: user.state || "",
+          country: user.country || "",
           location: user.location || "",
-          streetAddress: (user as any).streetAddress || "",
-          zipCode: (user as any).zipCode || "",
-          phoneNumber: (user as any).phoneNumber || "",
-          websiteUrl: (user as any).websiteUrl || "",
+          streetAddress: (user as any).street_address || (user as any).streetAddress || "",
+          zipCode: (user as any).zip_code || (user as any).zipCode || "",
+          phoneNumber: (user as any).phone_number || (user as any).phoneNumber || "",
+          websiteUrl: (user as any).website_url || (user as any).websiteUrl || (user as any).website || "",
+          interests: predefinedInterests,
+          activities: predefinedActivities,
+          events: predefinedEvents,
+          isVeteran: Boolean((user as any).is_veteran || user.isVeteran),
+          isActiveDuty: Boolean((user as any).is_active_duty || user.isActiveDuty),
+          customInterests: (user as any).customInterests || "",
+          customActivities: (user as any).customActivities || "",
+          customEvents: (user as any).customEvents || "",
         });
       } else {
+        const travelingWithChildrenValue = !!(user as any).travelingWithChildren;
+        
         profileForm.reset({
           bio: user.bio || "",
           secretActivities: user.secretActivities || "",
           hometownCity: user.hometownCity || "",
           hometownState: user.hometownState || "",
           hometownCountry: user.hometownCountry || "",
-          dateOfBirth: user.dateOfBirth ? new Date(user.dateOfBirth).toISOString().split('T')[0] : "",
-          ageVisible: user.ageVisible || false,
+          dateOfBirth: user.dateOfBirth ? 
+            (typeof user.dateOfBirth === 'string' ? user.dateOfBirth : new Date(user.dateOfBirth).toISOString().split('T')[0]) : "",
+          ageVisible: Boolean(user.ageVisible),
           gender: user.gender || "",
           sexualPreference: user.sexualPreference || [],
-          sexualPreferenceVisible: user.sexualPreferenceVisible || false,
+          sexualPreferenceVisible: Boolean(user.sexualPreferenceVisible),
           travelStyle: user.travelStyle || [],
-          isVeteran: user.isVeteran || false,
-          isActiveDuty: user.isActiveDuty || false,
+          travelWhy: user.travelWhy || "",
+          travelHow: user.travelHow || "",
+          travelBudget: user.travelBudget || "",
+          travelGroup: user.travelGroup || "",
+          travelingWithChildren: travelingWithChildrenValue,
+          childrenAges: (user as any).childrenAges || "",
+          isVeteran: Boolean(user.isVeteran),
+          isActiveDuty: Boolean(user.isActiveDuty),
+          // interests: user.interests || [],
+          // activities: user.activities || [],
+          // events: user.events || [],
+          customInterests: (user as any).customInterests || (user as any).custom_interests || "",
+          customActivities: (user as any).customActivities || (user as any).custom_activities || "",
+          customEvents: (user as any).customEvents || (user as any).custom_events || "",
         });
+        
+        // Force set the value after reset to ensure React Hook Form properly registers it
+        setTimeout(() => {
+          profileForm.setValue('travelingWithChildren', travelingWithChildrenValue);
+        }, 100);
       }
     }
   }, [user, userLoading, profileForm]);
+
+  // Re-populate form when dialog opens to ensure latest data is shown
+  React.useEffect(() => {
+    if (isEditMode && user && !userLoading) {
+      console.log('🔥 Re-syncing form with updated user data');
+      
+      // For business users, extract and set custom fields
+      if (user.userType === 'business') {
+        const customInterests = (user.interests || [])
+          .filter((item: string) => !getAllInterests().includes(item))
+          .join(', ');
+        const customActivities = (user.activities || [])
+          .filter((item: string) => !getAllActivities().includes(item))
+          .join(', ');
+        const customEvents = (user.events || [])
+          .filter((item: string) => !getAllEvents().includes(item))
+          .join(', ');
+        
+        const predefinedInterests = (user.interests || [])
+          .filter((item: string) => getAllInterests().includes(item));
+        const predefinedActivities = (user.activities || [])
+          .filter((item: string) => getAllActivities().includes(item));
+        const predefinedEvents = (user.events || [])
+          .filter((item: string) => getAllEvents().includes(item));
+        
+        profileForm.reset({
+          bio: user.bio || "",
+          businessName: (user as any).business_name || (user as any).businessName || "",
+          businessDescription: (user as any).business_description || (user as any).businessDescription || "",
+          businessType: (user as any).business_type || (user as any).businessType || "",
+          hometownCity: user.hometownCity || "",
+          hometownState: user.hometownState || "",
+          hometownCountry: user.hometownCountry || "",
+          travelStyle: user.travelStyle || [],
+          city: user.city || "",
+          state: user.state || "",
+          country: user.country || "",
+          location: user.location || "",
+          streetAddress: (user as any).street_address || (user as any).streetAddress || "",
+          zipCode: (user as any).zip_code || (user as any).zipCode || "",
+          phoneNumber: (user as any).phone_number || (user as any).phoneNumber || "",
+          websiteUrl: (user as any).website_url || (user as any).websiteUrl || (user as any).website || "",
+
+          interests: predefinedInterests,
+          activities: predefinedActivities,
+          events: predefinedEvents,
+          customInterests: customInterests || user.customInterests || "",
+          customActivities: customActivities || user.customActivities || "",
+          customEvents: customEvents || user.customEvents || "",
+          isVeteran: !!user.isVeteran,
+          isActiveDuty: !!user.isActiveDuty,
+          isMinorityOwned: !!user.isMinorityOwned,
+          isFemaleOwned: !!user.isFemaleOwned,
+          isLGBTQIAOwned: !!user.isLGBTQIAOwned,
+          showMinorityOwned: user.showMinorityOwned !== false,
+          showFemaleOwned: user.showFemaleOwned !== false,
+          showLGBTQIAOwned: user.showLGBTQIAOwned !== false,
+        });
+      } else {
+        // For non-business users, reset with their data
+        profileForm.reset({
+          bio: user.bio || "",
+          secretActivities: user.secretActivities || "",
+          hometownCity: user.hometownCity || "",
+          hometownState: user.hometownState || "",
+          hometownCountry: user.hometownCountry || "",
+          dateOfBirth: user.dateOfBirth || "",
+          ageVisible: !!user.ageVisible,
+          gender: user.gender || "",
+          sexualPreference: user.sexualPreference || [],
+          sexualPreferenceVisible: !!user.sexualPreferenceVisible,
+          travelStyle: user.travelStyle || [],
+          travelingWithChildren: !!user.travelingWithChildren,
+          childrenAges: user.childrenAges || "",
+          isVeteran: !!user.isVeteran,
+          isActiveDuty: !!user.isActiveDuty,
+        });
+      }
+    }
+  }, [isEditMode, user, userLoading, profileForm]);
 
   // Form for editing references
   const editReferenceForm = useForm({
@@ -1183,7 +1556,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     if (user) {
       profileForm.reset({
         bio: user.bio || "",
-        businessName: (user as any).businessName || "",
+        ...(user?.userType === 'business' ? { 
+          businessName: (user as any).business_name || (user as any).businessName || "",
+          businessDescription: (user as any).business_description || (user as any).businessDescription || "",
+        } : {}),
         hometownCity: user.hometownCity || "",
         hometownState: user.hometownState || "",
         hometownCountry: user.hometownCountry || "",
@@ -1194,13 +1570,17 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         sexualPreference: Array.isArray(user.sexualPreference) ? user.sexualPreference : (user.sexualPreference ? [user.sexualPreference] : []),
         sexualPreferenceVisible: user.sexualPreferenceVisible || false,
         travelStyle: Array.isArray(user.travelStyle) ? user.travelStyle : [],
-        isVeteran: user.isVeteran || false,
-        isActiveDuty: user.isActiveDuty || false,
-        // Business contact fields
-        streetAddress: (user as any).streetAddress || "",
-        zipCode: (user as any).zipCode || "",
-        phoneNumber: (user as any).phoneNumber || "",
-        websiteUrl: (user as any).websiteUrl || "",
+        isVeteran: (user as any).is_veteran || user.isVeteran || false,
+        isActiveDuty: (user as any).is_active_duty || user.isActiveDuty || false,
+        // Business contact fields - only for business users
+        ...(user?.userType === 'business' ? {
+          streetAddress: (user as any).streetAddress || "",
+        } : {}),
+        ...(user?.userType === 'business' ? {
+          zipCode: (user as any).zipCode || "",
+          phoneNumber: (user as any).phoneNumber || "",
+          websiteUrl: (user as any).websiteUrl || "",
+        } : {}),
       });
     }
   }, [user, profileForm]);
@@ -1217,11 +1597,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     enabled: !!effectiveUserId,
   });
 
-  // Fetch travel memories for story generator
-  const { data: storyTravelMemories = [] } = useQuery<TravelMemory[]>({
-    queryKey: [`/api/users/${effectiveUserId}/travel-memories`],
-    enabled: !!effectiveUserId,
-  });
+
 
   // Fetch user references
   const { data: references = [] } = useQuery<any[]>({
@@ -1229,42 +1605,88 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     enabled: !!effectiveUserId,
   });
 
-  // Photo upload mutation
+  // Fetch user vouches
+  const { data: vouches = [] } = useQuery<any[]>({
+    queryKey: [`/api/users/${effectiveUserId}/vouches`],
+    enabled: !!effectiveUserId,
+  });
+
+  // Photo upload mutation with adaptive compression
   const uploadPhoto = useMutation({
     mutationFn: async (file: File) => {
-      // Convert file to base64
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = async () => {
-          try {
-            const base64Data = reader.result as string;
-            const response = await fetch(`/api/users/${effectiveUserId}/photos`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                userId: effectiveUserId,
-                imageData: base64Data,
-                title: 'Travel Photo',
-                isPublic: true
-              }),
-            });
-            
-            if (!response.ok) {
-              const errorData = await response.json();
-              throw new Error(errorData.message || 'Failed to upload photo');
+      try {
+        // Use adaptive compression before upload
+        const compressedFile = await compressPhotoAdaptive(file);
+        
+        // Convert compressed file to base64
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = async () => {
+            try {
+              const base64Data = reader.result as string;
+              const response = await fetch(`/api/users/${effectiveUserId}/photos`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  userId: effectiveUserId,
+                  imageData: base64Data,
+                  title: 'Travel Photo',
+                  isPublic: true
+                }),
+              });
+              
+              if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to upload photo');
+              }
+              const result = await response.json();
+              
+              resolve(result);
+            } catch (error) {
+              reject(error);
             }
-            const result = await response.json();
-            
-            resolve(result);
-          } catch (error) {
-            reject(error);
-          }
-        };
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(compressedFile);
+        });
+      } catch (compressionError) {
+        console.warn('Photo compression failed, using original file:', compressionError);
+        // Fall back to original file if compression fails
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = async () => {
+            try {
+              const base64Data = reader.result as string;
+              const response = await fetch(`/api/users/${effectiveUserId}/photos`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  userId: effectiveUserId,
+                  imageData: base64Data,
+                  title: 'Travel Photo',
+                  isPublic: true
+                }),
+              });
+              
+              if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to upload photo');
+              }
+              const result = await response.json();
+              
+              resolve(result);
+            } catch (error) {
+              reject(error);
+            }
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}/photos`] });
@@ -1288,14 +1710,19 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   // Photo deletion mutation
   const deletePhoto = useMutation({
     mutationFn: async (photoId: number) => {
-      const response = await fetch(`/api/user-photos/${photoId}`, {
+      const response = await fetch(`/api/photos/${photoId}`, {
         method: 'DELETE',
       });
       if (!response.ok) throw new Error('Failed to delete photo');
       return response.json();
     },
     onSuccess: () => {
+      // Invalidate ALL photo-related queries to ensure UI updates
       queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}/photos`] });
+      queryClient.invalidateQueries({ queryKey: ['/api/users', effectiveUserId, 'photos'] });
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
+      // Force refetch to update UI immediately
+      queryClient.refetchQueries({ queryKey: [`/api/users/${effectiveUserId}/photos`] });
       toast({
         title: "Photo deleted",
         description: "Your photo has been removed.",
@@ -1506,7 +1933,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   };
 
   const handleDeletePhoto = (photoId: number) => {
-    if (window.confirm("Are you sure you want to delete this photo?")) {
+    if (window.confirm("Are you sure you want to delete this photo? This cannot be undone.")) {
       deletePhoto.mutate(photoId);
     }
   };
@@ -1534,7 +1961,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       console.log('Cover photo update response:', responseData);
       
       // Extract user data from API response (API returns { user, coverPhoto, message }) - SAME AS PROFILE PHOTO
-      const updatedUser = responseData?.user || responseData;
+      const updatedUser = (responseData as any)?.user || responseData || {};
       console.log('Gallery cover photo upload success, user has cover:', !!updatedUser?.coverPhoto);
       
       // Update cache key to force immediate image refresh
@@ -1612,7 +2039,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
 
   // Handle avatar upload from file input
-  const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       // Validate file size (max 2MB for avatar)
@@ -1638,18 +2065,22 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       console.log('Avatar upload starting for file:', file.name, 'size:', file.size);
       setUploadingPhoto(true);
       
-      // Direct upload function call
-      const reader = new FileReader();
-      reader.onload = async () => {
-        try {
-          const base64 = reader.result as string;
-          console.log('File converted to base64, uploading...');
-          
-          const response = await fetch(`/api/users/${effectiveUserId}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ profileImage: base64 })
-          });
+      // Direct upload function call with adaptive compression
+      try {
+        // Use adaptive compression for profile photos
+        const compressedFile = await compressPhotoAdaptive(file);
+        
+        const reader = new FileReader();
+        reader.onload = async () => {
+          try {
+            const base64 = reader.result as string;
+            console.log('Compressed file converted to base64, uploading...');
+            
+            const response = await fetch(`/api/users/${effectiveUserId}`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ profileImage: base64 })
+            });
           
           if (!response.ok) {
             throw new Error(`Upload failed: ${response.statusText}`);
@@ -1698,7 +2129,71 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         setUploadingPhoto(false);
       };
       
-      reader.readAsDataURL(file);
+      reader.readAsDataURL(compressedFile);
+      } catch (compressionError: any) {
+        console.warn('Photo compression failed, using original file:', compressionError);
+        // Fall back to original file if compression fails
+        const reader = new FileReader();
+        reader.onload = async () => {
+          try {
+            const base64 = reader.result as string;
+            console.log('Original file converted to base64, uploading...');
+            
+            const response = await fetch(`/api/users/${effectiveUserId}`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ profileImage: base64 })
+            });
+            
+            if (!response.ok) {
+              throw new Error(`Upload failed: ${response.statusText}`);
+            }
+            
+            const updatedUser = await response.json();
+            console.log('Avatar upload successful:', updatedUser.username);
+            
+            // Update auth immediately
+            authStorage.setUser(updatedUser);
+            if (setAuthUser && isOwnProfile) {
+              setAuthUser(updatedUser);
+            }
+            
+            // Invalidate queries
+            queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
+            queryClient.invalidateQueries({ queryKey: ["/api/users"] });
+            
+            // Trigger navbar refresh
+            window.dispatchEvent(new CustomEvent('userDataUpdated', { detail: updatedUser }));
+            
+            toast({
+              title: "Success",
+              description: "Avatar updated successfully!",
+            });
+            
+          } catch (error: any) {
+            console.error('Avatar upload error:', error);
+            toast({
+              title: "Upload Failed",
+              description: error?.message || "Failed to upload avatar",
+              variant: "destructive",
+            });
+          } finally {
+            setUploadingPhoto(false);
+          }
+        };
+        
+        reader.onerror = () => {
+          console.error('Failed to read file');
+          toast({
+            title: "Error",
+            description: "Failed to read image file",
+            variant: "destructive",
+          });
+          setUploadingPhoto(false);
+        };
+        
+        reader.readAsDataURL(file);
+      }
     }
     // Clear the input to allow same file selection
     e.target.value = '';
@@ -2059,7 +2554,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const updateActivities = useMutation({
     mutationFn: async (activities: string[]) => {
       const response = await apiRequest('PUT', `/api/users/${effectiveUserId}`, {
-        localActivities: activities
+        activities: activities
       });
       if (!response.ok) {
         const errorText = await response.text();
@@ -2069,11 +2564,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
+      refetchUser();
       toast({
         title: "Activities updated",
         description: "Your activities have been successfully updated.",
       });
       setEditingActivities(false);
+      setTempActivities([]);
     },
     onError: () => {
       toast({
@@ -2087,7 +2584,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const updateEvents = useMutation({
     mutationFn: async (events: string[]) => {
       const response = await apiRequest('PUT', `/api/users/${effectiveUserId}`, {
-        localEvents: events
+        events: events
       });
       if (!response.ok) {
         const errorText = await response.text();
@@ -2097,6 +2594,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
+      refetchUser();
       toast({
         title: "Events updated",
         description: "Your events have been successfully updated.",
@@ -2165,9 +2663,21 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
   // Edit handlers
   const handleEditInterests = () => {
-    if (!user) return;
-    setTempInterests(user.interests || []);
+    console.log('🔧 EDIT INTERESTS: Starting edit mode', { 
+      user: user?.username, 
+      userInterests: user?.interests,
+      editingInterests,
+      tempInterests 
+    });
+    if (!user) {
+      console.log('❌ EDIT INTERESTS: No user data available');
+      return;
+    }
+    const userInterests = user.interests || [];
+    console.log('🔧 EDIT INTERESTS: Setting temp interests to:', userInterests);
+    setTempInterests(userInterests);
     setEditingInterests(true);
+    console.log('🔧 EDIT INTERESTS: Edit mode activated');
   };
 
   const handleSaveInterests = () => {
@@ -2181,7 +2691,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
   const handleEditActivities = () => {
     if (!user) return;
-    setTempActivities(user.localActivities || user.activities || []);
+    setTempActivities(user.activities || []);
     setEditingActivities(true);
   };
 
@@ -2196,7 +2706,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
   const handleEditEvents = () => {
     if (!user) return;
-    setTempEvents(user.localEvents || user.events || []);
+    setTempEvents(user.events || []);
     setEditingEvents(true);
   };
 
@@ -2325,11 +2835,109 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     setEditingBusinessDescription(true);
   };
 
+  // Owner contact mutation and handlers
+  const updateOwnerContact = useMutation({
+    mutationFn: async (data: { ownerName: string; ownerEmail: string; ownerPhone: string }) => {
+      const response = await fetch(`/api/users/${effectiveUserId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      });
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText);
+      }
+      return response.json();
+    },
+    onSuccess: (updatedUser) => {
+      queryClient.setQueryData([`/api/users/${effectiveUserId}`], updatedUser);
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
+      
+      authStorage.setUser(updatedUser);
+      if (typeof setAuthUser === 'function') {
+        setAuthUser(updatedUser);
+      }
+      
+      toast({
+        title: "Owner contact updated",
+        description: "Internal contact information has been successfully updated.",
+      });
+      setEditingOwnerInfo(false);
+    },
+    onError: (error) => {
+      toast({
+        title: "Update failed",
+        description: `Failed to update owner contact: ${error.message}`,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleSaveOwnerContact = () => {
+    updateOwnerContact.mutate(ownerContactForm);
+  };
+
+  // Initialize owner contact form when user data loads
+  useEffect(() => {
+    if (user && user.userType === 'business') {
+      setOwnerContactForm({
+        ownerName: user.ownerName || "",
+        contactName: user.contactName || "",
+        ownerEmail: user.ownerEmail || "",
+        ownerPhone: user.ownerPhone || ""
+      });
+    }
+  }, [user]);
+
   // Profile edit mutation
   const editProfile = useMutation({
-    mutationFn: async (data: z.infer<typeof profileSchema>) => {
-      console.log('Profile edit data being sent:', data);
-      const response = await apiRequest('PUT', `/api/users/${effectiveUserId}`, data);
+    mutationFn: async (data: z.infer<typeof dynamicProfileSchema>) => {
+      console.log('🔥 BUSINESS SAVE: Data being sent:', data);
+      console.log('🔥 MUTATION: User type is:', user?.userType);
+      
+      // For business users, use simpler payload structure
+      const payload = user?.userType === 'business' ? {
+        ...data,
+        isVeteran: !!data.isVeteran,
+        isActiveDuty: !!data.isActiveDuty,
+        isMinorityOwned: !!data.isMinorityOwned,
+        isFemaleOwned: !!data.isFemaleOwned,
+        isLGBTQIAOwned: !!data.isLGBTQIAOwned,
+        showMinorityOwned: data.showMinorityOwned !== false,
+        showFemaleOwned: data.showFemaleOwned !== false,
+        showLGBTQIAOwned: data.showLGBTQIAOwned !== false,
+      } : {
+        ...data,
+        // Only include traveler fields if they exist in the data
+        ...((data as any).hasOwnProperty('travelingWithChildren') && { travelingWithChildren: !!(data as any).travelingWithChildren }),
+        ...((data as any).hasOwnProperty('ageVisible') && { ageVisible: !!(data as any).ageVisible }),
+        ...((data as any).hasOwnProperty('sexualPreferenceVisible') && { sexualPreferenceVisible: !!(data as any).sexualPreferenceVisible }),
+        // Always include veteran status fields
+        isVeteran: !!data.isVeteran,
+        isActiveDuty: !!data.isActiveDuty,
+        isMinorityOwned: !!data.isMinorityOwned,
+        isFemaleOwned: !!data.isFemaleOwned,
+        isLGBTQIAOwned: !!data.isLGBTQIAOwned,
+        showMinorityOwned: data.showMinorityOwned !== false,
+        showFemaleOwned: data.showFemaleOwned !== false,
+        showLGBTQIAOwned: data.showLGBTQIAOwned !== false,
+      };
+      
+      console.log('🔥 MUTATION: Profile payload with explicit booleans:', payload);
+      
+      const response = await fetch(`/api/users/${effectiveUserId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-user-id': currentUser?.id?.toString(),
+          'x-user-type': 'business'
+        },
+        body: JSON.stringify(payload)
+      });
+      
       if (!response.ok) {
         const errorText = await response.text();
         console.error('Profile edit error response:', errorText);
@@ -2338,35 +2946,112 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       return response.json();
     },
     onSuccess: (updatedUser) => {
-      queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
-      // Also invalidate navbar user data cache to refresh avatar
+      console.log('✅ BUSINESS SAVE SUCCESS:', updatedUser);
+      
+      // Update all caches
+      queryClient.setQueryData([`/api/users/${effectiveUserId}`], updatedUser);
       queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
       
-      // Update localStorage if editing own profile
-      if (isOwnProfile && currentUser) {
-        const updatedStoredUser = { ...currentUser, ...updatedUser };
-        localStorage.setItem('user', JSON.stringify(updatedStoredUser));
-        localStorage.setItem('travelconnect_user', JSON.stringify(updatedStoredUser));
+      // Update auth storage
+      authStorage.setUser(updatedUser);
+      if (typeof setAuthUser === 'function') {
+        setAuthUser(updatedUser);
       }
+      
+      // FORCE immediate UI refresh with state update
+      window.dispatchEvent(new CustomEvent('userDataUpdated', { detail: updatedUser }));
+      window.dispatchEvent(new CustomEvent('profileUpdated', { detail: updatedUser }));
+      
+      // CRITICAL: Reset form with updated values immediately to prevent toggle drift
+      setTimeout(() => {
+        console.log('🔥 Re-syncing form with updated user data');
+        if (user?.userType !== 'business') {
+          profileForm.reset({
+            bio: updatedUser.bio || "",
+            secretActivities: updatedUser.secretActivities || "",
+            hometownCity: updatedUser.hometownCity || "",
+            hometownState: updatedUser.hometownState || "",
+            hometownCountry: updatedUser.hometownCountry || "",
+            dateOfBirth: updatedUser.dateOfBirth ? new Date(updatedUser.dateOfBirth).toISOString().split('T')[0] : "",
+            ageVisible: updatedUser.ageVisible !== undefined ? updatedUser.ageVisible : false,
+            gender: updatedUser.gender || "",
+            sexualPreference: updatedUser.sexualPreference || [],
+            sexualPreferenceVisible: updatedUser.sexualPreferenceVisible !== undefined ? updatedUser.sexualPreferenceVisible : false,
+            travelStyle: updatedUser.travelStyle || [],
+            travelingWithChildren: updatedUser.travelingWithChildren === true,
+            childrenAges: (updatedUser as any).childrenAges || "",
+            isVeteran: updatedUser.isVeteran !== undefined ? updatedUser.isVeteran : false,
+            isActiveDuty: updatedUser.isActiveDuty !== undefined ? updatedUser.isActiveDuty : false,
+            isMinorityOwned: updatedUser.isMinorityOwned !== undefined ? updatedUser.isMinorityOwned : false,
+            isFemaleOwned: updatedUser.isFemaleOwned !== undefined ? updatedUser.isFemaleOwned : false,
+            isLGBTQIAOwned: updatedUser.isLGBTQIAOwned !== undefined ? updatedUser.isLGBTQIAOwned : false,
+            showMinorityOwned: updatedUser.showMinorityOwned !== undefined ? updatedUser.showMinorityOwned : true,
+            showFemaleOwned: updatedUser.showFemaleOwned !== undefined ? updatedUser.showFemaleOwned : true,
+            showLGBTQIAOwned: updatedUser.showLGBTQIAOwned !== undefined ? updatedUser.showLGBTQIAOwned : true,
+          });
+        }
+      }, 100);
+      
+      // Force immediate refetch to trigger component re-render
+      refetchUser();
+      
+      // Multiple invalidations to ensure all cached data is fresh
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`, currentUser?.id] });
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
+      queryClient.invalidateQueries({ queryKey: ["/api/users"] });
+      
       toast({
-        title: "Profile updated",
-        description: "Your profile has been successfully updated.",
+        title: "Business profile updated",
+        description: "Your business profile has been successfully updated.",
       });
       setIsEditMode(false);
     },
     onError: (error) => {
-      console.error('Profile edit mutation error:', error);
+      console.error('Save failed:', error);
       toast({
-        title: "Update failed",
-        description: `Failed to update profile: ${error.message}`,
+        title: "Save failed",
+        description: `Failed to save: ${error.message}`,
         variant: "destructive",
       });
     },
   });
 
-  const onSubmitProfile = (data: z.infer<typeof profileSchema>) => {
-    console.log('onSubmitProfile called with data:', data);
-    console.log('Form validation errors:', profileForm.formState.errors);
+  const onSubmitProfile = (data: z.infer<typeof dynamicProfileSchema>) => {
+    console.log('🔥 BUSINESS FORM SUBMIT:', data);
+    console.log('🔥 FORM SUBMIT: User type is:', user?.userType);
+    console.log('🔥 Form errors:', profileForm.formState.errors);
+    console.log('🔥 Form valid:', profileForm.formState.isValid);
+    
+    // Clear children ages if traveling with children is turned off (only for non-business users)
+    if (user?.userType !== 'business' && 'travelingWithChildren' in data && !data.travelingWithChildren) {
+      (data as any).childrenAges = "";
+      console.log('🔥 FORM SUBMIT: Cleared childrenAges because travelingWithChildren is false');
+    }
+    
+    // Process custom text entries for business users
+    if (user?.userType === 'business') {
+      const formData = data as any;
+      
+      // Process custom interests
+      if (formData.customInterests) {
+        const customInterestsList = formData.customInterests.split(',').map((item: string) => item.trim()).filter((item: string) => item);
+        formData.interests = [...(formData.interests || []).filter((item: string) => getAllInterests().includes(item)), ...customInterestsList];
+      }
+      
+      // Process custom activities
+      if (formData.customActivities) {
+        const customActivitiesList = formData.customActivities.split(',').map((item: string) => item.trim()).filter((item: string) => item);
+        formData.activities = [...(formData.activities || []).filter((item: string) => getAllActivities().includes(item)), ...customActivitiesList];
+      }
+      
+      // Process custom events
+      if (formData.customEvents) {
+        const customEventsList = formData.customEvents.split(',').map((item: string) => item.trim()).filter((item: string) => item);
+        formData.events = [...(formData.events || []).filter((item: string) => getAllEvents().includes(item)), ...customEventsList];
+      }
+      
+      console.log('🔥 BUSINESS SUBMIT: Final data with custom fields processed:', formData);
+    }
     
     // Send dateOfBirth as string - server will handle conversion to Date
     editProfile.mutate(data);
@@ -2477,23 +3162,19 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       return { text: 'Connected', disabled: false, variant: 'default' as const, className: 'bg-green-600 hover:bg-green-700 text-white border-0' };
     }
     if (connectionStatus?.status === 'pending') {
-      return { text: 'Request Sent', disabled: true, variant: 'default' as const, className: 'bg-blue-400 hover:bg-blue-500 text-white border-0' };
+      return { text: 'Request Sent', disabled: true, variant: 'default' as const, className: 'bg-gray-600 hover:bg-gray-700 text-white border-0' };
     }
-    return { text: connectMutation.isPending ? 'Connecting...' : 'Connect', disabled: connectMutation.isPending, variant: 'default' as const, className: 'bg-travel-blue hover:bg-blue-700 text-white border-0' };
+    return { text: connectMutation.isPending ? 'Connecting...' : 'Connect', disabled: connectMutation.isPending, variant: 'default' as const, className: 'bg-blue-600 hover:bg-blue-700 text-white border-0' };
   };
 
   // Function to determine current location based on travel status
   const getCurrentLocation = () => {
     if (!user) return "Not specified";
     
-    // Check if user has active travel plans
-    const now = new Date();
-    const travelStart = user.travelStartDate ? new Date(user.travelStartDate) : null;
-    const travelEnd = user.travelEndDate ? new Date(user.travelEndDate) : null;
-    
-    // If user is currently traveling (between start and end dates)
-    if (travelStart && travelEnd && now >= travelStart && now <= travelEnd && user.travelDestination) {
-      return user.travelDestination;
+    // Use the modern travel plans system (same as all other components)
+    const currentDestination = getCurrentTravelDestination(travelPlans || []);
+    if (currentDestination) {
+      return currentDestination;
     }
     
     // Otherwise show their regular location
@@ -2582,6 +3263,27 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     return 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
   };
 
+  // Check if user profile is incomplete and needs completion
+  const isProfileIncomplete = () => {
+    if (!user || !isOwnProfile) return false;
+    
+    // For business users, check business-specific required fields
+    if (user.userType === 'business') {
+      const hasBusinessInfo = user.businessName && user.businessDescription && user.businessType;
+      const hasBusinessLocation = user.city && user.state && user.country;
+      const hasBusinessInterests = user.interests && Array.isArray(user.interests) && user.interests.length >= 3;
+      
+      return !hasBusinessInfo || !hasBusinessLocation || !hasBusinessInterests;
+    }
+    
+    // For regular users (travelers/locals)
+    const hasBasicInfo = user.bio && user.bio.trim().length > 0;
+    const hasInterests = user.interests && Array.isArray(user.interests) && user.interests.length >= 3;
+    const hasLocation = user.hometownCity && user.hometownState && user.hometownCountry;
+    
+    return !hasBasicInfo || !hasInterests || !hasLocation;
+  };
+
 
 
   // Add debug logging before render
@@ -2620,56 +3322,184 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {shouldShowBackToChatroom && (
-        <div className="w-full max-w-full mx-auto px-2 pt-2">
-          <Button 
-            onClick={handleBackToChatroom}
-            variant="outline" 
-            className="mb-2"
-          >
-            Back
-          </Button>
+    <>
+      {/* Mobile Navigation */}
+      <MobileTopNav />
+      <MobileBottomNav />
+      
+      <div className="min-h-screen profile-page">
+
+      {/* Profile Completion Warning - Only show for incomplete own profiles */}
+      {isProfileIncomplete() && (
+        <div className="w-full bg-red-600 text-white px-4 py-3">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-3 flex-1">
+                <div className="bg-white/20 rounded-full p-2 flex-shrink-0">
+                  <Zap className="w-5 h-5 text-white" />
+                </div>
+                <div className="min-w-0">
+                  <p className="font-bold text-base sm:text-lg">PLEASE FILL OUT PROFILE NOW TO MATCH WELL WITH OTHERS</p>
+                  <p className="text-red-100 text-xs sm:text-sm">Complete your bio, interests, and location to improve your compatibility with other travelers</p>
+                </div>
+              </div>
+              <Button
+                size="sm"
+                variant="secondary"
+                className="bg-white text-red-600 hover:bg-red-50 font-semibold flex-shrink-0 w-full sm:w-auto"
+                onClick={() => setIsEditMode(true)}
+              >
+                Complete Profile
+              </Button>
+            </div>
+          </div>
         </div>
       )}
     
-      {/* COMPLETELY REBUILT HERO SECTION - WORKING COVER PHOTO */}
-      <div className="relative w-full h-48 md:h-64 overflow-hidden">
-        {/* Background Layer */}
-        <div 
-          key={`cover-photo-${coverPhotoKey}`}
-          className="absolute inset-0 w-full h-full bg-cover bg-center bg-no-repeat"
-          style={{
-            backgroundImage: user.coverPhoto 
-              ? `url("${user.coverPhoto}?v=${coverPhotoKey}")`
-              : 'linear-gradient(to right, #3b82f6, #8b5cf6, #f97316)'
-          }}
-        />
-
-        {/* Dark overlay */}
-        <div className="absolute inset-0 bg-black/20 z-10"></div>
-        
-        {/* Upload Controls */}
+      {/* PROFILE HEADER */}
+      <section
+        className={`relative -mt-px isolate w-full bg-gradient-to-r ${gradientOptions[selectedGradient]} px-6 sm:px-10 py-8 sm:py-12`}
+      >
+        {/* floating color button */}
         {isOwnProfile && (
-          <div className="absolute top-4 right-4 z-20">
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleCoverPhotoUpload}
-              className="hidden"
-              id="cover-photo-upload"
-            />
-            <label 
-              htmlFor="cover-photo-upload" 
-              className="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-black/60 hover:bg-black/80 rounded-md cursor-pointer transition-colors"
-            >
-              <Camera className="w-4 h-4 mr-2" />
-              {user.coverPhoto ? 'Change Cover' : 'Add Cover'}
-            </label>
-          </div>
+          <button
+            type="button"
+            onClick={() => setSelectedGradient((prev) => (prev + 1) % gradientOptions.length)}
+            aria-label="Change header colors"
+            className="absolute right-3 top-3 z-10 inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/85 text-gray-700 shadow-md hover:bg-white"
+          >
+            🎨
+          </button>
         )}
-        
-        {/* Loading state */}
+
+        <div className="max-w-7xl mx-auto">
+          {/* allow wrapping so CTAs drop below on small screens */}
+          <div className="flex flex-row flex-wrap items-start gap-4 sm:gap-6">
+
+            {/* Avatar + camera (bigger, no scrollbars) */}
+            <div className="relative flex-shrink-0">
+              <div className="rounded-full bg-white ring-4 ring-white shadow-lg overflow-hidden">
+                <div className="w-36 h-36 sm:w-40 sm:h-40 md:w-56 md:h-56 rounded-full overflow-hidden no-scrollbar">
+                  <SimpleAvatar
+                    user={user}
+                    size="xl"
+                    className="w-full h-full block object-cover"
+                  />
+                </div>
+              </div>
+
+              {isOwnProfile && (
+                <>
+                  <Button
+                    size="icon"
+                    aria-label="Change avatar"
+                    className="absolute -bottom-2 -right-2 translate-x-1/4 translate-y-1/4
+                               h-10 w-10 sm:h-11 sm:w-11 rounded-full p-0
+                               bg-blue-600 hover:bg-blue-700 text-white shadow-lg ring-4 ring-white z-10"
+                    onClick={() => document.getElementById('avatar-upload-input')?.click()}
+                    disabled={uploadingPhoto}
+                  >
+                    <Camera className="h-4 w-4 sm:h-5 sm:w-5" />
+                  </Button>
+                  <input
+                    id="avatar-upload-input"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleAvatarUpload}
+                    className="hidden"
+                  />
+                </>
+              )}
+            </div>
+
+            {/* Profile text */}
+            <div className="flex-1 min-w-0">
+              {user?.userType === 'business' ? (
+                <div className="space-y-2 text-black w-full mt-2">
+                  <h1 className="text-2xl sm:text-4xl font-bold text-black">
+                    {user.businessName || user.name || `@${user.username}`}
+                  </h1>
+                  <div className="flex items-center gap-2 text-sm sm:text-base">
+                    <span className="inline-flex items-center justify-center h-7 rounded-full px-3 text-xs font-medium bg-blue-500 text-white">
+                      Nearby Business
+                    </span>
+                    {user.businessType && <span className="text-black/80">• {user.businessType}</span>}
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-1 text-black w-full mt-2">
+                  {/* Username */}
+                  <h1 className="text-xl sm:text-3xl font-bold text-black truncate">@{user.username}</h1>
+
+                  {/* Location/status — Centralized location display */}
+                  <div className="text-sm text-gray-600 dark:text-gray-400 flex flex-wrap items-center gap-x-3 gap-y-1">
+                    <span>From: <span className="font-medium">{user.hometownCity || user.location?.split(',')[0] || 'Hometown not set'}{user.hometownState ? `, ${user.hometownState}` : ''}{user.hometownCountry ? `, ${user.hometownCountry}` : ''}</span></span>
+                    <span>{(() => {
+                      const currentDestination = getCurrentTravelDestination(travelPlans || []);
+                      return currentDestination ? `Currently in ${currentDestination}` : 'Currently home';
+                    })()}</span>
+                  </div>
+
+                  {/* Stats */}
+                  <div className="flex items-center flex-wrap gap-2 text-xs sm:text-sm w-full">
+                    <span className="font-medium">🌍 {countriesVisited?.length || 0} countries</span>
+                    <span className="font-medium">⭐ {references?.length || 0} references</span>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* CTAs — wrap on mobile */}
+            {!isOwnProfile ? (
+              <div className="flex items-center justify-between gap-3 flex-wrap min-w-0">
+                <Button className="bg-orange-500 hover:bg-orange-600 text-white border-0 w-full sm:w-auto" onClick={handleMessage}>
+                  Message
+                </Button>
+                <Button
+                  className={`w-full sm:w-auto ${getConnectButtonState().className}`}
+                  variant={getConnectButtonState().variant}
+                  onClick={handleConnect}
+                  disabled={getConnectButtonState().disabled}
+                >
+                  {getConnectButtonState().text}
+                </Button>
+              </div>
+            ) : (
+              <div className="flex items-center justify-between gap-3 flex-wrap min-w-0">
+                {user && (user.hometownCity || user.location) && (
+                  <Button
+                    onClick={() => {
+                      const chatCity = user.hometownCity || user.location?.split(',')[0] || 'General';
+                      setLocation(`/city-chatrooms?city=${encodeURIComponent(chatCity)}`);
+                    }}
+                    className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700
+                               text-white border-0 shadow-lg rounded-full
+                               inline-flex items-center justify-center gap-2
+                               w-full sm:w-auto max-w-full sm:max-w-none
+                               px-4 py-3 overflow-hidden break-words"
+                  >
+                    <MessageCircle className="w-4 h-4 shrink-0" />
+                    <span className="truncate">Go to Chatrooms</span>
+                  </Button>
+                )}
+                <Button
+                  onClick={() => setLocation('/share-qr')}
+                  className="bg-gradient-to-r from-orange-600 to-blue-600 hover:from-orange-700 hover:to-blue-700
+                             text-white border-0 shadow-lg rounded-full
+                             inline-flex items-center justify-center gap-2
+                             w-full sm:w-auto max-w-full sm:max-w-none
+                             px-4 py-3 overflow-hidden break-words"
+                  data-testid="button-share-qr-code"
+                >
+                  <Share2 className="w-4 h-4 shrink-0" />
+                  <span className="truncate">Invite Friends</span>
+                </Button>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Upload overlay (unchanged) */}
         {uploadingPhoto && (
           <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-30">
             <div className="bg-white rounded-lg p-4 text-center">
@@ -2678,328 +3508,133 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             </div>
           </div>
         )}
-      </div>
-
-      {/* Profile Header */}
-      <div className="w-full max-w-full mx-auto px-4">
-        <div className="relative -mt-16 mb-6">
-          <div className="flex flex-col md:flex-row items-start gap-4 pt-4">
-              {/* Profile Avatar */}
-              <div className="relative z-20">
-                <Avatar className="w-32 h-32 md:w-40 md:h-40 border-4 border-white shadow-xl rounded-lg bg-white">
-                  <AvatarImage src={user.profileImage || photos[0]?.imageUrl} className="rounded-lg object-cover" />
-                  <AvatarFallback className="text-4xl bg-gradient-to-br from-blue-500 to-orange-500 text-white rounded-lg">
-                    {(user?.username?.charAt(0) || user?.name?.charAt(0) || 'U').toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-                {isOwnProfile && (
-                  <>
-                    {/* Avatar Upload Button */}
-                    <Button 
-                      size="sm" 
-                      className="absolute -bottom-2 -right-2 bg-blue-500 hover:bg-blue-600 text-white border-none shadow-lg"
-                      onClick={() => setShowPhotoUpload(true)}
-                      disabled={uploadingPhoto}
-                    >
-                      <Camera className="w-4 h-4 mr-1" />
-                      {uploadingPhoto ? 'Uploading...' : 'Add Photo'}
-                    </Button>
-                    {/* Hidden file input for direct avatar upload */}
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleAvatarUpload}
-                      className="hidden"
-                      id="avatar-upload-input"
-                    />
-                  </>
-                )}
-              </div>
-
-              {/* Profile Info */}
-              <div className="flex-1">
-                <h1 className="text-3xl font-bold mb-2 text-gray-900 dark:text-white outline-none border-none focus:outline-none focus:border-none select-none">@{user.username}</h1>
-                {/* Business Name Display */}
-                {user.userType === 'business' && user.businessName && (
-                  <div className="text-2xl font-semibold mb-2 text-blue-600 dark:text-blue-400">
-                    {user.businessName}
-                  </div>
-                )}
-                <p className="text-sm sm:text-lg mb-2 flex items-start gap-2 text-gray-700 dark:text-gray-300">
-                  <MapPin className="w-5 h-5 flex-shrink-0 mt-0.5" />
-                  <span className="break-words text-wrap">
-                    {user.userType === 'business' 
-                      ? `🏢 Nearby Business in ${user.hometownCity || 'Los Angeles'}`
-                      : (() => {
-                          // Check for active travel plans
-                          if (travelPlans && travelPlans.length > 0) {
-                            const today = new Date();
-                            for (const plan of travelPlans) {
-                              if (plan.startDate && plan.endDate) {
-                                const startDate = new Date(plan.startDate);
-                                const endDate = new Date(plan.endDate);
-                                const isCurrentlyActive = today >= startDate && today <= endDate;
-                                if (isCurrentlyActive && plan.destination) {
-                                  return `✈️ Currently Traveling to ${plan.destination}`;
-                                }
-                              }
-                            }
-                          }
-                          
-                          // Show hometown for non-traveling status
-                          const hometownCity = user.hometownCity;
-                          const hometownState = user.hometownState;
-                          const hometownCountry = user.hometownCountry;
-                          
-                          if (hometownCity) {
-                            if (hometownCountry && hometownCountry !== 'United States' && hometownCountry !== 'USA') {
-                              return `Nearby Local in ${hometownCity}, ${hometownCountry}`;
-                            } else if (hometownState && (hometownCountry === 'United States' || hometownCountry === 'USA')) {
-                              return `Nearby Local in ${hometownCity}, ${hometownState}`;
-                            } else {
-                              return `Nearby Local in ${hometownCity}`;
-                            }
-                          } else if (user.location) {
-                            return `Nearby Local in ${user.location}`;
-                          }
-                          return "Nearby Local";
-                        })()
-                    }
-                  </span>
-                </p>
-                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-1 sm:gap-3 text-sm text-gray-600 dark:text-gray-400">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    {/* Countries count - Hidden for business profiles */}
-                    {user?.userType !== 'business' && (
-                      <span className="flex items-center gap-1 whitespace-nowrap">
-                        <Globe className="w-4 h-4" />
-                        {countriesVisited.length} countries
-                      </span>
-                    )}
-                    <span className="flex items-center gap-1 whitespace-nowrap">
-                      <Star className="w-4 h-4" />
-                      {references.length} References
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-1 text-xs sm:text-sm">
-                    <Users className="w-4 h-4 flex-shrink-0" />
-                    <span className="break-words">
-                      {user.userType === 'business' 
-                        ? `Nearby Business in ${user.hometownCity || 'Los Angeles'}`
-                        : (() => {
-                            // STATIC HOMETOWN - NEVER CHANGES
-                            const hometownCity = user.hometownCity;
-                            const hometownState = user.hometownState;
-                            const hometownCountry = user.hometownCountry;
-                            
-                            if (hometownCity) {
-                              if (hometownCountry && hometownCountry !== 'United States' && hometownCountry !== 'USA') {
-                                return `Nearby Local in ${hometownCity}, ${hometownCountry}`;
-                              } else if (hometownState && (hometownCountry === 'United States' || hometownCountry === 'USA')) {
-                                return `Nearby Local in ${hometownCity}, ${hometownState}`;
-                              } else {
-                                return `Nearby Local in ${hometownCity}`;
-                              }
-                            } else if (user.location) {
-                              return `Nearby Local in ${user.location}`;
-                            }
-                            return "Nearby Local";
-                          })()
-                      }
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Action Buttons - Mobile responsive layout */}
-              <div className="flex flex-col gap-3 sm:grid sm:grid-cols-2 md:self-end md:-ml-4 w-full sm:max-w-[280px] mt-4">
-                {isOwnProfile ? (
-                  <>
-                    <Button 
-                      variant="outline" 
-                      onClick={() => setIsEditMode(true)}
-                      className="sm:col-span-2 bg-blue-500 hover:bg-blue-600 text-white border-0 h-12 text-base font-semibold"
-                    >
-                      <Edit className="w-5 h-5 mr-2" />
-                      Edit Profile
-                    </Button>
-
-                    <Button
-                      variant="outline"
-                      onClick={() => setLocation('/?filters=open')}
-                      className="sm:col-span-2 bg-gradient-to-r from-blue-500 to-orange-500 text-white hover:from-blue-600 hover:to-orange-600 border-0 h-12 text-base font-semibold"
-                    >
-                      <Search className="w-5 h-5 mr-2" />
-                      Keyword Search
-                    </Button>
-                    {user?.hometownCity && (
-                      <Button 
-                        variant="outline"
-                        onClick={handleViewChatrooms}
-                        className="sm:col-span-2 bg-orange-500 hover:bg-blue-600 text-white border-0 h-12 text-base font-semibold"
-                      >
-                        View Chatrooms
-                      </Button>
-                    )}
-                  </>
-                ) : (
-                  <>
-                    <Button 
-                      className="bg-orange-500 hover:bg-orange-600 text-white border-0"
-                      onClick={handleMessage}
-                    >
-                      Message
-                    </Button>
-                    <Button 
-                      variant="default"
-                      className="bg-travel-blue hover:bg-blue-700 text-white border-0"
-                      onClick={handleConnect}
-                      disabled={connectMutation.isPending}
-                    >
-                      {connectMutation.isPending ? 'Connecting...' : 'Connect'}
-                    </Button>
-
-                    {user?.hometownCity && (
-                      <Button 
-                        variant="outline"
-                        onClick={handleViewChatrooms}
-                        className="bg-blue-500 hover:bg-blue-600 text-white border-0"
-                      >
-                        View Chatrooms
-                      </Button>
-                    )}
-                    {currentUser?.id && user?.id && currentUser.id !== user.id && (
-                      <BlockUserButton 
-                        userId={currentUser.id}
-                        targetUserId={user.id}
-                        targetUsername={user.username}
-                      />
-                    )}
-                  </>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
+      </section>
       
-      {/* Main content section */}
-      <div className="w-full max-w-full mx-auto pb-4">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          {/* Main Content Column */}
-          <div className="lg:col-span-2 space-y-4">
-            {/* Action Button - Show different options based on user type */}
-            {isOwnProfile && (
-              <div className="flex justify-end mb-4">
-                {user?.userType === 'business' ? (
-                  // Show instant deal creator for businesses
-                  <div className="flex gap-3">
-                    <Button
-                      onClick={() => setLocation('/business-dashboard')}
-                      className="bg-gradient-to-r from-blue-600 to-orange-600 text-white font-bold border-none hover:from-blue-700 hover:to-orange-700"
-                    >
-                      <Zap className="w-4 h-4 mr-2" />
-                      Create Instant Deal
-                    </Button>
-                  </div>
-                ) : (
-                  // Show QuickMeetupWidget for travelers/locals - same as home page
-                  <div className="mt-6">
-                    <QuickMeetupWidget city={user?.hometownCity || ''} />
-                  </div>
-                )}
-              </div>
-            )}
+      {/* Main content section - Modern Sectioned Layout */}
+      <div className="w-full max-w-full mx-auto pb-0 px-2 sm:px-4 -mt-2 overflow-x-hidden">
+        
 
-            {/* Mobile Edit Buttons - Only show on your own profile */}
-            {isOwnProfile && (
-              <div className="md:hidden mb-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg">Quick Actions</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid grid-cols-2 gap-3">
-                      <Button
-                        onClick={() => setIsEditMode(true)}
-                        className="bg-gradient-to-r from-blue-500 to-orange-500 text-white border-0 hover:from-blue-600 hover:to-orange-600"
-                      >
-                        <Edit className="w-4 h-4 mr-2" />
-                        Edit Profile
-                      </Button>
-                      <Button
-                        onClick={() => setShowPhotoUpload(true)}
-                        variant="outline"
-                        className="border-blue-500 text-blue-600 hover:bg-blue-50"
-                      >
-                        <Camera className="w-4 h-4 mr-2" />
-                        Add Photo
-                      </Button>
-                      <Button
-                        onClick={() => setLocation('/travel-plans')}
-                        variant="outline"
-                        className="border-green-500 text-green-600 hover:bg-green-50"
-                      >
-                        <MapPin className="w-4 h-4 mr-2" />
-                        Travel Plans
-                      </Button>
-                      <Button
-                        onClick={() => setLocation('/settings')}
-                        variant="outline"
-                        className="border-gray-500 text-gray-600 hover:bg-gray-50"
-                      >
-                        <Settings className="w-4 h-4 mr-2" />
-                        Settings
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            )}
+
+
+
+
+
+        {/* Things We Have in Common - Mobile Only */}
+        {!isOwnProfile && currentUser && user?.id && (
+          <div className="lg:hidden bg-white dark:bg-gray-800 rounded-2xl p-3 sm:p-4 mb-4 shadow-sm">
+            <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2 mb-3">
+              <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-red-500" />
+              Things We Have in Common
+            </h3>
+            <WhatYouHaveInCommon currentUserId={currentUser.id} otherUserId={user.id} />
+          </div>
+        )}
+
+
+
+
+
+
+
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-2">
+          {/* Main Content Column */}
+          <div className="lg:col-span-2 space-y-2">
+
+
+            
+
+
             
             {/* About Section */}
-            <Card>
-              <CardHeader>
-                <CardTitle>About {user?.userType === 'business' ? (user?.businessName || user?.name || user?.username) : (user?.username || 'User')}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {/* Business Name Field for Business Users */}
-                {user?.userType === 'business' && (
-                  <div className="mb-4 p-4 bg-gradient-to-r from-blue-50 to-orange-50 dark:from-blue-900/20 dark:to-orange-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
-                    <div className="flex items-center justify-between mb-2">
-                      <h4 className="font-semibold text-blue-800 dark:text-blue-200">Business Name</h4>
-                      {isOwnProfile && (
-                        <Button size="sm" variant="outline" onClick={() => setIsEditMode(true)} className="bg-gradient-to-r from-blue-500 to-orange-500 text-white border-0 hover:from-blue-600 hover:to-orange-600">
-                          <Edit className="w-3 h-3" />
-                        </Button>
-                      )}
-                    </div>
-                    <p className="text-lg font-bold text-blue-900 dark:text-blue-100">
-                      {user?.businessName || 'Business name not set'}
-                    </p>
-                  </div>
-                )}
-                
+            <Card className="mt-6 relative overflow-visible">
+              <CardHeader className="flex items-center gap-2 flex-wrap min-w-0 w-full">
+                <CardTitle className="text-base sm:text-lg break-words max-w-[calc(100%-3rem)] sm:max-w-none">
+                  About {user?.userType === 'business'
+                    ? (user?.businessName || user?.name || user?.username)
+                    : (user?.username || 'User')}
+                </CardTitle>
 
-                
-                <p className="text-gray-900 dark:text-white leading-relaxed mb-4 font-semibold">
-                  {user?.userType === 'business' 
-                    ? (user?.businessDescription || user?.bio || "No business description available yet.")
-                    : (user?.bio || "No bio available yet.")
-                  }
-                </p>
+                {isOwnProfile && (
+                  <>
+                    {/* Icon-only on phones */}
+                    <Button
+                      size="icon"
+                      variant="outline"
+                      onClick={() => setIsEditMode(true)}
+                      className="ml-auto sm:hidden shrink-0"
+                      aria-label="Edit Profile"
+                    >
+                      <svg viewBox="0 0 24 24" className="w-4 h-4" fill="currentColor">
+                        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zm2.92 2.33H5v-.92l8.06-8.06.92.92L5.92 19.58zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                      </svg>
+                    </Button>
+
+                    {/* Labeled button on ≥ sm */}
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setIsEditMode(true)}
+                      className="ml-auto hidden sm:inline-flex shrink-0"
+                    >
+                      Edit Profile
+                    </Button>
+                  </>
+                )}
+              </CardHeader>
+
+              <CardContent className="space-y-4 pr-3 sm:pr-4 min-w-0 break-words overflow-visible">
+                {/* Bio / Business Description */}
+                <div>
+                  <p className="text-gray-900 dark:text-white leading-relaxed whitespace-pre-wrap break-words">
+                    {user?.userType === 'business'
+                      ? (user?.businessDescription || "No business description available yet.")
+                      : (user?.bio || "No bio available yet.")
+                    }
+                  </p>
+                </div>
+
+                {/* Metropolitan Area (optional) */}
+                {user.hometownCity && user.hometownState && user.hometownCountry && (() => {
+                  const metroArea = getMetropolitanArea(user.hometownCity, user.hometownState, user.hometownCountry);
+                  if (!metroArea) return null;
+                  return (
+                    <div className="p-3 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg dark:from-gray-800/50 dark:to-gray-700/50">
+                      <div className="flex items-center gap-2">
+                        <MapPin className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Metropolitan Area:</span>
+                        <span className="text-sm text-gray-800 dark:text-gray-200 font-semibold">{metroArea}</span>
+                      </div>
+                    </div>
+                  );
+                })()}
+
+                {/* Secret Activities (non-business) */}
                 {user?.userType !== 'business' && user?.secretActivities && (
-                  <div className="mb-4 p-3 bg-gradient-to-br from-orange-50 to-blue-50 border-l-4 border-orange-200 rounded-r-lg">
-                    <h5 className="font-medium text-black dark:text-black mb-2">Secret things I would do if my closest friends came to town</h5>
-                    <p className="text-black dark:text-black text-sm italic">
+                  <div className="p-3 bg-gradient-to-br from-orange-50 to-blue-50 border-l-4 border-orange-200 rounded-r-lg">
+                    <h5 className="font-medium text-black mb-2">
+                      Secret things I would do if my closest friends came to town
+                    </h5>
+                    <p className="text-black text-sm italic whitespace-pre-wrap break-words">
                       {user?.secretActivities}
                     </p>
                   </div>
                 )}
-                <div className="space-y-2 text-sm">
+
+                {/* What you have in common (for other profiles) */}
+                {!isOwnProfile && currentUser && user?.id && (
                   <div>
-                    <span className="font-medium text-gray-600 dark:text-gray-400">From:</span>
-                    <span className="ml-2">
-                      {user?.userType === 'business' 
+                    <WhatYouHaveInCommon currentUserId={currentUser.id} otherUserId={user.id} />
+                  </div>
+                )}
+
+                {/* Basic Info — grid so lines never run together */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2 text-sm">
+                  <div className="flex items-start">
+                    <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">From:</span>
+                    <span className="text-gray-900 dark:text-gray-100 flex-1 break-words">
+                      {user?.userType === 'business'
                         ? (user?.location || user?.hometownCity || "Los Angeles, CA")
                         : (() => {
                             const parts = [user?.hometownCity, user?.hometownState, user?.hometownCountry].filter(Boolean);
@@ -3010,224 +3645,152 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </div>
 
                   {user?.userType !== 'business' && user?.gender && (
-                    <div>
-                      <span className="font-medium text-gray-600 dark:text-gray-400">Gender:</span>
-                      <span className="ml-2 capitalize">{user?.gender?.replace('-', ' ')}</span>
+                    <div className="flex items-start">
+                      <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">Gender:</span>
+                      <span className="capitalize flex-1 break-words">{user?.gender?.replace('-', ' ')}</span>
                     </div>
                   )}
-                  {user.isVeteran && (
-                    <div>
-                      <span className="font-medium text-gray-600">Military Status:</span>
-                      <span className="ml-2 text-red-600 font-semibold">Veteran</span>
+
+                  {/* Military Status for non-business users */}
+                  {user?.userType !== 'business' && user.isVeteran && (
+                    <div className="flex items-start">
+                      <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">Military:</span>
+                      <span className="text-red-600 font-semibold flex-1 break-words">Veteran</span>
                     </div>
                   )}
-                  {user.isActiveDuty && (
-                    <div>
-                      <span className="font-medium text-gray-600">Military Status:</span>
-                      <span className="ml-2 text-blue-600 font-semibold">Active Duty</span>
+                  {user?.userType !== 'business' && user.isActiveDuty && (
+                    <div className="flex items-start">
+                      <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">Military:</span>
+                      <span className="text-blue-600 font-semibold flex-1 break-words">Active Duty</span>
                     </div>
                   )}
+
                   {user.sexualPreferenceVisible && user.sexualPreference && (
-                    <div>
-                      <span className="font-medium text-white dark:text-white">Sexual Preference:</span>
-                      <span className="ml-2">
+                    <div className="flex items-start">
+                      <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">Preference:</span>
+                      <span className="flex-1 break-words">
                         {Array.isArray(user.sexualPreference) 
                           ? user.sexualPreference.join(', ')
                           : typeof user.sexualPreference === 'string'
-                          ? user.sexualPreference.split(',').join(', ')
+                          ? (user.sexualPreference as string).split(',').join(', ')
                           : user.sexualPreference
                         }
                       </span>
                     </div>
                   )}
-                  <div className="flex items-center justify-between">
-                    <div></div>
-                    {isOwnProfile && (
-                      <Button size="sm" variant="outline" onClick={() => setIsEditMode(true)}>
-                        <Edit className="w-3 h-3" />
-                      </Button>
-                    )}
-                  </div>
+
                   {user.userType !== 'business' && user.ageVisible && user.dateOfBirth && (
-                    <div>
-                      <span className="font-medium text-gray-600 dark:text-gray-400">Age:</span>
-                      <span className="ml-2">{calculateAge(user.dateOfBirth)} years old</span>
+                    <div className="flex items-start">
+                      <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">Age:</span>
+                      <span className="flex-1 break-words">{calculateAge(user.dateOfBirth)} years old</span>
                     </div>
                   )}
 
-                  {/* Business Contact Information */}
-                  {user.userType === 'business' && (
-                    <div className="space-y-3 border-t pt-4 mt-4">
-                      <h4 className="font-medium text-gray-800 dark:text-white flex items-center gap-2">
-                        <MapPin className="w-4 h-4 text-blue-500" />
-                        Business Information
-                      </h4>
-                      
+                  {user.userType !== 'business' && user.travelingWithChildren && (
+                    <div className="flex items-start">
+                      <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">Family:</span>
+                      <span className="flex-1 break-words flex items-center gap-1">
+                        <Users className="w-4 h-4" /> Traveling with children
+                        {(user as any).childrenAges && (
+                          <span className="text-sm text-gray-500 dark:text-gray-400">
+                            (Ages: {(user as any).childrenAges})
+                          </span>
+                        )}
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Business Contact Information */}
+                {user.userType === 'business' && (
+                  <div className="space-y-3 border-t pt-4 mt-4">
+                    <h4 className="font-medium text-gray-800 dark:text-white flex items-center gap-2">
+                      <MapPin className="w-4 h-4 text-blue-500" />
+                      Business Information
+                    </h4>
+                    
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2 text-sm">
                       {user.streetAddress && (
-                        <div>
-                          <span className="font-medium text-gray-600 dark:text-gray-400">Address:</span>
-                          <span className="ml-2">{user.streetAddress}{user.zipCode && `, ${user.zipCode}`}</span>
+                        <div className="flex items-start">
+                          <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">Address:</span>
+                          <span className="flex-1 break-words">{user.streetAddress}{user.zipCode && `, ${user.zipCode}`}</span>
                         </div>
                       )}
                       
-                      {user.phoneNumber && (
-                        <div>
-                          <span className="font-medium text-gray-600 dark:text-gray-400">Phone:</span>
-                          <a 
-                            href={`tel:${user.phoneNumber.replace(/[^\d+]/g, '')}`}
-                            className="ml-2 text-blue-600 underline"
-                          >
-                            {(() => {
-                              const cleaned = user.phoneNumber.replace(/\D/g, '');
-                              return cleaned.length === 10 
-                                ? `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6)}`
-                                : user.phoneNumber;
-                            })()}
-                          </a>
-                        </div>
-                      )}
                       
                       {user.websiteUrl && (
-                        <div>
-                          <span className="font-medium text-gray-600 dark:text-gray-400">Website:</span>
+                        <div className="flex items-start">
+                          <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">Website:</span>
                           <a 
                             href={user.websiteUrl.startsWith('http') ? user.websiteUrl : `https://${user.websiteUrl}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="ml-2 text-blue-600 underline"
+                            className="text-blue-600 underline flex-1 break-words"
                           >
                             {user.websiteUrl}
                           </a>
                         </div>
                       )}
-
-                      {/* Business Services and Special Offers */}
-                      {(user.services || user.specialOffers || user.targetCustomers || user.certifications || isOwnProfile) && (
-                        <div className="space-y-3 border-t pt-3 mt-3">
-                          <div className="flex items-center justify-between">
-                            <h5 className="font-medium text-gray-700 dark:text-gray-300">Business Description</h5>
-                            {isOwnProfile && !editingBusinessDescription && (
-                              <Button size="sm" variant="outline" onClick={handleEditBusinessDescription} className="bg-gradient-to-r from-blue-500 to-orange-500 text-white border-0 hover:from-blue-600 hover:to-orange-600">
-                                <Edit className="w-3 h-3" />
-                              </Button>
-                            )}
-                          </div>
-                          
-                          {editingBusinessDescription ? (
-                            <div className="space-y-4">
-                              <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Services Offered</label>
-                                <Textarea
-                                  value={businessDescriptionForm.services || ''}
-                                  onChange={(e) => setBusinessDescriptionForm(prev => ({ ...prev, services: e.target.value }))}
-                                  placeholder="Describe the services your business offers..."
-                                  className="min-h-[60px]"
-                                />
-                              </div>
-                              <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">What makes you special?</label>
-                                <Textarea
-                                  value={businessDescriptionForm.specialOffers || ''}
-                                  onChange={(e) => setBusinessDescriptionForm(prev => ({ ...prev, specialOffers: e.target.value }))}
-                                  placeholder="What makes your business unique and special..."
-                                  className="min-h-[60px]"
-                                />
-                              </div>
-                              <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Target Customers</label>
-                                <Textarea
-                                  value={businessDescriptionForm.targetCustomers || ''}
-                                  onChange={(e) => setBusinessDescriptionForm(prev => ({ ...prev, targetCustomers: e.target.value }))}
-                                  placeholder="Who are your ideal customers..."
-                                  className="min-h-[60px]"
-                                />
-                              </div>
-                              <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Certifications</label>
-                                <Textarea
-                                  value={businessDescriptionForm.certifications || ''}
-                                  onChange={(e) => setBusinessDescriptionForm(prev => ({ ...prev, certifications: e.target.value }))}
-                                  placeholder="List any certifications or credentials..."
-                                  className="min-h-[60px]"
-                                />
-                              </div>
-                              <div className="flex gap-2">
-                                <Button onClick={handleSaveBusinessDescription} disabled={savingBusinessDescription}>
-                                  {savingBusinessDescription ? "Saving..." : "Save Changes"}
-                                </Button>
-                                <Button variant="outline" onClick={handleCancelEditBusinessDescription} className="border-orange-500 text-orange-600 hover:bg-orange-50 dark:border-orange-400 dark:text-orange-400 dark:hover:bg-orange-900/20">
-                                  Cancel
-                                </Button>
-                              </div>
-                            </div>
-                          ) : (
-                            <div className="space-y-3">
-                              {user.services && (
-                                <div>
-                                  <span className="font-medium text-gray-600 dark:text-gray-400">Services Offered:</span>
-                                  <p className="ml-2 text-sm text-gray-700 dark:text-gray-300">{user.services}</p>
-                                </div>
-                              )}
-                              
-                              {user.specialOffers && (
-                                <div>
-                                  <span className="font-medium text-gray-600 dark:text-gray-400">What makes us special:</span>
-                                  <p className="ml-2 text-sm text-gray-700 dark:text-gray-300">{user.specialOffers}</p>
-                                </div>
-                              )}
-                              
-                              {user.targetCustomers && (
-                                <div>
-                                  <span className="font-medium text-gray-600">Target Customers:</span>
-                                  <p className="ml-2 text-sm text-gray-700">{user.targetCustomers}</p>
-                                </div>
-                              )}
-                              
-                              {user.certifications && (
-                                <div>
-                                  <span className="font-medium text-gray-600">Certifications:</span>
-                                  <p className="ml-2 text-sm text-gray-700">{user.certifications}</p>
-                                </div>
-                              )}
-                            </div>
-                          )}
-                        </div>
-                      )}
-
-                      {/* Military Status for Business */}
-                      {(user.isVeteran || user.isActiveDuty) && (
-                        <div className="space-y-2 border-t pt-3 mt-3">
-                          <h5 className="font-medium text-gray-700">Military Status</h5>
-                          {user.isVeteran && (
-                            <div className="flex items-center gap-2">
-                              <span className="text-green-600">✓</span>
-                              <span className="text-sm">Veteran Owned Business</span>
-                            </div>
-                          )}
-                          {user.isActiveDuty && (
-                            <div className="flex items-center gap-2">
-                              <span className="text-blue-600">✓</span>
-                              <span className="text-sm">Active Duty Owned Business</span>
-                            </div>
-                          )}
-                        </div>
-                      )}
                     </div>
-                  )}
-                </div>
+
+                    {/* Business Ownership Categories */}
+                    {(user.isVeteran || user.isActiveDuty || (user.isMinorityOwned && user.showMinorityOwned) || (user.isFemaleOwned && user.showFemaleOwned) || (user.isLGBTQIAOwned && user.showLGBTQIAOwned)) && (
+                      <div className="space-y-2 border-t pt-3 mt-3">
+                        <h5 className="font-medium text-gray-700 dark:text-gray-300">Business Ownership</h5>
+                        
+                        {/* Military Status */}
+                        {user.isVeteran && (
+                          <div className="flex items-center gap-2">
+                            <span className="text-green-600">✓</span>
+                            <span className="text-sm">Veteran Owned Business</span>
+                          </div>
+                        )}
+                        {user.isActiveDuty && (
+                          <div className="flex items-center gap-2">
+                            <span className="text-blue-600">✓</span>
+                            <span className="text-sm">Active Duty Owned Business</span>
+                          </div>
+                        )}
+                        
+                        {/* Diversity Categories */}
+                        {user.isMinorityOwned && user.showMinorityOwned && (
+                          <div className="flex items-center gap-2">
+                            <span className="text-purple-600">✓</span>
+                            <span className="text-sm">Minority Owned Business</span>
+                          </div>
+                        )}
+                        {user.isFemaleOwned && user.showFemaleOwned && (
+                          <div className="flex items-center gap-2">
+                            <span className="text-pink-600">✓</span>
+                            <span className="text-sm">Female Owned Business</span>
+                          </div>
+                        )}
+                        {user.isLGBTQIAOwned && user.showLGBTQIAOwned && (
+                          <div className="flex items-center gap-2">
+                            <span className="text-rainbow bg-gradient-to-r from-red-500 via-yellow-500 via-green-500 via-blue-500 to-purple-500 bg-clip-text text-transparent font-bold">✓</span>
+                            <span className="text-sm">LGBTQIA+ Owned Business</span>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
               </CardContent>
             </Card>
 
-            {/* Business Offers Section - Only for business users */}
+            {/* Business Deals Section - Only for business users */}
             {user?.userType === 'business' && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center justify-between">
-                    <span>Business Offers & Deals</span>
+              <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
+                <CardHeader className="bg-white dark:bg-gray-900">
+                  <CardTitle className="flex items-center justify-between text-gray-900 dark:text-white">
+                    <span>Business Deals</span>
                     {isOwnProfile && (
                       <Button 
                         size="sm" 
-                        onClick={() => setLocation('/deals')}
+                        onClick={() => {
+                          console.log('🔥 CREATE OFFER clicked, navigating to business dashboard');
+                          setLocation('/business-dashboard');
+                        }}
                         className="bg-gradient-to-r from-green-500 to-blue-500 text-white border-0 hover:from-green-600 hover:to-blue-600"
                       >
                         <Plus className="w-3 h-3 mr-1" />
@@ -3236,8 +3799,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     )}
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
-                  {businessOffersLoading ? (
+                <CardContent className="bg-white dark:bg-gray-900 p-6">
+                  {businessDealsLoading ? (
                     <div className="space-y-3">
                       {[1, 2].map(i => (
                         <div key={i} className="animate-pulse">
@@ -3245,39 +3808,40 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         </div>
                       ))}
                     </div>
-                  ) : businessOffers.length === 0 ? (
+                  ) : businessDeals.length === 0 ? (
                     <div className="text-center py-8 text-gray-500 dark:text-gray-400">
                       <Package className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                      <p>No business offers created yet</p>
+                      <p>No business deals created yet</p>
                       {isOwnProfile && (
-                        <p className="text-sm mt-2">Create your first offer to attract customers!</p>
+                        <p className="text-sm mt-2">Create your first deal to attract customers!</p>
                       )}
                     </div>
                   ) : (
                     <div className="space-y-4">
-                      {businessOffers.slice(0, 3).map((offer: any) => (
-                        <div key={offer.id} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-md transition-shadow">
+                      {businessDeals.slice(0, 3).map((deal: any) => (
+                        <div key={deal.id} className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 hover:shadow-md dark:hover:shadow-gray-800/50 transition-shadow bg-white dark:bg-gray-800">
                           <div className="flex items-start justify-between mb-2">
-                            <h4 className="font-semibold text-gray-900 dark:text-white">{offer.title}</h4>
-                            <Badge variant="secondary" className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                              {offer.discountValue} {offer.discountType === 'percentage' ? '%' : ''} off
-                            </Badge>
+                            <h4 className="font-semibold text-gray-900 dark:text-white">{deal.title}</h4>
+                            <div className="inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0">
+                              {deal.discountValue} {deal.discountType === 'percentage' ? '%' : ''} off
+                            </div>
                           </div>
-                          <p className="text-gray-600 dark:text-gray-300 text-sm mb-3 line-clamp-2">{offer.description}</p>
+                          <p className="text-gray-600 dark:text-gray-300 text-sm mb-3 line-clamp-2">{deal.description}</p>
                           <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
-                            <span>Valid until {new Date(offer.validUntil).toLocaleDateString()}</span>
-                            <span className="capitalize">{offer.category}</span>
+                            <span>Valid until {new Date(deal.validUntil).toLocaleDateString()}</span>
+                            <span className="capitalize">{deal.category}</span>
                           </div>
                         </div>
                       ))}
-                      {businessOffers.length > 3 && (
+                      {businessDeals.length > 3 && (
                         <div className="text-center pt-2">
                           <Button 
                             variant="outline" 
                             size="sm"
                             onClick={() => setLocation('/deals')}
+                            className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
                           >
-                            View All {businessOffers.length} Offers
+                            View All {businessDeals.length} Deals
                           </Button>
                         </div>
                       )}
@@ -3287,12 +3851,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               </Card>
             )}
 
-            {/* What You Have in Common Section - Only show for other users' profiles */}
-            {!isOwnProfile && currentUser && user?.id && (
-              <WhatYouHaveInCommon currentUserId={currentUser.id} otherUserId={user.id} />
-            )}
+            {/* What You Have in Common Section - MOVED TO ABOUT SECTION FOR BETTER VISIBILITY */}
 
-            {/* Local Interests, Activities & Events Section */}
+
+
+            {/* Local Interests, Activities & Events Section - For non-business users only */}
+            {user?.userType !== 'business' && (
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -3300,172 +3864,425 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   Local Interests, Activities & Events
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-6">
-                {/* Most Popular Interest Choices */}
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <h4 className="font-medium text-gray-800 dark:text-white flex items-center gap-2">
-                      <span className="text-yellow-500 text-lg">⭐</span>
-                      Most Popular Interest Choices
-                    </h4>
-                    {isOwnProfile && !editingPopularInterests && (
-                      <Button size="sm" variant="outline" onClick={() => setEditingPopularInterests(true)} className="bg-gradient-to-r from-blue-500 to-orange-500 text-white border-0 hover:from-blue-600 hover:to-orange-600">
-                        <Edit className="w-3 h-3" />
-                      </Button>
-                    )}
+              <CardContent className="space-y-6 break-words overflow-hidden">
+                {/* Single Edit Button for All Preferences */}
+                {isOwnProfile && !editingInterests && !editingActivities && !editingEvents && (
+                  <div className="flex justify-center mb-4">
+                    <Button
+                      onClick={() => {
+                        // Open ALL editing modes at once
+                        setEditingInterests(true);
+                        setEditingActivities(true);
+                        setEditingEvents(true);
+                        // Initialize form data with custom field support
+                        const userInterests = user?.interests || [];
+                        const userActivities = user?.activities || [];
+                        const userEvents = user?.events || [];
+                        
+                        setEditFormData({
+                          interests: userInterests,
+                          activities: userActivities,
+                          events: userEvents
+                        });
+                        
+                        // Initialize custom fields from database or empty arrays
+                        const customInterests = user?.customInterests || "";
+                        const customActivities = user?.customActivities || "";
+                        const customEvents = user?.customEvents || "";
+                        
+                        // Parse custom fields (comma-separated) and add to arrays if not already present
+                        if (customInterests) {
+                          const parsed = customInterests.split(',').map(s => s.trim()).filter(s => s);
+                          parsed.forEach(item => {
+                            if (!userInterests.includes(item)) {
+                              userInterests.push(item);
+                            }
+                          });
+                        }
+                        if (customActivities) {
+                          const parsed = customActivities.split(',').map(s => s.trim()).filter(s => s);
+                          parsed.forEach(item => {
+                            if (!userActivities.includes(item)) {
+                              userActivities.push(item);
+                            }
+                          });
+                        }
+                        if (customEvents) {
+                          const parsed = customEvents.split(',').map(s => s.trim()).filter(s => s);
+                          parsed.forEach(item => {
+                            if (!userEvents.includes(item)) {
+                              userEvents.push(item);
+                            }
+                          });
+                        }
+                        
+                        // Update form data with combined arrays
+                        setEditFormData({
+                          interests: userInterests,
+                          activities: userActivities,
+                          events: userEvents
+                        });
+                      }}
+                      className="bg-blue-600 hover:bg-blue-700 text-white"
+                    >
+                      <Edit className="w-4 h-4 mr-2" />
+                      Edit All Preferences
+                    </Button>
                   </div>
-                  
-                  {editingPopularInterests ? (
-                    <div className="space-y-4">
-                      <div className="text-sm text-blue-600 bg-blue-50 border border-blue-400 rounded-md p-3 mb-4 dark:bg-blue-900/20 dark:border-blue-500 dark:text-blue-300">
-                        Select your most popular interests from the curated list below. These will be prominently displayed on your profile.
-                      </div>
-                      
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                        {[
-                          "Single and Looking", "Craft Beer & Breweries", "Coffee Culture", "Cocktails & Bars",
-                          "Nightlife & Dancing", "Photography", "Street Art", "Food Trucks", 
-                          "Rooftop Bars", "Pub Crawls & Bar Tours", "Local Food Specialties", "Walking Tours",
-                          "Happy Hour Deals", "Discounts For Travelers", "Boat & Water Tours", "Food Tours",
-                          "Adventure Tours", "City Tours & Sightseeing", "Hiking & Nature", "Museums",
-                          "Local Unknown Hotspots", "Meet Locals/Travelers", "Yoga & Wellness", "Live Music Venues",
-                          "Beach Activities", "Fine Dining", "Historical Tours", "Festivals & Events"
-                        ].map((interest) => (
-                          <div key={interest} className="flex items-center space-x-2">
-                            <input
-                              type="checkbox"
-                              id={`popular-${interest}`}
-                              checked={user?.interests?.includes(interest) || false}
-                              onChange={(e) => {
-                                const currentInterests = user?.interests || [];
-                                let newInterests;
-                                if (e.target.checked) {
-                                  newInterests = [...currentInterests, interest];
-                                } else {
-                                  newInterests = currentInterests.filter(i => i !== interest);
-                                }
-                                setAuthUser(prev => prev ? { ...prev, interests: newInterests } : prev);
-                              }}
-                              className="h-4 w-4 border-gray-300 rounded text-blue-600 focus:ring-blue-500"
-                            />
-                            <label htmlFor={`popular-${interest}`} className="text-sm text-gray-700 dark:text-gray-300">
-                              {interest}
-                            </label>
-                          </div>
-                        ))}
-                      </div>
-                      
-                      <div className="flex gap-2 pt-4">
+                )}
+
+                {/* Unified Edit Form for All Preferences */}
+                {isOwnProfile && (editingInterests && editingActivities && editingEvents) ? (
+                  <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-600">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Edit All Preferences</h3>
+                      <div className="flex gap-2">
                         <Button 
                           onClick={async () => {
                             try {
-                              await editProfile.mutateAsync({ 
-                                interests: user?.interests || []
+                              console.log('🔧 SAVING DATA:', editFormData);
+                              
+                              // Separate predefined vs custom entries for proper database storage
+                              const predefinedInterests = INTERESTS_OPTIONS.filter(opt => editFormData.interests.includes(opt));
+                              const predefinedActivities = ACTIVITIES_OPTIONS.filter(opt => editFormData.activities.includes(opt));
+                              const predefinedEvents = EVENTS_OPTIONS.filter(opt => editFormData.events.includes(opt));
+                              
+                              const customInterests = editFormData.interests.filter(int => !INTERESTS_OPTIONS.includes(int));
+                              const customActivities = editFormData.activities.filter(act => !ACTIVITIES_OPTIONS.includes(act));
+                              const customEvents = editFormData.events.filter(evt => !EVENTS_OPTIONS.includes(evt));
+                              
+                              const saveData = {
+                                interests: predefinedInterests,
+                                activities: predefinedActivities, 
+                                events: predefinedEvents,
+                                customInterests: customInterests.join(', '),
+                                customActivities: customActivities.join(', '),
+                                customEvents: customEvents.join(', ')
+                              };
+                              
+                              console.log('🔧 SAVE - Separated data:', saveData);
+                              
+                              const response = await fetch(`/api/users/${user.id}`, {
+                                method: 'PUT',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(saveData)
                               });
-                              setEditingPopularInterests(false);
+                              if (!response.ok) throw new Error('Failed to save');
+                              // Refresh data instead of page reload
+                              queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
+                              // Close all editing modes after successful save
+                              setEditingInterests(false);
+                              setEditingActivities(false);
+                              setEditingEvents(false);
+                              console.log('✅ Successfully saved user preferences');
                             } catch (error) {
-                              console.error('Failed to update popular interests:', error);
+                              console.error('❌ Failed to update preferences:', error);
                             }
                           }}
-                          disabled={editProfile.isPending}
-                          className="bg-blue-600 hover:bg-blue-700"
+                          disabled={false}
+                          className="bg-green-600 hover:bg-green-700 text-white"
                         >
-                          {editProfile.isPending ? "Saving..." : "Save Changes"}
+                          Save All Changes
                         </Button>
                         <Button 
                           variant="outline" 
-                          onClick={() => setEditingPopularInterests(false)}
+                          onClick={() => {
+                            // Cancel all edits and close all editing modes
+                            setEditingInterests(false);
+                            setEditingActivities(false);
+                            setEditingEvents(false);
+                            // Reset form data
+                            setEditFormData({
+                              interests: user?.interests || [],
+                              activities: user?.activities || [],
+                              events: user?.events || []
+                            });
+                          }}
                           className="border-orange-500 text-orange-600 hover:bg-orange-50 dark:border-orange-400 dark:text-orange-400 dark:hover:bg-orange-900/20"
                         >
-                          Cancel
+                          Cancel All
                         </Button>
                       </div>
                     </div>
-                  ) : (
-                    <div className="flex flex-wrap gap-2">
-                      {[
-                        "Single and Looking", "Craft Beer & Breweries", "Coffee Culture", "Cocktails & Bars",
-                        "Nightlife & Dancing", "Photography", "Street Art", "Food Trucks", 
-                        "Rooftop Bars", "Pub Crawls & Bar Tours", "Local Food Specialties", "Walking Tours",
-                        "Happy Hour Deals", "Discounts For Travelers", "Boat & Water Tours", "Food Tours",
-                        "Adventure Tours", "City Tours & Sightseeing", "Hiking & Nature", "Museums",
-                        "Local Unknown Hotspots", "Meet Locals/Travelers", "Yoga & Wellness", "Live Music Venues",
-                        "Beach Activities", "Fine Dining", "Historical Tours", "Festivals & Events"
-                      ].filter(interest => user?.interests?.includes(interest)).map((interest, index) => {
-                        return (
-                          <Badge
-                            key={interest}
-                            className={getInterestStyle(interest)}
-                          >
-                            {interest}
-                          </Badge>
-                        );
-                      })}
-                      
-                      {user?.interests?.filter(interest => [
-                        "Single and Looking", "Craft Beer & Breweries", "Coffee Culture", "Cocktails & Bars",
-                        "Nightlife & Dancing", "Photography", "Street Art", "Food Trucks", 
-                        "Rooftop Bars", "Pub Crawls & Bar Tours", "Local Food Specialties", "Walking Tours",
-                        "Happy Hour Deals", "Discounts For Travelers", "Boat & Water Tours", "Food Tours",
-                        "Adventure Tours", "City Tours & Sightseeing", "Hiking & Nature", "Museums",
-                        "Local Unknown Hotspots", "Meet Locals/Travelers", "Yoga & Wellness", "Live Music Venues",
-                        "Beach Activities", "Fine Dining", "Historical Tours", "Festivals & Events"
-                      ].includes(interest)).length === 0 && (
-                        <div className="text-gray-500 dark:text-gray-400 text-sm italic">
-                          No popular interests selected yet
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
+                    
+                    {/* When editing all preferences, show the unified content */}
+                    {editingInterests && editingActivities && editingEvents && (
+                      <div className="space-y-6 mt-6">
+                        {/* Top Interests Section */}
+                        <div>
+                          <h4 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white flex items-center gap-2">
+                            <Heart className="w-5 h-5 text-blue-500" />
+                            Top Interests
+                          </h4>
+                          
+                          {/* Top Choices for Most Travelers */}
+                          <div className="mb-4">
+                            <h5 className="text-sm font-medium mb-2 text-gray-900 dark:text-white">Top Choices for Most Travelers</h5>
+                            <div className="flex flex-wrap gap-2 p-3 bg-gradient-to-r from-blue-100 to-orange-100 dark:from-blue-900 dark:to-orange-900 rounded-lg overflow-hidden break-words">
+                              {MOST_POPULAR_INTERESTS.map((interest) => {
+                                const isSelected = editFormData.interests.includes(interest);
+                                
+                                return (
+                                  <button
+                                    key={interest}
+                                    type="button"
+                                    onClick={() => {
+                                      toggleArrayValue(editFormData.interests, interest, (newInterests) => 
+                                        setEditFormData({ ...editFormData, interests: newInterests })
+                                      );
+                                    }}
+                                    className={`inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none border-0 transition-all ${
+                                      isSelected
+                                        ? 'bg-green-600 text-white font-bold transform scale-105'
+                                        : 'bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-800 dark:text-blue-200 dark:hover:bg-blue-700'
+                                    }`}
+                                  >
+                                    {interest}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
 
-                {/* Local Interests */}
+                          {/* All Available Interests */}
+                          <div>
+                            <h5 className="text-sm font-medium mb-2 text-gray-900 dark:text-white">All Available Interests</h5>
+                            <div className="flex flex-wrap gap-2 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border overflow-hidden break-words">
+                              {getAllInterests().filter(interest => !MOST_POPULAR_INTERESTS.includes(interest)).map((interest) => {
+                                const displayText = interest.startsWith("**") && interest.endsWith("**") ? 
+                                  interest.slice(2, -2) : interest;
+                                const isSelected = editFormData.interests.includes(interest);
+                                
+                                return (
+                                  <button
+                                    key={interest}
+                                    type="button"
+                                    onClick={() => {
+                                      toggleArrayValue(editFormData.interests, interest, (newInterests) => 
+                                        setEditFormData({ ...editFormData, interests: newInterests })
+                                      );
+                                    }}
+                                    className={`inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none border-0 transition-all ${
+                                      isSelected
+                                        ? 'bg-green-600 text-white font-bold transform scale-105'
+                                        : 'bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-800 dark:text-blue-200 dark:hover:bg-blue-700'
+                                    }`}
+                                  >
+                                    {displayText}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Activities Section */}
+                        <div>
+                          <h4 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white flex items-center gap-2">
+                            <Globe className="w-5 h-5 text-green-500" />
+                            Activities
+                          </h4>
+                          
+                          <div className="text-sm text-blue-600 bg-blue-50 border border-blue-400 rounded-md p-3 mb-4 dark:bg-blue-900/20 dark:border-blue-600 dark:text-blue-300">
+                            Your default preferences for trips and to match with Nearby Locals and Travelers. They can be added to and changed in the future for specific trips etc.
+                          </div>
+                          
+                          <div className="flex flex-wrap gap-2 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border overflow-hidden break-words">
+                            {getAllActivities().map((activity, index) => {
+                              const isSelected = editFormData.activities.includes(activity);
+                              
+                              return (
+                                <button
+                                  key={`activity-${activity}-${index}`}
+                                  type="button"
+                                  onClick={() => {
+                                    toggleArrayValue(editFormData.activities, activity, (newActivities) => 
+                                      setEditFormData({ ...editFormData, activities: newActivities })
+                                    );
+                                  }}
+                                  className={`inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none border-0 transition-all ${
+                                    isSelected
+                                      ? 'bg-green-600 text-white font-bold transform scale-105'
+                                      : 'bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-800 dark:text-green-200 dark:hover:bg-green-700'
+                                  }`}
+                                >
+                                  {activity}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+
+                        {/* Events Section */}
+                        <div>
+                          <h4 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white flex items-center gap-2">
+                            <Calendar className="w-5 h-5 text-purple-500" />
+                            Events
+                          </h4>
+                          
+                          <div className="flex flex-wrap gap-2 p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg border">
+                            {getAllEvents().map((event, index) => {
+                              const isSelected = editFormData.events.includes(event);
+                              
+                              return (
+                                <button
+                                  key={`event-${event}-${index}`}
+                                  type="button"
+                                  onClick={() => {
+                                    toggleArrayValue(editFormData.events, event, (newEvents) => 
+                                      setEditFormData({ ...editFormData, events: newEvents })
+                                    );
+                                  }}
+                                  className={`inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none border-0 transition-all ${
+                                    isSelected
+                                      ? 'bg-green-600 text-white font-bold transform scale-105'
+                                      : 'bg-orange-100 text-orange-800 hover:bg-orange-200 dark:bg-orange-800 dark:text-orange-200 dark:hover:bg-orange-700'
+                                  }`}
+                                >
+                                  {event}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                        
+                        {/* Bottom Save/Cancel Buttons */}
+                        <div className="flex gap-2 mt-6 pt-4 border-t border-gray-200 dark:border-gray-600">
+                          <Button 
+                            onClick={async () => {
+                              try {
+                                console.log('🔧 BOTTOM SAVE - DATA:', editFormData);
+                                const response = await fetch(`/api/users/${user.id}`, {
+                                  method: 'PUT',
+                                  headers: { 'Content-Type': 'application/json' },
+                                  body: JSON.stringify(editFormData)
+                                });
+                                if (!response.ok) throw new Error('Failed to save');
+                                // Refresh data instead of page reload
+                                queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
+                                // Close all editing modes after successful save
+                                setEditingInterests(false);
+                                setEditingActivities(false);
+                                setEditingEvents(false);
+                              } catch (error) {
+                                console.error('Failed to update preferences:', error);
+                              }
+                            }}
+                            disabled={false}
+                            className="bg-green-600 hover:bg-green-700 text-white flex-1"
+                          >
+                            Save All Changes
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            onClick={() => {
+                              // Cancel all edits and close all editing modes
+                              setEditingInterests(false);
+                              setEditingActivities(false);
+                              setEditingEvents(false);
+                              // Reset temp values AND editFormData to original user data
+                              setTempInterests(user?.interests || []);
+                              setTempActivities(user?.activities || []);
+                              setTempEvents(user?.events || []);
+                              setEditFormData({
+                                interests: user?.interests || [],
+                                activities: user?.activities || [],
+                                events: user?.events || []
+                              });
+                            }}
+                            className="border-orange-500 text-orange-600 hover:bg-orange-50 dark:border-orange-400 dark:text-orange-400 dark:hover:bg-orange-900/20 flex-1"
+                          >
+                            Cancel All
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ) : null}
+
+
+                {/* Interests */}
                 <div>
                   <div className="flex items-center justify-between mb-3">
                     <h4 className="font-medium text-gray-800 dark:text-white flex items-center gap-2">
-                      <Star className="w-4 h-4 text-yellow-500" />
-                      Local Interests
+                      <Heart className="w-4 h-4 text-blue-500" />
+                      Interests
                     </h4>
-                    {isOwnProfile && !editingInterests && (
-                      <Button size="sm" variant="outline" onClick={handleEditInterests} className="bg-gradient-to-r from-blue-500 to-orange-500 text-white border-0 hover:from-blue-600 hover:to-orange-600">
-                        <Edit className="w-3 h-3" />
+                    {isOwnProfile && (
+                      <Button
+                        size="sm"
+                        onClick={() => setEditingInterests(true)}
+                        className="bg-blue-600 hover:bg-blue-700 text-white border-0"
+                      >
+                        <Edit className="w-3 h-3 mr-1" />
+                        Edit
                       </Button>
                     )}
                   </div>
                   
-                  {editingInterests ? (
+                  {editingInterests && !(editingInterests && editingActivities && editingEvents) ? (
                     <div className="space-y-4">
-                      <div className="text-sm text-blue-600 bg-blue-50 border border-blue-400 rounded-md p-3 mb-4 dark:bg-blue-900/20 dark:border-blue-600 dark:text-blue-300">
-                        Your default preferences for trips and to match with Nearby Locals and Travelers. They can be added to and changed in the future for specific trips etc.
-                      </div>
-                      
-                      {/* All Available Interests */}
-                      <div>
-                        <h4 className="text-lg font-medium mb-3 text-gray-900 dark:text-white">All Available Interests</h4>
-                        <div className="grid grid-cols-4 gap-1 border rounded-lg p-3 bg-blue-50 dark:bg-blue-900/20 border-gray-300 dark:border-gray-600">
-                          {getAllInterests().map((interest) => (
-                            <div key={interest} className="flex items-center space-x-1">
-                              <input
-                                type="checkbox"
-                                id={`interest-${interest}`}
-                                checked={tempInterests.includes(interest)}
-                                onChange={(e) => {
-                                  if (e.target.checked) {
-                                    setTempInterests([...tempInterests, interest]);
-                                  } else {
+                      {/* Top Choices for Most Travelers */}
+                      <div className="mb-4">
+                        <h4 className="text-sm font-medium mb-2 text-gray-900 dark:text-white">Top Choices for Most Travelers</h4>
+                        <div className="flex flex-wrap gap-2 p-3 bg-gradient-to-r from-blue-100 to-orange-100 dark:from-blue-900 dark:to-orange-900 rounded-lg">
+                          {MOST_POPULAR_INTERESTS.map((interest) => {
+                            const isSelected = tempInterests.includes(interest);
+                            
+                            return (
+                              <button
+                                key={interest}
+                                type="button"
+                                onClick={() => {
+                                  if (isSelected) {
                                     setTempInterests(tempInterests.filter(i => i !== interest));
+                                  } else {
+                                    setTempInterests([...tempInterests, interest]);
                                   }
                                 }}
-                                className="h-3 w-3 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                              />
-                              <label 
-                                htmlFor={`interest-${interest}`} 
-                                className="text-xs text-gray-700 dark:text-gray-300 cursor-pointer leading-tight font-medium"
+                                className={`inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none border-0 transition-all ${
+                                  isSelected
+                                    ? 'bg-green-600 text-white font-bold transform scale-105'
+                                    : 'bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-800 dark:text-blue-200 dark:hover:bg-blue-700'
+                                }`}
                               >
                                 {interest}
-                              </label>
-                            </div>
-                          ))}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      {/* Additional Interests */}
+                      <div>
+                        <h4 className="text-sm font-medium mb-2 text-gray-900 dark:text-white">🔍 Additional Interests</h4>
+                        <div className="flex flex-wrap gap-2 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border">
+                          {getAllInterests().filter(interest => !MOST_POPULAR_INTERESTS.includes(interest)).map((interest) => {
+                            const displayText = interest.startsWith("**") && interest.endsWith("**") ? 
+                              interest.slice(2, -2) : interest;
+                            const isSelected = tempInterests.includes(interest);
+                            
+                            return (
+                              <button
+                                key={interest}
+                                type="button"
+                                onClick={() => {
+                                  if (isSelected) {
+                                    setTempInterests(tempInterests.filter(i => i !== interest));
+                                  } else {
+                                    setTempInterests([...tempInterests, interest]);
+                                  }
+                                }}
+                                className={`inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none border-0 transition-all ${
+                                  isSelected
+                                    ? 'bg-green-600 text-white font-bold transform scale-105'
+                                    : 'bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-800 dark:text-green-200 dark:hover:bg-green-700'
+                                }`}
+                              >
+                                {displayText}
+                              </button>
+                            );
+                          })}
                         </div>
                       </div>
                       
@@ -3478,20 +4295,28 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             if (e.key === 'Enter') {
                               e.preventDefault();
                               const trimmed = customInterestInput.trim();
-                              if (trimmed && !tempInterests.includes(trimmed)) {
-                                setTempInterests(prev => [...prev, trimmed]);
+                              if (trimmed && !editFormData.interests.includes(trimmed)) {
+                                setEditFormData(prev => ({ ...prev, interests: [...prev.interests, trimmed] }));
                                 setCustomInterestInput('');
                               }
                             }
                           }}
                         />
-                        <Button type="button" onClick={() => {
-                          const trimmed = customInterestInput.trim();
-                          if (trimmed && !tempInterests.includes(trimmed)) {
-                            setTempInterests([...tempInterests, trimmed]);
-                            setCustomInterestInput('');
-                          }
-                        }} variant="outline">Add</Button>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            const trimmed = customInterestInput.trim();
+                            if (trimmed && !editFormData.interests.includes(trimmed)) {
+                              setEditFormData(prev => ({ ...prev, interests: [...prev.interests, trimmed] }));
+                              setCustomInterestInput('');
+                            }
+                          }}
+                          className="h-8 px-2"
+                        >
+                          <Plus className="w-3 h-3" />
+                        </Button>
                       </div>
                       {/* Show selected interests */}
                       {tempInterests.length > 0 && (
@@ -3499,15 +4324,15 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           <p className="text-sm font-medium text-gray-700 mb-2">Selected Interests:</p>
                           <div className="flex flex-wrap gap-2">
                             {tempInterests.map((interest) => (
-                              <Badge key={interest} className="bg-blue-100 text-blue-800 border-blue-300">
+                              <div key={interest} className="inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0">
                                 {interest}
                                 <button
                                   onClick={() => setTempInterests(tempInterests.filter(i => i !== interest))}
-                                  className="ml-1 text-blue-600 hover:text-blue-800"
+                                  className="ml-1 text-blue-200 hover:text-white"
                                 >
                                   ×
                                 </button>
-                              </Badge>
+                              </div>
                             ))}
                           </div>
                         </div>
@@ -3522,104 +4347,96 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       </div>
                     </div>
                   ) : (
-                    <div className="flex flex-wrap gap-2">
-                      {(() => {
-                        const filteredInterests = getFilteredInterestsForProfile(user, isOwnProfile);
-                        return filteredInterests && filteredInterests.length > 0 ? (
-                          filteredInterests.map((interest, index) => (
-                            <Badge key={`interest-${index}`} className={getInterestStyle(interest)}>
-                              {interest}
-                            </Badge>
-                          ))
-                        ) : (
-                          <p className="text-gray-500 text-sm">No interests listed</p>
-                        );
-                      })()}
+                    <div className="space-y-3">
+                      {/* SIMPLIFIED VIEW: Just show count and top few for own profile */}
+                      {true ? (
+                        <div>
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-sm text-gray-600 dark:text-gray-400">
+                              {(user?.interests || []).length} interests selected
+                            </span>
+                          </div>
+                          <div className="flex flex-wrap gap-2">
+                            {(() => {
+                              const interests = user?.interests || [];
+                              const topInterests = interests.slice(0, 8); // Show only first 8
+                              const remaining = interests.length - 8;
+                              
+                              return (
+                                <>
+                                  {topInterests.map((interest, index) => (
+                                    <div key={`interest-${index}`} className="inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0">
+                                      {interest}
+                                    </div>
+                                  ))}
+                                  {remaining > 0 && (
+                                    <div className="inline-flex items-center justify-center h-7 rounded-full px-2 text-[11px] font-medium whitespace-nowrap leading-none border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 bg-transparent">
+                                      +{remaining} more
+                                    </div>
+                                  )}
+                                </>
+                              );
+                            })()}
+                          </div>
+                        </div>
+                      ) : (
+                        <p className="text-gray-500 text-sm">No interests selected yet</p>
+                      )}
                     </div>
                   )}
                 </div>
 
-                {/* Local Activities */}
+                {/* Activities */}
                 <div>
                   <div className="flex items-center justify-between mb-3">
                     <h4 className="font-medium text-gray-800 dark:text-white flex items-center gap-2">
                       <Globe className="w-4 h-4 text-green-500" />
-                      Local Activities
+                      Activities
                     </h4>
-                    {isOwnProfile && !editingActivities && (
-                      <Button size="sm" variant="outline" onClick={handleEditActivities} className="bg-gradient-to-r from-blue-500 to-orange-500 text-white border-0 hover:from-blue-600 hover:to-orange-600">
-                        <Edit className="w-3 h-3" />
+                    {isOwnProfile && (
+                      <Button
+                        size="sm"
+                        onClick={() => setEditingActivities(true)}
+                        className="bg-green-600 hover:bg-green-700 text-white border-0"
+                      >
+                        <Edit className="w-3 h-3 mr-1" />
+                        Edit
                       </Button>
                     )}
                   </div>
                   
-                  {editingActivities ? (
+                  {editingActivities && !(editingInterests && editingActivities && editingEvents) ? (
                     <div className="space-y-4">
                       <div className="text-sm text-blue-600 bg-blue-50 border border-blue-400 rounded-md p-3 mb-4 dark:bg-blue-900/20 dark:border-blue-600 dark:text-blue-300">
                         Your default preferences for trips and to match with Nearby Locals and Travelers. They can be added to and changed in the future for specific trips etc.
                       </div>
                       
-                      {/* Top Choices for Most Locals and Travelers - Activities */}
-                      <div className="mb-6 p-4 bg-gradient-to-r from-green-100 to-emerald-100 dark:from-green-900/20 dark:to-emerald-900/20 border border-green-300 dark:border-green-600 rounded-lg">
-                        <div className="flex items-center mb-3">
-                          <span className="text-xl mr-2">⭐</span>
-                          <h4 className="text-lg font-semibold text-gray-900 dark:text-white">Top Choices for Most Locals and Travelers</h4>
-                        </div>
-                        <div className="grid grid-cols-4 gap-1">
-                          {[
-                            "Photo Documentation", "Photography Skills", "Travel Buddy Finding", "Local Connections",
-                            "Cultural Learning", "Meetup Organizing", "Itinerary Planning", "Budget Planning",
-                            "Group Formation", "Travel Journaling", "Language Practice", "Video Creation"
-                          ].map((activity) => (
-                            <div key={activity} className="flex items-center space-x-1">
-                              <input
-                                type="checkbox"
-                                id={`top-activity-${activity}`}
-                                checked={tempActivities.includes(activity)}
-                                onChange={(e) => {
-                                  if (e.target.checked) {
-                                    setTempActivities([...tempActivities, activity]);
-                                  } else {
-                                    setTempActivities(tempActivities.filter(a => a !== activity));
-                                  }
-                                }}
-                                className="h-4 w-4 border-gray-300 rounded text-green-600 focus:ring-green-500"
-                              />
-                              <label htmlFor={`top-activity-${activity}`} className="text-xs font-semibold text-black dark:text-green-300 cursor-pointer">
-                                {activity}
-                              </label>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-
                       {/* All Available Activities */}
                       <div>
-                        <h4 className="text-lg font-medium mb-3 text-gray-900 dark:text-white">All Available Activities</h4>
-                        <div className="grid grid-cols-4 gap-1 border rounded-lg p-3 bg-green-50 dark:bg-green-900/20">
-                          {getAllActivities().map((activity, index) => (
-                            <div key={`activity-${activity}-${index}`} className="flex items-center space-x-1">
-                              <input
-                                type="checkbox"
-                                id={`activity-${activity}`}
-                                checked={tempActivities.includes(activity)}
-                                onChange={(e) => {
-                                  if (e.target.checked) {
-                                    setTempActivities([...tempActivities, activity]);
-                                  } else {
-                                    setTempActivities(tempActivities.filter(a => a !== activity));
-                                  }
+                        <h4 className="text-sm font-medium mb-2 text-gray-900 dark:text-white">All Available Activities</h4>
+                        <div className="flex flex-wrap gap-2 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border">
+                          {getAllActivities().map((activity, index) => {
+                            const isSelected = editFormData.activities.includes(activity);
+                            
+                            return (
+                              <button
+                                key={`activity-${activity}-${index}`}
+                                type="button"
+                                onClick={() => {
+                                  toggleArrayValue(editFormData.activities, activity, (newActivities) => 
+                                    setEditFormData({ ...editFormData, activities: newActivities })
+                                  );
                                 }}
-                                className="h-3 w-3 text-green-600 focus:ring-green-500 border-gray-300 rounded"
-                              />
-                              <label 
-                                htmlFor={`activity-${activity}`} 
-                                className="text-xs font-medium text-gray-700 dark:text-gray-300 cursor-pointer leading-tight"
+                                className={`pill inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap border-0 appearance-none select-none gap-1.5 transition-all ${
+                                  isSelected
+                                    ? 'bg-green-600 text-white font-bold transform scale-105'
+                                    : 'bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-800 dark:text-blue-200 dark:hover:bg-blue-700'
+                                }`}
                               >
                                 {activity}
-                              </label>
-                            </div>
-                          ))}
+                              </button>
+                            );
+                          })}
                         </div>
                       </div>
                       
@@ -3632,8 +4449,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             if (e.key === 'Enter') {
                               e.preventDefault();
                               const trimmed = customActivityInput.trim();
-                              if (trimmed && !tempActivities.includes(trimmed)) {
-                                setTempActivities(prev => [...prev, trimmed]);
+                              if (trimmed && !editFormData.activities.includes(trimmed)) {
+                                setEditFormData(prev => ({ ...prev, activities: [...prev.activities, trimmed] }));
                                 setCustomActivityInput('');
                               }
                             }
@@ -3641,27 +4458,28 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         />
                         <Button type="button" onClick={() => {
                           const trimmed = customActivityInput.trim();
-                            if (trimmed && !tempActivities.includes(trimmed)) {
-                              setTempActivities([...tempActivities, trimmed]);
+                            if (trimmed && !editFormData.activities.includes(trimmed)) {
+                              setEditFormData(prev => ({ ...prev, activities: [...prev.activities, trimmed] }));
                               setCustomActivityInput('');
                             }
                           }} variant="outline">Add</Button>
                       </div>
-                      {/* Show selected activities */}
+                      {/* Simple list of current activities with remove buttons */}
                       {tempActivities.length > 0 && (
-                        <div className="p-3 bg-gray-50 rounded-lg">
-                          <p className="text-sm font-medium text-gray-700 mb-2">Selected Activities:</p>
+                        <div className="mt-3 p-3 bg-gray-50 rounded-lg">
+                          <p className="text-sm font-medium text-gray-700 mb-2">Current Activities:</p>
                           <div className="flex flex-wrap gap-2">
                             {tempActivities.map((activity, index) => (
-                              <Badge key={`temp-activity-${activity}-${index}`} className="bg-green-100 text-green-800 border-green-300">
+                              <span key={`activity-${activity}-${index}`} className="inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0">
                                 {activity}
                                 <button
                                   onClick={() => setTempActivities(tempActivities.filter(a => a !== activity))}
-                                  className="ml-1 text-green-600 hover:text-green-800"
+                                  className="ml-1 text-green-600 hover:text-red-600 font-bold"
+                                  title={`Remove ${activity}`}
                                 >
                                   ×
                                 </button>
-                              </Badge>
+                              </span>
                             ))}
                           </div>
                         </div>
@@ -3676,111 +4494,94 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       </div>
                     </div>
                   ) : (
-                    <div className="flex flex-wrap gap-2">
-                      {(user.localActivities && user.localActivities.length > 0) ? (
-                        user.localActivities.map((activity: string, index: number) => {
-                          return (
-                            <Badge key={`activity-${index}`} className={getActivityStyle()}>
-                              {activity}
-                            </Badge>
-                          );
-                        })
-                      ) : (user.activities && user.activities.length > 0) ? (
-                        user.activities.map((activity: string, index: number) => {
-                          return (
-                            <Badge key={`activity-${index}`} className={getActivityStyle()}>
-                              {activity}
-                            </Badge>
-                          );
-                        })
+                    <div className="space-y-3">
+                      {/* SIMPLIFIED VIEW: Just show count and top few for own profile */}
+                      {(user.activities && user.activities.length > 0) ? (
+                        <div>
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-sm text-gray-600 dark:text-gray-400">
+                              {user.activities.length} activities selected
+                            </span>
+                          </div>
+                          <div className="flex flex-wrap gap-2">
+                            {(() => {
+                              const activities = user.activities || [];
+                              const topActivities = activities.slice(0, 6); // Show only first 6
+                              const remaining = activities.length - 6;
+                              
+                              return (
+                                <>
+                                  {topActivities.map((activity, index) => (
+                                    <div key={`activity-${index}`} className="pill pill-activities inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-green-500 text-white border-0 appearance-none select-none gap-1.5" style={{height: '2.5rem', minWidth: '8rem', padding: '0 1rem', fontSize: '1rem'}}>
+                                      {activity}
+                                    </div>
+                                  ))}
+                                  {remaining > 0 && (
+                                    <div className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-green-500 text-white border-0 appearance-none select-none gap-1.5">
+                                      +{remaining} more
+                                    </div>
+                                  )}
+                                </>
+                              );
+                            })()}
+                          </div>
+                        </div>
                       ) : (
-                        <p className="text-gray-500 text-sm">No activities listed</p>
+                        <p className="text-gray-500 text-sm">No activities selected yet</p>
                       )}
                     </div>
                   )}
                 </div>
 
-                {/* Local Events */}
+                {/* Events */}
                 <div>
                   <div className="flex items-center justify-between mb-3">
                     <h4 className="font-medium text-gray-800 dark:text-white flex items-center gap-2">
                       <Calendar className="w-4 h-4 text-purple-500" />
-                      Local Events
+                      Events
                     </h4>
-                    {isOwnProfile && !editingEvents && (
-                      <Button size="sm" variant="outline" onClick={handleEditEvents} className="bg-gradient-to-r from-blue-500 to-orange-500 text-white border-0 hover:from-blue-600 hover:to-orange-600">
-                        <Edit className="w-3 h-3" />
+                    {isOwnProfile && (
+                      <Button
+                        size="sm"
+                        onClick={() => setEditingEvents(true)}
+                        className="bg-purple-600 hover:bg-purple-700 text-white border-0"
+                      >
+                        <Edit className="w-3 h-3 mr-1" />
+                        Edit
                       </Button>
                     )}
                   </div>
                   
-                  {editingEvents ? (
+                  {editingEvents && !(editingInterests && editingActivities && editingEvents) ? (
                     <div className="space-y-4">
-                      <div className="text-sm text-blue-600 bg-blue-50 border border-blue-400 rounded-md p-3 mb-4 dark:bg-blue-900/20 dark:border-blue-600 dark:text-blue-300">
-                        Your default preferences for trips and to match with Nearby Locals and Travelers. They can be added to and changed in the future for specific trips etc.
-                      </div>
-                      
-                      {/* Top Choices for Most Locals and Travelers - Events */}
-                      <div className="mb-6 p-4 bg-gradient-to-r from-purple-100 to-indigo-100 dark:from-purple-900/20 dark:to-indigo-900/20 border border-purple-300 dark:border-purple-600 rounded-lg">
-                        <div className="flex items-center mb-3">
-                          <span className="text-xl mr-2">⭐</span>
-                          <h4 className="text-lg font-semibold text-gray-900 dark:text-white">Top Choices for Most Locals and Travelers</h4>
-                        </div>
-                        <div className="grid grid-cols-4 gap-1">
-                          {[
-                            "Street Festivals", "Cultural Celebrations", "Community Events", "Bar Crawls",
-                            "Club Nights", "Dance Events", "Sports Events", "Seasonal Events",
-                            "Networking Events", "Game Nights", "DJ Events", "Pop-up Restaurants"
-                          ].map((event) => (
-                            <div key={event} className="flex items-center space-x-1">
-                              <input
-                                type="checkbox"
-                                id={`top-event-${event}`}
-                                checked={tempEvents.includes(event)}
-                                onChange={(e) => {
-                                  if (e.target.checked) {
-                                    setTempEvents([...tempEvents, event]);
-                                  } else {
-                                    setTempEvents(tempEvents.filter(ev => ev !== event));
-                                  }
-                                }}
-                                className="h-4 w-4 border-gray-300 rounded text-purple-600 focus:ring-purple-500"
-                              />
-                              <label htmlFor={`top-event-${event}`} className="text-xs font-semibold text-black dark:text-purple-300 cursor-pointer">
-                                {event}
-                              </label>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-
                       {/* All Available Events */}
                       <div>
-                        <h4 className="text-lg font-medium mb-3 text-gray-900 dark:text-white">All Available Events</h4>
-                        <div className="grid grid-cols-4 gap-1 border rounded-lg p-3 bg-purple-50 dark:bg-purple-900/20">
-                          {getAllEvents().map((event, index) => (
-                            <div key={`event-${event}-${index}`} className="flex items-center space-x-1">
-                              <input
-                                type="checkbox"
-                                id={`event-${event}`}
-                                checked={tempEvents.includes(event)}
-                                onChange={(e) => {
-                                  if (e.target.checked) {
-                                    setTempEvents([...tempEvents, event]);
-                                  } else {
+                        <h4 className="text-sm font-medium mb-2 text-gray-900 dark:text-white">All Available Events</h4>
+                        <div className="flex flex-wrap gap-2 p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg border">
+                          {getAllEvents().map((event, index) => {
+                            const isSelected = tempEvents.includes(event);
+                            
+                            return (
+                              <button
+                                key={`event-${event}-${index}`}
+                                type="button"
+                                onClick={() => {
+                                  if (isSelected) {
                                     setTempEvents(tempEvents.filter(ev => ev !== event));
+                                  } else {
+                                    setTempEvents([...tempEvents, event]);
                                   }
                                 }}
-                                className="h-3 w-3 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
-                              />
-                              <label 
-                                htmlFor={`event-${event}`} 
-                                className="text-xs text-gray-700 dark:text-gray-300 cursor-pointer leading-tight font-medium"
+                                className={`pill inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap border-0 appearance-none select-none gap-1.5 transition-all ${
+                                  isSelected
+                                    ? 'bg-green-600 text-white font-bold transform scale-105'
+                                    : 'bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-800 dark:text-blue-200 dark:hover:bg-blue-700'
+                                }`}
                               >
                                 {event}
-                              </label>
-                            </div>
-                          ))}
+                              </button>
+                            );
+                          })}
                         </div>
                       </div>
                       
@@ -3793,8 +4594,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             if (e.key === 'Enter') {
                               e.preventDefault();
                               const trimmed = customEventInput.trim();
-                              if (trimmed && !tempEvents.includes(trimmed)) {
-                                setTempEvents(prev => [...prev, trimmed]);
+                              if (trimmed && !editFormData.events.includes(trimmed)) {
+                                setEditFormData(prev => ({ ...prev, events: [...prev.events, trimmed] }));
                                 setCustomEventInput('');
                               }
                             }
@@ -3802,27 +4603,28 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         />
                         <Button type="button" onClick={() => {
                           const trimmed = customEventInput.trim();
-                            if (trimmed && !tempEvents.includes(trimmed)) {
-                              setTempEvents([...tempEvents, trimmed]);
+                            if (trimmed && !editFormData.events.includes(trimmed)) {
+                              setEditFormData(prev => ({ ...prev, events: [...prev.events, trimmed] }));
                               setCustomEventInput('');
                             }
                           }} variant="outline">Add</Button>
                       </div>
-                      {/* Show selected events */}
+                      {/* Simple list of current events with remove buttons */}
                       {tempEvents.length > 0 && (
-                        <div className="p-3 bg-gray-50 rounded-lg">
-                          <p className="text-sm font-medium text-gray-700 mb-2">Selected Events:</p>
+                        <div className="mt-3 p-3 bg-gray-50 rounded-lg">
+                          <p className="text-sm font-medium text-gray-700 mb-2">Current Events:</p>
                           <div className="flex flex-wrap gap-2">
                             {tempEvents.map((event, index) => (
-                              <Badge key={`temp-event-${event}-${index}`} className="bg-purple-100 text-purple-800 border-purple-300">
+                              <span key={`event-${event}-${index}`} className="inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0">
                                 {event}
                                 <button
                                   onClick={() => setTempEvents(tempEvents.filter(e => e !== event))}
-                                  className="ml-1 text-purple-600 hover:text-purple-800"
+                                  className="ml-1 text-purple-600 hover:text-red-600 font-bold"
+                                  title={`Remove ${event}`}
                                 >
                                   ×
                                 </button>
-                              </Badge>
+                              </span>
                             ))}
                           </div>
                         </div>
@@ -3840,47 +4642,721 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       </div>
                     </div>
                   ) : (
-                    <div className="flex flex-wrap gap-2">
-                      {(user.localEvents && user.localEvents.length > 0) ? (
-                        user.localEvents.map((event: string, index: number) => {
-                          return (
-                            <Badge key={`event-${index}`} className={getEventStyle()}>
-                              {event}
-                            </Badge>
-                          );
-                        })
-                      ) : (user.events && user.events.length > 0) ? (
-                        user.events.map((event: string, index: number) => {
-                          return (
-                            <Badge key={`event-${index}`} className={getEventStyle()}>
-                              {event}
-                            </Badge>
-                          );
-                        })
+                    <div className="space-y-3">
+                      {/* SIMPLIFIED VIEW: Just show count and top few for own profile */}
+                      {(user.events && user.events.length > 0) ? (
+                        <div>
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-sm text-gray-600 dark:text-gray-400">
+                              {user.events.length} event types selected
+                            </span>
+                          </div>
+                          <div className="flex flex-wrap gap-2">
+                            {(() => {
+                              const events = user.events || [];
+                              const topEvents = events.slice(0, 6); // Show only first 6
+                              const remaining = events.length - 6;
+                              
+                              return (
+                                <>
+                                  {topEvents.map((event, index) => (
+                                    <div key={`event-${index}`} className="pill pill-events inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-purple-500 text-white border-0 appearance-none select-none gap-1.5" style={{height: '2.5rem', minWidth: '8rem', padding: '0 1rem', fontSize: '1rem'}}>
+                                      {event}
+                                    </div>
+                                  ))}
+                                  {remaining > 0 && (
+                                    <div className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-purple-500 text-white border-0 appearance-none select-none gap-1.5">
+                                      +{remaining} more
+                                    </div>
+                                  )}
+                                </>
+                              );
+                            })()}
+                          </div>
+                        </div>
                       ) : (
-                        <p className="text-gray-500 text-sm">No event preferences listed</p>
+                        <p className="text-gray-500 text-sm">No event preferences selected yet</p>
                       )}
                     </div>
                   )}
                 </div>
               </CardContent>
             </Card>
+            )}
 
-            {/* Vouch System */}
-            {currentUser?.id && (
-              <VouchWidget 
-                userId={effectiveUserId} 
-                isOwnProfile={isOwnProfile} 
-                currentUserId={currentUser.id}
+
+            {/* Things I Want to Do Widget - Show for all non-business profiles */}
+            {user?.userType !== 'business' && (
+              <ThingsIWantToDoSection
+                userId={effectiveUserId || 0}
+                isOwnProfile={isOwnProfile}
               />
             )}
 
-            {/* City Stats with Chatroom Links */}
-            <CityStatsWidget
-              city={user?.hometownCity || ''}
-              state={user?.hometownState || ''}
-              country={user?.hometownCountry || 'United States'}
-            />
+            {/* Business Interests, Activities & Events Section - For business users only */}
+            {user?.userType === 'business' && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Heart className="w-5 h-5 text-orange-500" />
+                  Business Interests, Activities & Events
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6 break-words overflow-hidden">
+                {/* Single Edit Button for All Business Preferences */}
+                {isOwnProfile && !editingInterests && !editingActivities && !editingEvents && (
+                  <div className="flex justify-center mb-4">
+                    <Button
+                      onClick={() => {
+                        console.log('🔧 BUSINESS EDIT - Starting:', { 
+                          user,
+                          hasCustomInterests: !!user?.customInterests,
+                          hasCustomActivities: !!user?.customActivities,
+                          hasCustomEvents: !!user?.customEvents,
+                          customInterests: user?.customInterests,
+                          customActivities: user?.customActivities,
+                          customEvents: user?.customEvents
+                        });
+                        
+                        // Open ALL editing modes at once for business users
+                        setEditingInterests(true);
+                        setEditingActivities(true);
+                        setEditingEvents(true);
+                        
+                        // Initialize form data with combined predefined + custom entries
+                        const userInterests = [...(user?.interests || [])];
+                        const userActivities = [...(user?.activities || [])];
+                        const userEvents = [...(user?.events || [])];
+                        
+                        // Add custom fields from database to the arrays for display
+                        if (user?.customInterests) {
+                          const customInterests = user.customInterests.split(',').map(s => s.trim()).filter(s => s);
+                          console.log('🔧 Processing custom interests:', customInterests);
+                          customInterests.forEach(item => {
+                            if (!userInterests.includes(item)) {
+                              userInterests.push(item);
+                            }
+                          });
+                        }
+                        if (user?.customActivities) {
+                          const customActivities = user.customActivities.split(',').map(s => s.trim()).filter(s => s);
+                          console.log('🔧 Processing custom activities:', customActivities);
+                          customActivities.forEach(item => {
+                            if (!userActivities.includes(item)) {
+                              userActivities.push(item);
+                            }
+                          });
+                        }
+                        if (user?.customEvents) {
+                          const customEvents = user.customEvents.split(',').map(s => s.trim()).filter(s => s);
+                          console.log('🔧 Processing custom events:', customEvents);
+                          customEvents.forEach(item => {
+                            if (!userEvents.includes(item)) {
+                              userEvents.push(item);
+                            }
+                          });
+                        }
+                        
+                        console.log('🔧 BUSINESS EDIT - Final arrays:', { 
+                          finalInterests: userInterests,
+                          finalActivities: userActivities,
+                          finalEvents: userEvents
+                        });
+                        
+                        setEditFormData({
+                          interests: userInterests,
+                          activities: userActivities,
+                          events: userEvents
+                        });
+                      }}
+                      className="bg-orange-600 hover:bg-orange-700 text-white"
+                    >
+                      <Edit className="w-4 h-4 mr-2" />
+                      Edit Business Preferences
+                    </Button>
+                  </div>
+                )}
+
+                {/* Display current business interests/activities/events when not editing */}
+                {(!editingInterests || !editingActivities || !editingEvents) && (
+                  <div className="space-y-4">
+                    {(() => {
+                      // Combine predefined and custom fields for display
+                      const allInterests = [...(user?.interests || [])];
+                      const allActivities = [...(user?.activities || [])];
+                      const allEvents = [...(user?.events || [])];
+                      
+                      // Add custom interests
+                      if (user?.customInterests) {
+                        const customInterests = user.customInterests.split(',').map(s => s.trim()).filter(s => s);
+                        customInterests.forEach(item => {
+                          if (!allInterests.includes(item)) {
+                            allInterests.push(item);
+                          }
+                        });
+                      }
+                      
+                      // Add custom activities
+                      if (user?.customActivities) {
+                        const customActivities = user.customActivities.split(',').map(s => s.trim()).filter(s => s);
+                        customActivities.forEach(item => {
+                          if (!allActivities.includes(item)) {
+                            allActivities.push(item);
+                          }
+                        });
+                      }
+                      
+                      // Add custom events
+                      if (user?.customEvents) {
+                        const customEvents = user.customEvents.split(',').map(s => s.trim()).filter(s => s);
+                        customEvents.forEach(item => {
+                          if (!allEvents.includes(item)) {
+                            allEvents.push(item);
+                          }
+                        });
+                      }
+                      
+                      return (
+                        <>
+                          {allInterests.length > 0 && (
+                            <div>
+                              <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Business Interests</h4>
+                              <div className="flex flex-wrap gap-2">
+                                {allInterests.map((interest, index) => (
+                                  <div key={`interest-${index}`} className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
+                                    {interest}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          {allActivities.length > 0 && (
+                            <div>
+                              <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Business Activities</h4>
+                              <div className="flex flex-wrap gap-2">
+                                {allActivities.map((activity, index) => (
+                                  <div key={`activity-${index}`} className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-green-500 text-white border-0 appearance-none select-none gap-1.5">
+                                    {activity}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          {allEvents.length > 0 && (
+                            <div>
+                              <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Business Events</h4>
+                              <div className="flex flex-wrap gap-2">
+                                {allEvents.map((event, index) => (
+                                  <div key={`event-${index}`} className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-purple-500 text-white border-0 appearance-none select-none gap-1.5">
+                                    {event}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          {(allInterests.length === 0 && allActivities.length === 0 && allEvents.length === 0) && (
+                            <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                              <Heart className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+                              <p>Click "Edit Business Preferences" to add your business interests, activities, and events</p>
+                            </div>
+                          )}
+                        </>
+                      );
+                    })()}
+                  </div>
+                )}
+
+                {/* Business Edit Form - Reuse the same unified editing system */}
+                {isOwnProfile && (editingInterests && editingActivities && editingEvents) && (
+                  <div className="bg-orange-50 dark:bg-orange-900/20 p-4 rounded-lg border border-orange-200 dark:border-orange-600">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Edit Business Preferences</h3>
+                      <div className="flex gap-2">
+                        <Button 
+                          onClick={async () => {
+                            try {
+                              console.log('🔧 BUSINESS SAVING DATA:', editFormData);
+                              
+                              // Separate predefined vs custom entries for proper database storage
+                              const predefinedInterests = getAllInterests().filter(opt => editFormData.interests.includes(opt));
+                              const predefinedActivities = getAllActivities().filter(opt => editFormData.activities.includes(opt));
+                              const predefinedEvents = getAllEvents().filter(opt => editFormData.events.includes(opt));
+                              
+                              const customInterests = editFormData.interests.filter(int => !getAllInterests().includes(int));
+                              const customActivities = editFormData.activities.filter(act => !getAllActivities().includes(act));
+                              const customEvents = editFormData.events.filter(evt => !getAllEvents().includes(evt));
+                              
+                              const saveData = {
+                                interests: predefinedInterests,
+                                activities: predefinedActivities, 
+                                events: predefinedEvents,
+                                customInterests: customInterests.join(', '),
+                                customActivities: customActivities.join(', '),
+                                customEvents: customEvents.join(', ')
+                              };
+                              
+                              console.log('🔧 BUSINESS SAVE - Separated data:', saveData);
+                              
+                              const response = await fetch(`/api/users/${effectiveUserId}`, {
+                                method: 'PUT',
+                                headers: {
+                                  'Content-Type': 'application/json',
+                                  // CRITICAL FIX: Remove massive x-user-data header causing 431 error
+                                  'x-user-id': effectiveUserId?.toString() || '',
+                                  'x-user-type': user?.userType || 'business'
+                                },
+                                body: JSON.stringify(saveData)
+                              });
+                              
+                              if (!response.ok) {
+                                const errorText = await response.text();
+                                throw new Error(`Failed to save: ${errorText}`);
+                              }
+                              
+                              // Refresh data
+                              queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
+                              // Close editing modes
+                              setEditingInterests(false);
+                              setEditingActivities(false);
+                              setEditingEvents(false);
+                              
+                              // Clear custom inputs
+                              setCustomInterestInput('');
+                              setCustomActivityInput('');
+                              setCustomEventInput('');
+                              
+                              toast({
+                                title: "Success!",
+                                description: "Business preferences saved successfully.",
+                              });
+                            } catch (error: any) {
+                              console.error('Failed to update business preferences:', error);
+                              toast({
+                                title: "Error",
+                                description: error.message || "Failed to save business preferences. Please try again.",
+                                variant: "destructive",
+                              });
+                            }
+                          }}
+                          disabled={false}
+                          className="bg-green-600 hover:bg-green-700 text-white"
+                        >
+                          Save Business Changes
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          onClick={() => {
+                            // Cancel edits and close editing modes
+                            setEditingInterests(false);
+                            setEditingActivities(false);
+                            setEditingEvents(false);
+                            setEditFormData({
+                              interests: user?.interests || [],
+                              activities: user?.activities || [],
+                              events: user?.events || []
+                            });
+                          }}
+                        >
+                          Cancel
+                        </Button>
+                      </div>
+                    </div>
+                    
+                    {/* Reuse the same editing interface structure from non-business users */}
+                    <div className="space-y-6">
+                      {/* Business Interests Section */}
+                      <div>
+                        <h4 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white flex items-center gap-2">
+                          <Heart className="w-5 h-5 text-orange-500" />
+                          Business Interests
+                        </h4>
+                        <div className="flex flex-wrap gap-2 p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
+                          {getAllInterests().map((interest, index) => {
+                            const isSelected = editFormData.interests.includes(interest);
+                            console.log(`🔍 Interest "${interest}" is ${isSelected ? 'SELECTED' : 'not selected'} in:`, editFormData.interests);
+                            return (
+                              <button
+                                key={`business-interest-${interest}-${index}`}
+                                type="button"
+                                onClick={() => {
+                                  const newInterests = isSelected
+                                    ? editFormData.interests.filter((i: string) => i !== interest)
+                                    : [...editFormData.interests, interest];
+                                  setEditFormData({ ...editFormData, interests: newInterests });
+                                }}
+                                className={`inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none border-0 transition-all ${
+                                  isSelected
+                                    ? 'bg-green-600 text-white font-bold transform scale-105'
+                                    : 'bg-orange-100 text-orange-800 hover:bg-orange-200 dark:bg-orange-800 dark:text-orange-200 dark:hover:bg-orange-700'
+                                }`}
+                              >
+                                {interest}
+                              </button>
+                            );
+                          })}
+                        </div>
+                        
+                        {/* Custom Business Interests Input */}
+                        <div className="mt-3">
+                          <label className="text-xs font-medium mb-1 block text-gray-600 dark:text-gray-400">
+                            Add Custom Business Interests (hit Enter after each)
+                          </label>
+                          <div className="flex space-x-2">
+                            <Input
+                              placeholder="e.g., Sustainable Tourism, Local Partnerships"
+                              value={customInterestInput}
+                              onChange={(e) => setCustomInterestInput(e.target.value)}
+                              onKeyPress={(e) => {
+                                if (e.key === 'Enter') {
+                                  e.preventDefault();
+                                  const trimmed = customInterestInput.trim();
+                                  if (trimmed && !editFormData.interests.includes(trimmed)) {
+                                    setEditFormData({ ...editFormData, interests: [...editFormData.interests, trimmed] });
+                                    setCustomInterestInput('');
+                                  }
+                                }
+                              }}
+                              className="text-xs dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+                            />
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                const trimmed = customInterestInput.trim();
+                                if (trimmed && !editFormData.interests.includes(trimmed)) {
+                                  setEditFormData({ ...editFormData, interests: [...editFormData.interests, trimmed] });
+                                  setCustomInterestInput('');
+                                }
+                              }}
+                              className="h-8 px-2"
+                            >
+                              <Plus className="w-3 h-3" />
+                            </Button>
+                          </div>
+
+                          {/* Display Custom Interests with Delete Option */}
+                          {editFormData.interests.filter(interest => !getAllInterests().includes(interest)).length > 0 && (
+                            <div className="mt-2">
+                              <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Your Custom Interests (click X to remove):</p>
+                              <div className="flex flex-wrap gap-2">
+                                {editFormData.interests.filter(interest => !getAllInterests().includes(interest)).map((interest, index) => (
+                                  <span
+                                    key={`custom-interest-${index}`}
+                                    className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5"
+                                  >
+                                    {interest}
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        const newInterests = editFormData.interests.filter(i => i !== interest);
+                                        setEditFormData({ ...editFormData, interests: newInterests });
+                                      }}
+                                      className="ml-1 text-blue-600 hover:text-blue-800 dark:text-blue-300 dark:hover:text-blue-100"
+                                    >
+                                      ×
+                                    </button>
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Business Activities Section */}
+                      <div>
+                        <h4 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white flex items-center gap-2">
+                          <Globe className="w-5 h-5 text-green-500" />
+                          Business Activities
+                        </h4>
+                        <div className="flex flex-wrap gap-2 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                          {getAllActivities().map((activity, index) => {
+                            const isSelected = editFormData.activities.includes(activity);
+                            return (
+                              <button
+                                key={`business-activity-${activity}-${index}`}
+                                type="button"
+                                onClick={() => {
+                                  const newActivities = isSelected
+                                    ? editFormData.activities.filter((a: string) => a !== activity)
+                                    : [...editFormData.activities, activity];
+                                  setEditFormData({ ...editFormData, activities: newActivities });
+                                }}
+                                className={`inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none border-0 transition-all ${
+                                  isSelected
+                                    ? 'bg-green-600 text-white font-bold transform scale-105'
+                                    : 'bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-800 dark:text-green-200 dark:hover:bg-green-700'
+                                }`}
+                              >
+                                {activity}
+                              </button>
+                            );
+                          })}
+                        </div>
+                        
+                        {/* Custom Business Activities Input */}
+                        <div className="mt-3">
+                          <label className="text-xs font-medium mb-1 block text-gray-600 dark:text-gray-400">
+                            Add Custom Business Activities (hit Enter after each)
+                          </label>
+                          <div className="flex space-x-2">
+                            <Input
+                              placeholder="e.g., Private Tours, Corporate Events"
+                              value={customActivityInput}
+                              onChange={(e) => setCustomActivityInput(e.target.value)}
+                              onKeyPress={(e) => {
+                                if (e.key === 'Enter') {
+                                  e.preventDefault();
+                                  const trimmed = customActivityInput.trim();
+                                  if (trimmed && !editFormData.activities.includes(trimmed)) {
+                                    setEditFormData({ ...editFormData, activities: [...editFormData.activities, trimmed] });
+                                    setCustomActivityInput('');
+                                  }
+                                }
+                              }}
+                              className="text-xs dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+                            />
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                const trimmed = customActivityInput.trim();
+                                if (trimmed && !editFormData.activities.includes(trimmed)) {
+                                  setEditFormData({ ...editFormData, activities: [...editFormData.activities, trimmed] });
+                                  setCustomActivityInput('');
+                                }
+                              }}
+                              className="h-8 px-2"
+                            >
+                              <Plus className="w-3 h-3" />
+                            </Button>
+                          </div>
+
+                          {/* Display Custom Activities with Delete Option */}
+                          {editFormData.activities.filter(activity => !getAllActivities().includes(activity)).length > 0 && (
+                            <div className="mt-2">
+                              <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Custom Activities (click X to remove):</p>
+                              <div className="flex flex-wrap gap-2">
+                                {editFormData.activities.filter(activity => !getAllActivities().includes(activity)).map((activity, index) => (
+                                  <span
+                                    key={`custom-activity-${index}`}
+                                    className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-green-500 text-white border-0 appearance-none select-none gap-1.5"
+                                  >
+                                    {activity}
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        const newActivities = editFormData.activities.filter(a => a !== activity);
+                                        setEditFormData({ ...editFormData, activities: newActivities });
+                                      }}
+                                      className="ml-1 text-green-600 hover:text-green-800 dark:text-green-300 dark:hover:text-green-100"
+                                    >
+                                      ×
+                                    </button>
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Business Events Section */}
+                      <div>
+                        <h4 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white flex items-center gap-2">
+                          <Calendar className="w-5 h-5 text-purple-500" />
+                          Business Events
+                        </h4>
+                        <div className="flex flex-wrap gap-2 p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                          {getAllEvents().map((event, index) => {
+                            const isSelected = editFormData.events.includes(event);
+                            return (
+                              <button
+                                key={`business-event-${event}-${index}`}
+                                type="button"
+                                onClick={() => {
+                                  const newEvents = isSelected
+                                    ? editFormData.events.filter((e: string) => e !== event)
+                                    : [...editFormData.events, event];
+                                  setEditFormData({ ...editFormData, events: newEvents });
+                                }}
+                                className={`inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none border-0 transition-all ${
+                                  isSelected
+                                    ? 'bg-green-600 text-white font-bold transform scale-105'
+                                    : 'bg-purple-100 text-purple-800 hover:bg-purple-200 dark:bg-purple-800 dark:text-purple-200 dark:hover:bg-purple-700'
+                                }`}
+                              >
+                                {event}
+                              </button>
+                            );
+                          })}
+                        </div>
+                        
+                        {/* Custom Business Events Input */}
+                        <div className="mt-3">
+                          <label className="text-xs font-medium mb-1 block text-gray-600 dark:text-gray-400">
+                            Add Custom Business Events (hit Enter after each)
+                          </label>
+                          <div className="flex space-x-2">
+                            <Input
+                              placeholder="e.g., Wine Tastings, Art Shows, Workshops"
+                              value={customEventInput}
+                              onChange={(e) => setCustomEventInput(e.target.value)}
+                              onKeyPress={(e) => {
+                                if (e.key === 'Enter') {
+                                  e.preventDefault();
+                                  const trimmed = customEventInput.trim();
+                                  if (trimmed && !editFormData.events.includes(trimmed)) {
+                                    setEditFormData({ ...editFormData, events: [...editFormData.events, trimmed] });
+                                    setCustomEventInput('');
+                                  }
+                                }
+                              }}
+                              className="text-xs dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+                            />
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                const trimmed = customEventInput.trim();
+                                if (trimmed && !editFormData.events.includes(trimmed)) {
+                                  setEditFormData({ ...editFormData, events: [...editFormData.events, trimmed] });
+                                  setCustomEventInput('');
+                                }
+                              }}
+                              className="h-8 px-2"
+                            >
+                              <Plus className="w-3 h-3" />
+                            </Button>
+                          </div>
+
+                          {/* Display Custom Events with Delete Option */}
+                          {editFormData.events.filter(event => !getAllEvents().includes(event)).length > 0 && (
+                            <div className="mt-2">
+                              <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Custom Events (click X to remove):</p>
+                              <div className="flex flex-wrap gap-2">
+                                {editFormData.events.filter(event => !getAllEvents().includes(event)).map((event, index) => (
+                                  <span
+                                    key={`custom-event-${index}`}
+                                    className="pill inline-flex items-center"
+                                  >
+                                    {event}
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        const newEvents = editFormData.events.filter(e => e !== event);
+                                        setEditFormData({ ...editFormData, events: newEvents });
+                                      }}
+                                      className="ml-1 text-purple-600 hover:text-purple-800 dark:text-purple-300 dark:hover:text-purple-100"
+                                    >
+                                      ×
+                                    </button>
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Bottom Save Button for Business Preferences */}
+                {isOwnProfile && (editingInterests && editingActivities && editingEvents) && (
+                  <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border-t border-gray-200 dark:border-gray-600">
+                    <div className="flex justify-center">
+                      <Button 
+                        onClick={async () => {
+                          try {
+                            console.log('🔧 BUSINESS SAVING DATA (Bottom Button):', editFormData);
+                            
+                            // Separate predefined vs custom entries for proper database storage
+                            const predefinedInterests = getAllInterests().filter(opt => editFormData.interests.includes(opt));
+                            const predefinedActivities = getAllActivities().filter(opt => editFormData.activities.includes(opt));
+                            const predefinedEvents = getAllEvents().filter(opt => editFormData.events.includes(opt));
+                            
+                            const customInterests = editFormData.interests.filter(int => !getAllInterests().includes(int));
+                            const customActivities = editFormData.activities.filter(act => !getAllActivities().includes(act));
+                            const customEvents = editFormData.events.filter(evt => !getAllEvents().includes(evt));
+                            
+                            const saveData = {
+                              interests: predefinedInterests,
+                              activities: predefinedActivities, 
+                              events: predefinedEvents,
+                              customInterests: customInterests.join(', '),
+                              customActivities: customActivities.join(', '),
+                              customEvents: customEvents.join(', ')
+                            };
+                            
+                            console.log('🔧 BUSINESS SAVE - Final payload:', JSON.stringify(saveData, null, 2));
+                            
+                            const response = await fetch(`/api/users/${effectiveUserId}`, {
+                              method: 'PUT',
+                              headers: {
+                                'Content-Type': 'application/json',
+                                // CRITICAL FIX: Remove massive x-user-data header causing 431 error
+                                'x-user-id': effectiveUserId?.toString() || '',
+                                'x-user-type': user?.userType || 'business'
+                              },
+                              body: JSON.stringify(saveData)
+                            });
+                            
+                            console.log('🔧 BUSINESS SAVE - Response status:', response.status);
+                            
+                            if (!response.ok) {
+                              const errorText = await response.text();
+                              console.error('🔴 BUSINESS SAVE - Error response:', errorText);
+                              throw new Error(`Failed to save: ${response.status} ${errorText}`);
+                            }
+                            
+                            const responseData = await response.json();
+                            console.log('🔧 BUSINESS SAVE - Response data:', responseData);
+                            
+                            if (!response.ok) {
+                              throw new Error(`Failed to save: ${response.status} ${response.statusText}`);
+                            }
+                            
+                            // Update cache and UI
+                            queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
+                            
+                            // Close editing modes
+                            setEditingInterests(false);
+                            setEditingActivities(false);
+                            setEditingEvents(false);
+                            
+                            // Clear custom inputs
+                            setCustomInterestInput('');
+                            setCustomActivityInput('');
+                            setCustomEventInput('');
+                            
+                            toast({
+                              title: "Success!",
+                              description: "Business preferences saved successfully.",
+                            });
+                          } catch (error: any) {
+                            console.error('Failed to update business preferences:', error);
+                            toast({
+                              title: "Error",
+                              description: error.message || "Failed to save business preferences. Please try again.",
+                              variant: "destructive",
+                            });
+                          }
+                        }}
+                        className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 text-lg font-semibold"
+                        size="lg"
+                      >
+                        💾 Save Business Changes
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+            )}
 
             {/* Travel Plans - Hidden for business profiles */}
             {user?.userType !== 'business' && (
@@ -3939,13 +5415,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         {travelPlans.filter(plan => plan.status === 'planned' || plan.status === 'active').map((plan) => (
                         <div 
                           key={plan.id} 
-                          className="border rounded-lg p-3 hover:border-blue-300 dark:hover:border-blue-500 transition-colors cursor-pointer"
+                          className="border rounded-lg p-3 transition-colors hover:border-blue-300 dark:hover:border-blue-500 cursor-pointer border-gray-200 dark:border-gray-700"
+                          title={isOwnProfile ? "Click to view details" : "Click to view travel details, dates, and destinations"}
                           onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
                             setSelectedTravelPlan(plan);
                             setShowTravelPlanDetails(true);
-                            // Use setTimeout to ensure scroll happens after modal opens
                             setTimeout(() => {
                               window.scrollTo({ top: 0, behavior: 'smooth' });
                             }, 100);
@@ -3956,14 +5432,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               <div className="flex items-center gap-2 mb-1">
                                 <h4 className="font-medium text-sm">{plan.destination}</h4>
                                 {plan.status === 'active' && (
-                                  <Badge className="bg-green-500 text-white text-xs px-2 py-0.5">
+                                  <div className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
                                     ✈️ Currently Traveling
-                                  </Badge>
+                                  </div>
                                 )}
                                 {plan.status === 'planned' && (
-                                  <Badge className="bg-blue-500 text-white text-xs px-2 py-0.5">
+                                  <div className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-orange-500 text-white border-0 appearance-none select-none gap-1.5">
                                     📅 Upcoming
-                                  </Badge>
+                                  </div>
                                 )}
                               </div>
                               <p className="text-black dark:text-white text-xs mb-1 font-medium">
@@ -4012,32 +5488,43 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           </div>
                           {plan.interests && plan.interests.length > 0 && (
                             <div className="mb-2">
-                              <div className="flex flex-wrap gap-1">
-                                {plan.interests.slice(0, 2).map((interest) => (
-                                  <Badge key={interest} className={`text-xs ${getInterestStyle(interest)}`}>
+                              <div className="flex flex-wrap gap-2">
+                                {(expandedPlanInterests.has(plan.id) ? plan.interests : plan.interests.slice(0, 2)).map((interest: string) => (
+                                  <div key={interest} className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
                                     {interest}
-                                  </Badge>
+                                  </div>
                                 ))}
                                 {plan.interests.length > 2 && (
-                                  <Badge variant="outline" className="text-xs dark:bg-gray-800 dark:text-gray-300">
-                                    +{plan.interests.length - 2} more
-                                  </Badge>
+                                  <div 
+                                    className="pill-interests cursor-pointer"
+                                    onClick={() => {
+                                      const newExpanded = new Set(expandedPlanInterests);
+                                      if (expandedPlanInterests.has(plan.id)) {
+                                        newExpanded.delete(plan.id);
+                                      } else {
+                                        newExpanded.add(plan.id);
+                                      }
+                                      setExpandedPlanInterests(newExpanded);
+                                    }}
+                                  >
+                                    {expandedPlanInterests.has(plan.id) ? 'Show less' : `+${plan.interests.length - 2} more`}
+                                  </div>
                                 )}
                               </div>
                             </div>
                           )}
                           {plan.travelStyle && plan.travelStyle.length > 0 && (
                             <div>
-                              <div className="flex flex-wrap gap-1">
-                                {plan.travelStyle.slice(0, 2).map((style) => (
-                                  <Badge key={style} variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200 dark:bg-green-900 dark:text-green-200 dark:border-green-700">
+                              <div className="flex flex-wrap gap-2">
+                                {plan.travelStyle.slice(0, 2).map((style: string) => (
+                                  <div key={style} className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
                                     {style}
-                                  </Badge>
+                                  </div>
                                 ))}
                                 {plan.travelStyle.length > 2 && (
-                                  <Badge variant="outline" className="text-xs dark:bg-gray-800 dark:text-gray-300">
+                                  <div className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
                                     +{plan.travelStyle.length - 2} more
-                                  </Badge>
+                                  </div>
                                 )}
                               </div>
                             </div>
@@ -4083,9 +5570,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               <div className="flex-1">
                                 <div className="flex items-center gap-2 mb-1">
                                   <h4 className="font-medium text-sm text-gray-600 dark:text-gray-300">{plan.destination}</h4>
-                                  <Badge className="bg-gray-500 text-white text-xs px-2 py-0.5">
+                                  <div className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-gray-500 text-white border-0 appearance-none select-none gap-1.5">
                                     ✓ Completed
-                                  </Badge>
+                                  </div>
                                 </div>
                                 <p className="text-gray-500 dark:text-gray-400 text-xs mb-1 font-medium">
                                   {plan.startDate ? formatDateForDisplay(plan.startDate, user?.hometownCity || 'UTC') : 'Start date TBD'} - {plan.endDate ? formatDateForDisplay(plan.endDate, user?.hometownCity || 'UTC') : 'End date TBD'}
@@ -4135,32 +5622,43 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             </div>
                             {plan.interests && plan.interests.length > 0 && (
                               <div className="mb-2">
-                                <div className="flex flex-wrap gap-1">
-                                  {plan.interests.slice(0, 2).map((interest) => (
-                                    <Badge key={interest} className="text-xs bg-gray-100 text-gray-600 border-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600">
+                                <div className="flex flex-wrap gap-2">
+                                  {(expandedPlanInterests.has(plan.id) ? plan.interests : plan.interests.slice(0, 2)).map((interest: string) => (
+                                    <div key={interest} className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
                                       {interest}
-                                    </Badge>
+                                    </div>
                                   ))}
                                   {plan.interests.length > 2 && (
-                                    <Badge variant="outline" className="text-xs dark:bg-gray-800 dark:text-gray-300">
-                                      +{plan.interests.length - 2} more
-                                    </Badge>
+                                    <div 
+                                      className="pill-interests cursor-pointer"
+                                      onClick={() => {
+                                        const newExpanded = new Set(expandedPlanInterests);
+                                        if (expandedPlanInterests.has(plan.id)) {
+                                          newExpanded.delete(plan.id);
+                                        } else {
+                                          newExpanded.add(plan.id);
+                                        }
+                                        setExpandedPlanInterests(newExpanded);
+                                      }}
+                                    >
+                                      {expandedPlanInterests.has(plan.id) ? 'Show less' : `+${plan.interests.length - 2} more`}
+                                    </div>
                                   )}
                                 </div>
                               </div>
                             )}
                             {plan.travelStyle && plan.travelStyle.length > 0 && (
                               <div>
-                                <div className="flex flex-wrap gap-1">
-                                  {plan.travelStyle.slice(0, 2).map((style) => (
-                                    <Badge key={style} variant="outline" className="text-xs bg-gray-50 text-gray-600 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600">
+                                <div className="flex flex-wrap gap-2">
+                                  {plan.travelStyle.slice(0, 2).map((style: string) => (
+                                    <div key={style} className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
                                       {style}
-                                    </Badge>
+                                    </div>
                                   ))}
                                   {plan.travelStyle.length > 2 && (
-                                    <Badge variant="outline" className="text-xs dark:bg-gray-800 dark:text-gray-300">
+                                    <div className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
                                       +{plan.travelStyle.length - 2} more
-                                    </Badge>
+                                    </div>
                                   )}
                                 </div>
                               </div>
@@ -4197,6 +5695,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
 
 
+
             {/* Our Events Widget - only for business profiles */}
             {user?.userType === 'business' && (
               <Card>
@@ -4207,17 +5706,17 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <BusinessEventsWidget userId={effectiveUserId} />
+                  <BusinessEventsWidget userId={effectiveUserId || 0} />
                 </CardContent>
               </Card>
             )}
 
-            {/* Travel Memories - now using the updated component that matches Travel Story Generator layout */}
+            {/* Photo Albums Widget - Separate from Travel Memories */}
             {user?.userType !== 'business' && (
               <Card>
                 <CardContent className="p-6">
-                  <TravelMemoryTimeline 
-                    userId={effectiveUserId}
+                  <PhotoAlbumWidget 
+                    userId={effectiveUserId || 0}
                     isOwnProfile={isOwnProfile}
                   />
                 </CardContent>
@@ -4309,35 +5808,88 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           </div>
 
           {/* Right Sidebar */}
-          <div className="lg:col-span-1 space-y-4">
-            {/* Optimize Your Profile Widget - Only show for own profile */}
-            {isOwnProfile && (
-              <Card className="border-orange-200 bg-gradient-to-br from-orange-50 to-blue-50 hover:shadow-lg transition-all duration-200">
-                <CardHeader className="pb-3">
-                  <div className="flex items-center space-x-2 mb-2">
-                    <TrendingUp className="w-5 h-5 text-orange-600" />
-                    <Badge variant="default" className="bg-orange-600 text-white">Success Tips</Badge>
-                  </div>
-                  <CardTitle className="text-lg font-semibold text-black dark:text-black">
-                    Boost Your Connections
-                  </CardTitle>
-                  <p className="text-sm text-black dark:text-black mt-2">
-                    Get better matches and more connections with our optimization guide
-                  </p>
+          <div className="lg:col-span-1 space-y-2">
+            {/* Quick Meetup Widget - Only show for own profile (travelers/locals only, NOT business) */}
+            {isOwnProfile && user && user.userType !== 'business' && (
+              <div className="mt-6">
+                <QuickMeetupWidget city={user?.hometownCity ?? ''} profileUserId={user?.id} />
+              </div>
+            )}
+
+            {/* Quick Deals Widget for Business Users */}
+            {isOwnProfile && user?.userType === 'business' && (
+              <div className="mt-6">
+                <QuickDealsWidget 
+                  city={user?.hometownCity ?? ''} 
+                  profileUserId={user?.id} 
+                  showCreateForm={showCreateDeal}
+                  onCloseCreateForm={() => {
+                    console.log('🔥 CLOSING create deal form');
+                    setShowCreateDeal(false);
+                  }}
+                />
+              </div>
+            )}
+
+
+            {/* Travel Stats - Hidden for business profiles - MOVED UP */}
+            {user?.userType !== 'business' && (
+              <Card 
+                className="hover:shadow-lg transition-all duration-200 hover:border-orange-300"
+              >
+                <CardHeader>
+                  <CardTitle className="dark:text-white">Travel Stats</CardTitle>
                 </CardHeader>
-                <CardContent className="pt-0">
-                  <Button 
-                    onClick={() => setLocation('/getting-started')}
-                    className="w-full bg-gradient-to-r from-blue-500 via-orange-500 to-violet-500 hover:from-blue-600 hover:via-orange-600 hover:to-violet-600 text-white border-0"
+                <CardContent className="space-y-4 break-words overflow-hidden">
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600 dark:text-gray-300 flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-orange-500" />
+                      Travel Aura
+                    </span>
+                    <span className="font-semibold text-orange-600 dark:text-orange-400">{user?.aura || 0}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600 dark:text-gray-300">Connections</span>
+                    <span className="font-semibold dark:text-white">{userConnections.length}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600 dark:text-gray-300">Active Travel Plans</span>
+                    <span className="font-semibold dark:text-white">{travelPlans.filter(plan => plan.status === 'planned' || plan.status === 'active').length}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600 dark:text-gray-300">Cumulative Trips Taken</span>
+                    <span className="font-semibold dark:text-white">{travelPlans.filter(plan => plan.status === 'completed').length}</span>
+                  </div>
+                  <div 
+                    className="flex items-center justify-between cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg p-2 -m-2 transition-colors"
+                    onClick={() => setShowChatroomList(true)}
                   >
-                    <Star className="w-4 h-4 mr-2" />
-                    Optimize Profile
-                  </Button>
+                    <span className="text-gray-600 dark:text-gray-300">City Chatrooms</span>
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold dark:text-white">{userChatrooms.length}</span>
+                      <ChevronRight className="w-4 h-4 text-gray-400" />
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600 dark:text-gray-300 flex items-center gap-2">
+                      <Shield className="w-4 h-4 text-blue-500" />
+                      <span className="hidden sm:inline">Vouches</span>
+                      <span className="sm:hidden">Vouches {(vouches?.length || 0) === 0 ? '• Get vouched by community' : ''}</span>
+                    </span>
+                    <span className="font-semibold text-blue-600 dark:text-blue-400">{vouches?.length || 0}</span>
+                  </div>
+                  {(vouches?.length || 0) === 0 && (
+                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1 ml-6 hidden sm:block">
+                      Get vouched by vouched community members who know you personally
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             )}
 
-            {/* Current Connections Widget - Visible to all */}
+
+
+            {/* Current Connections Widget - Visible to all - MOVED UNDER TRAVEL STATS */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center justify-between">
@@ -4463,36 +6015,41 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               <CardContent>
                 {userConnections.length > 0 ? (
                   <div className="space-y-3">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                     {userConnections.slice(0, connectionsDisplayCount).map((connection: any) => (
-                      <div key={connection.id} className="flex items-center justify-between">
-                        <div 
-                          className="flex items-center gap-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg p-2 -m-2 transition-colors flex-1"
-                          onClick={() => setLocation(`/profile/${connection.connectedUser?.id}`)}
-                        >
-                          <Avatar className="w-10 h-10">
-                            <AvatarImage src={connection.connectedUser?.profileImage || ""} />
-                            <AvatarFallback>
-                              {connection.connectedUser?.name?.charAt(0).toUpperCase() || 
-                               connection.connectedUser?.username?.charAt(0).toUpperCase() || "U"}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div>
-                            <p className="font-medium text-sm text-gray-900 dark:text-white">{connection.connectedUser?.username || connection.connectedUser?.name}</p>
-                            <p className="text-xs text-gray-500 dark:text-gray-400">
-                              {connection.connectedUser?.location || "Location not set"}
-                            </p>
-                          </div>
+                      <div
+                        key={connection.id}
+                        onClick={() => setLocation(`/profile/${connection.connectedUser?.id?.toString() || ''}`)}
+                        className="rounded-xl border p-3 hover:shadow-sm bg-white dark:bg-gray-800 cursor-pointer flex flex-col items-center text-center gap-2"
+                      >
+                        <SimpleAvatar
+                          user={connection.connectedUser}
+                          size="md"
+                          className="w-16 h-16 sm:w-14 sm:h-14 rounded-full border-2 object-cover"
+                        />
+                        <div className="w-full">
+                          <p className="font-medium text-sm truncate text-gray-900 dark:text-white">
+                            {connection.connectedUser?.name || connection.connectedUser?.username}
+                          </p>
+                          <p className="text-xs truncate text-gray-500 dark:text-gray-400">
+                            {connection.connectedUser?.hometownCity && connection.connectedUser?.hometownCountry
+                              ? `${connection.connectedUser?.hometownCity}, ${connection.connectedUser?.hometownCountry.replace("United States", "USA")}`
+                              : "New member"}
+                          </p>
                         </div>
+
+                        {/* Show the button on ≥sm only; on mobile the whole tile is tappable */}
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => setLocation(`/profile/${connection.connectedUser?.id}`)}
-                          className="h-8 px-3 text-xs bg-blue-500 hover:bg-blue-600 text-white border-0"
+                          className="hidden sm:inline-flex h-8 px-3 text-xs bg-blue-500 hover:bg-blue-600 text-white border-0"
+                          onClick={(e) => { e.stopPropagation(); setLocation(`/profile/${connection.connectedUser?.id?.toString() || ''}`); }}
                         >
                           View
                         </Button>
                       </div>
                     ))}
+                  </div>
                     
                     {/* Load More / Load Less buttons */}
                     {userConnections.length > 3 && (
@@ -4534,48 +6091,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               </CardContent>
             </Card>
 
-            {/* Travel Stats - Hidden for business profiles */}
-            {user?.userType !== 'business' && (
-              <Card 
-                className="hover:shadow-lg transition-all duration-200 hover:border-orange-300"
-              >
-                <CardHeader>
-                  <CardTitle className="dark:text-white">Travel Stats</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600 dark:text-gray-300 flex items-center gap-2">
-                      <Sparkles className="w-4 h-4 text-orange-500" />
-                      Travel Aura
-                    </span>
-                    <span className="font-semibold text-orange-600 dark:text-orange-400">{user?.aura || 0}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600 dark:text-gray-300">Countries Visited</span>
-                    <span className="font-semibold dark:text-white">{countriesVisited.length}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600 dark:text-gray-300">Connections</span>
-                    <span className="font-semibold dark:text-white">{userConnections.length}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600 dark:text-gray-300">References</span>
-                    <span className="font-semibold dark:text-white">{references.length}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600 dark:text-gray-300">Travel Plans</span>
-                    <span className="font-semibold dark:text-white">{travelPlans.length}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600 dark:text-gray-300">City Chatrooms</span>
-                    <span className="font-semibold dark:text-white">{userChatrooms.length}</span>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
+
 
             {/* Reference Widget - Only show for other users' profiles */}
-            {!isOwnProfile && userConnections.some(conn => conn.status === 'accepted') && (
+            {!isOwnProfile && userConnections.some((conn: any) => conn.status === 'accepted') && (
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -4625,9 +6144,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           console.log('Form validation errors:', errors);
                         })} className="space-y-4">
                           
-                          {/* Hidden fields for userReferences schema */}
-                          <input type="hidden" value={user?.id} {...referenceForm.register("revieweeId")} />
-                          <input type="hidden" value={currentUser?.id} {...referenceForm.register("reviewerId")} />
+                          {/* Note: revieweeId and reviewerId handled in submission data */}
 
                           {/* Reference Content */}
                           <FormField
@@ -4692,89 +6209,194 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               </Card>
             )}
 
+            {/* MOBILE-FRIENDLY RIGHT-SIDE WIDGETS SECTION */}
+            
+            {/* Languages Widget - Top Priority for Customer Visibility */}
+            <Card className="hover:shadow-lg transition-all duration-200 border-2 border-blue-200 dark:border-blue-700 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20">
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-2">
+                    <Globe className="w-5 h-5 text-blue-600" />
+                    Languages I Speak
+                  </CardTitle>
+                  {isOwnProfile && !editingLanguages && (
+                    <Button size="sm" variant="outline" onClick={handleEditLanguages} className="border-blue-300 text-blue-700 hover:bg-blue-100 dark:border-blue-600 dark:text-blue-300">
+                      <Edit className="w-3 h-3" />
+                    </Button>
+                  )}
+                </div>
+              </CardHeader>
+              <CardContent>
+                {editingLanguages ? (
+                  <div className="space-y-3">
+                    <MultiSelect
+                      options={LANGUAGES_OPTIONS}
+                      selected={tempLanguages}
+                      onChange={setTempLanguages}
+                      placeholder="Select languages"
+                    />
+                    <div className="flex gap-2">
+                      <Button size="sm" onClick={handleSaveLanguages} disabled={updateLanguages.isPending} className="bg-blue-600 hover:bg-blue-700">
+                        {updateLanguages.isPending ? "Saving..." : "Save"}
+                      </Button>
+                      <Button size="sm" variant="outline" onClick={handleCancelLanguages}>
+                        Cancel
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    {user.languagesSpoken && user.languagesSpoken.length > 0 ? (
+                      <div className="flex flex-wrap gap-2">
+                        {user.languagesSpoken.map((language: string) => (
+                          <div key={language} className="inline-flex items-center justify-center h-10 min-w-[8.5rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-gradient-to-r from-orange-400 to-pink-500 text-white border-0 appearance-none select-none gap-1.5 shadow-md">
+                            {language}
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-gray-500 text-sm">No languages listed</p>
+                    )}
+                  </>
+                )}
+              </CardContent>
+            </Card>
+
             {/* References Widget */}
             {user?.id && (
-              <div className="references-widget-container">
-                <ReferencesWidgetNew userId={user.id} />
-              </div>
-            )}
-
-            {/* Travel Personality Assessment Widget - Show for all non-business users */}
-            {user?.userType !== 'business' && (
-              <Card className="hover:shadow-lg transition-all duration-200 hover:border-gray-300 dark:hover:border-gray-600">
+              <Card className="hover:shadow-lg transition-all duration-200">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Sparkles className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-                    Travel Personality
+                    <Star className="w-5 h-5 text-yellow-500" />
+                    References
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {personalityLoading ? (
-                    <div className="flex items-center justify-center p-4">
-                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-600 dark:border-gray-400"></div>
-                    </div>
-                  ) : userPersonalityProfile ? (
-                    <div className="space-y-3">
-                      <div className="text-sm text-gray-600 dark:text-gray-300">
-                        {isOwnProfile ? 'Your' : `${user.username}'s`} Travel Style: <span className="font-semibold text-gray-600 dark:text-gray-400 capitalize">
-                          {userPersonalityProfile.personalityType || 'Explorer'}
-                        </span>
+                  <ReferencesWidgetNew userId={user.id} />
+                </CardContent>
+              </Card>
+            )}
+
+
+            {/* Travel Intent Widget - TangoTrips-inspired */}
+            {user?.userType !== 'business' && (
+              <Card className="hover:shadow-lg transition-all duration-200 hover:border-purple-300 dark:hover:border-purple-600 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Sparkles className="w-5 h-5 text-purple-600" />
+                    Travel Intent & Style
+                    {isOwnProfile && (
+                      <Button
+                        size="sm"
+                        onClick={() => setLocation('/travel-quiz')}
+                        className="ml-auto bg-purple-600 hover:bg-purple-700 text-white border-0"
+                      >
+                        <Edit className="w-3 h-3 mr-1" />
+                        Update
+                      </Button>
+                    )}
+                  </CardTitle>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">
+                    What drives your travel and how you like to explore
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  {isOwnProfile ? (
+                    <div className="space-y-4">
+                      {/* Display Current Travel Intent */}
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Why you travel</Label>
+                          <div className="mt-1 p-2 rounded border bg-white dark:bg-gray-800">
+                            <span className="text-sm text-gray-900 dark:text-white">
+                              {user?.travelWhy || 'Not set'}
+                            </span>
+                          </div>
+                        </div>
+                        <div>
+                          <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Travel style</Label>
+                          <div className="mt-1 p-2 rounded border bg-white dark:bg-gray-800">
+                            <span className="text-sm text-gray-900 dark:text-white">
+                              {user?.travelHow || 'Not set'}
+                            </span>
+                          </div>
+                        </div>
+                        <div>
+                          <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Budget range</Label>
+                          <div className="mt-1 p-2 rounded border bg-white dark:bg-gray-800">
+                            <span className="text-sm text-gray-900 dark:text-white">
+                              {user?.travelBudget || 'Not set'}
+                            </span>
+                          </div>
+                        </div>
+                        <div>
+                          <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Group type</Label>
+                          <div className="mt-1 p-2 rounded border bg-white dark:bg-gray-800">
+                            <span className="text-sm text-gray-900 dark:text-white">
+                              {user?.travelGroup || 'Not set'}
+                            </span>
+                          </div>
+                        </div>
                       </div>
-                      <div className="grid grid-cols-2 gap-2 text-xs">
-                        <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 p-2 rounded">
-                          <div className="font-medium text-blue-700 dark:text-blue-300">Adventure</div>
-                          <div className="text-blue-600 dark:text-blue-400 capitalize">{userPersonalityProfile.travelStyle}</div>
-                        </div>
-                        <div className="bg-gradient-to-r from-green-50 to-teal-50 dark:from-green-900/20 dark:to-teal-900/20 p-2 rounded">
-                          <div className="font-medium text-green-700 dark:text-green-300">Social</div>
-                          <div className="text-green-600 dark:text-green-400 capitalize">{userPersonalityProfile.socialPreference}</div>
-                        </div>
-                        <div className="bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 p-2 rounded">
-                          <div className="font-medium text-orange-700 dark:text-orange-300">Budget</div>
-                          <div className="text-orange-600 dark:text-orange-400 capitalize">{userPersonalityProfile.budgetLevel}</div>
-                        </div>
-                        <div className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800/50 dark:to-gray-700/50 p-2 rounded">
-                          <div className="font-medium text-gray-700 dark:text-gray-300">Planning</div>
-                          <div className="text-gray-600 dark:text-gray-400 capitalize">{userPersonalityProfile.planningStyle}</div>
-                        </div>
-                      </div>
-                      <div className="flex items-center justify-between pt-2">
-                        <span className="text-xs text-gray-500 dark:text-gray-400">Compatibility Score</span>
-                        <span className="font-bold text-gray-600 dark:text-gray-400">
-                          {isOwnProfile ? '100' : (compatibilityData?.compatibilityScore || userPersonalityProfile.compatibilityScore || 0)}%
-                        </span>
-                      </div>
-                      {isOwnProfile && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setShowPersonalityAssessment(true)}
-                          className="w-full text-xs bg-gradient-to-r from-gray-500 to-gray-600 text-white border-0 hover:from-gray-600 hover:to-gray-700"
-                        >
-                          Retake Assessment
-                        </Button>
-                      )}
+                      
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setLocation('/travel-quiz')}
+                        className="w-full border-purple-500 text-purple-600 hover:bg-purple-50 dark:border-purple-400 dark:text-purple-400"
+                      >
+                        Update Travel Intent
+                      </Button>
                     </div>
                   ) : (
-                    <div className="text-center space-y-3">
-                      <div className="text-sm text-gray-600 dark:text-gray-300">
-                        {isOwnProfile 
-                          ? "Discover your travel personality to improve travel matching" 
-                          : `${user.username} hasn't completed their travel personality assessment yet`}
+                    <div className="space-y-3">
+                      <div className="grid grid-cols-2 gap-3 text-sm">
+                        <div>
+                          <span className="font-medium text-gray-700 dark:text-gray-300">Why:</span>
+                          <span className="ml-2 text-gray-900 dark:text-white">
+                            {user?.travelWhy ? user.travelWhy.charAt(0).toUpperCase() + user.travelWhy.slice(1) : 'Not shared'}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="font-medium text-gray-700 dark:text-gray-300">Style:</span>
+                          <span className="ml-2 text-gray-900 dark:text-white">
+                            {user?.travelHow ? user.travelHow.charAt(0).toUpperCase() + user.travelHow.slice(1) : 'Not shared'}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="font-medium text-gray-700 dark:text-gray-300">Budget:</span>
+                          <span className="ml-2 text-gray-900 dark:text-white">
+                            {user?.travelBudget ? user.travelBudget.charAt(0).toUpperCase() + user.travelBudget.slice(1) : 'Not shared'}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="font-medium text-gray-700 dark:text-gray-300">Group:</span>
+                          <span className="ml-2 text-gray-900 dark:text-white">
+                            {user?.travelGroup ? user.travelGroup.charAt(0).toUpperCase() + user.travelGroup.slice(1) : 'Not shared'}
+                          </span>
+                        </div>
                       </div>
-                      {isOwnProfile && (
-                        <Button
-                          onClick={() => setShowPersonalityAssessment(true)}
-                          className="w-full bg-gradient-to-r from-gray-500 to-gray-600 text-white border-0 hover:from-gray-600 hover:to-gray-700"
-                        >
-                          Take Assessment
-                        </Button>
+                      
+                      {/* Compatibility indicator when viewing other profiles */}
+                      {compatibilityData?.travelStyleCompatibility && (
+                        <div className="mt-3 p-2 rounded bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700">
+                          <div className="flex items-center gap-2">
+                            <Heart className="w-4 h-4 text-green-600" />
+                            <span className="text-sm font-medium text-green-700 dark:text-green-300">
+                              {compatibilityData.travelStyleCompatibility}% Travel Style Match
+                            </span>
+                          </div>
+                        </div>
                       )}
                     </div>
                   )}
                 </CardContent>
               </Card>
             )}
+
+
+
+
 
             {/* Friend Referral Widget - Only show for own profile and non-business users */}
             {isOwnProfile && user?.userType !== 'business' && (
@@ -4800,15 +6422,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       <div key={request.id} className="flex items-center justify-between p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors">
                         <div 
                           className="flex items-center gap-2 cursor-pointer flex-1 min-w-0 mr-2"
-                          onClick={() => setLocation(`/profile/${request.requesterUser?.id}`)}
+                          onClick={() => setLocation(`/profile/${request.requesterUser?.id?.toString() || ''}`)}
                         >
-                          <Avatar className="w-8 h-8 flex-shrink-0">
-                            <AvatarImage src={request.requesterUser?.profileImage || ""} />
-                            <AvatarFallback>
-                              {request.requesterUser?.name?.charAt(0).toUpperCase() || 
-                               request.requesterUser?.username?.charAt(0).toUpperCase() || "U"}
-                            </AvatarFallback>
-                          </Avatar>
+                          <SimpleAvatar 
+                            user={request.requesterUser} 
+                            size="sm" 
+                            className="flex-shrink-0"
+                          />
                           <div className="flex-1 min-w-0">
                             <p className="font-medium text-sm truncate text-gray-900 dark:text-white">@{request.requesterUser?.username}</p>
                             <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
@@ -4927,20 +6547,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       {countriesVisited.length > 0 ? (
                         <div className="flex flex-wrap gap-2">
                           {countriesVisited.map((country: string, index: number) => (
-                            <Badge 
+                            <div 
                               key={country} 
-                              className={`text-sm border-0 text-black dark:text-black ${
-                                index % 6 === 0 ? 'bg-gradient-to-r from-blue-500 to-blue-600' :
-                                index % 6 === 1 ? 'bg-gradient-to-r from-green-500 to-green-600' :
-                                index % 6 === 2 ? 'bg-gradient-to-r from-purple-500 to-purple-600' :
-                                index % 6 === 3 ? 'bg-gradient-to-r from-orange-500 to-orange-600' :
-                                index % 6 === 4 ? 'bg-gradient-to-r from-teal-500 to-teal-600' :
-                                'bg-gradient-to-r from-pink-500 to-pink-600'
-                              }`}
-                              style={{ color: '#000000 !important' }}
+                              className="pill-interests"
                             >
                               {country}
-                            </Badge>
+                            </div>
                           ))}
                         </div>
                       ) : (
@@ -4952,61 +6564,183 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               </Card>
             )}
 
-            {/* Languages */}
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle>Languages I Speak</CardTitle>
-                  {isOwnProfile && !editingLanguages && (
-                    <Button size="sm" variant="outline" onClick={handleEditLanguages}>
-                      <Edit className="w-3 h-3" />
-                    </Button>
-                  )}
-                </div>
-              </CardHeader>
-              <CardContent>
-                {editingLanguages ? (
-                  <div className="space-y-3">
-                    <MultiSelect
-                      options={LANGUAGES_OPTIONS}
-                      selected={tempLanguages}
-                      onChange={setTempLanguages}
-                      placeholder="Select languages"
-                    />
-                    <div className="flex gap-2">
-                      <Button size="sm" onClick={handleSaveLanguages} disabled={updateLanguages.isPending}>
-                        {updateLanguages.isPending ? "Saving..." : "Save"}
-                      </Button>
-                      <Button size="sm" variant="outline" onClick={handleCancelLanguages}>
-                        Cancel
-                      </Button>
+
+
+            {/* Comprehensive Geolocation System - Enhanced location sharing for users, businesses, and events */}
+            {console.log('🔧 Profile: Checking if location sharing should render:', { isOwnProfile, userId: user?.id })}
+            {isOwnProfile && user && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <MapPin className="h-5 w-5" />
+                    Location Sharing
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4 break-words overflow-hidden">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      {user.locationSharingEnabled ? (
+                        <Eye className="h-4 w-4 text-green-600" />
+                      ) : (
+                        <EyeOff className="h-4 w-4 text-gray-400" />
+                      )}
+                      <span className="text-sm font-medium">
+                        Share location on city map
+                      </span>
                     </div>
+                    <Switch
+                      checked={user.locationSharingEnabled || false}
+                      onCheckedChange={async (enabled) => {
+                        console.log('🔧 DIRECT: Location sharing toggle clicked:', { enabled, userId: user.id });
+                        
+                        // Update user data immediately for responsive UI
+                        const updatedUserData = { ...user, locationSharingEnabled: enabled };
+                        queryClient.setQueryData([`/api/users/${user.id}`], updatedUserData);
+                        
+                        if (enabled) {
+                          // Request location permission first
+                          if (!navigator.geolocation) {
+                            // Revert the optimistic update
+                            queryClient.setQueryData([`/api/users/${user.id}`], user);
+                            toast({
+                              title: "Location not supported",
+                              description: "Your browser doesn't support location services",
+                              variant: "destructive",
+                            });
+                            return;
+                          }
+                          
+                          // Get current location before enabling sharing
+                          navigator.geolocation.getCurrentPosition(
+                            async (position) => {
+                              const { latitude, longitude } = position.coords;
+                              console.log('🔧 DIRECT: Got location:', { latitude, longitude });
+                              
+                              try {
+                                // Update location sharing with coordinates
+                                const response = await apiRequest('PUT', `/api/users/${user.id}`, {
+                                  locationSharingEnabled: enabled,
+                                  currentLatitude: latitude,
+                                  currentLongitude: longitude
+                                });
+                                
+                                console.log('🔧 DIRECT: Location sharing updated successfully');
+                                
+                                // Update the cache with the response data
+                                queryClient.setQueryData([`/api/users/${user.id}`], response);
+                                
+                                // Also refetch to ensure consistency
+                                await queryClient.refetchQueries({ queryKey: [`/api/users/${user.id}`] });
+                                
+                                toast({
+                                  title: "Location sharing enabled",
+                                  description: "Your location is now visible on city maps",
+                                });
+                              } catch (error) {
+                                console.error('🔧 DIRECT: Error updating location sharing:', error);
+                                // Revert the optimistic update on error
+                                queryClient.setQueryData([`/api/users/${user.id}`], user);
+                                toast({
+                                  title: "Error", 
+                                  description: "Failed to update location sharing",
+                                  variant: "destructive",
+                                });
+                              }
+                            },
+                            (error) => {
+                              console.error('🔧 DIRECT: Location error:', error);
+                              // Revert the optimistic update on location error
+                              queryClient.setQueryData([`/api/users/${user.id}`], user);
+                              
+                              let message = "Unable to get your location";
+                              
+                              switch (error.code) {
+                                case error.PERMISSION_DENIED:
+                                  message = "Location access denied. Please enable location permissions in your browser settings.";
+                                  break;
+                                case error.POSITION_UNAVAILABLE:
+                                  message = "Location information unavailable.";
+                                  break;
+                                case error.TIMEOUT:
+                                  message = "Location request timed out.";
+                                  break;
+                              }
+                              
+                              toast({
+                                title: "Location Error",
+                                description: message,
+                                variant: "destructive",
+                              });
+                            },
+                            {
+                              enableHighAccuracy: true,
+                              timeout: 10000,
+                              maximumAge: 300000 // 5 minutes
+                            }
+                          );
+                        } else {
+                          // Simply disable location sharing
+                          try {
+                            const response = await apiRequest('PUT', `/api/users/${user.id}`, {
+                              locationSharingEnabled: enabled
+                            });
+                            
+                            console.log('🔧 DIRECT: Location sharing disabled');
+                            
+                            // Update the cache with the response data
+                            queryClient.setQueryData([`/api/users/${user.id}`], response);
+                            
+                            // Also refetch to ensure consistency
+                            await queryClient.refetchQueries({ queryKey: [`/api/users/${user.id}`] });
+                            
+                            toast({
+                              title: "Location sharing disabled",
+                              description: "Your location is no longer visible on city maps",
+                            });
+                          } catch (error) {
+                            console.error('🔧 DIRECT: Error disabling location sharing:', error);
+                            // Revert the optimistic update on error
+                            queryClient.setQueryData([`/api/users/${user.id}`], user);
+                            toast({
+                              title: "Error", 
+                              description: "Failed to update location sharing",
+                              variant: "destructive",
+                            });
+                          }
+                        }
+                      }}
+                      data-testid="location-sharing-toggle"
+                    />
                   </div>
-                ) : (
-                  <>
-                    {user.languagesSpoken && user.languagesSpoken.length > 0 ? (
-                      <div className="flex flex-wrap gap-2">
-                        {user.languagesSpoken.map((language: string) => (
-                          <Badge key={language} variant="secondary" className="text-sm">
-                            {language}
-                          </Badge>
-                        ))}
+
+                  {user.locationSharingEnabled && (
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                        <AlertCircle className="h-4 w-4" />
+                        <span>
+                          Your location will be visible to other users on the city map
+                          {user.userType === 'business' && ' while you are running deals and events'}
+                        </span>
                       </div>
-                    ) : (
-                      <p className="text-gray-500 text-sm">No languages listed</p>
-                    )}
-                  </>
-                )}
-              </CardContent>
-            </Card>
+                      {user.currentLatitude && user.currentLongitude && (
+                        <div className="text-xs text-gray-500 bg-gray-50 dark:bg-gray-800 p-2 rounded">
+                          Current location: {user.currentLatitude.toFixed(4)}, {user.currentLongitude.toFixed(4)}
+                        </div>
+                      )}
+                    </div>
+                  )}
 
-            {/* Location Sharing Widget - Temporarily disabled to fix white screen */}
-            {/* {isOwnProfile && (
-              <LocationSharingWidget />
-            )} */}
+                  {!user.locationSharingEnabled && (
+                    <div className="text-sm text-gray-500 dark:text-gray-400">
+                      Enable location sharing to appear on city maps and help other travelers find you
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
 
-            {/* Business Referral Program Widget - Temporarily commented to fix JSX error */}
-            {/* {isOwnProfile && user && user.userType !== 'business' && (
+            {/* Business Referral Program Widget */}
+            {isOwnProfile && user && user.userType !== 'business' && (
               <Card 
                 className="cursor-pointer hover:shadow-lg transition-shadow duration-200"
                 onClick={() => setLocation('/referrals')}
@@ -5015,6 +6749,17 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   <CardTitle className="flex items-center gap-2">
                     <Share2 className="w-5 h-5" />
                     Business Referral Program
+                    <Button
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setLocation('/referrals');
+                      }}
+                      className="ml-auto bg-green-600 hover:bg-green-700 text-white border-0"
+                    >
+                      <Edit className="w-3 h-3 mr-1" />
+                      Manage
+                    </Button>
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -5047,59 +6792,188 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </div>
                 </CardContent>
               </Card>
-            )} */}
-      {/* Platform Statistics - Admin Only (nearbytraveler) */}
-      {user?.username === 'nearbytraveler' && platformStats && (
-        <div className="max-w-6xl mx-auto px-4 py-8">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-xl font-bold text-center bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">
-                Platform Statistics (Admin View)
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <Card>
-                  <CardContent className="p-4 text-center">
-                    <Users className="w-8 h-8 text-blue-600 mx-auto mb-2" />
-                    <div className="text-2xl font-bold">
-                      {(platformStats as any)?.activeTravelers || 0}
+            )}
+
+
+            {/* Owner/Admin Contact Information - Only visible to business owner */}
+            {isOwnProfile && user?.userType === 'business' && (
+              <Card className="border-purple-200 dark:border-purple-800 bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-900/30 dark:to-indigo-900/30">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <Shield className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                      <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">
+                        Admin Information
+                      </CardTitle>
+                      <div className="inline-flex items-center justify-center h-6 min-w-[4rem] rounded-full px-2 text-xs font-medium leading-none whitespace-nowrap bg-purple-100 text-purple-700 dark:bg-purple-800 dark:text-purple-200 border-0 appearance-none select-none gap-1">
+                        Private
+                      </div>
                     </div>
-                    <div className="text-sm text-gray-600">Active travelers</div>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent className="p-4 text-center">
-                    <Heart className="w-8 h-8 text-red-600 mx-auto mb-2" />
-                    <div className="text-2xl font-bold">
-                      {(platformStats as any)?.successfulMatches || 0}
+                    {!editingOwnerInfo && (
+                      <Button
+                        size="sm"
+                        onClick={() => setEditingOwnerInfo(true)}
+                        className="bg-purple-600 hover:bg-purple-700 text-white border-0"
+                      >
+                        <Edit className="w-3 h-3 mr-1" />
+                        Edit
+                      </Button>
+                    )}
+                  </div>
+                  <p className="text-sm text-gray-700 dark:text-gray-300 mt-2">
+                    Internal contact information for platform communications
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  {editingOwnerInfo ? (
+                    <div className="space-y-4">
+                      <div>
+                        <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Business Name</Label>
+                        <Input 
+                          value={ownerContactForm.ownerName}
+                          onChange={(e) => setOwnerContactForm(prev => ({ ...prev, ownerName: e.target.value }))}
+                          placeholder="Enter business name"
+                          className="mt-1"
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Contact Name</Label>
+                        <Input 
+                          value={ownerContactForm.contactName}
+                          onChange={(e) => setOwnerContactForm(prev => ({ ...prev, contactName: e.target.value }))}
+                          placeholder="Enter main contact person name"
+                          className="mt-1"
+                        />
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                          The person we should contact (may be different from owner)
+                        </p>
+                      </div>
+                      <div>
+                        <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Contact Email</Label>
+                        <Input 
+                          value={ownerContactForm.ownerEmail}
+                          onChange={(e) => setOwnerContactForm(prev => ({ ...prev, ownerEmail: e.target.value }))}
+                          placeholder="owner@business.com"
+                          type="email"
+                          className="mt-1"
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Contact Person Phone Number</Label>
+                        <Input 
+                          value={ownerContactForm.ownerPhone}
+                          onChange={(e) => setOwnerContactForm(prev => ({ ...prev, ownerPhone: e.target.value }))}
+                          placeholder="(555) 123-4567"
+                          className="mt-1"
+                        />
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          onClick={handleSaveOwnerContact}
+                          disabled={updateOwnerContact.isPending}
+                          className="bg-purple-600 hover:bg-purple-700 text-white"
+                        >
+                          {updateOwnerContact.isPending ? "Saving..." : "Save"}
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => {
+                            setEditingOwnerInfo(false);
+                            setOwnerContactForm({
+                              ownerName: user?.ownerName || "",
+                              contactName: user?.contactName || "",
+                              ownerEmail: user?.ownerEmail || "",
+                              ownerPhone: user?.ownerPhone || ""
+                            });
+                          }}
+                          className="border-purple-500 text-purple-600 hover:bg-purple-50 dark:border-purple-400 dark:text-purple-400 dark:hover:bg-purple-900/20"
+                        >
+                          Cancel
+                        </Button>
+                      </div>
                     </div>
-                    <div className="text-sm text-gray-600">Successful matches</div>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent className="p-4 text-center">
-                    <MapPin className="w-8 h-8 text-green-600 mx-auto mb-2" />
-                    <div className="text-2xl font-bold">
-                      {(platformStats as any)?.destinationsCovered || 0}
+                  ) : (
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-gray-600 dark:text-gray-400">Business Name:</span>
+                        <span className="text-sm font-medium text-gray-900 dark:text-white">
+                          {user?.ownerName || "Not set"}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-gray-600 dark:text-gray-400">Contact Name:</span>
+                        <span className="text-sm font-medium text-gray-900 dark:text-white">
+                          {user?.contactName || "Not set"}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-gray-600 dark:text-gray-400">Contact Email:</span>
+                        {user?.ownerEmail ? (
+                          <a 
+                            href={`mailto:${user.ownerEmail}`} 
+                            className="text-sm font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 underline transition-colors"
+                          >
+                            {user.ownerEmail}
+                          </a>
+                        ) : (
+                          <span className="text-sm font-medium text-gray-900 dark:text-white">
+                            Not set
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-gray-600 dark:text-gray-400">Contact Person Phone:</span>
+                        {user?.ownerPhone ? (
+                          <a 
+                            href={`tel:${user.ownerPhone}`} 
+                            className="text-sm font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 underline transition-colors"
+                          >
+                            {user.ownerPhone}
+                          </a>
+                        ) : (
+                          <span className="text-sm font-medium text-gray-900 dark:text-white">
+                            Not set
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400 bg-purple-100 dark:bg-purple-900/50 p-2 rounded">
+                        <AlertCircle className="w-3 h-3 inline mr-1" />
+                        This information is only visible to you and used for platform communications
+                      </div>
                     </div>
-                    <div className="text-sm text-gray-600">Destinations covered</div>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent className="p-4 text-center">
-                    <TrendingUp className="w-8 h-8 text-purple-600 mx-auto mb-2" />
-                    <div className="text-2xl font-bold">
-                      {(platformStats as any)?.eventsShared || 0}
-                    </div>
-                    <div className="text-sm text-gray-600">Events Shared</div>
-                  </CardContent>
-                </Card>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      )}
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Boost Connections Widget - MOVED TO BOTTOM - Only show for own profile */}
+            {isOwnProfile && (
+              <Card className="border-orange-200 dark:border-orange-800 bg-gradient-to-br from-orange-50 to-blue-50 dark:from-orange-900/30 dark:to-blue-900/30 hover:shadow-lg transition-all duration-200">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <TrendingUp className="w-5 h-5 text-orange-600 dark:text-orange-400" />
+                    <div className="inline-flex items-center justify-center h-6 min-w-[4rem] rounded-full px-2 text-xs font-medium leading-none whitespace-nowrap bg-orange-600 text-white border-0 appearance-none select-none gap-1">Success Tips</div>
+                  </div>
+                  <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">
+                    Boost Your Connections
+                  </CardTitle>
+                  <p className="text-sm text-gray-700 dark:text-gray-300 mt-2">
+                    Get better matches and more connections with our optimization guide
+                  </p>
+                </CardHeader>
+                <CardContent className="pt-0">
+                  <Button 
+                    onClick={() => setLocation('/getting-started')}
+                    className="w-full bg-gradient-to-r from-blue-500 via-orange-500 to-violet-500 hover:from-blue-600 hover:via-orange-600 hover:to-violet-600 text-white border-0"
+                  >
+                    <Star className="w-4 h-4 mr-2" />
+                    Optimize Profile
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
           </div>
         </div>
       </div>
@@ -5264,8 +7138,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       </Dialog>
 
       {/* Travel Plan Edit Modal */}
-      <Dialog open={!!editingTravelPlan} onOpenChange={() => setEditingTravelPlan(null)}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <Dialog open={!!editingTravelPlan} onOpenChange={() => {
+        // Close travel plan editing and any profile editing to avoid conflicts
+        setEditingTravelPlan(null);
+        setEditingInterests(false);
+        setEditingActivities(false);
+        setEditingEvents(false);
+      }}>
+        <DialogContent className="w-[calc(100vw-16px)] max-w-[calc(100vw-16px)] md:max-w-4xl max-h-[85vh] md:max-h-[90vh] overflow-y-auto no-scrollbar mx-2 md:mx-auto p-4 md:p-6 safe-area-inset-bottom">
           <DialogHeader>
             <DialogTitle>Edit Travel Plan</DialogTitle>
           </DialogHeader>
@@ -5342,11 +7222,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 </div>
               </div>
 
-              {/* Interests Section */}
+              {/* Travel Plan Specific Interests Section */}
               <div>
                 <Label className="text-sm font-medium mb-2 block">
-                  Interests on This Trip
+                  <span className="text-orange-600">🌍 Travel Plan Specific Interests</span>
                 </Label>
+                <div className="text-xs text-gray-600 mb-3 p-2 bg-orange-50 rounded border">
+                  <strong>Note:</strong> These are interests specific to this travel plan only, separate from your main profile interests.
+                </div>
                 
                 {/* I am a Veteran checkbox */}
                 <div className="mb-4">
@@ -5382,7 +7265,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   />
                 </div>
                 
-                <div className="grid grid-cols-4 gap-1 border rounded-lg p-3 bg-blue-50">
+                <div className="grid grid-cols-4 gap-1 border rounded-lg p-3 bg-orange-50">
                   {getAllInterests().map((interest, index) => (
                     <div key={`interest-edit-${index}`} className="flex items-center space-x-1">
                       <FormField
@@ -5391,10 +7274,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         render={({ field }) => (
                           <Checkbox
                             id={`interest-edit-${interest}`}
-                            checked={field.value?.includes(interest)}
+                            checked={field.value?.includes(interest) || false}
                             onCheckedChange={(checked) => {
                               if (checked) {
-                                field.onChange([...field.value, interest]);
+                                field.onChange([...(field.value || []), interest]);
                               } else {
                                 field.onChange(field.value?.filter(i => i !== interest));
                               }
@@ -5410,6 +7293,44 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       </Label>
                     </div>
                   ))}
+                </div>
+                
+                {/* Custom Interests Input */}
+                <div className="mt-3">
+                  <Label className="text-xs font-medium mb-1 block text-gray-600">
+                    Add Custom Interests (comma-separated)
+                  </Label>
+                  <FormField
+                    control={form.control}
+                    name="customInterests"
+                    render={({ field }) => (
+                      <Input
+                        placeholder="e.g., Photography, Rock Climbing, Local Cuisine"
+                        value={field.value || ''}
+                        onChange={(e) => field.onChange(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            const value = field.value?.trim();
+                            if (value) {
+                              // Process custom interests by adding them to the interests array
+                              const customItems = value.split(',').map(item => item.trim()).filter(item => item);
+                              const currentInterests = form.getValues('interests') || [];
+                              const newInterests = [...currentInterests];
+                              customItems.forEach(item => {
+                                if (!newInterests.includes(item)) {
+                                  newInterests.push(item);
+                                }
+                              });
+                              form.setValue('interests', newInterests);
+                              field.onChange(''); // Clear the input
+                            }
+                          }
+                        }}
+                        className="text-xs"
+                      />
+                    )}
+                  />
                 </div>
               </div>
 
@@ -5431,10 +7352,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           render={({ field }) => (
                             <Checkbox
                               id={`activity-edit-${activity}`}
-                              checked={field.value?.includes(activity)}
+                              checked={field.value?.includes(activity) || false}
                               onCheckedChange={(checked) => {
                                 if (checked) {
-                                  field.onChange([...field.value, activity]);
+                                  field.onChange([...(field.value || []), activity]);
                                 } else {
                                   field.onChange(field.value?.filter(a => a !== activity));
                                 }
@@ -5451,6 +7372,44 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       </div>
                     );
                   })}
+                </div>
+                
+                {/* Custom Activities Input */}
+                <div className="mt-3">
+                  <Label className="text-xs font-medium mb-1 block text-gray-600">
+                    Add Custom Activities (comma-separated)
+                  </Label>
+                  <FormField
+                    control={form.control}
+                    name="customActivities"
+                    render={({ field }) => (
+                      <Input
+                        placeholder="e.g., Surfing Lessons, Wine Tasting, Museum Tours"
+                        value={field.value || ''}
+                        onChange={(e) => field.onChange(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            const value = field.value?.trim();
+                            if (value) {
+                              // Process custom activities by adding them to the activities array
+                              const customItems = value.split(',').map(item => item.trim()).filter(item => item);
+                              const currentActivities = form.getValues('activities') || [];
+                              const newActivities = [...currentActivities];
+                              customItems.forEach(item => {
+                                if (!newActivities.includes(item)) {
+                                  newActivities.push(item);
+                                }
+                              });
+                              form.setValue('activities', newActivities);
+                              field.onChange(''); // Clear the input
+                            }
+                          }
+                        }}
+                        className="text-xs"
+                      />
+                    )}
+                  />
                 </div>
               </div>
 
@@ -5469,10 +7428,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         render={({ field }) => (
                           <Checkbox
                             id={`event-edit-${event}`}
-                            checked={field.value?.includes(event)}
+                            checked={field.value?.includes(event) || false}
                             onCheckedChange={(checked) => {
                               if (checked) {
-                                field.onChange([...field.value, event]);
+                                field.onChange([...(field.value || []), event]);
                               } else {
                                 field.onChange(field.value?.filter(e => e !== event));
                               }
@@ -5489,42 +7448,43 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     </div>
                   ))}
                 </div>
-              </div>
-
-              {/* Travel Style Section */}
-              <div>
-                <Label className="text-sm font-medium mb-2 block">
-                  Travel Style
-                </Label>
                 
-                <div className="grid grid-cols-3 gap-1 border rounded-lg p-3 bg-gray-50">
-                  {BASE_TRAVELER_TYPES.map((style, index) => (
-                    <div key={`style-edit-${index}`} className="flex items-center space-x-1">
-                      <FormField
-                        control={form.control}
-                        name="travelStyle"
-                        render={({ field }) => (
-                          <Checkbox
-                            id={`style-edit-${style}`}
-                            checked={field.value?.includes(style)}
-                            onCheckedChange={(checked) => {
-                              if (checked) {
-                                field.onChange([...field.value, style]);
-                              } else {
-                                field.onChange(field.value?.filter(s => s !== style));
-                              }
-                            }}
-                          />
-                        )}
+                {/* Custom Events Input */}
+                <div className="mt-3">
+                  <Label className="text-xs font-medium mb-1 block text-gray-600">
+                    Add Custom Events (comma-separated)
+                  </Label>
+                  <FormField
+                    control={form.control}
+                    name="customEvents"
+                    render={({ field }) => (
+                      <Input
+                        placeholder="e.g., Jazz Festival, Food Market, Art Exhibition"
+                        value={field.value || ''}
+                        onChange={(e) => field.onChange(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            const value = field.value?.trim();
+                            if (value) {
+                              // Process custom events by adding them to the events array
+                              const customItems = value.split(',').map(item => item.trim()).filter(item => item);
+                              const currentEvents = form.getValues('events') || [];
+                              const newEvents = [...currentEvents];
+                              customItems.forEach(item => {
+                                if (!newEvents.includes(item)) {
+                                  newEvents.push(item);
+                                }
+                              });
+                              form.setValue('events', newEvents);
+                              field.onChange(''); // Clear the input
+                            }
+                          }
+                        }}
+                        className="text-xs"
                       />
-                      <Label 
-                        htmlFor={`style-edit-${style}`} 
-                        className="text-xs cursor-pointer leading-tight font-medium"
-                      >
-                        {style}
-                      </Label>
-                    </div>
-                  ))}
+                    )}
+                  />
                 </div>
               </div>
 
@@ -5537,7 +7497,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   control={form.control}
                   name="accommodation"
                   render={({ field }) => (
-                    <Select onValueChange={field.onChange} value={field.value}>
+                    <Select onValueChange={field.onChange} value={field.value || ""}>
                       <SelectTrigger>
                         <SelectValue placeholder="Select type" />
                       </SelectTrigger>
@@ -5604,107 +7564,310 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
       {/* Profile Edit Modal */}
       <Dialog open={isEditMode} onOpenChange={setIsEditMode}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="fixed inset-x-0 bottom-0 z-50 grid w-full gap-4 border border-slate-200 bg-white p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:slide-out-to-bottom-[48%] data-[state=open]:slide-in-from-bottom-[48%] sm:max-w-lg sm:rounded-lg sm:border dark:border-slate-800 dark:bg-slate-950 md:max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Edit Profile</DialogTitle>
+            <div className="flex items-center justify-between">
+              <DialogTitle>Edit Profile</DialogTitle>
+              <Button
+                type="button"
+                size="sm"
+                onClick={() => {
+                  console.log('🔥 SAVE BUTTON CLICKED - Header');
+                  console.log('🔥 Form errors:', profileForm.formState.errors);
+                  console.log('🔥 Form values:', profileForm.getValues());
+                  console.log('🔥 Form valid:', profileForm.formState.isValid);
+                  profileForm.handleSubmit(onSubmitProfile, (errors) => {
+                    console.log('🔥 VALIDATION ERRORS:', errors);
+                  })();
+                }}
+                disabled={editProfile.isPending}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                {editProfile.isPending ? "Saving..." : "Save"}
+              </Button>
+            </div>
           </DialogHeader>
           <Form {...profileForm}>
             <form onSubmit={profileForm.handleSubmit(onSubmitProfile)} className="space-y-6">
-              {user?.userType === 'business' && (
-                <FormField
-                  control={profileForm.control}
-                  name="businessName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Business Name</FormLabel>
-                      <FormControl>
-                        <Input 
-                          {...field} 
-                          placeholder="Enter your business name..."
-                          maxLength={100}
-                        />
-                      </FormControl>
-                      <div className="text-xs text-gray-500 text-right">
-                        {field.value?.length || 0}/100 characters
-                      </div>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )}
-              
+              {/* Business Profile Fields */}
               {user?.userType === 'business' ? (
-                <FormField
-                  control={profileForm.control}
-                  name="businessDescription"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Business Description</FormLabel>
-                      <FormControl>
-                        <Textarea 
-                          {...field} 
-                          placeholder="Describe your business, services, and what makes you special..."
-                          className="min-h-[100px] resize-none"
-                          maxLength={1000}
-                        />
-                      </FormControl>
-                      <div className="text-xs text-gray-500 text-right">
-                        {field.value?.length || 0}/1000 characters
-                      </div>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <div className="space-y-6">
+                  <FormField
+                    control={profileForm.control}
+                    name="businessName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Business Name</FormLabel>
+                        <FormControl>
+                          <Input 
+                            {...field} 
+                            placeholder="Enter your business name..."
+                            maxLength={100}
+                          />
+                        </FormControl>
+                        <div className="text-xs text-gray-500 text-right">
+                          {field.value?.length || 0}/100 characters
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+
+
+                  <FormField
+                    control={profileForm.control}
+                    name="businessType"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Business Type</FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value || ''}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select business type" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent className="dark:bg-gray-800 dark:border-gray-600">
+                            {BUSINESS_TYPES.map((type) => (
+                              <SelectItem key={type} value={type} className="dark:text-white dark:hover:bg-gray-700">
+                                {type}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={profileForm.control}
+                    name="phoneNumber"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Phone Number</FormLabel>
+                        <FormControl>
+                          <Input 
+                            {...field} 
+                            placeholder="(555) 123-4567"
+                            type="tel"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={profileForm.control}
+                    name="websiteUrl"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Website URL</FormLabel>
+                        <FormControl>
+                          <Input 
+                            {...field} 
+                            placeholder="www.yourwebsite.com"
+                            type="text"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+
+
+
+                  {/* Business Description Field */}
+                  <FormField
+                    control={profileForm.control}
+                    name="businessDescription"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Business Description</FormLabel>
+                        <FormControl>
+                          <Textarea 
+                            {...field} 
+                            placeholder="Describe your business and services..."
+                            className="min-h-[100px] resize-none"
+                            maxLength={1000}
+                          />
+                        </FormControl>
+                        <div className="text-xs text-gray-500 text-right">
+                          {field.value?.length || 0}/1000 characters {(field.value?.length || 0) < 30 && '(minimum 30 required)'}
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
               ) : (
-                <FormField
-                  control={profileForm.control}
-                  name="bio"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Bio</FormLabel>
-                      <FormControl>
-                        <Textarea 
-                          {...field} 
-                          placeholder="Tell us about yourself..."
-                          className="min-h-[100px] resize-none"
-                          maxLength={1000}
-                        />
-                      </FormControl>
-                      <div className="text-xs text-gray-500 text-right">
-                        {field.value?.length || 0}/1000 characters
-                      </div>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                /* Traveler Profile Fields */
+                <div className="space-y-6">
+                  <FormField
+                    control={profileForm.control}
+                    name="bio"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Bio</FormLabel>
+                        <FormControl>
+                          <Textarea 
+                            {...field} 
+                            placeholder="Tell us about yourself..."
+                            className="min-h-[100px] resize-none"
+                            maxLength={1000}
+                          />
+                        </FormControl>
+                        <div className="text-xs text-gray-500 text-right">
+                          {field.value?.length || 0}/1000 characters {(field.value?.length || 0) < 30 && '(minimum 30 required)'}
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={profileForm.control}
+                    name="secretActivities"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>If I could list a few Secret Local things in my hometown I would say they are...</FormLabel>
+                        <FormControl>
+                          <Textarea 
+                            {...field} 
+                            placeholder="Fill this out for others to see secret activities, hidden gems, local spots, or insider tips that only locals know about. Example: There's a hidden waterfall behind the old mill that locals love, or try the secret menu at Joe's Diner..."
+                            className="min-h-[80px] resize-none"
+                            maxLength={500}
+                          />
+                        </FormControl>
+                        <div className="text-xs text-gray-500 text-right">
+                          {field.value?.length || 0}/500 characters
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Family Travel Section */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white border-b pb-2">
+                      Family Travel
+                    </h3>
+                    
+                    <FormField
+                      control={profileForm.control}
+                      name="travelingWithChildren"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Are you traveling with children?</FormLabel>
+                          <FormControl>
+                            <div className="space-y-2 border rounded-md p-3">
+                              <div className="flex items-center space-x-2">
+                                <input
+                                  type="checkbox"
+                                  id="traveling-with-children"
+                                  checked={!!field.value}
+                                  onChange={(e) => {
+                                    const checked = e.target.checked;
+                                    field.onChange(checked);
+                                    if (!checked) {
+                                      // Clear ages when unchecked
+                                      profileForm.setValue('childrenAges', '');
+                                    }
+                                  }}
+                                  className="h-4 w-4 border-gray-300 rounded text-purple-600 focus:ring-purple-500"
+                                  data-testid="checkbox-traveling-with-children"
+                                />
+                                <label 
+                                  htmlFor="traveling-with-children" 
+                                  className="text-sm font-medium text-gray-700 dark:text-white cursor-pointer"
+                                >
+                                  Yes, I'm traveling with children
+                                </label>
+                              </div>
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    {/* Children Ages Field - Only show if traveling with children is checked */}
+                    {profileForm.watch('travelingWithChildren') && (
+                      <FormField
+                        control={profileForm.control}
+                        name="childrenAges"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Children's Ages</FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder="e.g., 3, 7, 12"
+                                {...field}
+                                className="dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+                              />
+                            </FormControl>
+                            <FormDescription>
+                              Enter the ages of your children (separated by commas)
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    )}
+                  </div>
+                </div>
               )}
 
-              {user?.userType !== 'business' && (
-                <FormField
-                  control={profileForm.control}
-                  name="secretActivities"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>If I could list a few Secret Local things in my hometown I would say they are...</FormLabel>
-                      <FormControl>
-                        <Textarea 
-                          {...field} 
-                          placeholder="Secret activities you'd share with Nearby Travelers and friends..."
-                          className="min-h-[80px] resize-none"
-                          maxLength={500}
-                        />
-                      </FormControl>
-                      <div className="text-xs text-gray-500 text-right">
-                        {field.value?.length || 0}/500 characters
-                      </div>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )}
-
+              {/* Location Section - Different for Business vs Traveler */}
               <div className="space-y-4">
-                <FormLabel>Hometown Location ** ONLY CHANGE IF YOU MOVE **</FormLabel>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white border-b pb-2">
+                  {user?.userType === 'business' ? 'Business Location' : 'Hometown Location ** ONLY CHANGE IF YOU MOVE **'}
+                </h3>
+                
+                {/* Business users get street address and ZIP code fields first */}
+                {user?.userType === 'business' && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      control={profileForm.control}
+                      name="streetAddress"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Street Address</FormLabel>
+                          <FormControl>
+                            <Input 
+                              {...field} 
+                              placeholder="123 Main Street"
+                              className="dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={profileForm.control}
+                      name="zipCode"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>ZIP Code</FormLabel>
+                          <FormControl>
+                            <Input 
+                              {...field} 
+                              placeholder="12345"
+                              className="dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                )}
+                
+                {/* Standard location dropdowns for all users */}
                 <SmartLocationInput
                   city={profileForm.watch('hometownCity') || ''}
                   state={profileForm.watch('hometownState') || ''}
@@ -5716,9 +7879,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   }}
                   required={false}
                   placeholder={{
-                    country: "Select your hometown country",
-                    state: "Select your hometown state/region", 
-                    city: "Select your hometown city"
+                    country: user?.userType === 'business' ? "Select your business country" : "Select your hometown country",
+                    state: user?.userType === 'business' ? "Select your business state/region" : "Select your hometown state/region", 
+                    city: user?.userType === 'business' ? "Select your business city" : "Select your hometown city"
                   }}
                 />
               </div>
@@ -5746,15 +7909,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             min={getDateInputConstraints().min}
                             max={getDateInputConstraints().max}
                             onChange={(e) => {
-                              const { isValid, message } = validateDateInput(e.target.value);
                               field.onChange(e.target.value);
-                              if (!isValid && e.target.value) {
-                                toast({
-                                  title: "Invalid Date",
-                                  description: message,
-                                  variant: "destructive",
-                                });
-                              }
                             }}
                             className="dark:bg-gray-800 dark:border-gray-600 dark:text-white [&::-webkit-calendar-picker-indicator]:dark:invert"
                           />
@@ -5768,7 +7923,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     control={profileForm.control}
                     name="ageVisible"
                     render={({ field }) => (
-                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
+                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-600">
                         <div className="space-y-0.5">
                           <FormLabel>Show Age</FormLabel>
                           <div className="text-sm text-gray-500">
@@ -5810,7 +7965,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Gender</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <Select onValueChange={field.onChange} defaultValue={field.value ?? ''}>
                           <FormControl>
                             <SelectTrigger>
                               <SelectValue placeholder="Select gender" />
@@ -5836,7 +7991,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       <FormItem>
                         <FormLabel>Sexual Preference (Select all that apply)</FormLabel>
                         <FormControl>
-                          <div className="space-y-2 max-h-32 overflow-y-auto border rounded-md p-3">
+                          <div className="space-y-2 border rounded-md p-3">
                             {SEXUAL_PREFERENCE_OPTIONS.map((preference) => (
                               <div key={preference} className="flex items-center space-x-2">
                                 <input
@@ -5877,7 +8032,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   control={profileForm.control}
                   name="sexualPreferenceVisible"
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
+                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-600">
                       <div className="space-y-0.5">
                         <FormLabel>Show Sexual Preference</FormLabel>
                         <div className="text-sm text-gray-500 dark:text-gray-400">
@@ -5904,202 +8059,497 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 />
               )}
 
-              {/* Business Contact Information - Only show for business users */}
-              {user?.userType === 'business' && (
-                <div className="space-y-4">
-                  <div className="border-t pt-4">
-                    <h3 className="text-lg font-semibold mb-3">Business Contact Information</h3>
+
+
+              {/* Profile Interests, Activities, and Events Section - For non-business users only */}
+              {user?.userType !== 'business' && (
+              <div className="space-y-6">
+                <div className="border-t pt-4">
+                  <h3 className="text-lg font-semibold mb-4 text-orange-600">Local Interests, Activities & Events</h3>
+                  <div className="text-sm text-gray-600 mb-4 p-3 bg-orange-50 rounded border">
+                    <strong>Tell us what you're interested in!</strong> Select categories that match your interests to connect with like-minded travelers and locals.
+                  </div>
+                  
+                  {/* Main Profile Interests Section */}
+                  <div className="mb-6">
+                    <Label className="text-sm font-medium mb-2 block">
+                      <span className="text-orange-600">🌟 My Local Interests</span>
+                    </Label>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-4 gap-1 border rounded-lg p-3 bg-orange-50">
+                      {getAllInterests().map((interest, index) => (
+                        <div key={`profile-interest-${index}`} className="flex items-center space-x-1">
+                          <FormField
+                            control={profileForm.control}
+                            name="interests"
+                            render={({ field }) => (
+                              <Checkbox
+                                id={`profile-interest-${interest}`}
+                                checked={field.value?.includes(interest) || false}
+                                onCheckedChange={(checked) => {
+                                  if (checked) {
+                                    field.onChange([...(field.value || []), interest]);
+                                  } else {
+                                    field.onChange(field.value?.filter(i => i !== interest));
+                                  }
+                                }}
+                              />
+                            )}
+                          />
+                          <Label 
+                            htmlFor={`profile-interest-${interest}`} 
+                            className="text-xs cursor-pointer leading-tight font-medium"
+                          >
+                            {interest}
+                          </Label>
+                        </div>
+                      ))}
+                    </div>
+                    
+                    {/* Custom Interests Input */}
+                    <div className="mt-3">
+                      <Label className="text-xs font-medium mb-1 block text-gray-600">
+                        Add Custom Interests (comma-separated)
+                      </Label>
                       <FormField
                         control={profileForm.control}
-                        name="streetAddress"
+                        name="customInterests"
                         render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Street Address</FormLabel>
-                            <FormControl>
-                              <Input {...field} placeholder="123 Main Street" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <FormField
-                        control={profileForm.control}
-                        name="zipCode"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>ZIP Code</FormLabel>
-                            <FormControl>
-                              <Input {...field} placeholder="10001" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <FormField
-                        control={profileForm.control}
-                        name="phoneNumber"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Phone Number</FormLabel>
-                            <FormControl>
-                              <Input {...field} placeholder="(555) 123-4567" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <FormField
-                        control={profileForm.control}
-                        name="websiteUrl"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Website URL</FormLabel>
-                            <FormControl>
-                              <Input {...field} placeholder="https://www.yourbusiness.com" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
+                          <Input
+                            placeholder="e.g., Photography, Rock Climbing, Local Cuisine, Art History"
+                            value={field.value || ''}
+                            onChange={(e) => field.onChange(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault();
+                                const value = field.value?.trim();
+                                if (value) {
+                                  // Process custom interests by adding them to the interests array
+                                  const customItems = value.split(',').map(item => item.trim()).filter(item => item);
+                                  const currentInterests = profileForm.getValues('interests') || [];
+                                  const newInterests = [...currentInterests];
+                                  customItems.forEach(item => {
+                                    if (!newInterests.includes(item)) {
+                                      newInterests.push(item);
+                                    }
+                                  });
+                                  profileForm.setValue('interests', newInterests);
+                                  field.onChange(''); // Clear the input
+                                }
+                              }
+                            }}
+                            className="text-xs"
+                          />
                         )}
                       />
                     </div>
+                  </div>
+
+                  {/* Main Profile Activities Section */}
+                  <div className="mb-6">
+                    <Label className="text-sm font-medium mb-2 block">
+                      <span className="text-green-600">🏃‍♂️ Activities I Enjoy</span>
+                    </Label>
                     
-                    {/* Military Status for Business */}
-                    <div className="space-y-4 border-t pt-4 mt-4">
-                      <h4 className="font-semibold mb-3">Military Status</h4>
-                      
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <FormField
-                          control={profileForm.control}
-                          name="isVeteran"
-                          render={({ field }) => (
-                            <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4">
-                              <FormControl>
-                                <input
-                                  type="checkbox"
-                                  checked={field.value || false}
-                                  onChange={field.onChange}
-                                  className="h-4 w-4"
+                    <div className="grid grid-cols-4 gap-1 border rounded-lg p-3 bg-green-50">
+                      {getAllActivities().map((activity, index) => {
+                        const displayText = activity.startsWith("**") && activity.endsWith("**") ? 
+                          activity.slice(2, -2) : activity;
+                        return (
+                          <div key={`profile-activity-${index}`} className="flex items-center space-x-1">
+                            <FormField
+                              control={profileForm.control}
+                              name="activities"
+                              render={({ field }) => (
+                                <Checkbox
+                                  id={`profile-activity-${activity}`}
+                                  checked={field.value?.includes(activity) || false}
+                                  onCheckedChange={(checked) => {
+                                    if (checked) {
+                                      field.onChange([...(field.value || []), activity]);
+                                    } else {
+                                      field.onChange(field.value?.filter(a => a !== activity));
+                                    }
+                                  }}
                                 />
-                              </FormControl>
-                              <div className="space-y-1 leading-none">
-                                <FormLabel>Veteran Owned Business</FormLabel>
-                                <div className="text-sm text-gray-500">
-                                  Check if your business is veteran-owned
-                                </div>
-                              </div>
-                            </FormItem>
-                          )}
-                        />
-                        
-                        <FormField
-                          control={profileForm.control}
-                          name="isActiveDuty"
-                          render={({ field }) => (
-                            <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4">
-                              <FormControl>
-                                <input
-                                  type="checkbox"
-                                  checked={field.value || false}
-                                  onChange={field.onChange}
-                                  className="h-4 w-4"
-                                />
-                              </FormControl>
-                              <div className="space-y-1 leading-none">
-                                <FormLabel>Active Duty Owned Business</FormLabel>
-                                <div className="text-sm text-gray-500">
-                                  Check if your business is active duty-owned
-                                </div>
-                              </div>
-                            </FormItem>
-                          )}
-                        />
-                      </div>
+                              )}
+                            />
+                            <Label 
+                              htmlFor={`profile-activity-${activity}`} 
+                              className="text-xs cursor-pointer leading-tight font-medium"
+                            >
+                              {displayText}
+                            </Label>
+                          </div>
+                        );
+                      })}
+                    </div>
+                    
+                    {/* Custom Activities Input */}
+                    <div className="mt-3">
+                      <Label className="text-xs font-medium mb-1 block text-gray-600">
+                        Add Custom Activities (comma-separated)
+                      </Label>
+                      <FormField
+                        control={profileForm.control}
+                        name="customActivities"
+                        render={({ field }) => (
+                          <Input
+                            placeholder="e.g., Surfing Lessons, Wine Tasting, Museum Tours, Rock Concerts"
+                            value={field.value || ''}
+                            onChange={(e) => field.onChange(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault();
+                                const value = field.value?.trim();
+                                if (value) {
+                                  // Process custom activities by adding them to the activities array
+                                  const customItems = value.split(',').map(item => item.trim()).filter(item => item);
+                                  const currentActivities = profileForm.getValues('activities') || [];
+                                  const newActivities = [...currentActivities];
+                                  customItems.forEach(item => {
+                                    if (!newActivities.includes(item)) {
+                                      newActivities.push(item);
+                                    }
+                                  });
+                                  profileForm.setValue('activities', newActivities);
+                                  field.onChange(''); // Clear the input
+                                }
+                              }
+                            }}
+                            className="text-xs"
+                          />
+                        )}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Main Profile Events Section */}
+                  <div className="mb-6">
+                    <Label className="text-sm font-medium mb-2 block">
+                      <span className="text-blue-600">🎪 Events I Like to Attend</span>
+                    </Label>
+                    
+                    <div className="grid grid-cols-4 gap-1 border rounded-lg p-3 bg-blue-50">
+                      {getAllEvents().map((event, index) => (
+                        <div key={`profile-event-${index}`} className="flex items-center space-x-1">
+                          <FormField
+                            control={profileForm.control}
+                            name="events"
+                            render={({ field }) => (
+                              <Checkbox
+                                id={`profile-event-${event}`}
+                                checked={field.value?.includes(event) || false}
+                                onCheckedChange={(checked) => {
+                                  if (checked) {
+                                    field.onChange([...(field.value || []), event]);
+                                  } else {
+                                    field.onChange(field.value?.filter(e => e !== event));
+                                  }
+                                }}
+                              />
+                            )}
+                          />
+                          <Label 
+                            htmlFor={`profile-event-${event}`} 
+                            className="text-xs cursor-pointer leading-tight font-medium"
+                          >
+                            {event}
+                          </Label>
+                        </div>
+                      ))}
+                    </div>
+                    
+                    {/* Custom Events Input */}
+                    <div className="mt-3">
+                      <Label className="text-xs font-medium mb-1 block text-gray-600">
+                        Add Custom Events (comma-separated)
+                      </Label>
+                      <FormField
+                        control={profileForm.control}
+                        name="customEvents"
+                        render={({ field }) => (
+                          <Input
+                            placeholder="e.g., Jazz Festival, Food Market, Art Exhibition, Tech Conferences"
+                            value={field.value || ''}
+                            onChange={(e) => field.onChange(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault();
+                                const value = field.value?.trim();
+                                if (value) {
+                                  // Process custom events by adding them to the events array
+                                  const customItems = value.split(',').map(item => item.trim()).filter(item => item);
+                                  const currentEvents = profileForm.getValues('events') || [];
+                                  const newEvents = [...currentEvents];
+                                  customItems.forEach(item => {
+                                    if (!newEvents.includes(item)) {
+                                      newEvents.push(item);
+                                    }
+                                  });
+                                  profileForm.setValue('events', newEvents);
+                                  field.onChange(''); // Clear the input
+                                }
+                              }
+                            }}
+                            className="text-xs"
+                          />
+                        )}
+                      />
                     </div>
                   </div>
                 </div>
-              )}
-
-              {/* Military Status Section - Only show for non-business users */}
-              {user?.userType !== 'business' && (
-                <div className="space-y-4">
-                  <div className="border-t pt-4">
-                    <h3 className="text-lg font-semibold mb-3">Military Status</h3>
-                  
-                  {/* Veteran Status */}
-                  <FormField
-                    control={profileForm.control}
-                    name="isVeteran"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
-                        <div className="space-y-0.5">
-                          <FormLabel>I am a Veteran</FormLabel>
-                          <div className="text-sm text-gray-500">
-                            Check if you have served in the military and are now a veteran
-                          </div>
-                        </div>
-                        <FormControl>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={() => {
-                              const newValue = !field.value;
-                              field.onChange(newValue);
-                              // If setting veteran to true, set active duty to false
-                              if (newValue) {
-                                profileForm.setValue('isActiveDuty', false);
-                              }
-                            }}
-                            className={`flex items-center gap-2 ${field.value ? 'bg-red-100 border-red-300 text-red-700' : ''}`}
-                          >
-                            {field.value ? '✓ Veteran' : 'Not Veteran'}
-                          </Button>
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-
-                  {/* Active Duty Status */}
-                  <FormField
-                    control={profileForm.control}
-                    name="isActiveDuty"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
-                        <div className="space-y-0.5">
-                          <FormLabel>I am Active Duty</FormLabel>
-                          <div className="text-sm text-gray-500">
-                            Check if you are currently serving in the military on active duty
-                          </div>
-                        </div>
-                        <FormControl>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={() => {
-                              const newValue = !field.value;
-                              field.onChange(newValue);
-                              // If setting active duty to true, set veteran to false
-                              if (newValue) {
-                                profileForm.setValue('isVeteran', false);
-                              }
-                            }}
-                            className={`flex items-center gap-2 ${field.value ? 'bg-blue-100 border-blue-300 text-blue-700' : ''}`}
-                          >
-                            {field.value ? '✓ Active Duty' : 'Not Active Duty'}
-                          </Button>
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                </div>
               </div>
               )}
+
+              {/* Military Status Section */}
+              <div className="space-y-4">
+                <div className="border-t pt-4">
+                  <h3 className="text-lg font-semibold mb-3 text-gray-900 dark:text-white">Military Status</h3>
+                
+                {/* Veteran Status */}
+                <FormField
+                  control={profileForm.control}
+                  name="isVeteran"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-600">
+                      <div className="space-y-0.5">
+                        <FormLabel className="text-gray-900 dark:text-white">{user?.userType === 'business' ? 'Veteran Owned Business' : 'I am a Veteran'}</FormLabel>
+                        <div className="text-sm text-gray-500 dark:text-gray-400">
+                          {user?.userType === 'business' 
+                            ? 'Check if your business is veteran-owned'
+                            : 'Check if you have served in the military and are now a veteran'
+                          }
+                        </div>
+                      </div>
+                      <FormControl>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            const newValue = !field.value;
+                            field.onChange(newValue);
+                            // If setting veteran to true, set active duty to false
+                            if (newValue) {
+                              profileForm.setValue('isActiveDuty', false);
+                            }
+                          }}
+                          className={`flex items-center gap-2 ${field.value ? 'bg-red-100 border-red-300 text-red-700 dark:bg-red-900/20 dark:border-red-600 dark:text-red-200' : 'dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200'}`}
+                        >
+                          {field.value ? '✓ Veteran' : 'Not Veteran'}
+                        </Button>
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+
+                {/* Active Duty Status */}
+                <FormField
+                  control={profileForm.control}
+                  name="isActiveDuty"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-600">
+                      <div className="space-y-0.5">
+                        <FormLabel className="text-gray-900 dark:text-white">{user?.userType === 'business' ? 'Active Duty Owned Business' : 'I am Active Duty'}</FormLabel>
+                        <div className="text-sm text-gray-500 dark:text-gray-400">
+                          {user?.userType === 'business'
+                            ? 'Check if your business is active duty-owned'
+                            : 'Check if you are currently serving in the military on active duty'
+                          }
+                        </div>
+                      </div>
+                      <FormControl>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            const newValue = !field.value;
+                            field.onChange(newValue);
+                            // If setting active duty to true, set veteran to false
+                            if (newValue) {
+                              profileForm.setValue('isVeteran', false);
+                            }
+                          }}
+                          className={`flex items-center gap-2 ${field.value ? 'bg-blue-100 border-blue-300 text-blue-700 dark:bg-blue-900/20 dark:border-blue-600 dark:text-blue-200' : 'dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200'}`}
+                        >
+                          {field.value ? '✓ Active Duty' : 'Not Active Duty'}
+                        </Button>
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+
+            {/* Diversity Business Ownership - Only show for business users */}
+            {user?.userType === 'business' && (
+              <div className="space-y-4">
+                <div className="border-t pt-4">
+                  <h3 className="text-lg font-semibold mb-3 text-gray-900 dark:text-white">Diversity Business Ownership</h3>
+                  <div className="text-sm text-gray-600 dark:text-gray-300 mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                    These categories can be hidden from public view but will still appear in keyword searches to help customers find diverse businesses.
+                  </div>
+                
+                {/* Minority Owned Business */}
+                <FormField
+                  control={profileForm.control}
+                  name="isMinorityOwned"
+                  render={({ field }) => (
+                    <FormItem className="space-y-3 rounded-lg border p-4 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-600">
+                      <div className="flex flex-row items-center justify-between">
+                        <div className="space-y-0.5">
+                          <FormLabel className="text-gray-900 dark:text-white">Minority Owned Business</FormLabel>
+                          <div className="text-sm text-gray-500 dark:text-gray-400">
+                            Check if your business is minority-owned
+                          </div>
+                        </div>
+                        <FormControl>
+                          <input
+                            type="checkbox"
+                            checked={field.value}
+                            onChange={(e) => field.onChange(e.target.checked)}
+                            className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:checked:bg-purple-600 rounded"
+                          />
+                        </FormControl>
+                      </div>
+                      {field.value && (
+                        <FormField
+                          control={profileForm.control}
+                          name="showMinorityOwned"
+                          render={({ field: publicField }) => (
+                            <FormItem className="flex flex-row items-center space-x-3 space-y-0 ml-6">
+                              <FormControl>
+                                <input
+                                  type="checkbox"
+                                  checked={publicField.value}
+                                  onChange={(e) => publicField.onChange(e.target.checked)}
+                                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                />
+                              </FormControl>
+                              <div className="space-y-1 leading-none">
+                                <FormLabel className="text-sm font-normal text-gray-600 dark:text-gray-300">
+                                  Show publicly (uncheck to hide but keep searchable)
+                                </FormLabel>
+                              </div>
+                            </FormItem>
+                          )}
+                        />
+                      )}
+                    </FormItem>
+                  )}
+                />
+
+                {/* Female Owned Business */}
+                <FormField
+                  control={profileForm.control}
+                  name="isFemaleOwned"
+                  render={({ field }) => (
+                    <FormItem className="space-y-3 rounded-lg border p-4 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-600">
+                      <div className="flex flex-row items-center justify-between">
+                        <div className="space-y-0.5">
+                          <FormLabel className="text-gray-900 dark:text-white">Female Owned Business</FormLabel>
+                          <div className="text-sm text-gray-500 dark:text-gray-400">
+                            Check if your business is female-owned
+                          </div>
+                        </div>
+                        <FormControl>
+                          <input
+                            type="checkbox"
+                            checked={field.value}
+                            onChange={(e) => field.onChange(e.target.checked)}
+                            className="h-4 w-4 text-pink-600 focus:ring-pink-500 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:checked:bg-pink-600 rounded"
+                          />
+                        </FormControl>
+                      </div>
+                      {field.value && (
+                        <FormField
+                          control={profileForm.control}
+                          name="showFemaleOwned"
+                          render={({ field: publicField }) => (
+                            <FormItem className="flex flex-row items-center space-x-3 space-y-0 ml-6">
+                              <FormControl>
+                                <input
+                                  type="checkbox"
+                                  checked={publicField.value}
+                                  onChange={(e) => publicField.onChange(e.target.checked)}
+                                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                />
+                              </FormControl>
+                              <div className="space-y-1 leading-none">
+                                <FormLabel className="text-sm font-normal text-gray-600 dark:text-gray-300">
+                                  Show publicly (uncheck to hide but keep searchable)
+                                </FormLabel>
+                              </div>
+                            </FormItem>
+                          )}
+                        />
+                      )}
+                    </FormItem>
+                  )}
+                />
+
+                {/* LGBTQIA+ Owned Business */}
+                <FormField
+                  control={profileForm.control}
+                  name="isLGBTQIAOwned"
+                  render={({ field }) => (
+                    <FormItem className="space-y-3 rounded-lg border p-4 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-600">
+                      <div className="flex flex-row items-center justify-between">
+                        <div className="space-y-0.5">
+                          <FormLabel className="text-gray-900 dark:text-white">LGBTQIA+ Owned Business</FormLabel>
+                          <div className="text-sm text-gray-500 dark:text-gray-400">
+                            Check if your business is LGBTQIA+ owned
+                          </div>
+                        </div>
+                        <FormControl>
+                          <input
+                            type="checkbox"
+                            checked={field.value}
+                            onChange={(e) => field.onChange(e.target.checked)}
+                            className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:checked:bg-purple-600 rounded"
+                            style={{ accentColor: '#8B5CF6' }}
+                          />
+                        </FormControl>
+                      </div>
+                      {field.value && (
+                        <FormField
+                          control={profileForm.control}
+                          name="showLGBTQIAOwned"
+                          render={({ field: publicField }) => (
+                            <FormItem className="flex flex-row items-center space-x-3 space-y-0 ml-6">
+                              <FormControl>
+                                <input
+                                  type="checkbox"
+                                  checked={publicField.value}
+                                  onChange={(e) => publicField.onChange(e.target.checked)}
+                                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                />
+                              </FormControl>
+                              <div className="space-y-1 leading-none">
+                                <FormLabel className="text-sm font-normal text-gray-600 dark:text-gray-300">
+                                  Show publicly (uncheck to hide but keep searchable)
+                                </FormLabel>
+                              </div>
+                            </FormItem>
+                          )}
+                        />
+                      )}
+                    </FormItem>
+                  )}
+                />
+
+                <div className="mt-4 p-3 bg-gray-100 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
+                  <h4 className="text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Privacy & Search Information:</h4>
+                  <ul className="text-xs text-gray-600 dark:text-gray-300 space-y-1">
+                    <li>• Even if unchecked for public display, these categories remain searchable</li>
+                    <li>• Customers can find your business using keywords like "minority owned", "female owned", etc.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            )}
 
               <div className="flex gap-2 pt-4">
                 <Button 
@@ -6114,6 +8564,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   type="submit" 
                   disabled={editProfile.isPending}
                   className="flex-1"
+                  onClick={() => {
+                    console.log('🔥 SAVE BUTTON CLICKED');
+                    console.log('🔥 Form errors:', profileForm.formState.errors);
+                    console.log('🔥 Form values:', profileForm.getValues());
+                    console.log('🔥 Form valid:', profileForm.formState.isValid);
+                  }}
                 >
                   {editProfile.isPending ? "Saving..." : "Save Changes"}
                 </Button>
@@ -6147,44 +8603,67 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         </DialogContent>
       </Dialog>
 
-      {/* Travel Plan Details Modal */}
+      {/* Travel Plan Details Modal - FIXED WITH PROPER BACK NAVIGATION */}
       <Dialog open={showTravelPlanDetails} onOpenChange={setShowTravelPlanDetails}>
-        <DialogContent className="max-w-2xl bg-black text-white border-gray-600">
+        <DialogContent className="max-w-2xl bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-white">
-              <MapPin className="w-5 h-5 text-white" />
+            <DialogTitle className="flex items-center gap-2 text-gray-900 dark:text-white">
+              <MapPin className="w-5 h-5" />
               {selectedTravelPlan?.destination} Trip Details
             </DialogTitle>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+              onClick={() => setShowTravelPlanDetails(false)}
+            >
+              <X className="w-4 h-4" />
+            </Button>
           </DialogHeader>
           
           {selectedTravelPlan && (
-            <div className="space-y-6">
+            <div className="space-y-4">
               {/* Trip Info */}
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="font-medium text-lg text-white">{selectedTravelPlan.destination}</h3>
-                  <p className="text-gray-300 text-sm">
+                  <h3 className="font-medium text-lg text-gray-900 dark:text-white">{selectedTravelPlan.destination}</h3>
+                  <p className="text-gray-600 dark:text-gray-400 text-sm">
                     {selectedTravelPlan.startDate ? formatDateForDisplay(selectedTravelPlan.startDate, user?.currentCity || 'UTC') : 'Start date TBD'} - {selectedTravelPlan.endDate ? formatDateForDisplay(selectedTravelPlan.endDate, user?.currentCity || 'UTC') : 'End date TBD'}
                   </p>
                 </div>
-                <Badge variant="outline" className="text-sm text-white border-gray-500">
+                <div className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-purple-500 text-white border-0 appearance-none select-none gap-1.5">
                   Trip Details
-                </Badge>
+                </div>
+              </div>
+              
+              {/* Close Button */}
+              <div className="flex justify-end">
+                <Button 
+                  onClick={() => setShowTravelPlanDetails(false)}
+                  className="bg-gradient-to-r from-blue-500 to-orange-500 text-white border-0 hover:from-blue-600 hover:to-orange-600"
+                >
+                  Close
+                </Button>
               </div>
 
-              {/* Interests */}
+              {/* Interests - LIMITED TO PREVENT OVERWHELMING */}
               {selectedTravelPlan.interests && selectedTravelPlan.interests.length > 0 && (
                 <div>
-                  <h4 className="font-medium text-sm mb-3 flex items-center gap-2 text-white">
-                    <Star className="w-4 h-4 text-white" />
-                    Interests
+                  <h4 className="font-medium text-sm mb-3 flex items-center gap-2 text-gray-900 dark:text-white">
+                    <Star className="w-4 h-4" />
+                    Top Interests ({selectedTravelPlan.interests.length})
                   </h4>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                    {selectedTravelPlan.interests.map((interest) => (
-                      <Badge key={interest} variant="secondary" className="text-xs bg-blue-900 text-blue-200 border-blue-700 justify-center">
+                    {selectedTravelPlan.interests.slice(0, 9).map((interest) => (
+                      <div key={interest} className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
                         {interest}
-                      </Badge>
+                      </div>
                     ))}
+                    {selectedTravelPlan.interests.length > 9 && (
+                      <div className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
+                        +{selectedTravelPlan.interests.length - 9} more
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
@@ -6198,9 +8677,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </h4>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                     {selectedTravelPlan.activities.map((activity) => (
-                      <Badge key={activity} variant="secondary" className="text-xs bg-green-900 text-green-200 border-green-700 justify-center">
+                      <div key={activity} className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-green-500 text-white border-0 appearance-none select-none gap-1.5">
                         {activity}
-                      </Badge>
+                      </div>
                     ))}
                   </div>
                 </div>
@@ -6215,9 +8694,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </h4>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                     {selectedTravelPlan.events.map((event) => (
-                      <Badge key={event} variant="secondary" className="text-xs bg-purple-900 text-purple-200 border-purple-700 justify-center">
+                      <div key={event} className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-purple-500 text-white border-0 appearance-none select-none gap-1.5">
                         {event}
-                      </Badge>
+                      </div>
                     ))}
                   </div>
                 </div>
@@ -6232,9 +8711,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </h4>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                     {selectedTravelPlan.travelStyle.map((style) => (
-                      <Badge key={style} variant="secondary" className="text-xs bg-orange-900 text-orange-200 border-orange-700 justify-center">
+                      <div key={style} className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
                         {style}
-                      </Badge>
+                      </div>
                     ))}
                   </div>
                 </div>
@@ -6260,7 +8739,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       {/* Simplified Cover Photo Selector Dialog */}
       {showCoverPhotoSelector && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto no-scrollbar">
             <div className="p-4 border-b flex justify-between items-center">
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Choose Cover Photo</h2>
               <button
@@ -6612,7 +9091,71 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           </div>
         </DialogContent>
       </Dialog>
-    </div>
+      
+      {/* Chatroom List Modal */}
+      <Dialog open={showChatroomList} onOpenChange={setShowChatroomList}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Users className="w-5 h-5" />
+              {isOwnProfile ? 'Your City Chatrooms' : `${user?.username}'s City Chatrooms`}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            {userChatrooms.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                <Users className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+                <p>No city chatrooms yet</p>
+                {isOwnProfile && (
+                  <p className="text-sm mt-2">Join some city chatrooms to connect with locals and travelers!</p>
+                )}
+              </div>
+            ) : (
+              userChatrooms.map((chatroom: any) => (
+                <div 
+                  key={chatroom.id}
+                  className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+                  onClick={() => {
+                    setShowChatroomList(false);
+                    setLocation(`/simple-chatroom/${chatroom.id}`);
+                  }}
+                >
+                  <div className="flex-1 min-w-0">
+                    <div className="font-medium text-gray-800 dark:text-gray-200 truncate">
+                      {chatroom.name}
+                    </div>
+                    <div className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-2">
+                      📍 {chatroom.city}
+                      {chatroom.role === 'admin' && (
+                        <span className="inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0">
+                          Admin
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="text-sm text-gray-500 dark:text-gray-400 ml-4">
+                    {chatroom.member_count} members
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+          {userChatrooms.length > 0 && (
+            <div className="text-center pt-4">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setShowChatroomList(false);
+                  setLocation('/city-chatrooms');
+                }}
+              >
+                View All City Chatrooms
+              </Button>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
 
