@@ -450,11 +450,10 @@ export class DatabaseStorage implements IStorage {
     }
   ];
 
-  // Metropolitan area consolidation function
+  // DISABLED: Metropolitan area consolidation function - no forced consolidation per user request
   private consolidateToMetropolitanArea(city: string, state?: string | null, country?: string | null): string {
-    if (!city) return '';
-    
-    const cityLower = city.toLowerCase();
+    // DISABLED: Return original city without any consolidation
+    return city;
     const stateLower = (state || '').toLowerCase();
     const countryLower = (country || '').toLowerCase();
     

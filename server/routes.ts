@@ -190,7 +190,7 @@ interface MetropolitanArea {
   cities: string[];
 }
 
-// ENABLED: Global metropolitan area consolidation for all major cities
+// NO HARDCODED METRO AREAS - Removed all forced consolidation arrays
 const GLOBAL_METROPOLITAN_AREAS: MetropolitanArea[] = [
   // Los Angeles Metropolitan Area
   {
@@ -387,50 +387,13 @@ const GLOBAL_METROPOLITAN_AREAS: MetropolitanArea[] = [
 
 // ENABLED: Metro consolidation functions - consolidate all major cities worldwide
 function consolidateToMetropolitanArea(city: string, state?: string, country?: string): string {
-  if (!city) return '';
-  
-  const cityLower = city.toLowerCase();
-  const stateLower = (state || '').toLowerCase();
-  const countryLower = (country || '').toLowerCase();
-  
-  // Find matching metropolitan area
-  for (const metro of GLOBAL_METROPOLITAN_AREAS) {
-    const metroState = (metro.state || '').toLowerCase();
-    const metroCountry = metro.country.toLowerCase();
-    
-    // Check if country and state match (if specified)
-    if (country && metroCountry !== countryLower) continue;
-    if (state && metro.state && metroState !== stateLower) continue;
-    
-    // Check if city is in this metropolitan area
-    if (metro.cities.some(metroCity => metroCity.toLowerCase() === cityLower)) {
-      return metro.mainCity;
-    }
-  }
-  
-  // Return original city if no metro area found
+  // DISABLED: No forced consolidation - return original city
   return city;
 }
 
-// Get all cities in a metropolitan area
+// DISABLED: Get all cities in a metropolitan area - no forced consolidation
 function getMetropolitanAreaCities(mainCity: string, state?: string, country?: string): string[] {
-  const stateLower = (state || '').toLowerCase();
-  const countryLower = (country || '').toLowerCase();
-  
-  for (const metro of GLOBAL_METROPOLITAN_AREAS) {
-    const metroState = (metro.state || '').toLowerCase();
-    const metroCountry = metro.country.toLowerCase();
-    
-    if (metro.mainCity === mainCity) {
-      // Check if state and country match
-      if (country && metroCountry !== countryLower) continue;
-      if (state && metro.state && metroState !== stateLower) continue;
-      
-      return metro.cities;
-    }
-  }
-  
-  // Return just the single city if no metro area found
+  // DISABLED: Return only the single city without metro consolidation
   return [mainCity];
 }
 
@@ -2902,18 +2865,9 @@ Questions? Just reply to this message. Welcome aboard!
         if (process.env.NODE_ENV === 'development') console.log('🌴 ADVANCED SEARCH LOCATION: Searching for users in:', location);
       if (process.env.NODE_ENV === 'development') console.log('🌴 SEARCH CITY EXTRACTED:', searchCity);
         
-        // Apply LA Metro consolidation - if searching for ANY LA metro city, include ALL metro cities
-        const citiesToSearch = [];
-        const laMetroCities = ['Los Angeles', 'Beverly Hills', 'Santa Monica', 'West Hollywood', 'Pasadena', 'Glendale', 'Burbank', 'Hollywood', 'Manhattan Beach', 'Redondo Beach', 'Hermosa Beach', 'Venice', 'Marina del Rey', 'Culver City', 'El Segundo', 'Inglewood', 'LAX', 'Playa del Rey'];
-        
-        if (laMetroCities.includes(searchCity)) {
-          // Include ALL LA metro cities when searching for any LA metro city
-          citiesToSearch.push(...laMetroCities);
-          if (process.env.NODE_ENV === 'development') console.log('🌴 ADVANCED SEARCH LA METRO: Searching', searchCity, '-> expanded to ALL LA metro cities:', citiesToSearch.length, 'cities');
-        } else {
-          citiesToSearch.push(searchCity);
-          if (process.env.NODE_ENV === 'development') console.log('🌴 ADVANCED SEARCH SINGLE CITY:', searchCity);
-        }
+        // NO HARDCODED CONSOLIDATION - Use exact city search based on user's actual data
+        const citiesToSearch = [searchCity];
+        if (process.env.NODE_ENV === 'development') console.log('🎯 ADVANCED SEARCH EXACT CITY:', searchCity);
         
         if (process.env.NODE_ENV === 'development') console.log('🌴 CITIES TO SEARCH:', citiesToSearch.slice(0, 5), '... (total:', citiesToSearch.length, ')');
         
@@ -4218,56 +4172,9 @@ Questions? Just reply to this message. Welcome aboard!
         const cityName = city.toString();
         console.log(`🎪 EVENTS: Getting events for city: ${cityName}`);
         
-        // CRITICAL FIX: Only apply LA Metro consolidation if user is specifically in LA Metro area
-        // This prevents Austin users from seeing Los Angeles events
+        // NO HARDCODED CITY CONSOLIDATION - Use exact city for events
         let searchCities = [cityName];
-        
-        // Define LA Metro cities directly to avoid import issues
-        const LA_METRO_CITIES = [
-          'Los Angeles',
-          'Playa del Rey',
-          'Santa Monica', 
-          'Venice',
-          'Venice Beach',
-          'Culver City',
-          'Marina del Rey',
-          'El Segundo',
-          'Manhattan Beach',
-          'Hermosa Beach',
-          'Redondo Beach',
-          'Beverly Hills',
-          'West Hollywood',
-          'Hollywood',
-          'North Hollywood',
-          'Burbank',
-          'Glendale',
-          'Pasadena',
-          'South Pasadena',
-          'Long Beach',
-          'Torrance',
-          'Inglewood',
-          'Hawthorne'
-        ];
-        
-        if (process.env.NODE_ENV === 'development') console.log(`🔍 EVENTS DEBUG: Checking if ${cityName} is in LA metro. LA cities:`, LA_METRO_CITIES.slice(0, 5));
-        
-        // Only use metro consolidation if the requesting city is actually in the LA metro area
-        const isActualLAMetroCity = cityName.toLowerCase().includes('los angeles metro') || 
-                                   LA_METRO_CITIES.some(laCity => 
-                                     cityName.toLowerCase() === laCity.toLowerCase()
-                                   );
-        
-        console.log(`🔍 EVENTS DEBUG: isActualLAMetroCity for ${cityName}: ${isActualLAMetroCity}`);
-        
-        if (isActualLAMetroCity) {
-          // Only for genuine LA metro cities, show all LA metro events
-          searchCities = LA_METRO_CITIES;
-          if (process.env.NODE_ENV === 'development') console.log(`🗺️ EVENTS METRO: ${cityName} is genuine LA metro city - searching events in ${searchCities.length} LA metro cities`);
-        } else {
-          // For all other cities (Austin, Las Vegas, New York, etc.), only show events in that specific city
-          searchCities = [cityName]; // CRITICAL: Ensure we only search the specific city
-          console.log(`🎯 EVENTS LOCAL: ${cityName} is not in LA metro - showing only local events for ${cityName}`);
-        }
+        console.log(`🎯 EVENTS EXACT: Searching events only in ${cityName}`);
         
         if (process.env.NODE_ENV === 'development') console.log(`🌍 EVENTS: Final searchCities array:`, searchCities);
         
@@ -9555,77 +9462,13 @@ Questions? Just reply to this message. Welcome aboard!
         return res.status(400).json({ message: "Name, city, and country are required" });
       }
 
-      // METRO AREA CONSOLIDATION: Recommend broader metro areas for small cities
-      const shouldConsolidateToMetro = (cityName: string, stateName: string = '', countryName: string = '') => {
-        const cityLower = cityName.toLowerCase().trim();
-        const stateLower = stateName.toLowerCase().trim();
-        
-        // LA Metro Area - consolidate small cities to "Los Angeles Metro"
-        const laMetroCities = [
-          'santa monica', 'venice', 'beverly hills', 'hollywood', 'culver city',
-          'manhattan beach', 'redondo beach', 'el segundo', 'inglewood', 'torrance',
-          'marina del rey', 'hermosa beach', 'west hollywood', 'westwood', 'malibu',
-          'playa del rey', 'hawthorne', 'gardena', 'carson', 'lakewood'
-        ];
-        
-        if (stateLower.includes('california') && laMetroCities.includes(cityLower)) {
-          return { 
-            consolidatedCity: 'Los Angeles Metro',
-            consolidatedState: 'California',
-            originalCity: cityName,
-            message: 'Your chatroom has been created for the broader Los Angeles Metro area to help connect more people across the region.'
-          };
-        }
-        
-        // NYC Metro Area - consolidate boroughs and small cities  
-        const nycMetroCities = [
-          'brooklyn', 'queens', 'bronx', 'staten island', 'manhattan', 'jersey city',
-          'hoboken', 'long island city', 'astoria', 'williamsburg', 'flushing'
-        ];
-        
-        if ((stateLower.includes('new york') || stateLower.includes('new jersey')) && 
-            nycMetroCities.includes(cityLower)) {
-          return {
-            consolidatedCity: 'New York Metro',
-            consolidatedState: 'New York',
-            originalCity: cityName,
-            message: 'Your chatroom has been created for the broader New York Metro area to help connect more people across the region.'
-          };
-        }
-        
-        // Bay Area - consolidate smaller cities
-        const bayAreaCities = [
-          'san jose', 'oakland', 'berkeley', 'fremont', 'hayward', 'sunnyvale',
-          'santa clara', 'mountain view', 'palo alto', 'redwood city', 'vallejo'
-        ];
-        
-        if (stateLower.includes('california') && bayAreaCities.includes(cityLower)) {
-          return {
-            consolidatedCity: 'San Francisco Bay Area',
-            consolidatedState: 'California', 
-            originalCity: cityName,
-            message: 'Your chatroom has been created for the broader San Francisco Bay Area to help connect more people across the region.'
-          };
-        }
-        
-        return null;
-      };
-
-      // Check if this city should be consolidated to a metro area
-      const consolidation = shouldConsolidateToMetro(city, state, country);
-      
+      // NO HARDCODED METRO CONSOLIDATION - Use actual city data
       let finalCity = city;
       let finalState = state;
       let consolidationMessage = '';
       
-      if (consolidation) {
-        finalCity = consolidation.consolidatedCity;
-        finalState = consolidation.consolidatedState;
-        consolidationMessage = consolidation.message;
-        
-        if (process.env.NODE_ENV === 'development') {
-          console.log(`🌍 METRO CONSOLIDATION: ${consolidation.originalCity} → ${finalCity}`);
-        }
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`🎯 CHATROOM EXACT CITY: Using ${city} without forced consolidation`);
       }
 
       if (process.env.NODE_ENV === 'development') console.log(`🏠 CREATING CHATROOM: "${name}" by user ${userId} in ${finalCity}, ${country}`);
