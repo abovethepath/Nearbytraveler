@@ -2258,13 +2258,22 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           await storage.ensureMeetLocalsChatrooms(userData.hometownCity, userData.hometownState, userData.hometownCountry);
           if (process.env.NODE_ENV === 'development') console.log(`✓ Created/verified hometown chatroom for ${userData.hometownCity}, ${userData.hometownCountry}`);
           
-          // AUTO-JOIN: Add new user to Los Angeles Metro chatrooms (Welcome Newcomers and Let's Meet Up)
+              // AUTO-JOIN: Add new user to Los Angeles Metro chatrooms (Welcome Newcomers and Let's Meet Up)
           await storage.autoJoinWelcomeChatroom(user.id, userData.hometownCity, userData.hometownCountry);
           if (process.env.NODE_ENV === 'development') console.log(`✓ Auto-joined user ${user.id} to Los Angeles Metro chatrooms`);
         } catch (error: any) {
           if (process.env.NODE_ENV === 'development') console.error('Error creating hometown chatroom:', error);
         }
       }
+
+      // AUTO-JOIN ALL NEW USERS: Add to 2 global default chatrooms
+      try {
+        await storage.autoJoinDefaultChatrooms(user.id);
+        if (process.env.NODE_ENV === 'development') console.log(`✅ Auto-joined user ${user.id} to default global chatrooms`);
+      } catch (error: any) {
+        if (process.env.NODE_ENV === 'development') console.error('Error auto-joining default chatrooms:', error);
+      }
+
 
       // CRITICAL: Create chatrooms for travel destination if user is currently traveling
       if (userData.isCurrentlyTraveling && userData.travelDestination) {

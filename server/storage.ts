@@ -352,6 +352,7 @@ export interface IStorage {
   createCityChatroom(): Promise<any>;
   getChatroomsCreatedByUser(userId: number): Promise<any[]>;
   autoJoinWelcomeChatroom(userId: number, city: string, country: string): Promise<void>;
+  autoJoinDefaultChatrooms(userId: number): Promise<void>;
 
   // Secret Local Experiences methods
   createSecretLocalExperience(experience: any): Promise<any>;
@@ -7033,6 +7034,51 @@ export class DatabaseStorage implements IStorage {
       }
     } catch (error) {
       console.error('Error ensuring Meet Locals chatrooms:', error);
+    }
+  }
+
+  // Auto-join ALL new users to 2 default global chatrooms
+  async autoJoinDefaultChatrooms(userId: number): Promise<void> {
+    try {
+      console.log(`🎯 AUTO-JOIN DEFAULT: Adding user ${userId} to default chatrooms`);
+      
+      // Default chatroom IDs for all new users
+      const defaultChatroomIds = [201, 202]; // Welcome Newcomers Global, General Chat Global
+      
+      for (const chatroomId of defaultChatroomIds) {
+        try {
+          // Check if user is already a member
+          const existingMembership = await db
+            .select()
+            .from(chatroomMembers)
+            .where(and(
+              eq(chatroomMembers.chatroomId, chatroomId),
+              eq(chatroomMembers.userId, userId)
+            ))
+            .limit(1);
+
+          if (existingMembership.length === 0) {
+            // Add user to the chatroom
+            await db.insert(chatroomMembers).values({
+              chatroomId: chatroomId,
+              userId: userId,
+              role: 'member',
+              isActive: true,
+              joinedAt: new Date()
+            });
+            
+            console.log(`✅ Auto-joined user ${userId} to default chatroom ${chatroomId}`);
+          } else {
+            console.log(`⚠️ User ${userId} already in chatroom ${chatroomId}`);
+          }
+        } catch (chatroomError) {
+          console.error(`Error joining chatroom ${chatroomId}:`, chatroomError);
+          // Continue trying other chatrooms
+        }
+      }
+    } catch (error) {
+      console.error('Error auto-joining default chatrooms:', error);
+      // Don't fail user creation if chatroom joining fails
     }
   }
 

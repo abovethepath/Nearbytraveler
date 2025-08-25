@@ -309,37 +309,72 @@ export default function SimpleChatroomFixed() {
               </div>
             </div>
             
-            {/* Members */}
-            {members.length > 0 && (
-              <div className="mt-4 pt-4 border-t">
-                <div className="flex items-center gap-2 mb-3">
-                  <Users className="w-4 h-4" />
-                  <span className="text-sm font-medium">Members ({members.length})</span>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {members.slice(0, 8).map((member) => (
-                    <div key={member.user_id} className="flex items-center gap-2 bg-gray-100 dark:bg-gray-700 rounded-full px-3 py-1">
-                      <Avatar className="w-6 h-6">
-                        {member.profile_image ? (
-                          <AvatarImage src={member.profile_image} alt={member.username} />
-                        ) : (
-                          <AvatarFallback className="text-xs bg-blue-500 text-white">
-                            {member.username.slice(0, 2).toUpperCase()}
-                          </AvatarFallback>
-                        )}
-                      </Avatar>
-                      <span className="text-sm">{member.username}</span>
-                      {member.user_id === currentUserId && (
-                        <span className="text-xs bg-green-500 text-white rounded px-1">You</span>
-                      )}
-                    </div>
-                  ))}
-                  {members.length > 8 && (
-                    <span className="text-sm text-gray-500">+{members.length - 8} more</span>
-                  )}
-                </div>
+            {/* Members List - Always Show */}
+            <div className="mt-4 pt-4 border-t">
+              <div className="flex items-center gap-2 mb-3">
+                <Users className="w-4 h-4" />
+                <span className="text-sm font-medium text-gray-900 dark:text-white">
+                  Chatroom Members ({members.length})
+                </span>
               </div>
-            )}
+              
+              {members.length === 0 ? (
+                <div className="text-sm text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
+                  No members yet. Be the first to join!
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {/* Show all members in a grid */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    {members.map((member) => (
+                      <div 
+                        key={member.user_id} 
+                        className="flex items-center gap-3 bg-gray-50 dark:bg-gray-800 rounded-lg p-3 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                      >
+                        <Avatar className="w-8 h-8 border-2 border-white dark:border-gray-600">
+                          {member.profile_image ? (
+                            <AvatarImage src={member.profile_image} alt={member.username} />
+                          ) : (
+                            <AvatarFallback className="text-xs bg-gradient-to-br from-blue-400 to-purple-500 text-white">
+                              {member.username.slice(0, 2).toUpperCase()}
+                            </AvatarFallback>
+                          )}
+                        </Avatar>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2">
+                            <span className="font-medium text-gray-900 dark:text-white text-sm truncate">
+                              {member.username}
+                            </span>
+                            {member.role === 'admin' && (
+                              <span className="text-xs bg-blue-500 text-white rounded px-1.5 py-0.5">
+                                Admin
+                              </span>
+                            )}
+                            {member.user_id === currentUserId && (
+                              <span className="text-xs bg-green-500 text-white rounded px-1.5 py-0.5">
+                                You
+                              </span>
+                            )}
+                          </div>
+                          {member.name && (
+                            <div className="text-xs text-gray-600 dark:text-gray-400 truncate">
+                              {member.name}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  {/* Member stats */}
+                  <div className="text-xs text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 rounded p-2">
+                    {members.length} total member{members.length !== 1 ? 's' : ''} • 
+                    {members.filter(m => m.role === 'admin').length} admin{members.filter(m => m.role === 'admin').length !== 1 ? 's' : ''} • 
+                    {members.filter(m => m.role !== 'admin').length} regular member{members.filter(m => m.role !== 'admin').length !== 1 ? 's' : ''}
+                  </div>
+                </div>
+              )}
+            </div>
           </CardHeader>
         </Card>
 
