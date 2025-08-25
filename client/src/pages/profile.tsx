@@ -3450,16 +3450,20 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 </div>
               ) : (
                 <div className="space-y-1 text-black dark:text-white w-full mt-2">
-                  {/* Username */}
-                  <h1 className="text-xl sm:text-3xl font-bold text-black dark:text-white truncate">@{user.username}</h1>
+                  {/* Nearby Traveler/Local Branding */}
+                  <h1 className="text-xl sm:text-3xl font-bold text-black dark:text-white truncate">{(() => {
+                    const currentDestination = getCurrentTravelDestination(travelPlans || []);
+                    if (currentDestination) {
+                      return `Nearby Traveler ${currentDestination}`;
+                    } else {
+                      const hometown = user.hometownCity || user.location?.split(',')[0] || 'Hometown not set';
+                      return `Nearby Local ${hometown}`;
+                    }
+                  })()}</h1>
 
-                  {/* Location/status — Centralized location display */}
-                  <div className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-300 flex flex-wrap items-center gap-x-3 gap-y-1">
-                    <span>From: <span className="font-medium">{user.hometownCity || user.location?.split(',')[0] || 'Hometown not set'}{user.hometownState ? `, ${user.hometownState}` : ''}{user.hometownCountry ? `, ${user.hometownCountry}` : ''}</span></span>
-                    <span>{(() => {
-                      const currentDestination = getCurrentTravelDestination(travelPlans || []);
-                      return currentDestination ? `Currently in ${currentDestination}` : 'Currently home';
-                    })()}</span>
+                  {/* Username */}
+                  <div className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-300">
+                    <span>@{user.username}</span>
                   </div>
 
                   {/* Stats */}
