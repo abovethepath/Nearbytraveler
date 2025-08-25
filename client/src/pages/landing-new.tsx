@@ -424,45 +424,37 @@ export default function Landing() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
               <div>
                 <h4 className="font-bold mb-2">❌ Old Way: Random Encounters</h4>
-                <ul className="text-sm space-y-3 opacity-90">
-                  <li className="flex items-start space-x-2">
-                    <span>•</span>
-                    <span>Meet strangers at events</span>
-                  </li>
-                  <li className="flex items-start space-x-2">
-                    <span>•</span>
-                    <span>No shared context or interests</span>
-                  </li>
-                  <li className="flex items-start space-x-2">
-                    <span>•</span>
-                    <span>Awkward small talk</span>
-                  </li>
-                  <li className="flex items-start space-x-2">
-                    <span>•</span>
-                    <span>Lose touch after the trip</span>
-                  </li>
-                </ul>
+                <div className="text-sm opacity-90">
+                  <div className="mb-4">
+                    <span className="block">• Meet strangers at events</span>
+                  </div>
+                  <div className="mb-4">
+                    <span className="block">• No shared context or interests</span>
+                  </div>
+                  <div className="mb-4">
+                    <span className="block">• Awkward small talk</span>
+                  </div>
+                  <div className="mb-4">
+                    <span className="block">• Lose touch after the trip</span>
+                  </div>
+                </div>
               </div>
               <div>
                 <h4 className="font-bold mb-2">✅ Nearby Traveler Way</h4>
-                <ul className="text-sm space-y-3">
-                  <li className="flex items-start space-x-2">
-                    <span>•</span>
-                    <span>Connect with like-minded travelers</span>
-                  </li>
-                  <li className="flex items-start space-x-2">
-                    <span>•</span>
-                    <span>Rich profiles with stories & photos</span>
-                  </li>
-                  <li className="flex items-start space-x-2">
-                    <span>•</span>
-                    <span>Instant recognition at future events</span>
-                  </li>
-                  <li className="flex items-start space-x-2">
-                    <span>•</span>
-                    <span>Lifelong travel friendships</span>
-                  </li>
-                </ul>
+                <div className="text-sm">
+                  <div className="mb-4">
+                    <span className="block">• Connect with like-minded travelers</span>
+                  </div>
+                  <div className="mb-4">
+                    <span className="block">• Rich profiles with stories & photos</span>
+                  </div>
+                  <div className="mb-4">
+                    <span className="block">• Instant recognition at future events</span>
+                  </div>
+                  <div className="mb-4">
+                    <span className="block">• Lifelong travel friendships</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
