@@ -2266,12 +2266,21 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         }
       }
 
-      // AUTO-JOIN ALL NEW USERS: Add to 2 global default chatrooms
+      // AUTO-JOIN NEW USERS: Add to hometown and travel city chatrooms
       try {
-        await storage.autoJoinDefaultChatrooms(user.id);
-        if (process.env.NODE_ENV === 'development') console.log(`✅ Auto-joined user ${user.id} to default global chatrooms`);
+        const travelCity = userData.isCurrentlyTraveling && userData.travelDestination ? userData.travelDestination.split(', ')[0] : undefined;
+        const travelCountry = userData.isCurrentlyTraveling && userData.travelDestination ? userData.travelDestination.split(', ')[2] || userData.travelDestination.split(', ')[1] : undefined;
+        
+        await storage.autoJoinUserCityChatrooms(
+          user.id, 
+          userData.hometownCity, 
+          userData.hometownCountry,
+          travelCity,
+          travelCountry
+        );
+        if (process.env.NODE_ENV === 'development') console.log(`✅ Auto-joined user ${user.id} to their city chatrooms`);
       } catch (error: any) {
-        if (process.env.NODE_ENV === 'development') console.error('Error auto-joining default chatrooms:', error);
+        if (process.env.NODE_ENV === 'development') console.error('Error auto-joining city chatrooms:', error);
       }
 
 

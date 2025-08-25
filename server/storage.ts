@@ -352,7 +352,7 @@ export interface IStorage {
   createCityChatroom(): Promise<any>;
   getChatroomsCreatedByUser(userId: number): Promise<any[]>;
   autoJoinWelcomeChatroom(userId: number, city: string, country: string): Promise<void>;
-  autoJoinDefaultChatrooms(userId: number): Promise<void>;
+  autoJoinUserCityChatrooms(userId: number, hometownCity: string, hometownCountry: string, travelCity?: string, travelCountry?: string): Promise<void>;
 
   // Secret Local Experiences methods
   createSecretLocalExperience(experience: any): Promise<any>;
@@ -7037,47 +7037,24 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  // Auto-join ALL new users to 2 default global chatrooms
-  async autoJoinDefaultChatrooms(userId: number): Promise<void> {
+  // Auto-join new users to chatrooms for their hometown and travel destination
+  async autoJoinUserCityChatrooms(userId: number, hometownCity: string, hometownCountry: string, travelCity?: string, travelCountry?: string): Promise<void> {
     try {
-      console.log(`🎯 AUTO-JOIN DEFAULT: Adding user ${userId} to default chatrooms`);
+      console.log(`🎯 AUTO-JOIN CITIES: Adding user ${userId} to their city chatrooms`);
       
-      // Default chatroom IDs for all new users
-      const defaultChatroomIds = [201, 202]; // Welcome Newcomers Global, General Chat Global
+      // Always join hometown chatrooms
+      if (hometownCity && hometownCountry) {
+        await this.autoJoinWelcomeChatroom(userId, hometownCity, hometownCountry);
+        console.log(`✅ Auto-joined user ${userId} to hometown chatrooms: ${hometownCity}`);
+      }
       
-      for (const chatroomId of defaultChatroomIds) {
-        try {
-          // Check if user is already a member
-          const existingMembership = await db
-            .select()
-            .from(chatroomMembers)
-            .where(and(
-              eq(chatroomMembers.chatroomId, chatroomId),
-              eq(chatroomMembers.userId, userId)
-            ))
-            .limit(1);
-
-          if (existingMembership.length === 0) {
-            // Add user to the chatroom
-            await db.insert(chatroomMembers).values({
-              chatroomId: chatroomId,
-              userId: userId,
-              role: 'member',
-              isActive: true,
-              joinedAt: new Date()
-            });
-            
-            console.log(`✅ Auto-joined user ${userId} to default chatroom ${chatroomId}`);
-          } else {
-            console.log(`⚠️ User ${userId} already in chatroom ${chatroomId}`);
-          }
-        } catch (chatroomError) {
-          console.error(`Error joining chatroom ${chatroomId}:`, chatroomError);
-          // Continue trying other chatrooms
-        }
+      // If traveling, also join travel destination chatrooms
+      if (travelCity && travelCountry) {
+        await this.autoJoinWelcomeChatroom(userId, travelCity, travelCountry);
+        console.log(`✅ Auto-joined user ${userId} to travel destination chatrooms: ${travelCity}`);
       }
     } catch (error) {
-      console.error('Error auto-joining default chatrooms:', error);
+      console.error('Error auto-joining user city chatrooms:', error);
       // Don't fail user creation if chatroom joining fails
     }
   }

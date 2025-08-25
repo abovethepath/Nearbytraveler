@@ -380,7 +380,7 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
                         <span className="w-2 h-2 bg-purple-500 rounded-full mr-1"></span>
                         Business
                       </span>
-                      <span className="text-purple-700 dark:text-purple-300 font-medium">
+                      <span className="text-purple-900 dark:text-white font-medium">
                         🏢 {user.hometownCity || 'Los Angeles'}
                       </span>
                     </>
@@ -393,8 +393,13 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
                         <span className="w-2 h-2 bg-gray-500 rounded-full mr-1"></span>
                         From
                       </span>
-                      <span className="text-gray-700 dark:text-gray-300 font-medium">
+                      <span className="text-gray-900 dark:text-white font-medium">
                         🏠 {(user.hometownCity || user.hometown || user.location || '').split(',')[0]}
+                        {userTravelPlans && userTravelPlans.length > 0 && getCurrentTravelDestination(userTravelPlans) && (
+                          <span className="text-blue-600 dark:text-blue-400 ml-2">
+                            → {getCurrentTravelDestination(userTravelPlans)}
+                          </span>
+                        )}
                       </span>
                       {compatibilityData && (compatibilityData.sharedInterests?.length > 0 || compatibilityData.sharedActivities?.length > 0 || compatibilityData.sharedEvents?.length > 0) && (
                         <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full ml-2">
