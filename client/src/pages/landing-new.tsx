@@ -202,7 +202,7 @@ export default function Landing() {
                 </div>
                 
                 {/* Tags - Smaller and limited to 2 max */}
-                <div className="flex gap-1 mb-3">
+                <div className="flex gap-1 mb-6">
                   <span className="bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full text-xs font-medium">Free</span>
                   <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs font-medium">Beach</span>
                 </div>
@@ -234,7 +234,7 @@ export default function Landing() {
                 </div>
                 
                 {/* Tags - Smaller and limited to 2 max */}
-                <div className="flex gap-1 mb-3">
+                <div className="flex gap-1 mb-6">
                   <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-xs font-medium">$1.50</span>
                   <span className="bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full text-xs font-medium">Food</span>
                 </div>
@@ -266,7 +266,7 @@ export default function Landing() {
                 </div>
                 
                 {/* Tags - Smaller and limited to 2 max */}
-                <div className="flex gap-1 mb-3">
+                <div className="flex gap-1 mb-6">
                   <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs font-medium">Free</span>
                   <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-xs font-medium">Hiking</span>
                 </div>
@@ -298,7 +298,7 @@ export default function Landing() {
                 </div>
                 
                 {/* Tags - Smaller and limited to 2 max */}
-                <div className="flex gap-1 mb-3">
+                <div className="flex gap-1 mb-6">
                   <span className="bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full text-xs font-medium">Drinks</span>
                   <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs font-medium">21+</span>
                 </div>
