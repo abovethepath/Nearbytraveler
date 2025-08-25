@@ -3,7 +3,6 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { AuthContext } from "@/App";
 import { MobilePreview } from "@/components/MobilePreview";
-import TravelMatches from "@/components/travel-matches";
 import UserCard from "@/components/user-card";
 import ResponsiveUserGrid from "@/components/ResponsiveUserGrid";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -45,7 +44,7 @@ export default function ConnectPage() {
   console.log('ConnectPage - user data:', user?.username, user?.location);
   
   // Active tab state
-  const [activeTab, setActiveTab] = useState("ai-matches");
+  const [activeTab, setActiveTab] = useState("location-search");
   
   // Connect modal state - auto-open on page load
   const [showConnectModal, setShowConnectModal] = useState(true);
@@ -489,13 +488,7 @@ export default function ConnectPage() {
         </Card>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4 sm:space-y-6">
-          <TabsList className="grid w-full grid-cols-3 bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl border border-white/20 dark:border-gray-700/50 rounded-xl p-1 sm:p-2">
-            <TabsTrigger 
-              value="ai-matches" 
-              className="text-xs sm:text-sm rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-600 data-[state=active]:text-white transition-all duration-300 px-2 sm:px-4 py-1.5 sm:py-2"
-            >
-              AI Matches
-            </TabsTrigger>
+          <TabsList className="grid w-full grid-cols-2 bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl border border-white/20 dark:border-gray-700/50 rounded-xl p-1 sm:p-2">
             <TabsTrigger 
               value="location-search" 
               className="text-xs sm:text-sm rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-green-500 data-[state=active]:to-teal-600 data-[state=active]:text-white transition-all duration-300 px-2 sm:px-4 py-1.5 sm:py-2"
@@ -512,20 +505,6 @@ export default function ConnectPage() {
 
 
 
-          {/* AI Matches Tab - Integrated from Matches page */}
-          <TabsContent value="ai-matches" className="space-y-4 sm:space-y-6">
-            <Card className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl border border-white/20 dark:border-gray-700/50 rounded-2xl shadow-lg">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <TrendingUp className="w-5 h-5" />
-                  AI-Powered Travel Matches
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <TravelMatches />
-              </CardContent>
-            </Card>
-          </TabsContent>
 
           {/* Location Search Tab */}
           <TabsContent value="location-search" className="space-y-4 sm:space-y-6">
