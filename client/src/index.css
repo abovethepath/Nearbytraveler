@@ -160,8 +160,7 @@
 }
 
 /* Override problematic black text */
-.dark .text-gray-900,
-.dark .text-black {
+.dark .text-gray-900 {
   color: rgb(243 244 246) !important; /* gray-100 */
 }
 
@@ -204,9 +203,6 @@
   @apply text-gray-400 !important;
 }
 
-.dark .text-black {
-  @apply text-white !important;
-}
 
 /* Fix backgrounds that might be causing black on black */
 .dark .bg-gray-50 {
@@ -232,72 +228,79 @@
 
 /* Fix white text on colored backgrounds in dark mode */
 .dark .bg-blue-500, .dark .bg-blue-600 {
-  @apply text-white !important;
+  color: white !important;
 }
 
 .dark .bg-green-500, .dark .bg-green-600 {
-  @apply text-white !important;
+  color: white !important;
 }
 
 .dark .bg-red-500, .dark .bg-red-600 {
-  @apply text-white !important;
+  color: white !important;
 }
 
 .dark .bg-yellow-500, .dark .bg-yellow-600 {
-  @apply text-black !important;
+  color: black !important;
 }
 
 .dark .bg-purple-500, .dark .bg-purple-600 {
-  @apply text-white !important;
+  color: white !important;
 }
 
 .dark .bg-pink-500, .dark .bg-pink-600 {
-  @apply text-white !important;
+  color: white !important;
 }
 
 .dark .bg-indigo-500, .dark .bg-indigo-600 {
-  @apply text-white !important;
+  color: white !important;
 }
 
 .dark .bg-orange-500, .dark .bg-orange-600 {
-  @apply text-white !important;
+  color: white !important;
 }
 
 .dark .bg-teal-500, .dark .bg-teal-600 {
-  @apply text-white !important;
+  color: white !important;
 }
 
 .dark .bg-cyan-500, .dark .bg-cyan-600 {
-  @apply text-black !important;
+  color: black !important;
 }
 
 /* For light colored pills, make them darker in dark mode for better contrast */
 .dark .bg-yellow-200, .dark .bg-yellow-300 {
-  @apply bg-yellow-600 text-black !important;
+  background-color: #ca8a04 !important;
+  color: black !important;
 }
 
 .dark .bg-blue-200, .dark .bg-blue-300 {
-  @apply bg-blue-600 text-white !important;
+  background-color: #2563eb !important;
+  color: white !important;
 }
 
 .dark .bg-green-200, .dark .bg-green-300 {
-  @apply bg-green-600 text-white !important;
+  background-color: #059669 !important;
+  color: white !important;
 }
 
 .dark .bg-red-200, .dark .bg-red-300 {
-  @apply bg-red-600 text-white !important;
+  background-color: #dc2626 !important;
+  color: white !important;
 }
 
 .dark .bg-purple-200, .dark .bg-purple-300 {
-  @apply bg-purple-600 text-white !important;
+  background-color: #9333ea !important;
+  color: white !important;
 }
 
 .dark .bg-pink-200, .dark .bg-pink-300 {
-  @apply bg-pink-600 text-white !important;
+  background-color: #db2777 !important;
+  color: white !important;
 }
 
 .dark .bg-indigo-200, .dark .bg-indigo-300 {
-  @apply bg-indigo-600 text-white !important;
+  background-color: #4f46e5 !important;
+  color: white !important;
 }
 
 /* Card and container fixes */

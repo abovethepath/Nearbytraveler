@@ -8038,7 +8038,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-gray-900 dark:text-white">Gender</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value ?? ''}>
+                        <Select onValueChange={field.onChange} value={field.value ?? ''}>
                           <FormControl>
                             <SelectTrigger className="text-gray-900 dark:text-white dark:bg-gray-800 dark:border-gray-600">
                               <SelectValue placeholder="Select gender" className="text-gray-900 dark:text-white" />

@@ -7821,7 +7821,43 @@ export class DatabaseStorage implements IStorage {
         .from(users)
         .where(eq(users.id, userId));
       
-      return user;
+      if (!user) return undefined;
+
+      // Convert snake_case database fields to camelCase for frontend
+      const convertedUser = {
+        ...user,
+        isVeteran: user.is_veteran,
+        isActiveDuty: user.is_active_duty,
+        childrenAges: user.children_ages,
+        hometownCity: user.hometown_city,
+        hometownState: user.hometown_state,
+        hometownCountry: user.hometown_country,
+        travelStyle: user.travel_style,
+        dateOfBirth: user.date_of_birth,
+        ageVisible: user.age_visible,
+        sexualPreference: user.sexual_preference,
+        sexualPreferenceVisible: user.sexual_preference_visible,
+        travelingWithChildren: user.traveling_with_children,
+        secretActivities: user.secret_activities,
+        businessName: user.business_name,
+        businessDescription: user.business_description,
+        businessType: user.business_type,
+        streetAddress: user.street_address,
+        zipCode: user.zip_code,
+        phoneNumber: user.phone_number,
+        websiteUrl: user.website_url,
+        customInterests: user.custom_interests,
+        customActivities: user.custom_activities,
+        customEvents: user.custom_events,
+        isMinorityOwned: user.is_minority_owned,
+        isFemaleOwned: user.is_female_owned,
+        isLGBTQIAOwned: user.is_lgbtqia_owned,
+        showMinorityOwned: user.show_minority_owned,
+        showFemaleOwned: user.show_female_owned,
+        showLGBTQIAOwned: user.show_lgbtqia_owned,
+      };
+      
+      return convertedUser;
     } catch (error) {
       console.error('Error fetching user by ID:', error);
       return undefined;
