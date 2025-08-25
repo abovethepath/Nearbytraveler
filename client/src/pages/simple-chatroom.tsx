@@ -283,12 +283,12 @@ export default function SimpleChatroomPage() {
     },
   });
 
-  // Auto-scroll to bottom when new messages arrive
+  // Auto-scroll to bottom only when user sends a message, not on every message update
   useEffect(() => {
-    if (messagesEndRef.current) {
+    if (messagesEndRef.current && sendMessageMutation.isSuccess) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, [messages]);
+  }, [sendMessageMutation.isSuccess]);
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
@@ -345,7 +345,7 @@ export default function SimpleChatroomPage() {
               </Button>
               <div>
                 <CardTitle className="text-xl">
-                  {chatroom?.name || `Chatroom ${chatroomId}`}
+                  {chatroom?.name || "Loading chatroom..."}
                 </CardTitle>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                   {chatroom?.city && `${chatroom.city}, ${chatroom.state}`} · {memberCount} online
