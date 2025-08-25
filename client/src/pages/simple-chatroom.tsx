@@ -5,8 +5,9 @@ import { apiRequest } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Send, ArrowLeft, Users } from "lucide-react";
+import { Send, ArrowLeft, Users, MessageCircle, Loader2 } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 interface ChatMessage {
@@ -75,31 +76,36 @@ export default function SimpleChatroomPage() {
   const { data: chatroom, isLoading: chatroomLoading } = useQuery<Chatroom>({
     queryKey: [`/api/simple-chatrooms/${chatroomId}`],
     enabled: !!(currentUserId && chatroomId && !isNaN(chatroomId)),
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 10 * 60 * 1000, // 10 minutes - chatroom details rarely change
+    refetchOnWindowFocus: false,
   });
 
   // Get messages - only fetch if user is joined
-  const { data: messages = [], isLoading: messagesLoading, refetch: refetchMessages } = useQuery<ChatMessage[]>({
+  const { data: messages = [], isLoading: messagesLoading, isFetching: messagesFetching, refetch: refetchMessages } = useQuery<ChatMessage[]>({
     queryKey: [`/api/simple-chatrooms/${chatroomId}/messages`],
     enabled: !!(currentUserId && chatroomId && !isNaN(chatroomId) && isJoined),
-    refetchInterval: isJoined ? 3000 : false, // Only poll if joined
-    staleTime: 1000, // 1 second
+    refetchInterval: isJoined ? 5000 : false, // Poll every 5 seconds if joined
+    staleTime: 30000, // 30 seconds - don't refetch unless data is actually stale
+    refetchOnWindowFocus: false, // Prevent refetching when window gets focus
+    refetchOnReconnect: true, // Only refetch on network reconnection
   });
 
   // Get member count
   const { data: memberCountResp, refetch: refetchMemberCount } = useQuery<{memberCount: number}>({
     queryKey: [`/api/simple-chatrooms/${chatroomId}/members/count`],
     enabled: !!(currentUserId && chatroomId && !isNaN(chatroomId)),
-    refetchInterval: 15000,
-    staleTime: 10000, // 10 seconds
+    refetchInterval: 15000, // 15 seconds
+    staleTime: 30000, // 30 seconds
+    refetchOnWindowFocus: false,
   });
 
   // Get members list - check if current user is a member
   const { data: members = [], refetch: refetchMembers } = useQuery<ChatMember[]>({
     queryKey: [`/api/simple-chatrooms/${chatroomId}/members`],
     enabled: !!(currentUserId && chatroomId && !isNaN(chatroomId)),
-    refetchInterval: 30000,
-    staleTime: 20000, // 20 seconds
+    refetchInterval: 30000, // 30 seconds
+    staleTime: 60000, // 1 minute - members don't change frequently
+    refetchOnWindowFocus: false,
   });
 
   // Check membership when members data changes
@@ -131,10 +137,10 @@ export default function SimpleChatroomPage() {
           title: "Joined chatroom",
           description: "You have successfully joined the chatroom",
         });
-        // Refetch data
-        refetchMemberCount();
-        refetchMembers();
-        refetchMessages();
+        // Use invalidateQueries to avoid loading state flickers
+        queryClient.invalidateQueries({ queryKey: [`/api/simple-chatrooms/${chatroomId}/members/count`] });
+        queryClient.invalidateQueries({ queryKey: [`/api/simple-chatrooms/${chatroomId}/members`] });
+        queryClient.invalidateQueries({ queryKey: [`/api/simple-chatrooms/${chatroomId}/messages`] });
       } else {
         const error = await response.json().catch(() => ({}));
         throw new Error(error.message || "Failed to join chatroom");
@@ -172,11 +178,10 @@ export default function SimpleChatroomPage() {
           title: "Left chatroom",
           description: "You have successfully left the chatroom",
         });
-        // Refetch data
-        refetchMemberCount();
-        refetchMembers();
-        // Clear messages since user left
-        queryClient.setQueryData([`/api/simple-chatrooms/${chatroomId}/messages`], []);
+        // Use invalidateQueries and clear messages cache
+        queryClient.invalidateQueries({ queryKey: [`/api/simple-chatrooms/${chatroomId}/members/count`] });
+        queryClient.invalidateQueries({ queryKey: [`/api/simple-chatrooms/${chatroomId}/members`] });
+        queryClient.removeQueries({ queryKey: [`/api/simple-chatrooms/${chatroomId}/messages`] });
         setTimeout(() => navigate('/city-chatrooms'), 1000);
       } else {
         const error = await response.json().catch(() => ({}));
@@ -220,7 +225,11 @@ export default function SimpleChatroomPage() {
     },
     onSuccess: () => {
       setMessageText("");
-      refetchMessages();
+      // Use queryClient.invalidateQueries instead of direct refetch to avoid loading states
+      queryClient.invalidateQueries({ 
+        queryKey: [`/api/simple-chatrooms/${chatroomId}/messages`],
+        exact: true 
+      });
     },
     onError: (error: any) => {
       if (error.message?.includes("must be a member") || error.message?.includes("join the chatroom")) {
@@ -344,32 +353,94 @@ export default function SimpleChatroomPage() {
               </div>
             </div>
             
-            {/* Member List */}
+            {/* Member List - Show All Members with Avatars */}
             {Array.isArray(members) && members.length > 0 && (
               <div className="mt-4 pt-4 border-t">
                 <div className="flex items-center gap-2 mb-3">
                   <Users className="w-4 h-4" />
-                  <span className="text-sm font-medium">{members.length} Member{members.length !== 1 ? 's' : ''}</span>
+                  <span className="text-sm font-medium">All {members.length} Member{members.length !== 1 ? 's' : ''}</span>
                 </div>
-                <div className="flex flex-wrap gap-2">
-                  {members.map((member: ChatMember) => (
-                    <div key={member.user_id} className="flex items-center gap-2 bg-gray-50 dark:bg-gray-700 rounded-full px-3 py-1">
-                      <Avatar className="w-6 h-6">
-                        {member.profile_image ? (
-                          <AvatarImage src={member.profile_image} alt={member.username} />
-                        ) : (
-                          <AvatarFallback className="text-xs">
-                            {member.username.slice(0, 2).toUpperCase()}
-                          </AvatarFallback>
-                        )}
-                      </Avatar>
-                      <span className="text-sm">{member.username}</span>
-                      {member.role === 'admin' && (
-                        <span className="text-xs bg-blue-500 text-white rounded px-1">Admin</span>
+                
+                {/* Avatar Grid for larger member lists */}
+                {members.length > 8 ? (
+                  <div>
+                    {/* Show first 12 avatars in a compact grid */}
+                    <div className="flex flex-wrap gap-2 mb-3">
+                      {members.slice(0, 12).map((member) => (
+                        <div key={member.user_id} className="relative group">
+                          <Avatar className="w-10 h-10 border-2 border-white dark:border-gray-600 shadow-sm hover:scale-110 transition-transform cursor-pointer">
+                            {member.profile_image ? (
+                              <AvatarImage src={member.profile_image} alt={member.username} />
+                            ) : (
+                              <AvatarFallback className="text-xs font-medium bg-gradient-to-br from-blue-400 to-purple-500 text-white">
+                                {member.username.slice(0, 2).toUpperCase()}
+                              </AvatarFallback>
+                            )}
+                          </Avatar>
+                          {/* Tooltip on hover */}
+                          <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-black text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
+                            {member.username}
+                            {member.role === 'admin' && ' (Admin)'}
+                          </div>
+                        </div>
+                      ))}
+                      {members.length > 12 && (
+                        <div className="w-10 h-10 border-2 border-gray-300 dark:border-gray-600 rounded-full flex items-center justify-center bg-gray-100 dark:bg-gray-700 text-xs font-medium text-gray-600 dark:text-gray-400">
+                          +{members.length - 12}
+                        </div>
                       )}
                     </div>
-                  ))}
-                </div>
+                    
+                    {/* Expandable member list */}
+                    <details className="group">
+                      <summary className="cursor-pointer text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 flex items-center gap-1">
+                        View all members
+                        <span className="group-open:rotate-180 transition-transform">▼</span>
+                      </summary>
+                      <div className="mt-3 space-y-2 max-h-48 overflow-y-auto">
+                        {members.map((member) => (
+                          <div key={member.user_id} className="flex items-center gap-3 p-2 rounded-lg bg-gray-50 dark:bg-gray-700/50">
+                            <Avatar className="w-8 h-8">
+                              {member.profile_image ? (
+                                <AvatarImage src={member.profile_image} alt={member.username} />
+                              ) : (
+                                <AvatarFallback className="text-xs bg-gradient-to-br from-blue-400 to-purple-500 text-white">
+                                  {member.username.slice(0, 2).toUpperCase()}
+                                </AvatarFallback>
+                              )}
+                            </Avatar>
+                            <span className="text-sm font-medium">{member.username}</span>
+                            <span className="text-xs text-gray-500 dark:text-gray-400">{member.name}</span>
+                            {member.role === 'admin' && (
+                              <span className="text-xs bg-blue-500 text-white rounded px-2 py-1 ml-auto">Admin</span>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </details>
+                  </div>
+                ) : (
+                  /* Show all members in cards for smaller lists */
+                  <div className="flex flex-wrap gap-2">
+                    {members.map((member) => (
+                      <div key={member.user_id} className="flex items-center gap-2 bg-gray-50 dark:bg-gray-700 rounded-full px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                        <Avatar className="w-7 h-7">
+                          {member.profile_image ? (
+                            <AvatarImage src={member.profile_image} alt={member.username} />
+                          ) : (
+                            <AvatarFallback className="text-xs bg-gradient-to-br from-blue-400 to-purple-500 text-white">
+                              {member.username.slice(0, 2).toUpperCase()}
+                            </AvatarFallback>
+                          )}
+                        </Avatar>
+                        <span className="text-sm font-medium">{member.username}</span>
+                        {member.role === 'admin' && (
+                          <span className="text-xs bg-blue-500 text-white rounded px-1.5 py-0.5">Admin</span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
           </CardHeader>
@@ -390,43 +461,62 @@ export default function SimpleChatroomPage() {
                 </div>
               ) : messagesLoading ? (
                 <div className="flex items-center justify-center h-full">
-                  <span>Loading messages...</span>
+                  <div className="flex items-center gap-2">
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    <span>Loading messages...</span>
+                  </div>
                 </div>
               ) : messages.length === 0 ? (
                 <div className="flex items-center justify-center h-full text-gray-500">
-                  No messages yet. Start the conversation!
+                  <div className="text-center">
+                    <MessageCircle className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                    <p>No messages yet. Start the conversation!</p>
+                    {messagesFetching && !messagesLoading && (
+                      <p className="text-xs text-gray-400 mt-2">Checking for new messages...</p>
+                    )}
+                  </div>
                 </div>
               ) : (
-                messages.map((message) => (
-                  <div
-                    key={message.id}
-                    className={`flex ${message.sender_id === currentUserId ? 'justify-end' : 'justify-start'}`}
-                  >
-                    <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-                      message.sender_id === currentUserId
-                        ? 'bg-blue-500 text-white'
-                        : 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100'
-                    }`}>
-                      <div className={`text-xs mb-1 ${
-                        message.sender_id === currentUserId 
-                          ? 'text-blue-100' 
-                          : 'text-gray-600 dark:text-gray-300'
+                <div className="space-y-3">
+                  {messages.map((message) => (
+                    <div
+                      key={message.id}
+                      className={`flex ${message.sender_id === currentUserId ? 'justify-end' : 'justify-start'}`}
+                    >
+                      <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+                        message.sender_id === currentUserId
+                          ? 'bg-blue-500 text-white'
+                          : 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100'
                       }`}>
-                        {message.username || 'Unknown'}
-                      </div>
-                      <div className={message.sender_id === currentUserId ? 'text-white' : 'text-gray-900 dark:text-gray-100'}>
-                        {message.content}
-                      </div>
-                      <div className={`text-xs mt-1 ${
-                        message.sender_id === currentUserId 
-                          ? 'text-blue-100' 
-                          : 'text-gray-500 dark:text-gray-400'
-                      }`}>
-                        {new Date(message.created_at).toLocaleTimeString()}
+                        <div className={`text-xs mb-1 ${
+                          message.sender_id === currentUserId 
+                            ? 'text-blue-100' 
+                            : 'text-gray-600 dark:text-gray-300'
+                        }`}>
+                          {message.username || 'Unknown'}
+                        </div>
+                        <div className={message.sender_id === currentUserId ? 'text-white' : 'text-gray-900 dark:text-gray-100'}>
+                          {message.content}
+                        </div>
+                        <div className={`text-xs mt-1 ${
+                          message.sender_id === currentUserId 
+                            ? 'text-blue-100' 
+                            : 'text-gray-500 dark:text-gray-400'
+                        }`}>
+                          {new Date(message.created_at).toLocaleTimeString()}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))
+                  ))}
+                  {/* Subtle indicator when fetching new messages */}
+                  {messagesFetching && !messagesLoading && (
+                    <div className="flex justify-center">
+                      <div className="text-xs text-gray-400 bg-gray-50 dark:bg-gray-800 px-3 py-1 rounded-full">
+                        Checking for new messages...
+                      </div>
+                    </div>
+                  )}
+                </div>
               )}
               <div ref={messagesEndRef} />
             </div>
