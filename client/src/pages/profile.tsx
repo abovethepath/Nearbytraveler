@@ -3027,8 +3027,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       queryClient.invalidateQueries({ queryKey: ["/api/users"] });
       
       toast({
-        title: "Business profile updated",
-        description: "Your business profile has been successfully updated.",
+        title: user?.userType === 'business' ? "Business profile updated" : "Profile updated",
+        description: user?.userType === 'business' 
+          ? "Your business profile has been successfully updated."
+          : "Your profile has been successfully updated.",
       });
       setIsEditMode(false);
     },
