@@ -290,22 +290,23 @@ export default function Landing() {
                   className="w-full h-48 object-cover"
                 />
               </div>
-              <div className="p-6 flex flex-col flex-grow overflow-hidden">
-                <div className="mb-3 min-w-0">
-                  <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-1 break-all overflow-hidden">Happy Hour Thursday</h3>
-                  <p className="text-sm text-gray-600 break-all overflow-hidden">Jameson Pub • Live Music</p>
+              <div className="p-6 flex flex-col flex-grow">
+                <div className="mb-3">
+                  <h3 className="font-bold text-gray-900 mb-1" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Happy Hour Thursday</h3>
+                  <p className="text-sm text-gray-600" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Jameson Pub • Live Music</p>
                 </div>
                 
                 {/* Tags - Smaller and limited to 2 max */}
-                <div className="flex gap-1 mb-3 overflow-hidden">
-                  <span className="bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full text-xs font-medium flex-shrink-0">Drinks</span>
-                  <span className="bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full text-xs font-medium flex-shrink-0">Live Music</span>
+                <div className="flex gap-1 mb-3">
+                  <span className="bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full text-xs font-medium">Drinks</span>
+                  <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs font-medium">21+</span>
                 </div>
                 
-                <p className="text-gray-700 text-sm sm:text-base mb-4 flex-grow leading-relaxed break-all overflow-hidden min-w-0">Join locals and travelers for Thursday happy hour with live music at Jameson Pub. Great drinks, live bands, and authentic LA nightlife.</p>
+                <p className="text-gray-700 text-sm mb-4 flex-grow" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Join locals and travelers for Thursday happy hour with live music at Jameson Pub. Great drinks, live bands, and authentic LA nightlife.</p>
                 <Button 
                   onClick={() => setLocation('/join')}
-                  className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold mt-auto break-all"
+                  className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold mt-auto"
+                  style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}
                 >
                   JOIN TO CONNECT
                 </Button>
