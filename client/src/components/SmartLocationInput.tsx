@@ -4,7 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { getRegionForCity, isStateOptionalForCountry, validateLocationForCountry } from "@/lib/locationHelpers";
 import { COUNTRIES, CITIES_BY_COUNTRY } from "@/lib/locationData";
-import { METRO_AREAS, isLAMetroCity } from "../../../shared/constants";
+import { METRO_AREAS, isLAMetroCity, getMetroArea } from "../../../shared/constants";
 
 interface SmartLocationInputProps {
   city?: string;
@@ -127,27 +127,42 @@ export function SmartLocationInput({
     }
   };
 
-  // Get cities for country WITH LA Metro consolidation
+  // Get cities for country WITH ALL METRO consolidation
   const getCitiesForCountry = () => {
     if (!country) return [];
     
     const baseCities = CITIES_BY_COUNTRY[country] || [];
     
     if (country === "United States") {
-      // For US, ensure LA Metro cities are prominent and properly ordered
-      const laMetroCities = METRO_AREAS['Los Angeles']?.cities || [];
+      // Collect ALL metro cities from ALL metro areas
+      const allMetroCities = new Set<string>();
+      const mainMetroCities: string[] = [];
+      
+      Object.values(METRO_AREAS).forEach(metro => {
+        // Add the main city first
+        if (baseCities.includes(metro.mainCity)) {
+          mainMetroCities.push(metro.mainCity);
+        }
+        // Add all metro cities to the set
+        metro.cities.forEach(city => {
+          if (baseCities.includes(city)) {
+            allMetroCities.add(city);
+          }
+        });
+      });
+      
       const topCities = ["Los Angeles", "Las Vegas", "Miami", "Nashville", "New Orleans", "Austin", "Chicago", "New York City"];
       
       return [
-        // Top priority cities first (including Los Angeles)
+        // Top priority cities first
         ...topCities.filter(c => baseCities.includes(c)),
-        // LA Metro cities prominently displayed (excluding Los Angeles to avoid duplication)
-        ...laMetroCities.filter(c => c !== 'Los Angeles' && baseCities.includes(c)),
-        // Rest of US cities
+        // ALL Metro area cities prominently displayed (excluding main cities to avoid duplication)
+        ...Array.from(allMetroCities).filter(city => !topCities.includes(city)),
+        // Rest of US cities (non-metro, non-top)
         ...baseCities.filter(city => {
           const isTopCity = topCities.includes(city);
-          const isLAMetroCity = laMetroCities.includes(city);
-          return !isTopCity && !isLAMetroCity;
+          const isMetroCity = allMetroCities.has(city);
+          return !isTopCity && !isMetroCity;
         })
       ];
     }
