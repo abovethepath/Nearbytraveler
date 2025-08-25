@@ -144,10 +144,34 @@
     color-scheme: light !important;
   }
   
-  /* DISABLE ALL DARK CLASSES */
-  .dark * {
-    background-color: inherit !important;
-    color: inherit !important;
+  /* NUCLEAR OPTION: FORCE LIGHT THEME EVERYWHERE */
+  *, *::before, *::after {
+    background-color: white !important;
+    color: black !important;
+  }
+  
+  /* DISABLE ALL DARK CLASSES COMPLETELY */
+  .dark,
+  .dark *,
+  [data-theme="dark"],
+  [data-theme="dark"] * {
+    background-color: white !important;
+    color: black !important;
+  }
+  
+  /* Override specific UI components */
+  .bg-gray-900,
+  .bg-gray-800,
+  .bg-gray-700,
+  .bg-slate-900,
+  .bg-slate-800 {
+    background-color: white !important;
+  }
+  
+  .text-white,
+  .text-gray-100,
+  .text-gray-200 {
+    color: black !important;
   }
 }
 
