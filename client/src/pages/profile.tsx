@@ -3550,8 +3550,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             {/* About Section */}
             <Card className="mt-6 relative overflow-visible">
               <CardHeader className="flex items-center gap-2 flex-wrap min-w-0 w-full">
-                <CardTitle className="text-base sm:text-lg break-words max-w-[calc(100%-3rem)] sm:max-w-none">
-                  About {user?.userType === 'business'
+                <CardTitle className="text-xl sm:text-2xl font-bold break-words max-w-[calc(100%-3rem)] sm:max-w-none">
+                  ABOUT {user?.userType === 'business'
                     ? (user?.businessName || user?.name || user?.username)
                     : (user?.username || 'User')}
                 </CardTitle>
