@@ -71,6 +71,35 @@ export default function JoinNowWidgetNew() {
     }
   };
 
+  // Phone number formatting function
+  const formatPhoneNumber = (value: string) => {
+    // Remove all non-numeric characters
+    const phoneNumber = value.replace(/\D/g, '');
+    
+    // Don't format if empty
+    if (!phoneNumber) return '';
+    
+    // Add country code if not present and length suggests US number
+    const withCountryCode = phoneNumber.startsWith('1') ? phoneNumber : `1${phoneNumber}`;
+    
+    // Format as 1-xxx-xxx-xxxx
+    if (withCountryCode.length >= 11) {
+      return `1-${withCountryCode.slice(1, 4)}-${withCountryCode.slice(4, 7)}-${withCountryCode.slice(7, 11)}`;
+    } else if (withCountryCode.length >= 8) {
+      return `1-${withCountryCode.slice(1, 4)}-${withCountryCode.slice(4, 7)}-${withCountryCode.slice(7)}`;
+    } else if (withCountryCode.length >= 5) {
+      return `1-${withCountryCode.slice(1, 4)}-${withCountryCode.slice(4)}`;
+    } else if (withCountryCode.length >= 2) {
+      return `1-${withCountryCode.slice(1)}`;
+    }
+    return withCountryCode;
+  };
+
+  const handlePhoneChange = (value: string) => {
+    const formatted = formatPhoneNumber(value);
+    setFormData({ ...formData, phoneNumber: formatted });
+  };
+
   const handleUsernameChange = (value: string) => {
     const cleanUsername = value.replace(/\s/g, '_');
     setFormData({ ...formData, username: cleanUsername });
@@ -424,8 +453,8 @@ export default function JoinNowWidgetNew() {
                 id="phoneNumber"
                 type="tel"
                 value={formData.phoneNumber}
-                onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
-                placeholder="+1 (555) 123-4567"
+                onChange={(e) => handlePhoneChange(e.target.value)}
+                placeholder="1-555-123-4567"
                 className="text-base py-3 text-crisp font-medium"
                 required
               />
