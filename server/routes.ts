@@ -1304,7 +1304,8 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       }
 
       // Get current user ID from headers (set by frontend)
-      const currentUserId = req.headers['x-user-id'] ? parseInt(req.headers['x-user-id'] as string || '0') : null;
+      const userIdHeader = req.headers['x-user-id'] as string;
+      const currentUserId = userIdHeader && !isNaN(parseInt(userIdHeader)) ? parseInt(userIdHeader) : null;
 
       // Apply global metropolitan area consolidation to search location
       const searchLocation = location as string;
@@ -1350,9 +1351,10 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       }
 
       // Include current user if they match the location (hometown search)
-      if (currentUserId) {
-        const currentUser = await storage.getUser(currentUserId);
-        if (currentUser && !users.some(u => u.id === currentUserId)) {
+      if (currentUserId && currentUserId > 0) {
+        try {
+          const currentUser = await storage.getUser(currentUserId);
+          if (currentUser && !users.some(u => u.id === currentUserId)) {
           const userHometown = `${currentUser.hometownCity}, ${currentUser.hometownState}, ${currentUser.hometownCountry}`;
           const currentUserCity = currentUser.hometownCity || '';
           
@@ -1365,6 +1367,9 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
             if (process.env.NODE_ENV === 'development') console.log(`👤 HOMETOWN SEARCH: Including current user ${currentUser.username} from ${currentUserCity} in ${finalSearchLocation} results`);
             users.unshift(currentUser);
           }
+        }
+        } catch (error) {
+          if (process.env.NODE_ENV === 'development') console.error(`Error fetching current user ${currentUserId}:`, error);
         }
       }
       
