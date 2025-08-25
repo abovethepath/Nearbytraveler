@@ -144,7 +144,6 @@ export default function BusinessLanding() {
         <section className="mt-16 max-w-3xl mx-auto text-left">
           <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Why Join Nearby Traveler Business Network?</h2>
           <ul className="list-disc list-inside text-lg text-white sm:text-gray-700 sm:dark:text-gray-200 space-y-2">
-            <li>Reach travelers who are actively exploring your area and looking for authentic local experiences.</li>
             <li>Search and directly target locals and travelers in your area to market your offers and deals to those who express specific interests.</li>
             <li>Create time-limited offers and deals that attract both tourists and locals to your business.</li>
             <li>Host events to showcase your services and build community connections.</li>
