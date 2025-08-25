@@ -41,7 +41,7 @@ export default function BusinessLanding() {
                     <div className="max-w-4xl mx-auto">
                       <h1 className="px-3 leading-tight sm:leading-snug">
                         <span className="block font-black text-[clamp(1.5rem,6vw,2.25rem)] text-white">
-                          Grow Your Business. Meet Travelers and Locals Who Are Already Looking for Your Products or Services.
+                          Grow Your Business. Meet <span className="text-blue-400">Nearby Travelers</span> <span className="text-orange-400">and Locals</span> Who Are Already Looking for Your Products or Services.
                         </span>
                       </h1>
                       
