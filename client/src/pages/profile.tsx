@@ -4016,7 +4016,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           </h4>
                           
                           <div className="flex flex-wrap gap-2 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border overflow-hidden break-words">
-                            {getAllInterests().map((interest) => {
+                            {getAllInterests().filter(interest => !MOST_POPULAR_INTERESTS.includes(interest)).map((interest) => {
                               const displayText = interest.startsWith("**") && interest.endsWith("**") ? 
                                 interest.slice(2, -2) : interest;
                               const isSelected = editFormData.interests.includes(interest);
@@ -4040,6 +4040,40 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                 </button>
                               );
                             })}
+                          </div>
+                          
+                          {/* Custom Interest Input */}
+                          <div className="flex space-x-2 mt-4">
+                            <Input
+                              placeholder="Add your own interests not listed above - Hit enter after each choice"
+                              value={customInterestInput}
+                              onChange={(e) => setCustomInterestInput(e.target.value)}
+                              onKeyPress={(e) => {
+                                if (e.key === 'Enter') {
+                                  e.preventDefault();
+                                  const trimmed = customInterestInput.trim();
+                                  if (trimmed && !editFormData.interests.includes(trimmed)) {
+                                    setEditFormData(prev => ({ ...prev, interests: [...prev.interests, trimmed] }));
+                                    setCustomInterestInput('');
+                                  }
+                                }
+                              }}
+                            />
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                const trimmed = customInterestInput.trim();
+                                if (trimmed && !editFormData.interests.includes(trimmed)) {
+                                  setEditFormData(prev => ({ ...prev, interests: [...prev.interests, trimmed] }));
+                                  setCustomInterestInput('');
+                                }
+                              }}
+                              className="h-8 px-2"
+                            >
+                              <Plus className="w-3 h-3" />
+                            </Button>
                           </div>
                         </div>
 
@@ -4078,6 +4112,40 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               );
                             })}
                           </div>
+                          
+                          {/* Custom Activity Input */}
+                          <div className="flex space-x-2 mt-4">
+                            <Input
+                              placeholder="Add your own activities not listed above - Hit enter after each choice"
+                              value={customActivityInput}
+                              onChange={(e) => setCustomActivityInput(e.target.value)}
+                              onKeyPress={(e) => {
+                                if (e.key === 'Enter') {
+                                  e.preventDefault();
+                                  const trimmed = customActivityInput.trim();
+                                  if (trimmed && !editFormData.activities.includes(trimmed)) {
+                                    setEditFormData(prev => ({ ...prev, activities: [...prev.activities, trimmed] }));
+                                    setCustomActivityInput('');
+                                  }
+                                }
+                              }}
+                            />
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                const trimmed = customActivityInput.trim();
+                                if (trimmed && !editFormData.activities.includes(trimmed)) {
+                                  setEditFormData(prev => ({ ...prev, activities: [...prev.activities, trimmed] }));
+                                  setCustomActivityInput('');
+                                }
+                              }}
+                              className="h-8 px-2"
+                            >
+                              <Plus className="w-3 h-3" />
+                            </Button>
+                          </div>
                         </div>
 
                         {/* Events Section */}
@@ -4110,6 +4178,40 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                 </button>
                               );
                             })}
+                          </div>
+                          
+                          {/* Custom Event Input */}
+                          <div className="flex space-x-2 mt-4">
+                            <Input
+                              placeholder="Add your own events not listed above - Hit enter after each choice"
+                              value={customEventInput}
+                              onChange={(e) => setCustomEventInput(e.target.value)}
+                              onKeyPress={(e) => {
+                                if (e.key === 'Enter') {
+                                  e.preventDefault();
+                                  const trimmed = customEventInput.trim();
+                                  if (trimmed && !editFormData.events.includes(trimmed)) {
+                                    setEditFormData(prev => ({ ...prev, events: [...prev.events, trimmed] }));
+                                    setCustomEventInput('');
+                                  }
+                                }
+                              }}
+                            />
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                const trimmed = customEventInput.trim();
+                                if (trimmed && !editFormData.events.includes(trimmed)) {
+                                  setEditFormData(prev => ({ ...prev, events: [...prev.events, trimmed] }));
+                                  setCustomEventInput('');
+                                }
+                              }}
+                              className="h-8 px-2"
+                            >
+                              <Plus className="w-3 h-3" />
+                            </Button>
                           </div>
                         </div>
                         
