@@ -7499,7 +7499,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
       {/* Profile Edit Modal */}
       <Dialog open={isEditMode} onOpenChange={setIsEditMode}>
-        <DialogContent className="fixed inset-x-0 bottom-0 z-50 grid w-full gap-4 border border-slate-200 bg-white p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:slide-out-to-bottom-[48%] data-[state=open]:slide-in-from-bottom-[48%] sm:max-w-lg sm:rounded-lg sm:border dark:border-slate-800 dark:bg-slate-950 md:max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-[95vw] w-full md:max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <div className="flex items-center justify-between">
               <DialogTitle>Edit Profile</DialogTitle>
@@ -7900,20 +7900,25 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Gender</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value ?? ''}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select gender" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent className="dark:bg-gray-800 dark:border-gray-600">
-                            {GENDER_OPTIONS.map((gender) => (
-                              <SelectItem key={gender} value={gender} className="dark:text-white dark:hover:bg-gray-700">
+                        <div className="flex flex-wrap gap-3">
+                          {GENDER_OPTIONS.map((gender) => (
+                            <div key={gender} className="flex items-center space-x-2">
+                              <Checkbox
+                                id={`gender-${gender}`}
+                                checked={field.value === gender}
+                                onCheckedChange={(checked) => {
+                                  field.onChange(checked ? gender : "");
+                                }}
+                              />
+                              <label
+                                htmlFor={`gender-${gender}`}
+                                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                              >
                                 {gender}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                              </label>
+                            </div>
+                          ))}
+                        </div>
                         <FormMessage />
                       </FormItem>
                     )}
