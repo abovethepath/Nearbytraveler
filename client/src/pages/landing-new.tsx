@@ -346,25 +346,25 @@ export default function Landing() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
             
             {/* Before Events */}
-            <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:bg-gray-800 rounded-2xl p-8 shadow-lg border-2 border-blue-300 dark:border-blue-600 text-center">
+            <div className="bg-gradient-to-br from-blue-400 to-blue-500 dark:bg-gray-800 rounded-2xl p-8 shadow-lg border-2 border-blue-600 dark:border-blue-600 text-center">
               <div className="text-4xl mb-4">🎉</div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Before Events</h3>
+              <h3 className="text-xl font-bold text-white mb-6">Before Events</h3>
               <div className="grid grid-cols-1 gap-3 text-left">
                 <div className="flex items-center space-x-2">
-                  <span className="text-orange-500 font-bold">•</span>
-                  <span className="text-black dark:text-gray-300 text-base">Browse profiles of people headed to the same event or city</span>
+                  <span className="text-white font-bold">•</span>
+                  <span className="text-white text-base">Browse profiles of people headed to the same event or city</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <span className="text-orange-500 font-bold">•</span>
-                  <span className="text-black dark:text-gray-300 text-base">Break the ice with a quick chat or group plan</span>
+                  <span className="text-white font-bold">•</span>
+                  <span className="text-white text-base">Break the ice with a quick chat or group plan</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <span className="text-orange-500 font-bold">•</span>
-                  <span className="text-black dark:text-gray-300 text-base">Swap stories, backgrounds, and tips</span>
+                  <span className="text-white font-bold">•</span>
+                  <span className="text-white text-base">Swap stories, backgrounds, and tips</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <span className="text-orange-500 font-bold">•</span>
-                  <span className="text-black dark:text-gray-300 text-base">Show up already excited and connected</span>
+                  <span className="text-white font-bold">•</span>
+                  <span className="text-white text-base">Show up already excited and connected</span>
                 </div>
               </div>
             </div>
@@ -394,25 +394,25 @@ export default function Landing() {
             </div>
             
             {/* After Events */}
-            <div className="bg-gradient-to-br from-orange-50 to-orange-100 dark:bg-gray-800 rounded-2xl p-8 shadow-lg border-2 border-orange-300 dark:border-orange-600 text-center">
+            <div className="bg-gradient-to-br from-orange-400 to-orange-500 dark:bg-gray-800 rounded-2xl p-8 shadow-lg border-2 border-orange-600 dark:border-orange-600 text-center">
               <div className="text-4xl mb-4">🌍</div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">After Events</h3>
+              <h3 className="text-xl font-bold text-white mb-6">After Events</h3>
               <div className="grid grid-cols-1 gap-3 text-left">
                 <div className="flex items-center space-x-2">
-                  <span className="text-orange-500 font-bold">•</span>
-                  <span className="text-black dark:text-gray-300 text-base">Keep the new friendships alive</span>
+                  <span className="text-white font-bold">•</span>
+                  <span className="text-white text-base">Keep the new friendships alive</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <span className="text-orange-500 font-bold">•</span>
-                  <span className="text-black dark:text-gray-300 text-base">Plan your next meetup or trip together</span>
+                  <span className="text-white font-bold">•</span>
+                  <span className="text-white text-base">Plan your next meetup or trip together</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <span className="text-orange-500 font-bold">•</span>
-                  <span className="text-black dark:text-gray-300 text-base">Spot familiar names in future events</span>
+                  <span className="text-white font-bold">•</span>
+                  <span className="text-white text-base">Spot familiar names in future events</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <span className="text-orange-500 font-bold">•</span>
-                  <span className="text-black dark:text-gray-300 text-base">Grow your own global community</span>
+                  <span className="text-white font-bold">•</span>
+                  <span className="text-white text-base">Grow your own global community</span>
                 </div>
               </div>
             </div>
