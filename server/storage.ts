@@ -1564,6 +1564,33 @@ export class DatabaseStorage implements IStorage {
       .insert(travelPlans)
       .values(travelPlan)
       .returning();
+
+    // ✈️ AUTO-JOIN: Add traveler to destination chatrooms
+    if (newPlan.destination && newPlan.userId) {
+      try {
+        console.log(`🎯 TRAVEL PLAN: Auto-joining user ${newPlan.userId} to ${newPlan.destination} chatrooms`);
+        
+        // Parse destination to get city, state, country
+        const destinationParts = newPlan.destination.split(',');
+        const destinationCity = destinationParts[0]?.trim();
+        const destinationState = destinationParts[1]?.trim() || null;
+        const destinationCountry = destinationParts[2]?.trim() || 'United States';
+        
+        if (destinationCity) {
+          // First, ensure chatrooms exist for the destination
+          await this.ensureMeetLocalsChatrooms(destinationCity, destinationState, destinationCountry);
+          
+          // Then auto-join the traveler to the destination chatrooms
+          await this.autoJoinWelcomeChatroom(newPlan.userId, destinationCity, destinationCountry);
+          
+          console.log(`✅ TRAVEL PLAN: Successfully joined user ${newPlan.userId} to ${destinationCity} chatrooms`);
+        }
+      } catch (error) {
+        console.error('Error auto-joining destination chatrooms for travel plan:', error);
+        // Don't fail the travel plan creation if chatroom joining fails
+      }
+    }
+    
     return newPlan;
   }
 
