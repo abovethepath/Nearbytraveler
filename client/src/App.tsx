@@ -85,7 +85,7 @@ import PlanTrip from "@/pages/plan-trip";
 import TravelIntentQuiz from "@/pages/TravelIntentQuiz";
 import CityChatrooms from "@/pages/city-chatrooms";
 import Chatroom from "@/pages/chatroom";
-import SimpleChatroom from "@/pages/simple-chatroom";
+import SimpleChatroomFixed from "@/pages/simple-chatroom-fixed";
 
 import BusinessOffers from "@/pages/business-offers";
 import BusinessDashboard from "@/pages/business-dashboard";
@@ -708,7 +708,7 @@ function Router() {
 
     if (location.startsWith('/simple-chatroom/')) {
       console.log('🚀 ROUTING: Simple chatroom route matched');
-      return <SimpleChatroom />;
+      return <SimpleChatroomFixed />;
     }
 
     if (location.startsWith('/city-chatrooms/')) {
