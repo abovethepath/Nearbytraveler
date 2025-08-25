@@ -41,25 +41,15 @@ export default function BusinessLanding() {
                     <div className="max-w-4xl mx-auto">
                       <h1 className="px-3 leading-tight sm:leading-snug">
                         <span className="block font-black text-[clamp(1.5rem,6vw,2.25rem)] text-white">
-                          Grow Your Business
-                        </span>
-                        <span className="block font-black text-[clamp(1.25rem,5.5vw,2rem)]">
-                          <span className="text-amber-300 sm:text-orange-500">to Targeted Customers </span>
-                          <span className="text-blue-300 sm:text-blue-600">with Nearby Travelers </span>
-                          <span className="text-white">and Locals Showing Direct Interest in Your Products and Services</span>
+                          Grow Your Business with Direct Connections
                         </span>
                       </h1>
                       
                       {/* Business value proposition (hide on phones so the hero photo is visible) */}
                       <div className="hidden sm:block mt-8 p-6 bg-black/40 backdrop-blur-sm rounded-2xl border border-white/20">
                         <p className="text-sm sm:text-base md:text-lg lg:text-xl text-white leading-relaxed px-2">
-                          <span className="text-orange-300 font-bold">"Connect with travelers actively exploring your area and locals seeking authentic experiences.</span>
-                          <span className="text-white"> Create targeted offers, host events, and build a loyal customer base that recommends you to others."</span>
+                          Reach travelers and locals already looking for experiences, products, and services like yours. Nearby Traveler puts your brand in front of the right audience at the right time.
                         </p>
-                        <div className="mt-4 text-center">
-                          <p className="text-white font-bold text-lg">— Your Business Growth Partner</p>
-                          <p className="text-orange-200 text-sm">From restaurants to tours - grow your business with real connections</p>
-                        </div>
                       </div>
                       
                       {/* Hero CTA */}
@@ -69,7 +59,7 @@ export default function BusinessLanding() {
                           size="lg"
                           className="bg-orange-500 hover:bg-orange-600 text-white font-bold text-xl px-12 py-6 rounded-2xl shadow-2xl transition-all duration-200 transform hover:scale-105 animate-pulse-glow"
                         >
-                          🚀 Join Nearby Traveler NOW!!!!
+                          Start Reaching Customers
                         </Button>
                       </div>
                     </div>
