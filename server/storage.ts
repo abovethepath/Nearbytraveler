@@ -450,9 +450,19 @@ export class DatabaseStorage implements IStorage {
     }
   ];
 
-  // DISABLED: Metropolitan area consolidation function - no forced consolidation per user request
+  // LA METRO CONSOLIDATION ENABLED: Consolidate LA cities to "Los Angeles Metro" as required
   private consolidateToMetropolitanArea(city: string, state?: string | null, country?: string | null): string {
-    // DISABLED: Return original city without any consolidation
+    if (!city) return city;
+    
+    const cityLower = city.toLowerCase();
+    
+    // LA Metro consolidation - this IS the correct behavior per user requirements
+    for (const metro of this.GLOBAL_METROPOLITAN_AREAS) {
+      if (metro.cities.some(metroCity => metroCity.toLowerCase() === cityLower)) {
+        return metro.mainCity;
+      }
+    }
+    
     return city;
     const stateLower = (state || '').toLowerCase();
     const countryLower = (country || '').toLowerCase();
