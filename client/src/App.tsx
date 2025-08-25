@@ -61,6 +61,7 @@ import EventsLanding from "@/pages/events-landing";
 import BusinessLanding from "@/pages/business-landing";
 import LocalsLanding from "@/pages/locals-landing";
 import TravelersLanding from "@/pages/travelers-landing";
+import NetworkingLanding from "@/pages/networking-landing";
 import Connect from "@/pages/connect";
 import Requests from "@/pages/requests";
 
@@ -171,7 +172,7 @@ function Router() {
 
   const landingPageRoutes = [
     '/', '/landing', '/landing-new', '/auth', '/join', '/signup', '/signup/local', '/signup/traveler', '/signup/business',
-    '/events-landing', '/business-landing', '/locals-landing', '/travelers-landing', '/privacy', '/terms', '/cookies', '/about', '/getting-started',
+    '/events-landing', '/business-landing', '/locals-landing', '/travelers-landing', '/networking-landing', '/privacy', '/terms', '/cookies', '/about', '/getting-started',
     '/forgot-password', '/reset-password', '/welcome', '/welcome-business', '/welcome-travel-agent', '/quick-login', '/preview-landing', '/preview-first-landing',
     '/travel-quiz', '/TravelIntentQuiz', '/signup/travel-agent'
   ];
@@ -502,6 +503,12 @@ function Router() {
       if (location === '/travelers-landing') {
         console.log('Showing TravelersLanding for unauthenticated user');
         return <TravelersLanding />;
+      }
+
+      // Allow access to networking landing page without authentication
+      if (location === '/networking-landing') {
+        console.log('Showing NetworkingLanding for unauthenticated user');
+        return <NetworkingLanding />;
       }
 
       // Travel Intent Quiz - accessible without authentication
