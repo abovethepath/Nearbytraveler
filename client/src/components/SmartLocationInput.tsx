@@ -180,13 +180,9 @@ export function SmartLocationInput({
           <SelectTrigger className="text-gray-900 dark:bg-gray-700 dark:text-white dark:border-gray-600">
             <SelectValue placeholder={typeof placeholder === 'object' ? placeholder?.country : "Select country"} />
           </SelectTrigger>
-          <SelectContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white">
+          <SelectContent>
             {COUNTRIES.map((countryOption) => (
-              <SelectItem 
-                key={countryOption} 
-                value={countryOption} 
-                className="text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 focus:bg-gray-100 dark:focus:bg-gray-700 cursor-pointer"
-              >
+              <SelectItem key={countryOption} value={countryOption}>
                 {countryOption}
               </SelectItem>
             ))}
@@ -204,13 +200,9 @@ export function SmartLocationInput({
             <SelectTrigger className="text-gray-900 dark:bg-gray-700 dark:text-white dark:border-gray-600">
               <SelectValue placeholder={typeof placeholder === 'object' ? placeholder?.city : "Select city"} />
             </SelectTrigger>
-            <SelectContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white max-h-96 overflow-y-auto">
+            <SelectContent className="max-h-96 overflow-y-auto">
               {citiesForCountry.map((cityOption) => (
-                <SelectItem 
-                  key={cityOption} 
-                  value={cityOption} 
-                  className="text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 focus:bg-gray-100 dark:focus:bg-gray-700 cursor-pointer"
-                >
+                <SelectItem key={cityOption} value={cityOption}>
                   {cityOption}
                 </SelectItem>
               ))}
@@ -238,7 +230,7 @@ export function SmartLocationInput({
                   : "Select region/province"
               } />
             </SelectTrigger>
-            <SelectContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white max-h-96 overflow-y-auto">
+            <SelectContent className="max-h-96 overflow-y-auto">
               {/* Add state/region options based on country */}
               {country === "United States" && [
                 "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut",
@@ -250,11 +242,7 @@ export function SmartLocationInput({
                 "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia",
                 "Wisconsin", "Wyoming"
               ].map((stateOption) => (
-                <SelectItem 
-                  key={stateOption} 
-                  value={stateOption} 
-                  className="text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 focus:bg-gray-100 dark:focus:bg-gray-700 cursor-pointer"
-                >
+                <SelectItem key={stateOption} value={stateOption}>
                   {stateOption}
                 </SelectItem>
               ))}
@@ -263,11 +251,7 @@ export function SmartLocationInput({
                 "Northwest Territories", "Nova Scotia", "Nunavut", "Ontario", "Prince Edward Island",
                 "Quebec", "Saskatchewan", "Yukon"
               ].map((provinceOption) => (
-                <SelectItem 
-                  key={provinceOption} 
-                  value={provinceOption} 
-                  className="text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 focus:bg-gray-100 dark:focus:bg-gray-700 cursor-pointer"
-                >
+                <SelectItem key={provinceOption} value={provinceOption}>
                   {provinceOption}
                 </SelectItem>
               ))}
