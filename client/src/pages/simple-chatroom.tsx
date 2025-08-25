@@ -44,76 +44,225 @@ export default function SimpleChatroomPage() {
   const queryClient = useQueryClient();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [messageText, setMessageText] = useState("");
+  const [isJoined, setIsJoined] = useState(false);
+  const [isJoining, setIsJoining] = useState(false);
+  const [isLeaving, setIsLeaving] = useState(false);
 
   // Extract chatroom ID from URL path: /simple-chatroom/198
   const pathSegments = location.split('/');
   const chatroomId = parseInt(pathSegments[2] || '198');
   
-  console.log('🚀 SIMPLE CHATROOM: Component loaded with chatroom ID:', chatroomId, 'from URL:', location, 'params:', params, 'pathSegments:', pathSegments);
-  
-  // Get current user with better error handling
+  // Get current user with error handling
   const getCurrentUser = () => {
     try {
       const storedUser = localStorage.getItem('travelconnect_user') || localStorage.getItem('user');
       if (storedUser) {
         const user = JSON.parse(storedUser);
-        console.log('🔑 CHATROOM: Found user in localStorage:', user?.username || 'unknown');
         return user;
       } else {
-        console.log('⚠️ CHATROOM: No user found in localStorage');
         return null;
       }
     } catch (e) {
-      console.error('❌ CHATROOM: Error parsing user from localStorage:', e);
+      console.error('Error parsing user from localStorage:', e);
       return null;
     }
   };
   
   const currentUser = getCurrentUser();
   const currentUserId = Number(currentUser?.id || 0);
-  
-  console.log('🔑 CHATROOM: Current user data:', { currentUser: currentUser?.username || 'null', currentUserId });
-  
-  // Scroll to top when entering chatroom
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [chatroomId]); // Re-run when chatroom ID changes
-
-  // SIMPLIFIED: All chatrooms are now public - no access check needed
-  const accessCheck = { hasAccess: true, isPublic: true };
-  const accessLoading = false;
-  const accessError = null;
 
   // Get chatroom details
-  const { data: chatroom } = useQuery<Chatroom>({
+  const { data: chatroom, isLoading: chatroomLoading } = useQuery<Chatroom>({
     queryKey: [`/api/simple-chatrooms/${chatroomId}`],
     enabled: !!(currentUserId && chatroomId && !isNaN(chatroomId)),
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
-  // Get messages
-  const { data: messages = [], isLoading } = useQuery<ChatMessage[]>({
+  // Get messages - only fetch if user is joined
+  const { data: messages = [], isLoading: messagesLoading, refetch: refetchMessages } = useQuery<ChatMessage[]>({
     queryKey: [`/api/simple-chatrooms/${chatroomId}/messages`],
-    enabled: !!(currentUserId && chatroomId && !isNaN(chatroomId)),
-    refetchInterval: 5000, // Refresh messages every 5 seconds (reduced from 1 second)
+    enabled: !!(currentUserId && chatroomId && !isNaN(chatroomId) && isJoined),
+    refetchInterval: isJoined ? 3000 : false, // Only poll if joined
+    staleTime: 1000, // 1 second
   });
 
   // Get member count
-  const { data: memberCountResp } = useQuery<{memberCount: number}>({
+  const { data: memberCountResp, refetch: refetchMemberCount } = useQuery<{memberCount: number}>({
     queryKey: [`/api/simple-chatrooms/${chatroomId}/members/count`],
     enabled: !!(currentUserId && chatroomId && !isNaN(chatroomId)),
-    refetchInterval: 15000, // Refresh count every 15 seconds (reduced frequency)
+    refetchInterval: 15000,
+    staleTime: 10000, // 10 seconds
   });
 
-  // Get members list
-  const { data: members = [] } = useQuery<ChatMember[]>({
+  // Get members list - check if current user is a member
+  const { data: members = [], refetch: refetchMembers } = useQuery<ChatMember[]>({
     queryKey: [`/api/simple-chatrooms/${chatroomId}/members`],
     enabled: !!(currentUserId && chatroomId && !isNaN(chatroomId)),
-    refetchInterval: 30000, // Refresh members every 30 seconds (reduced frequency)
+    refetchInterval: 30000,
+    staleTime: 20000, // 20 seconds
+    onSuccess: (data) => {
+      // Check if current user is in the members list
+      const userIsMember = data.some(member => member.user_id === currentUserId);
+      setIsJoined(userIsMember);
+    }
   });
 
-  // Early error handling for invalid chatroom ID - MOVED AFTER HOOKS
+  // Join room function
+  async function joinRoom() {
+    if (!currentUserId || isJoining || isJoined) return;
+    
+    setIsJoining(true);
+    try {
+      const response = await fetch(`/api/simple-chatrooms/${chatroomId}/join`, {
+        method: "POST",
+        headers: { 
+          "x-user-id": String(currentUserId),
+          "Content-Type": "application/json"
+        },
+        credentials: "include",
+      });
+      
+      if (response.ok) {
+        setIsJoined(true);
+        toast({
+          title: "Joined chatroom",
+          description: "You have successfully joined the chatroom",
+        });
+        // Refetch data
+        refetchMemberCount();
+        refetchMembers();
+        refetchMessages();
+      } else {
+        const error = await response.json().catch(() => ({}));
+        throw new Error(error.message || "Failed to join chatroom");
+      }
+    } catch (error: any) {
+      console.error("Join room error:", error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to join chatroom",
+        variant: "destructive"
+      });
+    } finally {
+      setIsJoining(false);
+    }
+  }
+
+  // Leave room function
+  async function leaveRoom() {
+    if (!currentUserId || isLeaving || !isJoined) return;
+    
+    setIsLeaving(true);
+    try {
+      const response = await fetch(`/api/simple-chatrooms/${chatroomId}/leave`, {
+        method: "POST",
+        headers: { 
+          "x-user-id": String(currentUserId),
+          "Content-Type": "application/json"
+        },
+        credentials: "include",
+      });
+      
+      if (response.ok) {
+        setIsJoined(false);
+        toast({
+          title: "Left chatroom",
+          description: "You have successfully left the chatroom",
+        });
+        // Refetch data
+        refetchMemberCount();
+        refetchMembers();
+        // Clear messages since user left
+        queryClient.setQueryData([`/api/simple-chatrooms/${chatroomId}/messages`], []);
+        setTimeout(() => navigate('/city-chatrooms'), 1000);
+      } else {
+        const error = await response.json().catch(() => ({}));
+        throw new Error(error.message || "Failed to leave chatroom");
+      }
+    } catch (error: any) {
+      console.error("Leave room error:", error);
+      toast({
+        title: "Error", 
+        description: error.message || "Failed to leave chatroom",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLeaving(false);
+    }
+  }
+
+  const memberCount = memberCountResp?.memberCount ?? 0;
+
+  // Send message mutation
+  const sendMessageMutation = useMutation({
+    mutationFn: async (content: string) => {
+      if (!currentUser?.id) throw new Error("User not found");
+      if (!isJoined) throw new Error("You must join the chatroom first");
+
+      const res = await fetch(`/api/simple-chatrooms/${chatroomId}/messages`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-user-id": String(currentUser.id),
+        },
+        credentials: "include",
+        body: JSON.stringify({ content: content.trim() }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || err.message || "Failed to send message");
+      }
+      return res.json();
+    },
+    onSuccess: () => {
+      setMessageText("");
+      refetchMessages();
+    },
+    onError: (error: any) => {
+      if (error.message?.includes("must be a member") || error.message?.includes("join the chatroom")) {
+        toast({
+          title: "Membership Required",
+          description: "You need to join this chatroom before sending messages.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: error.message || "Failed to send message",
+          variant: "destructive",
+        });
+      }
+    },
+  });
+
+  // Auto-scroll to bottom when new messages arrive
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
+
+  // Auto-join room when component loads if user is not already joined
+  useEffect(() => {
+    if (currentUserId && chatroomId && !isJoined && !isJoining && members.length > 0) {
+      // Check if user should be in this room but isn't
+      const userIsMember = members.some(member => member.user_id === currentUserId);
+      if (!userIsMember) {
+        // Auto-join for public rooms
+        joinRoom();
+      }
+    }
+  }, [currentUserId, chatroomId, members, isJoined, isJoining]);
+
+  const handleSendMessage = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!messageText.trim() || !isJoined) return;
+    sendMessageMutation.mutate(messageText);
+  };
+
+  // Error handling for invalid chatroom ID
   if (isNaN(chatroomId) || chatroomId <= 0) {
-    console.error('❌ CHATROOM: Invalid chatroom ID:', chatroomId);
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-orange-50 dark:from-gray-900 dark:to-gray-800">
         <div className="max-w-4xl mx-auto px-4 py-6">
@@ -128,9 +277,8 @@ export default function SimpleChatroomPage() {
     );
   }
   
-  // Early error handling for missing user - MOVED AFTER HOOKS  
+  // Error handling for missing user
   if (!currentUser || !currentUserId) {
-    console.error('❌ CHATROOM: No authenticated user found');
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-orange-50 dark:from-gray-900 dark:to-gray-800">
         <div className="max-w-4xl mx-auto px-4 py-6">
@@ -145,209 +293,6 @@ export default function SimpleChatroomPage() {
       </div>
     );
   }
-
-  // Join room function
-  async function joinRoom() {
-    if (!currentUserId) {
-      console.log('❌ JOIN: No current user ID available');
-      return;
-    }
-    
-    console.log('🔗 JOIN: Attempting to join chatroom', chatroomId, 'with user ID', currentUserId);
-    
-    try {
-      const response = await fetch(`/api/simple-chatrooms/${chatroomId}/join`, {
-        method: "POST",
-        headers: { "x-user-id": String(currentUserId) },
-        credentials: "include",
-      });
-      
-      if (response.ok) {
-        toast({
-          title: "Joined chatroom",
-          description: "You have successfully joined the chatroom",
-        });
-        queryClient.invalidateQueries({ queryKey: [`/api/simple-chatrooms/${chatroomId}/members/count`] });
-        queryClient.invalidateQueries({ queryKey: [`/api/simple-chatrooms/${chatroomId}/members`] });
-      } else {
-        const error = await response.json();
-        toast({
-          title: "Error",
-          description: error.message || "Failed to join chatroom",
-          variant: "destructive"
-        });
-      }
-    } catch (error) {
-      console.error('❌ JOIN ERROR:', error);
-      toast({
-        title: "Error",
-        description: "Failed to join chatroom",
-        variant: "destructive"
-      });
-    }
-  }
-
-  // Leave room function
-  async function leaveRoom() {
-    if (!currentUserId) {
-      console.log('❌ LEAVE: No current user ID available');
-      return;
-    }
-    
-    console.log('🚪 LEAVE: Attempting to leave chatroom', chatroomId, 'with user ID', currentUserId);
-    
-    try {
-      const response = await fetch(`/api/simple-chatrooms/${chatroomId}/leave`, {
-        method: "POST",
-        headers: { 
-          "x-user-id": String(currentUserId),
-          "Content-Type": "application/json"
-        },
-        credentials: "include",
-      });
-      
-      if (response.ok) {
-        toast({
-          title: "Left chatroom",
-          description: "You have successfully left the chatroom",
-        });
-        queryClient.invalidateQueries({ queryKey: [`/api/simple-chatrooms/${chatroomId}/members/count`] });
-        queryClient.invalidateQueries({ queryKey: [`/api/simple-chatrooms/${chatroomId}/members`] });
-        // Navigate back to chatrooms list after successfully leaving
-        setTimeout(() => navigate('/city-chatrooms'), 1000);
-      } else {
-        const error = await response.json();
-        console.error('❌ LEAVE ERROR:', error);
-        toast({
-          title: "Error",
-          description: error.message || "Failed to leave chatroom",
-          variant: "destructive"
-        });
-      }
-    } catch (error) {
-      console.error('❌ LEAVE ERROR:', error);
-      toast({
-        title: "Error", 
-        description: "Failed to leave chatroom",
-        variant: "destructive"
-      });
-    }
-  }
-
-  const memberCount = memberCountResp?.memberCount ?? 0;
-
-  // Send message mutation
-  const sendMessageMutation = useMutation({
-    mutationFn: async (content: string) => {
-      if (!currentUser?.id) throw new Error("User not found");
-
-      const res = await fetch(`/api/simple-chatrooms/${chatroomId}/messages`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-user-id": String(currentUser.id), // CRITICAL: Send user ID in header
-        },
-        credentials: "include",
-        body: JSON.stringify({ content: content.trim() }),
-      });
-
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.error || err.message || "Failed to send message");
-      }
-      return res.json();
-    },
-    onSuccess: () => {
-      setMessageText("");
-      queryClient.invalidateQueries({ queryKey: [`/api/simple-chatrooms/${chatroomId}/messages`] });
-    },
-    onError: (error: any) => {
-      // Handle specific membership error
-      if (error.message?.includes("must be a member")) {
-        toast({
-          title: "Membership Required",
-          description: "You need to join this chatroom before sending messages. Joining now...",
-          variant: "destructive",
-        });
-        // Automatically attempt to join the chatroom
-        setTimeout(() => joinRoom(), 1000);
-      } else {
-        toast({
-          title: "Error",
-          description: error.message || "Failed to send message",
-          variant: "destructive",
-        });
-      }
-    },
-  });
-
-  // Request access mutation
-  const requestAccessMutation = useMutation({
-    mutationFn: async (message?: string) => {
-      const response = await fetch(`/api/simple-chatrooms/${chatroomId}/request-access`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-user-id": String(currentUserId)
-        },
-        credentials: "include",
-        body: JSON.stringify({ message: message || "" }),
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || "Failed to request access");
-      }
-
-      return response.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`/api/simple-chatrooms/${chatroomId}/access-check`] });
-      toast({
-        title: "Access requested",
-        description: "Your request has been sent to the organizer",
-      });
-    },
-    onError: (error: any) => {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to request access",
-        variant: "destructive",
-      });
-    },
-  });
-
-  // Keep scroll position at top when entering chatroom
-  useEffect(() => {
-    // Only scroll to top on initial load, not on new messages
-    if (messages && messages.length > 0) {
-      setTimeout(() => {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      }, 100);
-    }
-  }, [chatroomId]); // Only trigger on chatroom change, not message updates
-
-  // Auto-join all rooms since they're all public
-  useEffect(() => {
-    if (currentUserId && chatroomId) {
-      joinRoom();
-    }
-  }, [currentUserId, chatroomId]);
-
-  const handleSendMessage = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!messageText.trim()) return;
-    sendMessageMutation.mutate(messageText);
-  };
-
-  // Simplified access state - all chatrooms are public
-  console.log('✅ CHATROOM: All chatrooms are public - access granted automatically');
-
-  // No need for access loading since all chatrooms are public
-
-
-
-  // REMOVED: Access control code - all chatrooms are now public
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-orange-50 dark:from-gray-900 dark:to-gray-800">
@@ -370,10 +315,29 @@ export default function SimpleChatroomPage() {
                 <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                   {chatroom?.city && `${chatroom.city}, ${chatroom.state}`} · {memberCount} online
                 </p>
+                {!isJoined && (
+                  <p className="text-sm text-orange-600 dark:text-orange-400 mt-1">
+                    You are not a member of this chatroom
+                  </p>
+                )}
               </div>
               <div className="ml-auto flex gap-2">
-                <Button onClick={joinRoom} variant="secondary" size="sm">Join</Button>
-                <Button onClick={leaveRoom} variant="outline" size="sm">Leave</Button>
+                <Button 
+                  onClick={joinRoom} 
+                  variant="secondary" 
+                  size="sm"
+                  disabled={isJoining || isJoined}
+                >
+                  {isJoining ? "Joining..." : isJoined ? "Joined" : "Join"}
+                </Button>
+                <Button 
+                  onClick={leaveRoom} 
+                  variant="outline" 
+                  size="sm"
+                  disabled={isLeaving || !isJoined}
+                >
+                  {isLeaving ? "Leaving..." : "Leave"}
+                </Button>
               </div>
             </div>
             
@@ -412,7 +376,16 @@ export default function SimpleChatroomPage() {
         <Card className="mb-4">
           <CardContent className="p-4">
             <div className="h-96 overflow-y-auto space-y-3 mb-4">
-              {isLoading ? (
+              {!isJoined ? (
+                <div className="flex items-center justify-center h-full text-gray-500">
+                  <div className="text-center">
+                    <p className="mb-2">Join this chatroom to see messages and participate</p>
+                    <Button onClick={joinRoom} disabled={isJoining}>
+                      {isJoining ? "Joining..." : "Join Chatroom"}
+                    </Button>
+                  </div>
+                </div>
+              ) : messagesLoading ? (
                 <div className="flex items-center justify-center h-full">
                   <span>Loading messages...</span>
                 </div>
@@ -450,13 +423,13 @@ export default function SimpleChatroomPage() {
               <Input
                 value={messageText}
                 onChange={(e) => setMessageText(e.target.value)}
-                placeholder="Type your message..."
-                disabled={sendMessageMutation.isPending}
+                placeholder={isJoined ? "Type your message..." : "Join the chatroom to send messages"}
+                disabled={sendMessageMutation.isPending || !isJoined}
                 className="flex-1"
               />
               <Button 
                 type="submit" 
-                disabled={!messageText.trim() || sendMessageMutation.isPending}
+                disabled={!messageText.trim() || sendMessageMutation.isPending || !isJoined}
               >
                 <Send className="w-4 h-4" />
               </Button>
