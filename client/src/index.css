@@ -158,31 +158,41 @@
     background-color: #1a1a1a !important;
   }
   
-  /* NUCLEAR OPTION: FORCE ALL TEXT TO WHITE */
-  *,
-  *::before,
-  *::after,
-  div,
-  span,
-  p,
-  h1, h2, h3, h4, h5, h6,
-  button,
-  input,
-  textarea,
-  select,
-  label,
-  a,
-  li,
-  td,
-  th,
-  .text-sm,
-  .text-base,
-  .text-lg,
-  .text-xl,
-  .font-medium,
-  .font-semibold,
-  .font-bold {
+  /* NUCLEAR OPTION: FORCE ALL TEXT TO WHITE EXCEPT HERO */
+  *:not(.hero-clean *),
+  *:not(.hero-clean)::before,
+  *:not(.hero-clean)::after,
+  div:not(.hero-clean *),
+  span:not(.hero-clean *),
+  p:not(.hero-clean *),
+  h1:not(.hero-clean *), h2:not(.hero-clean *), h3:not(.hero-clean *), h4:not(.hero-clean *), h5:not(.hero-clean *), h6:not(.hero-clean *),
+  button:not(.hero-clean *),
+  input:not(.hero-clean *),
+  textarea:not(.hero-clean *),
+  select:not(.hero-clean *),
+  label:not(.hero-clean *),
+  a:not(.hero-clean *),
+  li:not(.hero-clean *),
+  td:not(.hero-clean *),
+  th:not(.hero-clean *),
+  .text-sm:not(.hero-clean *),
+  .text-base:not(.hero-clean *),
+  .text-lg:not(.hero-clean *),
+  .text-xl:not(.hero-clean *),
+  .font-medium:not(.hero-clean *),
+  .font-semibold:not(.hero-clean *),
+  .font-bold:not(.hero-clean *) {
     color: white !important;
+  }
+  
+  /* PRESERVE HERO STYLING */
+  .hero-clean,
+  .hero-clean * {
+    color: inherit !important;
+  }
+  
+  .hero-blue {
+    color: #60a5fa !important;
   }
   
   /* SPECIFIC OVERRIDES FOR COMMON COMPONENTS */
