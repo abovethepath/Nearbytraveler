@@ -12,7 +12,6 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { useLocation } from "wouter";
 import { Building, MapPin, User, Zap } from "lucide-react";
-import { SmartLocationInput } from "@/components/SmartLocationInput";
 import { BUSINESS_TYPES } from "../../../shared/base-options";
 import { useAuth } from "@/App";
 import { useEffect } from "react";
@@ -588,25 +587,75 @@ export default function SignupBusinessSimple() {
                     />
                   </div>
                   
-                  {/* Smart Location Input - Mobile Responsive */}
-                  <div className="overflow-hidden break-words">
-                    <FormLabel className="text-sm sm:text-base font-medium mb-2 block text-black dark:text-white break-words overflow-hidden">Business Location *</FormLabel>
-                    <SmartLocationInput
-                      city={form.watch('city')}
-                      state={form.watch('state')}
-                      country={form.watch('country')}
-                      onLocationChange={(location) => {
-                        form.setValue('city', location.city);
-                        form.setValue('state', location.state);
-                        form.setValue('country', location.country);
-                      }}
-                      required={true}
-                      placeholder={{
-                        country: "Select country",
-                        state: "Select state/province",
-                        city: "Select city"
-                      }}
-                      className="text-sm sm:text-base"
+                  {/* Simple Location Dropdowns - Mobile Responsive */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 overflow-hidden break-words">
+                    <FormField
+                      control={form.control}
+                      name="country"
+                      render={({ field }) => (
+                        <FormItem className="overflow-hidden break-words">
+                          <FormLabel className="text-sm sm:text-base break-words overflow-hidden">Country *</FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger className="h-9 sm:h-10 md:h-11 text-sm sm:text-base">
+                                <SelectValue placeholder="Select country" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="United States">United States</SelectItem>
+                              <SelectItem value="Canada">Canada</SelectItem>
+                              <SelectItem value="United Kingdom">United Kingdom</SelectItem>
+                              <SelectItem value="Australia">Australia</SelectItem>
+                              <SelectItem value="Germany">Germany</SelectItem>
+                              <SelectItem value="France">France</SelectItem>
+                              <SelectItem value="Spain">Spain</SelectItem>
+                              <SelectItem value="Italy">Italy</SelectItem>
+                              <SelectItem value="Netherlands">Netherlands</SelectItem>
+                              <SelectItem value="Japan">Japan</SelectItem>
+                              <SelectItem value="Mexico">Mexico</SelectItem>
+                              <SelectItem value="Brazil">Brazil</SelectItem>
+                              <SelectItem value="Other">Other</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="state"
+                      render={({ field }) => (
+                        <FormItem className="overflow-hidden break-words">
+                          <FormLabel className="text-sm sm:text-base break-words overflow-hidden">State/Province *</FormLabel>
+                          <FormControl>
+                            <Input 
+                              placeholder="Enter state/province" 
+                              {...field} 
+                              className="h-9 sm:h-10 md:h-11 text-sm sm:text-base break-words overflow-hidden"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="city"
+                      render={({ field }) => (
+                        <FormItem className="overflow-hidden break-words">
+                          <FormLabel className="text-sm sm:text-base break-words overflow-hidden">City *</FormLabel>
+                          <FormControl>
+                            <Input 
+                              placeholder="Enter city" 
+                              {...field} 
+                              className="h-9 sm:h-10 md:h-11 text-sm sm:text-base break-words overflow-hidden"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
                     />
                   </div>
                 </div>
