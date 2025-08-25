@@ -1,4 +1,4 @@
-import networkingHeroImage from "@assets/netowrking hereo page_1756130525285.png";
+import networkingHeroImage from "@assets/image_1756131077690.png";
 
 export default function NetworkingHero() {
   return (
@@ -32,12 +32,18 @@ export default function NetworkingHero() {
             Connect before, during, and after every event — no business cards needed.
           </p>
           <div className="mt-5 flex flex-col sm:flex-row gap-3">
-            <a href="/signup" className="inline-flex items-center justify-center rounded-2xl px-5 py-3 bg-orange-500 text-white font-medium shadow-md hover:shadow-lg">
+            <button 
+              onClick={() => setLocation('/join')}
+              className="inline-flex items-center justify-center rounded-2xl px-5 py-3 bg-orange-500 text-white font-medium shadow-md hover:shadow-lg"
+            >
               Start Networking Now
-            </a>
-            <a href="/events" className="inline-flex items-center justify-center rounded-2xl px-5 py-3 bg-white/90 backdrop-blur text-gray-900 font-medium shadow-md hover:bg-white">
+            </button>
+            <button 
+              onClick={() => setLocation('/join')}
+              className="inline-flex items-center justify-center rounded-2xl px-5 py-3 bg-white/90 backdrop-blur text-gray-900 font-medium shadow-md hover:bg-white"
+            >
               See Who's Going
-            </a>
+            </button>
           </div>
         </div>
       </div>
