@@ -394,7 +394,7 @@ export default function Landing() {
             </div>
             
             {/* After Events */}
-            <div className="bg-gradient-to-br from-green-50 to-emerald-100 dark:bg-gray-800 rounded-2xl p-8 shadow-lg border-2 border-green-300 dark:border-green-600 text-center">
+            <div className="bg-gradient-to-br from-orange-50 to-orange-100 dark:bg-gray-800 rounded-2xl p-8 shadow-lg border-2 border-orange-300 dark:border-orange-600 text-center">
               <div className="text-4xl mb-4">🌍</div>
               <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">After Events</h3>
               <div className="grid grid-cols-1 gap-3 text-left">
