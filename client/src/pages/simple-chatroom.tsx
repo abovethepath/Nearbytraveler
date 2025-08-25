@@ -148,24 +148,59 @@ export default function SimpleChatroomPage() {
 
   // Join room function
   async function joinRoom() {
-    if (!currentUser?.id) return;
-    await fetch(`/api/simple-chatrooms/${chatroomId}/join`, {
-      method: "POST",
-      headers: { "x-user-id": String(currentUser.id) },
-      credentials: "include",
-    });
-    queryClient.invalidateQueries({ queryKey: [`/api/simple-chatrooms/${chatroomId}/members/count`] });
+    if (!currentUserId) {
+      console.log('❌ JOIN: No current user ID available');
+      return;
+    }
+    
+    console.log('🔗 JOIN: Attempting to join chatroom', chatroomId, 'with user ID', currentUserId);
+    
+    try {
+      const response = await fetch(`/api/simple-chatrooms/${chatroomId}/join`, {
+        method: "POST",
+        headers: { "x-user-id": String(currentUserId) },
+        credentials: "include",
+      });
+      
+      if (response.ok) {
+        toast({
+          title: "Joined chatroom",
+          description: "You have successfully joined the chatroom",
+        });
+        queryClient.invalidateQueries({ queryKey: [`/api/simple-chatrooms/${chatroomId}/members/count`] });
+        queryClient.invalidateQueries({ queryKey: [`/api/simple-chatrooms/${chatroomId}/members`] });
+      } else {
+        const error = await response.json();
+        toast({
+          title: "Error",
+          description: error.message || "Failed to join chatroom",
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      console.error('❌ JOIN ERROR:', error);
+      toast({
+        title: "Error",
+        description: "Failed to join chatroom",
+        variant: "destructive"
+      });
+    }
   }
 
   // Leave room function
   async function leaveRoom() {
-    if (!currentUser?.id) return;
+    if (!currentUserId) {
+      console.log('❌ LEAVE: No current user ID available');
+      return;
+    }
+    
+    console.log('🚪 LEAVE: Attempting to leave chatroom', chatroomId, 'with user ID', currentUserId);
     
     try {
       const response = await fetch(`/api/simple-chatrooms/${chatroomId}/leave`, {
         method: "POST",
         headers: { 
-          "x-user-id": String(currentUser.id),
+          "x-user-id": String(currentUserId),
           "Content-Type": "application/json"
         },
         credentials: "include",
@@ -182,6 +217,7 @@ export default function SimpleChatroomPage() {
         setTimeout(() => navigate('/city-chatrooms'), 1000);
       } else {
         const error = await response.json();
+        console.error('❌ LEAVE ERROR:', error);
         toast({
           title: "Error",
           description: error.message || "Failed to leave chatroom",
@@ -189,6 +225,7 @@ export default function SimpleChatroomPage() {
         });
       }
     } catch (error) {
+      console.error('❌ LEAVE ERROR:', error);
       toast({
         title: "Error", 
         description: "Failed to leave chatroom",
