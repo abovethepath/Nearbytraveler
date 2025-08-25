@@ -28,6 +28,7 @@ interface User {
   name: string;
   userType: string;
   location: string;
+  phoneNumber: string;
   createdAt: string;
   isActive: boolean;
   subscriptionStatus?: string;
@@ -346,6 +347,7 @@ export default function AdminDashboard() {
                     <TableRow>
                       <TableHead>User</TableHead>
                       <TableHead>Email</TableHead>
+                      <TableHead>Phone</TableHead>
                       <TableHead>Type</TableHead>
                       <TableHead>Location</TableHead>
                       <TableHead>Joined</TableHead>
@@ -362,6 +364,9 @@ export default function AdminDashboard() {
                           </div>
                         </TableCell>
                         <TableCell>{user.email}</TableCell>
+                        <TableCell>
+                          <span className="text-sm font-mono">{user.phoneNumber || 'N/A'}</span>
+                        </TableCell>
                         <TableCell>
                           <Badge variant={
                             user.userType === 'business' ? 'default' : 

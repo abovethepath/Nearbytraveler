@@ -17,6 +17,7 @@ export default function JoinNowWidgetNew() {
     username: "",
     email: "",
     confirmEmail: "",
+    phoneNumber: "",
     password: "",
     confirmPassword: ""
   });
@@ -94,7 +95,7 @@ export default function JoinNowWidgetNew() {
     setCurrentError(null); // Clear any previous errors
     
     // Basic validation
-    if (!formData.name || !formData.username || !formData.email || !formData.password) {
+    if (!formData.name || !formData.username || !formData.email || !formData.phoneNumber || !formData.password) {
       const errorMsg = "Please fill in all required fields.";
       setCurrentError(errorMsg);
       toast({
@@ -181,6 +182,7 @@ export default function JoinNowWidgetNew() {
       name: formData.name,
       username: formData.username,
       email: formData.email.toLowerCase().trim(),
+      phoneNumber: formData.phoneNumber,
       password: formData.password,
       userType: userType
     };
@@ -380,6 +382,22 @@ export default function JoinNowWidgetNew() {
                   💡 <strong>Multiple Businesses?</strong> Use email variants like: owner+pizza@example.com, owner+shop@example.com
                 </p>
               )}
+            </div>
+            
+            <div>
+              <Label htmlFor="phoneNumber" className="text-base md:text-lg font-medium text-gray-900 dark:text-white text-crisp">Phone Number *</Label>
+              <Input
+                id="phoneNumber"
+                type="tel"
+                value={formData.phoneNumber}
+                onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
+                placeholder="(555) 123-4567"
+                className="text-base py-3 text-crisp font-medium"
+                required
+              />
+              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                For future SMS notifications (optional features)
+              </p>
             </div>
             
             <div>

@@ -175,7 +175,8 @@ export default function SignupTraveling() {
           email: accountData.email || '',
           username: accountData.username || '',
           name: accountData.name || '',
-          password: accountData.password || ''
+          password: accountData.password || '',
+          phoneNumber: accountData.phoneNumber || ''
         }));
       } catch (error) {
         console.error('❌ Error loading account data from sessionStorage:', error);
@@ -192,7 +193,7 @@ export default function SignupTraveling() {
 
       // Get account data from sessionStorage (from Auth component)
       const storedAccountData = sessionStorage.getItem('accountData');
-      let accountData = { email: '', password: '', username: '', name: '' };
+      let accountData = { email: '', password: '', username: '', name: '', phoneNumber: '' };
 
       if (storedAccountData) {
         try {
@@ -209,7 +210,8 @@ export default function SignupTraveling() {
         email: accountData.email || formData.email,
         password: accountData.password || formData.password,
         username: accountData.username || formData.username,
-        name: accountData.name || formData.name
+        name: accountData.name || formData.name,
+        phoneNumber: accountData.phoneNumber || formData.phoneNumber
       };
 
       // Validation
@@ -294,6 +296,7 @@ export default function SignupTraveling() {
         password: finalFormData.password,
         username: finalFormData.username.toLowerCase().trim(),
         name: finalFormData.name.trim(),
+        phoneNumber: finalFormData.phoneNumber,
         
         // Profile fields
         dateOfBirth: new Date(formData.dateOfBirth),

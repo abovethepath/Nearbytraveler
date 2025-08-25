@@ -143,7 +143,7 @@ export default function SignupBusinessSimple() {
       password: accountData?.password || "",
       ownerName: accountData?.businessName || "", // Business name for contact database
       contactName: accountData?.name || "", // Contact person name 
-      ownerPhone: "",
+      ownerPhone: accountData?.phoneNumber || "",
       // businessName comes from step 1, no need to collect again
       businessType: "",
       customBusinessType: "",
