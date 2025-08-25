@@ -269,7 +269,7 @@ export function LocationSharingWidget() {
                   <div>• Firefox: Preferences → Privacy → Permissions → Location</div>
                   <div>• Safari: Preferences → Websites → Location</div>
                   
-                  <div className="mt-2 text-blue-600">
+                  <div className="mt-2 text-blue-600 dark:text-blue-400">
                     <strong>Still not working?</strong> Try refreshing the page after changing system settings.
                   </div>
                 </div>
@@ -354,14 +354,14 @@ export function LocationSharingWidget() {
 
             {/* Debug Information */}
             {debugInfo && (
-              <div className="p-2 bg-gray-50 rounded border text-xs text-gray-600">
+              <div className="p-2 bg-gray-50 dark:bg-gray-800 rounded border text-xs text-gray-600 dark:text-gray-300">
                 <strong>Debug:</strong> {debugInfo}
               </div>
             )}
 
             {/* Privacy Note */}
-            <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
-              <p className="text-xs text-blue-800">
+            <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
+              <p className="text-xs text-blue-800 dark:text-blue-200">
                 <strong>Privacy:</strong> Your exact location is never shared. Others only see when you're nearby (within 7 miles) and can connect with you if interested.
               </p>
             </div>
