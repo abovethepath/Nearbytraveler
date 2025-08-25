@@ -13,9 +13,9 @@ type User = {
   id: number;
   username: string;
   email: string;
-  firstName: string;
-  lastName: string;
-  profileImageUrl?: string;
+  password?: string;
+  name: string;
+  profileImage?: string;
   hometownCity?: string;
   hometownState?: string;
   hometownCountry?: string;
@@ -25,6 +25,7 @@ type User = {
   topChoices?: string[];
   userType?: string;
   bio?: string;
+  location?: string;
 };
 
 export default function ProfilePage() {
@@ -111,9 +112,9 @@ export default function ProfilePage() {
           <CardContent className="p-6">
             <div className="flex flex-col md:flex-row items-center gap-6">
               <Avatar className="w-24 h-24">
-                <AvatarImage src={user.profileImageUrl} />
+                <AvatarImage src={user.profileImage} />
                 <AvatarFallback className="text-2xl">
-                  {user.firstName?.[0]}{user.lastName?.[0]}
+                  {user.name?.[0]}{user.username?.[0]}
                 </AvatarFallback>
               </Avatar>
               
@@ -122,7 +123,7 @@ export default function ProfilePage() {
                   @{user.username}
                 </h1>
                 <p className="text-lg text-gray-600 dark:text-gray-300">
-                  {user.firstName} {user.lastName}
+                  {user.name}
                 </p>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
                   From: {user.hometownCity}, {user.hometownState || user.hometownCountry}
