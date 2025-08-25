@@ -191,32 +191,6 @@ app.get('/api/businesses', async (req, res) => {
 
 // REMOVED DUPLICATE /api/users ENDPOINT - using the filtered one in routes.ts instead
 
-app.get('/api/users/:id', async (req, res) => {
-  try {
-    const userId = parseInt(req.params.id);
-    console.log('👤 DIRECT API: Fetching user by ID:', userId);
-    
-    // Validate user ID
-    if (isNaN(userId) || userId <= 0) {
-      console.log('🔥 Invalid user ID provided:', req.params.id);
-      return res.status(400).json({ error: 'Invalid user ID' });
-    }
-    
-    const userQuery = await db.select().from(users)
-      .where(eq(users.id, userId))
-      .limit(1);
-    
-    if (userQuery.length === 0) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-    
-    return res.json(userQuery[0]);
-  } catch (error: any) {
-    console.error('🔥 Error in user by ID API:', error);
-    return res.status(500).json({ error: 'Failed to get user' });
-  }
-});
-
 app.get('/api/quick-deals', async (req, res) => {
   try {
     console.log('🎯 DIRECT API: Fetching quick deals');
