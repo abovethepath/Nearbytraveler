@@ -2902,6 +2902,31 @@ Questions? Just reply to this message. Welcome aboard!
         const typeList = userType.split(',');
         whereConditions.push(inArray(users.userType, typeList));
       }
+      
+      // CRITICAL FIX: Add interests filtering logic
+      if (interests && Array.isArray(interests) && interests.length > 0) {
+        if (process.env.NODE_ENV === 'development') console.log('🎯 INTERESTS FILTER: Searching for users with interests:', interests);
+        
+        const interestsFilter = or(
+          ...interests.map(interest => 
+            sql`${users.interests} && ARRAY[${interest}]::text[]`
+          )
+        );
+        whereConditions.push(interestsFilter);
+      } else if (interests && typeof interests === 'string') {
+        // Handle comma-separated string format
+        const interestsList = interests.split(',').map(i => i.trim()).filter(Boolean);
+        if (interestsList.length > 0) {
+          if (process.env.NODE_ENV === 'development') console.log('🎯 INTERESTS FILTER (string): Searching for users with interests:', interestsList);
+          
+          const interestsFilter = or(
+            ...interestsList.map(interest => 
+              sql`${users.interests} && ARRAY[${interest}]::text[]`
+            )
+          );
+          whereConditions.push(interestsFilter);
+        }
+      }
 
       // Execute search query with debug logging
       if (process.env.NODE_ENV === 'development') {
