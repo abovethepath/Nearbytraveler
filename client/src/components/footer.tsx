@@ -41,11 +41,11 @@ export default function Footer() {
             {/* Contact */}
             <div className="sm:col-span-2 lg:col-span-1">
               <h3 className="text-sm font-semibold mb-4 text-white">Contact</h3>
-              <div className="space-y-3 text-gray-300 text-sm">
+              <div className="flex flex-col space-y-3 text-gray-300 text-sm">
                 <div>
                   <p className="break-words">Aaron@thenearbytraveler.com</p>
                 </div>
-                <div className="space-y-1">
+                <div className="flex flex-col space-y-1">
                   <p>322 Gould Street</p>
                   <p>Sheridan, WY 82801</p>
                 </div>
