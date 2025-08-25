@@ -166,18 +166,89 @@ export default function Landing() {
         </div>
       </div>
 
-      {/* Beta Disclaimer Section */}
-      <div className="py-8 bg-gradient-to-r from-red-100 to-orange-100 dark:from-red-900/30 dark:to-orange-900/30">
-        <div className="max-w-4xl mx-auto px-4">
-          <div className="p-6 bg-red-600 dark:bg-red-700 rounded-lg border-4 border-red-500 dark:border-red-400 shadow-xl ring-4 ring-red-200 dark:ring-red-800/50">
-            <div className="flex items-center justify-center mb-2">
-              <span className="inline-block w-3 h-3 bg-red-500 rounded-full mr-2"></span>
-              <span className="text-white font-bold text-xs uppercase tracking-wide">Beta Notice</span>
-              <span className="inline-block w-3 h-3 bg-red-500 rounded-full ml-2"></span>
+      {/* From the Founder Section */}
+      <div className="py-16 bg-gradient-to-r from-blue-600 to-orange-500">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            {/* Left Column - Text Content */}
+            <div className="text-white space-y-6">
+              <div className="inline-block bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full">
+                <span className="text-sm font-bold uppercase tracking-wide">From the Founder</span>
+              </div>
+              
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black leading-tight" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>
+                Building Real Connections in a Digital World
+              </h2>
+              
+              <div className="space-y-4 text-lg leading-relaxed">
+                <p style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>
+                  <span className="font-semibold text-orange-200">"After 15+ years of hosting travelers from 40+ countries,</span> I realized the magic happens when authentic people connect over shared experiences - not staged tourist activities."
+                </p>
+                
+                <p style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>
+                  <span className="text-blue-100">That's why I built Nearby Traveler.</span> <span className="font-semibold">We're not another booking platform.</span> We're a community where real locals and genuine travelers create unforgettable moments together.
+                </p>
+              </div>
+              
+              <div className="flex items-center space-x-4 pt-4">
+                <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center text-2xl font-bold">
+                  A
+                </div>
+                <div>
+                  <p className="font-bold text-xl">Aaron Henao</p>
+                  <p className="text-blue-100">Founder & Lead Connector</p>
+                  <p className="text-sm text-orange-200">400+ travelers hosted • 15+ years experience</p>
+                </div>
+              </div>
             </div>
-            <p className="text-sm text-white text-center leading-relaxed" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>
-              <span className="font-semibold text-white" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Although we are a GLOBAL COMMUNITY of Travelers, Nearby Traveler Beta Version is for Los Angeles Based Events and Businesses.</span> <span className="text-white" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>While you can join and connect worldwide, we are focusing our beta launch on Los Angeles, feel free to spread the word Worldwide however.</span>
-            </p>
+            
+            {/* Right Column - Feature Highlights */}
+            <div className="space-y-6">
+              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+                <div className="flex items-center space-x-4 mb-4">
+                  <div className="w-12 h-12 bg-orange-400 rounded-xl flex items-center justify-center text-white text-xl font-bold">
+                    🌍
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold">Global Community</h3>
+                    <p className="text-blue-100 text-sm">Connect with travelers worldwide</p>
+                  </div>
+                </div>
+                <p className="text-white/90 leading-relaxed" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>
+                  Join thousands of travelers and locals creating authentic experiences together.
+                </p>
+              </div>
+              
+              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+                <div className="flex items-center space-x-4 mb-4">
+                  <div className="w-12 h-12 bg-blue-400 rounded-xl flex items-center justify-center text-white text-xl font-bold">
+                    🤝
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold">Real Connections</h3>
+                    <p className="text-orange-100 text-sm">No tourist traps, just authentic experiences</p>
+                  </div>
+                </div>
+                <p className="text-white/90 leading-relaxed" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>
+                  Meet real people who share your interests and create lasting friendships.
+                </p>
+              </div>
+              
+              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+                <div className="flex items-center space-x-4 mb-4">
+                  <div className="w-12 h-12 bg-teal-400 rounded-xl flex items-center justify-center text-white text-xl font-bold">
+                    ⚡
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold">Instant Meetups</h3>
+                    <p className="text-blue-100 text-sm">Connect right now, today</p>
+                  </div>
+                </div>
+                <p className="text-white/90 leading-relaxed" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>
+                  Find people to explore with in real-time, whether you're local or visiting.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
