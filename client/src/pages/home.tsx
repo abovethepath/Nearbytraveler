@@ -1226,7 +1226,7 @@ export default function Home() {
     bg-cover bg-center bg-no-repeat
     min-h-[34svh] sm:min-h-[40vh] md:min-h-[36vh] xl:min-h-[32vh]
   "
-  style={{ backgroundImage: "url('/attached_assets/beach travel_1754973619241.jpg')" }}
+  style={{ backgroundImage: "url('/travelers coffee_1750995178947.png')" }}
 >
   {/* Readability overlay (non-interactive) */}
   <div
