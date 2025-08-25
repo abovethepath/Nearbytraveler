@@ -225,6 +225,12 @@ app.get('/api/users/:id', async (req, res) => {
     const userId = parseInt(req.params.id);
     console.log('👤 DIRECT API: Fetching user by ID:', userId);
     
+    // Validate user ID
+    if (isNaN(userId) || userId <= 0) {
+      console.log('🔥 Invalid user ID provided:', req.params.id);
+      return res.status(400).json({ error: 'Invalid user ID' });
+    }
+    
     const userQuery = await db.select().from(users)
       .where(eq(users.id, userId))
       .limit(1);

@@ -420,7 +420,7 @@ function Navbar() {
                     />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56" align="end" forceMount>
+                <DropdownMenuContent className="w-56 z-[9999] bg-white dark:bg-gray-800 border shadow-lg" align="end" forceMount>
                   {/* Welcome item at the top */}
                   {directUser?.userType !== 'business' && (
                     <DropdownMenuItem onClick={() => {
