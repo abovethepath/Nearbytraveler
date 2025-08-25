@@ -424,20 +424,20 @@ export default function Landing() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
               <div>
                 <h4 className="font-bold mb-2">❌ Old Way: Random Encounters</h4>
-                <ul className="text-sm space-y-1 opacity-90">
-                  <li>• Meet strangers at events</li>
-                  <li>• No shared context or interests</li>
-                  <li>• Awkward small talk</li>
-                  <li>• Lose touch after the trip</li>
+                <ul className="text-sm space-y-2 opacity-90">
+                  <li className="block">• Meet strangers at events</li>
+                  <li className="block">• No shared context or interests</li>
+                  <li className="block">• Awkward small talk</li>
+                  <li className="block">• Lose touch after the trip</li>
                 </ul>
               </div>
               <div>
                 <h4 className="font-bold mb-2">✅ Nearby Traveler Way</h4>
-                <ul className="text-sm space-y-1">
-                  <li>• Connect with like-minded travelers</li>
-                  <li>• Rich profiles with stories & photos</li>
-                  <li>• Instant recognition at future events</li>
-                  <li>• Lifelong travel friendships</li>
+                <ul className="text-sm space-y-2">
+                  <li className="block">• Connect with like-minded travelers</li>
+                  <li className="block">• Rich profiles with stories & photos</li>
+                  <li className="block">• Instant recognition at future events</li>
+                  <li className="block">• Lifelong travel friendships</li>
                 </ul>
               </div>
             </div>
