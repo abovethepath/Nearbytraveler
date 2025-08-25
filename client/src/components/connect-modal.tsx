@@ -225,7 +225,7 @@ export default function ConnectModal({ isOpen, onClose, userTravelPlans: propTra
         ...(searchFilters.languages.length > 0 && { languages: JSON.stringify(searchFilters.languages) })
       });
       
-      return apiRequest('GET', `/api/users/search-by-location?${params}`);
+      return apiRequest('GET', `/api/users?${params}`);
     },
     onSuccess: async (response) => {
       const data = await response.json();

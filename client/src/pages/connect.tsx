@@ -227,7 +227,11 @@ export default function ConnectPage() {
       });
       
       console.log('ConnectModal searching for:', searchLocation.trim());
-      const response = await fetch(`/api/users/search-by-location?${params}`);
+      const response = await fetch(`/api/users?${params}`, {
+        headers: {
+          'X-User-ID': '34'
+        }
+      });
       if (!response.ok) {
         throw new Error('Failed to search for travelers and locals');
       }
