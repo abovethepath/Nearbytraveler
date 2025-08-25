@@ -3453,17 +3453,17 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   {/* Username */}
                   <h1 className="text-xl sm:text-3xl font-bold text-black dark:text-white truncate">@{user.username}</h1>
 
-                  {/* Travel Status */}
-                  <div className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-300">
-                    {(() => {
+                  {/* Travel Status & Hometown */}
+                  <div className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-300 flex flex-wrap items-center gap-x-3 gap-y-1">
+                    <span>From: <span className="font-medium">{user.hometownCity || user.location?.split(',')[0] || 'Hometown not set'}{user.hometownState ? `, ${user.hometownState}` : ''}{user.hometownCountry ? `, ${user.hometownCountry}` : ''}</span></span>
+                    <span>{(() => {
                       const currentDestination = getCurrentTravelDestination(travelPlans || []);
                       if (currentDestination) {
                         return `Nearby Traveler ${currentDestination}`;
                       } else {
-                        const hometown = user.hometownCity || user.location?.split(',')[0] || 'Hometown not set';
-                        return `Nearby Local ${hometown}`;
+                        return `Nearby Local ${user.hometownCity || user.location?.split(',')[0] || 'Home'}`;
                       }
-                    })()}
+                    })()}</span>
                   </div>
 
                   {/* Stats */}
