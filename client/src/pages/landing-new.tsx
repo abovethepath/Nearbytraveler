@@ -346,39 +346,75 @@ export default function Landing() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
             
             {/* Before Events */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border-2 border-orange-200 dark:border-orange-600 text-center">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border-2 border-orange-200 dark:border-orange-600 text-center">
               <div className="text-4xl mb-4">📱</div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">Before Events</h3>
-              <ul className="text-gray-700 dark:text-gray-300 text-sm space-y-2 text-left">
-                <li>• Read each other's travel stories</li>
-                <li>• Chat and plan meetups</li>
-                <li>• Share interests and backgrounds</li>
-                <li>• Build excitement together</li>
-              </ul>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Before Events</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left">
+                <div className="flex items-center space-x-2">
+                  <span className="text-orange-500 font-bold">•</span>
+                  <span className="text-gray-700 dark:text-gray-300 text-base">Read travel stories</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span className="text-orange-500 font-bold">•</span>
+                  <span className="text-gray-700 dark:text-gray-300 text-base">Chat and plan</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span className="text-orange-500 font-bold">•</span>
+                  <span className="text-gray-700 dark:text-gray-300 text-base">Share backgrounds</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span className="text-orange-500 font-bold">•</span>
+                  <span className="text-gray-700 dark:text-gray-300 text-base">Build excitement</span>
+                </div>
+              </div>
             </div>
             
             {/* During Events */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border-2 border-blue-200 dark:border-blue-600 text-center">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border-2 border-blue-200 dark:border-blue-600 text-center">
               <div className="text-4xl mb-4">🎉</div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">During Events</h3>
-              <ul className="text-gray-700 dark:text-gray-300 text-sm space-y-2 text-left">
-                <li>• Instantly recognize your connections</li>
-                <li>• Skip awkward introductions</li>
-                <li>• Share experiences in real-time</li>
-                <li>• Create group memories</li>
-              </ul>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">During Events</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left">
+                <div className="flex items-center space-x-2">
+                  <span className="text-blue-500 font-bold">•</span>
+                  <span className="text-gray-700 dark:text-gray-300 text-base">Instantly recognize</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span className="text-blue-500 font-bold">•</span>
+                  <span className="text-gray-700 dark:text-gray-300 text-base">Skip introductions</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span className="text-blue-500 font-bold">•</span>
+                  <span className="text-gray-700 dark:text-gray-300 text-base">Share real-time</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span className="text-blue-500 font-bold">•</span>
+                  <span className="text-gray-700 dark:text-gray-300 text-base">Create memories</span>
+                </div>
+              </div>
             </div>
             
             {/* After Events */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border-2 border-orange-200 dark:border-orange-600 text-center">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border-2 border-orange-200 dark:border-orange-600 text-center">
               <div className="text-4xl mb-4">💫</div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">After Events</h3>
-              <ul className="text-gray-700 dark:text-gray-300 text-sm space-y-2 text-left">
-                <li>• Stay connected across cities</li>
-                <li>• Plan future meetups</li>
-                <li>• Recognize friends at new events</li>
-                <li>• Build your global community</li>
-              </ul>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">After Events</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left">
+                <div className="flex items-center space-x-2">
+                  <span className="text-orange-500 font-bold">•</span>
+                  <span className="text-gray-700 dark:text-gray-300 text-base">Stay connected</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span className="text-orange-500 font-bold">•</span>
+                  <span className="text-gray-700 dark:text-gray-300 text-base">Plan future meetups</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span className="text-orange-500 font-bold">•</span>
+                  <span className="text-gray-700 dark:text-gray-300 text-base">Recognize friends</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span className="text-orange-500 font-bold">•</span>
+                  <span className="text-gray-700 dark:text-gray-300 text-base">Build community</span>
+                </div>
+              </div>
             </div>
           </div>
           
