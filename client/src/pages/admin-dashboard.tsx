@@ -29,6 +29,11 @@ interface User {
   userType: string;
   location: string;
   phoneNumber: string;
+  hometownCity: string;
+  hometownState: string;
+  hometownCountry: string;
+  isCurrentlyTraveling: boolean;
+  travelDestination: string;
   createdAt: string;
   isActive: boolean;
   subscriptionStatus?: string;
@@ -214,13 +219,146 @@ export default function AdminDashboard() {
         </Card>
       </div>
 
-      <Tabs defaultValue="pricing" className="space-y-4">
+      <Tabs defaultValue="sms" className="space-y-4">
         <TabsList>
+          <TabsTrigger value="sms">SMS Database</TabsTrigger>
           <TabsTrigger value="pricing">Pricing & Settings</TabsTrigger>
           <TabsTrigger value="users">All Users</TabsTrigger>
           <TabsTrigger value="businesses">Business Accounts</TabsTrigger>
           <TabsTrigger value="revenue">Revenue</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="sms" className="space-y-4">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">📱 SMS Ready Users</CardTitle>
+                <CardDescription>Users with phone numbers for notifications</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold text-green-600">
+                  {users?.filter(u => u.phoneNumber).length || 0}
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  of {users?.length || 0} total users
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">✈️ Currently Traveling</CardTitle>
+                <CardDescription>Users on trips with phone numbers</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold text-blue-600">
+                  {users?.filter(u => u.phoneNumber && u.isCurrentlyTraveling).length || 0}
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  travelers with phones
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">🏠 Local Users</CardTitle>
+                <CardDescription>Locals with phone numbers</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold text-purple-600">
+                  {users?.filter(u => u.phoneNumber && !u.isCurrentlyTraveling).length || 0}
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  locals with phones
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>SMS Notification Targeting</CardTitle>
+              <CardDescription>
+                Segment users by location and travel status for targeted SMS campaigns
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {usersLoading ? (
+                <div className="flex items-center justify-center py-8">
+                  <div className="animate-spin w-6 h-6 border-2 border-primary border-t-transparent rounded-full" />
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {/* Filter buttons */}
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    <Button variant="outline" size="sm">All Users ({users?.length || 0})</Button>
+                    <Button variant="outline" size="sm" className="text-green-600">
+                      📱 Has Phone ({users?.filter(u => u.phoneNumber).length || 0})
+                    </Button>
+                    <Button variant="outline" size="sm" className="text-blue-600">
+                      ✈️ Traveling ({users?.filter(u => u.isCurrentlyTraveling).length || 0})
+                    </Button>
+                    <Button variant="outline" size="sm" className="text-purple-600">
+                      🏠 Locals ({users?.filter(u => !u.isCurrentlyTraveling).length || 0})
+                    </Button>
+                  </div>
+
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>User & Contact</TableHead>
+                        <TableHead>Location Data</TableHead>
+                        <TableHead>Travel Status</TableHead>
+                        <TableHead>SMS Ready</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {users?.map((user) => (
+                        <TableRow key={user.id} className={!user.phoneNumber ? 'opacity-50' : ''}>
+                          <TableCell>
+                            <div>
+                              <div className="font-medium">{user.name}</div>
+                              <div className="text-sm text-muted-foreground">@{user.username}</div>
+                              <div className="text-sm font-mono text-green-600 mt-1">
+                                {user.phoneNumber || '❌ No Phone'}
+                              </div>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="space-y-1">
+                              <div className="font-medium text-sm">🏠 Hometown:</div>
+                              <div className="text-sm text-blue-600">
+                                {user.hometownCity || 'Unknown'}, {user.hometownCountry || 'Unknown'}
+                              </div>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="space-y-1">
+                              <Badge variant={user.isCurrentlyTraveling ? 'default' : 'secondary'}>
+                                {user.isCurrentlyTraveling ? '✈️ Traveling' : '🏠 Local'}
+                              </Badge>
+                              {user.isCurrentlyTraveling && user.travelDestination && (
+                                <div className="text-xs text-blue-600 font-medium">
+                                  📍 {user.travelDestination}
+                                </div>
+                              )}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant={user.phoneNumber ? 'default' : 'destructive'}>
+                              {user.phoneNumber ? '✅ SMS Ready' : '❌ No Phone'}
+                            </Badge>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
 
         <TabsContent value="pricing" className="space-y-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -331,9 +469,9 @@ export default function AdminDashboard() {
         <TabsContent value="users">
           <Card>
             <CardHeader>
-              <CardTitle>All Users</CardTitle>
+              <CardTitle>All Users - SMS Contact Database</CardTitle>
               <CardDescription>
-                Complete user database with registration details
+                Complete contact database with phone numbers and location data for SMS notifications
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -346,12 +484,11 @@ export default function AdminDashboard() {
                   <TableHeader>
                     <TableRow>
                       <TableHead>User</TableHead>
-                      <TableHead>Email</TableHead>
                       <TableHead>Phone</TableHead>
+                      <TableHead>Hometown</TableHead>
+                      <TableHead>Travel Status</TableHead>
                       <TableHead>Type</TableHead>
-                      <TableHead>Location</TableHead>
                       <TableHead>Joined</TableHead>
-                      <TableHead>Status</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -363,9 +500,30 @@ export default function AdminDashboard() {
                             <div className="text-sm text-muted-foreground">@{user.username}</div>
                           </div>
                         </TableCell>
-                        <TableCell>{user.email}</TableCell>
                         <TableCell>
-                          <span className="text-sm font-mono">{user.phoneNumber || 'N/A'}</span>
+                          <div className="text-sm font-mono text-green-600 font-semibold">
+                            {user.phoneNumber || '❌ No Phone'}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="text-sm">
+                            <div className="font-medium">{user.hometownCity || 'Unknown'}</div>
+                            <div className="text-xs text-muted-foreground">
+                              {user.hometownState ? `${user.hometownState}, ` : ''}{user.hometownCountry || 'Unknown Country'}
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="space-y-1">
+                            <Badge variant={user.isCurrentlyTraveling ? 'default' : 'secondary'}>
+                              {user.isCurrentlyTraveling ? '✈️ Traveling' : '🏠 Local'}
+                            </Badge>
+                            {user.isCurrentlyTraveling && user.travelDestination && (
+                              <div className="text-xs text-blue-600 font-medium">
+                                📍 {user.travelDestination}
+                              </div>
+                            )}
+                          </div>
                         </TableCell>
                         <TableCell>
                           <Badge variant={
@@ -375,13 +533,7 @@ export default function AdminDashboard() {
                             {user.userType}
                           </Badge>
                         </TableCell>
-                        <TableCell className="max-w-[200px] truncate">{user.location}</TableCell>
                         <TableCell>{formatDate(user.createdAt)}</TableCell>
-                        <TableCell>
-                          <Badge variant={user.isActive ? 'default' : 'destructive'}>
-                            {user.isActive ? 'Active' : 'Inactive'}
-                          </Badge>
-                        </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
