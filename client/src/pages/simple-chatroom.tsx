@@ -46,12 +46,9 @@ export default function SimpleChatroomPage() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [messageText, setMessageText] = useState("");
   
-  // CRITICAL: Tri-state membership tracking to prevent excessive API calls
-  const [isJoined, setIsJoined] = useState<boolean | null>(null); // null = unknown, true = joined, false = not joined
-  const [membershipChecked, setMembershipChecked] = useState(false);
+  // Simple membership tracking - NO AUTO-JOIN
   const [isJoining, setIsJoining] = useState(false);
   const [isLeaving, setIsLeaving] = useState(false);
-  const [hasAutoJoined, setHasAutoJoined] = useState(false); // Prevent multiple auto-joins
 
   // Extract chatroom ID from URL path: /simple-chatroom/198
   const pathSegments = location.split('/');
@@ -93,15 +90,8 @@ export default function SimpleChatroomPage() {
     refetchOnWindowFocus: false,
   });
 
-  // Check membership when members data changes - CRITICAL LOGIC
-  useEffect(() => {
-    if (members && Array.isArray(members) && !membershipChecked) {
-      const userIsMember = members.some((member: ChatMember) => member.user_id === currentUserId);
-      console.log('🔍 MEMBERSHIP CHECK:', { userIsMember, currentUserId, membersCount: members.length });
-      setIsJoined(userIsMember);
-      setMembershipChecked(true);
-    }
-  }, [members, currentUserId, membershipChecked]);
+  // Check membership when members data changes - SIMPLE CHECK ONLY
+  const userIsMember = Array.isArray(members) ? members.some((member: ChatMember) => member.user_id === currentUserId) : false;
 
   // Get member count
   const { data: memberCountResp, refetch: refetchMemberCount } = useQuery<{memberCount: number}>({
@@ -115,39 +105,21 @@ export default function SimpleChatroomPage() {
   // Get messages - only fetch if user is joined
   const { data: messages = [], isLoading: messagesLoading, isFetching: messagesFetching, refetch: refetchMessages } = useQuery<ChatMessage[]>({
     queryKey: [`/api/simple-chatrooms/${chatroomId}/messages`],
-    enabled: !!(currentUserId && chatroomId && !isNaN(chatroomId) && isJoined === true),
-    refetchInterval: isJoined === true ? 8000 : false, // Poll every 8 seconds if joined
+    enabled: !!(currentUserId && chatroomId && !isNaN(chatroomId) && userIsMember),
+    refetchInterval: userIsMember ? 8000 : false, // Poll every 8 seconds if joined
     staleTime: 30000, // 30 seconds
     refetchOnWindowFocus: false,
   });
 
-  // CRITICAL: Smart auto-join logic with safety checks
-  useEffect(() => {
-    // Only auto-join if ALL conditions are met:
-    const shouldAutoJoin = 
-      currentUserId &&                    // Valid user ID
-      chatroomId &&                      // Valid chatroom ID  
-      membershipChecked &&               // Membership has been verified
-      isJoined === false &&              // User is confirmed NOT a member
-      !isJoining &&                      // Not currently joining
-      !hasAutoJoined;                    // Haven't already attempted auto-join
+  // NO AUTO-JOIN - Users must manually click Join button
 
-    if (shouldAutoJoin) {
-      console.log('🚀 AUTO-JOIN: All conditions met, attempting join for user:', currentUserId);
-      setHasAutoJoined(true); // Mark as attempted to prevent repeated attempts
-      joinRoom();
-    }
-  }, [currentUserId, chatroomId, membershipChecked, isJoined, isJoining, hasAutoJoined]);
-
-  // Join room function with robust error handling
+  // Join room function - MANUAL ONLY
   async function joinRoom() {
-    if (!currentUserId || isJoining || isJoined) {
-      console.log('🚫 JOIN BLOCKED:', { currentUserId, isJoining, isJoined });
+    if (!currentUserId || isJoining || userIsMember) {
       return;
     }
     
     setIsJoining(true);
-    console.log('🔄 JOINING ROOM:', chatroomId, 'for user:', currentUserId);
     
     try {
       const response = await fetch(`/api/simple-chatrooms/${chatroomId}/join`, {
@@ -160,8 +132,6 @@ export default function SimpleChatroomPage() {
       });
       
       if (response.ok) {
-        setIsJoined(true);
-        console.log('✅ JOIN SUCCESS');
         toast({
           title: "Joined chatroom",
           description: "You have successfully joined the chatroom",
@@ -171,24 +141,9 @@ export default function SimpleChatroomPage() {
         queryClient.invalidateQueries({ queryKey: [`/api/simple-chatrooms/${chatroomId}/members/count`] });
         queryClient.invalidateQueries({ queryKey: [`/api/simple-chatrooms/${chatroomId}/members`] });
       } else {
-        let errorMessage = "Failed to join chatroom";
-        try {
-          const error = await response.text();
-          console.log('❌ JOIN ERROR RESPONSE:', error);
-          if (error.trim().startsWith('{')) {
-            const parsedError = JSON.parse(error);
-            errorMessage = parsedError.message || parsedError.error || errorMessage;
-          } else {
-            errorMessage = error || errorMessage;
-          }
-        } catch (parseError) {
-          console.error("Error parsing join response:", parseError);
-        }
-        throw new Error(errorMessage);
+        throw new Error("Failed to join chatroom");
       }
     } catch (error: any) {
-      console.error("❌ JOIN ERROR:", error);
-      setIsJoined(false); // Reset to not joined on error
       toast({
         title: "Error",
         description: error.message || "Failed to join chatroom",
@@ -202,7 +157,7 @@ export default function SimpleChatroomPage() {
 
   // Leave room function
   async function leaveRoom() {
-    if (!currentUserId || isLeaving || !isJoined) return;
+    if (!currentUserId || isLeaving || !userIsMember) return;
     
     setIsLeaving(true);
     try {
@@ -216,7 +171,6 @@ export default function SimpleChatroomPage() {
       });
       
       if (response.ok) {
-        setIsJoined(false);
         toast({
           title: "Left chatroom",
           description: "You have successfully left the chatroom",
@@ -248,7 +202,7 @@ export default function SimpleChatroomPage() {
   const sendMessageMutation = useMutation({
     mutationFn: async (content: string) => {
       if (!currentUser?.id) throw new Error("User not found");
-      if (isJoined !== true) throw new Error("You must join the chatroom first");
+      if (!userIsMember) throw new Error("You must join the chatroom first");
 
       const res = await fetch(`/api/simple-chatrooms/${chatroomId}/messages`, {
         method: "POST",
@@ -292,7 +246,7 @@ export default function SimpleChatroomPage() {
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!messageText.trim() || isJoined !== true) return;
+    if (!messageText.trim() || !userIsMember) return;
     sendMessageMutation.mutate(messageText);
   };
 
@@ -350,14 +304,9 @@ export default function SimpleChatroomPage() {
                 <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                   {chatroom?.city && `${chatroom.city}, ${chatroom.state}`} · {memberCount} online
                 </p>
-                {isJoined === false && (
+                {!userIsMember && (
                   <p className="text-sm text-orange-600 dark:text-orange-400 mt-1">
                     You are not a member of this chatroom
-                  </p>
-                )}
-                {isJoined === null && (
-                  <p className="text-sm text-blue-600 dark:text-blue-400 mt-1">
-                    Checking membership status...
                   </p>
                 )}
               </div>
@@ -366,15 +315,15 @@ export default function SimpleChatroomPage() {
                   onClick={joinRoom} 
                   variant="secondary" 
                   size="sm"
-                  disabled={isJoining || isJoined === true || isJoined === null}
+                  disabled={isJoining || userIsMember}
                 >
-                  {isJoining ? "Joining..." : isJoined === true ? "Joined" : isJoined === null ? "..." : "Join"}
+                  {isJoining ? "Joining..." : userIsMember ? "Joined" : "Join"}
                 </Button>
                 <Button 
                   onClick={leaveRoom} 
                   variant="outline" 
                   size="sm"
-                  disabled={isLeaving || isJoined !== true}
+                  disabled={isLeaving || !userIsMember}
                 >
                   {isLeaving ? "Leaving..." : "Leave"}
                 </Button>
@@ -478,14 +427,7 @@ export default function SimpleChatroomPage() {
         <Card className="mb-6">
           <CardContent className="p-4">
             <div className="h-96 overflow-y-auto space-y-3 mb-4">
-              {isJoined === null ? (
-                <div className="flex items-center justify-center h-full text-gray-500">
-                  <div className="text-center">
-                    <Loader2 className="w-8 h-8 animate-spin mx-auto mb-3" />
-                    <p>Checking membership status...</p>
-                  </div>
-                </div>
-              ) : isJoined === false ? (
+              {!userIsMember ? (
                 <div className="flex items-center justify-center h-full text-gray-500">
                   <div className="text-center">
                     <p className="mb-2">Join this chatroom to see messages and participate</p>
@@ -566,16 +508,14 @@ export default function SimpleChatroomPage() {
                 value={messageText}
                 onChange={(e) => setMessageText(e.target.value)}
                 placeholder={
-                  isJoined === null ? "Checking membership..." :
-                  isJoined === true ? "Type your message..." : 
-                  "Join the chatroom to send messages"
+                  userIsMember ? "Type your message..." : "Join the chatroom to send messages"
                 }
-                disabled={sendMessageMutation.isPending || isJoined !== true}
+                disabled={sendMessageMutation.isPending || !userIsMember}
                 className="flex-1"
               />
               <Button 
                 type="submit" 
-                disabled={!messageText.trim() || sendMessageMutation.isPending || isJoined !== true}
+                disabled={!messageText.trim() || sendMessageMutation.isPending || !userIsMember}
               >
                 <Send className="w-4 h-4" />
               </Button>
