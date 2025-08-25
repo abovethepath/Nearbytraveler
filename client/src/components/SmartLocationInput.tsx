@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { getRegionForCity, isStateOptionalForCountry, validateLocationForCountry } from "@/lib/locationHelpers";
+import { getRegionForCity, isStateOptionalForCountry, validateLocationForCountry, type LocationData } from "@/lib/locationHelpers";
 import { COUNTRIES, CITIES_BY_COUNTRY } from "@/lib/locationData";
 import { METRO_AREAS, isLAMetroCity, getMetroArea } from "../../../shared/constants";
 
@@ -40,6 +40,8 @@ export function SmartLocationInput({
   const [state, setState] = useState(propState);
   const [isStateOptional, setIsStateOptional] = useState(false);
   const [stateLabel, setStateLabel] = useState("State/Province/Region");
+  const [customCity, setCustomCity] = useState("");
+  const [isCustomMode, setIsCustomMode] = useState(false);
 
   // Update state requirements when country changes
   useEffect(() => {
@@ -60,12 +62,19 @@ export function SmartLocationInput({
     }
   }, [country]);
 
+  // Sync component state when props change (important for edit mode)
+  useEffect(() => {
+    if (city) {
+      setCustomCity(city);
+      setIsCustomMode(!CITIES_BY_COUNTRY[country]?.includes(city));
+    }
+  }, [city, country]);
+
   // Auto-populate state when city and country are selected (only if state is empty)
   useEffect(() => {
     if (city && country && !state) {
       const autoRegion = getRegionForCity(city, country);
       if (autoRegion) {
-        setState(autoRegion);
         const newLocation = { city, state: autoRegion, country };
         if (onLocationChange && typeof onLocationChange === 'function') {
           onLocationChange(newLocation);
@@ -127,42 +136,25 @@ export function SmartLocationInput({
     }
   };
 
-  // Get cities for country WITH ALL METRO consolidation
+  // Get cities for country with proper LA Metro handling
   const getCitiesForCountry = () => {
     if (!country) return [];
     
     const baseCities = CITIES_BY_COUNTRY[country] || [];
     
     if (country === "United States") {
-      // Collect ALL metro cities from ALL metro areas
-      const allMetroCities = new Set<string>();
-      const mainMetroCities: string[] = [];
-      
-      Object.values(METRO_AREAS).forEach(metro => {
-        // Add the main city first
-        if (baseCities.includes(metro.mainCity)) {
-          mainMetroCities.push(metro.mainCity);
-        }
-        // Add all metro cities to the set
-        metro.cities.forEach(city => {
-          if (baseCities.includes(city)) {
-            allMetroCities.add(city);
-          }
-        });
-      });
-      
-      const topCities = ["Los Angeles", "Las Vegas", "Miami", "Nashville", "New Orleans", "Austin", "Chicago", "New York City"];
-      
+      // For US, ensure LA Metro cities are prominent and properly ordered
       return [
-        // Top priority cities first
-        ...topCities.filter(c => baseCities.includes(c)),
-        // ALL Metro area cities prominently displayed (excluding main cities to avoid duplication)
-        ...Array.from(allMetroCities).filter(city => !topCities.includes(city)),
-        // Rest of US cities (non-metro, non-top)
+        // Top priority cities first (including Los Angeles)
+        "Los Angeles", "Las Vegas", "Miami", "Nashville", "New Orleans", "Austin", "Chicago", "New York City",
+        // LA Metro cities prominently displayed
+        ...METRO_AREAS['Los Angeles'].cities.filter(c => c !== 'Los Angeles'), // Don't duplicate Los Angeles
+        // Rest of US cities
         ...baseCities.filter(city => {
+          const topCities = ["Los Angeles", "Las Vegas", "Miami", "Nashville", "New Orleans", "Austin", "Chicago", "New York City"];
           const isTopCity = topCities.includes(city);
-          const isMetroCity = allMetroCities.has(city);
-          return !isTopCity && !isMetroCity;
+          const isLAMetro = METRO_AREAS['Los Angeles'].cities.includes(city);
+          return !isTopCity && !isLAMetro;
         })
       ];
     }
@@ -198,7 +190,7 @@ export function SmartLocationInput({
         </Select>
       </div>
 
-      {/* City Selection */}
+      {/* City Selection - With LA Metro prominence */}
       {country && (
         <div>
           <Label htmlFor="city" className="text-left text-gray-900 dark:text-white">
@@ -276,7 +268,7 @@ export function SmartLocationInput({
       {/* Location Preview with LA Metro indication */}
       {city && country && (
         <div className="text-sm text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-gray-700 p-2 rounded">
-          <strong>Location:</strong> {city}{state ? `, ${state}` : ""}, {country}
+          <strong>Location Preview:</strong> {city}{state ? `, ${state}` : ""}, {country}
           {isLAMetroCity(city) && (
             <div className="text-xs text-blue-600 dark:text-blue-400 mt-1">
               🌟 Part of Los Angeles Metro area
