@@ -464,18 +464,6 @@ export default function Landing() {
         </div>
       </div>
 
-          {/* Call to action to see more */}
-          <div className="text-center mt-12 py-16 bg-white">
-            <div className="max-w-7xl mx-auto px-4">
-              <Button 
-                onClick={() => setLocation('/join')}
-                size="lg"
-                className="bg-black text-orange-400 font-black px-12 py-4 rounded-2xl hover:bg-gray-800 text-xl"
-              >
-                JOIN THE COMMUNITY →
-              </Button>
-            </div>
-          </div>
         </div>
       </div>
 
