@@ -1576,6 +1576,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   // Update form when user data loads
   React.useEffect(() => {
     if (user) {
+      // Debug: Check what's in the user object for date of birth
+      console.log("🎂 DEBUG: User dateOfBirth raw value:", user.dateOfBirth);
+      console.log("🎂 DEBUG: User date_of_birth snake case:", (user as any).date_of_birth);
+      const formattedDOB = user.dateOfBirth ? formatDateOfBirthForInput(user.dateOfBirth) : 
+                          (user as any).date_of_birth ? formatDateOfBirthForInput((user as any).date_of_birth) : "";
+      console.log("🎂 DEBUG: Formatted DOB for form:", formattedDOB);
+      
       profileForm.reset({
         bio: user.bio || "",
         ...(user?.userType === 'business' ? { 
@@ -1585,7 +1592,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         hometownCity: user.hometownCity || "",
         hometownState: user.hometownState || "",
         hometownCountry: user.hometownCountry || "",
-        dateOfBirth: user.dateOfBirth ? formatDateOfBirthForInput(user.dateOfBirth) : "",
+        dateOfBirth: formattedDOB,
         ageVisible: user.ageVisible || false,
         gender: user.gender || "",
         secretActivities: user.secretActivities || "",
