@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
 import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
 import Footer from "@/components/footer";
+import NetworkingHero from "@/components/NetworkingHero";
 
 export default function NetworkingLanding() {
   const [, setLocation] = useLocation();
@@ -28,63 +29,7 @@ export default function NetworkingLanding() {
       <LandingHeaderSpacer />
       
       {/* HERO SECTION */}
-      <div className="relative z-0">
-        <div className="bg-gray-800 dark:bg-gray-900 border-4 border-purple-500 shadow-lg">
-          <div className="relative bg-gray-800 dark:bg-gray-900 pb-32 overflow-hidden min-h-[600px]">
-            <div className="absolute inset-0 h-full min-h-[600px]">
-              <div className="w-full h-full bg-gradient-to-br from-purple-900 via-indigo-900 to-blue-900"></div>
-              <div
-                className="absolute inset-0"
-                style={{
-                  background:
-                    "linear-gradient(to bottom, rgba(0,0,0,.55), rgba(0,0,0,.25), rgba(0,0,0,0))"
-                }}
-                aria-hidden="true"
-              />
-            </div>
-            <div className="relative">
-              <div className="sm:pb-16 md:pb-20 lg:pb-28 xl:pb-32">
-                <main className="mt-16 mx-auto max-w-full sm:mt-20 md:mt-24 lg:mt-28 xl:mt-32">
-                  <div className="text-center">
-                    <div className="max-w-4xl mx-auto">
-                      <h1 className="px-3 leading-tight sm:leading-snug">
-                        <span className="block font-black text-[clamp(1.5rem,6vw,2.5rem)] text-white mb-4">
-                          ✨ Network Smarter — Before, During, and After Every Event ✨
-                        </span>
-                      </h1>
-                      
-                      {/* Hero subtext */}
-                      <div className="hidden sm:block mt-8 p-6 bg-black/40 backdrop-blur-sm rounded-2xl border border-white/20">
-                        <p className="text-sm sm:text-base md:text-lg lg:text-xl text-white leading-relaxed px-2">
-                          Whether you're flying in for a conference or exploring a new city, Nearby Traveler helps you connect before you arrive, meet with purpose during the event, and stay in touch long after it's over.
-                        </p>
-                      </div>
-                    </div>
-                    
-                    {/* Hero CTAs */}
-                    <div className="mt-12 mb-8 px-4 space-y-4 sm:space-y-0 sm:flex sm:gap-4 sm:justify-center">
-                      <Button
-                        onClick={() => setLocation('/join')}
-                        size="lg"
-                        className="bg-purple-500 hover:bg-purple-600 text-white font-black text-lg sm:text-xl px-8 sm:px-12 py-4 sm:py-5 rounded-2xl shadow-xl transition-all duration-200 w-full sm:w-auto"
-                      >
-                        👉 Start Networking Now
-                      </Button>
-                      <Button
-                        onClick={() => setLocation('/join')}
-                        size="lg"
-                        className="bg-indigo-500 hover:bg-indigo-600 text-white font-black text-lg sm:text-xl px-8 sm:px-12 py-4 sm:py-5 rounded-2xl shadow-xl transition-all duration-200 w-full sm:w-auto"
-                      >
-                        📅 See Who's Going
-                      </Button>
-                    </div>
-                  </div>
-                </main>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <NetworkingHero />
 
       <main className="flex-1 px-4 py-16">
         
