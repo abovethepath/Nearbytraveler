@@ -349,22 +349,22 @@ export default function Landing() {
             <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border-2 border-orange-200 dark:border-orange-600 text-center">
               <div className="text-4xl mb-4">📱</div>
               <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Before Events</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left">
+              <div className="grid grid-cols-1 gap-3 text-left">
                 <div className="flex items-center space-x-2">
                   <span className="text-orange-500 font-bold">•</span>
-                  <span className="text-gray-900 dark:text-gray-300 text-base">Read travel stories</span>
+                  <span className="text-black dark:text-gray-300 text-base">Read travel stories</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <span className="text-orange-500 font-bold">•</span>
-                  <span className="text-gray-900 dark:text-gray-300 text-base">Chat and plan</span>
+                  <span className="text-black dark:text-gray-300 text-base">Chat and plan</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <span className="text-orange-500 font-bold">•</span>
-                  <span className="text-gray-900 dark:text-gray-300 text-base">Share backgrounds</span>
+                  <span className="text-black dark:text-gray-300 text-base">Share backgrounds</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <span className="text-orange-500 font-bold">•</span>
-                  <span className="text-gray-900 dark:text-gray-300 text-base">Build excitement</span>
+                  <span className="text-black dark:text-gray-300 text-base">Build excitement</span>
                 </div>
               </div>
             </div>
@@ -373,22 +373,22 @@ export default function Landing() {
             <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border-2 border-blue-200 dark:border-blue-600 text-center">
               <div className="text-4xl mb-4">🎉</div>
               <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">During Events</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left">
+              <div className="grid grid-cols-1 gap-3 text-left">
                 <div className="flex items-center space-x-2">
                   <span className="text-blue-500 font-bold">•</span>
-                  <span className="text-gray-900 dark:text-gray-300 text-base">Instantly recognize</span>
+                  <span className="text-black dark:text-gray-300 text-base">Instantly recognize</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <span className="text-blue-500 font-bold">•</span>
-                  <span className="text-gray-900 dark:text-gray-300 text-base">Skip introductions</span>
+                  <span className="text-black dark:text-gray-300 text-base">Skip introductions</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <span className="text-blue-500 font-bold">•</span>
-                  <span className="text-gray-900 dark:text-gray-300 text-base">Share real-time</span>
+                  <span className="text-black dark:text-gray-300 text-base">Share real-time</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <span className="text-blue-500 font-bold">•</span>
-                  <span className="text-gray-900 dark:text-gray-300 text-base">Create memories</span>
+                  <span className="text-black dark:text-gray-300 text-base">Create memories</span>
                 </div>
               </div>
             </div>
@@ -397,22 +397,22 @@ export default function Landing() {
             <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border-2 border-orange-200 dark:border-orange-600 text-center">
               <div className="text-4xl mb-4">💫</div>
               <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">After Events</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left">
+              <div className="grid grid-cols-1 gap-3 text-left">
                 <div className="flex items-center space-x-2">
                   <span className="text-orange-500 font-bold">•</span>
-                  <span className="text-gray-900 dark:text-gray-300 text-base">Stay connected</span>
+                  <span className="text-black dark:text-gray-300 text-base">Stay connected</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <span className="text-orange-500 font-bold">•</span>
-                  <span className="text-gray-900 dark:text-gray-300 text-base">Plan future meetups</span>
+                  <span className="text-black dark:text-gray-300 text-base">Plan future meetups</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <span className="text-orange-500 font-bold">•</span>
-                  <span className="text-gray-900 dark:text-gray-300 text-base">Recognize friends</span>
+                  <span className="text-black dark:text-gray-300 text-base">Recognize friends</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <span className="text-orange-500 font-bold">•</span>
-                  <span className="text-gray-900 dark:text-gray-300 text-base">Build community</span>
+                  <span className="text-black dark:text-gray-300 text-base">Build community</span>
                 </div>
               </div>
             </div>
