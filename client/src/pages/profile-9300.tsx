@@ -223,6 +223,35 @@ import type { User, UserPhoto, PassportStamp, TravelPlan } from "@shared/schema"
 import { insertUserReferenceSchema } from "@shared/schema";
 import { getAllInterests, getAllActivities, getAllEvents, getAllLanguages, validateSelections, MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS } from "../../../shared/base-options";
 
+// Extended user interface for additional properties
+interface ExtendedUser extends User {
+  isVeteran?: boolean;
+  isActiveDuty?: boolean;
+  isMinorityOwned?: boolean;
+  isFemaleOwned?: boolean;
+  isLGBTQIAOwned?: boolean;
+  showMinorityOwned?: boolean;
+  showFemaleOwned?: boolean;
+  showLGBTQIAOwned?: boolean;
+  childrenAges?: string;
+  ownerName?: string;
+  contactName?: string;
+  ownerEmail?: string;
+  ownerPhone?: string;
+  services?: string;
+  specialOffers?: string;
+  targetCustomers?: string;
+  certifications?: string;
+  customInterests?: string;
+  customActivities?: string;
+  customEvents?: string;
+}
+
+// Add missing constants
+const INTERESTS_OPTIONS = getAllInterests();
+const ACTIVITIES_OPTIONS = getAllActivities();
+const EVENTS_OPTIONS = getAllEvents();
+
 // Reference constants
 const REFERENCE_TYPES = [
   { value: "general", label: "General" },
@@ -1325,7 +1354,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           hometownCity: user.hometownCity || "",
           hometownState: user.hometownState || "",
           hometownCountry: user.hometownCountry || "",
-          dateOfBirth: user.dateOfBirth ? new Date(user.dateOfBirth).toISOString().split('T')[0] : "",
+          dateOfBirth: user.dateOfBirth ? 
+            (typeof user.dateOfBirth === 'string' ? user.dateOfBirth : new Date(user.dateOfBirth).toISOString().split('T')[0]) : "",
           ageVisible: Boolean(user.ageVisible),
           gender: user.gender || "",
           sexualPreference: user.sexualPreference || [],
@@ -5989,7 +6019,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     {userConnections.slice(0, connectionsDisplayCount).map((connection: any) => (
                       <div
                         key={connection.id}
-                        onClick={() => setLocation(`/profile/${connection.connectedUser?.id}`)}
+                        onClick={() => setLocation(`/profile/${connection.connectedUser?.id?.toString() || ''}`)}
                         className="rounded-xl border p-3 hover:shadow-sm bg-white dark:bg-gray-800 cursor-pointer flex flex-col items-center text-center gap-2"
                       >
                         <SimpleAvatar
@@ -6013,7 +6043,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           size="sm"
                           variant="outline"
                           className="hidden sm:inline-flex h-8 px-3 text-xs bg-blue-500 hover:bg-blue-600 text-white border-0"
-                          onClick={(e) => { e.stopPropagation(); setLocation(`/profile/${connection.connectedUser?.id}`); }}
+                          onClick={(e) => { e.stopPropagation(); setLocation(`/profile/${connection.connectedUser?.id?.toString() || ''}`); }}
                         >
                           View
                         </Button>
@@ -6392,7 +6422,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       <div key={request.id} className="flex items-center justify-between p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors">
                         <div 
                           className="flex items-center gap-2 cursor-pointer flex-1 min-w-0 mr-2"
-                          onClick={() => setLocation(`/profile/${request.requesterUser?.id}`)}
+                          onClick={() => setLocation(`/profile/${request.requesterUser?.id?.toString() || ''}`)
                         >
                           <SimpleAvatar 
                             user={request.requesterUser} 

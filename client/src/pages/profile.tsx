@@ -223,6 +223,35 @@ import type { User, UserPhoto, PassportStamp, TravelPlan } from "@shared/schema"
 import { insertUserReferenceSchema } from "@shared/schema";
 import { getAllInterests, getAllActivities, getAllEvents, getAllLanguages, validateSelections, MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS } from "../../../shared/base-options";
 
+// Extended user interface for additional properties
+interface ExtendedUser extends User {
+  isVeteran?: boolean;
+  isActiveDuty?: boolean;
+  isMinorityOwned?: boolean;
+  isFemaleOwned?: boolean;
+  isLGBTQIAOwned?: boolean;
+  showMinorityOwned?: boolean;
+  showFemaleOwned?: boolean;
+  showLGBTQIAOwned?: boolean;
+  childrenAges?: string;
+  ownerName?: string;
+  contactName?: string;
+  ownerEmail?: string;
+  ownerPhone?: string;
+  services?: string;
+  specialOffers?: string;
+  targetCustomers?: string;
+  certifications?: string;
+  customInterests?: string;
+  customActivities?: string;
+  customEvents?: string;
+}
+
+// Add missing constants
+const INTERESTS_OPTIONS = getAllInterests();
+const ACTIVITIES_OPTIONS = getAllActivities();
+const EVENTS_OPTIONS = getAllEvents();
+
 // Reference constants
 const REFERENCE_TYPES = [
   { value: "general", label: "General" },
@@ -1310,8 +1339,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           interests: predefinedInterests,
           activities: predefinedActivities,
           events: predefinedEvents,
-          isVeteran: Boolean((user as any).is_veteran || user.isVeteran),
-          isActiveDuty: Boolean((user as any).is_active_duty || user.isActiveDuty),
+          isVeteran: Boolean((user as any).is_veteran || (user as ExtendedUser).isVeteran),
+          isActiveDuty: Boolean((user as any).is_active_duty || (user as ExtendedUser).isActiveDuty),
           customInterests: (user as any).customInterests || "",
           customActivities: (user as any).customActivities || "",
           customEvents: (user as any).customEvents || "",
@@ -1325,7 +1354,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           hometownCity: user.hometownCity || "",
           hometownState: user.hometownState || "",
           hometownCountry: user.hometownCountry || "",
-          dateOfBirth: user.dateOfBirth ? new Date(user.dateOfBirth).toISOString().split('T')[0] : "",
+          dateOfBirth: user.dateOfBirth ? 
+            (typeof user.dateOfBirth === 'string' ? user.dateOfBirth : new Date(user.dateOfBirth).toISOString().split('T')[0]) : "",
           ageVisible: Boolean(user.ageVisible),
           gender: user.gender || "",
           sexualPreference: user.sexualPreference || [],
@@ -1337,8 +1367,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           travelGroup: user.travelGroup || "",
           travelingWithChildren: travelingWithChildrenValue,
           childrenAges: (user as any).childrenAges || "",
-          isVeteran: Boolean(user.isVeteran),
-          isActiveDuty: Boolean(user.isActiveDuty),
+          isVeteran: Boolean((user as ExtendedUser).isVeteran),
+          isActiveDuty: Boolean((user as ExtendedUser).isActiveDuty),
           // interests: user.interests || [],
           // activities: user.activities || [],
           // events: user.events || [],
@@ -1400,17 +1430,17 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           interests: predefinedInterests,
           activities: predefinedActivities,
           events: predefinedEvents,
-          customInterests: customInterests || user.customInterests || "",
-          customActivities: customActivities || user.customActivities || "",
-          customEvents: customEvents || user.customEvents || "",
-          isVeteran: !!user.isVeteran,
-          isActiveDuty: !!user.isActiveDuty,
-          isMinorityOwned: !!user.isMinorityOwned,
-          isFemaleOwned: !!user.isFemaleOwned,
-          isLGBTQIAOwned: !!user.isLGBTQIAOwned,
-          showMinorityOwned: user.showMinorityOwned !== false,
-          showFemaleOwned: user.showFemaleOwned !== false,
-          showLGBTQIAOwned: user.showLGBTQIAOwned !== false,
+          customInterests: customInterests || (user as ExtendedUser).customInterests || "",
+          customActivities: customActivities || (user as ExtendedUser).customActivities || "",
+          customEvents: customEvents || (user as ExtendedUser).customEvents || "",
+          isVeteran: !!(user as ExtendedUser).isVeteran,
+          isActiveDuty: !!(user as ExtendedUser).isActiveDuty,
+          isMinorityOwned: !!(user as ExtendedUser).isMinorityOwned,
+          isFemaleOwned: !!(user as ExtendedUser).isFemaleOwned,
+          isLGBTQIAOwned: !!(user as ExtendedUser).isLGBTQIAOwned,
+          showMinorityOwned: (user as ExtendedUser).showMinorityOwned !== false,
+          showFemaleOwned: (user as ExtendedUser).showFemaleOwned !== false,
+          showLGBTQIAOwned: (user as ExtendedUser).showLGBTQIAOwned !== false,
         });
       } else {
         // For non-business users, reset with their data
@@ -1427,9 +1457,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           sexualPreferenceVisible: !!user.sexualPreferenceVisible,
           travelStyle: user.travelStyle || [],
           travelingWithChildren: !!user.travelingWithChildren,
-          childrenAges: user.childrenAges || "",
-          isVeteran: !!user.isVeteran,
-          isActiveDuty: !!user.isActiveDuty,
+          childrenAges: (user as ExtendedUser).childrenAges || "",
+          isVeteran: !!(user as ExtendedUser).isVeteran,
+          isActiveDuty: !!(user as ExtendedUser).isActiveDuty,
         });
       }
     }
@@ -1540,8 +1570,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         sexualPreference: Array.isArray(user.sexualPreference) ? user.sexualPreference : (user.sexualPreference ? [user.sexualPreference] : []),
         sexualPreferenceVisible: user.sexualPreferenceVisible || false,
         travelStyle: Array.isArray(user.travelStyle) ? user.travelStyle : [],
-        isVeteran: (user as any).is_veteran || user.isVeteran || false,
-        isActiveDuty: (user as any).is_active_duty || user.isActiveDuty || false,
+        isVeteran: (user as any).is_veteran || (user as ExtendedUser).isVeteran || false,
+        isActiveDuty: (user as any).is_active_duty || (user as ExtendedUser).isActiveDuty || false,
         // Business contact fields - only for business users
         ...(user?.userType === 'business' ? {
           streetAddress: (user as any).streetAddress || "",
@@ -2854,7 +2884,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   useEffect(() => {
     if (user && user.userType === 'business') {
       setOwnerContactForm({
-        ownerName: user.ownerName || "",
+        ownerName: (user as ExtendedUser).ownerName || "",
         contactName: user.contactName || "",
         ownerEmail: user.ownerEmail || "",
         ownerPhone: user.ownerPhone || ""
@@ -3622,13 +3652,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   )}
 
                   {/* Military Status for non-business users */}
-                  {user?.userType !== 'business' && user.isVeteran && (
+                  {user?.userType !== 'business' && (user as ExtendedUser).isVeteran && (
                     <div className="flex items-start">
                       <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">Military:</span>
                       <span className="text-red-600 font-semibold flex-1 break-words">Veteran</span>
                     </div>
                   )}
-                  {user?.userType !== 'business' && user.isActiveDuty && (
+                  {user?.userType !== 'business' && (user as ExtendedUser).isActiveDuty && (
                     <div className="flex items-start">
                       <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">Military:</span>
                       <span className="text-blue-600 font-semibold flex-1 break-words">Active Duty</span>
@@ -3704,18 +3734,18 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     </div>
 
                     {/* Business Ownership Categories */}
-                    {(user.isVeteran || user.isActiveDuty || (user.isMinorityOwned && user.showMinorityOwned) || (user.isFemaleOwned && user.showFemaleOwned) || (user.isLGBTQIAOwned && user.showLGBTQIAOwned)) && (
+                    {((user as ExtendedUser).isVeteran || (user as ExtendedUser).isActiveDuty || ((user as ExtendedUser).isMinorityOwned && (user as ExtendedUser).showMinorityOwned) || ((user as ExtendedUser).isFemaleOwned && (user as ExtendedUser).showFemaleOwned) || ((user as ExtendedUser).isLGBTQIAOwned && (user as ExtendedUser).showLGBTQIAOwned)) && (
                       <div className="space-y-2 border-t pt-3 mt-3">
                         <h5 className="font-medium text-gray-700 dark:text-gray-300">Business Ownership</h5>
                         
                         {/* Military Status */}
-                        {user.isVeteran && (
+                        {(user as ExtendedUser).isVeteran && (
                           <div className="flex items-center gap-2">
                             <span className="text-green-600">✓</span>
                             <span className="text-sm">Veteran Owned Business</span>
                           </div>
                         )}
-                        {user.isActiveDuty && (
+                        {(user as ExtendedUser).isActiveDuty && (
                           <div className="flex items-center gap-2">
                             <span className="text-blue-600">✓</span>
                             <span className="text-sm">Active Duty Owned Business</span>
@@ -3723,19 +3753,19 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         )}
                         
                         {/* Diversity Categories */}
-                        {user.isMinorityOwned && user.showMinorityOwned && (
+                        {(user as ExtendedUser).isMinorityOwned && (user as ExtendedUser).showMinorityOwned && (
                           <div className="flex items-center gap-2">
                             <span className="text-purple-600">✓</span>
                             <span className="text-sm">Minority Owned Business</span>
                           </div>
                         )}
-                        {user.isFemaleOwned && user.showFemaleOwned && (
+                        {(user as ExtendedUser).isFemaleOwned && (user as ExtendedUser).showFemaleOwned && (
                           <div className="flex items-center gap-2">
                             <span className="text-pink-600">✓</span>
                             <span className="text-sm">Female Owned Business</span>
                           </div>
                         )}
-                        {user.isLGBTQIAOwned && user.showLGBTQIAOwned && (
+                        {(user as ExtendedUser).isLGBTQIAOwned && (user as ExtendedUser).showLGBTQIAOwned && (
                           <div className="flex items-center gap-2">
                             <span className="text-rainbow bg-gradient-to-r from-red-500 via-yellow-500 via-green-500 via-blue-500 to-purple-500 bg-clip-text text-transparent font-bold">✓</span>
                             <span className="text-sm">LGBTQIA+ Owned Business</span>
@@ -4700,7 +4730,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         
                         // Add custom fields from database to the arrays for display
                         if (user?.customInterests) {
-                          const customInterests = user.customInterests.split(',').map(s => s.trim()).filter(s => s);
+                          const customInterests = (user as ExtendedUser).customInterests.split(',').map(s => s.trim()).filter(s => s);
                           console.log('🔧 Processing custom interests:', customInterests);
                           customInterests.forEach(item => {
                             if (!userInterests.includes(item)) {
@@ -4709,7 +4739,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           });
                         }
                         if (user?.customActivities) {
-                          const customActivities = user.customActivities.split(',').map(s => s.trim()).filter(s => s);
+                          const customActivities = (user as ExtendedUser).customActivities.split(',').map(s => s.trim()).filter(s => s);
                           console.log('🔧 Processing custom activities:', customActivities);
                           customActivities.forEach(item => {
                             if (!userActivities.includes(item)) {
@@ -4718,7 +4748,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           });
                         }
                         if (user?.customEvents) {
-                          const customEvents = user.customEvents.split(',').map(s => s.trim()).filter(s => s);
+                          const customEvents = (user as ExtendedUser).customEvents.split(',').map(s => s.trim()).filter(s => s);
                           console.log('🔧 Processing custom events:', customEvents);
                           customEvents.forEach(item => {
                             if (!userEvents.includes(item)) {
@@ -4758,7 +4788,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       
                       // Add custom interests
                       if (user?.customInterests) {
-                        const customInterests = user.customInterests.split(',').map(s => s.trim()).filter(s => s);
+                        const customInterests = (user as ExtendedUser).customInterests.split(',').map(s => s.trim()).filter(s => s);
                         customInterests.forEach(item => {
                           if (!allInterests.includes(item)) {
                             allInterests.push(item);
@@ -4768,7 +4798,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       
                       // Add custom activities
                       if (user?.customActivities) {
-                        const customActivities = user.customActivities.split(',').map(s => s.trim()).filter(s => s);
+                        const customActivities = (user as ExtendedUser).customActivities.split(',').map(s => s.trim()).filter(s => s);
                         customActivities.forEach(item => {
                           if (!allActivities.includes(item)) {
                             allActivities.push(item);
@@ -4778,7 +4808,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       
                       // Add custom events
                       if (user?.customEvents) {
-                        const customEvents = user.customEvents.split(',').map(s => s.trim()).filter(s => s);
+                        const customEvents = (user as ExtendedUser).customEvents.split(',').map(s => s.trim()).filter(s => s);
                         customEvents.forEach(item => {
                           if (!allEvents.includes(item)) {
                             allEvents.push(item);
@@ -5989,7 +6019,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     {userConnections.slice(0, connectionsDisplayCount).map((connection: any) => (
                       <div
                         key={connection.id}
-                        onClick={() => setLocation(`/profile/${connection.connectedUser?.id}`)}
+                        onClick={() => setLocation(`/profile/${connection.connectedUser?.id?.toString() || ''}`)}
                         className="rounded-xl border p-3 hover:shadow-sm bg-white dark:bg-gray-800 cursor-pointer flex flex-col items-center text-center gap-2"
                       >
                         <SimpleAvatar
@@ -6013,7 +6043,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           size="sm"
                           variant="outline"
                           className="hidden sm:inline-flex h-8 px-3 text-xs bg-blue-500 hover:bg-blue-600 text-white border-0"
-                          onClick={(e) => { e.stopPropagation(); setLocation(`/profile/${connection.connectedUser?.id}`); }}
+                          onClick={(e) => { e.stopPropagation(); setLocation(`/profile/${connection.connectedUser?.id?.toString() || ''}`); }}
                         >
                           View
                         </Button>
@@ -6392,7 +6422,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       <div key={request.id} className="flex items-center justify-between p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors">
                         <div 
                           className="flex items-center gap-2 cursor-pointer flex-1 min-w-0 mr-2"
-                          onClick={() => setLocation(`/profile/${request.requesterUser?.id}`)}
+                          onClick={() => setLocation(`/profile/${request.requesterUser?.id?.toString() || ''}`)}
                         >
                           <SimpleAvatar 
                             user={request.requesterUser} 

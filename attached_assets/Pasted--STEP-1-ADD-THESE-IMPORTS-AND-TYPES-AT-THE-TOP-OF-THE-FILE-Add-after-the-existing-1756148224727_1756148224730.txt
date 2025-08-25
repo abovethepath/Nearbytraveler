@@ -1,0 +1,238 @@
+// ==== STEP 1: ADD THESE IMPORTS AND TYPES AT THE TOP OF THE FILE ====
+
+// Add after the existing imports (around line 50):
+const INTERESTS_OPTIONS = getAllInterests();
+const ACTIVITIES_OPTIONS = getAllActivities();
+const EVENTS_OPTIONS = getAllEvents();
+
+// Add this interface after the existing imports (around line 100):
+interface ExtendedUser extends User {
+  isVeteran?: boolean;
+  isActiveDuty?: boolean;
+  isMinorityOwned?: boolean;
+  isFemaleOwned?: boolean;
+  isLGBTQIAOwned?: boolean;
+  showMinorityOwned?: boolean;
+  showFemaleOwned?: boolean;
+  showLGBTQIAOwned?: boolean;
+  childrenAges?: string;
+  ownerName?: string;
+  contactName?: string;
+  ownerEmail?: string;
+  ownerPhone?: string;
+  services?: string;
+  specialOffers?: string;
+  targetCustomers?: string;
+  certifications?: string;
+  customInterests?: string;
+  customActivities?: string;
+  customEvents?: string;
+  business_name?: string;
+  businessName?: string;
+  business_description?: string;
+  businessDescription?: string;
+  business_type?: string;
+  businessType?: string;
+  street_address?: string;
+  streetAddress?: string;
+  zip_code?: string;
+  zipCode?: string;
+  phone_number?: string;
+  phoneNumber?: string;
+  website_url?: string;
+  websiteUrl?: string;
+  website?: string;
+  is_veteran?: boolean;
+  is_active_duty?: boolean;
+  custom_interests?: string;
+  custom_activities?: string;
+  custom_events?: string;
+}
+
+// ==== STEP 2: SPECIFIC LINE REPLACEMENTS ====
+
+// Line 823: Replace
+onClick={() => setLocation(`/profile/${connection.connectedUser?.id}`)}
+// With:
+onClick={() => setLocation(`/profile/${connection.connectedUser?.id?.toString() || ''}`)}
+
+// Line 843: Replace
+onClick={() => setLocation(`/profile/${request.requesterUser?.id}`)}
+// With:
+onClick={() => setLocation(`/profile/${request.requesterUser?.id?.toString() || ''}`)}
+
+// Line 1215: Replace
+ownerName: user?.ownerName || "",
+// With:
+ownerName: (user as ExtendedUser)?.ownerName || "",
+
+// Line 1339: Replace
+childrenAges: (user as any).childrenAges || "",
+// With:
+childrenAges: (user as ExtendedUser)?.childrenAges || "",
+
+// Line 1423: Replace
+dateOfBirth: user.dateOfBirth ? new Date(user.dateOfBirth).toISOString().split('T')[0] : "",
+// With:
+dateOfBirth: user.dateOfBirth ? 
+  (typeof user.dateOfBirth === 'string' ? user.dateOfBirth.split('T')[0] : new Date(user.dateOfBirth).toISOString().split('T')[0]) : "",
+
+// Line 1543: Replace
+isVeteran: Boolean((user as any).is_veteran || user.isVeteran),
+// With:
+isVeteran: Boolean((user as ExtendedUser)?.is_veteran || (user as ExtendedUser)?.isVeteran),
+
+// Line 2874-2881: Replace all these user property accesses:
+user.isVeteran
+user.isActiveDuty
+user.isMinorityOwned
+user.isFemaleOwned
+user.isLGBTQIAOwned
+user.showMinorityOwned
+user.showFemaleOwned
+user.showLGBTQIAOwned
+// With:
+(user as ExtendedUser)?.isVeteran
+(user as ExtendedUser)?.isActiveDuty
+(user as ExtendedUser)?.isMinorityOwned
+(user as ExtendedUser)?.isFemaleOwned
+(user as ExtendedUser)?.isLGBTQIAOwned
+(user as ExtendedUser)?.showMinorityOwned
+(user as ExtendedUser)?.showFemaleOwned
+(user as ExtendedUser)?.showLGBTQIAOwned
+
+// Line 2903: Replace
+const response = await fetch(`/api/users/${effectiveUserId}`, {
+  method: 'PUT',
+  headers: {
+    'Content-Type': 'application/json',
+    'x-user-id': effectiveUserId?.toString() || '',
+    'x-user-type': user?.userType || 'business'
+  },
+  body: JSON.stringify(payload)
+});
+// With:
+const response = await fetch(`/api/users/${effectiveUserId}`, {
+  method: 'PUT',
+  headers: {
+    'Content-Type': 'application/json',
+    'x-user-id': effectiveUserId?.toString() || '',
+    'x-user-type': user?.userType || 'business'
+  } as Record<string, string>,
+  body: JSON.stringify(payload)
+});
+
+// Line 2952: Replace
+{(user as any).childrenAges && (
+// With:
+{(user as ExtendedUser)?.childrenAges && (
+
+// Line 3916: Replace
+const predefinedInterests = INTERESTS_OPTIONS.filter(opt => editFormData.interests.includes(opt));
+// With:
+const predefinedInterests = getAllInterests().filter(opt => editFormData.interests.includes(opt));
+
+// Line 3917: Replace
+const predefinedActivities = ACTIVITIES_OPTIONS.filter(opt => editFormData.activities.includes(opt));
+// With:
+const predefinedActivities = getAllActivities().filter(opt => editFormData.activities.includes(opt));
+
+// Similarly replace EVENTS_OPTIONS with getAllEvents()
+
+// ==== STEP 3: MASS REPLACEMENTS NEEDED THROUGHOUT FILE ====
+
+// Replace ALL instances of these patterns:
+
+// Pattern 1: Business name fields
+user.business_name || user.businessName
+// Replace with:
+(user as ExtendedUser)?.business_name || (user as ExtendedUser)?.businessName
+
+// Pattern 2: Business description
+user.business_description || user.businessDescription
+// Replace with:
+(user as ExtendedUser)?.business_description || (user as ExtendedUser)?.businessDescription
+
+// Pattern 3: Street address
+user.street_address || user.streetAddress
+// Replace with:
+(user as ExtendedUser)?.street_address || (user as ExtendedUser)?.streetAddress
+
+// Pattern 4: Zip code
+user.zip_code || user.zipCode
+// Replace with:
+(user as ExtendedUser)?.zip_code || (user as ExtendedUser)?.zipCode
+
+// Pattern 5: Phone number
+user.phone_number || user.phoneNumber
+// Replace with:
+(user as ExtendedUser)?.phone_number || (user as ExtendedUser)?.phoneNumber
+
+// Pattern 6: Website URL
+user.website_url || user.websiteUrl || user.website
+// Replace with:
+(user as ExtendedUser)?.website_url || (user as ExtendedUser)?.websiteUrl || (user as ExtendedUser)?.website
+
+// Pattern 7: Veteran status
+user.is_veteran || user.isVeteran
+// Replace with:
+(user as ExtendedUser)?.is_veteran || (user as ExtendedUser)?.isVeteran
+
+// Pattern 8: Active duty status
+user.is_active_duty || user.isActiveDuty
+// Replace with:
+(user as ExtendedUser)?.is_active_duty || (user as ExtendedUser)?.isActiveDuty
+
+// Pattern 9: Custom fields
+user.customInterests || user.custom_interests
+// Replace with:
+(user as ExtendedUser)?.customInterests || (user as ExtendedUser)?.custom_interests
+
+user.customActivities || user.custom_activities
+// Replace with:
+(user as ExtendedUser)?.customActivities || (user as ExtendedUser)?.custom_activities
+
+user.customEvents || user.custom_events
+// Replace with:
+(user as ExtendedUser)?.customEvents || (user as ExtendedUser)?.custom_events
+
+// ==== STEP 4: UPDATE FORM RESET CALLS ====
+
+// Find all profileForm.reset() calls and update business-specific fields:
+// Replace calls like:
+businessName: (user as any).business_name || (user as any).businessName || "",
+// With:
+businessName: (user as ExtendedUser)?.business_name || (user as ExtendedUser)?.businessName || "",
+
+// ==== STEP 5: UPDATE CONDITIONAL RENDERING ====
+
+// Replace conditions like:
+{user.isVeteran && (
+// With:
+{(user as ExtendedUser)?.isVeteran && (
+
+// Replace conditions like:
+{user.ownerPhone ? (
+// With:
+{(user as ExtendedUser)?.ownerPhone ? (
+
+// ==== STEP 6: SEARCH AND REPLACE THESE EXACT STRINGS ====
+
+// Search for: "user.isVeteran" → Replace with: "(user as ExtendedUser)?.isVeteran"
+// Search for: "user.isActiveDuty" → Replace with: "(user as ExtendedUser)?.isActiveDuty"
+// Search for: "user.childrenAges" → Replace with: "(user as ExtendedUser)?.childrenAges"
+// Search for: "user.ownerName" → Replace with: "(user as ExtendedUser)?.ownerName"
+// Search for: "user.ownerEmail" → Replace with: "(user as ExtendedUser)?.ownerEmail"
+// Search for: "user.ownerPhone" → Replace with: "(user as ExtendedUser)?.ownerPhone"
+// Search for: "user.contactName" → Replace with: "(user as ExtendedUser)?.contactName"
+// Search for: "user.services" → Replace with: "(user as ExtendedUser)?.services"
+// Search for: "user.specialOffers" → Replace with: "(user as ExtendedUser)?.specialOffers"
+// Search for: "user.targetCustomers" → Replace with: "(user as ExtendedUser)?.targetCustomers"
+// Search for: "user.certifications" → Replace with: "(user as ExtendedUser)?.certifications"
+
+// ==== STEP 7: FIX FORM CONTROL REFERENCES ====
+
+// In form sections, replace patterns like:
+isVeteran: user.isVeteran !== undefined ? user.isVeteran : false,
+// With:
+isVeteran: (user as ExtendedUser)?.isVeteran !== undefined ? (user as ExtendedUser)?.isVeteran : false,
