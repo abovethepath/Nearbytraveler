@@ -137,9 +137,15 @@ export default function SimpleChatroomPage() {
           description: "You have successfully joined the chatroom",
           className: "bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100",
         });
-        // Refresh data efficiently
+        // Refresh data efficiently - force immediate refetch
         queryClient.invalidateQueries({ queryKey: [`/api/simple-chatrooms/${chatroomId}/members/count`] });
         queryClient.invalidateQueries({ queryKey: [`/api/simple-chatrooms/${chatroomId}/members`] });
+        
+        // Force immediate refresh to update UI
+        setTimeout(() => {
+          refetchMembers();
+          refetchMemberCount();
+        }, 100);
       } else {
         throw new Error("Failed to join chatroom");
       }
@@ -330,96 +336,54 @@ export default function SimpleChatroomPage() {
               </div>
             </div>
             
-            {/* Member List - Show All Members with Avatars */}
+            {/* Member List in Header - Show All Members with Avatars */}
             {Array.isArray(members) && members.length > 0 && (
               <div className="mt-4 pt-4 border-t">
                 <div className="flex items-center gap-2 mb-3">
                   <Users className="w-4 h-4" />
-                  <span className="text-sm font-medium">All {members.length} Member{members.length !== 1 ? 's' : ''}</span>
+                  <span className="text-sm font-medium">Online Members ({members.length})</span>
+                  {userIsMember && (
+                    <span className="text-xs bg-green-100 text-green-700 dark:bg-green-800 dark:text-green-200 rounded px-2 py-1">
+                      You're a member
+                    </span>
+                  )}
                 </div>
                 
-                {/* Avatar Grid for larger member lists */}
-                {members.length > 8 ? (
-                  <div>
-                    {/* Show first 12 avatars in a compact grid */}
-                    <div className="flex flex-wrap gap-2 mb-3">
-                      {members.slice(0, 12).map((member) => (
-                        <div key={member.user_id} className="relative group">
-                          <Avatar className="w-10 h-10 border-2 border-white dark:border-gray-600 shadow-sm hover:scale-110 transition-transform cursor-pointer">
-                            {member.profile_image ? (
-                              <AvatarImage src={member.profile_image} alt={member.username} />
-                            ) : (
-                              <AvatarFallback className="text-xs font-medium bg-gradient-to-br from-blue-400 to-purple-500 text-white">
-                                {member.username.slice(0, 2).toUpperCase()}
-                              </AvatarFallback>
-                            )}
-                          </Avatar>
-                          {/* Tooltip on hover */}
-                          <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-black text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
-                            {member.username}
-                            {member.role === 'admin' && ' (Admin)'}
-                          </div>
-                        </div>
-                      ))}
-                      {members.length > 12 && (
-                        <div className="w-10 h-10 border-2 border-gray-300 dark:border-gray-600 rounded-full flex items-center justify-center bg-gray-100 dark:bg-gray-700 text-xs font-medium text-gray-600 dark:text-gray-400">
-                          +{members.length - 12}
-                        </div>
+                {/* Show first 8 members in header */}
+                <div className="flex flex-wrap gap-2">
+                  {members.slice(0, 8).map((member) => (
+                    <div key={member.user_id} className="flex items-center gap-2 bg-gray-50 dark:bg-gray-700 rounded-full px-3 py-1.5 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                      <Avatar className="w-6 h-6">
+                        {member.profile_image ? (
+                          <AvatarImage src={member.profile_image} alt={member.username} />
+                        ) : (
+                          <AvatarFallback className="text-xs bg-gradient-to-br from-blue-400 to-purple-500 text-white">
+                            {member.username.slice(0, 2).toUpperCase()}
+                          </AvatarFallback>
+                        )}
+                      </Avatar>
+                      <span className="text-sm font-medium">{member.username}</span>
+                      {member.role === 'admin' && (
+                        <span className="text-xs bg-blue-500 text-white rounded px-1.5 py-0.5">Admin</span>
+                      )}
+                      {member.user_id === currentUserId && (
+                        <span className="text-xs bg-green-500 text-white rounded px-1.5 py-0.5">You</span>
                       )}
                     </div>
-                    
-                    {/* Expandable member list */}
-                    <details className="group">
-                      <summary className="cursor-pointer text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 flex items-center gap-1">
-                        View all members
-                        <span className="group-open:rotate-180 transition-transform">▼</span>
-                      </summary>
-                      <div className="mt-3 space-y-2 max-h-48 overflow-y-auto">
-                        {members.map((member) => (
-                          <div key={member.user_id} className="flex items-center gap-3 p-2 rounded-lg bg-gray-50 dark:bg-gray-700/50">
-                            <Avatar className="w-8 h-8">
-                              {member.profile_image ? (
-                                <AvatarImage src={member.profile_image} alt={member.username} />
-                              ) : (
-                                <AvatarFallback className="text-xs bg-gradient-to-br from-blue-400 to-purple-500 text-white">
-                                  {member.username.slice(0, 2).toUpperCase()}
-                                </AvatarFallback>
-                              )}
-                            </Avatar>
-                            <span className="text-sm font-medium">{member.username}</span>
-                            <span className="text-xs text-gray-500 dark:text-gray-400">{member.name}</span>
-                            {member.role === 'admin' && (
-                              <span className="text-xs bg-blue-500 text-white rounded px-2 py-1 ml-auto">Admin</span>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    </details>
-                  </div>
-                ) : (
-                  /* Show all members in cards for smaller lists */
-                  <div className="flex flex-wrap gap-2">
-                    {members.map((member) => (
-                      <div key={member.user_id} className="flex items-center gap-2 bg-gray-50 dark:bg-gray-700 rounded-full px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
-                        <Avatar className="w-7 h-7">
-                          {member.profile_image ? (
-                            <AvatarImage src={member.profile_image} alt={member.username} />
-                          ) : (
-                            <AvatarFallback className="text-xs bg-gradient-to-br from-blue-400 to-purple-500 text-white">
-                              {member.username.slice(0, 2).toUpperCase()}
-                            </AvatarFallback>
-                          )}
-                        </Avatar>
-                        <span className="text-sm font-medium">{member.username}</span>
-                        {member.role === 'admin' && (
-                          <span className="text-xs bg-blue-500 text-white rounded px-1.5 py-0.5">Admin</span>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
+                  ))}
+                  {members.length > 8 && (
+                    <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                      +{members.length - 8} more (see below)
+                    </div>
+                  )}
+                </div>
               </div>
             )}
+            
+            {/* Debug info - temporary */}
+            <div className="mt-2 text-xs text-gray-500">
+              Debug: {members?.length || 0} members, userIsMember: {userIsMember ? 'YES' : 'NO'}, currentUserId: {currentUserId}
+            </div>
           </CardHeader>
         </Card>
 
