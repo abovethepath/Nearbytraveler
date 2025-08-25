@@ -1048,9 +1048,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     
     // PRIORITY 2: Fallback to old travel fields for backwards compatibility
     const now = new Date();
-    const hasActiveTravelPlans = user.travelStartDate && user.travelEndDate && 
-      new Date(user.travelStartDate) <= now && 
-      new Date(user.travelEndDate) >= now;
+    // For currently_traveling users, show as active even without specific dates
+    const hasActiveTravelPlans = user.userType === 'currently_traveling' || 
+      (user.travelStartDate && user.travelEndDate && 
+       new Date(user.travelStartDate) <= now && 
+       new Date(user.travelEndDate) >= now);
     
     if (hasActiveTravelPlans && user.travelDestination) {
       const travelDestination = user.travelDestination.toLowerCase();
