@@ -3635,10 +3635,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 {/* Secret Activities (non-business) */}
                 {user?.userType !== 'business' && user?.secretActivities && (
                   <div className="p-3 bg-gradient-to-br from-orange-50 to-blue-50 border-l-4 border-orange-200 rounded-r-lg">
-                    <h5 className="font-medium text-black dark:text-white mb-2">
+                    <h5 className="font-medium text-black mb-2">
                       Secret things I would do if my closest friends came to town
                     </h5>
-                    <p className="text-black dark:text-white text-sm italic whitespace-pre-wrap break-words">
+                    <p className="text-black text-sm italic whitespace-pre-wrap break-words">
                       {user?.secretActivities}
                     </p>
                   </div>
