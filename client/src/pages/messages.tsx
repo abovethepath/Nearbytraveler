@@ -182,18 +182,12 @@ export default function Messages() {
     }
   }, [targetUserId, conversations, selectedConversation]);
 
-  // Get messages for selected conversation (including instant messages)
+  // Get messages for selected conversation (simplified to avoid duplication)
   const conversationMessages = selectedConversation 
-    ? [
-        ...(messages as any[]).filter((message: any) => 
-          (message.senderId === user?.id && message.receiverId === selectedConversation) ||
-          (message.receiverId === user?.id && message.senderId === selectedConversation)
-        ),
-        ...instantMessages.filter((message: any) =>
-          (message.senderId === user?.id && message.receiverId === selectedConversation) ||
-          (message.receiverId === user?.id && message.senderId === selectedConversation)
-        )
-      ].sort((a: any, b: any) => 
+    ? (messages as any[]).filter((message: any) => 
+        (message.senderId === user?.id && message.receiverId === selectedConversation) ||
+        (message.receiverId === user?.id && message.senderId === selectedConversation)
+      ).sort((a: any, b: any) => 
         new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
       )
     : [];
@@ -228,30 +222,12 @@ export default function Messages() {
   const handleSendMessage = () => {
     if (!newMessage.trim() || !selectedConversation) return;
     
-    // Use WebSocket instant messaging if connected
-    if (websocketService.isConnected()) {
-      console.log('📤 Sending instant message via WebSocket');
-      websocketService.sendInstantMessage(selectedConversation, newMessage.trim());
-      
-      // Add to local instant messages for immediate display
-      setInstantMessages(prev => [...prev, {
-        id: Date.now(),
-        senderId: user?.id,
-        receiverId: selectedConversation,
-        content: newMessage.trim(),
-        createdAt: new Date().toISOString(),
-        messageType: 'instant'
-      }]);
-      
-      setNewMessage('');
-    } else {
-      // Fallback to regular API call
-      console.log('📤 Sending message via API (WebSocket offline)');
-      sendMessageMutation.mutate({
-        receiverId: selectedConversation,
-        content: newMessage.trim(),
-      });
-    }
+    // Always use regular API call to avoid message duplication issues
+    console.log('📤 Sending message via API');
+    sendMessageMutation.mutate({
+      receiverId: selectedConversation,
+      content: newMessage.trim(),
+    });
   };
 
   // Handle typing indicators
