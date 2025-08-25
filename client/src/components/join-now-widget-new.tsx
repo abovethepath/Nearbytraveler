@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { formatIncompletePhoneNumber, isValidPhoneNumber } from "libphonenumber-js";
 
 export default function JoinNowWidgetNew() {
   const [, setLocation] = useLocation();
@@ -71,28 +72,20 @@ export default function JoinNowWidgetNew() {
     }
   };
 
-  // Phone number formatting function
+  // International phone number formatting function
   const formatPhoneNumber = (value: string) => {
-    // Remove all non-numeric characters
-    const phoneNumber = value.replace(/\D/g, '');
-    
     // Don't format if empty
-    if (!phoneNumber) return '';
+    if (!value) return '';
     
-    // Add country code if not present and length suggests US number
-    const withCountryCode = phoneNumber.startsWith('1') ? phoneNumber : `1${phoneNumber}`;
-    
-    // Format as 1-xxx-xxx-xxxx
-    if (withCountryCode.length >= 11) {
-      return `1-${withCountryCode.slice(1, 4)}-${withCountryCode.slice(4, 7)}-${withCountryCode.slice(7, 11)}`;
-    } else if (withCountryCode.length >= 8) {
-      return `1-${withCountryCode.slice(1, 4)}-${withCountryCode.slice(4, 7)}-${withCountryCode.slice(7)}`;
-    } else if (withCountryCode.length >= 5) {
-      return `1-${withCountryCode.slice(1, 4)}-${withCountryCode.slice(4)}`;
-    } else if (withCountryCode.length >= 2) {
-      return `1-${withCountryCode.slice(1)}`;
+    try {
+      // Use libphonenumber-js for international formatting
+      // Default to US if no country code is detected
+      const formatted = formatIncompletePhoneNumber(value, 'US');
+      return formatted || value;
+    } catch (error) {
+      // If formatting fails, return the input with only digits and + symbol
+      return value.replace(/[^\d+]/g, '');
     }
-    return withCountryCode;
   };
 
   const handlePhoneChange = (value: string) => {
@@ -454,7 +447,7 @@ export default function JoinNowWidgetNew() {
                 type="tel"
                 value={formData.phoneNumber}
                 onChange={(e) => handlePhoneChange(e.target.value)}
-                placeholder="1-555-123-4567"
+                placeholder="+1 555 123 4567 (US) or +44 20 7946 0958 (UK)"
                 className="text-base py-3 text-crisp font-medium"
                 required
               />
