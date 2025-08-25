@@ -3162,9 +3162,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       return { text: 'Connected', disabled: false, variant: 'default' as const, className: 'bg-green-600 hover:bg-green-700 text-white border-0' };
     }
     if (connectionStatus?.status === 'pending') {
-      return { text: 'Request Sent', disabled: true, variant: 'default' as const, className: 'bg-blue-400 hover:bg-blue-500 text-white border-0' };
+      return { text: 'Request Sent', disabled: true, variant: 'default' as const, className: 'bg-gray-600 hover:bg-gray-700 text-white border-0' };
     }
-    return { text: connectMutation.isPending ? 'Connecting...' : 'Connect', disabled: connectMutation.isPending, variant: 'default' as const, className: 'bg-travel-blue hover:bg-blue-700 text-white border-0' };
+    return { text: connectMutation.isPending ? 'Connecting...' : 'Connect', disabled: connectMutation.isPending, variant: 'default' as const, className: 'bg-blue-600 hover:bg-blue-700 text-white border-0' };
   };
 
   // Function to determine current location based on travel status

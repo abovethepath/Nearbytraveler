@@ -3188,9 +3188,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       return { text: 'Connected', disabled: false, variant: 'default' as const, className: 'bg-green-600 hover:bg-green-700 text-white border-0' };
     }
     if (connectionStatus?.status === 'pending') {
-      return { text: 'Request Sent', disabled: true, variant: 'default' as const, className: 'bg-blue-400 hover:bg-blue-50 dark:bg-blue-900/200 text-white border-0' };
+      return { text: 'Request Sent', disabled: true, variant: 'default' as const, className: 'bg-gray-600 hover:bg-gray-700 text-white border-0' };
     }
-    return { text: connectMutation.isPending ? 'Connecting...' : 'Connect', disabled: connectMutation.isPending, variant: 'default' as const, className: 'bg-travel-blue hover:bg-blue-700 text-white border-0' };
+    return { text: connectMutation.isPending ? 'Connecting...' : 'Connect', disabled: connectMutation.isPending, variant: 'default' as const, className: 'bg-blue-600 hover:bg-blue-700 text-white border-0' };
   };
 
   // Function to determine current location based on travel status
@@ -3489,7 +3489,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             {/* CTAs — wrap on mobile */}
             {!isOwnProfile ? (
               <div className="flex items-center justify-between gap-3 flex-wrap min-w-0">
-                <Button className="bg-orange-50 dark:bg-orange-900/200 hover:bg-orange-600 text-white border-0 w-full sm:w-auto" onClick={handleMessage}>
+                <Button className="bg-orange-500 hover:bg-orange-600 text-white border-0 w-full sm:w-auto" onClick={handleMessage}>
                   Message
                 </Button>
                 <Button
