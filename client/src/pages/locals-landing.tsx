@@ -90,13 +90,13 @@ export default function LocalsLanding() {
       </div>
 
       {/* Live Local Experiences Section */}
-      <div className="py-16 bg-white">
+      <div className="py-16 bg-white dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-12 animate-slide-in-left">
-            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black text-gray-900 mb-4 leading-tight px-2">
+            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black text-gray-900 dark:text-white mb-4 leading-tight px-2">
               Build Your Local Community & Welcome Travelers
             </h2>
-            <p className="text-xl text-gray-600">
+            <p className="text-xl text-gray-600 dark:text-gray-300">
               Connect with neighbors. Welcome visitors. Share your city's best secrets.
             </p>
           </div>
@@ -105,7 +105,7 @@ export default function LocalsLanding() {
 
           {/* Unique Features Section */}
           <div className="max-w-6xl mx-auto px-4 text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold mb-8 text-gray-900" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700'}}>
+            <h2 className="text-3xl sm:text-4xl font-bold mb-8 text-gray-900 dark:text-white" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700'}}>
               What Makes Nearby Traveler Special
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 items-stretch">
@@ -160,7 +160,7 @@ export default function LocalsLanding() {
             >
 JOIN THE COMMUNITY TODAY
             </Button>
-            <p className="text-gray-600 mt-3 text-lg">Join thousands of locals building global friendships</p>
+            <p className="text-gray-600 dark:text-gray-300 mt-3 text-lg">Join thousands of locals building global friendships</p>
           </div>
         </div>
       </div>
@@ -168,45 +168,45 @@ JOIN THE COMMUNITY TODAY
 
 
       {/* Why Locals Love It - Modern Cards */}
-      <div className="py-16 bg-gray-50">
+      <div className="py-16 bg-gray-50 dark:bg-gray-800">
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-black text-gray-900 mb-4">
+            <h2 className="text-4xl font-black text-gray-900 dark:text-white mb-4">
               Why Locals Are Obsessed with Nearby Traveler
             </h2>
-            <p className="text-xl text-gray-600">Turn your city knowledge into amazing friendships</p>
+            <p className="text-xl text-gray-600 dark:text-gray-300">Turn your city knowledge into amazing friendships</p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow">
+            <div className="bg-white dark:bg-gray-700 p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow">
               <div className="text-5xl mb-4">🗺️</div>
-              <h3 className="text-2xl font-bold mb-4 text-gray-900">Share Your Secret Spots</h3>
-              <p className="text-gray-700 text-lg">Show off those hidden gems only locals know. From secret viewpoints to hole-in-the-wall restaurants - share what makes your city special.</p>
+              <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Share Your Secret Spots</h3>
+              <p className="text-gray-700 dark:text-gray-300 text-lg">Show off those hidden gems only locals know. From secret viewpoints to hole-in-the-wall restaurants - share what makes your city special.</p>
             </div>
             
-            <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow">
+            <div className="bg-white dark:bg-gray-700 p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow">
               <div className="text-5xl mb-4">🌍</div>
-              <h3 className="text-2xl font-bold mb-4 text-gray-900">Meet Amazing People</h3>
-              <p className="text-gray-700 text-lg">Connect with curious travelers AND like-minded locals. Build friendships that span the globe while discovering your own city.</p>
+              <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Meet Amazing People</h3>
+              <p className="text-gray-700 dark:text-gray-300 text-lg">Connect with curious travelers AND like-minded locals. Build friendships that span the globe while discovering your own city.</p>
             </div>
             
-            <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow">
+            <div className="bg-white dark:bg-gray-700 p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow">
               <div className="text-5xl mb-4">⚡</div>
-              <h3 className="text-2xl font-bold mb-4 text-gray-900">Instant Social Life</h3>
-              <p className="text-gray-700 text-lg">Create "meet now" events when you want to hang out. Always have someone interesting to explore your city with.</p>
+              <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Instant Social Life</h3>
+              <p className="text-gray-700 dark:text-gray-300 text-lg">Create "meet now" events when you want to hang out. Always have someone interesting to explore your city with.</p>
             </div>
           </div>
         </div>
       </div>
 
       {/* How It Works - Modern Steps */}
-      <div className="py-16 bg-white">
+      <div className="py-16 bg-white dark:bg-gray-900">
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-black text-gray-900 mb-4">
+            <h2 className="text-4xl font-black text-gray-900 dark:text-white mb-4">
               Join in 3 Simple Steps
             </h2>
-            <p className="text-xl text-gray-600">From sign up to creating experiences in minutes</p>
+            <p className="text-xl text-gray-600 dark:text-gray-300">From sign up to creating experiences in minutes</p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
@@ -214,24 +214,24 @@ JOIN THE COMMUNITY TODAY
               <div className="bg-blue-500 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl">
                 <span className="text-3xl font-black text-white">1</span>
               </div>
-              <h3 className="text-2xl font-bold mb-4 text-gray-900">Create Your Local Profile</h3>
-              <p className="text-gray-700 text-lg leading-relaxed">Show off your city knowledge, interests, and favorite activities. Let travelers and locals know what makes you the perfect local connection.</p>
+              <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Create Your Local Profile</h3>
+              <p className="text-gray-700 dark:text-gray-300 text-lg leading-relaxed">Show off your city knowledge, interests, and favorite activities. Let travelers and locals know what makes you the perfect local connection.</p>
             </div>
             
             <div className="text-center">
               <div className="bg-purple-500 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl">
                 <span className="text-3xl font-black text-white">2</span>
               </div>
-              <h3 className="text-2xl font-bold mb-4 text-gray-900">Host Experiences</h3>
-              <p className="text-gray-700 text-lg leading-relaxed">Create meetups, share hidden gems, or organize local adventures. Host experiences that showcase the real side of your city.</p>
+              <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Host Experiences</h3>
+              <p className="text-gray-700 dark:text-gray-300 text-lg leading-relaxed">Create meetups, share hidden gems, or organize local adventures. Host experiences that showcase the real side of your city.</p>
             </div>
             
             <div className="text-center">
               <div className="bg-green-500 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl">
                 <span className="text-3xl font-black text-white">3</span>
               </div>
-              <h3 className="text-2xl font-bold mb-4 text-gray-900">Build Global Friendships</h3>
-              <p className="text-gray-700 text-lg leading-relaxed">Connect with amazing travelers and locals. Build lasting friendships while sharing what you love about your city.</p>
+              <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Build Global Friendships</h3>
+              <p className="text-gray-700 dark:text-gray-300 text-lg leading-relaxed">Connect with amazing travelers and locals. Build lasting friendships while sharing what you love about your city.</p>
             </div>
           </div>
           
@@ -248,7 +248,7 @@ JOIN THE COMMUNITY TODAY
             >
 BECOME A NEARBY LOCAL NOW
             </Button>
-            <p className="text-gray-600 mt-4 text-lg">Free to join • Start connecting today • Build amazing friendships</p>
+            <p className="text-gray-600 dark:text-gray-300 mt-4 text-lg">Free to join • Start connecting today • Build amazing friendships</p>
           </div>
         </div>
       </div>
