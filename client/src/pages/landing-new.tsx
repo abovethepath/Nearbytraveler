@@ -522,10 +522,10 @@ export default function Landing() {
                 <div className="text-center">
                   <div className="text-8xl mb-6">🤝</div>
                   <p className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-4">
-                    Transform Business Cards into
+                    No More Business Cards
                   </p>
                   <p className="text-3xl font-black bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
-                    Lasting Friendships
+                    Real Connections
                   </p>
                   <div className="mt-8 grid grid-cols-3 gap-4">
                     <div className="text-center">
