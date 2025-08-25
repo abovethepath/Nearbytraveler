@@ -92,6 +92,17 @@ export default function SimpleChatroomPage() {
 
   // Check membership when members data changes - SIMPLE CHECK ONLY
   const userIsMember = Array.isArray(members) ? members.some((member: ChatMember) => member.user_id === currentUserId) : false;
+  
+  // DEBUG: Log what we're getting from API
+  if (process.env.NODE_ENV === 'development') {
+    console.log('🔍 MEMBERS DEBUG:', {
+      members: members,
+      membersLength: members?.length,
+      currentUserId: currentUserId,
+      userIsMember: userIsMember,
+      memberUserIds: Array.isArray(members) ? members.map(m => m.user_id) : 'NOT_ARRAY'
+    });
+  }
 
   // Get member count
   const { data: memberCountResp, refetch: refetchMemberCount } = useQuery<{memberCount: number}>({
