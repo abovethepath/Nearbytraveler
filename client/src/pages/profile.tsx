@@ -3453,23 +3453,30 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   {/* Username */}
                   <h1 className="text-xl sm:text-3xl font-bold text-black dark:text-white truncate">@{user.username}</h1>
 
-                  {/* Travel Status & Hometown */}
-                  <div className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-300 flex flex-wrap items-center gap-x-3 gap-y-1">
-                    <span>From: <span className="font-medium">{user.hometownCity || user.location?.split(',')[0] || 'Hometown not set'}{user.hometownState ? `, ${user.hometownState}` : ''}{user.hometownCountry ? `, ${user.hometownCountry}` : ''}</span></span>
-                    <span>{(() => {
-                      const currentDestination = getCurrentTravelDestination(travelPlans || []);
-                      if (currentDestination) {
-                        return `Nearby Traveler ${currentDestination}`;
-                      } else {
-                        return `Nearby Local ${user.hometownCity || user.location?.split(',')[0] || 'Home'}`;
-                      }
-                    })()}</span>
-                  </div>
-
-                  {/* Stats */}
-                  <div className="flex items-center flex-wrap gap-2 text-xs sm:text-sm w-full">
-                    <span className="font-medium">🌍 {countriesVisited?.length || 0} countries</span>
-                    <span className="font-medium">⭐ {references?.length || 0} references</span>
+                  {/* Travel Status & Hometown - BIGGER AND DARKER */}
+                  <div className="space-y-1 mt-1">
+                    {/* Travel Status OR Local Status - BIG AND BOLD */}
+                    <div className="text-lg font-bold text-black dark:text-white">
+                      {(() => {
+                        const currentDestination = getCurrentTravelDestination(travelPlans || []);
+                        if (currentDestination) {
+                          return `Nearby Traveler ${currentDestination}`;
+                        } else {
+                          return `Nearby Local ${user.hometownCity || user.location?.split(',')[0] || 'Home'}`;
+                        }
+                      })()}
+                    </div>
+                    
+                    {/* Hometown - Always show on second line */}
+                    <div className="text-base font-medium text-gray-800 dark:text-gray-200">
+                      From: {user.hometownCity || user.location?.split(',')[0] || 'Hometown not set'}{user.hometownState ? `, ${user.hometownState}` : ''}{user.hometownCountry ? `, ${user.hometownCountry}` : ''}
+                    </div>
+                    
+                    {/* Countries & References - Below hometown */}
+                    <div className="flex items-center gap-3 text-sm font-medium text-gray-700 dark:text-gray-300">
+                      <span>🌍 {countriesVisited?.length || 0} countries</span>
+                      <span>🏅 {references?.length || 0} references</span>
+                    </div>
                   </div>
                 </div>
               )}
