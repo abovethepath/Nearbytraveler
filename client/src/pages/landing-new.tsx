@@ -338,7 +338,7 @@ export default function Landing() {
               Connect Before Your Trip, Keep Connections Forever
             </h2>
             <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-              Turn every travel event into lasting friendships. Connect before you go, bond during experiences, stay friends forever.
+              Turn every travel or business event into lasting friendships. Connect before you go, bond during experiences, stay friends forever.
             </p>
           </div>
           
