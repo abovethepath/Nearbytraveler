@@ -4,6 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { getRegionForCity, isStateOptionalForCountry, validateLocationForCountry, type LocationData } from "@/lib/locationHelpers";
 import { COUNTRIES, CITIES_BY_COUNTRY } from "@/lib/locationData";
+import { METRO_AREAS, isLAMetroCity, getMetroArea } from "../../../shared/constants";
 
 interface SmartLocationInputProps {
   city?: string;
@@ -135,7 +136,33 @@ export function SmartLocationInput({
     }
   };
 
-  const citiesForCountry = country ? Array.from(new Set(CITIES_BY_COUNTRY[country] || [])) : [];
+  // Get cities for country with proper LA Metro handling
+  const getCitiesForCountry = () => {
+    if (!country) return [];
+    
+    const baseCities = CITIES_BY_COUNTRY[country] || [];
+    
+    if (country === "United States") {
+      // For US, ensure LA Metro cities are prominent and properly ordered
+      return [
+        // Top priority cities first (including Los Angeles)
+        "Los Angeles", "Las Vegas", "Miami", "Nashville", "New Orleans", "Austin", "Chicago", "New York City",
+        // LA Metro cities prominently displayed
+        ...METRO_AREAS['Los Angeles'].cities.filter(c => c !== 'Los Angeles'), // Don't duplicate Los Angeles
+        // Rest of US cities
+        ...baseCities.filter(city => {
+          const topCities = ["Los Angeles", "Las Vegas", "Miami", "Nashville", "New Orleans", "Austin", "Chicago", "New York City"];
+          const isTopCity = topCities.includes(city);
+          const isLAMetro = METRO_AREAS['Los Angeles'].cities.includes(city);
+          return !isTopCity && !isLAMetro;
+        })
+      ];
+    }
+    
+    return baseCities;
+  };
+
+  const citiesForCountry = getCitiesForCountry();
   const validation = validateLocationForCountry({ city, state, country });
 
   return (
@@ -146,16 +173,16 @@ export function SmartLocationInput({
 
       {/* Country Selection */}
       <div>
-        <Label htmlFor="country" className="text-left dark:text-white">
+        <Label htmlFor="country" className="text-left text-gray-900 dark:text-white">
           Country {required ? "*" : ""}
         </Label>
         <Select value={country} onValueChange={handleCountryChange}>
-          <SelectTrigger className="dark:bg-gray-700 dark:text-white dark:border-gray-600">
+          <SelectTrigger className="text-gray-900 dark:bg-gray-700 dark:text-white dark:border-gray-600">
             <SelectValue placeholder={typeof placeholder === 'object' ? placeholder?.country : "Select country"} />
           </SelectTrigger>
-          <SelectContent className="dark:bg-gray-700 dark:border-gray-600">
+          <SelectContent className="dark:bg-gray-700 dark:border-gray-600 bg-white">
             {COUNTRIES.map((countryOption) => (
-              <SelectItem key={countryOption} value={countryOption} className="dark:text-white dark:hover:bg-gray-600">
+              <SelectItem key={countryOption} value={countryOption} className="text-gray-900 dark:text-white dark:hover:bg-gray-600">
                 {countryOption}
               </SelectItem>
             ))}
@@ -163,19 +190,19 @@ export function SmartLocationInput({
         </Select>
       </div>
 
-      {/* City Selection - Use dropdown for consistency */}
+      {/* City Selection - With LA Metro prominence */}
       {country && (
         <div>
-          <Label htmlFor="city" className="text-left dark:text-white">
+          <Label htmlFor="city" className="text-left text-gray-900 dark:text-white">
             City {required ? "*" : ""}
           </Label>
           <Select value={city} onValueChange={handleCityChange}>
-            <SelectTrigger className="dark:bg-gray-700 dark:text-white dark:border-gray-600">
+            <SelectTrigger className="text-gray-900 dark:bg-gray-700 dark:text-white dark:border-gray-600">
               <SelectValue placeholder={typeof placeholder === 'object' ? placeholder?.city : "Select city"} />
             </SelectTrigger>
-            <SelectContent className="dark:bg-gray-700 dark:border-gray-600 max-h-96 overflow-y-auto no-scrollbar scroll-smooth">
+            <SelectContent className="dark:bg-gray-700 dark:border-gray-600 bg-white max-h-96 overflow-y-auto">
               {citiesForCountry.map((cityOption) => (
-                <SelectItem key={cityOption} value={cityOption} className="dark:text-white dark:hover:bg-gray-600">
+                <SelectItem key={cityOption} value={cityOption} className="text-gray-900 dark:text-white dark:hover:bg-gray-600">
                   {cityOption}
                 </SelectItem>
               ))}
@@ -187,14 +214,14 @@ export function SmartLocationInput({
       {/* State/Region Selection */}
       {country && city && (
         <div>
-          <Label htmlFor="state" className="text-left dark:text-white">
+          <Label htmlFor="state" className="text-left text-gray-900 dark:text-white">
             {stateLabel}
           </Label>
           <Select 
             value={state} 
             onValueChange={handleStateChange}
           >
-            <SelectTrigger className="dark:bg-gray-700 dark:text-white dark:border-gray-600">
+            <SelectTrigger className="text-gray-900 dark:bg-gray-700 dark:text-white dark:border-gray-600">
               <SelectValue placeholder={
                 country === "United States" 
                   ? "Select state" 
@@ -203,7 +230,7 @@ export function SmartLocationInput({
                   : "Select region/province"
               } />
             </SelectTrigger>
-            <SelectContent className="dark:bg-gray-700 dark:border-gray-600 max-h-96 overflow-y-auto no-scrollbar scroll-smooth">
+            <SelectContent className="dark:bg-gray-700 dark:border-gray-600 bg-white max-h-96 overflow-y-auto">
               {/* Add state/region options based on country */}
               {country === "United States" && [
                 "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut",
@@ -215,7 +242,7 @@ export function SmartLocationInput({
                 "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia",
                 "Wisconsin", "Wyoming"
               ].map((stateOption) => (
-                <SelectItem key={stateOption} value={stateOption} className="dark:text-white dark:hover:bg-gray-600">
+                <SelectItem key={stateOption} value={stateOption} className="text-gray-900 dark:text-white dark:hover:bg-gray-600">
                   {stateOption}
                 </SelectItem>
               ))}
@@ -224,7 +251,7 @@ export function SmartLocationInput({
                 "Northwest Territories", "Nova Scotia", "Nunavut", "Ontario", "Prince Edward Island",
                 "Quebec", "Saskatchewan", "Yukon"
               ].map((provinceOption) => (
-                <SelectItem key={provinceOption} value={provinceOption} className="dark:text-white dark:hover:bg-gray-600">
+                <SelectItem key={provinceOption} value={provinceOption} className="text-gray-900 dark:text-white dark:hover:bg-gray-600">
                   {provinceOption}
                 </SelectItem>
               ))}
@@ -238,10 +265,15 @@ export function SmartLocationInput({
         </div>
       )}
 
-      {/* Location Preview */}
+      {/* Location Preview with LA Metro indication */}
       {city && country && (
         <div className="text-sm text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-gray-700 p-2 rounded">
           <strong>Location Preview:</strong> {city}{state ? `, ${state}` : ""}, {country}
+          {isLAMetroCity(city) && (
+            <div className="text-xs text-blue-600 dark:text-blue-400 mt-1">
+              🌟 Part of Los Angeles Metro area
+            </div>
+          )}
         </div>
       )}
 
