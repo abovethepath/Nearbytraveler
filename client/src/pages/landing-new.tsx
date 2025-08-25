@@ -346,13 +346,13 @@ export default function Landing() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
             
             {/* Before Events */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border-2 border-orange-200 dark:border-orange-600 text-center">
+            <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:bg-gray-800 rounded-2xl p-8 shadow-lg border-2 border-blue-300 dark:border-blue-600 text-center">
               <div className="text-4xl mb-4">📱</div>
               <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Before Events</h3>
               <div className="grid grid-cols-1 gap-3 text-left">
                 <div className="flex items-center space-x-2">
                   <span className="text-orange-500 font-bold">•</span>
-                  <span className="text-black dark:text-gray-300 text-base">Read travel stories</span>
+                  <span className="text-black dark:text-gray-300 text-base">See Profiles of others going to same events or cities</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <span className="text-orange-500 font-bold">•</span>
@@ -394,7 +394,7 @@ export default function Landing() {
             </div>
             
             {/* After Events */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border-2 border-orange-200 dark:border-orange-600 text-center">
+            <div className="bg-gradient-to-br from-green-50 to-emerald-100 dark:bg-gray-800 rounded-2xl p-8 shadow-lg border-2 border-green-300 dark:border-green-600 text-center">
               <div className="text-4xl mb-4">💫</div>
               <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">After Events</h3>
               <div className="grid grid-cols-1 gap-3 text-left">
