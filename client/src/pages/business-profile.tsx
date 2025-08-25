@@ -100,10 +100,6 @@ export default function BusinessProfile() {
                   <span>{businessData.location}</span>
                 </div>
                 <div className="flex items-center gap-2 text-gray-600">
-                  <Phone className="h-4 w-4" />
-                  <span>{businessData.phone}</span>
-                </div>
-                <div className="flex items-center gap-2 text-gray-600">
                   <Globe className="h-4 w-4" />
                   <a href={`https://${businessData.website}`} className="text-blue-600 hover:underline">
                     {businessData.website}

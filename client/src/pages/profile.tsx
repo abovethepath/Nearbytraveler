@@ -3687,22 +3687,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         </div>
                       )}
                       
-                      {user.phoneNumber && (
-                        <div className="flex items-start">
-                          <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">Phone:</span>
-                          <a 
-                            href={`tel:${user.phoneNumber.replace(/[^\d+]/g, '')}`}
-                            className="text-blue-600 underline flex-1 break-words"
-                          >
-                            {(() => {
-                              const cleaned = user.phoneNumber.replace(/\D/g, '');
-                              return cleaned.length === 10 
-                                ? `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6)}`
-                                : user.phoneNumber;
-                            })()}
-                          </a>
-                        </div>
-                      )}
                       
                       {user.websiteUrl && (
                         <div className="flex items-start">
