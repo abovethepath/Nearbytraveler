@@ -5976,6 +5976,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         >
                           <SelectTrigger className="h-8 text-xs bg-gradient-to-r from-blue-500 to-orange-500 text-white border-0 hover:from-blue-600 hover:to-orange-600">
                             <SelectValue placeholder="All locations" />
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-3 h-3 opacity-70 shrink-0">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                            </svg>
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="all">All locations</SelectItem>
@@ -5997,6 +6000,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         >
                           <SelectTrigger className="h-8 text-xs bg-gradient-to-r from-blue-500 to-orange-500 text-white border-0 hover:from-blue-600 hover:to-orange-600">
                             <SelectValue placeholder="Any gender" />
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-3 h-3 opacity-70 shrink-0">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                            </svg>
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="all">Any gender</SelectItem>
@@ -6016,6 +6022,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         >
                           <SelectTrigger className="h-8 text-xs bg-gradient-to-r from-blue-500 to-orange-500 text-white border-0 hover:from-blue-600 hover:to-orange-600">
                             <SelectValue placeholder="Any preference" />
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-3 h-3 opacity-70 shrink-0">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                            </svg>
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="all">Any preference</SelectItem>
@@ -6231,6 +6240,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                   <FormControl>
                                     <SelectTrigger className="text-gray-900 dark:text-white dark:bg-gray-800 dark:border-gray-600">
                                       <SelectValue placeholder="Select experience type" className="text-gray-900 dark:text-white" />
+                                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 opacity-50 shrink-0">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                                      </svg>
                                     </SelectTrigger>
                                   </FormControl>
                                   <SelectContent>
@@ -7555,6 +7567,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     <Select onValueChange={field.onChange} value={field.value || ""}>
                       <SelectTrigger className="text-gray-900 dark:text-white dark:bg-gray-800 dark:border-gray-600">
                         <SelectValue placeholder="Select type" className="text-gray-900 dark:text-white" />
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 opacity-50 shrink-0">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                        </svg>
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="hotel-booked">Hotel Booked</SelectItem>
@@ -7680,6 +7695,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           <FormControl>
                             <SelectTrigger className="text-gray-900 dark:text-white dark:bg-gray-800 dark:border-gray-600">
                               <SelectValue placeholder="Select business type" className="text-gray-900 dark:text-white" />
+                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 opacity-50 shrink-0">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                              </svg>
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent className="dark:bg-gray-800 dark:border-gray-600">
@@ -8024,6 +8042,16 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           <FormControl>
                             <SelectTrigger className="text-gray-900 dark:text-white dark:bg-gray-800 dark:border-gray-600">
                               <SelectValue placeholder="Select gender" className="text-gray-900 dark:text-white" />
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                strokeWidth={1.5}
+                                stroke="currentColor"
+                                className="w-4 h-4 opacity-50 shrink-0"
+                              >
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                              </svg>
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent className="dark:bg-gray-800 dark:border-gray-600">
