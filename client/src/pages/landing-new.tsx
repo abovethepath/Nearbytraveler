@@ -316,11 +316,9 @@ export default function Landing() {
             {/* Sunset Yoga on the Beach Event Card */}
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-2xl transform transition-all duration-300 flex flex-col min-h-[480px]" style={{animationDelay: '0.5s'}}>
               <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-pink-400 to-orange-500">
-                <img 
-                  src="@assets/image_1756110858653.png" 
-                  alt="Sunset yoga on the beach with people in poses" 
-                  className="w-full h-48 object-cover"
-                />
+                <div className="w-full h-48 bg-gradient-to-br from-pink-400 to-orange-500 flex items-center justify-center">
+                  <span className="text-white text-6xl">🧘‍♀️</span>
+                </div>
               </div>
               <div className="p-6 flex flex-col flex-grow">
                 <div className="mb-3">
