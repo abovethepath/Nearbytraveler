@@ -40,21 +40,16 @@ export default function NetworkingHero() {
                   </span>
                 </h1>
                 
-                {/* Networking value proposition (hide on phones so the hero photo is visible) */}
+                {/* What Our Network Says (hide on phones so the hero photo is visible) */}
                 <div className="hidden sm:block mt-8 p-6 bg-black/40 backdrop-blur-sm rounded-2xl border border-white/20">
-                  <p className="text-xl text-white leading-relaxed">
-                    <span className="text-orange-300 font-bold">"Thanks to Nearby Traveler, You can meet half your conference before even landing. An event can feel like a reunion, not a room full of strangers."</span>
-                    <span className="text-white"> —Aaron, Founder</span>
-                  </p>
-                  <div className="mt-6">
-                    <p className="text-lg text-white leading-relaxed">
-                      <span className="text-orange-300 font-bold">Transform your networking game.</span>
-                      <span className="text-white"> Meet conference attendees before you travel. Build meaningful connections that last beyond the event. Never walk into a room full of strangers again.</span>
-                    </p>
+                  <div className="text-center mb-4">
+                    <h3 className="text-white font-bold text-lg mb-4">What Our Network Says</h3>
                   </div>
+                  <p className="text-xl text-white leading-relaxed text-center">
+                    <span className="text-orange-300 font-bold">"Thanks to Nearby Traveler, You can meet half your conference before even landing. An event can feel like a reunion, not a room full of strangers."</span>
+                  </p>
                   <div className="mt-4 text-center">
-                    <p className="text-white font-bold text-lg">— Professional Networking Evolved</p>
-                    <p className="text-orange-200 text-sm">Join business travelers building lasting connections</p>
+                    <p className="text-white font-bold text-lg">— Aaron, Founder</p>
                   </div>
                 </div>
               </div>
