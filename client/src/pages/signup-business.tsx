@@ -289,9 +289,9 @@ export default function SignupBusinessSimple() {
   const businessTypes = BUSINESS_TYPES;
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-2 sm:py-4 lg:py-8 px-2 sm:px-4 lg:px-8 overflow-hidden break-words">
+    <div className="min-h-screen bg-gray-50 py-2 sm:py-4 lg:py-8 px-2 sm:px-4 lg:px-8 overflow-hidden break-words">
       <div className="max-w-4xl mx-auto overflow-hidden break-words">
-        <Card className="border border-gray-200 dark:border-gray-700 shadow-lg bg-white dark:bg-gray-800 overflow-hidden break-words">
+        <Card className="border border-gray-200 shadow-lg bg-white overflow-hidden break-words">
           <CardHeader className="text-center px-3 sm:px-6 py-4 sm:py-6 overflow-hidden break-words">
             <Building className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 mx-auto text-blue-600 mb-2 sm:mb-4" />
             <CardTitle className="text-lg sm:text-xl md:text-2xl lg:text-3xl break-words overflow-hidden">Register Your Business</CardTitle>
@@ -317,7 +317,7 @@ export default function SignupBusinessSimple() {
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 sm:space-y-6 md:space-y-8 overflow-hidden break-words">
                 
                 {/* Account Owner Information Section - Mobile Responsive */}
-                <div className="space-y-3 sm:space-y-4 bg-blue-50 dark:bg-blue-900/20 p-3 sm:p-4 md:p-6 rounded-lg overflow-hidden break-words">
+                <div className="space-y-3 sm:space-y-4 bg-blue-50 p-3 sm:p-4 md:p-6 rounded-lg overflow-hidden break-words">
                   <h3 className="text-base sm:text-lg md:text-xl font-semibold text-gray-900 dark:text-white flex items-center gap-2 break-words overflow-hidden">
                     <User className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
                     <span className="break-words overflow-hidden">Account Owner Information</span>

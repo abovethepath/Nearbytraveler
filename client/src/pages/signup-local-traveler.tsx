@@ -149,7 +149,7 @@ export default function SignupLocalTraveler() {
       if (!finalFormData.username) missingFields.push("Username");
       if (!finalFormData.name) missingFields.push("Full Name");
       if (!formData.dateOfBirth) missingFields.push("Date of Birth");
-      if (!formData.hometownCity) missingFields.push("Hometown City");
+      if (!formData.hometownCity) missingFields.push("Hometown");
       if (!formData.hometownCountry) missingFields.push("Hometown Country");
 
       if (missingFields.length > 0) {
@@ -162,11 +162,11 @@ export default function SignupLocalTraveler() {
         return;
       }
 
-      // Validate minimum 3 top choices
+      // Validate minimum 3 interests
       if (formData.interests.length < 3) {
         toast({
           title: "More selections needed",
-          description: "Please choose at least 3 top choices to help us match you with like-minded travelers.",
+          description: "Please choose at least 3 interests to help us match you with like-minded people nearby.",
           variant: "destructive",
         });
         setIsLoading(false);
@@ -185,7 +185,7 @@ export default function SignupLocalTraveler() {
         return;
       }
 
-      console.log('✅ VALIDATION PASSED - Proceeding with simplified registration');
+      console.log('✅ VALIDATION PASSED - Proceeding with simplified local registration');
 
       // Prepare simplified registration data
       const registrationData = {
@@ -197,13 +197,20 @@ export default function SignupLocalTraveler() {
         name: finalFormData.name.trim(),
         dateOfBirth: new Date(formData.dateOfBirth),
         phoneNumber: formData.phoneNumber.trim() || null,
-        hometownCountry: formData.hometownCountry,
+        interests: formData.interests,
+        // Hometown - CRITICAL for all users
         hometownCity: formData.hometownCity,
         hometownState: formData.hometownState,
-        location: formData.hometownState
+        hometownCountry: formData.hometownCountry,
+        location: formData.hometownState 
           ? `${formData.hometownCity}, ${formData.hometownState}, ${formData.hometownCountry}`
           : `${formData.hometownCity}, ${formData.hometownCountry}`,
-        interests: formData.interests,
+        hometown: formData.hometownState 
+          ? `${formData.hometownCity}, ${formData.hometownState}, ${formData.hometownCountry}`
+          : `${formData.hometownCity}, ${formData.hometownCountry}`,
+        // Metro area data for chatroom access
+        metroArea: formData.metroArea,
+        isMetroUser: formData.isMetroUser,
         // Set empty arrays for fields that will be completed in profile
         activities: [],
         events: [],
@@ -216,7 +223,7 @@ export default function SignupLocalTraveler() {
         travelingWithChildren: false
       };
 
-      console.log('➡️ Submitting simplified registration');
+      console.log('➡️ Submitting simplified local registration');
 
       const response = await fetch('/api/auth/register', {
         method: 'POST',
@@ -272,17 +279,9 @@ export default function SignupLocalTraveler() {
       } else {
         console.error('❌ Registration failed:', data.message);
         
-        // Provide specific error messages based on the field
-        let errorMessage = data.message || "Something went wrong.";
-        if (data.field === 'bio') {
-          errorMessage = "Your profile description needs to be at least 30 characters. This has been automatically added.";
-        } else if (data.field === 'totalSelections') {
-          errorMessage = "Please select at least 3 interests from the list below.";
-        }
-        
         toast({
           title: "Registration failed",
-          description: errorMessage,
+          description: data.message || "Something went wrong.",
           variant: "destructive",
         });
       }
@@ -310,27 +309,27 @@ export default function SignupLocalTraveler() {
   const { min: minDate, max: maxDate } = getDateInputConstraints();
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 overflow-hidden break-words">
+    <div className="min-h-screen bg-gray-50 overflow-hidden break-words">
       <div className="max-w-2xl mx-auto px-2 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-6 overflow-hidden break-words">
-        <Card className="shadow-lg sm:shadow-2xl border border-gray-200 sm:border-2 dark:border-gray-700 bg-white dark:bg-gray-900 overflow-hidden break-words">
-          <CardHeader className="text-center bg-gray-50 dark:bg-gray-800 rounded-t-lg pb-4 sm:pb-6 md:pb-8 px-4 sm:px-6 pt-4 sm:pt-6 overflow-hidden break-words">
+        <Card className="shadow-lg sm:shadow-2xl border border-gray-200 sm:border-2 bg-white overflow-hidden break-words">
+          <CardHeader className="text-center bg-gray-50 rounded-t-lg pb-4 sm:pb-6 md:pb-8 px-4 sm:px-6 pt-4 sm:pt-6 overflow-hidden break-words">
             <div className="flex justify-start mb-3 sm:mb-4">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => setLocation('/join')}
-                className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 border-blue-300 hover:border-blue-500 font-medium text-xs sm:text-sm h-8 sm:h-9"
+                className="text-blue-600 hover:text-blue-800 border-blue-300 hover:border-blue-500 font-medium text-xs sm:text-sm h-8 sm:h-9"
                 data-testid="button-back"
               >
                 <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                 Back
               </Button>
             </div>
-            <CardTitle className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-2 sm:mb-3 text-crisp break-words">
-              Complete Your Local Profile 🏠
+            <CardTitle className="text-xl sm:text-2xl md:text-3xl font-bold text-black mb-2 sm:mb-3 text-crisp leading-tight break-words">
+              Complete Your Profile 🏠
             </CardTitle>
-            <CardDescription className="text-xs sm:text-sm md:text-base lg:text-lg text-gray-600 dark:text-gray-300 leading-relaxed max-w-lg mx-auto text-crisp px-2 break-words">
-              Just a few quick details to get you started. You can add more to your profile after joining!
+            <CardDescription className="text-xs sm:text-sm md:text-base lg:text-lg text-black leading-relaxed max-w-lg mx-auto text-crisp px-2 break-words">
+              Just a few quick details to get you started. You can add more interests and activities and specific events to your profile after joining!
             </CardDescription>
           </CardHeader>
 
@@ -338,8 +337,8 @@ export default function SignupLocalTraveler() {
             <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8 overflow-hidden break-words">
               {/* Date of Birth - Mobile Responsive */}
               <div className="space-y-2 sm:space-y-3 overflow-hidden break-words">
-                <Label htmlFor="dateOfBirth" className="text-sm sm:text-base md:text-lg font-semibold text-gray-900 dark:text-white text-crisp break-words">
-                  Date of Birth * <span className="text-xs sm:text-sm font-normal text-gray-500 dark:text-gray-400">(Can be hidden on profile)</span>
+                <Label htmlFor="dateOfBirth" className="text-sm sm:text-base md:text-lg font-semibold text-black text-crisp break-words">
+                  Date of Birth * <span className="text-xs sm:text-sm font-normal text-black">(Can be hidden on profile)</span>
                 </Label>
                 <Input
                   id="dateOfBirth"
@@ -348,7 +347,7 @@ export default function SignupLocalTraveler() {
                   onChange={(e) => setFormData(prev => ({ ...prev, dateOfBirth: e.target.value }))}
                   min={minDate}
                   max={maxDate}
-                  className="text-sm sm:text-base py-2 sm:py-3 border border-gray-300 sm:border-2 dark:border-gray-600 rounded-lg focus:border-blue-500 dark:focus:border-blue-400 h-9 sm:h-10 md:h-11"
+                  className="text-sm sm:text-base py-2 sm:py-3 border border-gray-300 sm:border-2 rounded-lg focus:border-blue-500 text-black text-crisp font-medium h-9 sm:h-10 md:h-11"
                   data-testid="input-date-of-birth"
                   required
                 />
@@ -356,8 +355,8 @@ export default function SignupLocalTraveler() {
 
               {/* Phone Number - Mobile Responsive */}
               <div className="space-y-2 sm:space-y-3 overflow-hidden break-words">
-                <Label htmlFor="phoneNumber" className="text-sm sm:text-base md:text-lg font-semibold text-gray-900 dark:text-white text-crisp break-words">
-                  Phone Number <span className="text-xs sm:text-sm font-normal text-gray-500 dark:text-gray-400">(Optional - not in beta)</span>
+                <Label htmlFor="phoneNumber" className="text-sm sm:text-base md:text-lg font-semibold text-black text-crisp break-words">
+                  Phone Number <span className="text-xs sm:text-sm font-normal text-black">(Optional - not in beta)</span>
                 </Label>
                 <Input
                   id="phoneNumber"
@@ -365,88 +364,76 @@ export default function SignupLocalTraveler() {
                   value={formData.phoneNumber}
                   onChange={(e) => setFormData(prev => ({ ...prev, phoneNumber: e.target.value }))}
                   placeholder="(555) 123-4567"
-                  className="text-sm sm:text-base py-2 sm:py-3 border border-gray-300 sm:border-2 dark:border-gray-600 rounded-lg focus:border-blue-500 dark:focus:border-blue-400 h-9 sm:h-10 md:h-11"
+                  className="text-sm sm:text-base py-2 sm:py-3 border border-gray-300 sm:border-2 rounded-lg focus:border-blue-500 text-black h-9 sm:h-10 md:h-11"
                   data-testid="input-phone-number"
                 />
-                <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 break-words">
+                <p className="text-xs sm:text-sm text-black break-words">
                   Get text notifications when events you RSVP to are starting or have updates
                 </p>
               </div>
 
               {/* Hometown Location - Mobile Responsive */}
               <div className="space-y-3 sm:space-y-4 overflow-hidden break-words">
-                <Label className="text-sm sm:text-base md:text-lg font-semibold text-gray-900 dark:text-white text-crisp break-words">
-                  Hometown Location *
+                <Label className="text-sm sm:text-base md:text-lg font-semibold text-black text-crisp break-words">
+                  Hometown (Where you live) *
                 </Label>
                 <SmartLocationInput
                   onLocationSelect={(location) => {
-                    console.log('📍 Location selected:', location);
+                    console.log('🏠 Hometown selected:', location);
                     
-                    // METRO AREA DETECTION - Check if this city is part of a metro area
-                    const detection = detectMetroArea(location.city);
-                    console.log('🌍 Metro area detection:', detection);
+                    // Check for metro area
+                    const detection = detectMetroArea(location.city, location.state || '', location.country);
                     
                     setFormData(prev => ({
                       ...prev,
                       hometownCity: location.city,
                       hometownState: location.state || '',
-                      hometownCountry: location.country
+                      hometownCountry: location.country,
+                      metroArea: detection.metroArea || '',
+                      isMetroUser: detection.isMetroArea
                     }));
+
+                    setMetroDetection(detection);
                     
-                    // If it's a metro city, show confirmation
-                    if (detection.isMetroCity) {
-                      setMetroDetection(detection);
+                    if (detection.isMetroArea && detection.showConfirmation) {
                       setShowMetroConfirmation(true);
-                    } else {
-                      setMetroDetection(null);
-                      setShowMetroConfirmation(false);
                     }
                   }}
                   placeholder="Enter your hometown (e.g., New York, NY, USA)"
-                  className="text-sm sm:text-base py-2 sm:py-3"
+                  className="text-sm sm:text-base py-2 sm:py-3 text-crisp font-medium"
                   data-testid="input-hometown-location"
                 />
                 
                 {formData.hometownCity && (
-                  <div className="mt-2 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800 overflow-hidden break-words">
-                    <p className="text-xs sm:text-sm text-blue-800 dark:text-blue-200 break-words" data-testid="text-selected-hometown">
-                      <strong>Selected:</strong> {formData.hometownCity}
+                  <div className="mt-2 p-3 bg-green-50 rounded-lg border border-green-200 overflow-hidden break-words">
+                    <p className="text-xs sm:text-sm text-black break-words" data-testid="text-selected-hometown">
+                      <strong>Hometown:</strong> {formData.hometownCity}
                       {formData.hometownState && `, ${formData.hometownState}`}
                       {formData.hometownCountry && `, ${formData.hometownCountry}`}
                     </p>
                   </div>
                 )}
 
-                {/* METRO AREA CONFIRMATION - Mobile Responsive */}
+                {/* Metro Area Confirmation */}
                 {showMetroConfirmation && metroDetection && (
-                  <div className="mt-4 p-3 sm:p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-200 dark:border-orange-800 overflow-hidden break-words">
-                    <h4 className="font-semibold text-orange-800 dark:text-orange-200 mb-2 text-sm sm:text-base break-words">
-                      🌍 Metro Area Recognition
-                    </h4>
-                    <p className="text-xs sm:text-sm text-orange-700 dark:text-orange-300 mb-3 break-words">
-                      We detected that <strong>{metroDetection.specificCity}</strong> is part of the <strong>{metroDetection.metroAreaName}</strong> area. 
-                      Would you like to be recognized as both your specific city AND the metro area? This helps you connect with more people in your region.
-                    </p>
-                    <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+                  <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200 overflow-hidden break-words">
+                    <h4 className="font-medium text-black mb-2">{metroDetection.title}</h4>
+                    <p className="text-sm text-black mb-3">{metroDetection.message}</p>
+                    <div className="flex gap-2">
                       <Button
                         type="button"
                         size="sm"
                         onClick={() => {
                           setFormData(prev => ({
                             ...prev,
-                            metroArea: metroDetection.metroAreaName!,
+                            metroArea: metroDetection.metroArea || '',
                             isMetroUser: true
                           }));
                           setShowMetroConfirmation(false);
-                          toast({
-                            title: "Metro Area Added",
-                            description: `You'll be recognized as both ${metroDetection.specificCity} and ${metroDetection.metroAreaName}`
-                          });
                         }}
-                        className="bg-orange-600 hover:bg-orange-700 text-white text-xs sm:text-sm h-8 sm:h-9"
-                        data-testid="button-confirm-metro"
+                        className="bg-blue-600 hover:bg-blue-700 text-white"
                       >
-                        Yes, include metro area
+                        Yes, join {metroDetection.metroArea}
                       </Button>
                       <Button
                         type="button"
@@ -455,15 +442,13 @@ export default function SignupLocalTraveler() {
                         onClick={() => {
                           setFormData(prev => ({
                             ...prev,
-                            metroArea: "",
+                            metroArea: '',
                             isMetroUser: false
                           }));
                           setShowMetroConfirmation(false);
                         }}
-                        className="border-orange-300 text-orange-700 hover:bg-orange-100 dark:border-orange-600 dark:text-orange-300 text-xs sm:text-sm h-8 sm:h-9"
-                        data-testid="button-decline-metro"
                       >
-                        No, just my city
+                        No, keep {formData.hometownCity}
                       </Button>
                     </div>
                   </div>
@@ -473,15 +458,15 @@ export default function SignupLocalTraveler() {
               {/* Top Choices - Mobile Responsive with AI-Companion Grid */}
               <div className="space-y-3 sm:space-y-4 overflow-hidden break-words">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4">
-                  <Label className="text-sm sm:text-base font-semibold text-gray-900 dark:text-white break-words">
+                  <Label className="text-sm sm:text-base font-semibold text-black break-words">
                     Top Choices * (Choose at least 3)
                   </Label>
                   <div className="inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0" data-testid="text-selection-count">
                     {formData.interests.length} selected
                   </div>
                 </div>
-                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 break-words">
-                  Please choose 3 from the list below to better match with others. Once inside you can add more city specific events and activities.
+                <p className="text-xs sm:text-sm text-black break-words">
+                  Please choose 3 from the list below to better match with other locals and travelers. Once inside you can add more city specific events and activities.
                 </p>
                 
                 {/* Select/Clear All buttons - Mobile Responsive */}
@@ -511,31 +496,50 @@ export default function SignupLocalTraveler() {
                 {/* AI-Companion Responsive Grid */}
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3 overflow-hidden break-words">
                   {MOST_POPULAR_INTERESTS.map((interest) => (
-                    <Button
+                    <button
                       key={interest}
                       type="button"
-                      variant={formData.interests.includes(interest) ? "default" : "outline"}
                       onClick={() => toggleInterest(interest)}
-                      className="h-auto py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm font-medium transition-colors duration-200 break-words overflow-hidden"
+                      className={`p-2 sm:p-3 md:p-4 rounded-lg border-2 text-xs sm:text-sm font-medium text-center leading-tight transition-all duration-200 break-words ${
+                        formData.interests.includes(interest)
+                          ? 'border-blue-500 bg-blue-50 text-blue-700'
+                          : 'border-gray-300 bg-white text-black hover:border-gray-400 hover:bg-gray-50'
+                      }`}
                       data-testid={`button-interest-${interest.toLowerCase().replace(/\s+/g, '-')}`}
                     >
-                      <span className="break-words overflow-hidden text-center leading-tight">
-                        {interest}
-                      </span>
-                    </Button>
+                      {interest}
+                    </button>
                   ))}
                 </div>
               </div>
 
               {/* Submit Button - Mobile Responsive */}
-              <Button
-                type="submit"
-                disabled={isLoading || formData.interests.length < 3}
-                className="w-full text-sm sm:text-base md:text-lg py-3 sm:py-4 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 disabled:bg-gray-400 disabled:cursor-not-allowed font-bold text-white rounded-lg transition-colors duration-200 h-12 sm:h-14"
-                data-testid="button-create-account"
-              >
-                {isLoading ? "Creating Account..." : "Create My Account"}
-              </Button>
+              <div className="pt-4 sm:pt-6 space-y-3 sm:space-y-4 overflow-hidden break-words">
+                <Button
+                  type="submit"
+                  disabled={isLoading || formData.interests.length < 3}
+                  className="w-full py-3 sm:py-4 text-sm sm:text-base md:text-lg font-bold bg-blue-600 hover:bg-blue-700 text-white disabled:bg-gray-400 disabled:cursor-not-allowed h-12 sm:h-14 rounded-lg break-words"
+                  data-testid="button-submit"
+                >
+                  {isLoading ? 'Creating Account...' : `Complete Registration (${formData.interests.length}/3)`}
+                </Button>
+                
+                {formData.interests.length < 3 && (
+                  <p className="text-red-600 text-xs sm:text-sm text-center break-words">
+                    Please select at least {3 - formData.interests.length} more interest{3 - formData.interests.length !== 1 ? 's' : ''} to continue
+                  </p>
+                )}
+                
+                <Button
+                  type="button"
+                  onClick={() => setLocation('/')}
+                  variant="outline"
+                  className="w-full bg-gray-200 border-gray-400 text-black hover:bg-gray-300 h-10 sm:h-12 break-words"
+                  data-testid="button-back-to-landing"
+                >
+                  Back to Landing Page
+                </Button>
+              </div>
             </form>
           </CardContent>
         </Card>
