@@ -1576,12 +1576,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   // Update form when user data loads
   React.useEffect(() => {
     if (user) {
-      // Debug: Check what's in the user object for date of birth
-      console.log("🎂 DEBUG: User dateOfBirth raw value:", user.dateOfBirth);
-      console.log("🎂 DEBUG: User date_of_birth snake case:", (user as any).date_of_birth);
+      // Check both camelCase and snake_case for date of birth
       const formattedDOB = user.dateOfBirth ? formatDateOfBirthForInput(user.dateOfBirth) : 
                           (user as any).date_of_birth ? formatDateOfBirthForInput((user as any).date_of_birth) : "";
-      console.log("🎂 DEBUG: Formatted DOB for form:", formattedDOB);
       
       profileForm.reset({
         bio: user.bio || "",
@@ -6232,8 +6229,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                 <FormLabel className="text-gray-900 dark:text-white">Experience Type</FormLabel>
                                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                                   <FormControl>
-                                    <SelectTrigger>
-                                      <SelectValue placeholder="Select experience type" />
+                                    <SelectTrigger className="text-gray-900 dark:text-white dark:bg-gray-800 dark:border-gray-600">
+                                      <SelectValue placeholder="Select experience type" className="text-gray-900 dark:text-white" />
                                     </SelectTrigger>
                                   </FormControl>
                                   <SelectContent>
@@ -7556,8 +7553,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   name="accommodation"
                   render={({ field }) => (
                     <Select onValueChange={field.onChange} value={field.value || ""}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select type" />
+                      <SelectTrigger className="text-gray-900 dark:text-white dark:bg-gray-800 dark:border-gray-600">
+                        <SelectValue placeholder="Select type" className="text-gray-900 dark:text-white" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="hotel-booked">Hotel Booked</SelectItem>
@@ -7681,8 +7678,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         <FormLabel className="text-gray-900 dark:text-white">Business Type</FormLabel>
                         <Select onValueChange={field.onChange} value={field.value || ''}>
                           <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select business type" />
+                            <SelectTrigger className="text-gray-900 dark:text-white dark:bg-gray-800 dark:border-gray-600">
+                              <SelectValue placeholder="Select business type" className="text-gray-900 dark:text-white" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent className="dark:bg-gray-800 dark:border-gray-600">
@@ -8025,13 +8022,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         <FormLabel className="text-gray-900 dark:text-white">Gender</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value ?? ''}>
                           <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select gender" />
+                            <SelectTrigger className="text-gray-900 dark:text-white dark:bg-gray-800 dark:border-gray-600">
+                              <SelectValue placeholder="Select gender" className="text-gray-900 dark:text-white" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent className="dark:bg-gray-800 dark:border-gray-600">
                             {GENDER_OPTIONS.map((gender) => (
-                              <SelectItem key={gender} value={gender} className="dark:text-white dark:hover:bg-gray-700">
+                              <SelectItem key={gender} value={gender} className="text-gray-900 dark:text-white dark:hover:bg-gray-700">
                                 {gender}
                               </SelectItem>
                             ))}
