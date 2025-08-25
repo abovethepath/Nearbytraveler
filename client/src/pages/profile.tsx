@@ -4192,9 +4192,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     <Star className="w-4 h-4 text-yellow-500" />
                     Top Choices for Most Travelers
                   </h4>
-                  <div className="flex flex-wrap gap-2 p-3 bg-gradient-to-r from-yellow-100 to-orange-100 dark:from-yellow-900 dark:to-orange-900 rounded-lg">
+                  <div className="flex flex-wrap gap-2 p-3 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 rounded-lg border border-blue-200 dark:border-blue-700">
                     {MOST_POPULAR_INTERESTS.slice(0, 12).map((item) => (
-                      <div key={item} className="inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none bg-yellow-500 text-white border-0">
+                      <div key={item} className="inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none bg-gradient-to-r from-blue-500 to-purple-500 text-white border-0 shadow-sm">
                         {item}
                       </div>
                     ))}
@@ -4215,7 +4215,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       {/* All Interests */}
                       <div>
                         <div className="flex flex-wrap gap-2 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border">
-                          {getAllInterests().map((interest) => {
+                          {getAllInterests().filter(interest => !MOST_POPULAR_INTERESTS.includes(interest)).map((interest) => {
                             const displayText = interest.startsWith("**") && interest.endsWith("**") ? 
                               interest.slice(2, -2) : interest;
                             const isSelected = tempInterests.includes(interest);
@@ -4276,12 +4276,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           <Plus className="w-3 h-3" />
                         </Button>
                       </div>
-                      {/* Show selected interests */}
-                      {tempInterests.length > 0 && (
+                      {/* Show selected interests - filter out top choices to avoid duplication */}
+                      {tempInterests.filter(interest => !MOST_POPULAR_INTERESTS.includes(interest)).length > 0 && (
                         <div className="p-3 bg-gray-50 rounded-lg">
-                          <p className="text-sm font-medium text-gray-700 mb-2">Selected Interests:</p>
+                          <p className="text-sm font-medium text-gray-700 mb-2">Selected Additional Interests:</p>
                           <div className="flex flex-wrap gap-2">
-                            {tempInterests.map((interest) => (
+                            {tempInterests.filter(interest => !MOST_POPULAR_INTERESTS.includes(interest)).map((interest) => (
                               <div key={interest} className="inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0">
                                 {interest}
                                 <button
@@ -4311,14 +4311,16 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         <div>
                           <div className="flex items-center justify-between mb-2">
                             <span className="text-sm text-gray-600 dark:text-gray-400">
-                              {(user?.interests || []).length} interests selected
+                              {(user?.interests || []).filter(interest => !MOST_POPULAR_INTERESTS.includes(interest)).length} additional interests selected
                             </span>
                           </div>
                           <div className="flex flex-wrap gap-2">
                             {(() => {
-                              const interests = user?.interests || [];
-                              const topInterests = interests.slice(0, 8); // Show only first 8
-                              const remaining = interests.length - 8;
+                              // Filter out top choices from interests to avoid duplication
+                              const allInterests = user?.interests || [];
+                              const filteredInterests = allInterests.filter(interest => !MOST_POPULAR_INTERESTS.includes(interest));
+                              const topInterests = filteredInterests.slice(0, 8); // Show only first 8
+                              const remaining = filteredInterests.length - 8;
                               
                               return (
                                 <>
