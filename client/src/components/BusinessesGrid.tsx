@@ -181,11 +181,15 @@ export default function BusinessesGrid({ currentLocation, travelPlans = [] }: Bu
                       )}
                     </div>
 
-                    {/* Location row */}
+                    {/* Location row WITH STREET ADDRESS */}
                     <div className="mt-1 flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 min-w-0">
                       <MapPin className="h-4 w-4 shrink-0" />
                       <span className="truncate">
-                        {[city, state, country].filter(Boolean).join(", ")}
+                        {/* Show street address first, then city */}
+                        {b.streetAddress || b.street_address || b.address ? 
+                          `${b.streetAddress || b.street_address || b.address}, ${city}` :
+                          [city, state, country].filter(Boolean).join(", ")
+                        }
                       </span>
                     </div>
                   </div>
