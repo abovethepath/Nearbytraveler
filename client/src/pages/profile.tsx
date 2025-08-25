@@ -4168,23 +4168,46 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 ) : null}
 
 
+                {/* Edit All Preferences Button */}
+                {isOwnProfile && (
+                  <div className="mb-4">
+                    <Button
+                      size="sm"
+                      onClick={() => {
+                        setEditingInterests(true);
+                        setEditingActivities(true);
+                        setEditingEvents(true);
+                      }}
+                      className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0"
+                    >
+                      <Edit className="w-3 h-3 mr-1" />
+                      Edit All Preferences
+                    </Button>
+                  </div>
+                )}
+
+                {/* Top Choices Section */}
+                <div className="mb-6">
+                  <h4 className="font-medium text-gray-800 dark:text-white flex items-center gap-2 mb-3">
+                    <Star className="w-4 h-4 text-yellow-500" />
+                    Top Choices for Most Travelers
+                  </h4>
+                  <div className="flex flex-wrap gap-2 p-3 bg-gradient-to-r from-yellow-100 to-orange-100 dark:from-yellow-900 dark:to-orange-900 rounded-lg">
+                    {MOST_POPULAR_INTERESTS.concat(MOST_POPULAR_ACTIVITIES).slice(0, 12).map((item) => (
+                      <div key={item} className="inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none bg-yellow-500 text-white border-0">
+                        {item}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
                 {/* Interests */}
-                <div>
+                <div className="mb-6">
                   <div className="flex items-center justify-between mb-3">
                     <h4 className="font-medium text-gray-800 dark:text-white flex items-center gap-2">
                       <Heart className="w-4 h-4 text-blue-500" />
-                      Interests
+                      Your Interests
                     </h4>
-                    {isOwnProfile && (
-                      <Button
-                        size="sm"
-                        onClick={() => setEditingInterests(true)}
-                        className="bg-blue-600 hover:bg-blue-700 text-white border-0"
-                      >
-                        <Edit className="w-3 h-3 mr-1" />
-                        Edit
-                      </Button>
-                    )}
                   </div>
                   
                   {editingInterests && !(editingInterests && editingActivities && editingEvents) ? (
@@ -4322,22 +4345,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 </div>
 
                 {/* Activities */}
-                <div>
+                <div className="mb-6">
                   <div className="flex items-center justify-between mb-3">
                     <h4 className="font-medium text-gray-800 dark:text-white flex items-center gap-2">
                       <Globe className="w-4 h-4 text-green-500" />
-                      Activities
+                      Your Activities
                     </h4>
-                    {isOwnProfile && (
-                      <Button
-                        size="sm"
-                        onClick={() => setEditingActivities(true)}
-                        className="bg-green-600 hover:bg-green-700 text-white border-0"
-                      >
-                        <Edit className="w-3 h-3 mr-1" />
-                        Edit
-                      </Button>
-                    )}
                   </div>
                   
                   {editingActivities && !(editingInterests && editingActivities && editingEvents) ? (
@@ -4469,22 +4482,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 </div>
 
                 {/* Events */}
-                <div>
+                <div className="mb-6">
                   <div className="flex items-center justify-between mb-3">
                     <h4 className="font-medium text-gray-800 dark:text-white flex items-center gap-2">
                       <Calendar className="w-4 h-4 text-purple-500" />
-                      Events
+                      Your Events
                     </h4>
-                    {isOwnProfile && (
-                      <Button
-                        size="sm"
-                        onClick={() => setEditingEvents(true)}
-                        className="bg-purple-600 hover:bg-purple-700 text-white border-0"
-                      >
-                        <Edit className="w-3 h-3 mr-1" />
-                        Edit
-                      </Button>
-                    )}
                   </div>
                   
                   {editingEvents && !(editingInterests && editingActivities && editingEvents) ? (
