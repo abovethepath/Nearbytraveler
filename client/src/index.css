@@ -137,6 +137,43 @@
   body {
     @apply bg-background text-foreground;
   }
+  
+  /* FORCE ALL BLACK TEXT TO BE WHITE SITE-WIDE */
+  .text-black,
+  .text-gray-900,
+  .text-gray-800,
+  .text-gray-700,
+  .text-slate-900,
+  .text-slate-800,
+  .text-slate-700,
+  [style*="color: black"],
+  [style*="color: rgb(0, 0, 0)"],
+  [style*="color:#000"],
+  [style*="color: #000000"] {
+    color: white !important;
+  }
+  
+  /* FORCE ALL BLACK BACKGROUNDS TO BE DARK */
+  .bg-white {
+    background-color: #1a1a1a !important;
+  }
+  
+  /* MAKE SURE ALL TEXT IS READABLE ON DARK BACKGROUNDS */
+  * {
+    color: white !important;
+  }
+  
+  /* SPECIFIC OVERRIDES FOR COMMON COMPONENTS */
+  button, input, textarea, select {
+    color: white !important;
+    background-color: #2a2a2a !important;
+  }
+  
+  /* CARD AND CONTAINER OVERRIDES */
+  .card, .bg-card {
+    background-color: #1e1e1e !important;
+    color: white !important;
+  }
 }
 
 /* Fix select dropdown visibility */
