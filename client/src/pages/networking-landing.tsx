@@ -216,19 +216,19 @@ export default function NetworkingLanding() {
           </div>
         </div>
 
-        {/* THE POWER OF PERSISTENT CONNECTIONS */}
+        {/* SOCIAL PROOF */}
         <div className="max-w-4xl mx-auto mb-16">
           <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border">
             <div className="text-center">
               <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-                The Power of Persistent Connections
+                What Our Network Says
               </h3>
               <div className="bg-gradient-to-r from-purple-100 to-indigo-100 dark:from-purple-900/30 dark:to-indigo-900/30 rounded-xl p-6">
                 <p className="text-lg text-gray-700 dark:text-gray-300 italic mb-4">
-                  Thanks to Nearby Traveler, you can meet someone at a tech conference in December in California and instantly recognize them when you're both at the same industry conference in Texas in July. No awkward "Where do I know you from?" moments—just instant connection and picking up where you left off.
+                  "Thanks to Nearby Traveler, You can meet half your conference before even landing. An event can feel like a reunion, not a room full of strangers."
                 </p>
                 <p className="text-sm font-bold text-purple-600 dark:text-purple-400">
-                  Cross-conference networking made effortless
+                  — Aaron, Founder
                 </p>
               </div>
             </div>
