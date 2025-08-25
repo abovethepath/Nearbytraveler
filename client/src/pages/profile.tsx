@@ -3586,8 +3586,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             
             {/* About Section */}
             <Card className="mt-6 relative overflow-visible bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 dark:border-gray-700">
-              <CardHeader className="flex items-center gap-2 flex-wrap min-w-0 w-full">
-                <CardTitle className="text-base sm:text-lg break-words max-w-[calc(100%-3rem)] sm:max-w-none text-gray-900 dark:text-white">
+              <CardHeader className="flex items-start gap-2 flex-wrap min-w-0 w-full">
+                <CardTitle className="text-xl sm:text-2xl font-bold break-words max-w-[calc(100%-3rem)] sm:max-w-none text-gray-900 dark:text-white">
                   About {user?.userType === 'business'
                     ? (user?.businessName || user?.name || user?.username)
                     : (user?.username || 'User')}
