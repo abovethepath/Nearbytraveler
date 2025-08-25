@@ -1047,7 +1047,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <GlobalHotfixes />
-      <ThemeProvider defaultTheme="dark" storageKey="nearby-traveler-theme">
+      <ThemeProvider defaultTheme="light" storageKey="nearby-traveler-theme">
         <TooltipProvider>
           <Toaster />
           <Router />
