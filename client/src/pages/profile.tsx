@@ -3910,74 +3910,116 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6 break-words overflow-hidden">
-                {/* Single Edit Button for All Preferences */}
-                {isOwnProfile && !editingInterests && !editingActivities && !editingEvents && (
-                  <div className="flex justify-center mb-4">
-                    <Button
-                      onClick={() => {
-                        // Open ALL editing modes at once
-                        setEditingInterests(true);
-                        setEditingActivities(true);
-                        setEditingEvents(true);
-                        // Initialize form data with custom field support
-                        const userInterests = user?.interests || [];
-                        const userActivities = user?.activities || [];
-                        const userEvents = user?.events || [];
-                        
-                        setEditFormData({
-                          interests: userInterests,
-                          activities: userActivities,
-                          events: userEvents
-                        });
-                        
-                        // Initialize custom fields from database or empty arrays
-                        const customInterests = user?.customInterests || "";
-                        const customActivities = user?.customActivities || "";
-                        const customEvents = user?.customEvents || "";
-                        
-                        // Parse custom fields (comma-separated) and add to arrays if not already present
-                        if (customInterests) {
-                          const parsed = customInterests.split(',').map(s => s.trim()).filter(s => s);
-                          parsed.forEach(item => {
-                            if (!userInterests.includes(item)) {
-                              userInterests.push(item);
-                            }
-                          });
-                        }
-                        if (customActivities) {
-                          const parsed = customActivities.split(',').map(s => s.trim()).filter(s => s);
-                          parsed.forEach(item => {
-                            if (!userActivities.includes(item)) {
-                              userActivities.push(item);
-                            }
-                          });
-                        }
-                        if (customEvents) {
-                          const parsed = customEvents.split(',').map(s => s.trim()).filter(s => s);
-                          parsed.forEach(item => {
-                            if (!userEvents.includes(item)) {
-                              userEvents.push(item);
-                            }
-                          });
-                        }
-                        
-                        // Update form data with combined arrays
-                        setEditFormData({
-                          interests: userInterests,
-                          activities: userActivities,
-                          events: userEvents
-                        });
-                      }}
-                      className="bg-blue-600 hover:bg-blue-700 text-white"
-                    >
-                      <Edit className="w-4 h-4 mr-2" />
-                      Edit All Preferences
-                    </Button>
+                {/* ROW 1: TOP CHOICES */}
+                <div>
+                  <h4 className="font-medium text-gray-800 dark:text-gray-200 dark:text-white flex items-center gap-2 mb-3">
+                    <Star className="w-4 h-4 text-yellow-500" />
+                    Top Choices
+                  </h4>
+                  <div className="flex flex-wrap gap-2">
+                    {MOST_POPULAR_INTERESTS.slice(0, 8).map((interest) => (
+                      <div key={interest} className="inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none bg-yellow-500 text-white border-0">
+                        {interest}
+                      </div>
+                    ))}
                   </div>
-                )}
+                </div>
 
-                {/* Unified Edit Form for All Preferences */}
-                {isOwnProfile && (editingInterests && editingActivities && editingEvents) ? (
+                {/* ROW 2: INTERESTS */}
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <h4 className="font-medium text-gray-800 dark:text-gray-200 dark:text-white flex items-center gap-2">
+                      <Heart className="w-4 h-4 text-blue-500" />
+                      Interests
+                    </h4>
+                    {isOwnProfile && (
+                      <Button
+                        size="sm"
+                        onClick={() => setEditingInterests(true)}
+                        className="bg-blue-600 hover:bg-blue-700 text-white border-0"
+                      >
+                        <Edit className="w-3 h-3 mr-1" />
+                        Edit
+                      </Button>
+                    )}
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {(user.interests && user.interests.length > 0) ? (
+                      user.interests.slice(0, 6).map((interest, index) => (
+                        <div key={`interest-${index}`} className="inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none bg-blue-600 text-white border-0">
+                          {interest}
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-gray-500 dark:text-gray-400 text-sm">No interests selected yet</p>
+                    )}
+                  </div>
+                </div>
+
+                {/* ROW 3: ACTIVITIES */}
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <h4 className="font-medium text-gray-800 dark:text-gray-200 dark:text-white flex items-center gap-2">
+                      <Globe className="w-4 h-4 text-green-500" />
+                      Activities
+                    </h4>
+                    {isOwnProfile && (
+                      <Button
+                        size="sm"
+                        onClick={() => setEditingActivities(true)}
+                        className="bg-green-600 hover:bg-green-700 text-white border-0"
+                      >
+                        <Edit className="w-3 h-3 mr-1" />
+                        Edit
+                      </Button>
+                    )}
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {(user.activities && user.activities.length > 0) ? (
+                      user.activities.slice(0, 6).map((activity, index) => (
+                        <div key={`activity-${index}`} className="inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none bg-green-600 text-white border-0">
+                          {activity}
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-gray-500 dark:text-gray-400 text-sm">No activities selected yet</p>
+                    )}
+                  </div>
+                </div>
+
+                {/* ROW 4: EVENTS */}
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <h4 className="font-medium text-gray-800 dark:text-gray-200 dark:text-white flex items-center gap-2">
+                      <Calendar className="w-4 h-4 text-purple-500" />
+                      Events
+                    </h4>
+                    {isOwnProfile && (
+                      <Button
+                        size="sm"
+                        onClick={() => setEditingEvents(true)}
+                        className="bg-purple-600 hover:bg-purple-700 text-white border-0"
+                      >
+                        <Edit className="w-3 h-3 mr-1" />
+                        Edit
+                      </Button>
+                    )}
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {(user.events && user.events.length > 0) ? (
+                      user.events.slice(0, 6).map((event, index) => (
+                        <div key={`event-${index}`} className="inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none bg-purple-600 text-white border-0">
+                          {event}
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-gray-500 dark:text-gray-400 text-sm">No events selected yet</p>
+                    )}
+                  </div>
+                </div>
+
+                {/* EDITING MODES - Keep the existing edit interfaces but separate them */}
+                {isOwnProfile && false ? (
                   <div className="bg-blue-50 dark:bg-blue-900/20 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-600">
                     <div className="flex items-center justify-between mb-4">
                       <h3 className="text-lg font-semibold text-gray-900 dark:text-white dark:text-gray-100">Edit All Preferences</h3>
