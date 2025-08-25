@@ -241,6 +241,11 @@ export default function TravelersLanding() {
               <h3 className="text-xl font-bold mb-3 text-black">Safety & References</h3>
               <p className="text-black">Reference system, user verification, and safety features to ensure trustworthy connections.</p>
             </div>
+            <div className="bg-gradient-to-br from-rose-50 to-rose-100 dark:from-rose-900/30 dark:to-rose-800/30 p-6 rounded-xl shadow-lg border dark:border-rose-700/50">
+              <div className="text-4xl mb-4">🤝</div>
+              <h3 className="text-xl font-bold mb-3 text-black">Better Networking Events</h3>
+              <p className="text-black">Transform shallow networking into meaningful connections. Pre-match with attendees who share your interests, plan meetups before events, and continue conversations that matter.</p>
+            </div>
           </div>
         </div>
 
