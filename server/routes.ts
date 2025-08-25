@@ -1229,64 +1229,65 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
     }
   });
 
-  // City users endpoint - get all users for a specific city page WITH METRO CONSOLIDATION
+  // City users endpoint - get all users for a specific city page WITH PROPER LA METRO CONSOLIDATION
   app.get("/api/city/:city/users", async (req, res) => {
     try {
       const city = decodeURIComponent(req.params.city);
       const { state, country } = req.query;
       if (process.env.NODE_ENV === 'development') console.log(`🏙️ CITY USERS: Getting users for ${city}, ${state}, ${country}`);
       
-      // Apply metropolitan area consolidation FIRST
-      const searchState = (state as string) || '';  
-      const searchCountry = (country as string) || '';
-      const consolidatedCity = consolidateToMetropolitanArea(city, searchState, searchCountry);
+      // Use the same logic as /api/users endpoint for consistency
+      let query = db.select().from(users);
+      const conditions = [];
       
-      if (process.env.NODE_ENV === 'development') console.log(`🌍 METRO CONSOLIDATION: ${city} → ${consolidatedCity}`);
+      // Check if this is a metro city that should be consolidated to Los Angeles
+      const { METRO_AREAS } = await import('../shared/constants');
+      const isLAMetroCity = METRO_AREAS['Los Angeles'].cities.includes(city);
       
-      // Build comprehensive search with metro area
-      let searchLocation = consolidatedCity;
-      if (state) searchLocation += `, ${state}`;
-      if (country) searchLocation += `, ${country}`;
-      
-      if (process.env.NODE_ENV === 'development') console.log(`🏙️ CITY USERS: Searching with consolidated location: "${searchLocation}"`);
-      let users = await storage.searchUsersByLocationDirect(searchLocation);
-      
-      // ALWAYS search all metro cities for metropolitan areas (whether consolidated or requested directly)
-      const metroCities = getMetropolitanAreaCities(consolidatedCity, searchState, searchCountry);
-      if (metroCities.length > 1) { // If this is actually a metro area with multiple cities
-        if (process.env.NODE_ENV === 'development') console.log(`🌍 METRO: Searching all ${consolidatedCity} metropolitan cities: ${metroCities.join(', ')}`);
+      if (isLAMetroCity || city === 'Los Angeles Metro') {
+        // Search for ALL LA metro cities
+        const allLACities = METRO_AREAS['Los Angeles'].cities;
+        if (process.env.NODE_ENV === 'development') console.log(`🌍 LA METRO SEARCH: Searching for users in ALL LA metro cities:`, allLACities.length, 'cities');
         
-        const allMetroUsers = [];
-        const allUserIds = new Set(users.map(user => user.id));
-        
-        for (const metroCity of metroCities) {
-          if (metroCity !== consolidatedCity) {
-            // Search with state and country for exact matching
-            const metroLocation = searchState && searchCountry 
-              ? `${metroCity}, ${searchState}, ${searchCountry}`
-              : searchState 
-                ? `${metroCity}, ${searchState}` 
-                : metroCity;
-                
-            if (process.env.NODE_ENV === 'development') console.log(`🌍 METRO: Searching ${metroCity} (${metroLocation})`);
-            const metroUsers = await storage.searchUsersByLocationDirect(metroLocation);
-            
-            // Add unique users to the result
-            for (const user of metroUsers) {
-              if (!allUserIds.has(user.id)) {
-                allUserIds.add(user.id);
-                allMetroUsers.push(user);
-              }
-            }
-          }
-        }
-        
-        users = [...users, ...allMetroUsers];
-        if (process.env.NODE_ENV === 'development') console.log(`🌍 METRO: Combined ${users.length} users from ${consolidatedCity} area`);
+        const locationConditions = allLACities.map(metroCity => 
+          or(
+            ilike(users.location, `%${metroCity}%`),
+            ilike(users.hometownCity, `%${metroCity}%`)
+          )
+        );
+        conditions.push(or(...locationConditions));
+      } else {
+        // Regular city search - use exact matching to prevent Austin/Vegas appearing in LA
+        conditions.push(
+          or(
+            ilike(users.location, `%${city}%`),
+            ilike(users.hometownCity, `%${city}%`)
+          )
+        );
       }
       
-      if (process.env.NODE_ENV === 'development') console.log(`🏙️ CITY USERS: Final result - ${users.length} users for ${city} (with metro consolidation)`);
-      return res.json(users);
+      // Apply all conditions
+      if (conditions.length > 0) {
+        query = query.where(and(...conditions));
+      }
+      
+      const filteredUsers = await query;
+      
+      // Remove passwords and prepare response
+      const finalUsers = filteredUsers.map(user => {
+        if (!user) return null;
+        
+        const { password: _, ...userWithoutPassword } = user;
+        
+        return {
+          ...userWithoutPassword,
+          hometownCity: user.hometownCity || '',
+          location: user.location
+        };
+      }).filter(Boolean);
+      
+      if (process.env.NODE_ENV === 'development') console.log(`🏙️ CITY USERS: Final result - ${finalUsers.length} users for ${city}`);
+      return res.json(finalUsers);
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error fetching city users:", error);
       return res.status(500).json({ message: "Failed to fetch city users", error: error.message });
