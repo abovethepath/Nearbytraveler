@@ -391,9 +391,18 @@ function consolidateToMetropolitanArea(city: string, state?: string, country?: s
   return city;
 }
 
-// DISABLED: Get all cities in a metropolitan area - no forced consolidation
+// Get all cities in a metropolitan area with LA Metro consolidation
 function getMetropolitanAreaCities(mainCity: string, state?: string, country?: string): string[] {
-  // DISABLED: Return only the single city without metro consolidation
+  if (mainCity.toLowerCase() === 'los angeles' && state?.toLowerCase() === 'california') {
+    return [
+      'Los Angeles', 'Santa Monica', 'Venice', 'Venice Beach', 'El Segundo', 'Manhattan Beach', 
+      'Beverly Hills', 'West Hollywood', 'Pasadena', 'Burbank', 'Glendale', 
+      'Long Beach', 'Torrance', 'Inglewood', 'Culver City', 'Marina del Rey',
+      'Hermosa Beach', 'Redondo Beach', 'Hawthorne', 'Hollywood', 'Studio City',
+      'Sherman Oaks', 'Encino', 'Van Nuys', 'Northridge', 'Malibu',
+      'Pacific Palisades', 'Brentwood', 'Westwood', 'Century City', 'Playa del Rey'
+    ];
+  }
   return [mainCity];
 }
 
