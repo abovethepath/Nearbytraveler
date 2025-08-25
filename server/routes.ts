@@ -10538,6 +10538,33 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // Fix travel dates for existing currently_traveling users
+  app.patch('/api/users/fix-travel-dates', async (req, res) => {
+    try {
+      const result = await db.update(users)
+        .set({
+          travelStartDate: new Date().toISOString().split('T')[0], // Today
+          travelEndDate: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 60 days from today
+          travelDestination: 'Los Angeles, California, United States'
+        })
+        .where(and(
+          eq(users.userType, 'currently_traveling'),
+          isNull(users.travelStartDate)
+        ))
+        .returning();
+      
+      console.log(`✅ Fixed travel dates for ${result.length} currently_traveling users`);
+      res.json({ 
+        success: true, 
+        usersUpdated: result.length,
+        message: `Updated ${result.length} users with travel dates` 
+      });
+    } catch (error) {
+      console.error('Error fixing travel dates:', error);
+      res.status(500).json({ error: 'Failed to fix travel dates' });
+    }
+  });
+
   // Return the configured HTTP server with WebSocket support  
   return httpServer;
 }
