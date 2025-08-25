@@ -918,7 +918,7 @@ export default function Landing() {
             </span>
           </h2>
           <p className="text-xl text-gray-200 mb-8">
-            Whether you're a local ready to share your city or a traveler seeking authentic experiences, 
+            Whether you're a local ready to share your city, a traveler seeking authentic experiences or a business traveler looking to connect prior, 
             your journey starts here.
           </p>
           <div className="flex justify-center">
