@@ -112,26 +112,26 @@ export default function Landing() {
                 <main className="mt-8 sm:mt-16 md:mt-20 lg:mt-24 xl:mt-32 mx-auto max-w-full px-4">
                   <div className="text-center">
                     <div className="max-w-4xl mx-auto">
-                      <h1 className="px-3 leading-tight sm:leading-snug">
-                        <span className="block font-black text-[clamp(1.5rem,6vw,2.25rem)] text-white">
+                      <h1 className="px-3 leading-tight sm:leading-snug break-words">
+                        <span className="block font-black text-[clamp(1.5rem,6vw,2.25rem)] text-white break-words">
                           Skip the Tourist Traps.
                         </span>
-                        <span className="block font-black text-[clamp(1.25rem,5.5vw,2rem)]">
-                          <span className="text-amber-300 sm:text-orange-500">Meet Locals and Other </span>
-                          <span className="text-blue-300 sm:text-blue-600">Nearby Travelers </span>
-                          <span className="text-white sm:text-black">Right Now, Today!!!</span>
+                        <span className="block font-black text-[clamp(1.25rem,5.5vw,2rem)] break-words">
+                          <span className="text-amber-300 sm:text-orange-500 break-words">Meet Locals and Other </span>
+                          <span className="text-blue-300 sm:text-blue-600 break-words">Nearby Travelers </span>
+                          <span className="text-white sm:text-black break-words">Right Now, Today!!!</span>
                         </span>
                       </h1>
                       
                       {/* Personal credibility as founder (hide on phones so the hero photo is visible) */}
                       <div className="hidden sm:block mt-8 p-6 bg-black/40 backdrop-blur-sm rounded-2xl border border-white/20">
-                        <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-white leading-relaxed px-2">
-                          <span className="text-orange-300 font-bold">"For over 15 years I've hosted and toured 400+ travelers from over 40 countries as a local creating amazing expereinces.</span>
-                          <span className="text-white"> I built Nearby Traveler to do exactly that - meet real locals and real travelers while creating amazing new travel adventures and expanding my social circle of friends."</span>
+                        <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-white leading-relaxed px-2 break-words">
+                          <span className="text-orange-300 font-bold break-words">"For over 15 years I've hosted and toured 400+ travelers from over 40 countries as a local creating amazing experiences.</span>
+                          <span className="text-white break-words"> I built Nearby Traveler to do exactly that - meet real locals and real travelers while creating amazing new travel adventures and expanding my social circle of friends."</span>
                         </p>
                         <div className="mt-4 text-center">
-                          <p className="text-white font-bold text-lg">— Aaron, Founder</p>
-                          <p className="text-orange-200 text-sm">400+ travelers hosted • 40+ countries • 15+ years</p>
+                          <p className="text-white font-bold text-lg break-words">— Aaron, Founder</p>
+                          <p className="text-orange-200 text-sm break-words">400+ travelers hosted • 40+ countries • 15+ years</p>
                         </div>
                       </div>
                     </div>
@@ -151,7 +151,7 @@ export default function Landing() {
                       >
                         JOIN NEARBY TRAVELER NOW!!!
                       </Button>
-                      <p className="text-white mt-3 text-base sm:text-lg font-semibold px-2">Join the Community</p>
+                      <p className="text-white mt-3 text-base sm:text-lg font-semibold px-2 break-words">Join the Community</p>
                     </div>
 
                   </div>
@@ -166,10 +166,10 @@ export default function Landing() {
       <div className="relative z-10 py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-12 animate-slide-in-left">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-gray-900 mb-4 leading-normal px-2">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-gray-900 mb-4 leading-normal px-2 break-words">
               Connect with Locals and other Travelers
             </h2>
-            <p className="text-base sm:text-lg md:text-xl text-gray-600 px-2">
+            <p className="text-base sm:text-lg md:text-xl text-gray-600 px-2 break-words">
               Real people. Real experiences. Zero tourist traps.
             </p>
           </div>
