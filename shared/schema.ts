@@ -517,6 +517,12 @@ export const insertUserSchema = createInsertSchema(users).omit({
 }).extend({
   username: z.string().min(6, "Username must be 6-13 characters").max(13, "Username must be 6-13 characters"),
   password: z.string().min(8, "Password must be at least 8 characters long"),
+  // Fields actually collected during signup forms
+  dateOfBirth: z.date(), // ALWAYS required when collected - signup forms require this
+  hometownCity: z.string().min(1, "Hometown city is required"),
+  hometownState: z.string().optional(),
+  hometownCountry: z.string().min(1, "Hometown country is required"),
+  interests: z.array(z.string()).min(3, "Please select at least 3 interests"),
 });
 
 export const insertConnectionSchema = createInsertSchema(connections).omit({
