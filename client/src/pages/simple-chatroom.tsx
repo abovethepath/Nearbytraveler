@@ -528,22 +528,26 @@ export default function SimpleChatroomPage() {
                       <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
                         message.sender_id === currentUserId
                           ? 'bg-blue-500 text-white'
-                          : 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100'
+                          : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-600'
                       }`}>
-                        <div className={`text-xs mb-1 ${
+                        <div className={`text-xs mb-1 font-medium ${
                           message.sender_id === currentUserId 
                             ? 'text-blue-100' 
-                            : 'text-gray-600 dark:text-gray-300'
+                            : 'text-gray-700 dark:text-gray-300'
                         }`}>
                           {message.username || 'Unknown'}
                         </div>
-                        <div className={message.sender_id === currentUserId ? 'text-white' : 'text-gray-900 dark:text-gray-100'}>
+                        <div className={`font-medium ${
+                          message.sender_id === currentUserId 
+                            ? 'text-white' 
+                            : 'text-gray-900 dark:text-white'
+                        }`}>
                           {message.content}
                         </div>
                         <div className={`text-xs mt-1 ${
                           message.sender_id === currentUserId 
                             ? 'text-blue-100' 
-                            : 'text-gray-500 dark:text-gray-400'
+                            : 'text-gray-600 dark:text-gray-400'
                         }`}>
                           {new Date(message.created_at).toLocaleTimeString()}
                         </div>
