@@ -144,6 +144,18 @@
 /* iOS 100vh fix */
 .min-screen { min-height: 100dvh; }
 
+/* ULTIMATE TEXT OVERFLOW PREVENTION */
+html, body {
+  overflow-x: hidden !important;
+  max-width: 100vw !important;
+  width: 100% !important;
+}
+
+* {
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
 /* Guard rails for mobile - prevent horizontal scroll + text flex fixes */
 html, body, #root { width: 100%; overflow-x: hidden; }
 
@@ -266,7 +278,8 @@ input, select, textarea, button { font-size: 16px; }
     align-items: center !important;
     justify-content: center !important;
     font-weight: 500 !important;
-    white-space: nowrap !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
   }
 
   /* NUCLEAR BADGE OVERRIDE: Force ALL Badge components to be large regardless of variant or size */
@@ -291,7 +304,8 @@ input, select, textarea, button { font-size: 16px; }
     align-items: center !important;
     justify-content: center !important;
     font-weight: 500 !important;
-    white-space: nowrap !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
   }
 
   /* ULTIMATE NUCLEAR OVERRIDE: Target ALL possible preference pill elements */
@@ -319,7 +333,8 @@ input, select, textarea, button { font-size: 16px; }
     align-items: center !important;
     justify-content: center !important;
     font-weight: 500 !important;
-    white-space: nowrap !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
   }
   
   /* LARGE PILLS - All section-specific pills are now consistently large */
