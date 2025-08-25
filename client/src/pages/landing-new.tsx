@@ -324,7 +324,7 @@ export default function Landing() {
               </div>
               <div className="p-6 flex flex-col flex-grow">
                 <div className="mb-3">
-                  <h3 className="font-bold text-gray-900 mb-1" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Sunset Yoga on the Beach</h3>
+                  <h3 className="font-bold text-gray-900 mb-1" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Venice Beach Sunset Yoga on Venice Beach</h3>
                   <p className="text-sm text-gray-600" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Every Sunday • 6:00 PM</p>
                 </div>
                 
