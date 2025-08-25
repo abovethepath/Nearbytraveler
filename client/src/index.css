@@ -103,28 +103,31 @@
   --chart-5: 27 87% 67%;
 }
 
-/* DARK MODE COMPLETELY DISABLED - FORCE LIGHT THEME ONLY */
 .dark {
-  /* OVERRIDE DARK MODE - USE LIGHT THEME COLORS INSTEAD */
-  --background: 0 0% 100% !important;
-  --foreground: 222.2 84% 4.9% !important;
-  --card: 0 0% 100% !important;
-  --card-foreground: 222.2 84% 4.9% !important;
-  --popover: 0 0% 100% !important;
-  --popover-foreground: 222.2 84% 4.9% !important;
-  --primary: 221.2 83.2% 53.3% !important;
-  --primary-foreground: 210 40% 98% !important;
-  --secondary: 210 40% 96% !important;
-  --secondary-foreground: 222.2 84% 4.9% !important;
-  --muted: 210 40% 96% !important;
-  --muted-foreground: 215.4 16.3% 46.9% !important;
-  --accent: 210 40% 96% !important;
-  --accent-foreground: 222.2 84% 4.9% !important;
-  --destructive: 0 84.2% 60.2% !important;
-  --destructive-foreground: 210 40% 98% !important;
-  --border: 214.3 31.8% 91.4% !important;
-  --input: 214.3 31.8% 91.4% !important;
-  --ring: 221.2 83.2% 53.3% !important;
+  --background: 222.2 84% 4.9%;
+  --foreground: 210 40% 98%;
+  --card: 222.2 84% 4.9%;
+  --card-foreground: 210 40% 98%;
+  --popover: 222.2 84% 4.9%;
+  --popover-foreground: 210 40% 98%;
+  --primary: 217.2 91.2% 59.8%;
+  --primary-foreground: 222.2 84% 4.9%;
+  --secondary: 217.2 32.6% 17.5%;
+  --secondary-foreground: 210 40% 98%;
+  --muted: 217.2 32.6% 17.5%;
+  --muted-foreground: 215 20.2% 65.1%;
+  --accent: 217.2 32.6% 17.5%;
+  --accent-foreground: 210 40% 98%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 217.2 32.6% 17.5%;
+  --input: 217.2 32.6% 17.5%;
+  --ring: 224.3 76.3% 94.1%;
+  --chart-1: 220 70% 50%;
+  --chart-2: 160 60% 45%;
+  --chart-3: 30 80% 55%;
+  --chart-4: 280 65% 60%;
+  --chart-5: 340 75% 55%;
 }
 
 @layer base {
@@ -133,45 +136,6 @@
   }
   body {
     @apply bg-background text-foreground;
-    /* FORCE WHITE BACKGROUND ALWAYS */
-    background-color: white !important;
-    color: black !important;
-  }
-  
-  /* FORCE LIGHT THEME ON HTML ROOT */
-  html {
-    background-color: white !important;
-    color-scheme: light !important;
-  }
-  
-  /* NUCLEAR OPTION: FORCE LIGHT THEME EVERYWHERE */
-  *, *::before, *::after {
-    background-color: white !important;
-    color: black !important;
-  }
-  
-  /* DISABLE ALL DARK CLASSES COMPLETELY */
-  .dark,
-  .dark *,
-  [data-theme="dark"],
-  [data-theme="dark"] * {
-    background-color: white !important;
-    color: black !important;
-  }
-  
-  /* Override specific UI components */
-  .bg-gray-900,
-  .bg-gray-800,
-  .bg-gray-700,
-  .bg-slate-900,
-  .bg-slate-800 {
-    background-color: white !important;
-  }
-  
-  .text-white,
-  .text-gray-100,
-  .text-gray-200 {
-    color: black !important;
   }
 }
 
