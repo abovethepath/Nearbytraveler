@@ -4193,7 +4193,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     Top Choices for Most Travelers
                   </h4>
                   <div className="flex flex-wrap gap-2 p-3 bg-gradient-to-r from-yellow-100 to-orange-100 dark:from-yellow-900 dark:to-orange-900 rounded-lg">
-                    {MOST_POPULAR_INTERESTS.concat(MOST_POPULAR_ACTIVITIES).slice(0, 12).map((item) => (
+                    {MOST_POPULAR_INTERESTS.slice(0, 12).map((item) => (
                       <div key={item} className="inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none bg-yellow-500 text-white border-0">
                         {item}
                       </div>
