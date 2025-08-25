@@ -29,7 +29,7 @@ export default function NetworkingHero() {
             Networking, Reinvented.
           </h1>
           <p className="mt-3 md:mt-4 text-white/90 text-base md:text-xl max-w-2xl">
-            Connect before, during, and after every event—no business cards needed.
+            Connect before, during, and after every event — no business cards needed.
           </p>
           <div className="mt-5 flex flex-col sm:flex-row gap-3">
             <a href="/signup" className="inline-flex items-center justify-center rounded-2xl px-5 py-3 bg-orange-500 text-white font-medium shadow-md hover:shadow-lg">
