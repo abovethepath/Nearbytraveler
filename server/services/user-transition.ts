@@ -24,7 +24,7 @@ export class UserTransitionService {
         .from(users)
         .where(
           and(
-            eq(users.userType, 'current_traveler'),
+            eq(users.userType, 'currently_traveling'),
             lte(users.travelEndDate, now)
           )
         );
@@ -46,7 +46,7 @@ export class UserTransitionService {
         .leftJoin(users, eq(travelPlans.userId, users.id))
         .where(
           and(
-            eq(users.userType, 'current_traveler'),
+            eq(users.userType, 'currently_traveling'),
             lte(travelPlans.endDate, now)
           )
         );
@@ -140,7 +140,7 @@ export class UserTransitionService {
       }
 
       const userData = user[0];
-      if (userData.userType !== 'current_traveler') {
+      if (userData.userType !== 'currently_traveling') {
         return false;
       }
 
@@ -183,7 +183,7 @@ export class UserTransitionService {
         .from(users)
         .where(
           and(
-            eq(users.userType, 'current_traveler'),
+            eq(users.userType, 'currently_traveling'),
             lte(users.travelEndDate, futureDate)
           )
         );

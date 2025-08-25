@@ -40,7 +40,7 @@ export class UserStatusService {
         if (!user) continue;
 
         // Only update if user is currently a traveler
-        if (user.userType === 'current_traveler') {
+        if (user.userType === 'currently_traveling') {
           // Update user to be a local in their hometown
           await db
             .update(users)
@@ -108,7 +108,7 @@ export class UserStatusService {
         await db
           .update(users)
           .set({
-            userType: 'current_traveler',
+            userType: 'currently_traveling',
             location: plan.destination,
             travelDestination: plan.destination
           })

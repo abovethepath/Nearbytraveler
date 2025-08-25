@@ -446,11 +446,11 @@ export class TravelMatchingService {
       score = 10;
       isCompatible = true;
       reasons.push('Local expertise meets traveler curiosity');
-    } else if (user1.userType === 'current_traveler' && user2.userType === 'local') {
+    } else if (user1.userType === 'currently_traveling' && user2.userType === 'local') {
       score = 10;
       isCompatible = true;
       reasons.push('Current traveler can get local insights');
-    } else if (user1.userType === 'local' && user2.userType === 'current_traveler') {
+    } else if (user1.userType === 'local' && user2.userType === 'currently_traveling') {
       score = 10;
       isCompatible = true;
       reasons.push('Local can help current traveler');
@@ -462,7 +462,7 @@ export class TravelMatchingService {
       score = 8; // Increased from 6 to 8 for better local-to-local matching
       isCompatible = true;
       reasons.push('Local connections for area insights and friendships');
-    } else if (user1.userType === 'current_traveler' && user2.userType === 'current_traveler') {
+    } else if (user1.userType === 'currently_traveling' && user2.userType === 'currently_traveling') {
       score = 9;
       isCompatible = true;
       reasons.push('Current travelers can meet up and explore together');

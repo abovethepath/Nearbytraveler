@@ -2008,7 +2008,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       }
 
       // Map traveler signup fields
-      if (processedData.userType === 'current_traveler') {
+      if (processedData.userType === 'currently_traveling') {
         // Map localActivities and localEvents to main fields
         if (processedData.localActivities) {
           processedData.activities = processedData.localActivities;
@@ -2415,7 +2415,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       const hasTravelDestination = originalData.travelDestination || (originalData.travelDestinationCity && originalData.travelDestinationCountry);
       const hasTravelDates = originalData.travelStartDate && originalData.travelEndDate;
       const hasReturnDateOnly = originalData.travelReturnDate; // For simplified signup
-      const isTraveingUser = originalData.userType === 'traveler' || originalData.userType === 'current_traveler' || originalData.isCurrentlyTraveling;
+      const isTraveingUser = originalData.userType === 'traveler' || originalData.userType === 'currently_traveling' || originalData.isCurrentlyTraveling;
 
       // Support both full travel dates and simplified return-date-only signup
       if ((hasCurrentTravel || hasTravelDestination) && (hasTravelDates || hasReturnDateOnly) && isTraveingUser) {
@@ -2579,11 +2579,11 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
 
       // Check for business interest matches for all user types
       try {
-        const userLocation = userData.userType === 'current_traveler' && originalData.currentTravelCity
+        const userLocation = userData.userType === 'currently_traveling' && originalData.currentTravelCity
           ? [originalData.currentTravelCity, originalData.currentTravelState, originalData.currentTravelCountry].filter(Boolean).join(", ")
           : [userData.hometownCity, userData.hometownState, userData.hometownCountry].filter(Boolean).join(", ");
 
-        const matchType = userData.userType === 'current_traveler' ? 'traveler_interest' : 'local_interest';
+        const matchType = userData.userType === 'currently_traveling' ? 'traveler_interest' : 'local_interest';
 
         if (userLocation && ((userData.interests?.length || 0) > 0 || (userData.activities?.length || 0) > 0)) {
           await storage.checkBusinessInterestMatches(
