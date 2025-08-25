@@ -410,7 +410,7 @@ export default function Landing() {
             
             <div className="bg-white/95 backdrop-blur-sm rounded-3xl p-8 shadow-2xl animate-zoom-in" style={{animationDelay: '0.4s'}}>
               <p className="text-lg text-gray-900 leading-relaxed mb-6 text-center font-medium">
-                This platform helps travelers and locals meet each other, based on shared interests, activities, demographics, and events—making every encounter more meaningful.
+                Nearby Traveler connects travelers and locals through shared interests, activities, demographics, and events—transforming random encounters into life-changing connections.
               </p>
               
               {/* Benefits with orange and blue theme */}
