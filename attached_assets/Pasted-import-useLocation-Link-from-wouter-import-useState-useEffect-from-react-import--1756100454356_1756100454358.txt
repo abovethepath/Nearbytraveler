@@ -1,0 +1,283 @@
+import { useLocation, Link } from "wouter";
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import Footer from "@/components/footer";
+import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
+
+// Helper function for custom icons
+const CustomIcon = ({ iconName, className }: { iconName: string; className?: string }) => {
+  // Fallback to simple SVG icons since step icons may not exist
+  const getStepIcon = (stepNumber: string) => {
+    if (stepNumber.includes('step1')) {
+      return (
+        <svg width="80" height="80" viewBox="0 0 100 100" className="text-teal-500">
+          <g>
+            <circle cx="50" cy="30" r="15" fill="#0d9488" />
+            <path d="M20 80 Q50 60 80 80" stroke="#0d9488" strokeWidth="8" fill="none" />
+            <circle cx="35" cy="72" r="6" fill="#0d9488" />
+            <circle cx="65" cy="72" r="6" fill="#0d9488" />
+            <line x1="25" y1="65" x2="35" y2="80" stroke="#0d9488" strokeWidth="3" />
+          </g>
+        </svg>
+      );
+    } else if (stepNumber.includes('step2')) {
+      return (
+        <svg width="80" height="80" viewBox="0 0 100 100" className="text-teal-500">
+          <g>
+            <circle cx="50" cy="50" r="25" stroke="#0d9488" strokeWidth="4" fill="none" />
+            <circle cx="35" cy="40" r="3" fill="#0d9488" />
+            <circle cx="65" cy="40" r="3" fill="#0d9488" />
+            <path d="M35 60 Q50 70 65 60" stroke="#0d9488" strokeWidth="3" fill="none" />
+          </g>
+        </svg>
+      );
+    } else {
+      return (
+        <svg width="80" height="80" viewBox="0 0 100 100" className="text-teal-500">
+          <g>
+            <circle cx="40" cy="40" r="25" stroke="#0d9488" strokeWidth="4" fill="none" />
+            <line x1="58" y1="58" x2="75" y2="75" stroke="#0d9488" strokeWidth="6" strokeLinecap="round" />
+            <circle cx="30" cy="35" r="3" fill="#0d9488" />
+            <circle cx="50" cy="35" r="3" fill="#0d9488" />
+            <path d="M30 45 Q40 55 50 45" stroke="#0d9488" strokeWidth="2" fill="none" />
+          </g>
+        </svg>
+      );
+    }
+  };
+  
+  return (
+    <div className={className}>
+      {getStepIcon(iconName)}
+    </div>
+  );
+};
+
+export default function Landing() {
+  const [, setLocation] = useLocation();
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  return (
+    <div className="bg-gray-50 dark:bg-gray-900 font-sans overflow-x-hidden min-w-0" key="landing-v2-no-copy-button">
+      {/* Sticky CTA - Always Visible on All Devices */}
+      <div className="fixed bottom-6 right-6 z-50">
+        <Button
+          onClick={() => setLocation('/join')}
+          size="lg"
+          className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white font-black px-4 sm:px-8 py-3 sm:py-4 rounded-2xl shadow-2xl transition-all duration-200 border-2 sm:border-3 border-white text-sm sm:text-base break-words hyphens-auto"
+          style={{
+            boxShadow: '0 12px 35px rgba(0,0,0,0.4), 0 0 0 3px rgba(255,255,255,0.9)',
+            animation: 'gentle-pulse 2.5s ease-in-out infinite',
+            maxWidth: 'calc(100vw - 3rem)', // Prevent overflow on small screens
+          }}
+        >
+          <span className="break-words">JOIN NOW</span>
+        </Button>
+      </div>
+      
+      <LandingHeader />
+      <LandingHeaderSpacer />
+      
+      {/* HERO SECTION */}
+      <div className="relative z-10 overflow-hidden">
+        <div className="bg-gray-800 dark:bg-gray-900 border-4 border-orange-500 shadow-lg overflow-hidden">
+          <div className="relative bg-gray-800 dark:bg-gray-900 pb-32 overflow-hidden min-h-[600px]">
+            <div className="absolute inset-0 h-full min-h-[600px]">
+              <img
+                src="/travelers together hugging_1754971726997.avif"
+                alt="Travel experience"
+                className="w-full h-full object-cover"
+                style={{ objectPosition: 'center 70%' }}
+              />
+              <div
+                className="absolute inset-0"
+                style={{
+                  background:
+                    "linear-gradient(to bottom, rgba(0,0,0,.55), rgba(0,0,0,.25), rgba(0,0,0,0))"
+                }}
+                aria-hidden="true"
+              />
+            </div>
+            <div className="relative overflow-hidden">
+              <div className="sm:pb-16 md:pb-20 lg:pb-28 xl:pb-32">
+                <main className="mt-8 sm:mt-16 md:mt-20 lg:mt-24 xl:mt-32 mx-auto max-w-full px-4 overflow-hidden">
+                  <div className="text-center">
+                    <div className="max-w-4xl mx-auto">
+                      <h1 className="px-3 leading-tight sm:leading-snug break-words hyphens-auto">
+                        <span className="block font-black text-[clamp(1.5rem,6vw,2.25rem)] text-white break-words">
+                          Skip the Tourist Traps.
+                        </span>
+                        <span className="block font-black text-[clamp(1.25rem,5.5vw,2rem)] break-words">
+                          <span className="text-amber-300 sm:text-orange-500 break-words">Meet Locals and Other </span>
+                          <span className="text-blue-300 sm:text-blue-600 break-words">Nearby Travelers </span>
+                          <span className="text-white sm:text-black break-words">Right Now, Today!!!</span>
+                        </span>
+                      </h1>
+                      
+                      {/* Personal credibility as founder (hide on phones so the hero photo is visible) */}
+                      <div className="hidden sm:block mt-8 p-6 bg-black/40 backdrop-blur-sm rounded-2xl border border-white/20 mx-2">
+                        <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-white leading-relaxed px-2 break-words hyphens-auto">
+                          <span className="text-orange-300 font-bold break-words">"For over 15 years I've hosted and toured 400+ travelers from over 40 countries as a local creating amazing experiences.</span>
+                          <span className="text-white break-words"> I built Nearby Traveler to do exactly that - meet real locals and real travelers while creating amazing new travel adventures and expanding my social circle of friends."</span>
+                        </p>
+                        <div className="mt-4 text-center">
+                          <p className="text-white font-bold text-lg break-words">— Aaron, Founder</p>
+                          <p className="text-orange-200 text-sm break-words">400+ travelers hosted • 40+ countries • 15+ years</p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Primary signup CTA */}
+                    <div className="mt-12 mb-8 px-4">
+                      <Button
+                        onClick={() => setLocation('/join')}
+                        size="lg"
+                        className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white font-black px-4 sm:px-12 md:px-16 py-4 sm:py-5 md:py-6 rounded-2xl shadow-xl transition-all duration-200 border-2 sm:border-4 border-white w-full max-w-lg mx-auto break-words hyphens-auto"
+                        style={{
+                          fontSize: 'clamp(1.1rem, 3.5vw, 1.8rem)',
+                          minHeight: 'clamp(60px, 12vw, 80px)',
+                          boxShadow: '0 8px 30px rgba(0,0,0,0.3), 0 0 0 2px rgba(255,255,255,0.9)',
+                          animation: 'gentle-pulse 3s ease-in-out infinite',
+                          maxWidth: '100%',
+                        }}
+                      >
+                        <span className="break-words leading-tight">JOIN NEARBY TRAVELER NOW!!!</span>
+                      </Button>
+                      <p className="text-white mt-3 text-base sm:text-lg font-semibold px-2 break-words">Join the Community</p>
+                    </div>
+
+                  </div>
+                </main>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Live Events - Lu.ma style */}
+      <div className="relative z-10 py-16 bg-white overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center mb-12 animate-slide-in-left">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-gray-900 mb-4 leading-normal px-2 break-words hyphens-auto">
+              Connect with Locals and other Travelers
+            </h2>
+            <p className="text-base sm:text-lg md:text-xl text-gray-600 px-2 break-words">
+              Real people. Real experiences. Zero tourist traps.
+            </p>
+          </div>
+          
+          {/* Event Cards - Modern Lu.ma style */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-start">
+
+            {/* Beach Bonfire Event Card */}
+            <div className="bg-white rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-xl transition-all duration-300 flex flex-col min-h-[400px] w-full min-w-0">
+              <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-orange-400 to-red-500 overflow-hidden">
+                <img 
+                  src="/event page bbq party_1753299541268.png" 
+                  alt="Beach bonfire event" 
+                  className="w-full h-48 object-cover"
+                />
+              </div>
+              <div className="p-6 flex flex-col flex-grow min-w-0">
+                <div className="mb-3">
+                  <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-1 break-words hyphens-auto leading-tight">Beach Bonfire & BBQ</h3>
+                  <p className="text-sm text-gray-600 break-words leading-relaxed">Sunset gathering on the beach</p>
+                </div>
+                
+                {/* Tags */}
+                <div className="flex flex-wrap gap-2 mb-3">
+                  <span className="bg-orange-100 text-orange-700 px-2 py-1 rounded-full text-xs font-medium break-words">Free</span>
+                  <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs font-medium break-words">Beach</span>
+                  <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-medium break-words">Music</span>
+                </div>
+                
+                <p className="text-gray-700 text-sm sm:text-base mb-4 flex-grow leading-relaxed break-words hyphens-auto">Join locals for an authentic beach bonfire with BBQ, music, and sunset views. Experience the real LA beach culture with friendly people.</p>
+                <Button 
+                  onClick={() => setLocation('/join')}
+                  className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold mt-auto break-words text-sm sm:text-base"
+                >
+                  <span className="break-words">JOIN TO CONNECT</span>
+                </Button>
+              </div>
+            </div>
+            
+            {/* Add more event cards here with the same overflow fixes */}
+
+          </div>
+        </div>
+      </div>
+
+      {/* Additional sections continue... */}
+      <Footer />
+      
+      {/* Add custom CSS for better text wrapping */}
+      <style jsx>{`
+        @media (max-width: 640px) {
+          .hyphens-auto {
+            hyphens: auto;
+            word-break: break-word;
+            overflow-wrap: break-word;
+          }
+          
+          .break-words {
+            word-break: break-word;
+            overflow-wrap: break-word;
+          }
+        }
+        
+        /* Gentle pulse animation */
+        @keyframes gentle-pulse {
+          0%, 100% { 
+            transform: scale(1);
+            box-shadow: 0 12px 35px rgba(0,0,0,0.4), 0 0 0 3px rgba(255,255,255,0.9);
+          }
+          50% { 
+            transform: scale(1.02);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.5), 0 0 0 4px rgba(255,255,255,1);
+          }
+        }
+        
+        /* Slide in animations */
+        @keyframes slide-in-left {
+          from {
+            opacity: 0;
+            transform: translateX(-30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+        
+        @keyframes fade-in-up {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        
+        .animate-slide-in-left {
+          animation: slide-in-left 0.6s ease-out;
+        }
+        
+        .animate-fade-in-up {
+          animation: fade-in-up 0.6s ease-out;
+        }
+      `}</style>
+    </div>
+  );
+}
