@@ -74,8 +74,7 @@
 @tailwind utilities;
 
 :root {
-  /* FORCE LIGHT THEME - OVERRIDE EVERYTHING */
-  color-scheme: light !important;
+  color-scheme: light;
   --background: 0 0% 100%;
   --foreground: 222.2 84% 4.9%;
   --card: 0 0% 100%;
@@ -104,6 +103,7 @@
 }
 
 .dark {
+  color-scheme: dark;
   --background: 217 33% 12%;
   --foreground: 210 40% 98%;
   --card: 217 33% 15%;
@@ -128,6 +128,52 @@
   --chart-3: 30 80% 55%;
   --chart-4: 280 65% 60%;
   --chart-5: 340 75% 55%;
+}
+
+/* Global Dark Mode Fix - Ensures all text is visible in dark mode */
+.dark {
+  /* Force minimum contrast for all text elements */
+  color: rgb(243 244 246); /* gray-100 */
+}
+
+.dark *:not([class*="bg-"]):not([class*="text-"]) {
+  /* Ensure any element without explicit styling gets proper contrast */
+  color: rgb(243 244 246); /* gray-100 */
+}
+
+.dark input:not([class*="bg-"]):not([class*="text-"]) {
+  background-color: rgb(31 41 55); /* gray-800 */
+  color: rgb(243 244 246); /* gray-100 */
+  border-color: rgb(75 85 99); /* gray-600 */
+}
+
+.dark select:not([class*="bg-"]):not([class*="text-"]) {
+  background-color: rgb(31 41 55); /* gray-800 */
+  color: rgb(243 244 246); /* gray-100 */
+  border-color: rgb(75 85 99); /* gray-600 */
+}
+
+.dark textarea:not([class*="bg-"]):not([class*="text-"]) {
+  background-color: rgb(31 41 55); /* gray-800 */
+  color: rgb(243 244 246); /* gray-100 */
+  border-color: rgb(75 85 99); /* gray-600 */
+}
+
+/* Override problematic black text */
+.dark .text-gray-900,
+.dark .text-black {
+  color: rgb(243 244 246) !important; /* gray-100 */
+}
+
+/* Ensure dropdown content has proper contrast */
+.dark [role="option"],
+.dark [role="menuitem"] {
+  color: rgb(243 244 246) !important; /* gray-100 */
+}
+
+/* Fix for any remaining invisible text */
+.dark [class*="text-gray-"]:not([class*="text-gray-1"]):not([class*="text-gray-2"]):not([class*="text-gray-3"]):not([class*="text-gray-4"]) {
+  color: rgb(156 163 175) !important; /* gray-400 */
 }
 
 @layer base {
