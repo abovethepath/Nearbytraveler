@@ -267,40 +267,111 @@
   color: black !important;
 }
 
-/* For light colored pills, make them darker in dark mode for better contrast */
-.dark .bg-yellow-200, .dark .bg-yellow-300 {
-  background-color: #ca8a04 !important;
-  color: black !important;
+/* LIGHT MODE: Ensure proper colors for pills/badges */
+.bg-blue-100 {
+  background-color: #dbeafe !important;
+  color: #1e40af !important;
 }
 
-.dark .bg-blue-200, .dark .bg-blue-300 {
+.bg-blue-200 {
+  background-color: #bfdbfe !important;
+  color: #1d4ed8 !important;
+}
+
+.bg-green-100 {
+  background-color: #dcfce7 !important;
+  color: #166534 !important;
+}
+
+.bg-green-200 {
+  background-color: #bbf7d0 !important;
+  color: #15803d !important;
+}
+
+.bg-purple-100 {
+  background-color: #f3e8ff !important;
+  color: #7c3aed !important;
+}
+
+.bg-purple-200 {
+  background-color: #e9d5ff !important;
+  color: #8b5cf6 !important;
+}
+
+.bg-pink-100 {
+  background-color: #fce7f3 !important;
+  color: #be185d !important;
+}
+
+.bg-pink-200 {
+  background-color: #fbcfe8 !important;
+  color: #db2777 !important;
+}
+
+.bg-red-100 {
+  background-color: #fee2e2 !important;
+  color: #dc2626 !important;
+}
+
+.bg-red-200 {
+  background-color: #fecaca !important;
+  color: #ef4444 !important;
+}
+
+.bg-indigo-100 {
+  background-color: #e0e7ff !important;
+  color: #4f46e5 !important;
+}
+
+.bg-indigo-200 {
+  background-color: #c7d2fe !important;
+  color: #6366f1 !important;
+}
+
+.bg-yellow-100 {
+  background-color: #fef3c7 !important;
+  color: #92400e !important;
+}
+
+.bg-yellow-200 {
+  background-color: #fde68a !important;
+  color: #a16207 !important;
+}
+
+/* DARK MODE: Override for better contrast */
+.dark .bg-blue-100, .dark .bg-blue-200, .dark .bg-blue-300 {
   background-color: #2563eb !important;
   color: white !important;
 }
 
-.dark .bg-green-200, .dark .bg-green-300 {
+.dark .bg-green-100, .dark .bg-green-200, .dark .bg-green-300 {
   background-color: #059669 !important;
   color: white !important;
 }
 
-.dark .bg-red-200, .dark .bg-red-300 {
-  background-color: #dc2626 !important;
-  color: white !important;
-}
-
-.dark .bg-purple-200, .dark .bg-purple-300 {
+.dark .bg-purple-100, .dark .bg-purple-200, .dark .bg-purple-300 {
   background-color: #9333ea !important;
   color: white !important;
 }
 
-.dark .bg-pink-200, .dark .bg-pink-300 {
+.dark .bg-pink-100, .dark .bg-pink-200, .dark .bg-pink-300 {
   background-color: #db2777 !important;
   color: white !important;
 }
 
-.dark .bg-indigo-200, .dark .bg-indigo-300 {
+.dark .bg-red-100, .dark .bg-red-200, .dark .bg-red-300 {
+  background-color: #dc2626 !important;
+  color: white !important;
+}
+
+.dark .bg-indigo-100, .dark .bg-indigo-200, .dark .bg-indigo-300 {
   background-color: #4f46e5 !important;
   color: white !important;
+}
+
+.dark .bg-yellow-100, .dark .bg-yellow-200, .dark .bg-yellow-300 {
+  background-color: #ca8a04 !important;
+  color: black !important;
 }
 
 /* Card and container fixes */
