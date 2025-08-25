@@ -187,7 +187,7 @@ export default function Landing() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-start">
 
             {/* Beach Bonfire Event Card */}
-            <div className="bg-white rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-xl transition-all duration-300 flex flex-col min-h-[400px]">
+            <div className="bg-white rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-xl transition-all duration-300 flex flex-col min-h-[480px]">
               <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-orange-400 to-red-500">
                 <img 
                   src="/event page bbq party_1753299541268.png" 
@@ -207,7 +207,7 @@ export default function Landing() {
                   <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs font-medium">Beach</span>
                 </div>
                 
-                <p className="text-gray-700 text-sm sm:text-base mb-4 flex-grow leading-relaxed" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Join locals for an authentic beach bonfire with BBQ, music, and sunset views. Experience the real LA beach culture with friendly people.</p>
+                <p className="text-gray-700 text-sm sm:text-base mb-6 flex-grow leading-relaxed" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Join locals for an authentic beach bonfire with BBQ, music, and sunset views. Experience the real LA beach culture with friendly people.</p>
                 <Button 
                   onClick={() => setLocation('/join')}
                   className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold mt-auto"
@@ -219,7 +219,7 @@ export default function Landing() {
             </div>
             
             {/* Taco Tuesday Event Card */}
-            <div className="bg-white rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-2xl transform transition-all duration-300 flex flex-col min-h-[400px]" style={{animationDelay: '0.2s'}}>
+            <div className="bg-white rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-2xl transform transition-all duration-300 flex flex-col min-h-[480px]" style={{animationDelay: '0.2s'}}>
               <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-yellow-400 to-orange-500">
                 <img 
                   src="/image_1754973365104.png" 
@@ -239,7 +239,7 @@ export default function Landing() {
                   <span className="bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full text-xs font-medium">Food</span>
                 </div>
                 
-                <p className="text-gray-700 text-xs sm:text-sm mb-4 flex-grow leading-relaxed" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Join locals every Tuesday for authentic street tacos at unbeatable prices. Meet fellow taco lovers and discover the best Mexican spots in the city.</p>
+                <p className="text-gray-700 text-xs sm:text-sm mb-6 flex-grow leading-relaxed" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Join locals every Tuesday for authentic street tacos at unbeatable prices. Meet fellow taco lovers and discover the best Mexican spots in the city.</p>
                 <Button 
                   onClick={() => setLocation('/join')}
                   className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold mt-auto"
@@ -251,7 +251,7 @@ export default function Landing() {
             </div>
             
             {/* Hollywood Sign Hike Event Card */}
-            <div className="bg-white rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-2xl transform transition-all duration-300 flex flex-col min-h-[400px]" style={{animationDelay: '0.3s'}}>
+            <div className="bg-white rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-2xl transform transition-all duration-300 flex flex-col min-h-[480px]" style={{animationDelay: '0.3s'}}>
               <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-blue-500 to-indigo-600">
                 <img 
                   src="/image_1754974796221.png" 
@@ -271,7 +271,7 @@ export default function Landing() {
                   <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-xs font-medium">Hiking</span>
                 </div>
                 
-                <p className="text-gray-700 text-sm mb-4 flex-grow" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Weekly hike to the iconic Hollywood Sign with locals and travelers. Amazing city views, great photos, and authentic LA hiking culture.</p>
+                <p className="text-gray-700 text-sm mb-6 flex-grow" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Weekly hike to the iconic Hollywood Sign with locals and travelers. Amazing city views, great photos, and authentic LA hiking culture.</p>
                 <Button 
                   onClick={() => setLocation('/join')}
                   className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold mt-auto"
@@ -283,7 +283,7 @@ export default function Landing() {
             </div>
 
             {/* Happy Hour at Jameson Pub Event Card */}
-            <div className="bg-white rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-2xl transform transition-all duration-300 flex flex-col min-h-[400px]" style={{animationDelay: '0.4s'}}>
+            <div className="bg-white rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-2xl transform transition-all duration-300 flex flex-col min-h-[480px]" style={{animationDelay: '0.4s'}}>
               <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-amber-500 to-orange-600">
                 <img 
                   src="/image_1754975666980.png" 
@@ -303,7 +303,7 @@ export default function Landing() {
                   <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs font-medium">21+</span>
                 </div>
                 
-                <p className="text-gray-700 text-sm mb-4 flex-grow" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Join locals and travelers for Thursday happy hour with live music at Jameson Pub. Great drinks, live bands, and authentic LA nightlife.</p>
+                <p className="text-gray-700 text-sm mb-6 flex-grow" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Join locals and travelers for Thursday happy hour with live music at Jameson Pub. Great drinks, live bands, and authentic LA nightlife.</p>
                 <Button 
                   onClick={() => setLocation('/join')}
                   className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold mt-auto"
