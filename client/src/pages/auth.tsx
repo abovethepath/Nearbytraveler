@@ -123,7 +123,7 @@ export default function Auth() {
       <div className={`${!isLogin ? 'join-page-background' : 'login-page-background'} min-h-screen flex flex-col items-center justify-center p-4 relative`}>
       {/* Overlay to maintain readability */}
       <div className="absolute inset-0 bg-white/10 dark:bg-gray-900/20"></div>
-      <div className="w-full max-w-sm relative z-10">
+      <div className="w-full max-w-xs relative z-10">
         <Card className="auth-page-card shadow-2xl border-4 border-blue-500/50 bg-white/80 dark:bg-gray-900/95 backdrop-blur-md">
           <CardHeader className="text-center">
             <div className="flex justify-start mb-4">
