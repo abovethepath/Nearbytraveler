@@ -17,29 +17,31 @@ export default function LandingNavbar() {
                 </div>
               </Link>
             </div>
-            <div className="hidden lg:ml-8 lg:flex lg:space-x-2 xl:space-x-4 2xl:space-x-6">
-              <Link href="/" className="border-teal-500 text-gray-900 dark:text-white inline-flex items-center px-1 pt-1 border-b-2 text-xs lg:text-sm font-medium">
+            {/* FIXED: Added more spacing and consistent styling for all navigation links */}
+            <div className="hidden lg:ml-8 lg:flex lg:space-x-4 xl:space-x-6 2xl:space-x-8">
+              <Link href="/" className="border-transparent text-gray-700 dark:text-gray-300 hover:border-gray-300 hover:text-gray-900 dark:hover:text-white inline-flex items-center px-2 pt-1 border-b-2 text-sm font-medium whitespace-nowrap transition-colors duration-200">
                 Home
               </Link>
-              <Link href="/locals-landing" className="border-transparent text-gray-500 dark:text-gray-400 hover:border-gray-300 hover:text-gray-700 dark:hover:text-gray-300 inline-flex items-center px-1 pt-1 border-b-2 text-xs lg:text-sm font-medium whitespace-nowrap">
+              <Link href="/locals-landing" className="border-transparent text-gray-500 dark:text-gray-400 hover:border-gray-300 hover:text-gray-700 dark:hover:text-gray-300 inline-flex items-center px-2 pt-1 border-b-2 text-sm font-medium whitespace-nowrap transition-colors duration-200">
                 Locals
               </Link>
-              <Link href="/travelers-landing" className="border-transparent text-gray-500 dark:text-gray-400 hover:border-gray-300 hover:text-gray-700 dark:hover:text-gray-300 inline-flex items-center px-1 pt-1 border-b-2 text-xs lg:text-sm font-medium whitespace-nowrap">
+              <Link href="/travelers-landing" className="border-transparent text-gray-500 dark:text-gray-400 hover:border-gray-300 hover:text-gray-700 dark:hover:text-gray-300 inline-flex items-center px-2 pt-1 border-b-2 text-sm font-medium whitespace-nowrap transition-colors duration-200">
                 Travelers
               </Link>
-              <Link href="/events-landing" className="border-transparent text-gray-500 dark:text-gray-400 hover:border-gray-300 hover:text-gray-700 dark:hover:text-gray-300 inline-flex items-center px-1 pt-1 border-b-2 text-xs lg:text-sm font-medium whitespace-nowrap">
+              <Link href="/events-landing" className="border-transparent text-gray-500 dark:text-gray-400 hover:border-gray-300 hover:text-gray-700 dark:hover:text-gray-300 inline-flex items-center px-2 pt-1 border-b-2 text-sm font-medium whitespace-nowrap transition-colors duration-200">
                 Events
               </Link>
-              <Link href="/business-landing" className="border-transparent text-gray-500 dark:text-gray-400 hover:border-gray-300 hover:text-gray-700 dark:hover:text-gray-300 inline-flex items-center px-1 pt-1 border-b-2 text-xs lg:text-sm font-medium whitespace-nowrap">
+              <Link href="/business-landing" className="border-transparent text-gray-500 dark:text-gray-400 hover:border-gray-300 hover:text-gray-700 dark:hover:text-gray-300 inline-flex items-center px-2 pt-1 border-b-2 text-sm font-medium whitespace-nowrap transition-colors duration-200">
                 Business
               </Link>
             </div>
           </div>
-          <div className="hidden xl:ml-16 xl:flex xl:items-center xl:space-x-2 2xl:ml-20 2xl:space-x-3 flex-shrink-0">
-            <Link href="/auth" className="bg-blue-600 hover:bg-blue-700 text-white px-2 xl:px-3 py-1.5 rounded-md text-xs font-medium transition duration-150 ease-in-out whitespace-nowrap">
+          {/* FIXED: Increased spacing significantly to prevent overlap and ensure buttons don't touch navigation tabs */}
+          <div className="hidden xl:ml-32 xl:flex xl:items-center xl:space-x-4 2xl:ml-40 2xl:space-x-6 flex-shrink-0 pl-8">
+            <Link href="/auth" className="bg-blue-600 hover:bg-blue-700 text-white px-4 xl:px-5 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out whitespace-nowrap">
               Sign In
             </Link>
-            <Link href="/join" className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white px-2 xl:px-3 py-1.5 rounded-md text-xs font-medium transition duration-150 ease-in-out whitespace-nowrap">
+            <Link href="/join" className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white px-4 xl:px-5 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out whitespace-nowrap">
               Join Now
             </Link>
           </div>
@@ -69,8 +71,9 @@ export default function LandingNavbar() {
       {mobileMenuOpen && (
         <div className="xl:hidden bg-white dark:bg-gray-800 shadow-lg">
           <div className="pt-3 pb-3 space-y-1 px-4">
+            {/* FIXED: Consistent styling for mobile home button - removed special background and border styling */}
             <Link href="/" 
-              className="bg-gradient-to-r from-blue-50 to-orange-50 dark:from-blue-900/20 dark:to-orange-900/20 border-l-4 border-blue-500 text-blue-700 dark:text-blue-400 block pl-4 pr-4 py-4 text-lg font-medium rounded-r-lg transition-all duration-200"
+              className="border-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 block pl-4 pr-4 py-4 border-l-4 text-lg font-medium rounded-r-lg transition-all duration-200 touch-manipulation"
               onClick={() => setMobileMenuOpen(false)}
             >
               🏠 Home
