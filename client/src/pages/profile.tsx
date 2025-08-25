@@ -4342,7 +4342,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       </div>
                       {/* Show selected interests */}
                       {tempInterests.length > 0 && (
-                        <div className="p-3 bg-gray-50 rounded-lg">
+                        <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
                           <p className="text-sm font-medium text-gray-700 mb-2">Selected Interests:</p>
                           <div className="flex flex-wrap gap-2">
                             {tempInterests.map((interest) => (
@@ -4488,7 +4488,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       </div>
                       {/* Simple list of current activities with remove buttons */}
                       {tempActivities.length > 0 && (
-                        <div className="mt-3 p-3 bg-gray-50 rounded-lg">
+                        <div className="mt-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
                           <p className="text-sm font-medium text-gray-700 mb-2">Current Activities:</p>
                           <div className="flex flex-wrap gap-2">
                             {tempActivities.map((activity, index) => (
@@ -4633,7 +4633,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       </div>
                       {/* Simple list of current events with remove buttons */}
                       {tempEvents.length > 0 && (
-                        <div className="mt-3 p-3 bg-gray-50 rounded-lg">
+                        <div className="mt-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
                           <p className="text-sm font-medium text-gray-700 mb-2">Current Events:</p>
                           <div className="flex flex-wrap gap-2">
                             {tempEvents.map((event, index) => (
@@ -5933,7 +5933,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 
                 {/* Filter Panel */}
                 {showConnectionFilters && userConnections.length > 0 && (
-                  <div className="mt-4 p-4 bg-gray-50 rounded-lg space-y-3">
+                  <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg space-y-3 border border-gray-200 dark:border-gray-700">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                       <div>
                         <label className="text-xs font-medium text-gray-700 mb-1 block">Location</label>
@@ -6745,7 +6745,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         </span>
                       </div>
                       {user.currentLatitude && user.currentLongitude && (
-                        <div className="text-xs text-gray-500 bg-gray-50 dark:bg-gray-800 p-2 rounded">
+                        <div className="text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 p-2 rounded border border-gray-200 dark:border-gray-700">
                           Current location: {user.currentLatitude.toFixed(4)}, {user.currentLongitude.toFixed(4)}
                         </div>
                       )}
@@ -9214,10 +9214,10 @@ class ProfileErrorBoundary extends React.Component<
       };
 
       return (
-        <div className="min-h-screen bg-gray-50 p-4">
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
           <div className="max-w-4xl mx-auto pt-20">
-            <div className="bg-white rounded-lg shadow-lg p-6">
-              <h2 className="text-2xl font-bold text-red-600 mb-4">Profile Page Error</h2>
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 border border-gray-200 dark:border-gray-700">
+              <h2 className="text-2xl font-bold text-red-600 dark:text-red-400 mb-4">Profile Page Error</h2>
               <p className="text-gray-600 dark:text-gray-300 mb-6">The profile page encountered a rendering error.</p>
               
               <div className="bg-red-50 border border-red-200 rounded p-4 mb-6">
