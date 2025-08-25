@@ -193,7 +193,7 @@ export default function SignupTraveling() {
 
       // Get account data from sessionStorage (from Auth component)
       const storedAccountData = sessionStorage.getItem('accountData');
-      let accountData = { email: '', password: '', username: '', name: '', phoneNumber: '' };
+      let accountData: any = { email: '', password: '', username: '', name: '', phoneNumber: '' };
 
       if (storedAccountData) {
         try {
@@ -211,7 +211,7 @@ export default function SignupTraveling() {
         password: accountData.password || formData.password,
         username: accountData.username || formData.username,
         name: accountData.name || formData.name,
-        phoneNumber: accountData.phoneNumber || formData.phoneNumber
+        phoneNumber: accountData.phoneNumber || ''
       };
 
       // Validation
