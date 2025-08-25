@@ -25,28 +25,53 @@ export default function NetworkingHero() {
       </svg>
 
       {/* Content */}
-      <div className="relative z-10 w-full px-5 md:px-8 pb-10 md:pb-0">
-        <div className="max-w-3xl md:max-w-4xl">
-          <h1 className="text-white text-3xl sm:text-4xl md:text-6xl font-semibold leading-tight">
-            Networking, Reinvented.
-          </h1>
-          <p className="mt-3 md:mt-4 text-white/90 text-base md:text-xl max-w-2xl">
-            Connect before, during, and after every event — no business cards needed.
-          </p>
-          <div className="mt-5 flex flex-col sm:flex-row gap-3">
-            <button 
-              onClick={() => setLocation('/join')}
-              className="inline-flex items-center justify-center rounded-2xl px-5 py-3 bg-orange-500 text-white font-medium shadow-md hover:shadow-lg"
-            >
-              Start Networking Now
-            </button>
-            <button 
-              onClick={() => setLocation('/join')}
-              className="inline-flex items-center justify-center rounded-2xl px-5 py-3 bg-white/90 backdrop-blur text-gray-900 font-medium shadow-md hover:bg-white"
-            >
-              See Who's Going
-            </button>
-          </div>
+      <div className="relative">
+        <div className="sm:pb-16 md:pb-20 lg:pb-28 xl:pb-32">
+          <main className="mt-16 mx-auto max-w-full sm:mt-20 md:mt-24 lg:mt-28 xl:mt-32">
+            <div className="text-center">
+              <div className="max-w-4xl mx-auto">
+                <h1 className="px-3 leading-tight sm:leading-snug">
+                  <span className="block font-black text-[clamp(1.5rem,6vw,2.25rem)] text-white">
+                    Networking, Reinvented.
+                  </span>
+                  <span className="block font-black text-[clamp(1.25rem,5.5vw,2rem)]">
+                    <span className="text-amber-300 sm:text-orange-500">Connect before, during, and after every event </span>
+                    <span className="text-white">— no business cards needed.</span>
+                  </span>
+                </h1>
+                
+                {/* Networking value proposition (hide on phones so the hero photo is visible) */}
+                <div className="hidden sm:block mt-8 p-6 bg-black/40 backdrop-blur-sm rounded-2xl border border-white/20">
+                  <p className="text-xl text-white leading-relaxed">
+                    <span className="text-orange-300 font-bold">"Thanks to Nearby Traveler, You can meet half your conference before even landing. An event can feel like a reunion, not a room full of strangers."</span>
+                    <span className="text-white"> —Aaron, Founder</span>
+                  </p>
+                  <div className="mt-6">
+                    <p className="text-lg text-white leading-relaxed">
+                      <span className="text-orange-300 font-bold">Transform your networking game.</span>
+                      <span className="text-white"> Meet conference attendees before you travel. Build meaningful connections that last beyond the event. Never walk into a room full of strangers again.</span>
+                    </p>
+                  </div>
+                  <div className="mt-4 text-center">
+                    <p className="text-white font-bold text-lg">— Professional Networking Evolved</p>
+                    <p className="text-orange-200 text-sm">Join business travelers building lasting connections</p>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Primary networking CTA */}
+              <div className="mt-12 mb-8 px-4">
+                <button
+                  onClick={() => setLocation('/join')}
+                  className="bg-transparent hover:bg-white/10 text-white font-bold text-lg px-8 py-3 rounded-full border-2 border-white transition-all duration-200 transform hover:scale-105"
+                >
+                  START NETWORKING NOW
+                </button>
+                <p className="text-white mt-3 text-base sm:text-lg font-semibold px-2">Join the networking revolution • Connect today</p>
+              </div>
+
+            </div>
+          </main>
         </div>
       </div>
     </section>
