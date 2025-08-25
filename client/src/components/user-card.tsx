@@ -35,20 +35,6 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
   // Emergency fallback - check localStorage directly if context fails
   const [fallbackUser, setFallbackUser] = useState<User | null>(null);
   
-  // Fetch compatibility data between current user and this user
-  const { data: compatibilityData } = useQuery({
-    queryKey: [`/api/compatibility/${currentUserId || effectiveUser?.id}/${user.id}`],
-    enabled: !!(currentUserId || effectiveUser?.id) && currentUserId !== user.id && effectiveUser?.id !== user.id,
-    staleTime: Infinity,
-    gcTime: Infinity,
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-    refetchInterval: false,
-    refetchIntervalInBackground: false,
-    refetchOnReconnect: false,
-    retry: false
-  });
-  
   React.useEffect(() => {
     if (!currentUser) {
       const storedUser = localStorage.getItem('travelconnect_user');
@@ -66,9 +52,23 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
     }
   }, [currentUser]);
 
-  // Use context user if available, otherwise fallback
+  // Use context user if available, otherwise fallback - MOVED BEFORE useQuery
   const effectiveUser = currentUser || fallbackUser;
   const effectiveIsAuthenticated = isAuthenticated || !!fallbackUser;
+  
+  // Fetch compatibility data between current user and this user
+  const { data: compatibilityData } = useQuery({
+    queryKey: [`/api/compatibility/${currentUserId || effectiveUser?.id}/${user.id}`],
+    enabled: !!(currentUserId || effectiveUser?.id) && currentUserId !== user.id && effectiveUser?.id !== user.id,
+    staleTime: Infinity,
+    gcTime: Infinity,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchInterval: false,
+    refetchIntervalInBackground: false,
+    refetchOnReconnect: false,
+    retry: false
+  });
 
   // Fetch travel plans to show travel dates when visiting cities
   const { data: userTravelPlans = [] } = useQuery({
