@@ -5,13 +5,16 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
+import { apiRequest } from "@/lib/queryClient";
+import { getAllInterests, getAllActivities, getAllEvents, getAllLanguages, validateSelections, MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS } from "../../../shared/base-options";
+import { BASE_TRAVELER_TYPES } from "@/lib/travelOptions";
+import { validateCustomInput, filterCustomEntries } from "@/lib/contentFilter";
 import { AuthContext } from "@/App";
 import { SmartLocationInput } from "@/components/SmartLocationInput";
 import { authStorage } from "@/lib/auth";
 import { ArrowLeft } from "lucide-react";
-import { calculateAge, validateDateInput, getDateInputConstraints } from "@/lib/ageUtils";
-import { MOST_POPULAR_INTERESTS } from "../../../shared/base-options";
-import { detectMetroArea, type MetroAreaDetection } from "../../../shared/metro-areas";
+import { GENDER_OPTIONS, SEXUAL_PREFERENCE_OPTIONS, PRIVACY_NOTES } from "@/lib/formConstants";
+import { calculateAge, formatDateOfBirthForInput, validateDateInput, getDateInputConstraints } from "@/lib/ageUtils";
 
 // Age validation utility
 const validateAge = (dateOfBirth: string): { isValid: boolean; message?: string } => {
@@ -49,34 +52,113 @@ const validateAge = (dateOfBirth: string): { isValid: boolean; message?: string 
 export default function SignupLocalTraveler() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
+  const authContext = useContext(AuthContext);
   const { setUser, login } = useContext(AuthContext);
 
   const [formData, setFormData] = useState({
     userType: "local",
-    // Account fields - will be loaded from session storage
+
+    // Account fields (for direct testing)
     email: "",
     password: "",
     username: "",
     name: "",
-    // Essential simplified fields
+
+    // Profile fields
     dateOfBirth: "",
-    phoneNumber: "", // For event SMS notifications
-    // Location fields - keep for locals
+    bio: "",
+    gender: "",
+    sexualPreference: [] as string[],
+    languagesSpoken: [] as string[],
+    customLanguages: "",
+
+    // Location fields
     hometownCountry: "",
     hometownCity: "",
     hometownState: "",
-    // Top Choices - minimum 3 required
+
+    // Interests/Activities/Events
     interests: [] as string[],
+    customInterests: [] as string[],
+    customInterestInput: "",
+
+    activities: [] as string[],
+    customActivities: [] as string[],
+    customActivityInput: "",
+
+    events: [] as string[],
+    customEvents: [] as string[],
+    customEventInput: "",
+
+
+
+    // Military status
+    isVeteran: false,
+    isActiveDuty: false,
+
+    // Family travel
+    travelingWithChildren: false,
+    
     // Current travel status - local users are typically not currently traveling
-    isCurrentlyTraveling: false,
-    // METRO AREA FIELDS
-    metroArea: "",
-    isMetroUser: false
+    isCurrentlyTraveling: false
   });
 
   const [isLoading, setIsLoading] = useState(false);
-  const [metroDetection, setMetroDetection] = useState<MetroAreaDetection | null>(null);
-  const [showMetroConfirmation, setShowMetroConfirmation] = useState(false);
+  const [customEvent, setCustomEvent] = useState("");
+
+  // Helper functions to match travelers signup exactly
+  const getTotalSelections = () => {
+    return formData.interests.length + formData.activities.length + formData.events.length;
+  };
+
+  // Select All function for Top Choices sections
+  const selectAllTopChoices = () => {
+    setFormData(prev => {
+      // Get items not already selected
+      const newInterests = MOST_POPULAR_INTERESTS.filter(item => !prev.interests.includes(item));
+      
+      return {
+        ...prev,
+        interests: [...prev.interests, ...newInterests]
+      };
+    });
+  };
+
+  // Clear All function for Top Choices sections
+  const clearAllTopChoices = () => {
+    setFormData(prev => ({
+      ...prev,
+      interests: prev.interests.filter(item => !MOST_POPULAR_INTERESTS.includes(item))
+    }));
+  };
+
+  const addCustomItem = (type: string, value: string, clearInput: () => void) => {
+    const trimmed = value.trim();
+    if (!trimmed) return;
+
+    if (type === 'interest') {
+      if (!formData.interests.includes(trimmed)) {
+        setFormData(prev => ({ ...prev, interests: [...prev.interests, trimmed] }));
+        clearInput();
+      }
+    } else if (type === 'activity') {
+      if (!formData.activities.includes(trimmed)) {
+        setFormData(prev => ({ ...prev, activities: [...prev.activities, trimmed] }));
+        clearInput();
+      }
+    } else if (type === 'event') {
+      if (!formData.events.includes(trimmed)) {
+        setFormData(prev => ({ ...prev, events: [...prev.events, trimmed] }));
+        clearInput();
+      }
+    } else if (type === 'language') {
+      if (!formData.languagesSpoken.includes(trimmed)) {
+        setFormData(prev => ({ ...prev, languagesSpoken: [...prev.languagesSpoken, trimmed] }));
+        clearInput();
+      }
+    }
+  };
+
 
   // Load account data from sessionStorage on component mount
   useEffect(() => {
@@ -103,9 +185,21 @@ export default function SignupLocalTraveler() {
     setIsLoading(true);
 
     try {
-      console.log('🚀 SIMPLIFIED LOCAL SIGNUP - Starting registration');
+      console.log('🚨 MOBILE SIGNUP DEBUG - Form submission started');
+      console.log('📋 Current Form Data:', {
+        dateOfBirth: formData.dateOfBirth,
+        hometownCity: formData.hometownCity,
+        hometownCountry: formData.hometownCountry,
+        sexualPreference: formData.sexualPreference,
+        languagesSpoken: formData.languagesSpoken,
+        customLanguages: formData.customLanguages,
+        interests: formData.interests,
+        activities: formData.activities,
+        events: formData.events,
+        totalSelections: formData.interests.length + formData.activities.length + formData.events.length
+      });
 
-      // Get account data from sessionStorage
+      // Get account data from sessionStorage (from Auth component)
       const storedAccountData = sessionStorage.getItem('accountData');
       let accountData = { email: '', password: '', username: '', name: '' };
 
@@ -118,76 +212,64 @@ export default function SignupLocalTraveler() {
         }
       }
 
-      // Check for referral information
-      const referralCode = sessionStorage.getItem('referralCode');
-      const referrerInfo = sessionStorage.getItem('referrerInfo');
-      const connectionNote = sessionStorage.getItem('connectionNote');
-      
-      if (referralCode) {
-        console.log('✅ Found referral code from QR signup:', referralCode);
-        if (connectionNote) {
-          console.log('📝 Found connection note:', connectionNote);
-        }
-      }
-
-      // Merge account data
+      // CRITICAL: Merge account data INTO formData to ensure submission has complete data
       const finalFormData = {
         ...formData,
         email: accountData.email || formData.email,
         password: accountData.password || formData.password,
         username: accountData.username || formData.username,
-        name: accountData.name || formData.name,
-        // Include referral information if available
-        ...(referralCode && { referralCode }),
-        ...(connectionNote && { connectionNote })
+        name: accountData.name || formData.name
       };
 
-      // Validate required fields
-      const missingFields = [];
-      if (!finalFormData.email) missingFields.push("Email");
-      if (!finalFormData.password) missingFields.push("Password");
-      if (!finalFormData.username) missingFields.push("Username");
-      if (!finalFormData.name) missingFields.push("Full Name");
-      if (!formData.dateOfBirth) missingFields.push("Date of Birth");
-      if (!formData.hometownCity) missingFields.push("Hometown");
-      if (!formData.hometownCountry) missingFields.push("Hometown Country");
-
-      if (missingFields.length > 0) {
+      // Validation
+      if (!finalFormData.name || !finalFormData.username || !finalFormData.email || !finalFormData.password) {
+        window.alert(`SIGNUP ERROR: Missing required fields - Name: ${finalFormData.name ? 'OK' : 'MISSING'}, Username: ${finalFormData.username ? 'OK' : 'MISSING'}, Email: ${finalFormData.email ? 'OK' : 'MISSING'}, Password: ${finalFormData.password ? 'OK' : 'MISSING'}`);
+        
         toast({
-          title: "Missing Required Information",
-          description: `Please fill in: ${missingFields.join(', ')}`,
+          title: "Missing required fields",
+          description: "Please fill in all required fields.",
           variant: "destructive",
         });
-        setIsLoading(false);
         return;
       }
 
-      // Validate minimum 3 interests
-      if (formData.interests.length < 3) {
+      // Age validation - optional for locals
+      if (formData.dateOfBirth) {
+        const ageResult = validateAge(formData.dateOfBirth);
+        if (!ageResult.isValid) {
+          toast({
+            title: "Age Validation",
+            description: ageResult.message,
+            variant: "destructive",
+          });
+          return;
+        }
+      }
+
+      // Location validation
+      if (!formData.hometownCity || !formData.hometownCountry) {
+        toast({
+          title: "Location required",
+          description: "Please select your hometown location.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Check minimum selections requirement - reduced for locals
+      const totalSelections = formData.interests.length + formData.activities.length + formData.events.length + formData.languagesSpoken.length;
+      if (totalSelections < 3) {
         toast({
           title: "More selections needed",
-          description: "Please choose at least 3 interests to help us match you with like-minded people nearby.",
+          description: "Please choose at least 3 total items to help us match you with others.",
           variant: "destructive",
         });
-        setIsLoading(false);
         return;
       }
 
-      // Age validation
-      const ageResult = validateAge(formData.dateOfBirth);
-      if (!ageResult.isValid) {
-        toast({
-          title: "Age Validation",
-          description: ageResult.message,
-          variant: "destructive",
-        });
-        setIsLoading(false);
-        return;
-      }
+      console.log('✅ VALIDATION PASSED - Proceeding with local registration');
 
-      console.log('✅ VALIDATION PASSED - Proceeding with simplified local registration');
-
-      // Prepare simplified registration data
+      // Prepare registration data
       const registrationData = {
         userType: 'local',
         isCurrentlyTraveling: false,
@@ -195,10 +277,14 @@ export default function SignupLocalTraveler() {
         password: finalFormData.password,
         username: finalFormData.username.toLowerCase().trim(),
         name: finalFormData.name.trim(),
-        dateOfBirth: new Date(formData.dateOfBirth),
-        phoneNumber: formData.phoneNumber.trim() || null,
-        interests: formData.interests,
-        // Hometown - CRITICAL for all users
+        
+        // Optional profile fields
+        dateOfBirth: formData.dateOfBirth ? new Date(formData.dateOfBirth) : undefined,
+        bio: formData.bio || '',
+        gender: formData.gender || '',
+        sexualPreference: formData.sexualPreference || [],
+        
+        // Location data
         hometownCity: formData.hometownCity,
         hometownState: formData.hometownState,
         hometownCountry: formData.hometownCountry,
@@ -208,22 +294,20 @@ export default function SignupLocalTraveler() {
         hometown: formData.hometownState 
           ? `${formData.hometownCity}, ${formData.hometownState}, ${formData.hometownCountry}`
           : `${formData.hometownCity}, ${formData.hometownCountry}`,
-        // Metro area data for chatroom access
-        metroArea: formData.metroArea,
-        isMetroUser: formData.isMetroUser,
-        // Set empty arrays for fields that will be completed in profile
-        activities: [],
-        events: [],
-        languagesSpoken: [],
-        sexualPreference: [],
-        // Default values for removed fields
-        gender: '',
-        isVeteran: false,
-        isActiveDuty: false,
-        travelingWithChildren: false
+        
+        // Preferences
+        interests: formData.interests,
+        activities: formData.activities,
+        events: formData.events,
+        languagesSpoken: formData.languagesSpoken,
+        
+        // Additional flags
+        isVeteran: formData.isVeteran,
+        isActiveDuty: formData.isActiveDuty,
+        travelingWithChildren: formData.travelingWithChildren
       };
 
-      console.log('➡️ Submitting simplified local registration');
+      console.log('➡️ Submitting local registration');
 
       const response = await fetch('/api/auth/register', {
         method: 'POST',
@@ -252,29 +336,13 @@ export default function SignupLocalTraveler() {
         // Clear stored account data
         sessionStorage.removeItem('accountData');
         
-        // Handle referral success and cleanup
-        let successMessage = "Setting up your local profile...";
-        if (referralCode && referrerInfo) {
-          try {
-            const referrer = JSON.parse(referrerInfo);
-            successMessage = `You're now connected with ${referrer.name}! Setting up your profile...`;
-          } catch (error) {
-            console.error('Error parsing referrer info:', error);
-          }
-          
-          // Clean up referral data
-          sessionStorage.removeItem('referralCode');
-          sessionStorage.removeItem('referrerInfo');
-          sessionStorage.removeItem('connectionNote');
-        }
-        
         toast({
           title: "Account created successfully!",
-          description: successMessage,
+          description: "Setting up your local profile...",
           variant: "default",
         });
 
-        // Navigate immediately to welcome page while profile builds in background
+        // Navigate to welcome page
         setLocation('/welcome');
       } else {
         console.error('❌ Registration failed:', data.message);
@@ -309,175 +377,119 @@ export default function SignupLocalTraveler() {
   const { min: minDate, max: maxDate } = getDateInputConstraints();
 
   return (
-    <div className="min-h-screen bg-gray-50 overflow-hidden break-words">
-      <div className="max-w-2xl mx-auto px-2 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-6 overflow-hidden break-words">
-        <Card className="shadow-lg sm:shadow-2xl border border-gray-200 sm:border-2 bg-white overflow-hidden break-words">
-          <CardHeader className="text-center bg-gray-50 rounded-t-lg pb-4 sm:pb-6 md:pb-8 px-4 sm:px-6 pt-4 sm:pt-6 overflow-hidden break-words">
-            <div className="flex justify-start mb-3 sm:mb-4">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
+      <div className="max-w-2xl mx-auto">
+        <Card className="shadow-2xl border-2 border-gray-200 dark:border-gray-700 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md">
+          <CardHeader className="text-center bg-gray-50 dark:bg-gray-800 rounded-t-lg pb-8">
+            <div className="flex justify-start mb-4">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => setLocation('/join')}
-                className="text-blue-600 hover:text-blue-800 border-blue-300 hover:border-blue-500 font-medium text-xs sm:text-sm h-8 sm:h-9"
-                data-testid="button-back"
+                className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 border-blue-300 hover:border-blue-500 font-medium"
               >
-                <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                <ArrowLeft className="w-4 h-4 mr-2" />
                 Back
               </Button>
             </div>
-            <CardTitle className="text-xl sm:text-2xl md:text-3xl font-bold text-black mb-2 sm:mb-3 text-crisp leading-tight break-words">
-              Complete Your Profile 🏠
+            <CardTitle className="text-4xl font-bold text-gray-900 dark:text-white mb-3">
+              Complete Your Local Profile 🏠
             </CardTitle>
-            <CardDescription className="text-xs sm:text-sm md:text-base lg:text-lg text-black leading-relaxed max-w-lg mx-auto text-crisp px-2 break-words">
-              Just a few quick details to get you started. You can add more interests and activities and specific events to your profile after joining!
+            <CardDescription className="text-xl text-gray-700 dark:text-gray-300 font-medium">
+              Just a few quick details to get you started. You can add more to your profile after joining!
             </CardDescription>
           </CardHeader>
 
-          <CardContent className="p-4 sm:p-6 md:p-8 overflow-hidden break-words">
-            <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8 overflow-hidden break-words">
-              {/* Date of Birth - Mobile Responsive */}
-              <div className="space-y-2 sm:space-y-3 overflow-hidden break-words">
-                <Label htmlFor="dateOfBirth" className="text-sm sm:text-base md:text-lg font-semibold text-black text-crisp break-words">
-                  Date of Birth * <span className="text-xs sm:text-sm font-normal text-black">(Can be hidden on profile)</span>
-                </Label>
-                <Input
-                  id="dateOfBirth"
-                  type="date"
-                  value={formData.dateOfBirth}
-                  onChange={(e) => setFormData(prev => ({ ...prev, dateOfBirth: e.target.value }))}
-                  min={minDate}
-                  max={maxDate}
-                  className="text-sm sm:text-base py-2 sm:py-3 border border-gray-300 sm:border-2 rounded-lg focus:border-blue-500 text-black text-crisp font-medium h-9 sm:h-10 md:h-11"
-                  data-testid="input-date-of-birth"
-                  required
-                />
-              </div>
+          <CardContent className="p-8 space-y-8">
+            <form onSubmit={handleSubmit} className="space-y-8">
 
-              {/* Phone Number - Mobile Responsive */}
-              <div className="space-y-2 sm:space-y-3 overflow-hidden break-words">
-                <Label htmlFor="phoneNumber" className="text-sm sm:text-base md:text-lg font-semibold text-black text-crisp break-words">
-                  Phone Number <span className="text-xs sm:text-sm font-normal text-black">(Optional - not in beta)</span>
-                </Label>
-                <Input
-                  id="phoneNumber"
-                  type="tel"
-                  value={formData.phoneNumber}
-                  onChange={(e) => setFormData(prev => ({ ...prev, phoneNumber: e.target.value }))}
-                  placeholder="(555) 123-4567"
-                  className="text-sm sm:text-base py-2 sm:py-3 border border-gray-300 sm:border-2 rounded-lg focus:border-blue-500 text-black h-9 sm:h-10 md:h-11"
-                  data-testid="input-phone-number"
-                />
-                <p className="text-xs sm:text-sm text-black break-words">
-                  Get text notifications when events you RSVP to are starting or have updates
-                </p>
-              </div>
+              {/* Personal Information */}
+              <div className="space-y-4">
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Personal Information</h3>
 
-              {/* Hometown Location - Mobile Responsive */}
-              <div className="space-y-3 sm:space-y-4 overflow-hidden break-words">
-                <Label className="text-sm sm:text-base md:text-lg font-semibold text-black text-crisp break-words">
-                  Hometown (Where you live) *
-                </Label>
-                <SmartLocationInput
-                  onLocationSelect={(location) => {
-                    console.log('🏠 Hometown selected:', location);
-                    
-                    // Check for metro area
-                    const detection = detectMetroArea(location.city, location.state || '', location.country);
-                    
-                    setFormData(prev => ({
-                      ...prev,
-                      hometownCity: location.city,
-                      hometownState: location.state || '',
-                      hometownCountry: location.country,
-                      metroArea: detection.metroArea || '',
-                      isMetroUser: detection.isMetroArea
-                    }));
-
-                    setMetroDetection(detection);
-                    
-                    if (detection.isMetroArea && detection.showConfirmation) {
-                      setShowMetroConfirmation(true);
-                    }
-                  }}
-                  placeholder="Enter your hometown (e.g., New York, NY, USA)"
-                  className="text-sm sm:text-base py-2 sm:py-3 text-crisp font-medium"
-                  data-testid="input-hometown-location"
-                />
-                
-                {formData.hometownCity && (
-                  <div className="mt-2 p-3 bg-green-50 rounded-lg border border-green-200 overflow-hidden break-words">
-                    <p className="text-xs sm:text-sm text-black break-words" data-testid="text-selected-hometown">
-                      <strong>Hometown:</strong> {formData.hometownCity}
-                      {formData.hometownState && `, ${formData.hometownState}`}
-                      {formData.hometownCountry && `, ${formData.hometownCountry}`}
-                    </p>
-                  </div>
-                )}
-
-                {/* Metro Area Confirmation */}
-                {showMetroConfirmation && metroDetection && (
-                  <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200 overflow-hidden break-words">
-                    <h4 className="font-medium text-black mb-2">{metroDetection.title}</h4>
-                    <p className="text-sm text-black mb-3">{metroDetection.message}</p>
-                    <div className="flex gap-2">
-                      <Button
-                        type="button"
-                        size="sm"
-                        onClick={() => {
-                          setFormData(prev => ({
-                            ...prev,
-                            metroArea: metroDetection.metroArea || '',
-                            isMetroUser: true
-                          }));
-                          setShowMetroConfirmation(false);
-                        }}
-                        className="bg-blue-600 hover:bg-blue-700 text-white"
-                      >
-                        Yes, join {metroDetection.metroArea}
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          setFormData(prev => ({
-                            ...prev,
-                            metroArea: '',
-                            isMetroUser: false
-                          }));
-                          setShowMetroConfirmation(false);
-                        }}
-                      >
-                        No, keep {formData.hometownCity}
-                      </Button>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label className="text-gray-900 dark:text-white">Date of Birth (Optional)</Label>
+                    <div className="text-sm text-blue-600 dark:text-blue-400 mb-2">
+                      Can be hidden from public view later while still being used for matching
                     </div>
+                    <Input
+                      type="date"
+                      value={formData.dateOfBirth}
+                      onChange={(e) => setFormData(prev => ({ ...prev, dateOfBirth: e.target.value }))}
+                      min={minDate}
+                      max={maxDate}
+                    />
                   </div>
-                )}
+
+                  <div>
+                    <Label className="text-gray-900 dark:text-white">Phone Number (Optional)</Label>
+                    <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                      Get text notifications when events you RSVP to are starting or have updates
+                    </div>
+                    <Input
+                      type="tel"
+                      value={formData.phoneNumber || ""}
+                      onChange={(e) => setFormData(prev => ({ ...prev, phoneNumber: e.target.value }))}
+                      placeholder="(555) 123-4567"
+                    />
+                  </div>
+                </div>
               </div>
 
-              {/* Top Choices - Mobile Responsive with AI-Companion Grid */}
-              <div className="space-y-3 sm:space-y-4 overflow-hidden break-words">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4">
-                  <Label className="text-sm sm:text-base font-semibold text-black break-words">
-                    Top Choices * (Choose at least 3)
-                  </Label>
-                  <div className="inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0" data-testid="text-selection-count">
+              {/* Location Information */}
+              <div className="space-y-4">
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Location Information</h3>
+
+                <div>
+                  <Label className="text-gray-900 dark:text-white">Hometown (Where you live) *</Label>
+                  <SmartLocationInput
+                    country={formData.hometownCountry}
+                    city={formData.hometownCity}
+                    state={formData.hometownState}
+                    onLocationChange={(location) => {
+                      setFormData(prev => ({
+                        ...prev,
+                        hometownCountry: location.country,
+                        hometownCity: location.city,
+                        hometownState: location.state
+                      }));
+                    }}
+                    placeholder={{ country: "Select your hometown country", city: "Select hometown city", state: "Select state/region" }}
+                    required
+                  />
+                  {formData.hometownCity && (
+                    <div className="mt-2 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+                      <p className="text-sm text-green-800 dark:text-green-200">
+                        <strong>Hometown:</strong> {formData.hometownCity}
+                        {formData.hometownState && `, ${formData.hometownState}`}
+                        {formData.hometownCountry && `, ${formData.hometownCountry}`}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Top Choices */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white">Top Choices * (Choose at least 3)</h3>
+                  <div className="text-sm bg-blue-100 text-blue-800 px-3 py-1 rounded-full">
                     {formData.interests.length} selected
                   </div>
                 </div>
-                <p className="text-xs sm:text-sm text-black break-words">
+                <p className="text-gray-700 dark:text-gray-300 mb-4">
                   Please choose 3 from the list below to better match with other locals and travelers. Once inside you can add more city specific events and activities.
                 </p>
-                
-                {/* Select/Clear All buttons - Mobile Responsive */}
-                <div className="flex flex-wrap gap-2 mb-3 sm:mb-4">
+
+                {/* Quick action buttons */}
+                <div className="flex gap-2 mb-4">
                   <Button
                     type="button"
                     variant="outline"
                     size="sm"
-                    onClick={() => setFormData(prev => ({ ...prev, interests: [...MOST_POPULAR_INTERESTS] }))}
-                    className="text-xs font-medium h-8"
-                    data-testid="button-select-all-interests"
+                    onClick={selectAllTopChoices}
+                    className="text-xs"
                   >
                     Select All
                   </Button>
@@ -485,27 +497,24 @@ export default function SignupLocalTraveler() {
                     type="button"
                     variant="outline"
                     size="sm"
-                    onClick={() => setFormData(prev => ({ ...prev, interests: [] }))}
-                    className="text-xs font-medium h-8"
-                    data-testid="button-clear-all-interests"
+                    onClick={clearAllTopChoices}
+                    className="text-xs"
                   >
                     Clear All
                   </Button>
                 </div>
-                
-                {/* AI-Companion Responsive Grid */}
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3 overflow-hidden break-words">
+
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                   {MOST_POPULAR_INTERESTS.map((interest) => (
                     <button
                       key={interest}
                       type="button"
                       onClick={() => toggleInterest(interest)}
-                      className={`p-2 sm:p-3 md:p-4 rounded-lg border-2 text-xs sm:text-sm font-medium text-center leading-tight transition-all duration-200 break-words ${
+                      className={`p-3 rounded-lg border-2 text-sm font-medium text-center transition-all ${
                         formData.interests.includes(interest)
-                          ? 'border-blue-500 bg-blue-50 text-blue-700'
-                          : 'border-gray-300 bg-white text-black hover:border-gray-400 hover:bg-gray-50'
+                          ? 'border-blue-500 bg-blue-50 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300'
+                          : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:border-gray-500'
                       }`}
-                      data-testid={`button-interest-${interest.toLowerCase().replace(/\s+/g, '-')}`}
                     >
                       {interest}
                     </button>
@@ -513,19 +522,17 @@ export default function SignupLocalTraveler() {
                 </div>
               </div>
 
-              {/* Submit Button - Mobile Responsive */}
-              <div className="pt-4 sm:pt-6 space-y-3 sm:space-y-4 overflow-hidden break-words">
+              {/* Submit Button */}
+              <div className="pt-6">
                 <Button
                   type="submit"
                   disabled={isLoading || formData.interests.length < 3}
-                  className="w-full py-3 sm:py-4 text-sm sm:text-base md:text-lg font-bold bg-blue-600 hover:bg-blue-700 text-white disabled:bg-gray-400 disabled:cursor-not-allowed h-12 sm:h-14 rounded-lg break-words"
-                  data-testid="button-submit"
+                  className="w-full py-4 text-lg font-semibold bg-blue-600 hover:bg-blue-700 text-white disabled:bg-gray-400"
                 >
                   {isLoading ? 'Creating Account...' : `Complete Registration (${formData.interests.length}/3)`}
                 </Button>
-                
                 {formData.interests.length < 3 && (
-                  <p className="text-red-600 text-xs sm:text-sm text-center break-words">
+                  <p className="text-red-600 text-sm mt-2 text-center">
                     Please select at least {3 - formData.interests.length} more interest{3 - formData.interests.length !== 1 ? 's' : ''} to continue
                   </p>
                 )}
@@ -534,8 +541,7 @@ export default function SignupLocalTraveler() {
                   type="button"
                   onClick={() => setLocation('/')}
                   variant="outline"
-                  className="w-full bg-gray-200 border-gray-400 text-black hover:bg-gray-300 h-10 sm:h-12 break-words"
-                  data-testid="button-back-to-landing"
+                  className="w-full mt-3 bg-gray-200 border-gray-400 text-gray-700 hover:bg-gray-300"
                 >
                   Back to Landing Page
                 </Button>
