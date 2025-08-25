@@ -70,11 +70,22 @@ function QuickMeetupsPage() {
   });
 
   const { data: allMeetups = [], isLoading } = useQuery<QuickMeetup[]>({
-    queryKey: ['/api/quick-meetups/all'],
+    queryKey: ['/api/quick-meetups'],
     queryFn: async () => {
       const response = await fetch('/api/quick-meetups');
       if (!response.ok) throw new Error('Failed to fetch meetups');
-      return response.json();
+      const data = await response.json();
+      
+      // Transform backend data to match frontend interface
+      return data.map((meetup: any) => ({
+        ...meetup,
+        creator: meetup.organizerUsername ? {
+          id: meetup.organizerId,
+          username: meetup.organizerUsername,
+          name: meetup.organizerName,
+          profileImage: meetup.organizerProfileImage
+        } : null
+      }));
     },
     refetchInterval: 30000, // Refresh every 30 seconds
   });
@@ -117,7 +128,7 @@ function QuickMeetupsPage() {
       });
       
       // Refresh the meetups list
-      queryClient.invalidateQueries({ queryKey: ['/api/quick-meetups/all'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/quick-meetups'] });
     },
     onError: (error: Error) => {
       toast({
@@ -152,7 +163,7 @@ function QuickMeetupsPage() {
         title: "Success!",
         description: "Meetup updated successfully.",
       });
-      queryClient.invalidateQueries({ queryKey: ['/api/quick-meetups/all'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/quick-meetups'] });
     },
     onError: (error: Error) => {
       toast({
@@ -185,7 +196,7 @@ function QuickMeetupsPage() {
         title: "Success!",
         description: "Meetup deleted successfully.",
       });
-      queryClient.invalidateQueries({ queryKey: ['/api/quick-meetups/all'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/quick-meetups'] });
     },
     onError: (error: Error) => {
       toast({
@@ -286,7 +297,17 @@ function QuickMeetupsPage() {
               <Users className="w-3 h-3" />
               <span>{meetup.participantCount || 1} attending</span>
               {meetup.creator && (
-                <span>• by @{meetup.creator.username}</span>
+                <div className="flex items-center gap-1 ml-1">
+                  <span>• by</span>
+                  {meetup.creator.profileImage && (
+                    <img 
+                      src={meetup.creator.profileImage} 
+                      alt={`${meetup.creator.username}'s avatar`}
+                      className="w-4 h-4 rounded-full object-cover border border-gray-300"
+                    />
+                  )}
+                  <span>@{meetup.creator.username}</span>
+                </div>
               )}
             </div>
           </div>
@@ -375,7 +396,7 @@ function QuickMeetupsPage() {
                 <div className="flex gap-1 flex-1">
                   <Button 
                     size="sm" 
-                    className="flex-1 text-xs h-7 bg-blue-500 hover:bg-blue-600 text-white"
+                    className="text-xs h-7 bg-blue-500 hover:bg-blue-600 text-white"
                     onClick={() => {
                       // Navigate to dedicated meetup management page
                       window.location.href = `/quick-meetup-chat/${meetup.id}`;
@@ -385,6 +406,23 @@ function QuickMeetupsPage() {
                     Manage ({meetup.participantCount})
                   </Button>
                   
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    className="text-xs h-7 border-orange-300 text-orange-600 hover:bg-orange-50"
+                    onClick={() => {
+                      setEditingMeetup(meetup);
+                      setEditForm({
+                        title: meetup.title,
+                        description: meetup.description || '',
+                        duration: '1hour'
+                      });
+                    }}
+                  >
+                    <Edit className="w-3 h-3 mr-1" />
+                    Edit
+                  </Button>
+                  
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button size="sm" variant="outline" className="h-7 w-7 p-0">
@@ -392,17 +430,6 @@ function QuickMeetupsPage() {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => {
-                        setEditingMeetup(meetup);
-                        setEditForm({
-                          title: meetup.title,
-                          description: meetup.description || '',
-                          duration: '1hour'
-                        });
-                      }}>
-                        <Edit className="w-3 h-3 mr-2" />
-                        Edit Meetup
-                      </DropdownMenuItem>
                       <DropdownMenuItem className="text-red-600 focus:text-red-600">
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
@@ -439,11 +466,40 @@ function QuickMeetupsPage() {
               <Button 
                 size="sm" 
                 className={`flex-1 text-xs h-7 ${isExpired ? 'bg-gray-500 hover:bg-gray-600' : 'bg-green-500 hover:bg-green-600'} text-white`}
-                onClick={() => {
+                onClick={async () => {
                   if (isExpired) {
                     setShowCreateForm(true);
                   } else {
-                    // TODO: Implement join functionality
+                    try {
+                      const response = await fetch(`/api/quick-meetups/${meetup.id}/join`, {
+                        method: 'POST',
+                        headers: {
+                          'Content-Type': 'application/json',
+                          'x-user-id': actualUser?.id?.toString() || ''
+                        }
+                      });
+                      
+                      if (response.ok) {
+                        toast({
+                          title: "Successfully Joined!",
+                          description: `You've joined "${meetup.title}". You can now chat with other participants.`,
+                        });
+                        queryClient.invalidateQueries({ queryKey: ['/api/quick-meetups'] });
+                      } else {
+                        const error = await response.json();
+                        toast({
+                          title: "Failed to Join",
+                          description: error.message || "Unable to join meetup",
+                          variant: "destructive",
+                        });
+                      }
+                    } catch (error) {
+                      toast({
+                        title: "Error",
+                        description: "Network error while trying to join meetup",
+                        variant: "destructive",
+                      });
+                    }
                   }
                 }}
               >
