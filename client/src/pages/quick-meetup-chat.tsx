@@ -400,7 +400,7 @@ function QuickMeetupChat() {
                           
                           {/* Message Text */}
                           <div className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
-                            {msg.content.split('\n').map((line, index) => (
+                            {(msg.content || '').split('\n').map((line, index) => (
                               <p key={index} className={index > 0 ? 'mt-2' : ''}>
                                 {line}
                               </p>
