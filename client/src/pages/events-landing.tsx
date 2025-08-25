@@ -47,7 +47,7 @@ export default function EventsLanding() {
                         <span className="block font-black text-[clamp(1.25rem,5.5vw,2rem)]">
                           <span className="text-amber-300 sm:text-orange-500">and Make Real Connections </span>
                           <span className="text-blue-300 sm:text-blue-600">with Nearby Travelers, </span>
-                          <span className="text-white">While Connecting with Other Locals.</span>
+                          <span className="text-white sm:text-black">While Connecting with Other Locals.</span>
                         </span>
                       </h1>
                       

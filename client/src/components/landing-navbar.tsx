@@ -8,50 +8,42 @@ export default function LandingNavbar() {
   return (
     <nav className="bg-transparent relative z-10 block w-full" style={{display: 'block', visibility: 'visible', minHeight: '64px'}}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16 gap-4" style={{display: 'flex', minHeight: '64px'}}>
-          
-          {/* Logo Section - Fixed Width */}
-          <div className="flex-shrink-0 flex items-center" style={{display: 'flex', alignItems: 'center'}}>
-            <Link href="/" className="flex items-center">
-              <div className="transform scale-125 sm:scale-150">
-                <Logo variant="navbar" />
-              </div>
-            </Link>
-          </div>
-
-          {/* Navigation Links - Flexible Width with Smart Sizing */}
-          <div className="hidden lg:flex items-center justify-center flex-1 max-w-2xl">
-            <div className="flex space-x-1 xl:space-x-2 2xl:space-x-4">
-              <Link href="/" className="border-transparent text-gray-700 dark:text-gray-300 hover:border-gray-300 hover:text-gray-900 dark:hover:text-white inline-flex items-center px-2 xl:px-3 pt-1 border-b-2 text-sm font-medium whitespace-nowrap transition-colors duration-200 flex-shrink-0">
+        <div className="flex justify-between h-16" style={{display: 'flex', minHeight: '64px'}}>
+          <div className="flex min-w-0 flex-1">
+            <div className="flex-shrink-0 flex items-center" style={{display: 'flex', alignItems: 'center'}}>
+              <Link href="/" className="flex items-center">
+                <div className="transform scale-125 sm:scale-150">
+                  <Logo variant="navbar" />
+                </div>
+              </Link>
+            </div>
+            <div className="hidden lg:ml-8 lg:flex lg:space-x-2 xl:space-x-4 2xl:space-x-6">
+              <Link href="/" className="border-teal-500 text-gray-900 dark:text-white inline-flex items-center px-1 pt-1 border-b-2 text-xs lg:text-sm font-medium">
                 Home
               </Link>
-              <Link href="/locals-landing" className="border-transparent text-gray-500 dark:text-gray-400 hover:border-gray-300 hover:text-gray-700 dark:hover:text-gray-300 inline-flex items-center px-2 xl:px-3 pt-1 border-b-2 text-sm font-medium whitespace-nowrap transition-colors duration-200 flex-shrink-0">
+              <Link href="/locals-landing" className="border-transparent text-gray-500 dark:text-gray-400 hover:border-gray-300 hover:text-gray-700 dark:hover:text-gray-300 inline-flex items-center px-1 pt-1 border-b-2 text-xs lg:text-sm font-medium whitespace-nowrap">
                 Locals
               </Link>
-              <Link href="/travelers-landing" className="border-transparent text-gray-500 dark:text-gray-400 hover:border-gray-300 hover:text-gray-700 dark:hover:text-gray-300 inline-flex items-center px-2 xl:px-3 pt-1 border-b-2 text-sm font-medium whitespace-nowrap transition-colors duration-200 flex-shrink-0">
+              <Link href="/travelers-landing" className="border-transparent text-gray-500 dark:text-gray-400 hover:border-gray-300 hover:text-gray-700 dark:hover:text-gray-300 inline-flex items-center px-1 pt-1 border-b-2 text-xs lg:text-sm font-medium whitespace-nowrap">
                 Travelers
               </Link>
-              <Link href="/events-landing" className="border-transparent text-gray-500 dark:text-gray-400 hover:border-gray-300 hover:text-gray-700 dark:hover:text-gray-300 inline-flex items-center px-2 xl:px-3 pt-1 border-b-2 text-sm font-medium whitespace-nowrap transition-colors duration-200 flex-shrink-0">
+              <Link href="/events-landing" className="border-transparent text-gray-500 dark:text-gray-400 hover:border-gray-300 hover:text-gray-700 dark:hover:text-gray-300 inline-flex items-center px-1 pt-1 border-b-2 text-xs lg:text-sm font-medium whitespace-nowrap">
                 Events
               </Link>
-              <Link href="/business-landing" className="border-transparent text-gray-500 dark:text-gray-400 hover:border-gray-300 hover:text-gray-700 dark:hover:text-gray-300 inline-flex items-center px-2 xl:px-3 pt-1 border-b-2 text-sm font-medium whitespace-nowrap transition-colors duration-200 flex-shrink-0">
+              <Link href="/business-landing" className="border-transparent text-gray-500 dark:text-gray-400 hover:border-gray-300 hover:text-gray-700 dark:hover:text-gray-300 inline-flex items-center px-1 pt-1 border-b-2 text-xs lg:text-sm font-medium whitespace-nowrap">
                 Business
               </Link>
             </div>
           </div>
-
-          {/* CTA Buttons - Fixed Width, Always Right */}
-          <div className="hidden lg:flex items-center space-x-3 flex-shrink-0">
-            <Link href="/auth" className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out whitespace-nowrap">
+          <div className="hidden xl:ml-16 xl:flex xl:items-center xl:space-x-2 2xl:ml-20 2xl:space-x-3 flex-shrink-0">
+            <Link href="/auth" className="bg-blue-600 hover:bg-blue-700 text-white px-2 xl:px-3 py-1.5 rounded-md text-xs font-medium transition duration-150 ease-in-out whitespace-nowrap">
               Sign In
             </Link>
-            <Link href="/join" className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white px-4 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out whitespace-nowrap">
+            <Link href="/join" className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white px-2 xl:px-3 py-1.5 rounded-md text-xs font-medium transition duration-150 ease-in-out whitespace-nowrap">
               Join Now
             </Link>
           </div>
-
-          {/* Mobile Menu Button */}
-          <div className="flex items-center lg:hidden">
+          <div className="-mr-2 flex items-center xl:hidden">
             <button 
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               type="button" 
@@ -75,10 +67,10 @@ export default function LandingNavbar() {
       
       {/* Enhanced Mobile menu */}
       {mobileMenuOpen && (
-        <div className="lg:hidden bg-white dark:bg-gray-800 shadow-lg">
+        <div className="xl:hidden bg-white dark:bg-gray-800 shadow-lg">
           <div className="pt-3 pb-3 space-y-1 px-4">
             <Link href="/" 
-              className="border-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 block pl-4 pr-4 py-4 border-l-4 text-lg font-medium rounded-r-lg transition-all duration-200 touch-manipulation"
+              className="bg-gradient-to-r from-blue-50 to-orange-50 dark:from-blue-900/20 dark:to-orange-900/20 border-l-4 border-blue-500 text-blue-700 dark:text-blue-400 block pl-4 pr-4 py-4 text-lg font-medium rounded-r-lg transition-all duration-200"
               onClick={() => setMobileMenuOpen(false)}
             >
               🏠 Home
@@ -126,36 +118,6 @@ export default function LandingNavbar() {
           </div>
         </div>
       )}
-
-      {/* Add custom CSS for ultra-wide screen handling */}
-      <style jsx>{`
-        /* Ensure proper spacing on ultra-wide screens */
-        @media (min-width: 1920px) {
-          .navbar-container {
-            max-width: 1800px;
-            margin: 0 auto;
-          }
-        }
-        
-        /* Fine-tune navigation spacing for different screen sizes */
-        @media (min-width: 1024px) and (max-width: 1279px) {
-          .nav-links {
-            gap: 0.25rem;
-          }
-        }
-        
-        @media (min-width: 1280px) and (max-width: 1535px) {
-          .nav-links {
-            gap: 0.5rem;
-          }
-        }
-        
-        @media (min-width: 1536px) {
-          .nav-links {
-            gap: 1rem;
-          }
-        }
-      `}</style>
     </nav>
   );
 }
