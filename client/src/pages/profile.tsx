@@ -6206,12 +6206,69 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               <CardContent>
                 {editingLanguages ? (
                   <div className="space-y-3">
-                    <MultiSelect
-                      options={LANGUAGES_OPTIONS}
-                      selected={tempLanguages}
-                      onChange={setTempLanguages}
-                      placeholder="Select languages"
-                    />
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          className="w-full justify-between bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-left"
+                        >
+                          {tempLanguages.length > 0 
+                            ? `${tempLanguages.length} language${tempLanguages.length > 1 ? 's' : ''} selected`
+                            : "Select languages..."
+                          }
+                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-full p-0 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600">
+                        <Command className="bg-white dark:bg-gray-800">
+                          <CommandInput placeholder="Search languages..." className="border-0" />
+                          <CommandEmpty>No language found.</CommandEmpty>
+                          <CommandGroup className="max-h-64 overflow-auto">
+                            {LANGUAGES_OPTIONS.map((language) => (
+                              <CommandItem
+                                key={language}
+                                value={language}
+                                onSelect={() => {
+                                  const isSelected = tempLanguages.includes(language);
+                                  if (isSelected) {
+                                    setTempLanguages(tempLanguages.filter(l => l !== language));
+                                  } else {
+                                    setTempLanguages([...tempLanguages, language]);
+                                  }
+                                }}
+                                className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
+                              >
+                                <Check
+                                  className={`mr-2 h-4 w-4 ${
+                                    tempLanguages.includes(language) ? "opacity-100" : "opacity-0"
+                                  }`}
+                                />
+                                {language}
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
+                    
+                    {/* Show selected languages */}
+                    {tempLanguages.length > 0 && (
+                      <div className="flex flex-wrap gap-2 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                        {tempLanguages.map((language) => (
+                          <div key={language} className="inline-flex items-center justify-center h-8 rounded-full px-3 text-sm font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0">
+                            {language}
+                            <button
+                              onClick={() => setTempLanguages(tempLanguages.filter(l => l !== language))}
+                              className="ml-2 text-blue-200 hover:text-white"
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    
                     <div className="flex gap-2">
                       <Button size="sm" onClick={handleSaveLanguages} disabled={updateLanguages.isPending} className="bg-blue-600 hover:bg-blue-700">
                         {updateLanguages.isPending ? "Saving..." : "Save"}
