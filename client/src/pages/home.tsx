@@ -2089,20 +2089,33 @@ export default function Home() {
                 )}
               </div>
 
-              {/* Sort By Dropdown - Desktop Only */}
+              {/* Desktop Controls */}
               {isDesktop && (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="ml-2 bg-white/70 dark:bg-gray-700/70 backdrop-blur-sm border border-gray-200/50 dark:border-gray-600/50 text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 dark:hover:from-blue-900/30 dark:hover:to-purple-900/30 rounded-xl"
+                <div className="flex items-center gap-2">
+                  {/* Advanced Search Button */}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowAdvancedFilters(true)}
+                    className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-none rounded-xl shadow-md"
                   >
-                    <ArrowUpDown className="w-4 h-4 mr-2" />
-                    Sort By
-                    <ChevronDown className="w-4 h-4 ml-2" />
+                    <Search className="w-4 h-4 mr-2" />
+                    Advanced Search
                   </Button>
-                </DropdownMenuTrigger>
+
+                  {/* Sort By Dropdown */}
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="bg-white/70 dark:bg-gray-700/70 backdrop-blur-sm border border-gray-200/50 dark:border-gray-600/50 text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 dark:hover:from-blue-900/30 dark:hover:to-purple-900/30 rounded-xl"
+                    >
+                      <ArrowUpDown className="w-4 h-4 mr-2" />
+                      Sort By
+                      <ChevronDown className="w-4 h-4 ml-2" />
+                    </Button>
+                  </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
                   <DropdownMenuItem onClick={() => setSortBy('closest_nearby')}>
                     <MapPin className="w-4 h-4 mr-2" />
@@ -2137,7 +2150,8 @@ export default function Home() {
                     Alphabetical
                   </DropdownMenuItem>
                 </DropdownMenuContent>
-                </DropdownMenu>
+                  </DropdownMenu>
+                </div>
               )}
             </div>
 
