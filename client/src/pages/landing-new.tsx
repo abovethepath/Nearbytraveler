@@ -124,7 +124,7 @@ export default function Landing() {
                         <span className="block font-black text-[clamp(1.25rem,5.5vw,2rem)]">
                           <span className="text-amber-300 sm:text-orange-500">Meet Locals and Other </span>
                           <span className="text-blue-300 sm:text-blue-600">Nearby Travelers </span>
-                          <span className="text-white sm:text-black">Right Now, Today!!!</span>
+                          <span className="text-white">Right Now, Today!!!</span>
                         </span>
                       </h1>
                       
