@@ -317,152 +317,6 @@ export default function Landing() {
 
           </div>
 
-      {/* CONNECT BEFORE, DURING & AFTER EVENTS SECTION */}
-      <div className="relative z-10 py-16 bg-gradient-to-br from-orange-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white mb-4">
-              Connect Before Your Trip or Business Event, Keep Connections Forever
-            </h2>
-            <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-              Turn every travel or business event into lasting friendships. Connect before you go, bond during experiences, stay friends forever.
-            </p>
-          </div>
-          
-          {/* Connection Timeline */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-            
-            {/* Before Events */}
-            <div className="bg-gradient-to-br from-blue-400 to-blue-500 dark:bg-gray-800 rounded-2xl p-8 shadow-lg border-2 border-blue-600 dark:border-blue-600 text-center">
-              <div className="text-4xl mb-4">🎉</div>
-              <h3 className="text-xl font-bold text-black mb-6">Before Events</h3>
-              <div className="grid grid-cols-1 gap-3 text-left">
-                <div className="flex items-center space-x-2">
-                  <span className="text-black font-bold">•</span>
-                  <span className="text-black text-base">Browse profiles of people headed to the same event or city</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <span className="text-black font-bold">•</span>
-                  <span className="text-black text-base">Break the ice with a quick chat or group plan</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <span className="text-black font-bold">•</span>
-                  <span className="text-black text-base">Swap stories, backgrounds, and tips</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <span className="text-black font-bold">•</span>
-                  <span className="text-black text-base">Show up already excited and connected</span>
-                </div>
-              </div>
-            </div>
-            
-            {/* During Events */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border-2 border-blue-200 dark:border-blue-600 text-center">
-              <div className="text-4xl mb-4">💫</div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">During Events</h3>
-              <div className="grid grid-cols-1 gap-3 text-left">
-                <div className="flex items-center space-x-2">
-                  <span className="text-blue-500 font-bold">•</span>
-                  <span className="text-black dark:text-gray-300 text-base">Recognize familiar faces right away</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <span className="text-blue-500 font-bold">•</span>
-                  <span className="text-black dark:text-gray-300 text-base">Skip the awkward introductions</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <span className="text-blue-500 font-bold">•</span>
-                  <span className="text-black dark:text-gray-300 text-base">Share updates and moments in real time</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <span className="text-blue-500 font-bold">•</span>
-                  <span className="text-black dark:text-gray-300 text-base">Create memories together, not alone</span>
-                </div>
-              </div>
-            </div>
-            
-            {/* After Events */}
-            <div className="bg-gradient-to-br from-orange-400 to-orange-500 dark:bg-gray-800 rounded-2xl p-8 shadow-lg border-2 border-orange-600 dark:border-orange-600 text-center">
-              <div className="text-4xl mb-4">🌍</div>
-              <h3 className="text-xl font-bold text-black mb-6">After Events</h3>
-              <div className="grid grid-cols-1 gap-3 text-left">
-                <div className="flex items-center space-x-2">
-                  <span className="text-black font-bold">•</span>
-                  <span className="text-black text-base">Keep the new friendships alive</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <span className="text-black font-bold">•</span>
-                  <span className="text-black text-base">Plan your next meetup or trip together</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <span className="text-black font-bold">•</span>
-                  <span className="text-black text-base">Spot familiar names in future events</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <span className="text-black font-bold">•</span>
-                  <span className="text-black text-base">Grow your own global community</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          {/* Better Than Business Cards */}
-          <div className="bg-gradient-to-r from-blue-600 to-orange-500 dark:from-blue-700 dark:to-orange-600 rounded-2xl p-8 text-center text-white mb-8">
-            <h3 className="text-2xl font-bold mb-4">Why This Beats Traditional Networking</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
-              <div>
-                <h4 className="font-bold mb-2">❌ Old Way: Random Encounters</h4>
-                <div className="text-sm opacity-90">
-                  <div className="mb-4">
-                    <span className="block">• Meet strangers at events</span>
-                  </div>
-                  <div className="mb-4">
-                    <span className="block">• No shared context or interests</span>
-                  </div>
-                  <div className="mb-4">
-                    <span className="block">• Awkward small talk</span>
-                  </div>
-                  <div className="mb-4">
-                    <span className="block">• Lose touch after the trip</span>
-                  </div>
-                </div>
-              </div>
-              <div>
-                <h4 className="font-bold mb-2">✅ Nearby Traveler Way</h4>
-                <div className="text-sm">
-                  <div className="mb-4">
-                    <span className="block">• Connect with like-minded travelers</span>
-                  </div>
-                  <div className="mb-4">
-                    <span className="block">• Rich profiles with stories & photos</span>
-                  </div>
-                  <div className="mb-4">
-                    <span className="block">• Instant recognition at future events</span>
-                  </div>
-                  <div className="mb-4">
-                    <span className="block">• Lifelong travel friendships</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          {/* Forever Connections */}
-          <div className="text-center bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg">
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Reconnect Anywhere, Anytime</h3>
-            <p className="text-lg text-gray-700 dark:text-gray-300 mb-6 max-w-2xl mx-auto">
-              When you attend a hiking event in Colorado and later see a familiar face at a food festival in Thailand, 
-              you'll instantly recognize each other and pick up where you left off. That's the power of lasting connections.
-            </p>
-            <Button 
-              onClick={() => setLocation('/join')}
-              size="lg"
-              className="bg-gradient-to-r from-orange-500 to-blue-600 hover:from-orange-600 hover:to-blue-700 text-white font-bold px-8 py-3 rounded-xl"
-            >
-              START BUILDING CONNECTIONS
-            </Button>
-          </div>
-        </div>
-      </div>
 
         </div>
       </div>
@@ -904,6 +758,153 @@ export default function Landing() {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* CONNECT BEFORE, DURING & AFTER EVENTS SECTION */}
+      <div className="relative z-10 py-16 bg-gradient-to-br from-orange-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white mb-4">
+              Connect Before Your Trip or Business Event, Keep Connections Forever
+            </h2>
+            <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+              Turn every travel or business event into lasting friendships. Connect before you go, bond during experiences, stay friends forever.
+            </p>
+          </div>
+          
+          {/* Connection Timeline */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+            
+            {/* Before Events */}
+            <div className="bg-gradient-to-br from-blue-400 to-blue-500 dark:bg-gray-800 rounded-2xl p-8 shadow-lg border-2 border-blue-600 dark:border-blue-600 text-center">
+              <div className="text-4xl mb-4">🎉</div>
+              <h3 className="text-xl font-bold text-black mb-6">Before Events</h3>
+              <div className="grid grid-cols-1 gap-3 text-left">
+                <div className="flex items-center space-x-2">
+                  <span className="text-black font-bold">•</span>
+                  <span className="text-black text-base">Browse profiles of people headed to the same event or city</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span className="text-black font-bold">•</span>
+                  <span className="text-black text-base">Break the ice with a quick chat or group plan</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span className="text-black font-bold">•</span>
+                  <span className="text-black text-base">Swap stories, backgrounds, and tips</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span className="text-black font-bold">•</span>
+                  <span className="text-black text-base">Show up already excited and connected</span>
+                </div>
+              </div>
+            </div>
+            
+            {/* During Events */}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border-2 border-blue-200 dark:border-blue-600 text-center">
+              <div className="text-4xl mb-4">💫</div>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">During Events</h3>
+              <div className="grid grid-cols-1 gap-3 text-left">
+                <div className="flex items-center space-x-2">
+                  <span className="text-blue-500 font-bold">•</span>
+                  <span className="text-black dark:text-gray-300 text-base">Recognize familiar faces right away</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span className="text-blue-500 font-bold">•</span>
+                  <span className="text-black dark:text-gray-300 text-base">Skip the awkward introductions</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span className="text-blue-500 font-bold">•</span>
+                  <span className="text-black dark:text-gray-300 text-base">Share updates and moments in real time</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span className="text-blue-500 font-bold">•</span>
+                  <span className="text-black dark:text-gray-300 text-base">Create memories together, not alone</span>
+                </div>
+              </div>
+            </div>
+            
+            {/* After Events */}
+            <div className="bg-gradient-to-br from-orange-400 to-orange-500 dark:bg-gray-800 rounded-2xl p-8 shadow-lg border-2 border-orange-600 dark:border-orange-600 text-center">
+              <div className="text-4xl mb-4">🌍</div>
+              <h3 className="text-xl font-bold text-black mb-6">After Events</h3>
+              <div className="grid grid-cols-1 gap-3 text-left">
+                <div className="flex items-center space-x-2">
+                  <span className="text-black font-bold">•</span>
+                  <span className="text-black text-base">Keep the new friendships alive</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span className="text-black font-bold">•</span>
+                  <span className="text-black text-base">Plan your next meetup or trip together</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span className="text-black font-bold">•</span>
+                  <span className="text-black text-base">Spot familiar names in future events</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span className="text-black font-bold">•</span>
+                  <span className="text-black text-base">Grow your own global community</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Better Than Business Cards */}
+          <div className="bg-gradient-to-r from-blue-600 to-orange-500 dark:from-blue-700 dark:to-orange-600 rounded-2xl p-8 text-center text-white mb-8">
+            <h3 className="text-2xl font-bold mb-4">Why This Beats Traditional Networking</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
+              <div>
+                <h4 className="font-bold mb-2">❌ Old Way: Random Encounters</h4>
+                <div className="text-sm opacity-90">
+                  <div className="mb-4 block">
+                    <span className="block">• Meet strangers at events</span>
+                  </div>
+                  <div className="mb-4 block">
+                    <span className="block">• No shared context or interests</span>
+                  </div>
+                  <div className="mb-4 block">
+                    <span className="block">• Awkward small talk</span>
+                  </div>
+                  <div className="mb-4 block">
+                    <span className="block">• Lose touch after the trip</span>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <h4 className="font-bold mb-2">✅ Nearby Traveler Way</h4>
+                <div className="text-sm">
+                  <div className="mb-4 block">
+                    <span className="block">• Connect with like-minded travelers</span>
+                  </div>
+                  <div className="mb-4 block">
+                    <span className="block">• Rich profiles with stories & photos</span>
+                  </div>
+                  <div className="mb-4 block">
+                    <span className="block">• Instant recognition at future events</span>
+                  </div>
+                  <div className="mb-4 block">
+                    <span className="block">• Lifelong travel friendships</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Forever Connections */}
+          <div className="text-center bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg">
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Reconnect Anywhere, Anytime</h3>
+            <p className="text-lg text-gray-700 dark:text-gray-300 mb-6 max-w-2xl mx-auto">
+              When you attend a hiking event in Colorado and later see a familiar face at a food festival in Thailand, 
+              you'll instantly recognize each other and pick up where you left off. That's the power of lasting connections.
+            </p>
+            <Button 
+              onClick={() => setLocation('/join')}
+              size="lg"
+              className="bg-gradient-to-r from-orange-500 to-blue-600 hover:from-orange-600 hover:to-blue-700 text-white font-bold px-8 py-3 rounded-xl"
+            >
+              START BUILDING CONNECTIONS
+            </Button>
           </div>
         </div>
       </div>
