@@ -436,21 +436,19 @@ export default function SignupTraveling() {
               <div className="space-y-4">
                 <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Personal Information</h3>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label className="text-gray-900 dark:text-white">Date of Birth *</Label>
-                    <div className="text-sm text-blue-600 dark:text-blue-400 mb-2">
-                      Can be hidden from public view later while still being used for matching
-                    </div>
-                    <Input
-                      type="date"
-                      value={formData.dateOfBirth}
-                      onChange={(e) => setFormData(prev => ({ ...prev, dateOfBirth: e.target.value }))}
-                      min={minDate}
-                      max={maxDate}
-                      required
-                    />
+                <div>
+                  <Label className="text-gray-900 dark:text-white">Date of Birth *</Label>
+                  <div className="text-sm text-blue-600 dark:text-blue-400 mb-2">
+                    Can be hidden from public view later while still being used for matching
                   </div>
+                  <Input
+                    type="date"
+                    value={formData.dateOfBirth}
+                    onChange={(e) => setFormData(prev => ({ ...prev, dateOfBirth: e.target.value }))}
+                    min={minDate}
+                    max={maxDate}
+                    required
+                  />
                 </div>
               </div>
 
