@@ -79,27 +79,10 @@ export default function SimpleChatroomPage() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [chatroomId]); // Re-run when chatroom ID changes
 
-  // Check access permission first - MUST come before any conditional returns
-  const { data: accessCheck, isLoading: accessLoading, error: accessError } = useQuery({
-    queryKey: [`/api/simple-chatrooms/${chatroomId}/access-check`],
-    queryFn: async () => {
-      console.log('🔍 CHATROOM: Checking access for chatroom ID:', chatroomId, 'user ID:', currentUserId);
-      const response = await fetch(`/api/simple-chatrooms/${chatroomId}/access-check`, {
-        headers: {
-          'x-user-id': String(currentUserId)
-        },
-        credentials: 'include'
-      });
-      console.log('🔍 CHATROOM: Access check response status:', response.status);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const result = await response.json();
-      console.log('✅ CHATROOM: Access check result:', result);
-      return result;
-    },
-    enabled: !!(currentUserId && chatroomId && !isNaN(chatroomId)),
-  });
+  // SIMPLIFIED: All chatrooms are now public - no access check needed
+  const accessCheck = { hasAccess: true, isPublic: true };
+  const accessLoading = false;
+  const accessError = null;
 
   // Get chatroom details
   const { data: chatroom } = useQuery<Chatroom>({
@@ -111,21 +94,21 @@ export default function SimpleChatroomPage() {
   const { data: messages = [], isLoading } = useQuery<ChatMessage[]>({
     queryKey: [`/api/simple-chatrooms/${chatroomId}/messages`],
     enabled: !!(currentUserId && chatroomId && !isNaN(chatroomId)),
-    refetchInterval: 1000, // Refresh messages every second
+    refetchInterval: 5000, // Refresh messages every 5 seconds (reduced from 1 second)
   });
 
   // Get member count
   const { data: memberCountResp } = useQuery<{memberCount: number}>({
     queryKey: [`/api/simple-chatrooms/${chatroomId}/members/count`],
     enabled: !!(currentUserId && chatroomId && !isNaN(chatroomId)),
-    refetchInterval: 5000, // Refresh count every 5 seconds
+    refetchInterval: 15000, // Refresh count every 15 seconds (reduced frequency)
   });
 
   // Get members list
   const { data: members = [] } = useQuery<ChatMember[]>({
     queryKey: [`/api/simple-chatrooms/${chatroomId}/members`],
     enabled: !!(currentUserId && chatroomId && !isNaN(chatroomId)),
-    refetchInterval: 10000, // Refresh members every 10 seconds
+    refetchInterval: 30000, // Refresh members every 30 seconds (reduced frequency)
   });
 
   // Early error handling for invalid chatroom ID - MOVED AFTER HOOKS
@@ -307,12 +290,12 @@ export default function SimpleChatroomPage() {
     }
   }, [chatroomId]); // Only trigger on chatroom change, not message updates
 
-  // Auto-join public rooms
+  // Auto-join all rooms since they're all public
   useEffect(() => {
-    if (accessCheck?.isPublic && !accessCheck?.hasAccess && currentUserId) {
+    if (currentUserId && chatroomId) {
       joinRoom();
     }
-  }, [accessCheck, currentUserId]);
+  }, [currentUserId, chatroomId]);
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
@@ -320,50 +303,15 @@ export default function SimpleChatroomPage() {
     sendMessageMutation.mutate(messageText);
   };
 
-  // Add comprehensive debug logging for access state
-  console.log('🔍 CHATROOM: Access state:', {
-    accessLoading,
-    accessError: accessError?.message || 'none',
-    accessCheck: accessCheck || 'none',
-    hasAccess: accessCheck?.hasAccess || false
-  });
+  // Simplified access state - all chatrooms are public
+  console.log('✅ CHATROOM: All chatrooms are public - access granted automatically');
 
-  // Show loading state while checking access
-  if (accessLoading) {
-    console.log('⏳ CHATROOM: Showing loading state for access check');
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-orange-50 dark:from-gray-900 dark:to-gray-800">
-        <div className="max-w-4xl mx-auto px-4 py-6">
-          <Card>
-            <CardHeader>
-              <div className="flex items-center gap-4">
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  onClick={() => navigate('/city-chatrooms')}
-                >
-                  <ArrowLeft className="w-4 h-4" />
-                </Button>
-                <div>Loading Chatroom...</div>
-              </div>
-            </CardHeader>
-            <CardContent className="p-8">
-              <div className="flex items-center justify-center">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mr-3"></div>
-                <span>Checking chatroom access...</span>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    );
-  }
+  // No need for access loading since all chatrooms are public
 
 
 
-  // DISABLED: Show access control screen if user doesn't have permission
-  // ALL CHATROOMS ARE NOW PUBLIC - NO ACCESS RESTRICTIONS
-  if (false && (accessError || (accessCheck && !accessCheck.hasAccess))) {
+  // REMOVED: Access control - all chatrooms are now public
+  if (false) {
     const getStatusInfo = () => {
       if (accessCheck?.status === 'pending') {
         return {
