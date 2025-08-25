@@ -1,35 +1,19 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useRoute } from 'wouter';
+import { useRoute, useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
-import { Heart, Star, Globe, Edit, Users, Calendar, Target } from 'lucide-react';
+import { Heart, Star, Globe, Edit, Users, Calendar, Target, Search, Zap } from 'lucide-react';
 import { useQuery as useAuthQuery } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
-
-type User = {
-  id: number;
-  username: string;
-  email: string;
-  password?: string;
-  name: string;
-  profileImage?: string;
-  hometownCity?: string;
-  hometownState?: string;
-  hometownCountry?: string;
-  interests?: string[];
-  activities?: string[];
-  events?: string[];
-  topChoices?: string[];
-  userType?: string;
-  bio?: string;
-  location?: string;
-};
+import { QuickMeetupWidget } from '@/components/QuickMeetupWidget';
 
 export default function ProfilePage() {
   const [, params] = useRoute('/profile/:userId?');
+  const [, setLocation] = useLocation();
+  
   // Get current user
   const { data: currentUser } = useAuthQuery({
     queryKey: ['/api/auth/user'],
@@ -40,10 +24,9 @@ export default function ProfilePage() {
   const userId = params?.userId || currentUser?.id;
   const isOwnProfile = !params?.userId || params?.userId === String(currentUser?.id);
   
-  // Edit mode state
+  // Edit mode states
   const [editingPreferences, setEditingPreferences] = useState(false);
   const [editFormData, setEditFormData] = useState({
-    topChoices: [] as string[],
     interests: [] as string[],
     activities: [] as string[],
     events: [] as string[]
@@ -73,7 +56,6 @@ export default function ProfilePage() {
   useEffect(() => {
     if (user) {
       setEditFormData({
-        topChoices: user.topChoices || [],
         interests: user.interests || [],
         activities: user.activities || [],
         events: user.events || []
@@ -88,19 +70,35 @@ export default function ProfilePage() {
   const handleCancel = () => {
     setEditingPreferences(false);
     setEditFormData({
-      topChoices: user?.topChoices || [],
       interests: user?.interests || [],
       activities: user?.activities || [],
       events: user?.events || []
     });
   };
 
+  const handleViewChatrooms = () => {
+    setLocation('/chat-rooms');
+  };
+
   if (isLoading) {
-    return <div className="p-8 text-center">Loading profile...</div>;
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+          <p className="text-gray-600 dark:text-gray-300">Loading profile...</p>
+        </div>
+      </div>
+    );
   }
 
   if (!user) {
-    return <div className="p-8 text-center">User not found</div>;
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600 dark:text-gray-300 text-lg">User not found</p>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -118,7 +116,7 @@ export default function ProfilePage() {
                 </AvatarFallback>
               </Avatar>
               
-              <div className="text-center md:text-left">
+              <div className="text-center md:text-left flex-1">
                 <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
                   @{user.username}
                 </h1>
@@ -135,6 +133,39 @@ export default function ProfilePage() {
                   }
                 </p>
               </div>
+
+              {/* Action Buttons */}
+              {isOwnProfile && (
+                <div className="flex flex-col gap-3 sm:flex-row">
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setEditingPreferences(true)}
+                    className="bg-blue-500 hover:bg-blue-600 text-white border-0"
+                  >
+                    <Edit className="w-4 h-4 mr-2" />
+                    Edit Profile
+                  </Button>
+
+                  <Button
+                    variant="outline"
+                    onClick={() => setLocation('/?filters=open')}
+                    className="bg-gradient-to-r from-blue-500 to-orange-500 text-white hover:from-blue-600 hover:to-orange-600 border-0"
+                  >
+                    <Search className="w-4 h-4 mr-2" />
+                    Search
+                  </Button>
+
+                  {user?.hometownCity && (
+                    <Button 
+                      variant="outline"
+                      onClick={handleViewChatrooms}
+                      className="bg-orange-500 hover:bg-orange-600 text-white border-0"
+                    >
+                      View Chatrooms
+                    </Button>
+                  )}
+                </div>
+              )}
             </div>
 
             {user.bio && (
@@ -145,7 +176,7 @@ export default function ProfilePage() {
           </CardContent>
         </Card>
 
-        {/* Preferences Section - Your Clean 4-Row Layout */}
+        {/* 4-Row Preferences Section */}
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
@@ -169,7 +200,7 @@ export default function ProfilePage() {
 
           <CardContent className="space-y-6">
             {editingPreferences ? (
-              // EDITING MODE - Simple form interface
+              // EDITING MODE
               <div className="space-y-6">
                 <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
                   <p className="text-blue-700 dark:text-blue-300">
@@ -177,20 +208,7 @@ export default function ProfilePage() {
                   </p>
                 </div>
 
-                {/* Simple text inputs for each category */}
                 <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Top Choices (comma separated)</label>
-                    <Input
-                      value={editFormData.topChoices.join(', ')}
-                      onChange={(e) => setEditFormData({
-                        ...editFormData,
-                        topChoices: e.target.value.split(',').map(s => s.trim()).filter(Boolean)
-                      })}
-                      placeholder="Travel, Food, Music, etc."
-                    />
-                  </div>
-
                   <div>
                     <label className="block text-sm font-medium mb-2">Interests (comma separated)</label>
                     <Input
@@ -247,30 +265,10 @@ export default function ProfilePage() {
                 </div>
               </div>
             ) : (
-              // DISPLAY MODE - Your Beautiful 4 Rows
+              // DISPLAY MODE - Clean 3 Rows (interests, activities, events)
               <div className="space-y-6">
                 
-                {/* ROW 1: Top Choices (Yellow Pills) */}
-                <div>
-                  <div className="flex items-center gap-2 mb-3">
-                    <Target className="w-4 h-4 text-yellow-500" />
-                    <h4 className="font-medium text-gray-800 dark:text-white">Top Choices</h4>
-                    <span className="text-sm text-gray-500">({(user.topChoices || []).length})</span>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {(user.topChoices || []).length > 0 ? (
-                      user.topChoices!.slice(0, 8).map((choice, index) => (
-                        <div key={index} className="inline-flex items-center justify-center h-10 min-w-[6rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-yellow-500 text-white border-0">
-                          {choice}
-                        </div>
-                      ))
-                    ) : (
-                      <p className="text-gray-500 dark:text-gray-400 text-sm">No top choices selected yet</p>
-                    )}
-                  </div>
-                </div>
-
-                {/* ROW 2: Interests (Blue Pills) */}
+                {/* ROW 1: Interests (Blue Pills) */}
                 <div>
                   <div className="flex items-center gap-2 mb-3">
                     <Heart className="w-4 h-4 text-blue-500" />
@@ -290,7 +288,7 @@ export default function ProfilePage() {
                   </div>
                 </div>
 
-                {/* ROW 3: Activities (Green Pills) */}
+                {/* ROW 2: Activities (Green Pills) */}
                 <div>
                   <div className="flex items-center gap-2 mb-3">
                     <Star className="w-4 h-4 text-green-500" />
@@ -310,7 +308,7 @@ export default function ProfilePage() {
                   </div>
                 </div>
 
-                {/* ROW 4: Events (Purple Pills) */}
+                {/* ROW 3: Events (Purple Pills) */}
                 <div>
                   <div className="flex items-center gap-2 mb-3">
                     <Calendar className="w-4 h-4 text-purple-500" />
@@ -334,6 +332,27 @@ export default function ProfilePage() {
             )}
           </CardContent>
         </Card>
+
+        {/* Action Widget */}
+        {isOwnProfile && (
+          <Card>
+            <CardContent className="p-6">
+              {user?.userType === 'business' ? (
+                <div className="text-center">
+                  <Button
+                    onClick={() => setLocation('/business-dashboard')}
+                    className="bg-gradient-to-r from-blue-600 to-orange-600 text-white font-bold border-none hover:from-blue-700 hover:to-orange-700"
+                  >
+                    <Zap className="w-4 h-4 mr-2" />
+                    Create Instant Deal
+                  </Button>
+                </div>
+              ) : (
+                <QuickMeetupWidget city={user?.hometownCity || ''} />
+              )}
+            </CardContent>
+          </Card>
+        )}
 
       </div>
     </div>
