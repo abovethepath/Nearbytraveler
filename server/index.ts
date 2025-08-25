@@ -360,105 +360,7 @@ app.get('/api/city-stats', async (req, res) => {
   }
 });
 
-app.get('/api/search-users', async (req, res) => {
-  try {
-    console.log('🔍 DIRECT API: Search users');
-    const location = Array.isArray(req.query.location) ? req.query.location[0] : req.query.location as string;
-    const search = Array.isArray(req.query.search) ? req.query.search[0] : req.query.search as string;
-    const currentUserId = req.query.currentUserId || req.headers['x-user-id'];
-    
-    console.log('🔍 SEARCH PARAMS:', { search, location, currentUserId });
-    
-    let results: any[] = [];
-    const whereConditions = [];
-    
-    // Exclude current user if provided
-    const userIdString = Array.isArray(currentUserId) ? currentUserId[0] : currentUserId as string;
-    if (userIdString && typeof userIdString === 'string' && !isNaN(parseInt(userIdString))) {
-      whereConditions.push(ne(users.id, parseInt(userIdString)));
-    }
-    
-    // Search by text (name, username, bio, interests, activities)  
-    if (search && typeof search === 'string' && search.trim() !== '') {
-      const searchTerm = search.trim().toLowerCase();
-      whereConditions.push(
-        or(
-          ilike(users.name, `%${searchTerm}%`),
-          ilike(users.username, `%${searchTerm}%`),
-          ilike(users.bio, `%${searchTerm}%`),
-          // For array fields, we use SQL to check if any element contains the search term
-          sql`EXISTS (SELECT 1 FROM unnest(${users.interests}) AS interest WHERE lower(interest) LIKE '%' || lower(${searchTerm}) || '%')`,
-          sql`EXISTS (SELECT 1 FROM unnest(${users.activities}) AS activity WHERE lower(activity) LIKE '%' || lower(${searchTerm}) || '%')`
-        )
-      );
-      console.log('🔍 SEARCH: Added text search condition for:', searchTerm);
-    }
-    
-    // Search by location with LA Metro consolidation
-    if (location && typeof location === 'string' && location.trim() !== '') {
-      const locationTerm = location.trim();
-      
-      // Import metro consolidation helpers
-      const { isLAMetroCity, getMetroCities } = await import('../shared/constants.js');
-      
-      // Extract just the city name from formatted locations like "Los Angeles, California, United States"
-      const cityName = locationTerm.split(',')[0].trim();
-      
-      // Check if searching for Los Angeles or any LA Metro city
-      const isSearchingLA = cityName.toLowerCase().includes('los angeles') || 
-                           cityName.toLowerCase().includes('la ') ||
-                           cityName.toLowerCase() === 'la';
-      
-      if (isSearchingLA) {
-        // Get all LA Metro cities for the search
-        const metroCities = getMetroCities('Los Angeles');
-        const cityConditions = metroCities.map(city => 
-          or(
-            ilike(users.location, `%${city}%`),
-            ilike(users.hometownCity, `%${city}%`)
-          )
-        );
-        
-        // Also include direct "Los Angeles" matches
-        cityConditions.push(
-          or(
-            ilike(users.location, `%Los Angeles%`),
-            ilike(users.hometownCity, `%Los Angeles%`)
-          )
-        );
-        
-        whereConditions.push(or(...cityConditions));
-        console.log('🔍 SEARCH: Added LA Metro consolidated search for:', metroCities.length, 'cities');
-      } else {
-        // Regular location search
-        whereConditions.push(
-          or(
-            ilike(users.location, `%${locationTerm}%`),
-            ilike(users.hometownCity, `%${locationTerm}%`),
-            ilike(users.hometownState, `%${locationTerm}%`),
-            ilike(users.hometownCountry, `%${locationTerm}%`)
-          )
-        );
-        console.log('🔍 SEARCH: Added location search condition for:', locationTerm);
-      }
-    }
-    
-    // Execute query
-    if (whereConditions.length > 0) {
-      results = await db.select().from(users).where(and(...whereConditions));
-    } else {
-      // If no search criteria provided, return empty results instead of all users
-      results = [];
-      console.log('🔍 SEARCH: No search criteria provided, returning empty results');
-    }
-    
-    console.log('🔍 DIRECT API: Found', results.length, 'users matching search');
-    res.json(results);
-  } catch (error: any) {
-    console.error('🔥 Error in search users API:', error);
-    res.status(500).json({ error: 'Failed to search users' });
-  }
-});
+// REMOVED: Conflicting search endpoint - using the proper one in routes.ts instead
 
 console.log('✅ CRITICAL API ROUTES REGISTERED BEFORE OTHER MIDDLEWARE');
 
@@ -610,34 +512,7 @@ app.use((req, res, next) => {
     // These routes MUST be defined here before any other middleware to bypass Vite interception
     console.log('🚀 REGISTERING CRITICAL API ROUTES TO BYPASS VITE INTERCEPTION');
     
-    app.get('/api/search-users', async (req, res) => {
-      try {
-        const {
-          search,
-          gender,
-          sexualPreference,
-          minAge,
-          maxAge,
-          interests,
-          activities,
-          events,
-          location,
-          userType,
-          travelerTypes,
-          militaryStatus
-        } = req.query;
-
-        if (process.env.NODE_ENV === 'development') console.log('🔍 DIRECT SEARCH: Performing search with filters:', {
-          search, gender, sexualPreference, minAge, maxAge, interests, activities, events, location, userType, travelerTypes, militaryStatus
-        });
-
-        // For now, return empty results to test the endpoint
-        res.json([]);
-      } catch (error: any) {
-        console.error('Error in direct search:', error);
-        res.status(500).json({ error: 'Failed to perform search' });
-      }
-    });
+    // REMOVED: Stub search endpoint - using the proper implementation in routes.ts
 
     // Note: Critical API routes already registered at the top of the middleware chain
     
