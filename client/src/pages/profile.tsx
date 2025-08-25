@@ -22,13 +22,12 @@ import { Check, ChevronsUpDown } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { MapPin, Camera, Globe, Users, Calendar, Star, Settings, ArrowLeft, Upload, Edit, Edit2, Heart, MessageSquare, X, Plus, Eye, EyeOff, MessageCircle, ImageIcon, Minus, RotateCcw, Sparkles, Package, Trash2, Home, FileText, TrendingUp, MessageCircleMore, Share2, ChevronDown, Search, Zap, History, QrCode } from "lucide-react";
+import { MapPin, Camera, Globe, Users, Calendar, Star, Settings, ArrowLeft, Upload, Edit, Edit2, Heart, MessageSquare, X, Plus, Eye, EyeOff, MessageCircle, ImageIcon, Minus, RotateCcw, Sparkles, Package, Trash2, Home, FileText, TrendingUp, MessageCircleMore, Share2, ChevronDown, Search, Zap, History } from "lucide-react";
 import { UniversalBackButton } from "@/components/UniversalBackButton";
 import FriendReferralWidget from "@/components/friend-referral-widget";
+import TravelPersonalityAssessment from "@/components/TravelPersonalityAssessment";
 import ReferencesWidgetNew from "@/components/references-widget-new";
-import { VouchWidget } from "@/components/vouch-widget";
-import { CityStatsWidget } from "@/components/CityStatsWidget";
-import QRCodeCard from "@/components/QRCodeCard";
+import { ThingsIWantToDoSection } from "@/components/things-i-want-to-do-section";
 // Removed framer-motion import for static interface
 import { useToast } from "@/hooks/use-toast";
 import { AuthContext } from "@/App";
@@ -2882,6 +2881,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             </div>
           </div>
         </div>
+      </div>
       
       {/* Main content section */}
       <div className="w-full max-w-full mx-auto pb-4">
@@ -3867,38 +3867,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               </CardContent>
             </Card>
 
-            {/* Vouch System */}
-            {currentUser?.id && (
-              <VouchWidget 
-                userId={effectiveUserId} 
-                isOwnProfile={isOwnProfile} 
-                currentUserId={currentUser.id}
-              />
-            )}
-
-            {/* City Stats with Chatroom Links */}
-            <CityStatsWidget
-              city={user?.hometownCity || ''}
-              state={user?.hometownState || ''}
-              country={user?.hometownCountry || 'United States'}
-            />
-
-            {/* QR Quick Connect System */}
-            {isOwnProfile && (
-              <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
-                <CardHeader>
-                  <CardTitle className="text-gray-900 dark:text-white flex items-center gap-2">
-                    <QrCode className="w-5 h-5" />
-                    Quick Connect QR Code
-                  </CardTitle>
-                  <CardDescription className="text-gray-600 dark:text-gray-400">
-                    Share your QR code for instant connections. People can scan with their phone camera to connect immediately.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <QRCodeCard />
-                </CardContent>
-              </Card>
+            {/* Things I Want to Do in... Section */}
+            {user?.userType !== 'business' && (
+              <ThingsIWantToDoSection userId={effectiveUserId} isOwnProfile={isOwnProfile} />
             )}
 
             {/* Travel Plans - Hidden for business profiles */}
