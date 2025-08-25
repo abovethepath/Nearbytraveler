@@ -518,7 +518,8 @@ export const insertUserSchema = createInsertSchema(users).omit({
   username: z.string().min(6, "Username must be 6-13 characters").max(13, "Username must be 6-13 characters"),
   password: z.string().min(8, "Password must be at least 8 characters long"),
   bio: z.string().optional(),
-  // Make optional fields truly optional for streamlined signup
+  // Date of birth: ALWAYS required when collected, NEVER optional
+  // But can be omitted entirely during streamlined signup
   dateOfBirth: z.date().optional(),
   gender: z.string().optional(),
   sexualPreference: z.array(z.string()).optional(),
