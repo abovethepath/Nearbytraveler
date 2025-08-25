@@ -189,36 +189,7 @@ app.get('/api/businesses', async (req, res) => {
   }
 });
 
-// Add more critical endpoints that are being intercepted
-app.get('/api/users', async (req, res) => {
-  try {
-    console.log('👥 DIRECT API: Fetching ALL users (not just travelers)');
-    const usersQuery = await db.select({
-      id: users.id,
-      username: users.username,
-      name: users.name,
-      userType: users.userType,
-      location: users.location,
-      hometownCity: users.hometownCity,
-      hometownState: users.hometownState,
-      hometownCountry: users.hometownCountry,
-      bio: users.bio,
-      profileImage: users.profileImage,
-      isCurrentlyTraveling: users.isCurrentlyTraveling,
-      travelDestination: users.travelDestination,
-      interests: users.interests,
-      activities: users.activities,
-      age: users.age,
-      gender: users.gender,
-    }).from(users);
-    
-    console.log('👥 DIRECT API: Found', usersQuery.length, 'total users');
-    res.json(usersQuery);
-  } catch (error: any) {
-    console.error('🔥 Error in users API:', error);
-    res.status(500).json({ error: 'Failed to get users' });
-  }
-});
+// REMOVED DUPLICATE /api/users ENDPOINT - using the filtered one in routes.ts instead
 
 app.get('/api/users/:id', async (req, res) => {
   try {
