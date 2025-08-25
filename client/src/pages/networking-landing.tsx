@@ -190,18 +190,18 @@ export default function NetworkingLanding() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/30 dark:to-purple-800/30 p-6 rounded-xl shadow-lg border dark:border-purple-700/50">
               <div className="text-4xl mb-4">🎯</div>
-              <h3 className="text-xl font-bold mb-3 text-black">Better than Business Cards</h3>
-              <p className="text-black">Real profiles with photos & stories that create lasting impressions</p>
+              <h3 className="text-xl font-bold mb-3 text-black dark:text-white">Better than Business Cards</h3>
+              <p className="text-black dark:text-white">Real profiles with photos & stories that create lasting impressions</p>
             </div>
             <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 dark:from-indigo-900/30 dark:to-indigo-800/30 p-6 rounded-xl shadow-lg border dark:border-indigo-700/50">
               <div className="text-4xl mb-4">🤝</div>
-              <h3 className="text-xl font-bold mb-3 text-black">Pre-Networking Made Easy</h3>
-              <p className="text-black">Walk in with warm intros instead of cold conversations</p>
+              <h3 className="text-xl font-bold mb-3 text-black dark:text-white">Pre-Networking Made Easy</h3>
+              <p className="text-black dark:text-white">Walk in with warm intros instead of cold conversations</p>
             </div>
             <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/30 dark:to-purple-800/30 p-6 rounded-xl shadow-lg border dark:border-purple-700/50">
               <div className="text-4xl mb-4">🌟</div>
-              <h3 className="text-xl font-bold mb-3 text-black">Connections That Last</h3>
-              <p className="text-black">Friendships & business contacts beyond the event</p>
+              <h3 className="text-xl font-bold mb-3 text-black dark:text-white">Connections That Last</h3>
+              <p className="text-black dark:text-white">Friendships & business contacts beyond the event</p>
             </div>
           </div>
           

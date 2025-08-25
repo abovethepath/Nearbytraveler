@@ -123,7 +123,7 @@ export function SecretExperiencesWidget({ city, state, country }: SecretExperien
                       e.stopPropagation();
                       toggleExperience(experience.id);
                     }}
-                    className="text-xs text-black dark:text-black mt-1 hover:underline cursor-pointer"
+                    className="text-xs text-black dark:text-white mt-1 hover:underline cursor-pointer"
                   >
                     {isExpanded ? "Show less" : "Show more"}
                   </button>
@@ -156,7 +156,7 @@ export function SecretExperiencesWidget({ city, state, country }: SecretExperien
                 e.stopPropagation();
                 setShowAll(!showAll);
               }}
-              className="w-full text-xs text-black dark:text-black hover:bg-gray-100 dark:hover:bg-gray-600"
+              className="w-full text-xs text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600"
             >
               {showAll ? (
                 <>

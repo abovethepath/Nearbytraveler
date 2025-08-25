@@ -373,7 +373,7 @@ export function LocationSharingWidget() {
           <Button
             onClick={() => handleLocationToggle(true)}
             disabled={enableLocationMutation.isPending}
-            className="w-full text-black dark:text-black"
+            className="w-full text-black dark:text-white"
           >
             {enableLocationMutation.isPending ? "Enabling..." : "Enable Proximity Notifications"}
           </Button>

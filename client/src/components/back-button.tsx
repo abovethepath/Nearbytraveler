@@ -34,9 +34,9 @@ export default function BackButton({
       variant={variant}
       size={size}
       onClick={handleBack}
-      className={`flex items-center gap-2 text-gray-700 dark:text-black hover:text-gray-900 dark:hover:text-gray-800 ${className}`}
+      className={`flex items-center gap-2 text-gray-700 dark:text-white hover:text-gray-900 dark:hover:text-gray-200 ${className}`}
     >
-      <ArrowLeft className="w-4 h-4 text-gray-700 dark:text-black" />
+      <ArrowLeft className="w-4 h-4 text-gray-700 dark:text-white" />
       Back
     </Button>
   );

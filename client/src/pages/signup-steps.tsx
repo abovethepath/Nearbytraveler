@@ -688,7 +688,7 @@ export default function SignupSteps() {
                           }
                           data-testid={`checkbox-top-choice-${interest.toLowerCase().replace(/\s+/g, '-')}`}
                         />
-                        <Label htmlFor={`top-interest-${interest}`} className="text-xs font-semibold text-black">
+                        <Label htmlFor={`top-interest-${interest}`} className="text-xs font-semibold text-black dark:text-white">
                           {interest}
                         </Label>
                       </div>
