@@ -5388,7 +5388,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   <CardHeader className="flex flex-col items-start gap-3">
                     <CardTitle className="flex items-center gap-2">
                       <Calendar className="w-5 h-5" />
-                      Current & Upcoming Travel Plans ({travelPlans.filter(plan => plan.status === 'planned' || plan.status === 'active').length})
+                      Current & Upcoming Travel Plans ({user?.userType === 'currently_traveling' ? Math.max(1, travelPlans.filter(plan => plan.status === 'planned' || plan.status === 'active').length) : travelPlans.filter(plan => plan.status === 'planned' || plan.status === 'active').length})
                     </CardTitle>
                   {isOwnProfile && (
                     <div className="flex flex-col gap-3">
@@ -5432,8 +5432,26 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   )}
                   </CardHeader>
                   <CardContent>
-                    {travelPlans.filter(plan => plan.status === 'planned' || plan.status === 'active').length > 0 ? (
+                    {(user?.userType === 'currently_traveling' || travelPlans.filter(plan => plan.status === 'planned' || plan.status === 'active').length > 0) ? (
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        {/* Show currently traveling status for users without formal plans */}
+                        {user?.userType === 'currently_traveling' && travelPlans.filter(plan => plan.status === 'planned' || plan.status === 'active').length === 0 && (
+                          <div className="border rounded-lg p-3 border-blue-300 dark:border-blue-500 bg-blue-50 dark:bg-blue-900/20">
+                            <div className="flex items-start justify-between mb-2">
+                              <div className="flex-1">
+                                <div className="flex items-center gap-2 mb-1">
+                                  <h4 className="font-medium text-sm dark:text-white">Currently Traveling</h4>
+                                  <div className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
+                                    ✈️ Currently Traveling
+                                  </div>
+                                </div>
+                                <p className="text-black dark:text-white text-xs mb-1 font-medium">
+                                  Active travel status - add trip details to track destinations and dates
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        )}
                         {travelPlans.filter(plan => plan.status === 'planned' || plan.status === 'active').map((plan) => (
                         <div 
                           key={plan.id} 
@@ -5876,7 +5894,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-gray-600 dark:text-gray-300">Active Travel Plans</span>
-                    <span className="font-semibold dark:text-white">{travelPlans.filter(plan => plan.status === 'planned' || plan.status === 'active').length}</span>
+                    <span className="font-semibold dark:text-white">{user?.userType === 'currently_traveling' ? Math.max(1, travelPlans.filter(plan => plan.status === 'planned' || plan.status === 'active').length) : travelPlans.filter(plan => plan.status === 'planned' || plan.status === 'active').length}</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-gray-600 dark:text-gray-300">Cumulative Trips Taken</span>
