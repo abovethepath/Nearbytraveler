@@ -4008,71 +4008,38 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     {/* When editing all preferences, show the unified content */}
                     {editingInterests && editingActivities && editingEvents && (
                       <div className="space-y-6 mt-6">
-                        {/* Top Interests Section */}
+                        {/* Interests Section */}
                         <div>
                           <h4 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white flex items-center gap-2">
                             <Heart className="w-5 h-5 text-blue-500" />
-                            Top Interests
+                            Interests
                           </h4>
                           
-                          {/* Top Choices for Most Travelers */}
-                          <div className="mb-4">
-                            <h5 className="text-sm font-medium mb-2 text-gray-900 dark:text-white">Top Choices for Most Travelers</h5>
-                            <div className="flex flex-wrap gap-2 p-3 bg-gradient-to-r from-blue-100 to-orange-100 dark:from-blue-900 dark:to-orange-900 rounded-lg overflow-hidden break-words">
-                              {MOST_POPULAR_INTERESTS.map((interest) => {
-                                const isSelected = editFormData.interests.includes(interest);
-                                
-                                return (
-                                  <button
-                                    key={interest}
-                                    type="button"
-                                    onClick={() => {
-                                      toggleArrayValue(editFormData.interests, interest, (newInterests) => 
-                                        setEditFormData({ ...editFormData, interests: newInterests })
-                                      );
-                                    }}
-                                    className={`inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none border-0 transition-all ${
-                                      isSelected
-                                        ? 'bg-green-600 text-white font-bold transform scale-105'
-                                        : 'bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-800 dark:text-blue-200 dark:hover:bg-blue-700'
-                                    }`}
-                                  >
-                                    {interest}
-                                  </button>
-                                );
-                              })}
-                            </div>
-                          </div>
-
-                          {/* All Available Interests */}
-                          <div>
-                            <h5 className="text-sm font-medium mb-2 text-gray-900 dark:text-white">All Available Interests</h5>
-                            <div className="flex flex-wrap gap-2 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border overflow-hidden break-words">
-                              {getAllInterests().filter(interest => !MOST_POPULAR_INTERESTS.includes(interest)).map((interest) => {
-                                const displayText = interest.startsWith("**") && interest.endsWith("**") ? 
-                                  interest.slice(2, -2) : interest;
-                                const isSelected = editFormData.interests.includes(interest);
-                                
-                                return (
-                                  <button
-                                    key={interest}
-                                    type="button"
-                                    onClick={() => {
-                                      toggleArrayValue(editFormData.interests, interest, (newInterests) => 
-                                        setEditFormData({ ...editFormData, interests: newInterests })
-                                      );
-                                    }}
-                                    className={`inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none border-0 transition-all ${
-                                      isSelected
-                                        ? 'bg-green-600 text-white font-bold transform scale-105'
-                                        : 'bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-800 dark:text-blue-200 dark:hover:bg-blue-700'
-                                    }`}
-                                  >
-                                    {displayText}
-                                  </button>
-                                );
-                              })}
-                            </div>
+                          <div className="flex flex-wrap gap-2 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border overflow-hidden break-words">
+                            {getAllInterests().map((interest) => {
+                              const displayText = interest.startsWith("**") && interest.endsWith("**") ? 
+                                interest.slice(2, -2) : interest;
+                              const isSelected = editFormData.interests.includes(interest);
+                              
+                              return (
+                                <button
+                                  key={interest}
+                                  type="button"
+                                  onClick={() => {
+                                    toggleArrayValue(editFormData.interests, interest, (newInterests) => 
+                                      setEditFormData({ ...editFormData, interests: newInterests })
+                                    );
+                                  }}
+                                  className={`inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none border-0 transition-all ${
+                                    isSelected
+                                      ? 'bg-green-600 text-white font-bold transform scale-105'
+                                      : 'bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-800 dark:text-blue-200 dark:hover:bg-blue-700'
+                                  }`}
+                                >
+                                  {displayText}
+                                </button>
+                              );
+                            })}
                           </div>
                         </div>
 
@@ -4222,42 +4189,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   
                   {editingInterests && !(editingInterests && editingActivities && editingEvents) ? (
                     <div className="space-y-4">
-                      {/* Top Choices for Most Travelers */}
-                      <div className="mb-4">
-                        <h4 className="text-sm font-medium mb-2 text-gray-900 dark:text-white">Top Choices for Most Travelers</h4>
-                        <div className="flex flex-wrap gap-2 p-3 bg-gradient-to-r from-blue-100 to-orange-100 dark:from-blue-900 dark:to-orange-900 rounded-lg">
-                          {MOST_POPULAR_INTERESTS.map((interest) => {
-                            const isSelected = tempInterests.includes(interest);
-                            
-                            return (
-                              <button
-                                key={interest}
-                                type="button"
-                                onClick={() => {
-                                  if (isSelected) {
-                                    setTempInterests(tempInterests.filter(i => i !== interest));
-                                  } else {
-                                    setTempInterests([...tempInterests, interest]);
-                                  }
-                                }}
-                                className={`inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none border-0 transition-all ${
-                                  isSelected
-                                    ? 'bg-green-600 text-white font-bold transform scale-105'
-                                    : 'bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-800 dark:text-blue-200 dark:hover:bg-blue-700'
-                                }`}
-                              >
-                                {interest}
-                              </button>
-                            );
-                          })}
-                        </div>
-                      </div>
-
-                      {/* Additional Interests */}
+                      {/* All Interests */}
                       <div>
-                        <h4 className="text-sm font-medium mb-2 text-gray-900 dark:text-white">🔍 Additional Interests</h4>
-                        <div className="flex flex-wrap gap-2 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border">
-                          {getAllInterests().filter(interest => !MOST_POPULAR_INTERESTS.includes(interest)).map((interest) => {
+                        <div className="flex flex-wrap gap-2 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border">
+                          {getAllInterests().map((interest) => {
                             const displayText = interest.startsWith("**") && interest.endsWith("**") ? 
                               interest.slice(2, -2) : interest;
                             const isSelected = tempInterests.includes(interest);
@@ -4276,7 +4211,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                 className={`inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none border-0 transition-all ${
                                   isSelected
                                     ? 'bg-green-600 text-white font-bold transform scale-105'
-                                    : 'bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-800 dark:text-green-200 dark:hover:bg-green-700'
+                                    : 'bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-800 dark:text-blue-200 dark:hover:bg-blue-700'
                                 }`}
                               >
                                 {displayText}
