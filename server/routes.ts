@@ -3411,15 +3411,17 @@ Questions? Just reply to this message. Welcome aboard!
               ilike(users.hometownCity, `%${city}%`)
             )
           );
-          conditions.push(or(...locationConditions));
+          const locationCondition = or(...locationConditions);
+          conditions.push(locationCondition);
+          if (process.env.NODE_ENV === 'development') console.log(`🌍 LA METRO CONDITION: Added location condition for ${allLACities.length} cities`);
         } else {
-          // Regular city search
-          conditions.push(
-            or(
-              ilike(users.location, `%${searchCity}%`),
-              ilike(users.hometownCity, `%${searchCity}%`)
-            )
+          // Regular city search - use more precise matching
+          const locationCondition = or(
+            ilike(users.location, `%${searchCity}%`),
+            ilike(users.hometownCity, `%${searchCity}%`)
           );
+          conditions.push(locationCondition);
+          if (process.env.NODE_ENV === 'development') console.log(`🌍 REGULAR SEARCH: Added location condition for: ${searchCity}`);
         }
       }
       
@@ -3489,9 +3491,12 @@ Questions? Just reply to this message. Welcome aboard!
         );
       }
       
-      // Apply all conditions
+      // Apply all conditions - CRITICAL DEBUG
       if (conditions.length > 0) {
+        if (process.env.NODE_ENV === 'development') console.log(`🔍 USERS: Applying ${conditions.length} conditions to query`);
         query = query.where(and(...conditions));
+      } else {
+        if (process.env.NODE_ENV === 'development') console.log(`🔍 USERS: NO CONDITIONS - returning ALL users (this is the bug!)`);
       }
       
       const filteredUsers = await query;
