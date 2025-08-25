@@ -4297,9 +4297,19 @@ Questions? Just reply to this message. Welcome aboard!
         const cityName = city.toString();
         console.log(`🎪 EVENTS: Getting events for city: ${cityName}`);
         
-        // NO HARDCODED CITY CONSOLIDATION - Use exact city for events
+        // Apply the same LA Metro consolidation as the users endpoint
+        const { METRO_AREAS } = await import('../shared/constants');
+        const isLAMetroCity = METRO_AREAS['Los Angeles'].cities.includes(cityName);
+        
         let searchCities = [cityName];
-        console.log(`🎯 EVENTS EXACT: Searching events only in ${cityName}`);
+        
+        if (isLAMetroCity || cityName === 'Los Angeles Metro') {
+          // Search for ALL LA metro cities
+          searchCities = METRO_AREAS['Los Angeles'].cities;
+          console.log(`🌍 LA METRO EVENTS: Searching for events in ALL LA metro cities:`, searchCities.length, 'cities');
+        } else {
+          console.log(`🎯 EVENTS EXACT: Searching events only in ${cityName}`);
+        }
         
         if (process.env.NODE_ENV === 'development') console.log(`🌍 EVENTS: Final searchCities array:`, searchCities);
         
@@ -4311,7 +4321,7 @@ Questions? Just reply to this message. Welcome aboard!
           if (process.env.NODE_ENV === 'development') console.log(`🔍 EVENTS: Searching for events in city: "${searchCity}"`);
           const cityEvents = await db.select().from(events)
             .where(and(
-              eq(events.city, searchCity), // CHANGED: Use exact match instead of ilike to prevent bleeding
+              eq(events.city, searchCity), // Use exact match to prevent bleeding
               gte(events.date, now),
               lte(events.date, sixWeeksFromNow)
             ))
