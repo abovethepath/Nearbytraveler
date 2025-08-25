@@ -3572,7 +3572,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             {/* About Section */}
             <Card className="mt-6 relative overflow-visible bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 dark:border-gray-700">
               <CardHeader className="flex items-center gap-2 flex-wrap min-w-0 w-full">
-                <CardTitle className="text-base sm:text-lg break-words max-w-[calc(100%-3rem)] sm:max-w-none">
+                <CardTitle className="text-base sm:text-lg break-words max-w-[calc(100%-3rem)] sm:max-w-none text-gray-900 dark:text-white">
                   About {user?.userType === 'business'
                     ? (user?.businessName || user?.name || user?.username)
                     : (user?.username || 'User')}
@@ -3881,7 +3881,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             {user?.userType !== 'business' && (
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white">
                   <Heart className="w-5 h-5 text-red-500" />
                   Local Interests, Activities & Events
                 </CardTitle>
@@ -4719,7 +4719,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             {user?.userType === 'business' && (
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white">
                   <Heart className="w-5 h-5 text-orange-500" />
                   Business Interests, Activities & Events
                 </CardTitle>
@@ -5386,7 +5386,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 {/* Current & Upcoming Travel Plans */}
                 <Card>
                   <CardHeader className="flex flex-col items-start gap-3">
-                    <CardTitle className="flex items-center gap-2">
+                    <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white">
                       <Calendar className="w-5 h-5" />
                       Current & Upcoming Travel Plans ({user?.userType === 'currently_traveling' ? Math.max(1, travelPlans.filter(plan => plan.status === 'planned' || plan.status === 'active').length) : travelPlans.filter(plan => plan.status === 'planned' || plan.status === 'active').length})
                     </CardTitle>
@@ -5932,7 +5932,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             {/* Current Connections Widget - Visible to all - MOVED UNDER TRAVEL STATS */}
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center justify-between">
+                <CardTitle className="flex items-center justify-between text-gray-900 dark:text-white">
                   <div className="flex items-center gap-2">
                     <Users className="w-5 h-5 text-green-500" />
                     Connections ({userConnections.length})
@@ -6306,7 +6306,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             {user?.id && (
               <Card className="hover:shadow-lg transition-all duration-200">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
+                  <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white">
                     <Star className="w-5 h-5 text-yellow-500" />
                     References
                   </CardTitle>
@@ -6611,7 +6611,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             {isOwnProfile && user && (
               <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
+                  <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white">
                     <MapPin className="h-5 w-5" />
                     Location Sharing
                   </CardTitle>

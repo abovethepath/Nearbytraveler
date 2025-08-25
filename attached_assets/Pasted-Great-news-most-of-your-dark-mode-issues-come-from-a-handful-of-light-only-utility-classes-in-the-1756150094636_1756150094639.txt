@@ -1,0 +1,134 @@
+Great news: most of your dark‑mode issues come from a handful of “light‑only” utility classes in the header/overlays. Here’s a tight patch list you can apply right now.
+
+1) Make the gradient header dark‑friendly (titles & meta)
+
+Your header text blocks use hard text-black, which vanish on dark/bright gradients. Swap to dual‑mode text and add a tiny shadow for contrast.
+
+Replace (Business title & meta):
+
+<div className="space-y-2 text-black w-full mt-2">
+  <h1 className="text-2xl sm:text-4xl font-bold text-black">
+
+
+With:
+
+<div className="space-y-2 text-white w-full mt-2 drop-shadow-[0_1px_2px_rgba(0,0,0,.5)]">
+  <h1 className="text-2xl sm:text-4xl font-bold text-white">
+
+
+Also change the “• {user.businessType}” span to a dimmer white:
+
+<span className="text-white/80">• {user.businessType}</span>
+
+
+(These blocks live in the header’s profile text area.)
+
+Replace (Traveler title):
+
+<div className="space-y-1 text-black w-full mt-2">
+  <h1 className="text-xl sm:text-3xl font-bold text-black truncate">
+
+
+With:
+
+<div className="space-y-1 text-white w-full mt-2 drop-shadow-[0_1px_2px_rgba(0,0,0,.5)]">
+  <h1 className="text-xl sm:text-3xl font-bold text-white truncate">
+
+
+Optional (extra legibility on wild gradients): add a subtle overlay inside the header section:
+
+<section className={`relative ... bg-gradient-to-r ${gradientOptions[selectedGradient]} ...`}>
+  <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/10 to-black/0" />
+  {/* existing header content */}
+</section>
+
+
+2) Fix the “🎨” color‑picker chip on dark
+
+Right now it’s forced white. Give it a dark skin too.
+
+Replace:
+
+className="absolute right-3 top-3 ... rounded-full bg-white/85 text-gray-700 shadow-md hover:bg-white"
+
+
+With:
+
+className="absolute right-3 top-3 ... rounded-full bg-white/85 text-gray-700 shadow-md hover:bg-white
+           dark:bg-gray-900/80 dark:text-gray-100 dark:hover:bg-gray-900"
+
+
+3) Avatar frame halo in dark mode
+
+The avatar frame uses bg-white ring-white; in dark mode it glows too bright. Add dark variants.
+
+Replace:
+
+<div className="rounded-full bg-white ring-4 ring-white shadow-lg overflow-hidden">
+
+
+With:
+
+<div className="rounded-full bg-white ring-4 ring-white shadow-lg overflow-hidden
+                dark:bg-gray-900 dark:ring-gray-900">
+
+
+(Do the same for the camera button ring if you want it subtler.)
+
+4) Uploading overlay box
+
+The overlay content is hard‑white; add a dark background + text.
+
+Replace:
+
+<div className="bg-white rounded-lg p-4 text-center">
+  ...
+  <p className="text-sm font-medium">Uploading...</p>
+</div>
+
+
+With:
+
+<div className="bg-white dark:bg-gray-900 rounded-lg p-4 text-center">
+  ...
+  <p className="text-sm font-medium text-gray-900 dark:text-gray-100">Uploading...</p>
+</div>
+
+
+5) Dialog/Edit Profile surface text color
+
+Your Dialog already has dark:bg-slate-950 and dark:border-slate-800. Add text colors so labels/descriptions don’t default to muted tokens.
+
+Add to the DialogContent container className:
+
+text-gray-900 dark:text-gray-100
+
+
+(Where you see the long bg-white ... dark:bg-slate-950 ... class list.)
+
+6) Light‑only buttons/badges quick audit
+
+“Complete Profile” button in the red banner is fine; it’s intentionally white on red and shows on dark because the banner is red, not theme‑dependent.
+
+Mobile “Things We Have in Common” card already has dual backgrounds: bg-white dark:bg-gray-800 and heading text-gray-900 dark:text-white—no change needed.
+
+Select popover already has dark:bg-gray-800 dark:border-gray-600 and items get dark hover—good.
+
+7) (Nice‑to‑have) Page background
+
+If the base .profile-page sometimes ends up on pure white, give it theme backgrounds on the wrapper:
+
+<div className="min-h-screen profile-page bg-gray-50 dark:bg-gray-900">
+
+
+(That wrapper surrounds the whole page.)
+
+Why this fixes it
+
+Every “can only be light” class (text-black, bg-white, ring-white) now has a dark: counterpart or is swapped to semantic pairs (text-gray-900 dark:text-white), so content stays legible on both bright gradients and dark UIs.
+
+Overlays and chips get dark surfaces to avoid blinding white panels on dark backgrounds.
+
+Titles on the gradient are explicitly white with a small drop‑shadow, so they stay readable regardless of the gradient palette.
+
+If you want, I can generate a quick patch file with these exact replacements bundled, but the above swaps are minimal and local—safe to paste in directly.
