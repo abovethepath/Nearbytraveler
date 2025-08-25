@@ -3450,20 +3450,20 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 </div>
               ) : (
                 <div className="space-y-1 text-black dark:text-white w-full mt-2">
-                  {/* Nearby Traveler/Local Branding */}
-                  <h1 className="text-xl sm:text-3xl font-bold text-black dark:text-white truncate">{(() => {
-                    const currentDestination = getCurrentTravelDestination(travelPlans || []);
-                    if (currentDestination) {
-                      return `Nearby Traveler ${currentDestination}`;
-                    } else {
-                      const hometown = user.hometownCity || user.location?.split(',')[0] || 'Hometown not set';
-                      return `Nearby Local ${hometown}`;
-                    }
-                  })()}</h1>
-
                   {/* Username */}
+                  <h1 className="text-xl sm:text-3xl font-bold text-black dark:text-white truncate">@{user.username}</h1>
+
+                  {/* Travel Status */}
                   <div className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-300">
-                    <span>@{user.username}</span>
+                    {(() => {
+                      const currentDestination = getCurrentTravelDestination(travelPlans || []);
+                      if (currentDestination) {
+                        return `Nearby Traveler ${currentDestination}`;
+                      } else {
+                        const hometown = user.hometownCity || user.location?.split(',')[0] || 'Hometown not set';
+                        return `Nearby Local ${hometown}`;
+                      }
+                    })()}
                   </div>
 
                   {/* Stats */}
