@@ -8268,7 +8268,7 @@ Questions? Just reply to this message. Welcome aboard!
         });
       }
 
-      // Handle date fallback logic
+      // Handle date fallback logic - Allow null dates when not provided
       let finalStartDate: Date | null = null;
       let finalEndDate: Date | null = null;
 
@@ -8280,20 +8280,22 @@ Questions? Just reply to this message. Welcome aboard!
         finalStartDate = new Date(Math.min(...photoUploadDates.map(d => d.getTime())));
         if (process.env.NODE_ENV === 'development') console.log('📅 No start date provided, using earliest photo date:', finalStartDate);
       } else {
-        // Last fallback to current date
-        finalStartDate = new Date();
-        if (process.env.NODE_ENV === 'development') console.log('📅 No dates available, using current date:', finalStartDate);
+        // Leave as null if no date provided - user doesn't want it to default to today
+        finalStartDate = null;
+        if (process.env.NODE_ENV === 'development') console.log('📅 No dates available, leaving empty as requested');
       }
 
       if (endDate) {
         finalEndDate = new Date(endDate);
-      } else if (photoUploadDates.length > 0) {
-        // If no end date, use latest photo upload date or same as start date
+      } else if (photoUploadDates.length > 0 && finalStartDate) {
+        // If no end date but we have a start date, use latest photo upload date or same as start date
         const latestPhotoDate = new Date(Math.max(...photoUploadDates.map(d => d.getTime())));
         finalEndDate = latestPhotoDate > finalStartDate ? latestPhotoDate : finalStartDate;
         if (process.env.NODE_ENV === 'development') console.log('📅 No end date provided, using latest photo date:', finalEndDate);
       } else {
-        finalEndDate = finalStartDate; // Same day trip
+        // Leave as null if no date provided - user doesn't want it to default to start date
+        finalEndDate = null;
+        if (process.env.NODE_ENV === 'development') console.log('📅 No end date available, leaving empty as requested');
       }
 
       const albumData = {
