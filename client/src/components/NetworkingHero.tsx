@@ -1,6 +1,8 @@
+import { useLocation } from "wouter";
 import networkingHeroImage from "@assets/image_1756131077690.png";
 
 export default function NetworkingHero() {
+  const [, setLocation] = useLocation();
   return (
     <section className="relative isolate min-h-[68vh] flex items-end md:items-center">
       {/* Background image */}
@@ -12,9 +14,9 @@ export default function NetworkingHero() {
       {/* Dark gradient for text legibility */}
       <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/30 to-black/60 md:from-black/30 md:via-black/20 md:to-black/40" />
       
-      {/* Smaller, thinner red X overlay */}
+      {/* Large red X overlay */}
       <svg
-        className="absolute inset-0 m-auto w-20 h-20 md:w-32 md:h-32 drop-shadow-lg"
+        className="absolute inset-0 m-auto w-40 h-40 md:w-64 md:h-64 drop-shadow-lg"
         viewBox="0 0 100 100"
         aria-hidden="true"
       >
