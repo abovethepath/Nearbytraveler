@@ -14,14 +14,14 @@ export default function NetworkingHero() {
       {/* Dark gradient for text legibility */}
       <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/30 to-black/60 md:from-black/30 md:via-black/20 md:to-black/40" />
       
-      {/* Large red X overlay */}
+      {/* Extra large red X overlay */}
       <svg
-        className="absolute inset-0 m-auto w-40 h-40 md:w-64 md:h-64 drop-shadow-lg"
+        className="absolute inset-0 m-auto w-72 h-72 md:w-96 md:h-96 drop-shadow-lg"
         viewBox="0 0 100 100"
         aria-hidden="true"
       >
-        <line x1="20" y1="20" x2="80" y2="80" stroke="#EF4444" strokeWidth="6" strokeLinecap="round" />
-        <line x1="80" y1="20" x2="20" y2="80" stroke="#EF4444" strokeWidth="6" strokeLinecap="round" />
+        <line x1="15" y1="15" x2="85" y2="85" stroke="#EF4444" strokeWidth="6" strokeLinecap="round" />
+        <line x1="85" y1="15" x2="15" y2="85" stroke="#EF4444" strokeWidth="6" strokeLinecap="round" />
       </svg>
 
       {/* Content */}
