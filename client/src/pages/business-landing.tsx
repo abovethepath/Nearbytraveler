@@ -41,14 +41,14 @@ export default function BusinessLanding() {
                     <div className="max-w-4xl mx-auto">
                       <h1 className="px-3 leading-tight sm:leading-snug">
                         <span className="block font-black text-[clamp(1.5rem,6vw,2.25rem)] text-white">
-                          Grow Your Business with Direct Connections
+                          Grow Your Business. Meet Travelers and Locals Who Are Already Looking for Your Products or Services.
                         </span>
                       </h1>
                       
                       {/* Business value proposition (hide on phones so the hero photo is visible) */}
                       <div className="hidden sm:block mt-8 p-6 bg-black/40 backdrop-blur-sm rounded-2xl border border-white/20">
                         <p className="text-sm sm:text-base md:text-lg lg:text-xl text-white leading-relaxed px-2">
-                          Reach travelers and locals already looking for experiences, products, and services like yours. Nearby Traveler puts your brand in front of the right audience at the right time.
+                          Travelers and locals are searching for real local experiences, products, and services. With Nearby Traveler, your business gets discovered the moment interest strikes.
                         </p>
                       </div>
                       
