@@ -486,7 +486,7 @@ export default function SignupLocalTraveler() {
                     variant="outline"
                     size="sm"
                     onClick={selectAllTopChoices}
-                    className="text-xs"
+                    className="text-sm font-semibold bg-green-50 hover:bg-green-100 border-green-300 text-green-700 dark:bg-green-900/20 dark:hover:bg-green-900/40 dark:border-green-600 dark:text-green-300"
                   >
                     Select All
                   </Button>
@@ -495,7 +495,7 @@ export default function SignupLocalTraveler() {
                     variant="outline"
                     size="sm"
                     onClick={clearAllTopChoices}
-                    className="text-xs"
+                    className="text-sm font-semibold bg-red-50 hover:bg-red-100 border-red-300 text-red-700 dark:bg-red-900/20 dark:hover:bg-red-900/40 dark:border-red-600 dark:text-red-300"
                   >
                     Clear All
                   </Button>
