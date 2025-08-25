@@ -768,36 +768,20 @@ export default function Landing() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
               <div>
                 <h4 className="font-bold mb-2">❌ Old Way: Random Encounters</h4>
-                <div className="text-sm opacity-90">
-                  <div className="mb-4 block">
-                    <span className="block">• Meet strangers at events</span>
-                  </div>
-                  <div className="mb-4 block">
-                    <span className="block">• No shared context or interests</span>
-                  </div>
-                  <div className="mb-4 block">
-                    <span className="block">• Awkward small talk</span>
-                  </div>
-                  <div className="mb-4 block">
-                    <span className="block">• Lose touch after the trip</span>
-                  </div>
+                <div className="text-sm opacity-90 flex flex-col space-y-2">
+                  <div>• Meet strangers at events</div>
+                  <div>• No shared context or interests</div>
+                  <div>• Awkward small talk</div>
+                  <div>• Lose touch after the trip</div>
                 </div>
               </div>
               <div>
                 <h4 className="font-bold mb-2">✅ Nearby Traveler Way</h4>
-                <div className="text-sm">
-                  <div className="mb-4 block">
-                    <span className="block">• Connect with like-minded travelers</span>
-                  </div>
-                  <div className="mb-4 block">
-                    <span className="block">• Rich profiles with stories & photos</span>
-                  </div>
-                  <div className="mb-4 block">
-                    <span className="block">• Instant recognition at future events</span>
-                  </div>
-                  <div className="mb-4 block">
-                    <span className="block">• Lifelong travel friendships</span>
-                  </div>
+                <div className="text-sm flex flex-col space-y-2">
+                  <div>• Connect with like-minded travelers</div>
+                  <div>• Rich profiles with stories & photos</div>
+                  <div>• Instant recognition at future events</div>
+                  <div>• Lifelong travel friendships</div>
                 </div>
               </div>
             </div>
