@@ -184,7 +184,7 @@ export default function Landing() {
           </div>
           
           {/* Event Cards - Modern Lu.ma style */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-start">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-start">
 
             {/* Beach Bonfire Event Card */}
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-xl transition-all duration-300 flex flex-col min-h-[400px]">
