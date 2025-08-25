@@ -68,8 +68,7 @@ export default function TravelersLanding() {
                       {/* Traveler value proposition (hide on phones so the hero photo is visible) */}
                       <div className="hidden sm:block mt-8 p-6 bg-black/40 backdrop-blur-sm rounded-2xl border border-white/20">
                         <p className="text-sm sm:text-base md:text-lg lg:text-xl text-white leading-relaxed px-2">
-                          <span className="text-orange-300 font-bold">"Skip the crowded tourist spots and overpriced restaurants.</span>
-                          <span className="text-white"> Connect with real locals who'll show you the hidden gems, secret bars, and authentic experiences that make travel unforgettable."</span>
+                          <span className="text-white">"Connect with real locals who'll show you the hidden gems, secret bars, and authentic experiences that make travel unforgettable."</span>
                         </p>
                         <div className="mt-4 text-center">
                           <p className="text-white font-bold text-lg">— Real Travelers, Real Experiences</p>
