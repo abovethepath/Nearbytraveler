@@ -313,6 +313,66 @@ export default function Landing() {
               </div>
             </div>
 
+            {/* Sunset Yoga on the Beach Event Card */}
+            <div className="bg-white rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-2xl transform transition-all duration-300 flex flex-col min-h-[480px]" style={{animationDelay: '0.5s'}}>
+              <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-pink-400 to-orange-500">
+                <div className="w-full h-48 bg-gradient-to-br from-pink-400 to-orange-500 flex items-center justify-center">
+                  <span className="text-white text-6xl">🧘‍♀️</span>
+                </div>
+              </div>
+              <div className="p-6 flex flex-col flex-grow">
+                <div className="mb-3">
+                  <h3 className="font-bold text-gray-900 mb-1" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Sunset Yoga on the Beach</h3>
+                  <p className="text-sm text-gray-600" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Every Sunday • 6:00 PM</p>
+                </div>
+                
+                {/* Tags - Smaller and limited to 2 max */}
+                <div className="flex gap-1 mb-6">
+                  <span className="bg-pink-100 text-pink-700 px-2 py-0.5 rounded-full text-xs font-medium">$15</span>
+                  <span className="bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full text-xs font-medium">Wellness</span>
+                </div>
+                
+                <p className="text-gray-700 text-sm mb-6 flex-grow" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Unwind with peaceful yoga as the sun sets over the Pacific. Perfect for connecting with wellness-focused travelers and locals. All levels welcome.</p>
+                <Button 
+                  onClick={() => setLocation('/join')}
+                  className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold mt-auto"
+                  style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}
+                >
+                  JOIN TO CONNECT
+                </Button>
+              </div>
+            </div>
+
+            {/* Griffith Observatory Night Event Card */}
+            <div className="bg-white rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-2xl transform transition-all duration-300 flex flex-col min-h-[480px]" style={{animationDelay: '0.6s'}}>
+              <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-indigo-600 to-purple-700">
+                <div className="w-full h-48 bg-gradient-to-br from-indigo-600 to-purple-700 flex items-center justify-center">
+                  <span className="text-white text-6xl">🌟</span>
+                </div>
+              </div>
+              <div className="p-6 flex flex-col flex-grow">
+                <div className="mb-3">
+                  <h3 className="font-bold text-gray-900 mb-1" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Griffith Observatory Night</h3>
+                  <p className="text-sm text-gray-600" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Every Friday • 7:30 PM</p>
+                </div>
+                
+                {/* Tags - Smaller and limited to 2 max */}
+                <div className="flex gap-1 mb-6">
+                  <span className="bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full text-xs font-medium">Free</span>
+                  <span className="bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full text-xs font-medium">Stargazing</span>
+                </div>
+                
+                <p className="text-gray-700 text-sm mb-6 flex-grow" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Explore the cosmos with fellow stargazers at LA's iconic observatory. Perfect for curious minds who love science, space, and stunning city views.</p>
+                <Button 
+                  onClick={() => setLocation('/join')}
+                  className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold mt-auto"
+                  style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}
+                >
+                  JOIN TO CONNECT
+                </Button>
+              </div>
+            </div>
+
 
           </div>
 
