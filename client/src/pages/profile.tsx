@@ -335,15 +335,21 @@ const createProfileSchema = (userType: string) => {
     return baseSchema.extend({
       dateOfBirth: z.string().optional(),
       ageVisible: z.boolean().default(true),
-      gender: z.string().optional(),
+      gender: z.array(z.string()).default([]), // FIXED: Changed to array for checkboxes
       sexualPreference: z.array(z.string()).default([]),
       sexualPreferenceVisible: z.boolean().default(false),
       secretActivities: z.string().optional(),
       travelingWithChildren: z.boolean().default(false),
+      childrenAges: z.string().optional(), // FIXED: Added missing childrenAges field
       travelWhy: z.string().optional(),
       travelHow: z.string().optional(),
       travelBudget: z.string().optional(),
       travelGroup: z.string().optional(),
+      // FIXED: Added missing fields that should be available to travelers too
+      interests: z.array(z.string()).default([]),
+      activities: z.array(z.string()).default([]),
+      isVeteran: z.boolean().default(false), // FIXED: Added military fields for travelers
+      isActiveDuty: z.boolean().default(false), // FIXED: Added military fields for travelers
     });
   }
 };
@@ -8039,31 +8045,35 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     name="gender"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-gray-900 dark:text-white">Gender</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value ?? ''}>
-                          <FormControl>
-                            <SelectTrigger className="text-gray-900 dark:text-white dark:bg-gray-800 dark:border-gray-600">
-                              <SelectValue placeholder="Select gender" className="text-gray-900 dark:text-white" />
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                strokeWidth={1.5}
-                                stroke="currentColor"
-                                className="w-4 h-4 opacity-50 shrink-0"
-                              >
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                              </svg>
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent className="dark:bg-gray-800 dark:border-gray-600">
+                        <FormLabel className="text-gray-900 dark:text-white">Gender (Select all that apply)</FormLabel>
+                        <FormControl>
+                          <div className="space-y-2 border rounded-md p-3">
                             {GENDER_OPTIONS.map((gender) => (
-                              <SelectItem key={gender} value={gender} className="text-gray-900 dark:text-white dark:hover:bg-gray-700">
-                                {gender}
-                              </SelectItem>
+                              <div key={gender} className="flex items-center space-x-2">
+                                <input
+                                  type="checkbox"
+                                  id={`gender-${gender}`}
+                                  checked={field.value?.includes(gender) || false}
+                                  onChange={(e) => {
+                                    const currentValue = field.value || [];
+                                    if (e.target.checked) {
+                                      field.onChange([...currentValue, gender]);
+                                    } else {
+                                      field.onChange(currentValue.filter((g: string) => g !== gender));
+                                    }
+                                  }}
+                                  className="h-4 w-4 border-gray-300 dark:border-gray-600 rounded text-purple-600 focus:ring-purple-500"
+                                />
+                                <label 
+                                  htmlFor={`gender-${gender}`} 
+                                  className="text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-white cursor-pointer"
+                                >
+                                  {gender}
+                                </label>
+                              </div>
                             ))}
-                          </SelectContent>
-                        </Select>
+                          </div>
+                        </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
