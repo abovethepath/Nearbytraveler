@@ -4,47 +4,49 @@ import { Link } from "wouter";
 export default function Footer() {
   return (
     <footer className="bg-gray-900 text-white border-t border-gray-700 dark:border-gray-600">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
         {/* Main footer content */}
-        <div className="flex flex-col lg:flex-row lg:items-start gap-6 lg:gap-8">
+        <div className="flex flex-col lg:flex-row lg:items-start gap-8 lg:gap-12">
           
           {/* Left side - Logo */}
-          <div className="flex flex-col lg:max-w-sm mb-4 lg:mb-0">
+          <div className="flex flex-col lg:max-w-sm mb-6 lg:mb-0">
             <Logo variant="black-navbar" />
           </div>
 
-          {/* Right side - Links organized in columns - moved closer to logo */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 w-full lg:ml-8">
+          {/* Right side - Links organized in columns */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12 w-full">
             
             {/* Navigation Links */}
             <div>
-              <h3 className="text-xs sm:text-sm font-semibold mb-2 sm:mb-3 text-white">Platform</h3>
-              <ul className="space-y-1 sm:space-y-1.5">
-                <li><Link href="/" className="text-gray-300 hover:text-white transition-colors text-xs sm:text-sm">Home</Link></li>
-                <li><Link href="/events" className="text-gray-300 hover:text-white transition-colors text-xs sm:text-sm">Events</Link></li>
-                <li><Link href="/matches" className="text-gray-300 hover:text-white transition-colors text-xs sm:text-sm">Connect</Link></li>
-                <li><Link href="/discover" className="text-gray-300 hover:text-white transition-colors text-xs sm:text-sm">Discover</Link></li>
+              <h3 className="text-sm font-semibold mb-4 text-white">Platform</h3>
+              <ul className="space-y-2">
+                <li><Link href="/" className="text-gray-300 hover:text-white transition-colors text-sm">Home</Link></li>
+                <li><Link href="/events" className="text-gray-300 hover:text-white transition-colors text-sm">Events</Link></li>
+                <li><Link href="/matches" className="text-gray-300 hover:text-white transition-colors text-sm">Connect</Link></li>
+                <li><Link href="/discover" className="text-gray-300 hover:text-white transition-colors text-sm">Discover</Link></li>
               </ul>
             </div>
 
             {/* Company */}
             <div>
-              <h3 className="text-xs sm:text-sm font-semibold mb-2 sm:mb-3 text-white">Company</h3>
-              <ul className="space-y-1 sm:space-y-1.5">
-                <li><Link href="/about" className="text-gray-300 hover:text-white transition-colors text-xs sm:text-sm">About Us</Link></li>
-                <li><Link href="/privacy" className="text-gray-300 hover:text-white transition-colors text-xs sm:text-sm">Privacy Policy</Link></li>
-                <li><Link href="/terms" className="text-gray-300 hover:text-white transition-colors text-xs sm:text-sm">Terms of Service</Link></li>
-                <li><Link href="/cookies" className="text-gray-300 hover:text-white transition-colors text-xs sm:text-sm">Cookie Policy</Link></li>
+              <h3 className="text-sm font-semibold mb-4 text-white">Company</h3>
+              <ul className="space-y-2">
+                <li><Link href="/about" className="text-gray-300 hover:text-white transition-colors text-sm">About Us</Link></li>
+                <li><Link href="/privacy" className="text-gray-300 hover:text-white transition-colors text-sm">Privacy Policy</Link></li>
+                <li><Link href="/terms" className="text-gray-300 hover:text-white transition-colors text-sm">Terms of Service</Link></li>
+                <li><Link href="/cookies" className="text-gray-300 hover:text-white transition-colors text-sm">Cookie Policy</Link></li>
               </ul>
             </div>
 
             {/* Contact */}
             <div className="sm:col-span-2 lg:col-span-1">
-              <h3 className="text-xs sm:text-sm font-semibold mb-2 sm:mb-3 text-white">Contact</h3>
-              <div className="space-y-1 sm:space-y-1.5 text-gray-400 text-xs sm:text-sm">
-                <p className="break-all">Aaron@thenearbytraveler.com</p>
+              <h3 className="text-sm font-semibold mb-4 text-white">Contact</h3>
+              <div className="space-y-3 text-gray-300 text-sm">
                 <div>
-                  <p>32 Gould Street</p>
+                  <p className="break-words">Aaron@thenearbytraveler.com</p>
+                </div>
+                <div className="space-y-1">
+                  <p>322 Gould Street</p>
                   <p>Sheridan, WY 82801</p>
                 </div>
               </div>
