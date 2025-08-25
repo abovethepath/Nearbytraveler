@@ -309,7 +309,7 @@ export function QuickMeetupWidget({ city, profileUserId }: { city?: string; prof
                     <SelectValue placeholder="Available for how long?" />
                   </SelectTrigger>
                   <SelectContent className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600">
-                    <SelectItem value="1hour">⏰ Available for 1 hour, drop down for more</SelectItem>
+                    <SelectItem value="1hour">⏰ Available for 1 hour</SelectItem>
                     <SelectItem value="2hours">⏰ Available for 2 hours</SelectItem>
                     <SelectItem value="3hours">⏰ Available for 3 hours</SelectItem>
                     <SelectItem value="4hours">⏰ Available for 4 hours</SelectItem>
