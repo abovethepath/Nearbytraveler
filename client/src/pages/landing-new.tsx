@@ -195,23 +195,22 @@ export default function Landing() {
                   className="w-full h-48 object-cover"
                 />
               </div>
-              <div className="p-6 flex flex-col flex-grow">
-                <div className="mb-3">
-                  <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-1" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Beach Bonfire & BBQ</h3>
-                  <p className="text-sm text-gray-600" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Sunset gathering on the beach</p>
+              <div className="p-6 flex flex-col flex-grow overflow-hidden">
+                <div className="mb-3 min-w-0">
+                  <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-1 break-all overflow-hidden">Beach Bonfire & BBQ</h3>
+                  <p className="text-sm text-gray-600 break-all overflow-hidden">Sunset gathering on the beach</p>
                 </div>
                 
                 {/* Tags - Smaller and limited to 2 max */}
-                <div className="flex gap-1 mb-3">
-                  <span className="bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full text-xs font-medium">Free</span>
-                  <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs font-medium">Beach</span>
+                <div className="flex gap-1 mb-3 overflow-hidden">
+                  <span className="bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full text-xs font-medium flex-shrink-0">Free</span>
+                  <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs font-medium flex-shrink-0">Beach</span>
                 </div>
                 
-                <p className="text-gray-700 text-sm sm:text-base mb-4 flex-grow leading-relaxed" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Join locals for an authentic beach bonfire with BBQ, music, and sunset views. Experience the real LA beach culture with friendly people.</p>
+                <p className="text-gray-700 text-sm sm:text-base mb-4 flex-grow leading-relaxed break-all overflow-hidden min-w-0">Join locals for an authentic beach bonfire with BBQ, music, and sunset views. Experience the real LA beach culture with friendly people.</p>
                 <Button 
                   onClick={() => setLocation('/join')}
-                  className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold mt-auto"
-                  style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}
+                  className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold mt-auto break-all"
                 >
                   JOIN TO CONNECT
                 </Button>
@@ -227,23 +226,22 @@ export default function Landing() {
                   className="w-full h-48 object-cover"
                 />
               </div>
-              <div className="p-6 flex flex-col flex-grow">
-                <div className="mb-3">
-                  <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-1" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Taco Tuesday</h3>
-                  <p className="text-sm text-gray-600" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Every Tuesday • $1.50 tacos</p>
+              <div className="p-6 flex flex-col flex-grow overflow-hidden">
+                <div className="mb-3 min-w-0">
+                  <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-1 break-all overflow-hidden">Taco Tuesday</h3>
+                  <p className="text-sm text-gray-600 break-all overflow-hidden">Every Tuesday • $1.50 tacos</p>
                 </div>
                 
                 {/* Tags - Smaller and limited to 2 max */}
-                <div className="flex gap-1 mb-3">
-                  <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-xs font-medium">$1.50</span>
-                  <span className="bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full text-xs font-medium">Food</span>
+                <div className="flex gap-1 mb-3 overflow-hidden">
+                  <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-xs font-medium flex-shrink-0">$1.50</span>
+                  <span className="bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full text-xs font-medium flex-shrink-0">Food</span>
                 </div>
                 
-                <p className="text-gray-700 text-sm sm:text-base mb-4 flex-grow leading-relaxed" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Join locals every Tuesday for authentic street tacos at unbeatable prices. Meet fellow taco lovers and discover the best Mexican spots in the city.</p>
+                <p className="text-gray-700 text-sm sm:text-base mb-4 flex-grow leading-relaxed break-all overflow-hidden min-w-0">Join locals every Tuesday for authentic street tacos at unbeatable prices. Meet fellow taco lovers and discover the best Mexican spots in the city.</p>
                 <Button 
                   onClick={() => setLocation('/join')}
-                  className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold mt-auto"
-                  style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}
+                  className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold mt-auto break-all"
                 >
                   JOIN TO CONNECT
                 </Button>
@@ -259,23 +257,22 @@ export default function Landing() {
                   className="w-full h-48 object-cover"
                 />
               </div>
-              <div className="p-6 flex flex-col flex-grow">
-                <div className="mb-3">
-                  <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-1" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Hollywood Sign Hike</h3>
-                  <p className="text-sm text-gray-600" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Every Saturday • 9:00 AM</p>
+              <div className="p-6 flex flex-col flex-grow overflow-hidden">
+                <div className="mb-3 min-w-0">
+                  <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-1 break-all overflow-hidden">Hollywood Sign Hike</h3>
+                  <p className="text-sm text-gray-600 break-all overflow-hidden">Every Saturday • 9:00 AM</p>
                 </div>
                 
                 {/* Tags - Smaller and limited to 2 max */}
-                <div className="flex gap-1 mb-3">
-                  <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs font-medium">Free</span>
-                  <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-xs font-medium">Hiking</span>
+                <div className="flex gap-1 mb-3 overflow-hidden">
+                  <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs font-medium flex-shrink-0">Free</span>
+                  <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-xs font-medium flex-shrink-0">Hiking</span>
                 </div>
                 
-                <p className="text-gray-700 text-sm sm:text-base mb-4 flex-grow leading-relaxed" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Weekly hike to the iconic Hollywood Sign with locals and travelers. Amazing city views, great photos, and authentic LA hiking culture.</p>
+                <p className="text-gray-700 text-sm sm:text-base mb-4 flex-grow leading-relaxed break-all overflow-hidden min-w-0">Weekly hike to the iconic Hollywood Sign with locals and travelers. Amazing city views, great photos, and authentic LA hiking culture.</p>
                 <Button 
                   onClick={() => setLocation('/join')}
-                  className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold mt-auto"
-                  style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}
+                  className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold mt-auto break-all"
                 >
                   JOIN TO CONNECT
                 </Button>
@@ -291,23 +288,22 @@ export default function Landing() {
                   className="w-full h-48 object-cover"
                 />
               </div>
-              <div className="p-6 flex flex-col flex-grow">
-                <div className="mb-3">
-                  <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-1" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Happy Hour Thursday</h3>
-                  <p className="text-sm text-gray-600" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Jameson Pub • Live Music</p>
+              <div className="p-6 flex flex-col flex-grow overflow-hidden">
+                <div className="mb-3 min-w-0">
+                  <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-1 break-all overflow-hidden">Happy Hour Thursday</h3>
+                  <p className="text-sm text-gray-600 break-all overflow-hidden">Jameson Pub • Live Music</p>
                 </div>
                 
                 {/* Tags - Smaller and limited to 2 max */}
-                <div className="flex gap-1 mb-3">
-                  <span className="bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full text-xs font-medium">Drinks</span>
-                  <span className="bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full text-xs font-medium">Live Music</span>
+                <div className="flex gap-1 mb-3 overflow-hidden">
+                  <span className="bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full text-xs font-medium flex-shrink-0">Drinks</span>
+                  <span className="bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full text-xs font-medium flex-shrink-0">Live Music</span>
                 </div>
                 
-                <p className="text-gray-700 text-sm sm:text-base mb-4 flex-grow leading-relaxed" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Join locals and travelers for Thursday happy hour with live music at Jameson Pub. Great drinks, live bands, and authentic LA nightlife.</p>
+                <p className="text-gray-700 text-sm sm:text-base mb-4 flex-grow leading-relaxed break-all overflow-hidden min-w-0">Join locals and travelers for Thursday happy hour with live music at Jameson Pub. Great drinks, live bands, and authentic LA nightlife.</p>
                 <Button 
                   onClick={() => setLocation('/join')}
-                  className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold mt-auto"
-                  style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}
+                  className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold mt-auto break-all"
                 >
                   JOIN TO CONNECT
                 </Button>
