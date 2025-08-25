@@ -245,6 +245,26 @@ interface ExtendedUser extends User {
   customInterests?: string;
   customActivities?: string;
   customEvents?: string;
+  business_name?: string;
+  businessName?: string;
+  business_description?: string;
+  businessDescription?: string;
+  business_type?: string;
+  businessType?: string;
+  street_address?: string;
+  streetAddress?: string;
+  zip_code?: string;
+  zipCode?: string;
+  phone_number?: string;
+  phoneNumber?: string;
+  website_url?: string;
+  websiteUrl?: string;
+  website?: string;
+  is_veteran?: boolean;
+  is_active_duty?: boolean;
+  custom_interests?: string;
+  custom_activities?: string;
+  custom_events?: string;
 }
 
 // Add missing constants
@@ -1366,7 +1386,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           travelBudget: user.travelBudget || "",
           travelGroup: user.travelGroup || "",
           travelingWithChildren: travelingWithChildrenValue,
-          childrenAges: (user as any).childrenAges || "",
+          childrenAges: (user as ExtendedUser)?.childrenAges || "",
           isVeteran: Boolean((user as ExtendedUser).isVeteran),
           isActiveDuty: Boolean((user as ExtendedUser).isActiveDuty),
           // interests: user.interests || [],
@@ -2827,10 +2847,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const handleEditBusinessDescription = () => {
     if (!user) return;
     setBusinessDescriptionForm({
-      services: user.services || '',
-      specialOffers: user.specialOffers || '',
-      targetCustomers: user.targetCustomers || '',
-      certifications: user.certifications || ''
+      services: (user as ExtendedUser)?.services || '',
+      specialOffers: (user as ExtendedUser)?.specialOffers || '',
+      targetCustomers: (user as ExtendedUser)?.targetCustomers || '',
+      certifications: (user as ExtendedUser)?.certifications || ''
     });
     setEditingBusinessDescription(true);
   };
@@ -2885,9 +2905,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     if (user && user.userType === 'business') {
       setOwnerContactForm({
         ownerName: (user as ExtendedUser).ownerName || "",
-        contactName: user.contactName || "",
-        ownerEmail: user.ownerEmail || "",
-        ownerPhone: user.ownerPhone || ""
+        contactName: (user as ExtendedUser)?.contactName || "",
+        ownerEmail: (user as ExtendedUser)?.ownerEmail || "",
+        ownerPhone: (user as ExtendedUser)?.ownerPhone || ""
       });
     }
   }, [user]);
@@ -3691,9 +3711,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">Family:</span>
                       <span className="flex-1 break-words flex items-center gap-1">
                         <Users className="w-4 h-4" /> Traveling with children
-                        {(user as any).childrenAges && (
+                        {(user as ExtendedUser)?.childrenAges && (
                           <span className="text-sm text-gray-500 dark:text-gray-400">
-                            (Ages: {(user as any).childrenAges})
+                            (Ages: {(user as ExtendedUser)?.childrenAges})
                           </span>
                         )}
                       </span>
@@ -6912,10 +6932,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         <span className="text-sm text-gray-600 dark:text-gray-400">Contact Email:</span>
                         {user?.ownerEmail ? (
                           <a 
-                            href={`mailto:${user.ownerEmail}`} 
+                            href={`mailto:${(user as ExtendedUser)?.ownerEmail}`} 
                             className="text-sm font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 underline transition-colors"
                           >
-                            {user.ownerEmail}
+                            {(user as ExtendedUser)?.ownerEmail}
                           </a>
                         ) : (
                           <span className="text-sm font-medium text-gray-900 dark:text-white">
@@ -6927,10 +6947,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         <span className="text-sm text-gray-600 dark:text-gray-400">Contact Person Phone:</span>
                         {user?.ownerPhone ? (
                           <a 
-                            href={`tel:${user.ownerPhone}`} 
+                            href={`tel:${(user as ExtendedUser)?.ownerPhone}`} 
                             className="text-sm font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 underline transition-colors"
                           >
-                            {user.ownerPhone}
+                            {(user as ExtendedUser)?.ownerPhone}
                           </a>
                         ) : (
                           <span className="text-sm font-medium text-gray-900 dark:text-white">
