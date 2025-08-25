@@ -1,0 +1,255 @@
+import React, { useState, useEffect, useRef } from "react";
+import { useParams, useLocation } from "wouter";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
+import { Send, ArrowLeft, Users, MessageCircle, Loader2 } from "lucide-react";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+
+interface ChatMessage {
+  id: number;
+  chatroom_id: number;
+  sender_id: number;
+  content: string;
+  created_at: string;
+  username: string;
+  name: string;
+}
+
+interface Chatroom {
+  id: number;
+  name: string;
+  description: string;
+  city: string;
+  state: string;
+  country: string;
+}
+
+interface ChatMember {
+  id: number;
+  user_id: number;
+  username: string;
+  name: string;
+  role: string;
+  profile_image?: string;
+}
+
+export default function SimpleChatroomPage() {
+  const params = useParams();
+  const [location, navigate] = useLocation();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [messageText, setMessageText] = useState("");
+  const [isJoining, setIsJoining] = useState(false);
+  const [isLeaving, setIsLeaving] = useState(false);
+
+  // Extract chatroom ID from URL path: /simple-chatroom/198
+  const pathSegments = location.split('/');
+  const chatroomId = parseInt(pathSegments[2] || '198');
+  
+  // Get current user with error handling
+  const getCurrentUser = () => {
+    try {
+      const storedUser = localStorage.getItem('travelconnect_user') || localStorage.getItem('user');
+      if (storedUser) {
+        const user = JSON.parse(storedUser);
+        return user;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      console.error('Error parsing user from localStorage:', e);
+      return null;
+    }
+  };
+  
+  const currentUser = getCurrentUser();
+  const currentUserId = Number(currentUser?.id || 0);
+
+  // Get chatroom details - DISABLED to prevent loops
+  const { data: chatroom } = useQuery<Chatroom>({
+    queryKey: [`/api/simple-chatrooms/${chatroomId}`],
+    enabled: false, // DISABLED
+  });
+
+  // Get members list - DISABLED to prevent loops
+  const { data: members = [] } = useQuery<ChatMember[]>({
+    queryKey: [`/api/simple-chatrooms/${chatroomId}/members`],
+    enabled: false, // DISABLED
+  });
+
+  // Check if user is a member - ALWAYS FALSE for now
+  const isJoined = false;
+
+  // Get member count - DISABLED
+  const { data: memberCountResp } = useQuery<{memberCount: number}>({
+    queryKey: [`/api/simple-chatrooms/${chatroomId}/members/count`],
+    enabled: false, // DISABLED
+  });
+
+  // Get messages - DISABLED
+  const { data: messages = [], isLoading: messagesLoading } = useQuery<ChatMessage[]>({
+    queryKey: [`/api/simple-chatrooms/${chatroomId}/messages`],
+    enabled: false, // DISABLED
+  });
+
+  // Join room function - DISABLED for now
+  async function joinRoom() {
+    toast({
+      title: "Temporarily Disabled",
+      description: "Join functionality is temporarily disabled to prevent loops",
+      variant: "destructive"
+    });
+  }
+
+  // Leave room function - DISABLED for now
+  async function leaveRoom() {
+    toast({
+      title: "Temporarily Disabled", 
+      description: "Leave functionality is temporarily disabled",
+      variant: "destructive"
+    });
+  }
+
+  const memberCount = 0;
+
+  // Send message mutation - DISABLED
+  const sendMessageMutation = useMutation({
+    mutationFn: async (content: string) => {
+      throw new Error("Temporarily disabled");
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Temporarily Disabled",
+        description: "Messaging is temporarily disabled to prevent system issues",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleSendMessage = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Do nothing
+  };
+
+  // Error handling for invalid chatroom ID
+  if (isNaN(chatroomId) || chatroomId <= 0) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-orange-50 dark:from-gray-900 dark:to-gray-800">
+        <div className="max-w-4xl mx-auto px-4 py-6">
+          <Card>
+            <CardContent className="p-8 text-center">
+              <div className="text-red-600 font-semibold mb-4">Invalid Chatroom ID</div>
+              <Button onClick={() => navigate('/city-chatrooms')}>Back to Chatrooms</Button>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+  
+  // Error handling for missing user
+  if (!currentUser || !currentUserId) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-orange-50 dark:from-gray-900 dark:to-gray-800">
+        <div className="max-w-4xl mx-auto px-4 py-6">
+          <Card>
+            <CardContent className="p-8 text-center">
+              <div className="text-red-600 font-semibold mb-4">Authentication Required</div>
+              <div className="text-gray-600 mb-4">Please log in to access chatrooms</div>
+              <Button onClick={() => navigate('/auth')}>Log In</Button>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-orange-50 dark:from-gray-900 dark:to-gray-800">
+      <div className="max-w-4xl mx-auto px-4 py-6">
+        {/* Header */}
+        <Card className="mb-6">
+          <CardHeader>
+            <div className="flex items-center gap-4">
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={() => navigate('/city-chatrooms')}
+              >
+                <ArrowLeft className="w-4 h-4" />
+              </Button>
+              <div>
+                <CardTitle className="text-xl">
+                  Chatroom {chatroomId} (SAFE MODE)
+                </CardTitle>
+                <p className="text-sm text-red-600 dark:text-red-400 mt-1">
+                  All functionality temporarily disabled to prevent system crashes
+                </p>
+              </div>
+              <div className="ml-auto flex gap-2">
+                <Button 
+                  onClick={joinRoom} 
+                  variant="secondary" 
+                  size="sm"
+                  disabled={true}
+                >
+                  Join (Disabled)
+                </Button>
+                <Button 
+                  onClick={leaveRoom} 
+                  variant="outline" 
+                  size="sm"
+                  disabled={true}
+                >
+                  Leave (Disabled)
+                </Button>
+              </div>
+            </div>
+          </CardHeader>
+        </Card>
+
+        {/* Messages Container */}
+        <Card className="mb-4">
+          <CardContent className="p-4">
+            <div className="h-96 overflow-y-auto space-y-3 mb-4">
+              <div className="flex items-center justify-center h-full text-gray-500">
+                <div className="text-center">
+                  <div className="text-red-600 mb-4">
+                    <h3 className="text-lg font-semibold">SAFE MODE ACTIVATED</h3>
+                    <p className="text-sm">All chatroom functionality has been disabled to prevent system crashes.</p>
+                  </div>
+                  <Button onClick={() => navigate('/city-chatrooms')} variant="outline">
+                    Return to Chatroom List
+                  </Button>
+                </div>
+              </div>
+            </div>
+
+            {/* Message Input - DISABLED */}
+            <form onSubmit={handleSendMessage} className="flex gap-2">
+              <Input
+                value=""
+                onChange={() => {}}
+                placeholder="Messaging disabled in safe mode"
+                disabled={true}
+                className="flex-1"
+              />
+              <Button 
+                type="submit" 
+                disabled={true}
+              >
+                <Send className="w-4 h-4" />
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}

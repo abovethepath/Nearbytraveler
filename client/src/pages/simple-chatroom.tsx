@@ -45,10 +45,13 @@ export default function SimpleChatroomPage() {
   const queryClient = useQueryClient();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [messageText, setMessageText] = useState("");
+  
+  // CRITICAL: Tri-state membership tracking to prevent excessive API calls
   const [isJoined, setIsJoined] = useState<boolean | null>(null); // null = unknown, true = joined, false = not joined
+  const [membershipChecked, setMembershipChecked] = useState(false);
   const [isJoining, setIsJoining] = useState(false);
   const [isLeaving, setIsLeaving] = useState(false);
-  const [membershipChecked, setMembershipChecked] = useState(false);
+  const [hasAutoJoined, setHasAutoJoined] = useState(false); // Prevent multiple auto-joins
 
   // Extract chatroom ID from URL path: /simple-chatroom/198
   const pathSegments = location.split('/');
@@ -81,49 +84,71 @@ export default function SimpleChatroomPage() {
     refetchOnWindowFocus: false,
   });
 
-  // Get messages - only fetch if user is joined
-  const { data: messages = [], isLoading: messagesLoading, isFetching: messagesFetching, refetch: refetchMessages } = useQuery<ChatMessage[]>({
-    queryKey: [`/api/simple-chatrooms/${chatroomId}/messages`],
-    enabled: !!(currentUserId && chatroomId && !isNaN(chatroomId) && isJoined === true),
-    refetchInterval: isJoined === true ? 5000 : false, // Poll every 5 seconds if joined
-    staleTime: 30000, // 30 seconds - don't refetch unless data is actually stale
-    refetchOnWindowFocus: false, // Prevent refetching when window gets focus
-    refetchOnReconnect: true, // Only refetch on network reconnection
+  // Get members list - check if current user is a member
+  const { data: members = [], refetch: refetchMembers } = useQuery<ChatMember[]>({
+    queryKey: [`/api/simple-chatrooms/${chatroomId}/members`],
+    enabled: !!(currentUserId && chatroomId && !isNaN(chatroomId)),
+    refetchInterval: 60000, // 60 seconds - longer interval to reduce load
+    staleTime: 120000, // 2 minutes - members don't change frequently
+    refetchOnWindowFocus: false,
   });
+
+  // Check membership when members data changes - CRITICAL LOGIC
+  useEffect(() => {
+    if (members && Array.isArray(members) && !membershipChecked) {
+      const userIsMember = members.some((member: ChatMember) => member.user_id === currentUserId);
+      console.log('🔍 MEMBERSHIP CHECK:', { userIsMember, currentUserId, membersCount: members.length });
+      setIsJoined(userIsMember);
+      setMembershipChecked(true);
+    }
+  }, [members, currentUserId, membershipChecked]);
 
   // Get member count
   const { data: memberCountResp, refetch: refetchMemberCount } = useQuery<{memberCount: number}>({
     queryKey: [`/api/simple-chatrooms/${chatroomId}/members/count`],
     enabled: !!(currentUserId && chatroomId && !isNaN(chatroomId)),
-    refetchInterval: 15000, // 15 seconds
+    refetchInterval: 30000, // 30 seconds
+    staleTime: 60000, // 1 minute
+    refetchOnWindowFocus: false,
+  });
+
+  // Get messages - only fetch if user is joined
+  const { data: messages = [], isLoading: messagesLoading, isFetching: messagesFetching, refetch: refetchMessages } = useQuery<ChatMessage[]>({
+    queryKey: [`/api/simple-chatrooms/${chatroomId}/messages`],
+    enabled: !!(currentUserId && chatroomId && !isNaN(chatroomId) && isJoined === true),
+    refetchInterval: isJoined === true ? 8000 : false, // Poll every 8 seconds if joined
     staleTime: 30000, // 30 seconds
     refetchOnWindowFocus: false,
   });
 
-  // Get members list - check if current user is a member
-  const { data: members = [], refetch: refetchMembers } = useQuery<ChatMember[]>({
-    queryKey: [`/api/simple-chatrooms/${chatroomId}/members`],
-    enabled: !!(currentUserId && chatroomId && !isNaN(chatroomId)),
-    refetchInterval: 30000, // 30 seconds
-    staleTime: 60000, // 1 minute - members don't change frequently
-    refetchOnWindowFocus: false,
-  });
-
-  // Check membership when members data changes
+  // CRITICAL: Smart auto-join logic with safety checks
   useEffect(() => {
-    if (members && Array.isArray(members)) {
-      const userIsMember = members.some((member: ChatMember) => member.user_id === currentUserId);
-      setIsJoined(userIsMember);
-      setMembershipChecked(true);
-      console.log('Membership check:', userIsMember, 'User ID:', currentUserId, 'Members:', members.length);
-    }
-  }, [members, currentUserId]);
+    // Only auto-join if ALL conditions are met:
+    const shouldAutoJoin = 
+      currentUserId &&                    // Valid user ID
+      chatroomId &&                      // Valid chatroom ID  
+      membershipChecked &&               // Membership has been verified
+      isJoined === false &&              // User is confirmed NOT a member
+      !isJoining &&                      // Not currently joining
+      !hasAutoJoined;                    // Haven't already attempted auto-join
 
-  // Join room function
+    if (shouldAutoJoin) {
+      console.log('🚀 AUTO-JOIN: All conditions met, attempting join for user:', currentUserId);
+      setHasAutoJoined(true); // Mark as attempted to prevent repeated attempts
+      joinRoom();
+    }
+  }, [currentUserId, chatroomId, membershipChecked, isJoined, isJoining, hasAutoJoined]);
+
+  // Join room function with robust error handling
   async function joinRoom() {
-    if (!currentUserId || isJoining || isJoined) return;
+    if (!currentUserId || isJoining || isJoined) {
+      console.log('🚫 JOIN BLOCKED:', { currentUserId, isJoining, isJoined });
+      return;
+    }
     
     setIsJoining(true);
+    console.log('🔄 JOINING ROOM:', chatroomId, 'for user:', currentUserId);
+    
     try {
       const response = await fetch(`/api/simple-chatrooms/${chatroomId}/join`, {
         method: "POST",
@@ -136,20 +161,20 @@ export default function SimpleChatroomPage() {
       
       if (response.ok) {
         setIsJoined(true);
+        console.log('✅ JOIN SUCCESS');
         toast({
           title: "Joined chatroom",
           description: "You have successfully joined the chatroom",
+          className: "bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100",
         });
-        // Use invalidateQueries to avoid loading state flickers
+        // Refresh data efficiently
         queryClient.invalidateQueries({ queryKey: [`/api/simple-chatrooms/${chatroomId}/members/count`] });
         queryClient.invalidateQueries({ queryKey: [`/api/simple-chatrooms/${chatroomId}/members`] });
-        queryClient.invalidateQueries({ queryKey: [`/api/simple-chatrooms/${chatroomId}/messages`] });
       } else {
         let errorMessage = "Failed to join chatroom";
         try {
-          const error = await response.text(); // Use text() first to see what we got
-          console.log('Join error response:', error);
-          // Try to parse as JSON if it looks like JSON
+          const error = await response.text();
+          console.log('❌ JOIN ERROR RESPONSE:', error);
           if (error.trim().startsWith('{')) {
             const parsedError = JSON.parse(error);
             errorMessage = parsedError.message || parsedError.error || errorMessage;
@@ -162,11 +187,13 @@ export default function SimpleChatroomPage() {
         throw new Error(errorMessage);
       }
     } catch (error: any) {
-      console.error("Join room error:", error);
+      console.error("❌ JOIN ERROR:", error);
+      setIsJoined(false); // Reset to not joined on error
       toast({
         title: "Error",
         description: error.message || "Failed to join chatroom",
-        variant: "destructive"
+        variant: "destructive",
+        className: "bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100",
       });
     } finally {
       setIsJoining(false);
@@ -193,35 +220,22 @@ export default function SimpleChatroomPage() {
         toast({
           title: "Left chatroom",
           description: "You have successfully left the chatroom",
+          className: "bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100",
         });
-        // Use invalidateQueries and clear messages cache
         queryClient.invalidateQueries({ queryKey: [`/api/simple-chatrooms/${chatroomId}/members/count`] });
         queryClient.invalidateQueries({ queryKey: [`/api/simple-chatrooms/${chatroomId}/members`] });
         queryClient.removeQueries({ queryKey: [`/api/simple-chatrooms/${chatroomId}/messages`] });
         setTimeout(() => navigate('/city-chatrooms'), 1000);
       } else {
-        let errorMessage = "Failed to leave chatroom";
-        try {
-          const error = await response.text(); // Use text() first to see what we got
-          console.log('Leave error response:', error);
-          // Try to parse as JSON if it looks like JSON
-          if (error.trim().startsWith('{')) {
-            const parsedError = JSON.parse(error);
-            errorMessage = parsedError.message || parsedError.error || errorMessage;
-          } else {
-            errorMessage = error || errorMessage;
-          }
-        } catch (parseError) {
-          console.error("Error parsing leave response:", parseError);
-        }
-        throw new Error(errorMessage);
+        throw new Error("Failed to leave chatroom");
       }
     } catch (error: any) {
       console.error("Leave room error:", error);
       toast({
         title: "Error", 
         description: error.message || "Failed to leave chatroom",
-        variant: "destructive"
+        variant: "destructive",
+        className: "bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100",
       });
     } finally {
       setIsLeaving(false);
@@ -254,26 +268,18 @@ export default function SimpleChatroomPage() {
     },
     onSuccess: () => {
       setMessageText("");
-      // Use queryClient.invalidateQueries instead of direct refetch to avoid loading states
       queryClient.invalidateQueries({ 
         queryKey: [`/api/simple-chatrooms/${chatroomId}/messages`],
         exact: true 
       });
     },
     onError: (error: any) => {
-      if (error.message?.includes("must be a member") || error.message?.includes("join the chatroom")) {
-        toast({
-          title: "Membership Required",
-          description: "You need to join this chatroom before sending messages.",
-          variant: "destructive",
-        });
-      } else {
-        toast({
-          title: "Error",
-          description: error.message || "Failed to send message",
-          variant: "destructive",
-        });
-      }
+      toast({
+        title: "Error",
+        description: error.message || "Failed to send message",
+        variant: "destructive",
+        className: "bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100",
+      });
     },
   });
 
@@ -283,19 +289,6 @@ export default function SimpleChatroomPage() {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages]);
-
-  // Auto-join room when component loads if user is not already joined
-  useEffect(() => {
-    // Only auto-join if:
-    // 1. We have a current user and valid chatroom ID
-    // 2. Membership has been checked 
-    // 3. User is confirmed NOT a member
-    // 4. Not currently in the process of joining
-    if (currentUserId && chatroomId && membershipChecked && isJoined === false && !isJoining) {
-      console.log('Auto-joining room for user:', currentUserId);
-      joinRoom();
-    }
-  }, [currentUserId, chatroomId, membershipChecked, isJoined, isJoining]);
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
