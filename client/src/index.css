@@ -138,97 +138,12 @@
     @apply bg-background text-foreground;
   }
   
-  /* FORCE ALL BLACK TEXT TO BE WHITE SITE-WIDE */
-  .text-black,
-  .text-gray-900,
-  .text-gray-800,
-  .text-gray-700,
-  .text-slate-900,
-  .text-slate-800,
-  .text-slate-700,
-  [style*="color: black"],
-  [style*="color: rgb(0, 0, 0)"],
-  [style*="color:#000"],
-  [style*="color: #000000"] {
-    color: white !important;
-  }
-  
-  /* FORCE ALL BLACK BACKGROUNDS TO BE DARK */
-  .bg-white {
-    background-color: #1a1a1a !important;
-  }
-  
-  /* NUCLEAR OPTION: FORCE ALL TEXT TO WHITE EXCEPT HERO */
-  *:not(.hero-clean *),
-  *:not(.hero-clean)::before,
-  *:not(.hero-clean)::after,
-  div:not(.hero-clean *),
-  span:not(.hero-clean *),
-  p:not(.hero-clean *),
-  h1:not(.hero-clean *), h2:not(.hero-clean *), h3:not(.hero-clean *), h4:not(.hero-clean *), h5:not(.hero-clean *), h6:not(.hero-clean *),
-  button:not(.hero-clean *),
-  input:not(.hero-clean *),
-  textarea:not(.hero-clean *),
-  select:not(.hero-clean *),
-  label:not(.hero-clean *),
-  a:not(.hero-clean *),
-  li:not(.hero-clean *),
-  td:not(.hero-clean *),
-  th:not(.hero-clean *),
-  .text-sm:not(.hero-clean *),
-  .text-base:not(.hero-clean *),
-  .text-lg:not(.hero-clean *),
-  .text-xl:not(.hero-clean *),
-  .font-medium:not(.hero-clean *),
-  .font-semibold:not(.hero-clean *),
-  .font-bold:not(.hero-clean *) {
-    color: white !important;
-  }
   
   /* PRESERVE HERO STYLING */
-  .hero-clean,
-  .hero-clean * {
-    color: inherit !important;
-  }
-  
   .hero-blue {
     color: #60a5fa !important;
   }
   
-  /* SPECIFIC OVERRIDES FOR COMMON COMPONENTS */
-  button, input, textarea, select {
-    color: white !important;
-    background-color: #2a2a2a !important;
-  }
-  
-  /* CARD AND CONTAINER OVERRIDES */
-  .card, 
-  .bg-card,
-  [class*="card"],
-  [class*="bg-"],
-  .business-card,
-  .deal-card {
-    background-color: #1e1e1e !important;
-    color: white !important;
-  }
-  
-  /* FORCE ALL CHILDREN OF CARDS TO BE WHITE */
-  .card *,
-  .bg-card *,
-  [class*="card"] *,
-  .business-card *,
-  .deal-card * {
-    color: white !important;
-  }
-  
-  /* SPECIFIC BUSINESS CARD FIXES */
-  .business-name,
-  .business-category,
-  .business-address,
-  .business-phone,
-  .business-description {
-    color: white !important;
-  }
 }
 
 /* Fix select dropdown visibility */
