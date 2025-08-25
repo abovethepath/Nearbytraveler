@@ -6561,12 +6561,69 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 <CardContent>
                   {editingCountries ? (
                     <div className="space-y-3">
-                      <MultiSelect
-                        options={COUNTRIES_OPTIONS}
-                        selected={tempCountries}
-                        onChange={setTempCountries}
-                        placeholder="Select countries visited"
-                      />
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            role="combobox"
+                            className="w-full justify-between bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-left"
+                          >
+                            {tempCountries.length > 0 
+                              ? `${tempCountries.length} countr${tempCountries.length > 1 ? 'ies' : 'y'} selected`
+                              : "Select countries visited..."
+                            }
+                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-full p-0 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600">
+                          <Command className="bg-white dark:bg-gray-800">
+                            <CommandInput placeholder="Search countries..." className="border-0" />
+                            <CommandEmpty>No country found.</CommandEmpty>
+                            <CommandGroup className="max-h-64 overflow-auto">
+                              {COUNTRIES_OPTIONS.map((country) => (
+                                <CommandItem
+                                  key={country}
+                                  value={country}
+                                  onSelect={() => {
+                                    const isSelected = tempCountries.includes(country);
+                                    if (isSelected) {
+                                      setTempCountries(tempCountries.filter(c => c !== country));
+                                    } else {
+                                      setTempCountries([...tempCountries, country]);
+                                    }
+                                  }}
+                                  className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
+                                >
+                                  <Check
+                                    className={`mr-2 h-4 w-4 ${
+                                      tempCountries.includes(country) ? "opacity-100" : "opacity-0"
+                                    }`}
+                                  />
+                                  {country}
+                                </CommandItem>
+                              ))}
+                            </CommandGroup>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
+                      
+                      {/* Show selected countries */}
+                      {tempCountries.length > 0 && (
+                        <div className="flex flex-wrap gap-2 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                          {tempCountries.map((country) => (
+                            <div key={country} className="inline-flex items-center justify-center h-8 rounded-full px-3 text-sm font-medium whitespace-nowrap leading-none bg-green-500 text-white border-0">
+                              {country}
+                              <button
+                                onClick={() => setTempCountries(tempCountries.filter(c => c !== country))}
+                                className="ml-2 text-green-200 hover:text-white"
+                              >
+                                ×
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      
                       <div className="flex gap-2">
                         <Button size="sm" onClick={handleSaveCountries} disabled={updateCountries.isPending}>
                           {updateCountries.isPending ? "Saving..." : "Save"}
