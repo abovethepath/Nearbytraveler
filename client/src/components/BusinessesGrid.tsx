@@ -249,14 +249,14 @@ export default function BusinessesGrid({ currentLocation, travelPlans = [] }: Bu
                 {/* Actions */}
                 <div className="mt-4 flex gap-2">
                   <Button
-                    className="flex-1 sm:flex-none"
+                    className="flex-1 sm:flex-none bg-blue-600 hover:bg-blue-700 text-white"
                     onClick={() => setLocation(`/business/${b.id}`)}
                   >
                     View
                   </Button>
                   <Button
                     variant="outline"
-                    className="flex-1 sm:flex-none"
+                    className="flex-1 sm:flex-none border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                     onClick={() =>
                       setLocation(
                         `/map?lat=${encodeURIComponent(
