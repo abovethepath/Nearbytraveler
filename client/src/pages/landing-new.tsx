@@ -346,9 +346,11 @@ export default function Landing() {
             {/* Griffith Observatory Night Event Card */}
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-2xl transform transition-all duration-300 flex flex-col min-h-[480px]" style={{animationDelay: '0.6s'}}>
               <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-indigo-600 to-purple-700">
-                <div className="w-full h-48 bg-gradient-to-br from-indigo-600 to-purple-700 flex items-center justify-center">
-                  <span className="text-white text-6xl">🌟</span>
-                </div>
+                <img 
+                  src="/Los_Angeles_1753819372180.jpg" 
+                  alt="Los Angeles cityscape with Griffith Observatory view" 
+                  className="w-full h-48 object-cover"
+                />
               </div>
               <div className="p-6 flex flex-col flex-grow">
                 <div className="mb-3">
