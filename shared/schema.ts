@@ -18,7 +18,6 @@ export const users = pgTable("users", {
   metroArea: text("metro_area"), // The metro area they belong to (e.g., "Los Angeles Metro")
   isMetroUser: boolean("is_metro_user").default(false), // Whether they confirmed metro area recognition
   profileImage: text("profile_image"),
-  topChoices: text("top_choices").array(), // NEW: Top 4 choices for easy connection matching
   interests: text("interests").array(),
   customInterests: text("custom_interests"), // User's custom interests as comma-separated string
   dateOfBirth: timestamp("date_of_birth"),
