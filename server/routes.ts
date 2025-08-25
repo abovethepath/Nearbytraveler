@@ -6768,7 +6768,30 @@ Questions? Just reply to this message. Welcome aboard!
 
       // Use Drizzle ORM query builder with combined conditions
       let query = db
-        .select()
+        .select({
+          // Select all quick meetup fields
+          id: quickMeetups.id,
+          organizerId: quickMeetups.organizerId,
+          title: quickMeetups.title,
+          description: quickMeetups.description,
+          meetingPoint: quickMeetups.meetingPoint,
+          street: quickMeetups.street,
+          city: quickMeetups.city,
+          state: quickMeetups.state,
+          zipcode: quickMeetups.zipcode,
+          country: quickMeetups.country,
+          location: quickMeetups.location,
+          availableAt: quickMeetups.availableAt,
+          expiresAt: quickMeetups.expiresAt,
+          duration: quickMeetups.duration,
+          isActive: quickMeetups.isActive,
+          createdAt: quickMeetups.createdAt,
+          participantCount: quickMeetups.participantCount,
+          // Select user fields with alias
+          organizerUsername: users.username,
+          organizerName: users.name,
+          organizerProfileImage: users.profileImage
+        })
         .from(quickMeetups)
         .leftJoin(users, eq(quickMeetups.organizerId, users.id))
         .where(and(...conditions));
@@ -6777,10 +6800,26 @@ Questions? Just reply to this message. Welcome aboard!
       
       // Transform the joined data to match expected format
       const allMeetups = queryResult.map(row => ({
-        ...row.quick_meetups,
-        organizerUsername: row.users?.username || null,
-        organizerName: row.users?.name || null,
-        organizerProfileImage: row.users?.profileImage || null
+        id: row.id,
+        organizerId: row.organizerId,
+        title: row.title,
+        description: row.description,
+        meetingPoint: row.meetingPoint,
+        street: row.street,
+        city: row.city,
+        state: row.state,
+        zipcode: row.zipcode,
+        country: row.country,
+        location: row.location,
+        availableAt: row.availableAt,
+        expiresAt: row.expiresAt,
+        duration: row.duration,
+        isActive: row.isActive,
+        createdAt: row.createdAt,
+        participantCount: row.participantCount,
+        organizerUsername: row.organizerUsername,
+        organizerName: row.organizerName,
+        organizerProfileImage: row.organizerProfileImage
       }));
       
       // Separate active and expired, then sort each group by newest first
