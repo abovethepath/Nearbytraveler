@@ -3927,22 +3927,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
                 {/* ROW 2: INTERESTS */}
                 <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <h4 className="font-medium text-gray-800 dark:text-gray-200 dark:text-white flex items-center gap-2">
-                      <Heart className="w-4 h-4 text-blue-500" />
-                      Interests
-                    </h4>
-                    {isOwnProfile && (
-                      <Button
-                        size="sm"
-                        onClick={() => setEditingInterests(true)}
-                        className="bg-blue-600 hover:bg-blue-700 text-white border-0"
-                      >
-                        <Edit className="w-3 h-3 mr-1" />
-                        Edit
-                      </Button>
-                    )}
-                  </div>
+                  <h4 className="font-medium text-gray-800 dark:text-gray-200 dark:text-white flex items-center gap-2 mb-3">
+                    <Heart className="w-4 h-4 text-blue-500" />
+                    Interests
+                  </h4>
                   <div className="flex flex-wrap gap-2">
                     {(user.interests && user.interests.length > 0) ? (
                       user.interests.slice(0, 6).map((interest, index) => (
@@ -3958,22 +3946,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
                 {/* ROW 3: ACTIVITIES */}
                 <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <h4 className="font-medium text-gray-800 dark:text-gray-200 dark:text-white flex items-center gap-2">
-                      <Globe className="w-4 h-4 text-green-500" />
-                      Activities
-                    </h4>
-                    {isOwnProfile && (
-                      <Button
-                        size="sm"
-                        onClick={() => setEditingActivities(true)}
-                        className="bg-green-600 hover:bg-green-700 text-white border-0"
-                      >
-                        <Edit className="w-3 h-3 mr-1" />
-                        Edit
-                      </Button>
-                    )}
-                  </div>
+                  <h4 className="font-medium text-gray-800 dark:text-gray-200 dark:text-white flex items-center gap-2 mb-3">
+                    <Globe className="w-4 h-4 text-green-500" />
+                    Activities
+                  </h4>
                   <div className="flex flex-wrap gap-2">
                     {(user.activities && user.activities.length > 0) ? (
                       user.activities.slice(0, 6).map((activity, index) => (
@@ -3989,22 +3965,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
                 {/* ROW 4: EVENTS */}
                 <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <h4 className="font-medium text-gray-800 dark:text-gray-200 dark:text-white flex items-center gap-2">
-                      <Calendar className="w-4 h-4 text-purple-500" />
-                      Events
-                    </h4>
-                    {isOwnProfile && (
-                      <Button
-                        size="sm"
-                        onClick={() => setEditingEvents(true)}
-                        className="bg-purple-600 hover:bg-purple-700 text-white border-0"
-                      >
-                        <Edit className="w-3 h-3 mr-1" />
-                        Edit
-                      </Button>
-                    )}
-                  </div>
+                  <h4 className="font-medium text-gray-800 dark:text-gray-200 dark:text-white flex items-center gap-2 mb-3">
+                    <Calendar className="w-4 h-4 text-purple-500" />
+                    Events
+                  </h4>
                   <div className="flex flex-wrap gap-2">
                     {(user.events && user.events.length > 0) ? (
                       user.events.slice(0, 6).map((event, index) => (
@@ -4017,6 +3981,28 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     )}
                   </div>
                 </div>
+
+                {/* SINGLE EDIT ALL BUTTON */}
+                {isOwnProfile && !editingInterests && !editingActivities && !editingEvents && (
+                  <div className="flex justify-center mt-4">
+                    <Button
+                      onClick={() => {
+                        setEditingInterests(true);
+                        setEditingActivities(true);
+                        setEditingEvents(true);
+                        setEditFormData({
+                          interests: user?.interests || [],
+                          activities: user?.activities || [],
+                          events: user?.events || []
+                        });
+                      }}
+                      className="bg-blue-600 hover:bg-blue-700 text-white"
+                    >
+                      <Edit className="w-4 h-4 mr-2" />
+                      Edit All Preferences
+                    </Button>
+                  </div>
+                )}
 
                 {/* EDITING MODES - Keep the existing edit interfaces but separate them */}
                 {isOwnProfile && false ? (
