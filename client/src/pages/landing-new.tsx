@@ -316,9 +316,11 @@ export default function Landing() {
             {/* Sunset Yoga on the Beach Event Card */}
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-2xl transform transition-all duration-300 flex flex-col min-h-[480px]" style={{animationDelay: '0.5s'}}>
               <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-pink-400 to-orange-500">
-                <div className="w-full h-48 bg-gradient-to-br from-pink-400 to-orange-500 flex items-center justify-center">
-                  <span className="text-white text-6xl">🧘‍♀️</span>
-                </div>
+                <img 
+                  src="@assets/image_1756110858653.png" 
+                  alt="Sunset yoga on the beach with people in poses" 
+                  className="w-full h-48 object-cover"
+                />
               </div>
               <div className="p-6 flex flex-col flex-grow">
                 <div className="mb-3">
@@ -328,8 +330,8 @@ export default function Landing() {
                 
                 {/* Tags - Smaller and limited to 2 max */}
                 <div className="flex gap-1 mb-6">
-                  <span className="bg-pink-100 text-pink-700 px-2 py-0.5 rounded-full text-xs font-medium">$15</span>
                   <span className="bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full text-xs font-medium">Wellness</span>
+                  <span className="bg-pink-100 text-pink-700 px-2 py-0.5 rounded-full text-xs font-medium">Free</span>
                 </div>
                 
                 <p className="text-gray-700 text-sm mb-6 flex-grow" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Unwind with peaceful yoga as the sun sets over the Pacific. Perfect for connecting with wellness-focused travelers and locals. All levels welcome.</p>
