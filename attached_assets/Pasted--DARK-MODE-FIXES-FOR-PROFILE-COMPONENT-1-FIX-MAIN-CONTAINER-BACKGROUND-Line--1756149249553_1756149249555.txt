@@ -1,0 +1,218 @@
+// ==== DARK MODE FIXES FOR PROFILE COMPONENT ====
+
+// 1. FIX MAIN CONTAINER BACKGROUND
+// Line ~600: Replace
+<div className="min-h-screen profile-page">
+// With:
+<div className="min-h-screen profile-page bg-white dark:bg-gray-900">
+
+// 2. FIX PROFILE COMPLETION WARNING BAR
+// Line ~650: Replace
+<div className="w-full bg-red-600 text-white px-4 py-3">
+// With:
+<div className="w-full bg-red-600 dark:bg-red-700 text-white px-4 py-3">
+
+// 3. FIX HEADER GRADIENT SECTION - ADD PROPER DARK MODE
+// Line ~670: The gradient section should work, but ensure text contrast
+// Replace any instances of:
+text-black
+// With:
+text-white dark:text-white
+
+// 4. FIX CARD BACKGROUNDS THROUGHOUT
+// Replace all Card components that don't have dark mode:
+<Card>
+// With:
+<Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+
+// Or for Cards that already have classes:
+<Card className="existing-classes bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+
+// 5. FIX CARDHEADER AND CARDCONTENT
+// Replace CardHeader instances:
+<CardHeader>
+// With:
+<CardHeader className="bg-white dark:bg-gray-800">
+
+// Replace CardContent instances:
+<CardContent>
+// With:
+<CardContent className="bg-white dark:bg-gray-800">
+
+// 6. FIX TEXT COLORS IN CARDS
+// Replace instances of:
+text-gray-900
+// With:
+text-gray-900 dark:text-white
+
+// Replace instances of:
+text-gray-800
+// With:
+text-gray-800 dark:text-gray-200
+
+// Replace instances of:
+text-gray-700
+// With:
+text-gray-700 dark:text-gray-300
+
+// Replace instances of:
+text-gray-600
+// With:
+text-gray-600 dark:text-gray-400
+
+// 7. FIX BUSINESS DEALS SECTION (Line ~1200)
+// Replace:
+<Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
+// With:
+<Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+
+// 8. FIX FORM BACKGROUNDS IN EDIT MODES
+// Replace form backgrounds:
+bg-blue-50
+// With:
+bg-blue-50 dark:bg-blue-900/20
+
+bg-green-50
+// With:
+bg-green-50 dark:bg-green-900/20
+
+bg-orange-50
+// With:
+bg-orange-50 dark:bg-orange-900/20
+
+bg-purple-50
+// With:
+bg-purple-50 dark:bg-purple-900/20
+
+// 9. FIX PILL/TAG BACKGROUNDS
+// Pills should generally work, but ensure contrast. Replace any that look wrong:
+bg-blue-100 text-blue-800
+// With:
+bg-blue-100 text-blue-800 dark:bg-blue-800 dark:text-blue-200
+
+bg-green-100 text-green-800
+// With:
+bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-200
+
+// 10. FIX MODAL/DIALOG BACKGROUNDS
+// Replace DialogContent instances:
+<DialogContent>
+// With:
+<DialogContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+
+// 11. FIX INPUT BACKGROUNDS IN FORMS
+// Replace Input components in forms:
+<Input
+// With:
+<Input className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
+
+// 12. FIX TEXTAREA BACKGROUNDS
+// Replace Textarea components:
+<Textarea
+// With:
+<Textarea className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
+
+// 13. FIX SELECT COMPONENTS
+// Replace Select components:
+<SelectTrigger>
+// With:
+<SelectTrigger className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white">
+
+<SelectContent>
+// With:
+<SelectContent className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600">
+
+// 14. FIX CHECKBOX STYLING
+// Replace checkbox inputs:
+className="h-4 w-4 border-gray-300 rounded text-purple-600 focus:ring-purple-500"
+// With:
+className="h-4 w-4 border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded text-purple-600 focus:ring-purple-500"
+
+// 15. FIX PHOTO GALLERY BACKGROUND
+// Line ~1800: Replace photo gallery container:
+<div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+// With:
+<div className="grid grid-cols-2 md:grid-cols-3 gap-4 bg-white dark:bg-gray-800">
+
+// 16. FIX ERROR STATES AND LOADING STATES
+// Replace loading/error text:
+text-gray-500
+// With:
+text-gray-500 dark:text-gray-400
+
+// 17. FIX SPECIFIC PROBLEM AREAS
+
+// Travel Stats Card (Line ~1900):
+<Card className="hover:shadow-lg transition-all duration-200 hover:border-orange-300">
+// With:
+<Card className="hover:shadow-lg transition-all duration-200 hover:border-orange-300 dark:hover:border-orange-600 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+
+// Connections Widget:
+<div className="rounded-xl border p-3 hover:shadow-sm bg-white dark:bg-gray-800 cursor-pointer flex flex-col items-center text-center gap-2">
+// With:
+<div className="rounded-xl border border-gray-200 dark:border-gray-700 p-3 hover:shadow-sm bg-white dark:bg-gray-800 cursor-pointer flex flex-col items-center text-center gap-2">
+
+// 18. FIX GRADIENT BACKGROUNDS THAT NEED DARK MODE
+// Replace gradient backgrounds:
+bg-gradient-to-r from-blue-50 to-indigo-50
+// With:
+bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20
+
+bg-gradient-to-r from-purple-50 to-pink-50
+// With:
+bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20
+
+bg-gradient-to-r from-orange-50 to-blue-50
+// With:
+bg-gradient-to-r from-orange-50 to-blue-50 dark:from-orange-900/20 dark:to-blue-900/20
+
+// 19. FIX FORM LABEL COLORS
+// Replace FormLabel instances that don't have dark mode:
+<FormLabel>
+// With:
+<FormLabel className="text-gray-900 dark:text-white">
+
+// 20. FIX BORDER COLORS
+// Replace border classes:
+border-gray-200
+// With:
+border-gray-200 dark:border-gray-700
+
+border-gray-300
+// With:
+border-gray-300 dark:border-gray-600
+
+// 21. FIX PHOTO LIGHTBOX MODAL
+// Line ~4200: Replace lightbox background:
+<div className="relative bg-white dark:bg-gray-800 rounded-lg max-w-4xl max-h-[90vh] p-6 m-4 overflow-hidden">
+// With:
+<div className="relative bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg max-w-4xl max-h-[90vh] p-6 m-4 overflow-hidden">
+
+// 22. FIX EMPTY STATES
+// Replace empty state text:
+<p className="text-gray-600 dark:text-white">No bio available yet.</p>
+// With:
+<p className="text-gray-600 dark:text-gray-300">No bio available yet.</p>
+
+// 23. ADD DARK MODE TO CUSTOM COMPONENTS
+// SmartLocationInput should inherit dark mode from parent, but if needed:
+// Add dark mode classes to any custom components that don't support it
+
+// 24. COMPREHENSIVE SEARCH AND REPLACE NEEDED:
+
+// Search: "bg-white" → Replace: "bg-white dark:bg-gray-800"
+// Search: "text-gray-900" → Replace: "text-gray-900 dark:text-white" 
+// Search: "text-gray-800" → Replace: "text-gray-800 dark:text-gray-200"
+// Search: "text-gray-700" → Replace: "text-gray-700 dark:text-gray-300"
+// Search: "text-gray-600" → Replace: "text-gray-600 dark:text-gray-400"
+// Search: "border-gray-200" → Replace: "border-gray-200 dark:border-gray-700"
+// Search: "border-gray-300" → Replace: "border-gray-300 dark:border-gray-600"
+// Search: "bg-gray-50" → Replace: "bg-gray-50 dark:bg-gray-800"
+// Search: "bg-gray-100" → Replace: "bg-gray-100 dark:bg-gray-700"
+
+// PRIORITY AREAS TO FIX FIRST:
+// 1. Main container background
+// 2. All Card components 
+// 3. Form inputs and selects
+// 4. Modal/Dialog backgrounds
+// 5. Text colors throughout

@@ -110,7 +110,7 @@ export default function SimpleChatroomPage() {
   // Get messages
   const { data: messages = [], isLoading } = useQuery<ChatMessage[]>({
     queryKey: [`/api/simple-chatrooms/${chatroomId}/messages`],
-    enabled: !!(currentUserId && chatroomId && !isNaN(chatroomId) && accessCheck?.hasAccess),
+    enabled: !!(currentUserId && chatroomId && !isNaN(chatroomId)),
     refetchInterval: 1000, // Refresh messages every second
   });
 
@@ -124,7 +124,7 @@ export default function SimpleChatroomPage() {
   // Get members list
   const { data: members = [] } = useQuery<ChatMember[]>({
     queryKey: [`/api/simple-chatrooms/${chatroomId}/members`],
-    enabled: !!(currentUserId && chatroomId && !isNaN(chatroomId) && accessCheck?.hasAccess),
+    enabled: !!(currentUserId && chatroomId && !isNaN(chatroomId)),
     refetchInterval: 10000, // Refresh members every 10 seconds
   });
 
@@ -361,8 +361,9 @@ export default function SimpleChatroomPage() {
 
 
 
-  // Show access control screen if user doesn't have permission
-  if (accessError || (accessCheck && !accessCheck.hasAccess)) {
+  // DISABLED: Show access control screen if user doesn't have permission
+  // ALL CHATROOMS ARE NOW PUBLIC - NO ACCESS RESTRICTIONS
+  if (false && (accessError || (accessCheck && !accessCheck.hasAccess))) {
     const getStatusInfo = () => {
       if (accessCheck?.status === 'pending') {
         return {
