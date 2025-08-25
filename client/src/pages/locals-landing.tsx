@@ -260,17 +260,10 @@ BECOME A NEARBY LOCAL NOW
             >
               JOIN AS A LOCAL NOW
             </Button>
-            <Button
-              onClick={() => setLocation('/auth')}
-              size="lg"
-              className="border-4 border-white text-white font-black text-2xl px-12 py-6 rounded-2xl shadow-2xl hover:bg-white/20 backdrop-blur-sm transition-all duration-200"
-            >
-              SIGN IN TO START
-            </Button>
           </div>
           
           <p className="text-xl text-white/90">
-            🏠 Free to join • 🌍 Global community • ⚡ Start hosting today
+            🏠 Free to join • 🌍 Global community
           </p>
         </div>
       </div>
