@@ -233,17 +233,24 @@ export default function SignupLocalTraveler() {
         return;
       }
 
-      // Age validation - optional for locals
-      if (formData.dateOfBirth) {
-        const ageResult = validateAge(formData.dateOfBirth);
-        if (!ageResult.isValid) {
-          toast({
-            title: "Age Validation",
-            description: ageResult.message,
-            variant: "destructive",
-          });
-          return;
-        }
+      // Age validation - required
+      if (!formData.dateOfBirth) {
+        toast({
+          title: "Date of birth required",
+          description: "Please enter your date of birth.",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      const ageResult = validateAge(formData.dateOfBirth);
+      if (!ageResult.isValid) {
+        toast({
+          title: "Age Validation",
+          description: ageResult.message,
+          variant: "destructive",
+        });
+        return;
       }
 
       // Location validation
@@ -409,7 +416,7 @@ export default function SignupLocalTraveler() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label className="text-gray-900 dark:text-white">Date of Birth (Optional)</Label>
+                    <Label className="text-gray-900 dark:text-white">Date of Birth *</Label>
                     <div className="text-sm text-blue-600 dark:text-blue-400 mb-2">
                       Can be hidden from public view later while still being used for matching
                     </div>
