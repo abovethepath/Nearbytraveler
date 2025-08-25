@@ -100,12 +100,15 @@ export default function SimpleChatroomPage() {
     enabled: !!(currentUserId && chatroomId && !isNaN(chatroomId)),
     refetchInterval: 30000,
     staleTime: 20000, // 20 seconds
-    onSuccess: (data) => {
-      // Check if current user is in the members list
-      const userIsMember = data.some(member => member.user_id === currentUserId);
+  });
+
+  // Check membership when members data changes
+  useEffect(() => {
+    if (members && Array.isArray(members)) {
+      const userIsMember = members.some((member: ChatMember) => member.user_id === currentUserId);
       setIsJoined(userIsMember);
     }
-  });
+  }, [members, currentUserId]);
 
   // Join room function
   async function joinRoom() {
@@ -245,9 +248,9 @@ export default function SimpleChatroomPage() {
 
   // Auto-join room when component loads if user is not already joined
   useEffect(() => {
-    if (currentUserId && chatroomId && !isJoined && !isJoining && members.length > 0) {
+    if (currentUserId && chatroomId && !isJoined && !isJoining && Array.isArray(members) && members.length > 0) {
       // Check if user should be in this room but isn't
-      const userIsMember = members.some(member => member.user_id === currentUserId);
+      const userIsMember = members.some((member: ChatMember) => member.user_id === currentUserId);
       if (!userIsMember) {
         // Auto-join for public rooms
         joinRoom();
@@ -342,14 +345,14 @@ export default function SimpleChatroomPage() {
             </div>
             
             {/* Member List */}
-            {members.length > 0 && (
+            {Array.isArray(members) && members.length > 0 && (
               <div className="mt-4 pt-4 border-t">
                 <div className="flex items-center gap-2 mb-3">
                   <Users className="w-4 h-4" />
                   <span className="text-sm font-medium">{members.length} Member{members.length !== 1 ? 's' : ''}</span>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  {members.map((member) => (
+                  {members.map((member: ChatMember) => (
                     <div key={member.user_id} className="flex items-center gap-2 bg-gray-50 dark:bg-gray-700 rounded-full px-3 py-1">
                       <Avatar className="w-6 h-6">
                         {member.profile_image ? (

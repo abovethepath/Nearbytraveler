@@ -259,10 +259,7 @@ export default function CityChatroomsPage() {
               <Card 
                 key={chatroom.id} 
                 className="group cursor-pointer transform hover:scale-105 transition-all duration-300 overflow-hidden relative bg-white dark:bg-gray-800 shadow-lg hover:shadow-xl border-gray-200 dark:border-gray-700"
-                onClick={() => {
-                  console.log('🔥 CHATROOM CARD CLICK: ID', chatroom.id, 'Name:', chatroom.name);
-                  navigate(`/simple-chatroom/${chatroom.id}`);
-                }}
+                onClick={() => navigate(`/simple-chatroom/${chatroom.id}`)}
               >
                 {/* Header with gradient background */}
                 <div className="relative h-24 bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
@@ -318,13 +315,10 @@ export default function CityChatroomsPage() {
                       <div className="flex gap-2">
                         <Button 
                           className="flex-1 bg-green-600 hover:bg-green-700 text-white"
-                          onClick={() => {
-                            console.log(`🚀 CHATROOM FIX: Opening simple chatroom ${chatroom.id}`);
-                            const url = `/simple-chatroom/${chatroom.id}?cacheBust=${Date.now()}`;
-                            console.log('🌐 Opening URL:', url);
-                            window.location.href = url;
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/simple-chatroom/${chatroom.id}`);
                           }}
-                          data-testid={`button-open-chat-${chatroom.id}`}
                         >
                           <MessageCircle className="w-4 h-4 mr-2" />
                           Open Chat
@@ -332,10 +326,12 @@ export default function CityChatroomsPage() {
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => leaveMutation.mutate(chatroom.id)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            leaveMutation.mutate(chatroom.id);
+                          }}
                           disabled={leaveMutation.isPending}
                           className="border-red-300 text-red-600 hover:bg-red-50 dark:border-red-700 dark:text-red-400 dark:hover:bg-red-900/20"
-                          data-testid={`button-leave-${chatroom.id}`}
                         >
                           Leave
                         </Button>
@@ -343,9 +339,11 @@ export default function CityChatroomsPage() {
                     ) : (
                       <Button 
                         className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-                        onClick={() => joinMutation.mutate(chatroom.id)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          joinMutation.mutate(chatroom.id);
+                        }}
                         disabled={joinMutation.isPending}
-                        data-testid={`button-join-${chatroom.id}`}
                       >
                         {joinMutation.isPending ? (
                           <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -368,7 +366,7 @@ export default function CityChatroomsPage() {
                 No Chatrooms Found
               </h3>
               <p className="text-gray-600 dark:text-gray-400 mb-8">
-                No chatrooms available for your locations yet. Chatrooms are automatically created as users join from different cities.
+                No chatrooms available for your locations yet. Create one to get started!
               </p>
             </div>
           </div>
