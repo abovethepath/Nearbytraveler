@@ -385,22 +385,6 @@ export default function JoinNowWidgetNew() {
             </div>
             
             <div>
-              <Label htmlFor="phoneNumber" className="text-base md:text-lg font-medium text-gray-900 dark:text-white text-crisp">Phone Number *</Label>
-              <Input
-                id="phoneNumber"
-                type="tel"
-                value={formData.phoneNumber}
-                onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
-                placeholder="+1 (555) 123-4567"
-                className="text-base py-3 text-crisp font-medium"
-                required
-              />
-              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                📱 Include country code (e.g., +1, +44, +33) for international SMS notifications
-              </p>
-            </div>
-            
-            <div>
               <Label htmlFor="confirmEmail" className="text-base md:text-lg font-medium text-gray-900 dark:text-white text-crisp">Confirm Email *</Label>
               <div className="relative">
                 <Input
@@ -432,6 +416,22 @@ export default function JoinNowWidgetNew() {
               {formData.confirmEmail && formData.email && formData.email === formData.confirmEmail && (
                 <p className="text-green-500 text-xs mt-1">Emails match</p>
               )}
+            </div>
+            
+            <div>
+              <Label htmlFor="phoneNumber" className="text-base md:text-lg font-medium text-gray-900 dark:text-white text-crisp">Phone Number *</Label>
+              <Input
+                id="phoneNumber"
+                type="tel"
+                value={formData.phoneNumber}
+                onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
+                placeholder="+1 (555) 123-4567"
+                className="text-base py-3 text-crisp font-medium"
+                required
+              />
+              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                📱 Include country code (e.g., +1, +44, +33) for international SMS notifications
+              </p>
             </div>
             
             <div>
