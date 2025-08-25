@@ -317,19 +317,6 @@ export default function Landing() {
 
           </div>
 
-          {/* Call to action to see more */}
-          <div className="text-center mt-12">
-            <Button 
-              onClick={() => setLocation('/join')}
-              size="lg"
-              className="bg-black text-orange-400 font-black px-12 py-4 rounded-2xl hover:bg-gray-800 text-xl"
-            >
-              JOIN THE COMMUNITY →
-            </Button>
-          </div>
-        </div>
-      </div>
-
       {/* CONNECT BEFORE, DURING & AFTER EVENTS SECTION */}
       <div className="relative z-10 py-16 bg-gradient-to-br from-orange-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
         <div className="max-w-6xl mx-auto px-4">
@@ -473,6 +460,21 @@ export default function Landing() {
             >
               START BUILDING CONNECTIONS
             </Button>
+          </div>
+        </div>
+      </div>
+
+          {/* Call to action to see more */}
+          <div className="text-center mt-12 py-16 bg-white">
+            <div className="max-w-7xl mx-auto px-4">
+              <Button 
+                onClick={() => setLocation('/join')}
+                size="lg"
+                className="bg-black text-orange-400 font-black px-12 py-4 rounded-2xl hover:bg-gray-800 text-xl"
+              >
+                JOIN THE COMMUNITY →
+              </Button>
+            </div>
           </div>
         </div>
       </div>
