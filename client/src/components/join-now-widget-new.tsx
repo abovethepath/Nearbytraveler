@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
@@ -206,19 +205,61 @@ export default function JoinNowWidgetNew() {
     <div className="space-y-4">
       {step === 1 ? (
         <>
-          {/* Step 1: User Type Selection */}
+          {/* Step 1: User Type Selection - 3 Boxes */}
           <div className="space-y-2">
-            <Label htmlFor="userType" className="text-base md:text-lg font-medium text-gray-900 dark:text-white text-crisp">I am a...</Label>
-            <Select value={userType} onValueChange={setUserType}>
-              <SelectTrigger className="w-full text-base py-3 text-crisp font-medium">
-                <SelectValue placeholder="Select your type" />
-              </SelectTrigger>
-              <SelectContent className="text-crisp">
-                <SelectItem value="local" className="text-base text-crisp">Nearby Local (Not Traveling Now)</SelectItem>
-                <SelectItem value="currently_traveling" className="text-base text-crisp">Currently Traveling</SelectItem>
-                <SelectItem value="business" className="text-base text-crisp">Nearby Business</SelectItem>
-              </SelectContent>
-            </Select>
+            <Label className="text-base md:text-lg font-medium text-gray-900 dark:text-white text-crisp">I am a...</Label>
+            <div className="space-y-2">
+              {/* Local Box */}
+              <div
+                onClick={() => setUserType("local")}
+                className={`cursor-pointer border-2 rounded-lg p-3 text-center transition-all ${
+                  userType === "local" 
+                    ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20" 
+                    : "border-gray-300 hover:border-gray-400"
+                }`}
+              >
+                <div className="text-sm font-medium text-gray-900 dark:text-white">
+                  Nearby Local
+                </div>
+                <div className="text-xs text-gray-600 dark:text-gray-400">
+                  Not Traveling Now
+                </div>
+              </div>
+
+              {/* Traveler Box */}
+              <div
+                onClick={() => setUserType("currently_traveling")}
+                className={`cursor-pointer border-2 rounded-lg p-3 text-center transition-all ${
+                  userType === "currently_traveling" 
+                    ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20" 
+                    : "border-gray-300 hover:border-gray-400"
+                }`}
+              >
+                <div className="text-sm font-medium text-gray-900 dark:text-white">
+                  Currently Traveling
+                </div>
+                <div className="text-xs text-gray-600 dark:text-gray-400">
+                  On a Trip Now
+                </div>
+              </div>
+
+              {/* Business Box */}
+              <div
+                onClick={() => setUserType("business")}
+                className={`cursor-pointer border-2 rounded-lg p-3 text-center transition-all ${
+                  userType === "business" 
+                    ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20" 
+                    : "border-gray-300 hover:border-gray-400"
+                }`}
+              >
+                <div className="text-sm font-medium text-gray-900 dark:text-white">
+                  Nearby Business
+                </div>
+                <div className="text-xs text-gray-600 dark:text-gray-400">
+                  Service Provider
+                </div>
+              </div>
+            </div>
           </div>
 
           <div className="mt-8 pt-4">
