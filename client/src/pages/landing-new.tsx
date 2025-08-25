@@ -425,6 +425,94 @@ export default function Landing() {
         </div>
       </div>
 
+      {/* BUSINESS EVENT NETWORKING WIDGET */}
+      <div className="relative z-10 py-16 bg-gradient-to-br from-indigo-100 via-white to-purple-100 dark:from-gray-800 dark:via-gray-900 dark:to-purple-900">
+        <div className="max-w-5xl mx-auto px-4">
+          <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl overflow-hidden">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              
+              {/* Left Content */}
+              <div className="p-8 lg:p-12">
+                <div className="mb-6">
+                  <span className="inline-block px-4 py-2 bg-gradient-to-r from-purple-500 to-indigo-600 text-white text-sm font-bold rounded-full mb-4">
+                    BUSINESS NETWORKING
+                  </span>
+                  <h2 className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white mb-4">
+                    Going to a <span className="text-purple-600 dark:text-purple-400">Business Event</span>?
+                  </h2>
+                  <p className="text-xl text-gray-600 dark:text-gray-300 leading-relaxed">
+                    Connect before you go, keep in touch forever
+                  </p>
+                </div>
+                
+                <div className="space-y-4 mb-8">
+                  <div className="flex items-start space-x-3">
+                    <div className="w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center mt-1">
+                      <span className="text-white text-sm font-bold">✓</span>
+                    </div>
+                    <p className="text-gray-700 dark:text-gray-300 font-medium">
+                      <strong>Better than business cards</strong> - Real connections that last
+                    </p>
+                  </div>
+                  <div className="flex items-start space-x-3">
+                    <div className="w-6 h-6 bg-indigo-500 rounded-full flex items-center justify-center mt-1">
+                      <span className="text-white text-sm font-bold">✓</span>
+                    </div>
+                    <p className="text-gray-700 dark:text-gray-300 font-medium">
+                      <strong>Meet prior to the event</strong> - Break the ice beforehand
+                    </p>
+                  </div>
+                  <div className="flex items-start space-x-3">
+                    <div className="w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center mt-1">
+                      <span className="text-white text-sm font-bold">✓</span>
+                    </div>
+                    <p className="text-gray-700 dark:text-gray-300 font-medium">
+                      <strong>Connect as new friends</strong> - Genuine relationships beyond networking
+                    </p>
+                  </div>
+                </div>
+                
+                <Button 
+                  onClick={() => setLocation('/join')}
+                  size="lg"
+                  className="w-full sm:w-auto bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold px-8 py-4 rounded-xl text-lg"
+                >
+                  START NETWORKING SMARTER
+                </Button>
+              </div>
+              
+              {/* Right Visual */}
+              <div className="p-8 lg:p-12 bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-900/20 dark:to-indigo-900/20 flex items-center justify-center">
+                <div className="text-center">
+                  <div className="text-8xl mb-6">🤝</div>
+                  <p className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-4">
+                    Transform Business Cards into
+                  </p>
+                  <p className="text-3xl font-black bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
+                    Lasting Friendships
+                  </p>
+                  <div className="mt-8 grid grid-cols-3 gap-4">
+                    <div className="text-center">
+                      <div className="text-3xl mb-2">📅</div>
+                      <p className="text-sm font-semibold text-gray-600 dark:text-gray-400">Before</p>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-3xl mb-2">🎯</div>
+                      <p className="text-sm font-semibold text-gray-600 dark:text-gray-400">During</p>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-3xl mb-2">🌟</div>
+                      <p className="text-sm font-semibold text-gray-600 dark:text-gray-400">Forever</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* FROM THE FOUNDER SECTION */}
       <div className="relative z-10 py-16 sm:py-20 overflow-hidden">
         {/* Blue to orange gradient background */}
