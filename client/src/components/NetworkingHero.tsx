@@ -25,9 +25,9 @@ export default function NetworkingHero() {
             />
           </div>
           
-          {/* Extra large red X overlay */}
+          {/* Extra large red X overlay - positioned on background image only */}
           <svg
-            className="absolute inset-0 m-auto w-72 h-72 md:w-96 md:h-96 drop-shadow-lg z-10"
+            className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/4 w-72 h-72 md:w-96 md:h-96 drop-shadow-lg z-5"
             viewBox="0 0 100 100"
             aria-hidden="true"
           >
