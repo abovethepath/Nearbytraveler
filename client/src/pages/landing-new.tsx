@@ -534,9 +534,9 @@ export default function Landing() {
                   </div>
                 </div>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Join as a Beta Tester</h3>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Join the Community</h3>
               <p className="text-white sm:text-gray-600 sm:dark:text-gray-300" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>
-                Join as a beta tester to help shape the future of travel connections, sharing your interests and travel style for personalized matches.
+                Join our global community of travelers and locals creating authentic connections, sharing your interests and travel style for personalized matches.
               </p>
             </div>
 
@@ -615,7 +615,7 @@ export default function Landing() {
                 size="lg"
                 className="bg-blue-600 hover:bg-blue-700 px-8 py-4 text-lg rounded-lg shadow-lg hover:shadow-xl text-black"
               >
-                Join as a Beta Tester
+                Join the Community
               </Button>
             </div>
           </div>
@@ -637,7 +637,7 @@ export default function Landing() {
                 size="lg"
                 className="bg-orange-600 hover:bg-orange-700 px-8 py-4 text-lg rounded-lg shadow-lg hover:shadow-xl text-black"
               >
-                Join as a Beta Tester
+                Join the Community
               </Button>
             </div>
             <div>
