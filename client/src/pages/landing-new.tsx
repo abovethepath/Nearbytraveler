@@ -1,7 +1,8 @@
 import { useLocation, Link } from "wouter";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import Footer from "@/components/footer";
-import LandingNavbar from "@/components/landing-navbar";
+import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
 
 // Helper function for custom icons
 const CustomIcon = ({ iconName, className }: { iconName: string; className?: string }) => {
@@ -54,6 +55,17 @@ const CustomIcon = ({ iconName, className }: { iconName: string; className?: str
 
 export default function Landing() {
   const [, setLocation] = useLocation();
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   return (
     <div className="bg-gray-50 dark:bg-gray-900 font-sans" key="landing-v2-no-copy-button">
@@ -62,7 +74,7 @@ export default function Landing() {
         <Button
           onClick={() => setLocation('/join')}
           size="lg"
-          className="bg-orange-500 hover:bg-orange-600 text-black font-black px-8 py-4 rounded-2xl shadow-2xl transform transition-all duration-200 hover:scale-105 border-3 border-white"
+          className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white font-black px-8 py-4 rounded-2xl shadow-2xl transition-all duration-200 border-3 border-white"
           style={{
             boxShadow: '0 12px 35px rgba(0,0,0,0.4), 0 0 0 3px rgba(255,255,255,0.9)',
             animation: 'gentle-pulse 2.5s ease-in-out infinite',
@@ -74,82 +86,76 @@ export default function Landing() {
         </Button>
       </div>
       
-      {/* Top sticky bar for maximum visibility */}
-      <div className="fixed top-0 left-0 right-0 bg-orange-500 text-black py-3 px-4 z-40 shadow-lg">
-        <div className="flex items-center justify-between max-w-6xl mx-auto">
-          <div className="flex-1 text-center">
-            <span className="font-bold text-lg" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>🔥 Connect with Locals and Travelers TODAY - Sign Up Now!</span>
-          </div>
-          <Button
-            onClick={() => setLocation('/join')}
-            className="bg-black text-orange-400 font-bold px-6 py-2 rounded-lg hover:bg-gray-800 ml-4"
-          >
-            SIGN UP NOW
-          </Button>
-        </div>
-      </div>
-
-      {/* Landing Navbar with BETA badge - ensure it's visible on mobile */}
-      <header className="sticky top-12 z-[55] bg-white/95 dark:bg-gray-900/95 backdrop-blur supports-[backdrop-filter]:bg-white/70 dark:supports-[backdrop-filter]:bg-gray-900/70">
-        <div className="pt-2">
-          <LandingNavbar />
-        </div>
-      </header>
+      <LandingHeader />
+      <LandingHeaderSpacer />
       
       {/* HERO SECTION */}
-      <div className="relative">
-        <div className="bg-gray-800 dark:bg-gray-900 border border-white/30 dark:border-gray-300/20">
+      <div className="relative z-10">
+        <div className="bg-gray-800 dark:bg-gray-900 border-4 border-orange-500 shadow-lg">
           <div className="relative bg-gray-800 dark:bg-gray-900 pb-32 overflow-hidden min-h-[600px]">
             <div className="absolute inset-0 h-full min-h-[600px]">
               <img
-                src="/attached_assets/travelers together hugging_1754971726997.avif"
+                src="/travelers together hugging_1754971726997.avif"
                 alt="Travel experience"
                 className="w-full h-full object-cover"
                 style={{ objectPosition: 'center 70%' }}
               />
-              <div className="absolute inset-0 bg-gray-800/70 dark:bg-gray-800/40 mix-blend-multiply" aria-hidden="true" />
+              <div
+                className="absolute inset-0"
+                style={{
+                  background:
+                    "linear-gradient(to bottom, rgba(0,0,0,.55), rgba(0,0,0,.25), rgba(0,0,0,0))"
+                }}
+                aria-hidden="true"
+              />
             </div>
             <div className="relative">
               <div className="sm:pb-16 md:pb-20 lg:pb-28 xl:pb-32">
-                <main className="mt-4 mx-auto max-w-full sm:mt-6 md:mt-8 lg:mt-10 xl:mt-12 px-4">
+                <main className="mt-8 sm:mt-16 md:mt-20 lg:mt-24 xl:mt-32 mx-auto max-w-full px-4">
                   <div className="text-center">
                     <div className="max-w-4xl mx-auto">
-                      <h1 className="text-4xl tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
-                        <span className="block text-white font-black" style={{fontFamily: '"Inter", sans-serif', wordBreak: 'break-word', overflowWrap: 'break-word'}}>Skip the tourist traps.</span>
-                        <span className="block text-orange-400 font-black" style={{fontFamily: '"Inter", sans-serif', wordBreak: 'break-word', overflowWrap: 'break-word'}}>Meet locals and other Nearby Travelers right now, today!!!</span>
+                      <h1 className="px-3 leading-tight sm:leading-snug">
+                        <span className="block font-black text-[clamp(1.5rem,6vw,2.25rem)] text-white" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>
+                          Skip the Tourist Traps.
+                        </span>
+                        <span className="block font-black text-[clamp(1.25rem,5.5vw,2rem)]" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>
+                          <span className="text-amber-300 sm:text-orange-500" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Meet Locals and Other </span>
+                          <span className="text-blue-300 sm:text-blue-600" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Nearby Travelers </span>
+                          <span className="text-white sm:text-black" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Right Now, Today!!!</span>
+                        </span>
                       </h1>
                       
-                      {/* Personal credibility as founder */}
-                      <div className="mt-8 p-6 bg-black/40 backdrop-blur-sm rounded-2xl border border-white/20 animate-zoom-in" style={{animationDelay: '0.3s'}}>
-                        <p className="text-xl text-white leading-relaxed" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>
-                          <span className="text-orange-300 font-bold" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>"Over 15 years I hosted and toured 400+ travelers from 30+ countries as a local.</span>
-                          <span className="text-white" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}> Now I built Nearby Traveler to do exactly that - meet real locals and real travelers while creating amazing new travel adventures."</span>
+                      {/* Personal credibility as founder (hide on phones so the hero photo is visible) */}
+                      <div className="hidden sm:block mt-8 p-6 bg-black/40 backdrop-blur-sm rounded-2xl border border-white/20">
+                        <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-white leading-relaxed px-2" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>
+                          <span className="text-orange-300 font-bold" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>"For over 15 years I've hosted and toured 400+ travelers from over 40 countries as a local creating amazing experiences.</span>
+                          <span className="text-white" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}> I built Nearby Traveler to do exactly that - meet real locals and real travelers while creating amazing new travel adventures and expanding my social circle of friends."</span>
                         </p>
                         <div className="mt-4 text-center">
                           <p className="text-white font-bold text-lg" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>— Aaron, Founder</p>
-                          <p className="text-orange-200 text-sm" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>400+ travelers hosted • 30+ countries • 15 years</p>
+                          <p className="text-orange-200 text-sm" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>400+ travelers hosted • 40+ countries • 15+ years</p>
                         </div>
                       </div>
                     </div>
                     
                     {/* Primary signup CTA */}
-                    <div className="mt-12 mb-8">
+                    <div className="mt-12 mb-8 px-4">
                       <Button
                         onClick={() => setLocation('/join')}
                         size="lg"
-                        className="bg-orange-500 hover:bg-orange-600 text-black font-black text-2xl px-16 py-6 rounded-2xl shadow-2xl transform transition-all duration-200 hover:scale-105 border-4 border-white"
+                        className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white font-black text-lg sm:text-xl md:text-2xl px-6 sm:px-12 md:px-16 py-4 sm:py-5 md:py-6 rounded-2xl shadow-xl transition-all duration-200 border-2 sm:border-4 border-white w-full max-w-lg mx-auto"
                         style={{
-                          fontSize: '1.8rem',
-                          minHeight: '80px',
-                          boxShadow: '0 15px 40px rgba(0,0,0,0.4), 0 0 0 4px rgba(255,255,255,0.9)',
-                          animation: 'gentle-pulse 2.5s ease-in-out infinite',
+                          fontSize: 'clamp(1.1rem, 3.5vw, 1.8rem)',
+                          minHeight: 'clamp(60px, 12vw, 80px)',
+                          boxShadow: '0 8px 30px rgba(0,0,0,0.3), 0 0 0 2px rgba(255,255,255,0.9)',
+                          animation: 'gentle-pulse 3s ease-in-out infinite',
                           wordBreak: 'break-word',
                           overflowWrap: 'break-word'
                         }}
                       >
                         JOIN NEARBY TRAVELER NOW!!!
                       </Button>
-                      <p className="text-white mt-3 text-lg font-semibold" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Join the travel community • Connect today</p>
+                      <p className="text-white mt-3 text-base sm:text-lg font-semibold px-2" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Join the Community</p>
                     </div>
 
                   </div>
@@ -160,23 +166,39 @@ export default function Landing() {
         </div>
       </div>
 
+      {/* Beta Disclaimer Section */}
+      <div className="py-8 bg-gradient-to-r from-red-100 to-orange-100 dark:from-red-900/30 dark:to-orange-900/30">
+        <div className="max-w-4xl mx-auto px-4">
+          <div className="p-6 bg-red-600 dark:bg-red-700 rounded-lg border-4 border-red-500 dark:border-red-400 shadow-xl ring-4 ring-red-200 dark:ring-red-800/50">
+            <div className="flex items-center justify-center mb-2">
+              <span className="inline-block w-3 h-3 bg-red-500 rounded-full mr-2"></span>
+              <span className="text-white font-bold text-xs uppercase tracking-wide">Beta Notice</span>
+              <span className="inline-block w-3 h-3 bg-red-500 rounded-full ml-2"></span>
+            </div>
+            <p className="text-sm text-white text-center leading-relaxed" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>
+              <span className="font-semibold text-white" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Although we are a GLOBAL COMMUNITY of Travelers, Nearby Traveler Beta Version is for Los Angeles Based Events and Businesses.</span> <span className="text-white" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>While you can join and connect worldwide, we are focusing our beta launch on Los Angeles, feel free to spread the word Worldwide however.</span>
+            </p>
+          </div>
+        </div>
+      </div>
+
       {/* Live Events - Lu.ma style */}
-      <div className="py-16 bg-white">
+      <div className="relative z-10 py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-12 animate-slide-in-left">
-            <h2 className="text-4xl font-black text-gray-900 mb-4" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-gray-900 mb-4 leading-normal px-2" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>
               Connect with Locals and other Travelers
             </h2>
-            <p className="text-xl text-gray-600" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>
+            <p className="text-base sm:text-lg md:text-xl text-gray-600 px-2" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>
               Real people. Real experiences. Zero tourist traps.
             </p>
           </div>
           
           {/* Event Cards - Modern Lu.ma style */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-start">
 
             {/* Beach Bonfire Event Card */}
-            <div className="bg-white rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-2xl transform transition-all duration-300 flex flex-col">
+            <div className="bg-white rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-xl transition-all duration-300 flex flex-col min-h-[400px]">
               <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-orange-400 to-red-500">
                 <img 
                   src="/event page bbq party_1753299541268.png" 
@@ -186,7 +208,7 @@ export default function Landing() {
               </div>
               <div className="p-6 flex flex-col flex-grow">
                 <div className="mb-3">
-                  <h3 className="font-bold text-gray-900 mb-1" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Beach Bonfire & BBQ</h3>
+                  <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-1" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Beach Bonfire & BBQ</h3>
                   <p className="text-sm text-gray-600" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Sunset gathering on the beach</p>
                 </div>
                 
@@ -197,10 +219,11 @@ export default function Landing() {
                   <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-medium">Music</span>
                 </div>
                 
-                <p className="text-gray-700 text-sm mb-4 flex-grow" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Join locals for an authentic beach bonfire with BBQ, music, and sunset views. Experience the real LA beach culture with friendly people.</p>
+                <p className="text-gray-700 text-sm sm:text-base mb-4 flex-grow leading-relaxed" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Join locals for an authentic beach bonfire with BBQ, music, and sunset views. Experience the real LA beach culture with friendly people.</p>
                 <Button 
                   onClick={() => setLocation('/join')}
                   className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold mt-auto"
+                  style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}
                 >
                   JOIN TO CONNECT
                 </Button>
@@ -208,7 +231,7 @@ export default function Landing() {
             </div>
             
             {/* Taco Tuesday Event Card */}
-            <div className="bg-white rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-2xl transform transition-all duration-300 flex flex-col" style={{animationDelay: '0.2s'}}>
+            <div className="bg-white rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-xl transition-all duration-300 flex flex-col min-h-[400px]" style={{animationDelay: '0.2s'}}>
               <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-yellow-400 to-orange-500">
                 <img 
                   src="/attached_assets/image_1754973365104.png" 
@@ -218,7 +241,7 @@ export default function Landing() {
               </div>
               <div className="p-6 flex flex-col flex-grow">
                 <div className="mb-3">
-                  <h3 className="font-bold text-gray-900 mb-1" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Taco Tuesday</h3>
+                  <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-1" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Taco Tuesday</h3>
                   <p className="text-sm text-gray-600" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Every Tuesday • $1.50 tacos</p>
                 </div>
                 
@@ -229,10 +252,11 @@ export default function Landing() {
                   <span className="bg-red-100 text-red-700 px-2 py-1 rounded-full text-xs font-medium">Weekly</span>
                 </div>
                 
-                <p className="text-gray-700 text-sm mb-4 flex-grow" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Join locals every Tuesday for authentic street tacos at unbeatable prices. Meet fellow taco lovers and discover the best Mexican spots in the city.</p>
+                <p className="text-gray-700 text-sm sm:text-base mb-4 flex-grow leading-relaxed" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Join locals every Tuesday for authentic street tacos at unbeatable prices. Meet fellow taco lovers and discover the best Mexican spots in the city.</p>
                 <Button 
                   onClick={() => setLocation('/join')}
                   className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold mt-auto"
+                  style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}
                 >
                   JOIN TO CONNECT
                 </Button>
@@ -240,7 +264,7 @@ export default function Landing() {
             </div>
             
             {/* Hollywood Sign Hike Event Card */}
-            <div className="bg-white rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-2xl transform transition-all duration-300 flex flex-col" style={{animationDelay: '0.3s'}}>
+            <div className="bg-white rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-xl transition-all duration-300 flex flex-col min-h-[400px]" style={{animationDelay: '0.3s'}}>
               <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-blue-500 to-indigo-600">
                 <img 
                   src="/attached_assets/image_1754974796221.png" 
@@ -250,7 +274,7 @@ export default function Landing() {
               </div>
               <div className="p-6 flex flex-col flex-grow">
                 <div className="mb-3">
-                  <h3 className="font-bold text-gray-900 mb-1" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Hollywood Sign Hike</h3>
+                  <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-1" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Hollywood Sign Hike</h3>
                   <p className="text-sm text-gray-600" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Every Saturday • 9:00 AM</p>
                 </div>
                 
@@ -261,10 +285,11 @@ export default function Landing() {
                   <span className="bg-purple-100 text-purple-700 px-2 py-1 rounded-full text-xs font-medium">Photos</span>
                 </div>
                 
-                <p className="text-gray-700 text-sm mb-4 flex-grow" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Weekly hike to the iconic Hollywood Sign with locals and travelers. Amazing city views, great photos, and authentic LA hiking culture.</p>
+                <p className="text-gray-700 text-sm sm:text-base mb-4 flex-grow leading-relaxed" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Weekly hike to the iconic Hollywood Sign with locals and travelers. Amazing city views, great photos, and authentic LA hiking culture.</p>
                 <Button 
                   onClick={() => setLocation('/join')}
                   className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold mt-auto"
+                  style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}
                 >
                   JOIN TO CONNECT
                 </Button>
@@ -272,7 +297,7 @@ export default function Landing() {
             </div>
 
             {/* Happy Hour at Jameson Pub Event Card */}
-            <div className="bg-white rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-2xl transform transition-all duration-300 flex flex-col" style={{animationDelay: '0.4s'}}>
+            <div className="bg-white rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-xl transition-all duration-300 flex flex-col min-h-[400px]" style={{animationDelay: '0.4s'}}>
               <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-amber-500 to-orange-600">
                 <img 
                   src="/attached_assets/image_1754975666980.png" 
@@ -282,7 +307,7 @@ export default function Landing() {
               </div>
               <div className="p-6 flex flex-col flex-grow">
                 <div className="mb-3">
-                  <h3 className="font-bold text-gray-900 mb-1" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Happy Hour Thursday</h3>
+                  <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-1" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Happy Hour Thursday</h3>
                   <p className="text-sm text-gray-600" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Jameson Pub • Live Music</p>
                 </div>
                 
@@ -293,47 +318,17 @@ export default function Landing() {
                   <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs font-medium">21+</span>
                 </div>
                 
-                <p className="text-gray-700 text-sm mb-4 flex-grow" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Join locals and travelers for Thursday happy hour with live music at Jameson Pub. Great drinks, live bands, and authentic LA nightlife.</p>
+                <p className="text-gray-700 text-sm sm:text-base mb-4 flex-grow leading-relaxed" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Join locals and travelers for Thursday happy hour with live music at Jameson Pub. Great drinks, live bands, and authentic LA nightlife.</p>
                 <Button 
                   onClick={() => setLocation('/join')}
                   className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold mt-auto"
+                  style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}
                 >
                   JOIN TO CONNECT
                 </Button>
               </div>
             </div>
 
-            {/* Venice Beach Dance Party Event Card */}
-            <div className="bg-white rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-2xl transform transition-all duration-300 flex flex-col" style={{animationDelay: '0.5s'}}>
-              <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-purple-500 to-pink-500">
-                <img 
-                  src="/attached_assets/beach travel_1754973619241.jpg" 
-                  alt="Friends celebrating together on beach at sunset" 
-                  className="w-full h-48 object-cover"
-                />
-              </div>
-              <div className="p-6 flex flex-col flex-grow">
-                <div className="mb-3">
-                  <h3 className="font-bold text-gray-900 mb-1" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Venice Beach Dance Party</h3>
-                  <p className="text-sm text-gray-600" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Sunset dancing on the beach</p>
-                </div>
-                
-                {/* Tags */}
-                <div className="flex flex-wrap gap-2 mb-3">
-                  <span className="bg-pink-100 text-pink-700 px-2 py-1 rounded-full text-xs font-medium">Free</span>
-                  <span className="bg-purple-100 text-purple-700 px-2 py-1 rounded-full text-xs font-medium">Dance</span>
-                  <span className="bg-orange-100 text-orange-700 px-2 py-1 rounded-full text-xs font-medium">Sunset</span>
-                </div>
-                
-                <p className="text-gray-700 text-sm mb-4 flex-grow" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Join the legendary Venice Beach dance scene with locals and travelers. Dancing on the sand as the sun sets over the Pacific Ocean.</p>
-                <Button 
-                  onClick={() => setLocation('/join')}
-                  className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold mt-auto"
-                >
-                  JOIN TO CONNECT
-                </Button>
-              </div>
-            </div>
           </div>
 
           {/* Call to action to see more */}
@@ -349,343 +344,257 @@ export default function Landing() {
         </div>
       </div>
 
-      {/* FROM THE FOUNDER SECTION */}
-      <div className="relative py-16 sm:py-20 overflow-hidden">
-        {/* Blue to orange gradient background */}
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-blue-500 to-orange-500"></div>
-        
-        <div className="relative max-w-4xl mx-auto px-4">
-          <div className="text-center mb-12 animate-fade-in-up">
-            <h2 className="text-3xl sm:text-4xl font-black text-white mb-4" style={{fontFamily: '"Inter", sans-serif', wordBreak: 'break-word', overflowWrap: 'break-word'}}>
-              From the Founder
+      {/* Connecting Travelers Section */}
+      <div className="py-12 sm:py-16 bg-white dark:sm:bg-gray-800 dark:bg-gray-400">
+        <div className="max-w-full mx-auto px-4">
+          <div className="text-center mb-8 sm:mb-12">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white lg:text-4xl" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700', wordBreak: 'break-word', overflowWrap: 'break-word'}}>
+              Connecting Travelers and Locals, Around The World
             </h2>
-            <div className="w-24 h-1 bg-gradient-to-r from-white to-blue-300 mx-auto rounded-full"></div>
           </div>
           
-          {/* Main content with better readability */}
-          <div className="max-w-3xl mx-auto animate-slide-in-left" style={{animationDelay: '0.2s'}}>
-            <div className="text-center mb-8">
-              <p className="text-xl sm:text-2xl text-white leading-relaxed font-medium mb-6" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>
-                "As a traveler and local, I always loved meeting new people—but finding those who truly shared my interests wasn't easy."
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+            {/* Box 1 - Find Travel Companions */}
+            <div className="text-center p-6 bg-gray-50 dark:bg-gray-300 rounded-lg hover:shadow-lg transition-shadow duration-300">
+              <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full flex items-center justify-center text-white text-2xl font-bold">
+                1
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-black mb-2" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Find Travel and Local Companions</h3>
+              <p className="text-gray-100 sm:text-gray-600 sm:dark:text-gray-300 text-sm" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Connect with like-minded travelers and nearby locals who share your interests, activities, demographics and desired events.</p>
+            </div>
+
+            {/* Box 2 - Discover Local Events */}
+            <div className="text-center p-6 bg-gray-50 dark:bg-gray-300 rounded-lg hover:shadow-lg transition-shadow duration-300">
+              <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full flex items-center justify-center text-white text-2xl font-bold">
+                2
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-black mb-2" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Discover Local Experiences</h3>
+              <p className="text-gray-100 sm:text-gray-600 sm:dark:text-gray-300 text-sm mb-3" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Join exciting events and activities hosted by locals and travelers to get an authentic taste of the city and make new friends.</p>
+              <Link href="/events-landing">
+                <button className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-xs font-medium underline">
+                  Learn More About Events →
+                </button>
+              </Link>
+            </div>
+
+            {/* Box 3 - Connect with Locals */}
+            <div className="text-center p-6 bg-gray-50 dark:bg-gray-300 rounded-lg hover:shadow-lg transition-shadow duration-300">
+              <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full flex items-center justify-center text-white text-2xl font-bold">
+                3
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-black mb-2" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Get Insider Knowledge</h3>
+              <p className="text-gray-100 sm:text-gray-600 sm:dark:text-gray-300 text-sm" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Meet locals who can show you hidden gems and provide tips on everything from food to sites that aren't in the guidebooks.</p>
+            </div>
+
+            {/* Box 4 - Plan Together */}
+            <div className="text-center p-6 bg-gray-50 dark:bg-gray-300 rounded-lg hover:shadow-lg transition-shadow duration-300">
+              <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full flex items-center justify-center text-white text-2xl font-bold">
+                4
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-black mb-2" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Plan Your Adventure</h3>
+              <p className="text-gray-100 sm:text-gray-600 sm:dark:text-gray-300 text-sm" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Collaborate on travel plans with your new connections and build personalized itineraries together.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* FROM THE FOUNDER SECTION */}
+      <div className="bg-white dark:sm:bg-gray-800 dark:bg-gray-400 py-12 sm:py-16 border-t border-gray-200 dark:border-gray-700">
+        <div className="max-w-4xl mx-auto px-4">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white lg:text-4xl" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700', wordBreak: 'break-word', overflowWrap: 'break-word'}}>
+              From the Founder
+            </h2>
+          </div>
+          
+          <div className="bg-gray-50 dark:bg-gray-700 rounded-2xl p-8 shadow-lg">
+            <div className="prose prose-lg text-gray-700 dark:text-gray-300 mx-auto text-left">
+              <p className="mb-4 text-base sm:text-lg text-gray-800 dark:text-gray-200 leading-relaxed" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>
+                As a traveler and local, I always loved meeting new people—but finding those who truly shared my interests wasn't easy.
               </p>
-              <p className="text-2xl sm:text-3xl text-white font-bold leading-relaxed mb-6" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>
+              <p className="mb-4 text-base sm:text-lg text-gray-800 dark:text-gray-200 leading-relaxed" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>
                 That's why I created Nearby Traveler.
               </p>
-            </div>
-            
-            <div className="bg-white/95 backdrop-blur-sm rounded-3xl p-8 shadow-2xl animate-zoom-in" style={{animationDelay: '0.4s'}}>
-              <p className="text-lg text-gray-900 leading-relaxed mb-6 text-center font-medium" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>
+              <p className="mb-4 text-base sm:text-lg text-gray-800 dark:text-gray-200 leading-relaxed" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>
                 This platform helps travelers and locals meet each other, based on shared interests, activities, demographics, and events—making every encounter more meaningful.
               </p>
-              
-              {/* Benefits with orange and blue theme */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div className="text-center p-4 bg-white rounded-2xl border-2 border-orange-300 shadow-lg">
-                  <div className="text-3xl mb-3">🤝</div>
-                  <p className="font-bold text-black" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Connect with like-minded people</p>
-                </div>
-                <div className="text-center p-4 bg-white rounded-2xl border-2 border-blue-300 shadow-lg">
-                  <div className="text-3xl mb-3">💎</div>
-                  <p className="font-bold text-gray-900" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Discover hidden gems</p>
-                </div>
-                <div className="text-center p-4 bg-white rounded-2xl border-2 border-orange-300 shadow-lg">
-                  <div className="text-3xl mb-3">✨</div>
-                  <p className="font-bold text-black" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Create unforgettable memories</p>
-                </div>
-              </div>
-              
-              <p className="text-lg text-gray-900 leading-relaxed text-center mb-6 font-medium" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>
-                It's more than just travel—it's about real community, wherever you are.
+              <p className="mb-4 text-base sm:text-lg text-gray-800 dark:text-gray-200 leading-relaxed" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>
+                Whether you're exploring your city or visiting somewhere new, Nearby Traveler helps you:
               </p>
-              
-              {/* Founder signature with orange and blue accents */}
-              <div className="text-center pt-6 border-t border-blue-200">
-                <p className="text-lg text-gray-800 mb-3 font-medium" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Thanks for being part of the journey.</p>
-                <div className="flex items-center justify-center space-x-4">
-                  <div>
-                    <p className="text-xl font-black text-gray-900" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Aaron Lefkowitz</p>
-                    <p className="text-blue-600 font-bold" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Founder, Nearby Traveler</p>
-                  </div>
-                </div>
+              <div className="mb-6 pl-4">
+                <p className="mb-2 text-base sm:text-lg" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}><span className="text-blue-600 dark:text-blue-400 font-semibold">• Connect with like-minded people</span></p>
+                <p className="mb-2 text-base sm:text-lg" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}><span className="text-blue-600 dark:text-blue-400 font-semibold">• Discover hidden gems</span></p>
+                <p className="mb-2 text-base sm:text-lg" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}><span className="text-blue-600 dark:text-blue-400 font-semibold">• Create unforgettable memories</span></p>
+              </div>
+              <p className="mb-4 text-base sm:text-lg text-gray-800 dark:text-gray-200 leading-relaxed" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>
+                It's more than just travel—it's about real community, wherever you are. So complete your profile, dive in, and start connecting.
+              </p>
+              <p className="mb-2 text-base sm:text-lg text-gray-800 dark:text-gray-200 leading-relaxed" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>
+                Thanks for being part of the journey.
+              </p>
+              <div className="text-right mt-6">
+                <p className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Aaron Lefkowitz</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Founder, Nearby Traveler</p>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* HOW IT WORKS SECTION - SEXY REDESIGN */}
-      <div className="py-20 bg-gradient-to-br from-gray-50 via-blue-50 to-orange-50 dark:from-gray-900 dark:via-blue-900/20 dark:to-orange-900/20">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-16">
-            <span className="inline-block px-6 py-2 bg-gradient-to-r from-blue-100 to-orange-100 text-blue-800 text-sm font-bold rounded-full mb-4 animate-pulse">
-              HOW IT WORKS
-            </span>
-            <h2 className="text-4xl sm:text-5xl font-black text-gray-900 dark:text-white mb-6" style={{fontFamily: '"Open Sans", sans-serif', wordBreak: 'break-word', overflowWrap: 'break-word'}}>
-              Turn Connections into <span className="bg-gradient-to-r from-blue-600 to-orange-600 bg-clip-text text-transparent">Travel Adventures</span>
+      {/* HOW IT WORKS SECTION - SIMPLIFIED */}
+      <div className="bg-gray-50 dark:sm:bg-gray-900 dark:bg-gray-500 py-12 sm:py-16">
+        <div className="max-w-full mx-auto px-4">
+          <div className="text-center mb-8 sm:mb-12">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white lg:text-4xl" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700', wordBreak: 'break-word', overflowWrap: 'break-word'}}>
+              How It Works
             </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>
-              Three simple steps that transform your travel experience from ordinary to extraordinary
+            <p className="mt-4 text-base sm:text-lg text-gray-100 sm:text-gray-600 sm:dark:text-gray-300" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>
+              Simple steps to connect with locals and travelers worldwide
             </p>
           </div>
           
-          <div className="relative">
-            {/* Connection line */}
-            <div className="hidden md:block absolute top-24 left-1/2 transform -translate-x-1/2 w-full max-w-4xl">
-              <div className="h-1 bg-gradient-to-r from-blue-300 via-purple-300 to-orange-300 rounded-full opacity-30"></div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+            {/* Step 1: Join */}
+            <div className="text-center">
+              <div className="relative mb-6">
+                <div className="w-28 h-28 rounded-lg border-2 border-amber-400 flex items-center justify-center bg-white shadow-md mx-auto">
+                  <div className="w-full h-full flex items-center justify-center">
+                    <CustomIcon iconName="step1" />
+                  </div>
+                </div>
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Join as a Beta Tester</h3>
+              <p className="text-white sm:text-gray-600 sm:dark:text-gray-300" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>
+                Join as a beta tester to help shape the future of travel connections, sharing your interests and travel style for personalized matches.
+              </p>
             </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
-              {/* Step 1: Join */}
-              <div className="group">
-                <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-300 border border-blue-100 dark:border-blue-800">
-                  <div className="relative mb-8">
-                    <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg group-hover:shadow-xl transition-all duration-300">
-                      <span className="text-white text-2xl font-black">1</span>
-                    </div>
-                    <div className="absolute -top-2 -right-2 w-6 h-6 bg-blue-400 rounded-full animate-bounce"></div>
-                  </div>
-                  <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-4 text-center" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>
-                    Join the Movement
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-300 text-center leading-relaxed" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>
-                    Share your travel style, interests, and dream destinations. Our matching algorithm connects you with like-minded travelers and locals.
-                  </p>
-                  <div className="mt-6 flex justify-center">
-                    <div className="flex space-x-1">
-                      <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
-                      <div className="w-2 h-2 bg-blue-300 rounded-full animate-pulse" style={{animationDelay: '0.2s'}}></div>
-                      <div className="w-2 h-2 bg-blue-200 rounded-full animate-pulse" style={{animationDelay: '0.4s'}}></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
 
-              {/* Step 2: Connect */}
-              <div className="group">
-                <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-300 border border-purple-100 dark:border-purple-800">
-                  <div className="relative mb-8">
-                    <div className="w-20 h-20 bg-gradient-to-r from-purple-500 to-orange-500 rounded-2xl flex items-center justify-center mx-auto shadow-lg group-hover:shadow-xl transition-all duration-300">
-                      <span className="text-white text-2xl font-black">2</span>
-                    </div>
-                    <div className="absolute -top-2 -right-2 w-6 h-6 bg-purple-400 rounded-full animate-bounce" style={{animationDelay: '0.5s'}}></div>
-                  </div>
-                  <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-4 text-center" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>
-                    Make Real Connections
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-300 text-center leading-relaxed" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>
-                    Chat with locals who know secret spots and fellow travelers heading to your destination. No awkward small talk - just shared adventures.
-                  </p>
-                  <div className="mt-6 flex justify-center">
-                    <div className="flex space-x-1">
-                      <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse"></div>
-                      <div className="w-2 h-2 bg-purple-300 rounded-full animate-pulse" style={{animationDelay: '0.2s'}}></div>
-                      <div className="w-2 h-2 bg-orange-300 rounded-full animate-pulse" style={{animationDelay: '0.4s'}}></div>
-                    </div>
+            {/* Step 2: Connect */}
+            <div className="text-center">
+              <div className="relative mb-6">
+                <div className="w-28 h-28 rounded-lg border-2 border-amber-400 flex items-center justify-center bg-white shadow-md mx-auto">
+                  <div className="w-full h-full flex items-center justify-center">
+                    <CustomIcon iconName="step2" />
                   </div>
                 </div>
               </div>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Connect</h3>
+              <p className="text-white sm:text-gray-600 sm:dark:text-gray-300" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>
+                Connect with Nearby Travelers and Locals who share your interests and travel dates.
+              </p>
+            </div>
 
-              {/* Step 3: Explore */}
-              <div className="group">
-                <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-300 border border-orange-100 dark:border-orange-800">
-                  <div className="relative mb-8">
-                    <div className="w-20 h-20 bg-gradient-to-r from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg group-hover:shadow-xl transition-all duration-300">
-                      <span className="text-white text-2xl font-black">3</span>
-                    </div>
-                  </div>
-                  <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-4 text-center" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>
-                    Create Epic Memories
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-300 text-center leading-relaxed" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>
-                    Join authentic experiences, discover hidden gems, and turn strangers into lifelong friends. This is travel the way it's meant to be.
-                  </p>
-                  <div className="mt-6 flex justify-center">
-                    <div className="flex space-x-1">
-                      <div className="w-2 h-2 bg-orange-400 rounded-full animate-pulse"></div>
-                      <div className="w-2 h-2 bg-orange-300 rounded-full animate-pulse" style={{animationDelay: '0.2s'}}></div>
-                      <div className="w-2 h-2 bg-orange-200 rounded-full animate-pulse" style={{animationDelay: '0.4s'}}></div>
-                    </div>
+            {/* Step 3: Explore */}
+            <div className="text-center">
+              <div className="relative mb-6">
+                <div className="w-28 h-28 rounded-lg border-2 border-amber-400 flex items-center justify-center bg-white shadow-md mx-auto">
+                  <div className="w-full h-full flex items-center justify-center">
+                    <CustomIcon iconName="step3" />
                   </div>
                 </div>
               </div>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Explore</h3>
+              <p className="text-gray-100 sm:text-gray-600 sm:dark:text-gray-300" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>
+                Explore your destination with your new connections.
+              </p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* FOR LOCALS SECTION - REDESIGNED */}
-      <div id="locals" className="py-20 bg-gradient-to-br from-gray-50 via-teal-50 to-blue-50 dark:from-gray-900 dark:via-teal-900/10 dark:to-blue-900/10">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            <div className="space-y-8 order-2 lg:order-1">
-              <div>
-                <span className="inline-block px-4 py-2 bg-gradient-to-r from-teal-100 to-blue-100 text-teal-800 text-sm font-bold rounded-full mb-4">
-                  FOR LOCALS
-                </span>
-                <h2 className="text-4xl sm:text-5xl font-black text-gray-900 dark:text-white mb-6" style={{fontFamily: '"Open Sans", sans-serif', wordBreak: 'break-word', overflowWrap: 'break-word'}}>
-                  🏠 Expand Your <span className="bg-gradient-to-r from-teal-600 to-blue-600 bg-clip-text text-transparent">Social Network</span>
-                </h2>
-                <p className="text-xl text-gray-600 dark:text-gray-300 leading-relaxed" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>
-                  You know your city best. Transform your local knowledge into unforgettable 
-                  experiences while building meaningful connections with fellow locals and travelers.
-                </p>
-              </div>
-              
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-teal-100 dark:border-teal-800">
-                  <div className="flex items-center mb-3">
-                    <div className="w-10 h-10 bg-gradient-to-r from-teal-500 to-teal-600 rounded-lg flex items-center justify-center mr-3">
-                      <span className="text-white text-sm font-bold">🎯</span>
-                    </div>
-                    <h3 className="font-black text-black dark:text-white" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Host Events</h3>
-                  </div>
-                  <p className="text-black dark:text-gray-300 text-sm font-semibold" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Beach BBQs, hiking trips, cultural tours</p>
-                </div>
-                
-                <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-blue-100 dark:border-blue-800">
-                  <div className="flex items-center mb-3">
-                    <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg flex items-center justify-center mr-3">
-                      <span className="text-white text-sm font-bold">💎</span>
-                    </div>
-                    <h3 className="font-black text-black dark:text-white" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Share Hidden Gems</h3>
-                  </div>
-                  <p className="text-black dark:text-gray-300 text-sm font-semibold" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Your secret spots become discoveries</p>
-                </div>
-                
-                <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-purple-100 dark:border-purple-800">
-                  <div className="flex items-center mb-3">
-                    <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg flex items-center justify-center mr-3">
-                      <span className="text-white text-sm font-bold">🤝</span>
-                    </div>
-                    <h3 className="font-black text-black dark:text-white" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Build Connections</h3>
-                  </div>
-                  <p className="text-black dark:text-gray-300 text-sm font-semibold" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Welcome travelers, connect with fellow locals</p>
-                </div>
-                
-                <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-orange-100 dark:border-orange-800">
-                  <div className="flex items-center mb-3">
-                    <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg flex items-center justify-center mr-3">
-                      <span className="text-white text-sm font-bold">🌟</span>
-                    </div>
-                    <h3 className="font-black text-black dark:text-white" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Create Community</h3>
-                  </div>
-                  <p className="text-black dark:text-gray-300 text-sm font-semibold" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Turn strangers into lifelong friends</p>
-                </div>
-              </div>
+      {/* FOR LOCALS SECTION */}
+      <div id="locals" className="py-16 bg-white dark:sm:bg-gray-800 dark:bg-gray-400">
+        <div className="max-w-full mx-auto px-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-white mb-6 dark:drop-shadow-[0_0_8px_rgba(0,0,0,0.8)]" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700', wordBreak: 'break-word', overflowWrap: 'break-word'}}>
+                🏠 Locals: Your City, Through Your Eyes
+              </h2>
+              <p className="text-lg text-gray-100 sm:text-gray-600 sm:dark:text-gray-300 mb-6" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>
+                You know your city best. You create the experiences that make travelers fall in love 
+                with your hometown. You're not just participating - you're leading.
+              </p>
+              <ul className="space-y-4 text-gray-100 sm:text-gray-600 sm:dark:text-gray-300">
+                <li className="flex items-start">
+                  <span className="text-teal-500 mr-3">✓</span>
+                  <span style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}><strong>Host Events:</strong> Beach BBQs, hiking trips, cultural tours - share what you love</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-teal-500 mr-3">✓</span>
+                  <span style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}><strong>Share Hidden Gems:</strong> Your secret spots become unforgettable discoveries</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-teal-500 mr-3">✓</span>
+                  <span style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}><strong>Make Connections:</strong> Connect with other locals and welcome travelers</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-teal-500 mr-3">✓</span>
+                  <span style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}><strong>Build Community:</strong> Create lasting friendships with fellow travelers and locals who share your interests</span>
+                </li>
+              </ul>
             </div>
-            
-            <div className="relative order-1 lg:order-2">
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-200 to-teal-200 rounded-3xl transform rotate-3 opacity-20"></div>
-              <div className="relative bg-white dark:bg-gray-800 rounded-3xl p-10 shadow-2xl border border-blue-100 dark:border-blue-800">
-                <div className="text-center">
-                  <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-teal-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
-                    <span className="text-white text-3xl">🏠</span>
-                  </div>
-                  <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-4" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>
-                    Become a Local Ambassador
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-300 mb-8 leading-relaxed" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>
-                    Transform your city knowledge into unforgettable experiences. 
-                    Every event you host, every secret spot you share makes you the hero of someone's travel story.
-                  </p>
-                  <Button 
-                    onClick={() => setLocation('/join')}
-                    size="lg"
-                    className="w-full bg-gradient-to-r from-blue-600 to-teal-600 hover:from-blue-700 hover:to-teal-700 text-white font-black text-lg px-8 py-4 rounded-2xl shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
-                  >
-                    Join as a Nearby Local
-                  </Button>
-                </div>
-              </div>
+            <div className="bg-gradient-to-br from-blue-100 to-orange-100 dark:from-blue-900/30 dark:to-orange-800/30 rounded-2xl p-8 text-center">
+              <div className="text-6xl mb-4">🌟</div>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Expand Your Social Network</h3>
+              <p className="text-gray-100 sm:text-gray-700 sm:dark:text-gray-300 mb-6" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>
+                Share your favorite spots, host unique events, and show travelers the authentic side of your city.
+              </p>
+              <Button 
+                onClick={() => setLocation('/join')}
+                size="lg"
+                className="bg-blue-600 hover:bg-blue-700 px-8 py-4 text-lg rounded-lg shadow-lg hover:shadow-xl text-black"
+              >
+                Join as a Beta Tester
+              </Button>
             </div>
           </div>
         </div>
       </div>
 
-      {/* FOR TRAVELERS SECTION - REDESIGNED */}
-      <div id="travelers" className="py-20 bg-gradient-to-br from-gray-50 via-orange-50 to-red-50 dark:from-gray-900 dark:via-orange-900/10 dark:to-red-900/10">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            <div className="relative order-2 lg:order-1">
-              <div className="absolute inset-0 bg-gradient-to-br from-orange-200 to-red-200 rounded-3xl transform -rotate-3 opacity-20"></div>
-              <div className="relative bg-white dark:bg-gray-800 rounded-3xl p-10 shadow-2xl border border-orange-100 dark:border-orange-800">
-                <div className="text-center">
-                  <div className="w-20 h-20 bg-gradient-to-r from-orange-500 to-red-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
-                    <span className="text-white text-3xl">🌍</span>
-                  </div>
-                  <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-4" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>
-                    Adventure Beyond Guidebooks
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-300 mb-8 leading-relaxed" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>
-                    Skip the tourist traps and dive into authentic experiences. 
-                    Connect with locals who'll show you their city's soul and fellow travelers who share your wanderlust.
-                  </p>
-                  <Button 
-                    onClick={() => setLocation('/join')}
-                    size="lg"
-                    className="w-full bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white font-black text-lg px-8 py-4 rounded-2xl shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
-                  >
-                    Start Your Adventure
-                  </Button>
-                </div>
-              </div>
+      {/* FOR TRAVELERS SECTION */}
+      <div id="travelers" className="py-16 bg-gray-50 dark:sm:bg-gray-900 dark:bg-gray-500">
+        <div className="max-w-full mx-auto px-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div className="bg-gradient-to-br from-orange-100 to-orange-200 dark:from-orange-900/30 dark:to-orange-800/30 rounded-2xl p-8 text-center">
+              <div className="text-6xl mb-4">🗺️</div>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Your Next Adventure Awaits</h3>
+              <p className="text-gray-100 sm:text-gray-700 sm:dark:text-gray-300 mb-6" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>
+                Find local-led experiences and connect with fellow travelers to make your next trip unforgettable.
+              </p>
+              <Button 
+                onClick={() => setLocation('/join')}
+                size="lg"
+                className="bg-orange-600 hover:bg-orange-700 px-8 py-4 text-lg rounded-lg shadow-lg hover:shadow-xl text-black"
+              >
+                Join as a Beta Tester
+              </Button>
             </div>
-            
-            <div className="space-y-8 order-1 lg:order-2">
-              <div>
-                <span className="inline-block px-4 py-2 bg-gradient-to-r from-orange-100 to-red-100 text-orange-800 text-sm font-bold rounded-full mb-4">
-                  FOR TRAVELERS
-                </span>
-                <h2 className="text-4xl sm:text-5xl font-black text-gray-900 dark:text-white mb-6" style={{fontFamily: '"Open Sans", sans-serif', wordBreak: 'break-word', overflowWrap: 'break-word'}}>
-                  🌍 Travel Like a <span className="bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">Local Insider</span>
-                </h2>
-                <p className="text-xl text-gray-600 dark:text-gray-300 leading-relaxed" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>
-                  Forget the crowds and clichés. Discover destinations through the eyes of locals 
-                  and connect with fellow adventurers who get your travel vibe.
-                </p>
-              </div>
-              
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-orange-100 dark:border-orange-800">
-                  <div className="flex items-center mb-3">
-                    <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg flex items-center justify-center mr-3">
-                      <span className="text-white text-sm font-bold">🎯</span>
-                    </div>
-                    <h3 className="font-black text-gray-900 dark:text-white" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Local-Led Events</h3>
-                  </div>
-                  <p className="text-gray-600 dark:text-gray-300 text-sm" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Join authentic experiences crafted by locals</p>
-                </div>
-                
-                <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-red-100 dark:border-red-800">
-                  <div className="flex items-center mb-3">
-                    <div className="w-10 h-10 bg-gradient-to-r from-red-500 to-red-600 rounded-lg flex items-center justify-center mr-3">
-                      <span className="text-white text-sm font-bold">🗺️</span>
-                    </div>
-                    <h3 className="font-black text-gray-900 dark:text-white" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Hidden Gems</h3>
-                  </div>
-                  <p className="text-gray-600 dark:text-gray-300 text-sm" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Discover spots that tourists never find</p>
-                </div>
-                
-                <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-pink-100 dark:border-pink-800">
-                  <div className="flex items-center mb-3">
-                    <div className="w-10 h-10 bg-gradient-to-r from-pink-500 to-pink-600 rounded-lg flex items-center justify-center mr-3">
-                      <span className="text-white text-sm font-bold">👥</span>
-                    </div>
-                    <h3 className="font-black text-gray-900 dark:text-white" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Travel Buddies</h3>
-                  </div>
-                  <p className="text-gray-600 dark:text-gray-300 text-sm" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Meet travelers with your dates and interests</p>
-                </div>
-                
-                <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-purple-100 dark:border-purple-800">
-                  <div className="flex items-center mb-3">
-                    <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg flex items-center justify-center mr-3">
-                      <span className="text-white text-sm font-bold">💡</span>
-                    </div>
-                    <h3 className="font-black text-gray-900 dark:text-white" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Insider Tips</h3>
-                  </div>
-                  <p className="text-gray-600 dark:text-gray-300 text-sm" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Get secrets that guidebooks can't provide</p>
-                </div>
-              </div>
+            <div>
+              <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-white mb-6 dark:drop-shadow-[0_0_8px_rgba(0,0,0,0.8)]" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700', wordBreak: 'break-word', overflowWrap: 'break-word'}}>
+                🌍 For Travelers: Discover Cities Through Connections
+              </h2>
+              <p className="text-lg text-gray-100 sm:text-gray-600 sm:dark:text-gray-300 mb-6" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>
+                Skip the tourist traps. Connect with locals who know their cities inside out and 
+                fellow travelers who share your interests and travel dates.
+              </p>
+              <ul className="space-y-4 text-gray-100 sm:text-gray-600 sm:dark:text-gray-300">
+                <li className="flex items-start">
+                  <span className="text-orange-500 mr-3">✓</span>
+                  <span style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}><strong>Local-Created Events:</strong> Join authentic experiences designed by locals</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-orange-500 mr-3">✓</span>
+                  <span style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}><strong>Hidden Gem Access:</strong> Discover spots tourists never find</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-orange-500 mr-3">✓</span>
+                  <span style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}><strong>Traveler Connections:</strong> Meet people who share your travel dates and interests</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-orange-500 mr-3">✓</span>
+                  <span style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}><strong>Insider Knowledge:</strong> Get tips that guidebooks don't have</span>
+                </li>
+              </ul>
             </div>
           </div>
         </div>
@@ -703,13 +612,20 @@ export default function Landing() {
             Whether you're a local ready to share your city or a traveler seeking authentic experiences, 
             your journey starts here.
           </p>
-          <div className="flex justify-center">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button 
               onClick={() => setLocation('/join')}
               size="lg"
-              className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-lg px-8 py-4 rounded-lg shadow-lg hover:shadow-xl text-white"
+              className="bg-blue-600 hover:bg-blue-700 text-lg px-8 py-4 rounded-lg shadow-lg hover:shadow-xl text-black"
             >
-              Join Nearby Traveler
+              Join as a Beta Tester
+            </Button>
+            <Button 
+              onClick={() => setLocation('/join')}
+              size="lg"
+              className="bg-orange-600 hover:bg-orange-700 text-lg px-8 py-4 rounded-lg shadow-lg hover:shadow-xl text-black"
+            >
+              Join as a Beta Tester
             </Button>
           </div>
         </div>
@@ -737,11 +653,9 @@ export default function Landing() {
         </div>
       </div>
 
-      {/* Extra bottom padding so content is not hidden behind mobile bottom nav */}
-      <div className="h-20 md:h-0" />
       <Footer />
       
-      {/* Add custom CSS for better text wrapping and animations */}
+      {/* Add custom CSS for better text wrapping */}
       <style jsx>{`
         .event-card * {
           word-break: break-word;
@@ -783,27 +697,12 @@ export default function Landing() {
           }
         }
         
-        @keyframes zoom-in {
-          from {
-            opacity: 0;
-            transform: scale(0.9);
-          }
-          to {
-            opacity: 1;
-            transform: scale(1);
-          }
-        }
-        
         .animate-slide-in-left {
           animation: slide-in-left 0.6s ease-out;
         }
         
         .animate-fade-in-up {
           animation: fade-in-up 0.6s ease-out;
-        }
-        
-        .animate-zoom-in {
-          animation: zoom-in 0.6s ease-out;
         }
       `}</style>
     </div>
