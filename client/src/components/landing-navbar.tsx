@@ -17,31 +17,31 @@ export default function LandingNavbar() {
                 </div>
               </Link>
             </div>
-            {/* FIXED: Added more spacing and consistent styling for all navigation links */}
-            <div className="hidden lg:ml-8 lg:flex lg:space-x-4 xl:space-x-6 2xl:space-x-8">
-              <Link href="/" className="border-transparent text-gray-700 dark:text-gray-300 hover:border-gray-300 hover:text-gray-900 dark:hover:text-white inline-flex items-center px-2 pt-1 border-b-2 text-sm font-medium whitespace-nowrap transition-colors duration-200">
+            {/* FIXED: Reduced navigation spacing to give more room for CTA buttons */}
+            <div className="hidden lg:ml-8 lg:flex lg:space-x-2 xl:space-x-3 2xl:space-x-4" style={{ maxWidth: '60%' }}>
+              <Link href="/" className="border-transparent text-gray-700 dark:text-gray-300 hover:border-gray-300 hover:text-gray-900 dark:hover:text-white inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium whitespace-nowrap transition-colors duration-200 flex-shrink-0">
                 Home
               </Link>
-              <Link href="/locals-landing" className="border-transparent text-gray-500 dark:text-gray-400 hover:border-gray-300 hover:text-gray-700 dark:hover:text-gray-300 inline-flex items-center px-2 pt-1 border-b-2 text-sm font-medium whitespace-nowrap transition-colors duration-200">
+              <Link href="/locals-landing" className="border-transparent text-gray-500 dark:text-gray-400 hover:border-gray-300 hover:text-gray-700 dark:hover:text-gray-300 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium whitespace-nowrap transition-colors duration-200 flex-shrink-0">
                 Locals
               </Link>
-              <Link href="/travelers-landing" className="border-transparent text-gray-500 dark:text-gray-400 hover:border-gray-300 hover:text-gray-700 dark:hover:text-gray-300 inline-flex items-center px-2 pt-1 border-b-2 text-sm font-medium whitespace-nowrap transition-colors duration-200">
+              <Link href="/travelers-landing" className="border-transparent text-gray-500 dark:text-gray-400 hover:border-gray-300 hover:text-gray-700 dark:hover:text-gray-300 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium whitespace-nowrap transition-colors duration-200 flex-shrink-0">
                 Travelers
               </Link>
-              <Link href="/events-landing" className="border-transparent text-gray-500 dark:text-gray-400 hover:border-gray-300 hover:text-gray-700 dark:hover:text-gray-300 inline-flex items-center px-2 pt-1 border-b-2 text-sm font-medium whitespace-nowrap transition-colors duration-200">
+              <Link href="/events-landing" className="border-transparent text-gray-500 dark:text-gray-400 hover:border-gray-300 hover:text-gray-700 dark:hover:text-gray-300 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium whitespace-nowrap transition-colors duration-200 flex-shrink-0">
                 Events
               </Link>
-              <Link href="/business-landing" className="border-transparent text-gray-500 dark:text-gray-400 hover:border-gray-300 hover:text-gray-700 dark:hover:text-gray-300 inline-flex items-center px-2 pt-1 border-b-2 text-sm font-medium whitespace-nowrap transition-colors duration-200">
+              <Link href="/business-landing" className="border-transparent text-gray-500 dark:text-gray-400 hover:border-gray-300 hover:text-gray-700 dark:hover:text-gray-300 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium whitespace-nowrap transition-colors duration-200 flex-shrink-0">
                 Business
               </Link>
             </div>
           </div>
-          {/* FIXED: Increased spacing significantly to prevent overlap and ensure buttons don't touch navigation tabs */}
-          <div className="hidden xl:ml-32 xl:flex xl:items-center xl:space-x-4 2xl:ml-40 2xl:space-x-6 flex-shrink-0 pl-8">
-            <Link href="/auth" className="bg-blue-600 hover:bg-blue-700 text-white px-4 xl:px-5 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out whitespace-nowrap">
+          {/* FIXED: Much more aggressive spacing and flex-shrink-0 to prevent overlap */}
+          <div className="hidden xl:flex xl:items-center xl:space-x-3 2xl:space-x-4 flex-shrink-0" style={{ marginLeft: 'auto', paddingLeft: '2rem', minWidth: 'fit-content' }}>
+            <Link href="/auth" className="bg-blue-600 hover:bg-blue-700 text-white px-3 xl:px-4 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out whitespace-nowrap flex-shrink-0">
               Sign In
             </Link>
-            <Link href="/join" className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white px-4 xl:px-5 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out whitespace-nowrap">
+            <Link href="/join" className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white px-3 xl:px-4 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out whitespace-nowrap flex-shrink-0">
               Join Now
             </Link>
           </div>
