@@ -110,10 +110,10 @@ export default function LocalsLanding() {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 items-stretch">
               <div className="bg-orange-600 p-6 rounded-xl shadow-lg text-white flex flex-col h-full overflow-hidden">
-                <div className="text-4xl mb-4">🏖️</div>
-                <h3 className="text-lg sm:text-xl font-bold mb-3 text-white leading-tight break-words">Beach Bonfires & BBQs</h3>
-                <p className="text-white text-sm sm:text-base leading-relaxed flex-grow break-words overflow-wrap-anywhere">
-                  Host or join amazing events like beach gatherings, sunset BBQs, campfire hikes, bar crawls, and social gatherings nearby.
+                <div className="text-4xl mb-4">🎉</div>
+                <h3 className="text-lg sm:text-xl font-bold mb-4 text-white leading-tight">Social Events & Gatherings</h3>
+                <p className="text-white text-sm sm:text-base leading-relaxed flex-grow">
+                  Host or join amazing local events like meetups, group activities, cultural experiences, and social gatherings in your city.
                 </p>
               </div>
               <div className="bg-teal-600 p-6 rounded-xl shadow-lg text-white flex flex-col h-full overflow-hidden">
