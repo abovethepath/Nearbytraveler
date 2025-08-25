@@ -692,7 +692,7 @@ export default function Landing() {
             {/* Before Events */}
             <div className="bg-gradient-to-br from-blue-400 to-blue-500 dark:bg-gray-800 rounded-2xl p-8 shadow-lg border-2 border-blue-600 dark:border-blue-600 text-center">
               <div className="text-4xl mb-4">🎉</div>
-              <h3 className="text-xl font-bold text-black mb-6">Before Events</h3>
+              <h3 className="text-xl font-bold text-black mb-6">Before Events or Trips</h3>
               <div className="grid grid-cols-1 gap-3 text-left">
                 <div className="flex items-center space-x-2">
                   <span className="text-black font-bold">•</span>
@@ -716,7 +716,7 @@ export default function Landing() {
             {/* During Events */}
             <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border-2 border-blue-200 dark:border-blue-600 text-center">
               <div className="text-4xl mb-4">💫</div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">During Events</h3>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">During Events or Trips</h3>
               <div className="grid grid-cols-1 gap-3 text-left">
                 <div className="flex items-center space-x-2">
                   <span className="text-blue-500 font-bold">•</span>
@@ -740,7 +740,7 @@ export default function Landing() {
             {/* After Events */}
             <div className="bg-gradient-to-br from-orange-400 to-orange-500 dark:bg-gray-800 rounded-2xl p-8 shadow-lg border-2 border-orange-600 dark:border-orange-600 text-center">
               <div className="text-4xl mb-4">🌍</div>
-              <h3 className="text-xl font-bold text-black mb-6">After Events</h3>
+              <h3 className="text-xl font-bold text-black mb-6">After Events or Trips</h3>
               <div className="grid grid-cols-1 gap-3 text-left">
                 <div className="flex items-center space-x-2">
                   <span className="text-black font-bold">•</span>
