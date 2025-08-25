@@ -4,6 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { getRegionForCity, isStateOptionalForCountry, validateLocationForCountry } from "@/lib/locationHelpers";
 import { COUNTRIES, CITIES_BY_COUNTRY } from "@/lib/locationData";
+import { METRO_AREAS, isLAMetroCity } from "../../../shared/constants";
 
 interface SmartLocationInputProps {
   city?: string;
@@ -126,10 +127,32 @@ export function SmartLocationInput({
     }
   };
 
-  // Get cities for country - SIMPLIFIED without complex LA Metro logic
+  // Get cities for country WITH LA Metro consolidation
   const getCitiesForCountry = () => {
     if (!country) return [];
-    return CITIES_BY_COUNTRY[country] || [];
+    
+    const baseCities = CITIES_BY_COUNTRY[country] || [];
+    
+    if (country === "United States") {
+      // For US, ensure LA Metro cities are prominent and properly ordered
+      const laMetroCities = METRO_AREAS['Los Angeles']?.cities || [];
+      const topCities = ["Los Angeles", "Las Vegas", "Miami", "Nashville", "New Orleans", "Austin", "Chicago", "New York City"];
+      
+      return [
+        // Top priority cities first (including Los Angeles)
+        ...topCities.filter(c => baseCities.includes(c)),
+        // LA Metro cities prominently displayed (excluding Los Angeles to avoid duplication)
+        ...laMetroCities.filter(c => c !== 'Los Angeles' && baseCities.includes(c)),
+        // Rest of US cities
+        ...baseCities.filter(city => {
+          const isTopCity = topCities.includes(city);
+          const isLAMetroCity = laMetroCities.includes(city);
+          return !isTopCity && !isLAMetroCity;
+        })
+      ];
+    }
+    
+    return baseCities;
   };
 
   const citiesForCountry = getCitiesForCountry();
@@ -235,10 +258,15 @@ export function SmartLocationInput({
         </div>
       )}
 
-      {/* Simple Location Preview */}
+      {/* Location Preview with LA Metro indication */}
       {city && country && (
         <div className="text-sm text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-gray-700 p-2 rounded">
           <strong>Location:</strong> {city}{state ? `, ${state}` : ""}, {country}
+          {isLAMetroCity(city) && (
+            <div className="text-xs text-blue-600 dark:text-blue-400 mt-1">
+              🌟 Part of Los Angeles Metro area
+            </div>
+          )}
         </div>
       )}
 
