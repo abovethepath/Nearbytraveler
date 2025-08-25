@@ -119,7 +119,7 @@ export default function Landing() {
                     <div className="max-w-4xl mx-auto">
                       <h1 className="px-3 leading-tight sm:leading-snug">
                         <span className="block font-black text-[clamp(1.5rem,6vw,2.25rem)] text-white">
-                          Skip the Tourist Traps.
+                          Skip the Tourist Traps, Connect Before Your Trip, Keep Connections Forever!!!
                         </span>
                         <span className="block font-black text-[clamp(1.25rem,5.5vw,2rem)]">
                           <span className="text-amber-300 sm:text-orange-500">Meet Locals and Other </span>
