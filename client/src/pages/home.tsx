@@ -2262,7 +2262,7 @@ export default function Home() {
                               </div>
                             </div>
                             <div className="mt-2 min-w-0">
-                              <div className="text-sm font-semibold truncate">@{u.username}</div>
+                              <div className="text-sm font-semibold truncate text-gray-900 dark:text-white">@{u.username}</div>
                               <div className="text-xs text-gray-500 dark:text-gray-400 truncate">
                                 {u.hometownCity && u.hometownCountry ? `${u.hometownCity}, ${u.hometownCountry.replace("United States","USA")}` : u.location || "New member"}
                               </div>
