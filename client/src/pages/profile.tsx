@@ -3456,7 +3456,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       return (
                         <>
                           <h1 className="text-2xl sm:text-3xl font-bold text-black">@{user.username}</h1>
-                          <div className="text-lg font-medium text-orange-600">
+                          <div className="text-lg font-medium text-white">
                             Nearby Local {hometown}
                           </div>
                         </>
