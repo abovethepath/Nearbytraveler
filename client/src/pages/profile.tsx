@@ -3442,12 +3442,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       // When traveling: NEARBY TRAVELER [DESTINATION]
                       return (
                         <>
-                          <h1 className="text-3xl sm:text-5xl md:text-6xl font-bold text-black leading-tight">
-                            NEARBY TRAVELER<br />
-                            <span className="text-blue-600">{currentDestination.toUpperCase()}</span>
-                          </h1>
-                          <div className="text-sm text-gray-600 dark:text-gray-400">
-                            <span className="font-medium">@{user.username}</span> • From {hometown}
+                          <h1 className="text-2xl sm:text-3xl font-bold text-black">@{user.username}</h1>
+                          <div className="text-lg sm:text-xl font-semibold text-blue-600 mt-1">
+                            NEARBY TRAVELER {currentDestination.toUpperCase()}
+                          </div>
+                          <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                            From {hometown}
                           </div>
                         </>
                       );
@@ -3455,12 +3455,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       // When home: NEARBY LOCAL [HOMETOWN]
                       return (
                         <>
-                          <h1 className="text-3xl sm:text-5xl md:text-6xl font-bold text-black leading-tight">
-                            NEARBY LOCAL<br />
-                            <span className="text-orange-600">{hometown.toUpperCase()}</span>
-                          </h1>
-                          <div className="text-sm text-gray-600 dark:text-gray-400">
-                            <span className="font-medium">@{user.username}</span> • Currently home
+                          <h1 className="text-2xl sm:text-3xl font-bold text-black">@{user.username}</h1>
+                          <div className="text-lg sm:text-xl font-semibold text-orange-600 mt-1">
+                            NEARBY LOCAL {hometown.toUpperCase()}
+                          </div>
+                          <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                            Currently home
                           </div>
                         </>
                       );
