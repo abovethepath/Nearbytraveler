@@ -1435,8 +1435,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           customInterests: customInterests || user.customInterests || "",
           customActivities: customActivities || user.customActivities || "",
           customEvents: customEvents || user.customEvents || "",
-          isVeteran: !!user.isVeteran,
-          isActiveDuty: !!user.isActiveDuty,
+          isVeteran: !!user.isVeteran || !!((user as any).is_veteran),
+          isActiveDuty: !!user.isActiveDuty || !!((user as any).is_active_duty),
           isMinorityOwned: !!user.isMinorityOwned,
           isFemaleOwned: !!user.isFemaleOwned,
           isLGBTQIAOwned: !!user.isLGBTQIAOwned,
@@ -1459,9 +1459,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           sexualPreferenceVisible: !!user.sexualPreferenceVisible,
           travelStyle: user.travelStyle || [],
           travelingWithChildren: !!user.travelingWithChildren,
-          childrenAges: (user as any).children_ages || (user as any).childrenAges || "",
-          isVeteran: !!((user as any).is_veteran || user.isVeteran),
-          isActiveDuty: !!((user as any).is_active_duty || user.isActiveDuty),
+          childrenAges: user.childrenAges || (user as any).children_ages || "",
+          isVeteran: !!user.isVeteran || !!((user as any).is_veteran),
+          isActiveDuty: !!user.isActiveDuty || !!((user as any).is_active_duty),
         });
       }
     }
