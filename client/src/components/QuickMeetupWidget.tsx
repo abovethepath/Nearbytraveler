@@ -465,7 +465,11 @@ export function QuickMeetupWidget({ city, profileUserId }: { city?: string; prof
               const untilStr = expiresAtLocal.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
 
               return (
-                <Card key={meetup.id} className="bg-white dark:bg-gray-800 border border-orange-200 dark:border-orange-800 overflow-visible">
+                <Card 
+                  key={meetup.id} 
+                  className="bg-white dark:bg-gray-800 border border-orange-200 dark:border-orange-800 overflow-visible cursor-pointer hover:shadow-md hover:border-orange-300 dark:hover:border-orange-700 transition-all duration-200"
+                  onClick={() => window.location.href = `/quick-meetup-chat/${meetup.id}`}
+                >
                   <CardContent className="p-3 space-y-3 overflow-visible">
                     {/* Top row: avatar + author + countdown (wraps on small) */}
                     <div className="flex items-center justify-between gap-2 flex-wrap min-w-0">
@@ -593,12 +597,16 @@ export function QuickMeetupWidget({ city, profileUserId }: { city?: string; prof
                       </p>
                     )}
                   
-                    {/* Participants */}
-                    <div className="flex items-center gap-2">
+                    {/* Participants and Call to Action */}
+                    <div className="flex items-center justify-between gap-2">
                       <Badge variant="secondary" className="text-[11px]">
                         <Users className="w-3 h-3 mr-1" />
                         {meetup.participantCount} joined
                       </Badge>
+                      
+                      <div className="text-[10px] text-blue-600 dark:text-blue-400 font-medium">
+                        Click to view details & chat →
+                      </div>
                     </div>
 
                     {/* Action */}
