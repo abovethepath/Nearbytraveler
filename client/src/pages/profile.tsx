@@ -3573,8 +3573,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             
             {/* About Section */}
             <Card className="mt-6 relative overflow-visible">
-              <CardHeader className="flex items-center gap-2 flex-wrap min-w-0 w-full">
-                <CardTitle className="text-xl sm:text-2xl font-bold break-words max-w-[calc(100%-3rem)] sm:max-w-none">
+              <CardHeader className="flex items-start gap-2 flex-wrap min-w-0 w-full">
+                <CardTitle className="text-xl sm:text-2xl font-bold break-words max-w-[calc(100%-3rem)] sm:max-w-none text-left">
                   ABOUT {user?.userType === 'business'
                     ? (user?.businessName || user?.name || user?.username)
                     : (user?.username || 'User')}
@@ -3611,7 +3611,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               <CardContent className="space-y-4 pr-3 sm:pr-4 min-w-0 break-words overflow-visible">
                 {/* Bio / Business Description */}
                 <div>
-                  <p className="text-gray-900 dark:text-white leading-relaxed whitespace-pre-wrap break-words">
+                  <p className="text-gray-900 dark:text-white leading-relaxed whitespace-pre-wrap break-words text-left">
                     {user?.userType === 'business'
                       ? (user?.businessDescription || "No business description available yet.")
                       : (user?.bio || "No bio available yet.")
