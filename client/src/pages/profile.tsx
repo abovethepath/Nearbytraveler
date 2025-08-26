@@ -21,7 +21,7 @@ import { Check, ChevronsUpDown } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { MapPin, Camera, Globe, Users, Calendar, Star, Settings, ArrowLeft, Upload, Edit, Edit2, Heart, MessageSquare, X, Plus, Eye, EyeOff, MessageCircle, ImageIcon, Minus, RotateCcw, Sparkles, Package, Trash2, Home, FileText, TrendingUp, MessageCircleMore, Share2, ChevronDown, Search, Zap, History, Clock, Wifi, Shield, ChevronRight, AlertCircle, Phone, Plane } from "lucide-react";
+import { MapPin, Camera, Globe, Users, Calendar, Star, Settings, ArrowLeft, Upload, Edit, Edit2, Heart, MessageSquare, X, Plus, Eye, EyeOff, MessageCircle, ImageIcon, Minus, RotateCcw, Sparkles, Package, Trash2, Home, FileText, TrendingUp, MessageCircleMore, Share2, ChevronDown, Search, Zap, History, Clock, Wifi, Shield, ChevronRight, AlertCircle, Phone, Plane, User } from "lucide-react";
 import { compressPhotoAdaptive } from "@/utils/photoCompression";
 import { AdaptiveCompressionIndicator } from "@/components/adaptive-compression-indicator";
 import { UniversalBackButton } from "@/components/UniversalBackButton";
@@ -7822,6 +7822,94 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           </DialogHeader>
           <Form {...profileForm}>
             <form onSubmit={profileForm.handleSubmit(onSubmitProfile)} className="space-y-6">
+              
+              {/* ALWAYS VISIBLE PERSONAL INFORMATION SECTION */}
+              <div className="space-y-6 bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border-2 border-blue-200 dark:border-blue-700">
+                <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-100 flex items-center gap-2">
+                  <User className="w-5 h-5" />
+                  Personal Information
+                </h3>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Age of Children Field */}
+                  <FormField
+                    control={profileForm.control}
+                    name="childrenAges"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-blue-900 dark:text-blue-100">Age of Children (if applicable)</FormLabel>
+                        <FormControl>
+                          <Input 
+                            {...field} 
+                            placeholder="e.g., 8, 12, 16 or 'None'"
+                            className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-blue-300 dark:border-blue-600"
+                            maxLength={100}
+                          />
+                        </FormControl>
+                        <FormDescription className="text-xs text-blue-700 dark:text-blue-300">
+                          List ages separated by commas, or write "None" if no children
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Veteran Status Field */}
+                  <FormField
+                    control={profileForm.control}
+                    name="isVeteran"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                        <FormControl>
+                          <input
+                            type="checkbox"
+                            checked={field.value}
+                            onChange={field.onChange}
+                            className="mt-1 h-4 w-4 border-blue-300 rounded text-blue-600 focus:ring-blue-500"
+                          />
+                        </FormControl>
+                        <div className="space-y-1 leading-none">
+                          <FormLabel className="text-blue-900 dark:text-blue-100">
+                            Military Veteran
+                          </FormLabel>
+                          <FormDescription className="text-xs text-blue-700 dark:text-blue-300">
+                            Check if you are a military veteran
+                          </FormDescription>
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Active Duty Field */}
+                  <FormField
+                    control={profileForm.control}
+                    name="isActiveDuty"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                        <FormControl>
+                          <input
+                            type="checkbox"
+                            checked={field.value}
+                            onChange={field.onChange}
+                            className="mt-1 h-4 w-4 border-blue-300 rounded text-blue-600 focus:ring-blue-500"
+                          />
+                        </FormControl>
+                        <div className="space-y-1 leading-none">
+                          <FormLabel className="text-blue-900 dark:text-blue-100">
+                            Active Duty Military
+                          </FormLabel>
+                          <FormDescription className="text-xs text-blue-700 dark:text-blue-300">
+                            Check if you are currently active duty military
+                          </FormDescription>
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+
               {/* Business Profile Fields */}
               {user?.userType === 'business' ? (
                 <div className="space-y-6">
