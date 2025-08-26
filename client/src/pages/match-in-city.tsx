@@ -417,17 +417,35 @@ export default function MatchInCity() {
             cityName: selectedCity
           })
         });
-        if (response.ok) {
+        
+        if (response.ok || response.status === 409) {
+          // Handle both successful creation (200) and already exists (409) cases
           const newInterest = await response.json();
           toast({
             title: "Interest Added",
             description: `Added interest in ${activity.activityName}`,
           });
-          // Immediately update local state
-          setUserActivities(prev => [...prev, newInterest]);
+          // Immediately update local state - check if already exists first
+          setUserActivities(prev => {
+            const alreadyExists = prev.some(ua => ua.activityId === activity.id);
+            if (alreadyExists) {
+              return prev; // No need to add again
+            }
+            return [...prev, newInterest];
+          });
           // Invalidate profile queries to refresh "Things I Want to Do"
           queryClient.invalidateQueries({ queryKey: [`/api/user-city-interests/${userId}`] });
           queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}`] });
+        } else {
+          // Handle error case
+          const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+          toast({
+            title: "Error",
+            description: errorData.error || `Failed to add interest in ${activity.activityName}`,
+            variant: "destructive",
+          });
+          // Refresh user activities from server to ensure accurate state
+          fetchUserActivities();
         }
       }
       fetchMatchingUsers();

@@ -10104,6 +10104,32 @@ Questions? Just reply to this message. Welcome aboard!
       res.json(newInterest);
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error('Error creating user city interest:', error);
+      
+      // Handle duplicate key constraint (user already has this interest)
+      if (error.code === '23505' && error.constraint === 'user_city_interests_user_id_activity_id_unique') {
+        // Find existing interest and return it instead of error
+        try {
+          const [existingInterest] = await db
+            .select()
+            .from(userCityInterests)
+            .where(
+              and(
+                eq(userCityInterests.userId, parseInt(userId as string)),
+                eq(userCityInterests.activityId, parseInt(activityId))
+              )
+            );
+          
+          if (existingInterest) {
+            if (process.env.NODE_ENV === 'development') console.log(`✅ USER INTERESTS POST: Interest already exists, returning existing interest ${existingInterest.id}`);
+            return res.json(existingInterest);
+          }
+        } catch (lookupError) {
+          if (process.env.NODE_ENV === 'development') console.error('Error looking up existing interest:', lookupError);
+        }
+        
+        return res.status(409).json({ error: 'Interest already exists' });
+      }
+      
       res.status(500).json({ error: 'Failed to create user city interest' });
     }
   });
