@@ -554,6 +554,42 @@ export default function MatchInCity() {
                     </p>
                   </div>
 
+                  {/* Collaborative Matching Process */}
+                  <div className="mb-6">
+                    <h3 className="text-white font-bold text-xl mb-4 text-center">🎯 COLLABORATIVE CITY ACTIVITY MATCHING</h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {/* Step 1 */}
+                      <div className="bg-green-600/30 rounded-lg p-4 border border-green-400/30">
+                        <h4 className="text-white font-semibold text-lg mb-3">1. Add Activities to Your City</h4>
+                        <div className="space-y-2 text-green-200 text-sm">
+                          <div className="flex items-center gap-2">
+                            <span className="text-green-400">+</span>
+                            <span>"Hike Mount Calabasas"</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-green-400">+</span>
+                            <span>"Taylor Swift Eras Tour"</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-green-400">+</span>
+                            <span>"Rooftop Bar Sunset"</span>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {/* Step 2 */}
+                      <div className="bg-blue-600/30 rounded-lg p-4 border border-blue-400/30">
+                        <h4 className="text-white font-semibold text-lg mb-3">2. Click What Others Added</h4>
+                        <div className="space-y-2 text-blue-200 text-sm">
+                          <div>🎯 <strong>Browse hundreds of activity suggestions</strong></div>
+                          <div>🎯 <strong>Click to add them to your profile</strong></div>
+                          <div>🎯 <strong>Match with others who want the same activities</strong></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
                   <div className="space-y-3">
                     <h3 className="text-white font-semibold">✨ How This Works:</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-blue-200">
