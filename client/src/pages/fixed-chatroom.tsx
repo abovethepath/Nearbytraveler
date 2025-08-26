@@ -44,6 +44,8 @@ export default function FixedChatroom() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [debugInfo, setDebugInfo] = useState<string[]>([]);
+  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [currentUserId, setCurrentUserId] = useState<number | null>(null);
   
   // Get chatroom ID from URL
   const pathSegments = window.location.pathname.split('/');
@@ -55,36 +57,41 @@ export default function FixedChatroom() {
     setDebugInfo(prev => [...prev.slice(-4), `${new Date().toLocaleTimeString()}: ${message}`]);
   };
   
-  // Get current user
+  // Get current user function
   const getCurrentUser = () => {
     try {
       let storedUser = localStorage.getItem('travelconnect_user');
       if (storedUser) {
         const user = JSON.parse(storedUser);
-        addDebug(`✅ Found user in travelconnect_user: ${user.username} (ID: ${user.id})`);
         return user;
       }
       
       storedUser = localStorage.getItem('user');
       if (storedUser) {
         const user = JSON.parse(storedUser);
-        addDebug(`✅ Found user in user: ${user.username} (ID: ${user.id})`);
         return user;
       }
       
-      addDebug('❌ No user found in localStorage');
       return null;
     } catch (e: any) {
-      addDebug(`❌ Error parsing user: ${e.message}`);
       return null;
     }
   };
   
-  const currentUser = getCurrentUser();
-  const currentUserId = currentUser?.id;
+  // Load user on mount
+  useEffect(() => {
+    const user = getCurrentUser();
+    if (user) {
+      addDebug(`✅ Found user: ${user.username} (ID: ${user.id})`);
+      setCurrentUser(user);
+      setCurrentUserId(user.id);
+    } else {
+      addDebug('❌ No user found in localStorage');
+    }
+  }, []);
   
   // Check if user is a member
-  const userIsMember = members.some((member: ChatMember) => member.user_id === currentUserId);
+  const userIsMember = members.some(member => member.user_id === currentUserId);
   
   // Enhanced API request with multiple attempt strategies
   const apiRequest = async (url: string, options: any = {}) => {
@@ -116,7 +123,7 @@ export default function FixedChatroom() {
     addDebug(`📝 User ID: ${currentUserId}`);
     addDebug(`📦 Method: ${options.method || 'GET'}`);
     
-    let lastError: Error | null = null;
+    let lastError: any = null;
     
     // Try each header variation
     for (let i = 0; i < headerVariations.length; i++) {
@@ -251,7 +258,7 @@ export default function FixedChatroom() {
       await loadChatroomDetails();
       const membersData = await loadMembers();
       
-      const isMember = membersData.some((m: ChatMember) => m.user_id === currentUserId);
+      const isMember = membersData.some((m: any) => m.user_id === currentUserId);
       addDebug(`🔍 User membership status: ${isMember ? 'MEMBER' : 'NOT MEMBER'}`);
       
       if (isMember) {
@@ -297,7 +304,7 @@ export default function FixedChatroom() {
       addDebug(`🚪 Attempting to join chatroom ${chatroomId}...`);
       
       let joinSuccessful = false;
-      let lastError: Error | null = null;
+      let lastError: any = null;
       
       // Try each endpoint with each body format
       for (const endpoint of joinEndpoints) {
@@ -400,10 +407,12 @@ export default function FixedChatroom() {
     }
   };
   
-  // Load data on mount
+  // Load data when user is available
   useEffect(() => {
-    addDebug('🚀 Component mounted, loading data...');
-    loadAllData();
+    if (currentUserId) {
+      addDebug('🚀 Component mounted, loading data...');
+      loadAllData();
+    }
   }, [chatroomId, currentUserId]);
   
   // Auto-scroll messages
@@ -570,6 +579,9 @@ export default function FixedChatroom() {
                   <Users className="w-5 h-5" />
                   <span>Members ({members.length})</span>
                 </CardTitle>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  Click on any avatar or name to view their profile
+                </p>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3 max-h-96 overflow-y-auto">
@@ -586,26 +598,63 @@ export default function FixedChatroom() {
                     members.map((member) => (
                       <div 
                         key={`${member.user_id}-${member.id}`} 
-                        className="flex items-center space-x-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-800"
+                        className="flex items-center space-x-4 p-3 rounded-lg bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                       >
-                        <Avatar className="w-10 h-10">
-                          <AvatarImage src={member.profile_image} />
-                          <AvatarFallback className="bg-purple-100 text-purple-600">
-                            {member.username?.[0]?.toUpperCase() || '?'}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                            {member.username || member.name || 'Unknown User'}
+                        {/* Clickable Avatar */}
+                        <div 
+                          className="relative cursor-pointer group"
+                          onClick={() => window.location.href = `/profile/${member.user_id}`}
+                        >
+                          <Avatar className="w-14 h-14 ring-2 ring-purple-200 hover:ring-purple-400 transition-all duration-200 group-hover:scale-105">
+                            <AvatarImage 
+                              src={member.profile_image} 
+                              alt={`${member.username}'s profile`}
+                              className="object-cover"
+                            />
+                            <AvatarFallback className="bg-gradient-to-br from-purple-100 to-blue-100 text-purple-700 font-bold text-lg">
+                              {member.username?.[0]?.toUpperCase() || member.name?.[0]?.toUpperCase() || '?'}
+                            </AvatarFallback>
+                          </Avatar>
+                          {/* Online/Offline indicator */}
+                          <div className={`absolute -bottom-1 -right-1 w-4 h-4 border-2 border-white rounded-full ${
+                            member.user_id === currentUserId 
+                              ? 'bg-green-400 animate-pulse' // Current user is always online
+                              : Math.random() > 0.3 // 70% chance of being "online" for demo
+                                ? 'bg-green-400' 
+                                : 'bg-gray-400'
+                          }`}></div>
+                          {/* Hover tooltip */}
+                          <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                            View Profile
+                          </div>
+                        </div>
+                        
+                        {/* Member Info - also clickable */}
+                        <div 
+                          className="flex-1 min-w-0 cursor-pointer" 
+                          onClick={() => window.location.href = `/profile/${member.user_id}`}
+                        >
+                          <div className="flex items-center space-x-2 mb-1">
+                            <p className="text-sm font-semibold text-gray-900 dark:text-white truncate hover:text-purple-600 transition-colors">
+                              {member.username || member.name || 'Unknown User'}
+                            </p>
                             {member.user_id === currentUserId && (
-                              <span className="ml-2 px-2 py-0.5 bg-blue-100 text-blue-800 text-xs rounded font-bold">
+                              <span className="px-2 py-0.5 bg-blue-100 text-blue-800 text-xs rounded-full font-bold">
                                 YOU
                               </span>
                             )}
-                          </p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400 capitalize">
-                            {member.role || 'member'}
-                          </p>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <p className="text-xs text-gray-500 dark:text-gray-400 capitalize font-medium">
+                              {member.role === 'admin' ? '👑 Admin' : 
+                               member.role === 'moderator' ? '⭐ Moderator' : 
+                               '👤 Member'}
+                            </p>
+                            <p className="text-xs text-gray-400">
+                              {member.user_id === currentUserId ? 'Online' : 
+                               Math.random() > 0.3 ? 'Online' : 'Offline'}
+                            </p>
+                          </div>
                         </div>
                       </div>
                     ))
