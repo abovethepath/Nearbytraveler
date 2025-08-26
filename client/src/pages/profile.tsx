@@ -3443,11 +3443,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       return (
                         <>
                           <h1 className="text-2xl sm:text-3xl font-bold text-black">@{user.username}</h1>
-                          <div className="text-lg font-medium text-blue-600">
-                            Nearby Traveler {currentDestination}
-                          </div>
-                          <div className="text-sm text-white font-medium">
-                            From {hometown}
+                          <div className="text-lg font-medium text-black">
+                            NEARBY TRAVELER {currentDestination}
                           </div>
                         </>
                       );
@@ -3456,8 +3453,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       return (
                         <>
                           <h1 className="text-2xl sm:text-3xl font-bold text-black">@{user.username}</h1>
-                          <div className="text-lg font-medium text-white">
-                            Nearby Local {hometown}
+                          <div className="text-lg font-medium text-black">
+                            NEARBY LOCAL {hometown}
                           </div>
                         </>
                       );
