@@ -551,71 +551,46 @@ export default function MatchInCity() {
                   </Button>
                 )}
 
-                {/* Dense Colorful Activity Grid - Matching Original Design */}
+                {/* Interactive Activity Pills - Toggle to Add to Your Profile */}
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
-                  {/* Pre-populated colorful activities matching the screenshot */}
-                  {[
-                    { name: "Hermosa Beach Festival", color: "bg-blue-500 hover:bg-blue-600" },
-                    { name: "Union Square farmers market", color: "bg-orange-500 hover:bg-orange-600" },
-                    { name: "Lower East Side history", color: "bg-blue-500 hover:bg-blue-600" },
-                    { name: "Williamsburg hipster spots", color: "bg-orange-500 hover:bg-orange-600" },
-                    { name: "SoHo shopping sprees", color: "bg-blue-500 hover:bg-blue-600" },
-                    { name: "Artist studio tours", color: "bg-orange-500 hover:bg-orange-600" },
-                    { name: "Frick Collection", color: "bg-blue-500 hover:bg-blue-600" },
-                    { name: "Natural History Museum", color: "bg-orange-500 hover:bg-orange-600" },
-                    { name: "Guggenheim visits", color: "bg-orange-500 hover:bg-orange-600" },
-                    { name: "Museum of Modern Art", color: "bg-blue-500 hover:bg-blue-600" },
-                    { name: "Top of the Rock views", color: "bg-orange-500 hover:bg-orange-600" },
-                    { name: "9/11 Memorial visits", color: "bg-blue-500 hover:bg-blue-600" },
-                    { name: "One World Observatory", color: "bg-green-500 hover:bg-green-600" },
-                    { name: "Times Square people watching", color: "bg-blue-500 hover:bg-blue-600" },
-                    { name: "Statue of Liberty tours", color: "bg-orange-500 hover:bg-orange-600" },
-                    { name: "Craft cocktail making", color: "bg-blue-500 hover:bg-blue-600" },
-                    { name: "Deli sandwich tours", color: "bg-orange-500 hover:bg-orange-600" },
-                    { name: "Michelin star dining", color: "bg-blue-500 hover:bg-blue-600" },
-                    { name: "Live jazz at Blue Note", color: "bg-orange-500 hover:bg-orange-600" },
-                    { name: "Dance clubs", color: "bg-blue-500 hover:bg-blue-600" },
-                    { name: "Street art in Bushwick", color: "bg-orange-500 hover:bg-orange-600" },
-                    { name: "Karaoke nights", color: "bg-blue-500 hover:bg-blue-600" },
-                    { name: "Guggenheim tours", color: "bg-blue-500 hover:bg-blue-600" },
-                    { name: "Gallery hopping Chelsea", color: "bg-orange-500 hover:bg-orange-600" },
-                    { name: "East River waterfront", color: "bg-blue-500 hover:bg-blue-600" },
-                    { name: "MoMA art exhibitions", color: "bg-orange-500 hover:bg-orange-600" },
-                    { name: "High Line strolls", color: "bg-blue-500 hover:bg-blue-600" },
-                    { name: "Brooklyn Bridge walks", color: "bg-orange-500 hover:bg-orange-600" },
-                    { name: "Street food adventures", color: "bg-blue-500 hover:bg-blue-600" },
-                    { name: "Restaurant Week dining", color: "bg-orange-500 hover:bg-orange-600" },
-                    { name: "Bagel shop mornings", color: "bg-blue-500 hover:bg-blue-600" },
-                    { name: "Pizza crawl Brooklyn", color: "bg-orange-500 hover:bg-orange-600" },
-                    { name: "Rooftop bar hopping", color: "bg-blue-500 hover:bg-blue-600" },
-                    { name: "Madison Square Garden events", color: "bg-orange-500 hover:bg-orange-600" },
-                    { name: "Comedy clubs in Village", color: "bg-blue-500 hover:bg-blue-600" },
-                    { name: "Off-Broadway theater", color: "bg-orange-500 hover:bg-orange-600" },
-                    // Add user's custom activities
-                    ...cityActivities.map((activity) => ({
-                      name: activity.activityName,
-                      color: userActivities.find(ua => ua.activityId === activity.id) 
-                        ? "bg-green-500 hover:bg-green-600" 
-                        : "bg-gray-500 hover:bg-gray-600",
-                      isCustom: true,
-                      activity: activity
-                    }))
-                  ].map((item, index) => {
-                    const isUserActivity = item.isCustom ? 
-                      userActivities.find(ua => ua.activityId === item.activity?.id) :
-                      false;
+                  {cityActivities.map((activity) => {
+                    const userActivity = userActivities.find(ua => ua.activityId === activity.id);
+                    const isToggled = !!userActivity;
                     
                     return (
                       <Button
-                        key={`activity-${index}-${item.name}`}
-                        onClick={() => item.isCustom ? toggleActivity(item.activity) : null}
+                        key={activity.id}
+                        onClick={() => toggleActivity(activity)}
                         size="sm"
-                        className={`${item.color} text-white font-medium px-3 py-2 rounded-lg text-xs text-left h-auto min-h-[40px] transition-all duration-200 shadow-sm hover:shadow-md`}
+                        className={`${
+                          isToggled 
+                            ? "bg-green-500 hover:bg-green-600 ring-2 ring-green-300" 
+                            : "bg-blue-500 hover:bg-blue-600"
+                        } text-white font-medium px-3 py-2 rounded-lg text-xs text-left h-auto min-h-[40px] transition-all duration-200 shadow-sm hover:shadow-md`}
                       >
-                        {item.name}
+                        {activity.activityName}
+                        {isToggled && (
+                          <span className="ml-2 text-green-200">✓</span>
+                        )}
                       </Button>
                     );
                   })}
+                  
+                  {/* Show message if no activities exist */}
+                  {cityActivities.length === 0 && (
+                    <div className="col-span-full text-center py-8">
+                      <p className="text-white/70 mb-4">No activities available yet for {selectedCity}</p>
+                      <p className="text-white/50 text-sm">Be the first to add an activity!</p>
+                    </div>
+                  )}
+                </div>
+                
+                {/* Instructions */}
+                <div className="mt-4 p-4 bg-white/5 rounded-lg border border-white/10">
+                  <p className="text-white/70 text-sm">
+                    💡 <strong>How it works:</strong> Click any activity to toggle it on/off. 
+                    Toggled activities (green with ✓) appear on your profile and you'll be matched with others who selected the same activities!
+                  </p>
                 </div>
               </CardContent>
             </Card>
