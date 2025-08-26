@@ -45,7 +45,12 @@ export default function AICityEvents({ cityName, currentUser }: AICityEventsProp
 
   // Fetch regular events as fallback
   const { data: regularEvents = [], isLoading: eventsLoading } = useQuery({
-    queryKey: ['/api/events'],
+    queryKey: ['/api/events', cityName],
+    queryFn: async () => {
+      const response = await fetch(`/api/events?city=${encodeURIComponent(cityName)}`);
+      if (!response.ok) throw new Error('Failed to fetch events');
+      return response.json();
+    },
     select: (data: Event[]) => data.filter(event => 
       event.location?.toLowerCase().includes(cityName.toLowerCase())
     )
