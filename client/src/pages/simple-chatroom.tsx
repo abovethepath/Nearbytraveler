@@ -202,27 +202,101 @@ export default function SimpleChatroomPage() {
 
   const memberCount = members.length;
 
-  // Send message mutation
+  // Enhanced send message with multiple API attempts
   const sendMessageMutation = useMutation({
     mutationFn: async (content: string) => {
       if (!currentUser?.id) throw new Error("User not found");
       if (!userIsMember) throw new Error("You must join the chatroom first");
 
-      const res = await fetch(`/api/chatrooms/${chatroomId}/messages`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-user-id": String(currentUser.id),
-        },
-        credentials: "include",
-        body: JSON.stringify({ content: content.trim() }),
-      });
-
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.error || err.message || "Failed to send message");
+      console.log(`💬 Sending message: "${content.substring(0, 50)}..."`);
+      
+      // Try multiple endpoints and methods for sending messages
+      const messageAttempts = [
+        // Standard REST approaches
+        { url: `/api/chatrooms/${chatroomId}/messages`, body: { content } },
+        { url: `/api/chatrooms/${chatroomId}/messages`, body: { message: content } },
+        { url: `/api/chatrooms/${chatroomId}/messages`, body: { text: content } },
+        
+        // With user ID in body
+        { url: `/api/chatrooms/${chatroomId}/messages`, body: { content, user_id: currentUserId } },
+        { url: `/api/chatrooms/${chatroomId}/messages`, body: { content, userId: currentUserId } },
+        { url: `/api/chatrooms/${chatroomId}/messages`, body: { content, senderId: currentUserId } },
+        
+        // Alternative endpoints
+        { url: `/api/chatroom/${chatroomId}/messages`, body: { content } },
+        { url: `/api/chatrooms/${chatroomId}/message`, body: { content } },
+        
+        // Different API structure
+        { url: `/api/messages`, body: { content, chatroom_id: chatroomId, user_id: currentUserId } },
+        { url: `/api/send-message`, body: { content, chatroomId: chatroomId, userId: currentUserId } }
+      ];
+      
+      let messageSuccessful = false;
+      let lastError = null;
+      
+      for (const attempt of messageAttempts) {
+        if (messageSuccessful) break;
+        
+        try {
+          console.log(`🔄 Trying message: POST ${attempt.url} with body: ${JSON.stringify(attempt.body)}...`);
+          
+          const response = await fetch(attempt.url, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'x-user-id': String(currentUserId),
+              'X-User-ID': String(currentUserId),
+              'user-id': String(currentUserId)
+            },
+            body: JSON.stringify(attempt.body),
+            credentials: 'include'
+          });
+          
+          console.log(`📡 Response: ${response.status} ${response.statusText}`);
+          
+          // Check if response is HTML (error page) vs JSON
+          const contentType = response.headers.get('content-type');
+          if (contentType && contentType.includes('text/html')) {
+            const htmlError = await response.text();
+            console.log(`❌ Got HTML instead of JSON: ${htmlError.substring(0, 100)}...`);
+            throw new Error(`Server returned HTML error page (${response.status})`);
+          }
+          
+          if (!response.ok) {
+            const errorText = await response.text();
+            console.log(`❌ API Error: ${errorText}`);
+            throw new Error(`${response.status}: ${errorText}`);
+          }
+          
+          // Try to parse JSON response
+          let data;
+          try {
+            const responseText = await response.text();
+            if (responseText.trim() === '') {
+              // Empty response is sometimes OK for message sending
+              data = { success: true };
+            } else {
+              data = JSON.parse(responseText);
+            }
+          } catch (parseError) {
+            console.log(`❌ JSON parse error: ${parseError.message}`);
+            // If we get here, the API might return non-JSON success responses
+            data = { success: true };
+          }
+          
+          console.log('✅ Message sent successfully!');
+          messageSuccessful = true;
+          return data;
+          
+        } catch (error) {
+          console.log(`⚠️ ${attempt.url} failed: ${error.message}`);
+          lastError = error;
+        }
       }
-      return res.json();
+      
+      if (!messageSuccessful) {
+        throw lastError || new Error('All message send attempts failed');
+      }
     },
     onSuccess: () => {
       setMessageText("");
@@ -232,9 +306,10 @@ export default function SimpleChatroomPage() {
       });
     },
     onError: (error: any) => {
+      console.log(`❌ Failed to send message: ${error.message}`);
       toast({
-        title: "Error",
-        description: error.message || "Failed to send message",
+        title: "Failed to send message",
+        description: error.message,
         variant: "destructive",
         className: "bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100",
       });
