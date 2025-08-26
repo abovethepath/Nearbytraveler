@@ -2484,6 +2484,26 @@ export default function Home() {
             </div>
 
 
+            {/* Local Businesses Section */}
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white">Local Businesses</h2>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setLocation('/discover')}
+                  className="text-gray-600 dark:text-gray-400"
+                >
+                  <Store className="w-4 h-4 mr-1" />
+                  View All
+                </Button>
+              </div>
+              <BusinessesGrid 
+                displayCount={businessesDisplayCount}
+                onDisplayCountChange={setBusinessesDisplayCount}
+              />
+            </div>
+
             {/* Quick Actions Section - Consolidated */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* Quick Deals */}
