@@ -11,8 +11,8 @@ export default function LandingNavbar() {
         <div className="flex justify-between items-center h-16 gap-4" style={{display: 'flex', minHeight: '64px'}}>
           
           {/* Logo Section - Fixed Width */}
-          <div className="flex-shrink-0 flex items-center" style={{display: 'flex', alignItems: 'center'}}>
-            <Link href="/" className="flex items-center">
+          <div className="flex-shrink-0 flex items-center justify-start" style={{display: 'flex', alignItems: 'center'}}>
+            <Link href="/" className="flex items-center text-left">
               <div className="transform scale-125 sm:scale-150">
                 <Logo variant="navbar" />
               </div>

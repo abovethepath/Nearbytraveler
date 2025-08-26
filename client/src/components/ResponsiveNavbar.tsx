@@ -7,7 +7,7 @@ export default function ResponsiveNavbar() {
     <header className="w-full border-b bg-white/70 backdrop-blur supports-[backdrop-filter]:bg-white/60">
       <div className="container-default">
         <div className="flex h-14 items-center justify-between">
-          <a href="/" className="text-lg font-bold">Nearby Traveler</a>
+          <a href="/" className="text-lg font-bold text-left">Nearby Traveler</a>
 
           <button
             className="inline-flex items-center justify-center rounded-md p-2 md:hidden"
