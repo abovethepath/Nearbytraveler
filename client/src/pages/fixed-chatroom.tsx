@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Send, Users, ArrowLeft, Loader2, RefreshCw } from "lucide-react";
+import { Send, Users, ArrowLeft, Loader2, RefreshCw, AlertCircle } from "lucide-react";
 
 interface ChatMessage {
   id: number;
@@ -43,32 +43,39 @@ export default function FixedChatroom() {
   const [isSending, setIsSending] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [debugInfo, setDebugInfo] = useState<string[]>([]);
   
   // Get chatroom ID from URL
   const pathSegments = window.location.pathname.split('/');
   const chatroomId = parseInt(pathSegments[2] || '198');
   
-  // Get current user - TRY MULTIPLE SOURCES
+  // Debug logging function
+  const addDebug = (message: string) => {
+    console.log(message);
+    setDebugInfo(prev => [...prev.slice(-4), `${new Date().toLocaleTimeString()}: ${message}`]);
+  };
+  
+  // Get current user
   const getCurrentUser = () => {
     try {
       let storedUser = localStorage.getItem('travelconnect_user');
       if (storedUser) {
         const user = JSON.parse(storedUser);
-        console.log('✅ Found user in travelconnect_user:', user.username);
+        addDebug(`✅ Found user in travelconnect_user: ${user.username} (ID: ${user.id})`);
         return user;
       }
       
       storedUser = localStorage.getItem('user');
       if (storedUser) {
         const user = JSON.parse(storedUser);
-        console.log('✅ Found user in user:', user.username);
+        addDebug(`✅ Found user in user: ${user.username} (ID: ${user.id})`);
         return user;
       }
       
-      console.log('❌ No user found in localStorage');
+      addDebug('❌ No user found in localStorage');
       return null;
-    } catch (e) {
-      console.error('❌ Error parsing user:', e);
+    } catch (e: any) {
+      addDebug(`❌ Error parsing user: ${e.message}`);
       return null;
     }
   };
@@ -77,54 +84,88 @@ export default function FixedChatroom() {
   const currentUserId = currentUser?.id;
   
   // Check if user is a member
-  const userIsMember = members.some(member => member.user_id === currentUserId);
+  const userIsMember = members.some((member: ChatMember) => member.user_id === currentUserId);
   
-  // Show toast-like notifications
-  const showNotification = (message: string, type: 'success' | 'error' | 'info' = 'info') => {
-    console.log(`${type.toUpperCase()}: ${message}`);
-    // You can integrate with your toast system here
-  };
-  
-  // Make authenticated API request
+  // Enhanced API request with multiple attempt strategies
   const apiRequest = async (url: string, options: any = {}) => {
     if (!currentUserId) {
       throw new Error('No user ID found - please log in');
     }
     
-    const headers = {
-      'Content-Type': 'application/json',
-      'x-user-id': String(currentUserId),
-      ...options.headers
-    };
+    // Try multiple header formats that servers commonly expect
+    const headerVariations = [
+      {
+        'Content-Type': 'application/json',
+        'x-user-id': String(currentUserId),
+        ...options.headers
+      },
+      {
+        'Content-Type': 'application/json',
+        'X-User-ID': String(currentUserId),
+        'Authorization': `Bearer ${currentUserId}`,
+        ...options.headers
+      },
+      {
+        'Content-Type': 'application/json',
+        'user-id': String(currentUserId),
+        ...options.headers
+      }
+    ];
     
-    console.log('🌐 API Request:', url, 'with user ID:', currentUserId);
+    addDebug(`🌐 Attempting API call: ${url}`);
+    addDebug(`📝 User ID: ${currentUserId}`);
+    addDebug(`📦 Method: ${options.method || 'GET'}`);
     
-    const response = await fetch(url, {
-      ...options,
-      headers,
-      credentials: 'include'
-    });
+    let lastError: Error | null = null;
     
-    console.log('📡 API Response:', response.status, response.statusText);
-    
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('❌ API Error:', response.status, errorText);
-      throw new Error(`${response.status}: ${errorText}`);
+    // Try each header variation
+    for (let i = 0; i < headerVariations.length; i++) {
+      const headers = headerVariations[i];
+      
+      try {
+        addDebug(`🔄 Attempt ${i + 1} with headers: ${Object.keys(headers).join(', ')}`);
+        
+        const response = await fetch(url, {
+          ...options,
+          headers,
+          credentials: 'include'
+        });
+        
+        addDebug(`📡 Response: ${response.status} ${response.statusText}`);
+        
+        if (!response.ok) {
+          const errorText = await response.text();
+          addDebug(`❌ Response error: ${errorText}`);
+          lastError = new Error(`${response.status}: ${errorText}`);
+          
+          // If it's a 401/403, try next header variation
+          if (response.status === 401 || response.status === 403) {
+            continue;
+          }
+          throw lastError;
+        }
+        
+        const data = await response.json();
+        addDebug(`✅ Success with attempt ${i + 1}`);
+        addDebug(`📊 Data received: ${JSON.stringify(data).substring(0, 100)}...`);
+        return data;
+        
+      } catch (fetchError: any) {
+        addDebug(`⚠️ Attempt ${i + 1} failed: ${fetchError.message}`);
+        lastError = fetchError;
+      }
     }
     
-    const data = await response.json();
-    console.log('✅ API Data:', data);
-    return data;
+    // All attempts failed
+    throw lastError || new Error('All API attempts failed');
   };
   
   // Load chatroom details
   const loadChatroomDetails = async () => {
     try {
-      console.log('📋 Loading chatroom details...');
+      addDebug('📋 Loading chatroom details...');
       const chatroomResponse = await apiRequest(`/api/chatrooms/${chatroomId}`);
       
-      // Handle different response formats
       let chatroomData;
       if (Array.isArray(chatroomResponse)) {
         chatroomData = chatroomResponse[0];
@@ -134,12 +175,11 @@ export default function FixedChatroom() {
         chatroomData = chatroomResponse;
       }
       
-      console.log('✅ Chatroom details loaded:', chatroomData);
+      addDebug(`✅ Chatroom loaded: ${chatroomData.name}`);
       setChatroom(chatroomData);
-      
       return chatroomData;
-    } catch (error) {
-      console.error('❌ Failed to load chatroom details:', error);
+    } catch (error: any) {
+      addDebug(`❌ Failed to load chatroom: ${error.message}`);
       throw error;
     }
   };
@@ -147,10 +187,9 @@ export default function FixedChatroom() {
   // Load members
   const loadMembers = async () => {
     try {
-      console.log('👥 Loading members...');
+      addDebug('👥 Loading members...');
       const membersResponse = await apiRequest(`/api/chatrooms/${chatroomId}/members`);
       
-      // Handle different response formats
       let membersData = [];
       if (Array.isArray(membersResponse)) {
         membersData = membersResponse;
@@ -160,13 +199,11 @@ export default function FixedChatroom() {
         membersData = membersResponse.data;
       }
       
-      console.log('✅ Members loaded:', membersData.length, 'members');
+      addDebug(`✅ Members loaded: ${membersData.length} people`);
       setMembers(membersData);
-      
       return membersData;
-    } catch (error) {
-      console.error('❌ Failed to load members:', error);
-      // Don't throw - members might not be accessible if not joined
+    } catch (error: any) {
+      addDebug(`❌ Failed to load members: ${error.message}`);
       setMembers([]);
       return [];
     }
@@ -175,10 +212,9 @@ export default function FixedChatroom() {
   // Load messages
   const loadMessages = async () => {
     try {
-      console.log('💬 Loading messages...');
+      addDebug('💬 Loading messages...');
       const messagesResponse = await apiRequest(`/api/chatrooms/${chatroomId}/messages`);
       
-      // Handle different response formats
       let messagesData = [];
       if (Array.isArray(messagesResponse)) {
         messagesData = messagesResponse;
@@ -188,12 +224,11 @@ export default function FixedChatroom() {
         messagesData = messagesResponse.data;
       }
       
-      console.log('✅ Messages loaded:', messagesData.length, 'messages');
+      addDebug(`✅ Messages loaded: ${messagesData.length} messages`);
       setMessages(messagesData);
-      
       return messagesData;
-    } catch (error) {
-      console.error('❌ Failed to load messages:', error);
+    } catch (error: any) {
+      addDebug(`❌ Failed to load messages: ${error.message}`);
       setMessages([]);
       return [];
     }
@@ -202,7 +237,7 @@ export default function FixedChatroom() {
   // Load all data
   const loadAllData = async () => {
     if (!currentUserId) {
-      console.log('❌ Cannot load data - no user ID');
+      addDebug('❌ Cannot load data - no user ID');
       setError('Please log in to access the chatroom');
       setLoading(false);
       return;
@@ -211,51 +246,101 @@ export default function FixedChatroom() {
     try {
       setLoading(true);
       setError(null);
-      console.log('🔄 Loading all chatroom data for ID:', chatroomId);
+      addDebug(`🔄 Loading all data for chatroom ${chatroomId}`);
       
-      // Load chatroom details first
       await loadChatroomDetails();
-      
-      // Load members
       const membersData = await loadMembers();
       
-      // Check if user is a member and load messages if so
-      const isMember = membersData.some(m => m.user_id === currentUserId);
-      console.log('🔍 User is member after load?', isMember);
+      const isMember = membersData.some((m: ChatMember) => m.user_id === currentUserId);
+      addDebug(`🔍 User membership status: ${isMember ? 'MEMBER' : 'NOT MEMBER'}`);
       
       if (isMember) {
         await loadMessages();
       }
       
-    } catch (error) {
-      console.error('❌ Error loading chatroom data:', error);
+    } catch (error: any) {
+      addDebug(`❌ Error loading data: ${error.message}`);
       setError(`Failed to load chatroom: ${error.message}`);
     } finally {
       setLoading(false);
     }
   };
   
-  // Join chatroom
+  // JOIN CHATROOM - Multiple endpoint attempts
   const joinChatroom = async () => {
-    if (!currentUserId || isJoining || userIsMember) return;
+    if (!currentUserId || isJoining || userIsMember) {
+      addDebug('⚠️ Join blocked - missing user ID, already joining, or already member');
+      return;
+    }
     
     setIsJoining(true);
     setError(null);
     
+    // Try multiple possible join endpoints
+    const joinEndpoints = [
+      `/api/chatrooms/${chatroomId}/join`,
+      `/api/chatrooms/${chatroomId}/members`,
+      `/api/chatroom/${chatroomId}/join`,
+      `/api/chatrooms/${chatroomId}/membership`
+    ];
+    
+    // Try different request body formats
+    const bodyFormats = [
+      JSON.stringify({}),
+      JSON.stringify({ user_id: currentUserId }),
+      JSON.stringify({ userId: currentUserId }),
+      JSON.stringify({ action: 'join' }),
+      JSON.stringify({ chatroom_id: chatroomId, user_id: currentUserId })
+    ];
+    
     try {
-      console.log('🚪 Joining chatroom:', chatroomId);
-      await apiRequest(`/api/chatrooms/${chatroomId}/join`, { method: 'POST' });
+      addDebug(`🚪 Attempting to join chatroom ${chatroomId}...`);
       
-      showNotification('✅ Successfully joined the chatroom!', 'success');
+      let joinSuccessful = false;
+      let lastError: Error | null = null;
       
-      // Force reload all data after joining
-      console.log('🔄 Reloading data after join...');
-      await loadAllData();
+      // Try each endpoint with each body format
+      for (const endpoint of joinEndpoints) {
+        if (joinSuccessful) break;
+        
+        for (const body of bodyFormats) {
+          if (joinSuccessful) break;
+          
+          try {
+            addDebug(`🔄 Trying: POST ${endpoint} with body: ${body}`);
+            
+            await apiRequest(endpoint, { 
+              method: 'POST',
+              body: body
+            });
+            
+            addDebug('✅ Join request successful!');
+            joinSuccessful = true;
+            break;
+            
+          } catch (error: any) {
+            addDebug(`⚠️ ${endpoint} failed: ${error.message}`);
+            lastError = error;
+          }
+        }
+      }
       
-    } catch (error) {
-      console.error('❌ Error joining chatroom:', error);
+      if (!joinSuccessful) {
+        throw lastError || new Error('All join attempts failed');
+      }
+      
+      addDebug('🎉 Successfully joined! Reloading data...');
+      
+      // Wait a moment then reload
+      setTimeout(async () => {
+        await loadAllData();
+      }, 500);
+      
+      setError(null);
+      
+    } catch (error: any) {
+      addDebug(`❌ All join attempts failed: ${error.message}`);
       setError(`Failed to join chatroom: ${error.message}`);
-      showNotification(`Failed to join: ${error.message}`, 'error');
     } finally {
       setIsJoining(false);
     }
@@ -269,22 +354,17 @@ export default function FixedChatroom() {
     setError(null);
     
     try {
-      console.log('🚪 Leaving chatroom:', chatroomId);
+      addDebug(`🚪 Leaving chatroom ${chatroomId}...`);
       await apiRequest(`/api/chatrooms/${chatroomId}/leave`, { method: 'POST' });
       
-      showNotification('✅ Successfully left the chatroom', 'success');
-      
-      // Clear data and navigate back
-      setMessages([]);
-      setMembers([]);
+      addDebug('✅ Successfully left chatroom');
       setTimeout(() => {
         window.location.href = '/city-chatrooms';
       }, 1000);
       
-    } catch (error) {
-      console.error('❌ Error leaving chatroom:', error);
+    } catch (error: any) {
+      addDebug(`❌ Failed to leave: ${error.message}`);
       setError(`Failed to leave chatroom: ${error.message}`);
-      showNotification(`Failed to leave: ${error.message}`, 'error');
     } finally {
       setIsLeaving(false);
     }
@@ -298,32 +378,35 @@ export default function FixedChatroom() {
     setError(null);
     
     try {
-      console.log('💬 Sending message:', messageText);
+      addDebug(`💬 Sending message: "${messageText.substring(0, 50)}..."`);
       await apiRequest(`/api/chatrooms/${chatroomId}/messages`, {
         method: 'POST',
         body: JSON.stringify({ content: messageText.trim() })
       });
       
       setMessageText("");
+      addDebug('✅ Message sent successfully');
       
-      // Reload messages to get the new one
-      await loadMessages();
+      // Reload messages
+      setTimeout(async () => {
+        await loadMessages();
+      }, 500);
       
-    } catch (error) {
-      console.error('❌ Error sending message:', error);
+    } catch (error: any) {
+      addDebug(`❌ Failed to send message: ${error.message}`);
       setError(`Failed to send message: ${error.message}`);
-      showNotification(`Failed to send message: ${error.message}`, 'error');
     } finally {
       setIsSending(false);
     }
   };
   
-  // Load data on mount and when chatroom changes
+  // Load data on mount
   useEffect(() => {
+    addDebug('🚀 Component mounted, loading data...');
     loadAllData();
   }, [chatroomId, currentUserId]);
   
-  // Auto-scroll to bottom when messages change
+  // Auto-scroll messages
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
@@ -332,11 +415,13 @@ export default function FixedChatroom() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
-        <div className="flex items-center space-x-3">
-          <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
-          <div>
-            <p className="text-lg font-semibold">Loading chatroom...</p>
-            <p className="text-sm text-gray-600">Please wait</p>
+        <div className="text-center">
+          <Loader2 className="w-8 h-8 animate-spin text-purple-600 mx-auto mb-4" />
+          <p className="text-lg font-semibold mb-2">Loading chatroom...</p>
+          <div className="text-sm text-gray-600 max-w-md">
+            {debugInfo.slice(-2).map((debug, i) => (
+              <p key={i}>{debug}</p>
+            ))}
           </div>
         </div>
       </div>
@@ -349,7 +434,8 @@ export default function FixedChatroom() {
       <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
         <Card className="w-full max-w-md">
           <CardContent className="p-8 text-center">
-            <h2 className="text-2xl font-bold mb-4 text-red-600">❌ Not Logged In</h2>
+            <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+            <h2 className="text-2xl font-bold mb-4 text-red-600">Not Logged In</h2>
             <p className="text-gray-600 dark:text-gray-300 mb-6">Please log in to access the chatroom</p>
             <Button 
               className="w-full" 
@@ -365,7 +451,7 @@ export default function FixedChatroom() {
   
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
-      <div className="container mx-auto px-4 py-6 max-w-5xl">
+      <div className="container mx-auto px-4 py-6 max-w-6xl">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-4">
@@ -380,7 +466,7 @@ export default function FixedChatroom() {
             </Button>
             <div>
               <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-                {chatroom?.name ? `🏠 ${chatroom.name}` : `Chatroom #${chatroomId}`}
+                🏠 {chatroom?.name || `Chatroom #${chatroomId}`}
               </h1>
               <p className="text-sm text-gray-600 dark:text-gray-300">
                 {members.length} member{members.length !== 1 ? 's' : ''} • 
@@ -419,51 +505,61 @@ export default function FixedChatroom() {
                 size="sm"
                 onClick={joinChatroom}
                 disabled={isJoining}
-                className="flex items-center space-x-2 bg-green-600 hover:bg-green-700 text-white"
+                className="flex items-center space-x-2 bg-green-600 hover:bg-green-700 text-white font-semibold px-6"
               >
                 {isJoining && <Loader2 className="w-4 h-4 animate-spin" />}
-                <span>{isJoining ? 'Joining...' : 'Join Chatroom'}</span>
+                <span>{isJoining ? 'Joining...' : 'Join Chatroom Now'}</span>
               </Button>
             )}
           </div>
         </div>
         
+        {/* Debug Panel */}
+        <div className="mb-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-sm">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
+            <div>
+              <strong>Status:</strong>
+              <span className={`ml-2 px-2 py-1 rounded text-xs font-semibold ${
+                userIsMember 
+                  ? 'bg-green-100 text-green-800' 
+                  : 'bg-red-100 text-red-800'
+              }`}>
+                {userIsMember ? '✅ MEMBER' : '❌ NOT MEMBER'}
+              </span>
+            </div>
+            <div><strong>User ID:</strong> {currentUserId}</div>
+            <div><strong>Chatroom ID:</strong> {chatroomId}</div>
+          </div>
+          
+          <details className="mt-2">
+            <summary className="cursor-pointer font-medium">🔍 Debug Log (Click to expand)</summary>
+            <div className="mt-2 p-2 bg-gray-100 dark:bg-gray-800 rounded text-xs font-mono max-h-32 overflow-y-auto">
+              {debugInfo.map((info, i) => (
+                <div key={i} className="mb-1">{info}</div>
+              ))}
+            </div>
+          </details>
+        </div>
+        
         {/* Error Display */}
         {error && (
           <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-            <p className="text-red-800 font-medium">❌ {error}</p>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={loadAllData}
-              className="mt-2"
-            >
-              Try Again
-            </Button>
+            <div className="flex items-start space-x-3">
+              <AlertCircle className="w-5 h-5 text-red-500 mt-0.5" />
+              <div className="flex-1">
+                <p className="text-red-800 font-medium">{error}</p>
+                <div className="mt-2 space-x-2">
+                  <Button variant="outline" size="sm" onClick={loadAllData}>
+                    🔄 Retry
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={() => setError(null)}>
+                    ✕ Dismiss
+                  </Button>
+                </div>
+              </div>
+            </div>
           </div>
         )}
-        
-        {/* Status Info */}
-        <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-            <div>
-              <strong>User Status:</strong>
-              <span className={`ml-2 px-2 py-1 rounded text-xs ${
-                userIsMember 
-                  ? 'bg-green-100 text-green-800' 
-                  : 'bg-orange-100 text-orange-800'
-              }`}>
-                {userIsMember ? '✅ Member' : '⚠️ Not Member'}
-              </span>
-            </div>
-            <div>
-              <strong>Members:</strong> {members.length} people
-            </div>
-            <div>
-              <strong>Messages:</strong> {messages.length} total
-            </div>
-          </div>
-        </div>
         
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Members Sidebar */}
@@ -480,10 +576,10 @@ export default function FixedChatroom() {
                   {members.length === 0 ? (
                     <div className="text-center py-8">
                       <p className="text-gray-500 dark:text-gray-400 mb-4">
-                        {userIsMember ? 'No members loaded' : 'Join to see members'}
+                        No members loaded
                       </p>
                       <Button onClick={loadMembers} variant="outline" size="sm">
-                        🔄 Refresh Members
+                        🔄 Load Members
                       </Button>
                     </div>
                   ) : (
@@ -502,7 +598,7 @@ export default function FixedChatroom() {
                           <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
                             {member.username || member.name || 'Unknown User'}
                             {member.user_id === currentUserId && (
-                              <span className="ml-2 px-2 py-0.5 bg-blue-100 text-blue-800 text-xs rounded">
+                              <span className="ml-2 px-2 py-0.5 bg-blue-100 text-blue-800 text-xs rounded font-bold">
                                 YOU
                               </span>
                             )}
@@ -525,7 +621,7 @@ export default function FixedChatroom() {
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center justify-between">
-                    <span>Chat Messages ({messages.length})</span>
+                    <span>💬 Chat Messages ({messages.length})</span>
                     <Button onClick={loadMessages} variant="ghost" size="sm">
                       <RefreshCw className="w-4 h-4" />
                     </Button>
