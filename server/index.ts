@@ -145,12 +145,42 @@ app.get('/api/quick-meetups', async (req, res) => {
     console.log('⚡ DIRECT API: Fetching quick meetups');
     const now = new Date();
     
-    const meetupsQuery = await db.select().from(quickMeetups)
-      .where(and(
-        gt(quickMeetups.expiresAt, now),
-        eq(quickMeetups.isActive, true)
-      ))
-      .orderBy(desc(quickMeetups.createdAt));
+    const meetupsQuery = await db.select({
+      id: quickMeetups.id,
+      organizerId: quickMeetups.organizerId,
+      title: quickMeetups.title,
+      description: quickMeetups.description,
+      category: quickMeetups.category,
+      location: quickMeetups.location,
+      meetingPoint: quickMeetups.meetingPoint,
+      street: quickMeetups.street,
+      city: quickMeetups.city,
+      state: quickMeetups.state,
+      country: quickMeetups.country,
+      zipcode: quickMeetups.zipcode,
+      availableAt: quickMeetups.availableAt,
+      expiresAt: quickMeetups.expiresAt,
+      maxParticipants: quickMeetups.maxParticipants,
+      minParticipants: quickMeetups.minParticipants,
+      costEstimate: quickMeetups.costEstimate,
+      availability: quickMeetups.availability,
+      responseTime: quickMeetups.responseTime,
+      autoCancel: quickMeetups.autoCancel,
+      isActive: quickMeetups.isActive,
+      participantCount: quickMeetups.participantCount,
+      createdAt: quickMeetups.createdAt,
+      // Include organizer data from users table
+      organizerUsername: users.username,
+      organizerName: users.name,
+      organizerProfileImage: users.profileImage
+    })
+    .from(quickMeetups)
+    .leftJoin(users, eq(quickMeetups.organizerId, users.id))
+    .where(and(
+      gt(quickMeetups.expiresAt, now),
+      eq(quickMeetups.isActive, true)
+    ))
+    .orderBy(desc(quickMeetups.createdAt));
     
     res.json(meetupsQuery);
   } catch (error: any) {

@@ -6775,11 +6775,13 @@ Questions? Just reply to this message. Welcome aboard!
 
   // CRITICAL: Get quick meetups - ACTIVE FIRST, NEWEST FIRST - RAW SQL VERSION
   app.get("/api/quick-meetups", async (req, res) => {
+    console.log(`🔧 ROUTE HIT: /api/quick-meetups called at ${new Date().toISOString()}`);
+    console.log(`🔧 NODE_ENV:`, process.env.NODE_ENV);
     try {
       const { city, userId } = req.query;
       const now = new Date();
 
-      if (process.env.NODE_ENV === 'development') console.log(`QUICK MEETUPS: Fetching all meetups using Drizzle ORM, active first`);
+      console.log(`🔧 QUICK MEETUPS DEBUG: Fetching all meetups using Drizzle ORM, active first`);
 
       // Build conditions array for proper AND/OR logic
       const conditions = [eq(quickMeetups.isActive, true)];
@@ -6845,29 +6847,54 @@ Questions? Just reply to this message. Welcome aboard!
 
       const queryResult = await query.orderBy(desc(quickMeetups.createdAt));
       
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`🔧 QUICK MEETUPS RAW QUERY RESULT:`, queryResult.length, 'results');
+        if (queryResult.length > 0) {
+          console.log(`🔧 FIRST RESULT:`, {
+            id: queryResult[0].id,
+            organizerId: queryResult[0].organizerId,
+            organizerUsername: queryResult[0].organizerUsername,
+            organizerName: queryResult[0].organizerName,
+            organizerProfileImage: queryResult[0].organizerProfileImage ? 'HAS IMAGE' : 'NO IMAGE'
+          });
+        }
+      }
+      
       // Transform the joined data to match expected format
-      const allMeetups = queryResult.map(row => ({
-        id: row.id,
-        organizerId: row.organizerId,
-        title: row.title,
-        description: row.description,
-        meetingPoint: row.meetingPoint,
-        street: row.street,
-        city: row.city,
-        state: row.state,
-        zipcode: row.zipcode,
-        country: row.country,
-        location: row.location,
-        availableAt: row.availableAt,
-        expiresAt: row.expiresAt,
-        duration: row.duration,
-        isActive: row.isActive,
-        createdAt: row.createdAt,
-        participantCount: row.participantCount,
-        organizerUsername: row.organizerUsername,
-        organizerName: row.organizerName,
-        organizerProfileImage: row.organizerProfileImage
-      }));
+      const allMeetups = queryResult.map(row => {
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`🔧 MEETUP ROW DEBUG:`, {
+            id: row.id,
+            organizerId: row.organizerId,
+            organizerUsername: row.organizerUsername,
+            organizerName: row.organizerName,
+            organizerProfileImage: row.organizerProfileImage ? 'HAS IMAGE' : 'NO IMAGE'
+          });
+        }
+        
+        return {
+          id: row.id,
+          organizerId: row.organizerId,
+          title: row.title,
+          description: row.description,
+          meetingPoint: row.meetingPoint,
+          street: row.street,
+          city: row.city,
+          state: row.state,
+          zipcode: row.zipcode,
+          country: row.country,
+          location: row.location,
+          availableAt: row.availableAt,
+          expiresAt: row.expiresAt,
+          duration: row.duration,
+          isActive: row.isActive,
+          createdAt: row.createdAt,
+          participantCount: row.participantCount,
+          organizerUsername: row.organizerUsername,
+          organizerName: row.organizerName,
+          organizerProfileImage: row.organizerProfileImage
+        };
+      });
       
       // Separate active and expired, then sort each group by newest first
       const activeMeetups = allMeetups
