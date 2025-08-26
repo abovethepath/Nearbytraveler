@@ -885,11 +885,13 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Add global CSS for pill text sizing */}
-      <style jsx global>{`
-        .text-pill {
-          font-size: 12pt !important;
-        }
-      `}</style>
+      <style dangerouslySetInnerHTML={{
+        __html: `
+          .text-pill {
+            font-size: 12pt !important;
+          }
+        `
+      }} />
       
       {/* Main Content */}
       <div className="container mx-auto px-4 py-6">
