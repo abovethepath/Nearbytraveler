@@ -546,81 +546,59 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    console.log("🔍 STORAGE: createUser called with travel data:", {
+    console.log("🔍 STORAGE: createUser called with data:", {
+      userType: insertUser.userType,
       isCurrentlyTraveling: insertUser.isCurrentlyTraveling,
       travelDestination: insertUser.travelDestination,
-      travelStartDate: insertUser.travelStartDate,
-      travelEndDate: insertUser.travelEndDate
+      dateOfBirth: insertUser.dateOfBirth,
+      username: insertUser.username,
+      email: insertUser.email
     });
     
-    // STEP 1: Create user with basic data first (without travel data that's causing issues)
-    const basicUserData = {
-      ...insertUser,
-      // Ensure dateOfBirth is included if provided
-      dateOfBirth: insertUser.dateOfBirth || undefined,
-      // Remove travel data for initial insert
-      isCurrentlyTraveling: undefined,
-      travelDestination: undefined,
-      travelStartDate: undefined,
-      travelEndDate: undefined
-    };
+    // Clean the user data to ensure we only include defined values and handle dates properly
+    const cleanUserData: any = {};
     
-    const [basicUser] = await db
+    // Copy all defined fields from insertUser, ensuring proper data types
+    for (const [key, value] of Object.entries(insertUser)) {
+      if (value !== undefined && value !== null) {
+        cleanUserData[key] = value;
+      }
+    }
+    
+    // Ensure dateOfBirth is properly handled if provided
+    if (insertUser.dateOfBirth) {
+      if (insertUser.dateOfBirth instanceof Date) {
+        cleanUserData.dateOfBirth = insertUser.dateOfBirth;
+      } else if (typeof insertUser.dateOfBirth === 'string') {
+        cleanUserData.dateOfBirth = new Date(insertUser.dateOfBirth);
+      }
+    }
+    
+    console.log("🔍 STORAGE: Clean user data for insert:", {
+      fieldCount: Object.keys(cleanUserData).length,
+      hasDateOfBirth: !!cleanUserData.dateOfBirth,
+      userType: cleanUserData.userType,
+      isCurrentlyTraveling: cleanUserData.isCurrentlyTraveling
+    });
+    
+    // Create user with the clean data in a single operation
+    const [newUser] = await db
       .insert(users)
-      .values(basicUserData)
+      .values(cleanUserData)
       .returning();
     
-    console.log("🔍 STORAGE: Basic user created with ID:", basicUser.id);
-    
-    // STEP 2: Ensure we have non-undefined travel data for the update
-    const actualTravelData = {
-      isCurrentlyTraveling: insertUser.isCurrentlyTraveling ?? true,
-      travelDestination: insertUser.travelDestination ?? 'Bangkok, Thailand',
-      travelStartDate: insertUser.travelStartDate ?? new Date('2025-08-01T00:00:00.000Z'),
-      travelEndDate: insertUser.travelEndDate ?? new Date('2025-08-15T00:00:00.000Z')
-    };
-    
-    console.log("🔍 STORAGE: insertUser travel data BEFORE processing:", {
-      isCurrentlyTraveling: insertUser.isCurrentlyTraveling,
-      travelDestination: insertUser.travelDestination,
-      travelStartDate: insertUser.travelStartDate,
-      travelEndDate: insertUser.travelEndDate
+    console.log("🔍 STORAGE: User created successfully with ID:", newUser.id);
+    console.log("🔍 STORAGE: Final user data:", {
+      id: newUser.id,
+      username: newUser.username,
+      userType: newUser.userType,
+      isCurrentlyTraveling: newUser.isCurrentlyTraveling,
+      hasDateOfBirth: !!newUser.dateOfBirth,
+      location: newUser.location,
+      hometown: newUser.hometown
     });
     
-    console.log("🔍 STORAGE: Updating user with processed travel data:", actualTravelData);
-    
-    const [updatedUser] = await db
-      .update(users)
-      .set(actualTravelData)
-      .where(eq(users.id, basicUser.id))
-      .returning();
-    
-    console.log("🔍 STORAGE: Final user with travel data:", {
-      id: updatedUser.id,
-      isCurrentlyTraveling: updatedUser.isCurrentlyTraveling,
-      travelDestination: updatedUser.travelDestination,
-      travelStartDate: updatedUser.travelStartDate,
-      travelEndDate: updatedUser.travelEndDate
-    });
-    
-    // VERIFICATION: Final database check to confirm persistence
-    const [finalVerification] = await db.select({
-      id: users.id,
-      isCurrentlyTraveling: users.isCurrentlyTraveling,
-      travelDestination: users.travelDestination,
-      travelStartDate: users.travelStartDate,
-      travelEndDate: users.travelEndDate
-    }).from(users).where(eq(users.id, basicUser.id));
-    
-    console.log("🔍 STORAGE: Database verification confirms:", {
-      id: finalVerification.id,
-      isCurrentlyTraveling: finalVerification.isCurrentlyTraveling,
-      travelDestination: finalVerification.travelDestination,
-      travelStartDate: finalVerification.travelStartDate,
-      travelEndDate: finalVerification.travelEndDate
-    });
-    
-    return updatedUser;
+    return newUser;
   }
 
   async updateUser(id: number, data: Partial<User>): Promise<User | undefined> {
