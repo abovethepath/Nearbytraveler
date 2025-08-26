@@ -35,11 +35,13 @@ import SmartPhotoGallery from "@/components/smart-photo-gallery";
 import SmartLocationInput from "@/components/SmartLocationInput";
 import AICityEventsWidget from "@/components/ai-city-events";
 import TravelMatches from "@/components/travel-matches";
+import ResponsiveUserGrid from "@/components/ResponsiveUserGrid";
 import { SimpleAvatar } from "@/components/simple-avatar";
 import MessagesWidget from "@/components/MessagesWidget";
 import EventsWidget from "@/components/EventsWidget";
 import CurrentLocationWeatherWidget from "@/components/CurrentLocationWeatherWidget";
 import EnhancedDiscovery from "@/components/EnhancedDiscovery";
+import BusinessesGrid from "@/components/BusinessesGrid";
 import { QuickMeetupWidget } from "@/components/QuickMeetupWidget";
 import QuickDealsDiscovery from "@/components/QuickDealsDiscovery";
 import CityMap from "@/components/CityMap";
@@ -53,10 +55,8 @@ const USER_TYPE_OPTIONS = [
   "traveler", "local", "business"
 ];
 
-// Enhanced User Grid Component
+// Enhanced User Grid Component (integrated)
 function EnhancedUserGrid({ users, currentUser, onUserClick }) {
-  
-  // Calculate things in common between current user and another user
   const calculateThingsInCommon = (user) => {
     if (!currentUser || user.id === currentUser.id) return 0;
     
@@ -70,17 +70,14 @@ function EnhancedUserGrid({ users, currentUser, onUserClick }) {
     
     let commonCount = 0;
     
-    // Count common interests
     userInterests.forEach(interest => {
       if (currentInterests.has(interest)) commonCount++;
     });
     
-    // Count common activities  
     userActivities.forEach(activity => {
       if (currentActivities.has(activity)) commonCount++;
     });
     
-    // Count common events
     userEvents.forEach(event => {
       if (currentEvents.has(event)) commonCount++;
     });
@@ -88,7 +85,6 @@ function EnhancedUserGrid({ users, currentUser, onUserClick }) {
     return commonCount;
   };
 
-  // Format location display
   const formatLocation = (city, state, country) => {
     if (!city) return 'Unknown Location';
     
@@ -99,7 +95,6 @@ function EnhancedUserGrid({ users, currentUser, onUserClick }) {
     return parts.join(', ');
   };
 
-  // Sort users with current user first, then by things in common
   const sortedUsers = React.useMemo(() => {
     const otherUsers = users.filter(user => user.id !== currentUser?.id);
     const usersWithCommonality = otherUsers.map(user => ({
@@ -110,7 +105,7 @@ function EnhancedUserGrid({ users, currentUser, onUserClick }) {
     return currentUser ? [{ ...currentUser, thingsInCommon: 0 }, ...usersWithCommonality] : usersWithCommonality;
   }, [users, currentUser]);
 
-  const UserCard = ({ user, isCurrentUser }) => (
+  const UserCardEnhanced = ({ user, isCurrentUser }) => (
     <Card 
       className={`relative cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-105 ${
         isCurrentUser ? 'ring-2 ring-blue-500 bg-blue-50 dark:bg-blue-950/20' : 'hover:bg-gray-50 dark:hover:bg-gray-800'
@@ -126,7 +121,6 @@ function EnhancedUserGrid({ users, currentUser, onUserClick }) {
       )}
       
       <CardContent className="p-4 text-center">
-        {/* Avatar */}
         <div className="flex justify-center mb-3">
           <Avatar className="w-16 h-16 ring-2 ring-gray-200 dark:ring-gray-700">
             <AvatarImage src={user.profileImage} alt={`${user.username}'s avatar`} />
@@ -136,50 +130,45 @@ function EnhancedUserGrid({ users, currentUser, onUserClick }) {
           </Avatar>
         </div>
 
-        {/* Username */}
         <div className="mb-2">
-          <p className="font-semibold text-gray-900 dark:text-white text-pill">
+          <p className="font-semibold text-gray-900 dark:text-white" style={{fontSize: '12pt'}}>
             @{user.username}
             {isCurrentUser && <span className="text-blue-500 ml-1">(You)</span>}
           </p>
         </div>
 
-        {/* Hometown */}
         <div className="mb-2">
           <div className="flex items-center justify-center space-x-1 text-sm text-gray-600 dark:text-gray-300">
             <MapPin className="w-3 h-3" />
-            <span className="truncate text-pill">
+            <span className="truncate" style={{fontSize: '12pt'}}>
               {formatLocation(user.hometownCity, user.hometownState, user.hometownCountry)}
             </span>
           </div>
         </div>
 
-        {/* Currently Traveling */}
         {user.isCurrentlyTraveling && user.travelDestination && (
           <div className="mb-2">
             <div className="flex items-center justify-center space-x-1 text-sm text-orange-600 dark:text-orange-400">
               <Plane className="w-3 h-3" />
-              <span className="truncate font-medium text-pill">
+              <span className="truncate font-medium" style={{fontSize: '12pt'}}>
                 {user.travelDestination}
               </span>
             </div>
           </div>
         )}
 
-        {/* Things in Common */}
         {!isCurrentUser && (
           <div className="mt-3">
-            <Badge variant="secondary" className="text-pill">
+            <Badge variant="secondary" style={{fontSize: '12pt'}}>
               <Hash className="w-3 h-3 mr-1" />
               {user.thingsInCommon} things in common
             </Badge>
           </div>
         )}
 
-        {/* Current User Badge */}
         {isCurrentUser && (
           <div className="mt-3">
-            <Badge className="text-pill bg-blue-500 text-white">
+            <Badge className="bg-blue-500 text-white" style={{fontSize: '12pt'}}>
               That's You!
             </Badge>
           </div>
@@ -191,8 +180,8 @@ function EnhancedUserGrid({ users, currentUser, onUserClick }) {
   return (
     <div className="w-full">
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-        {sortedUsers.map((user, index) => (
-          <UserCard 
+        {sortedUsers.map((user) => (
+          <UserCardEnhanced 
             key={user.id} 
             user={user} 
             isCurrentUser={user.id === currentUser?.id}
@@ -206,567 +195,6 @@ function EnhancedUserGrid({ users, currentUser, onUserClick }) {
         </div>
       )}
     </div>
-  );
-}
-
-// Enhanced Business Widget Component
-function EnhancedBusinessWidget({ 
-  businesses, 
-  currentUserLocation, 
-  title = "Local Businesses",
-  showViewAll = true,
-  onBusinessClick,
-  onViewAll 
-}) {
-
-  // Sort businesses by location proximity (same city first, then by distance if available)
-  const sortedBusinesses = React.useMemo(() => {
-    if (!businesses) return [];
-    
-    return [...businesses].sort((a, b) => {
-      // If we have current user location, prioritize same city
-      if (currentUserLocation) {
-        const currentCity = currentUserLocation.toLowerCase();
-        const aInCurrentCity = a.city?.toLowerCase().includes(currentCity.toLowerCase());
-        const bInCurrentCity = b.city?.toLowerCase().includes(currentCity.toLowerCase());
-        
-        if (aInCurrentCity && !bInCurrentCity) return -1;
-        if (!aInCurrentCity && bInCurrentCity) return 1;
-      }
-      
-      // Then sort by distance if available
-      if (a.distance !== undefined && b.distance !== undefined) {
-        return a.distance - b.distance;
-      }
-      
-      // Finally by rating
-      return (b.rating || 0) - (a.rating || 0);
-    });
-  }, [businesses, currentUserLocation]);
-
-  const formatAddress = (business) => {
-    if (business.address) return business.address;
-    
-    const parts = [];
-    if (business.city) parts.push(business.city);
-    if (business.state) parts.push(business.state);
-    if (business.country) parts.push(business.country);
-    
-    return parts.join(', ') || 'Address not available';
-  };
-
-  const formatDistance = (distance) => {
-    if (distance === undefined) return null;
-    if (distance < 1) return `${Math.round(distance * 1000)}m away`;
-    return `${distance.toFixed(1)}km away`;
-  };
-
-  const getPriceLevelDisplay = (level) => {
-    if (!level) return null;
-    return '$'.repeat(level);
-  };
-
-  const BusinessCard = ({ business }) => (
-    <Card className="cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] bg-white dark:bg-gray-800">
-      <CardContent className="p-4">
-        {/* Header with Avatar and Basic Info */}
-        <div className="flex items-start space-x-3 mb-3">
-          <Avatar className="w-12 h-12 ring-2 ring-gray-200 dark:ring-gray-600">
-            <AvatarImage src={business.profileImage} alt={`${business.businessName} logo`} />
-            <AvatarFallback className="bg-gradient-to-br from-green-500 to-blue-500 text-white font-bold">
-              {business.businessName?.[0]?.toUpperCase() || 'B'}
-            </AvatarFallback>
-          </Avatar>
-          
-          <div className="flex-1 min-w-0">
-            <div className="flex items-start justify-between">
-              <div>
-                <h4 className="font-semibold text-gray-900 dark:text-white truncate">
-                  {business.businessName}
-                </h4>
-                {business.businessType && (
-                  <p className="text-sm text-gray-600 dark:text-gray-300 text-pill">
-                    {business.businessType}
-                  </p>
-                )}
-              </div>
-              
-              {/* Status Badge */}
-              <Badge 
-                variant={business.isOpen ? "default" : "secondary"}
-                className={`text-pill ml-2 ${
-                  business.isOpen 
-                    ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' 
-                    : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-                }`}
-              >
-                {business.isOpen ? 'Open' : 'Closed'}
-              </Badge>
-            </div>
-          </div>
-        </div>
-
-        {/* Business Description */}
-        {business.description && (
-          <p className="text-sm text-gray-600 dark:text-gray-300 mb-3 line-clamp-2">
-            {business.description}
-          </p>
-        )}
-
-        {/* Address */}
-        <div className="flex items-start space-x-2 mb-2 text-sm text-gray-600 dark:text-gray-300">
-          <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
-          <span className="break-words">{formatAddress(business)}</span>
-        </div>
-
-        {/* Phone Number */}
-        {business.phoneNumber && (
-          <div className="flex items-center space-x-2 mb-2 text-sm text-gray-600 dark:text-gray-300">
-            <Phone className="w-4 h-4 flex-shrink-0" />
-            <a 
-              href={`tel:${business.phoneNumber}`} 
-              className="hover:text-blue-500 transition-colors"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {business.phoneNumber}
-            </a>
-          </div>
-        )}
-
-        {/* Website */}
-        {business.website && (
-          <div className="flex items-center space-x-2 mb-3 text-sm text-blue-600 dark:text-blue-400">
-            <Globe className="w-4 h-4 flex-shrink-0" />
-            <a 
-              href={business.website} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="hover:underline truncate"
-              onClick={(e) => e.stopPropagation()}
-            >
-              Visit Website
-            </a>
-          </div>
-        )}
-
-        {/* Rating, Distance, Price Level */}
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center space-x-3">
-            {/* Rating */}
-            {business.rating && (
-              <div className="flex items-center space-x-1">
-                <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                <span className="text-sm font-medium">
-                  {business.rating.toFixed(1)}
-                </span>
-                {business.reviewCount && (
-                  <span className="text-pill text-gray-500">
-                    ({business.reviewCount})
-                  </span>
-                )}
-              </div>
-            )}
-
-            {/* Price Level */}
-            {business.priceLevel && (
-              <span className="text-sm text-green-600 dark:text-green-400 font-medium">
-                {getPriceLevelDisplay(business.priceLevel)}
-              </span>
-            )}
-          </div>
-
-          {/* Distance */}
-          {business.distance !== undefined && (
-            <span className="text-pill text-gray-500">
-              {formatDistance(business.distance)}
-            </span>
-          )}
-        </div>
-
-        {/* Tags */}
-        {business.tags && business.tags.length > 0 && (
-          <div className="flex flex-wrap gap-1 mb-3">
-            {business.tags.slice(0, 3).map((tag, index) => (
-              <Badge key={index} variant="outline" className="text-pill">
-                {tag}
-              </Badge>
-            ))}
-            {business.tags.length > 3 && (
-              <Badge variant="outline" className="text-pill text-gray-500">
-                +{business.tags.length - 3} more
-              </Badge>
-            )}
-          </div>
-        )}
-
-        {/* Opening Hours */}
-        {business.openingHours && (
-          <div className="flex items-center space-x-2 mb-3 text-pill text-gray-500 dark:text-gray-400">
-            <Clock className="w-3 h-3" />
-            <span>{business.openingHours}</span>
-          </div>
-        )}
-
-        {/* Action Buttons */}
-        <div className="flex space-x-2">
-          <Button
-            size="sm"
-            onClick={(e) => {
-              e.stopPropagation();
-              onBusinessClick?.(business);
-            }}
-            className="flex-1 text-pill"
-          >
-            <ExternalLink className="w-3 h-3 mr-1" />
-            View Details
-          </Button>
-          
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={(e) => {
-              e.stopPropagation();
-              // Handle contact action
-            }}
-            className="text-pill"
-          >
-            <MessageCircle className="w-3 h-3" />
-          </Button>
-          
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={(e) => {
-              e.stopPropagation();
-              // Handle share action
-            }}
-            className="text-pill"
-          >
-            <Share2 className="w-3 h-3" />
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
-  );
-
-  return (
-    <Card className="w-full">
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center space-x-2">
-            <Briefcase className="w-5 h-5" />
-            <span>{title}</span>
-            {currentUserLocation && (
-              <Badge variant="secondary" className="text-pill">
-                Near {currentUserLocation}
-              </Badge>
-            )}
-          </CardTitle>
-          {showViewAll && (
-            <Button variant="outline" size="sm" onClick={onViewAll}>
-              View All
-            </Button>
-          )}
-        </div>
-      </CardHeader>
-      
-      <CardContent>
-        {sortedBusinesses.length === 0 ? (
-          <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-            <Briefcase className="w-12 h-12 mx-auto mb-4 opacity-50" />
-            <p>No businesses found in your area</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {sortedBusinesses.map((business) => (
-              <BusinessCard key={business.id} business={business} />
-            ))}
-          </div>
-        )}
-      </CardContent>
-    </Card>
-  );
-}
-
-// Location-Based Events Widget Component
-function LocationSortedEvents({ 
-  events, 
-  currentUserLocation, 
-  title = "Upcoming Events",
-  showViewAll = true,
-  onEventClick,
-  onViewAll 
-}) {
-
-  // Sort events by location proximity and date
-  const sortedEvents = React.useMemo(() => {
-    if (!events) return [];
-    
-    return [...events].sort((a, b) => {
-      // If we have current user location, prioritize same city
-      if (currentUserLocation) {
-        const currentCity = currentUserLocation.toLowerCase();
-        const aInCurrentCity = a.city?.toLowerCase().includes(currentCity.toLowerCase()) || 
-                               a.location?.toLowerCase().includes(currentCity.toLowerCase());
-        const bInCurrentCity = b.city?.toLowerCase().includes(currentCity.toLowerCase()) ||
-                               b.location?.toLowerCase().includes(currentCity.toLowerCase());
-        
-        if (aInCurrentCity && !bInCurrentCity) return -1;
-        if (!aInCurrentCity && bInCurrentCity) return 1;
-      }
-      
-      // Then sort by distance if available
-      if (a.distance !== undefined && b.distance !== undefined) {
-        return a.distance - b.distance;
-      }
-      
-      // Finally by date (soonest first)
-      return new Date(a.date).getTime() - new Date(b.date).getTime();
-    });
-  }, [events, currentUserLocation]);
-
-  const formatEventLocation = (event) => {
-    const parts = [];
-    if (event.venue) parts.push(event.venue);
-    if (event.city) parts.push(event.city);
-    if (event.state) parts.push(event.state);
-    
-    return parts.join(', ') || event.location || 'Location TBD';
-  };
-
-  const formatEventDate = (dateString, time) => {
-    const date = new Date(dateString);
-    const today = new Date();
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    
-    const isToday = date.toDateString() === today.toDateString();
-    const isTomorrow = date.toDateString() === tomorrow.toDateString();
-    
-    let dateLabel = '';
-    if (isToday) dateLabel = 'Today';
-    else if (isTomorrow) dateLabel = 'Tomorrow';
-    else dateLabel = date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-    
-    if (time) {
-      return `${dateLabel} at ${time}`;
-    }
-    return dateLabel;
-  };
-
-  const formatDistance = (distance) => {
-    if (distance === undefined) return null;
-    if (distance < 1) return `${Math.round(distance * 1000)}m away`;
-    return `${distance.toFixed(1)}km away`;
-  };
-
-  const EventCard = ({ event }) => (
-    <Card className="cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] bg-white dark:bg-gray-800">
-      <CardContent className="p-4">
-        {/* Event Header with Image */}
-        <div className="flex items-start space-x-3 mb-3">
-          {event.eventImage && (
-            <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
-              <img 
-                src={event.eventImage} 
-                alt={event.title}
-                className="w-full h-full object-cover"
-              />
-            </div>
-          )}
-          
-          <div className="flex-1 min-w-0">
-            <div className="flex items-start justify-between">
-              <div>
-                <h4 className="font-semibold text-gray-900 dark:text-white line-clamp-2 mb-1">
-                  {event.title}
-                </h4>
-                {event.category && (
-                  <Badge variant="secondary" className="text-pill mb-2">
-                    {event.category}
-                  </Badge>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Event Description */}
-        {event.description && (
-          <p className="text-sm text-gray-600 dark:text-gray-300 mb-3 line-clamp-2">
-            {event.description}
-          </p>
-        )}
-
-        {/* Date and Time */}
-        <div className="flex items-center space-x-2 mb-2 text-sm text-gray-600 dark:text-gray-300">
-          <Calendar className="w-4 h-4 flex-shrink-0" />
-          <span>{formatEventDate(event.date, event.time)}</span>
-        </div>
-
-        {/* Location */}
-        <div className="flex items-start space-x-2 mb-2 text-sm text-gray-600 dark:text-gray-300">
-          <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
-          <span className="break-words">{formatEventLocation(event)}</span>
-        </div>
-
-        {/* Organizer */}
-        {event.organizer && (
-          <div className="flex items-center space-x-2 mb-3 text-sm text-gray-600 dark:text-gray-300">
-            <Users className="w-4 h-4 flex-shrink-0" />
-            <span>by {event.organizer}</span>
-          </div>
-        )}
-
-        {/* Stats Row */}
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center space-x-3">
-            {/* Attendees */}
-            {event.attendeeCount !== undefined && (
-              <div className="flex items-center space-x-1">
-                <Users className="w-4 h-4 text-green-500" />
-                <span className="text-sm font-medium">
-                  {event.attendeeCount}
-                  {event.capacity && `/${event.capacity}`}
-                </span>
-              </div>
-            )}
-
-            {/* Rating */}
-            {event.rating && (
-              <div className="flex items-center space-x-1">
-                <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                <span className="text-sm font-medium">
-                  {event.rating.toFixed(1)}
-                </span>
-              </div>
-            )}
-
-            {/* Price */}
-            {event.price !== undefined && (
-              <span className="text-sm font-medium text-green-600 dark:text-green-400">
-                {event.price === 0 ? 'Free' : `$${event.price}`}
-              </span>
-            )}
-          </div>
-
-          {/* Distance */}
-          {event.distance !== undefined && (
-            <span className="text-pill text-gray-500">
-              {formatDistance(event.distance)}
-            </span>
-          )}
-        </div>
-
-        {/* Tags */}
-        {event.tags && event.tags.length > 0 && (
-          <div className="flex flex-wrap gap-1 mb-3">
-            {event.tags.slice(0, 3).map((tag, index) => (
-              <Badge key={index} variant="outline" className="text-pill">
-                {tag}
-              </Badge>
-            ))}
-            {event.tags.length > 3 && (
-              <Badge variant="outline" className="text-pill text-gray-500">
-                +{event.tags.length - 3} more
-              </Badge>
-            )}
-          </div>
-        )}
-
-        {/* Location Priority Indicator */}
-        {currentUserLocation && (
-          <>
-            {(event.city?.toLowerCase().includes(currentUserLocation.toLowerCase()) || 
-              event.location?.toLowerCase().includes(currentUserLocation.toLowerCase())) && (
-              <div className="mb-3">
-                <Badge className="bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200 text-pill">
-                  <MapPin className="w-3 h-3 mr-1" />
-                  In your area
-                </Badge>
-              </div>
-            )}
-          </>
-        )}
-
-        {/* Action Buttons */}
-        <div className="flex space-x-2">
-          <Button
-            size="sm"
-            onClick={(e) => {
-              e.stopPropagation();
-              onEventClick?.(event);
-            }}
-            className="flex-1 text-pill"
-          >
-            <ExternalLink className="w-3 h-3 mr-1" />
-            View Event
-          </Button>
-          
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={(e) => {
-              e.stopPropagation();
-              // Handle interested/save action
-            }}
-            className="text-pill"
-          >
-            <Heart className="w-3 h-3" />
-          </Button>
-          
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={(e) => {
-              e.stopPropagation();
-              // Handle share action
-            }}
-            className="text-pill"
-          >
-            <Share2 className="w-3 h-3" />
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
-  );
-
-  return (
-    <Card className="w-full">
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center space-x-2">
-            <Calendar className="w-5 h-5" />
-            <span>{title}</span>
-            {currentUserLocation && (
-              <Badge variant="secondary" className="text-pill">
-                Near {currentUserLocation}
-              </Badge>
-            )}
-          </CardTitle>
-          {showViewAll && (
-            <Button variant="outline" size="sm" onClick={onViewAll}>
-              View All Events
-            </Button>
-          )}
-        </div>
-      </CardHeader>
-      
-      <CardContent>
-        {sortedEvents.length === 0 ? (
-          <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-            <Calendar className="w-12 h-12 mx-auto mb-4 opacity-50" />
-            <p>No upcoming events found</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {sortedEvents.map((event) => (
-              <EventCard key={event.id} event={event} />
-            ))}
-          </div>
-        )}
-      </CardContent>
-    </Card>
   );
 }
 
@@ -884,15 +312,6 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Add global CSS for pill text sizing */}
-      <style dangerouslySetInnerHTML={{
-        __html: `
-          .text-pill {
-            font-size: 12pt !important;
-          }
-        `
-      }} />
-      
       {/* Main Content */}
       <div className="container mx-auto px-4 py-6">
         {/* Enhanced User Grid - Current user first, 3-4 across */}
@@ -927,44 +346,129 @@ export default function Home() {
           />
         </div>
 
-        {/* Enhanced Business Widget */}
+        {/* Local Businesses Section */}
         <div className="mb-8">
-          <EnhancedBusinessWidget 
-            businesses={businesses} 
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center">
+              <Briefcase className="w-6 h-6 mr-2" />
+              Local Businesses
+            </h2>
+            <Button variant="outline" onClick={() => setLocation('/businesses')}>
+              View All
+            </Button>
+          </div>
+          
+          <BusinessesGrid 
+            businesses={businesses}
             currentUserLocation={getCurrentUserLocation()}
-            title="Local Businesses"
-            onBusinessClick={(business) => setLocation(`/business/${business.id}`)}
-            onViewAll={() => setLocation('/businesses')}
+            showViewAll={false}
           />
         </div>
 
-        {/* Location-Based Events */}
+        {/* Community Events */}
         <div className="mb-8">
-          <LocationSortedEvents 
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center">
+              <Calendar className="w-6 h-6 mr-2" />
+              Community Events
+            </h2>
+            <Button variant="outline" onClick={() => setLocation('/events')}>
+              View All
+            </Button>
+          </div>
+          
+          <EventsWidget 
             events={events}
             currentUserLocation={getCurrentUserLocation()}
-            title="Upcoming Events"
-            onEventClick={(event) => setLocation(`/event/${event.id}`)}
-            onViewAll={() => setLocation('/events')}
+            showUserEvents={true}
+            currentUser={user}
           />
         </div>
 
-        {/* Modals */}
-        {showDestinationModal && (
-          <DestinationModal
-            isOpen={showDestinationModal}
-            onClose={() => setShowDestinationModal(false)}
-          />
-        )}
+        {/* Quick Actions */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          {/* Quick Meetup Widget */}
+          <QuickMeetupWidget user={user} />
+          
+          {/* Current Weather */}
+          <CurrentLocationWeatherWidget user={user} />
+          
+          {/* Messages Preview */}
+          <MessagesWidget user={user} />
+        </div>
 
-        {showConnectModal && (
-          <ConnectModal
-            isOpen={showConnectModal}
-            onClose={() => setShowConnectModal(false)}
-            mode={connectModalMode}
+        {/* Enhanced Discovery Section */}
+        <div className="mb-8">
+          <EnhancedDiscovery 
+            currentUserLocation={getCurrentUserLocation()}
+            user={user}
           />
-        )}
+        </div>
+
+        {/* Quick Deals Discovery */}
+        <div className="mb-8">
+          <QuickDealsDiscovery 
+            currentUserLocation={getCurrentUserLocation()}
+            user={user}
+          />
+        </div>
+
+        {/* People Discovery Widget */}
+        <div className="mb-8">
+          <PeopleDiscoveryWidget 
+            currentUserLocation={getCurrentUserLocation()}
+            user={user}
+          />
+        </div>
+
+        {/* AI City Events */}
+        <div className="mb-8">
+          <AICityEventsWidget 
+            currentUserLocation={getCurrentUserLocation()}
+            user={user}
+          />
+        </div>
+
+        {/* Travel Matches */}
+        <div className="mb-8">
+          <TravelMatches user={user} />
+        </div>
+
+        {/* City Map */}
+        <div className="mb-8">
+          <CityMap 
+            currentUserLocation={getCurrentUserLocation()}
+            users={users}
+            businesses={businesses}
+            events={events}
+          />
+        </div>
       </div>
+
+      {/* Modals */}
+      <DestinationModal 
+        isOpen={showDestinationModal}
+        onClose={() => setShowDestinationModal(false)}
+        user={user}
+        onSave={(updatedUser) => {
+          setUser(updatedUser);
+          setShowDestinationModal(false);
+        }}
+      />
+
+      <ConnectModal
+        isOpen={showConnectModal}
+        onClose={() => setShowConnectModal(false)}
+        mode={connectModalMode}
+        searchLocation={activeLocationFilter}
+        user={user}
+      />
+
+      {/* AI Chat Bot */}
+      <AIChatBot user={user} />
+      
+      {/* Embedded Chat Widget */}
+      <EmbeddedChatWidget user={user} />
     </div>
   );
 }
