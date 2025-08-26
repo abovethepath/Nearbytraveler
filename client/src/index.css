@@ -100,6 +100,9 @@
   --chart-3: 197 37% 24%;
   --chart-4: 43 74% 66%;
   --chart-5: 27 87% 67%;
+  
+  /* UNIVERSAL PILL SIZE STANDARDIZATION */
+  --pill-font-size: 12pt;
 }
 
 .dark {
@@ -453,4 +456,21 @@
 .dark [data-radix-select-item]:hover {
   background-color: hsl(var(--accent)) !important;
   color: hsl(var(--accent-foreground)) !important;
+}
+
+/* UNIVERSAL PILL SIZE STANDARDIZATION - 12pt for ALL pills site-wide */
+.pill, 
+.badge, 
+[class*="badge"], 
+[class*="pill"],
+.rounded-full[class*="text-"][class*="px-"],
+.rounded[class*="text-"][class*="px-"],
+.inline-flex[class*="text-"][class*="px-"][class*="rounded"],
+.inline-flex[class*="bg-"][class*="text-"][class*="rounded-full"],
+.inline-flex[class*="bg-"][class*="text-"][class*="rounded"],
+span[class*="bg-"][class*="text-"][class*="rounded-full"],
+span[class*="bg-"][class*="text-"][class*="rounded"],
+div[class*="bg-"][class*="text-"][class*="rounded-full"],
+div[class*="bg-"][class*="text-"][class*="rounded"] {
+  font-size: var(--pill-font-size) !important;
 }
