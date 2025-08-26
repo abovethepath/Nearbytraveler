@@ -3460,7 +3460,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 <div className="space-y-2 text-black w-full mt-2">
                   {(() => {
                     const currentDestination = getCurrentTravelDestination(travelPlans || []);
-                    const hometownCity = user.hometownCity || 'Unknown';
+                    const hometown = user.hometownCity ? 
+                      `${user.hometownCity}${user.hometownState ? `, ${user.hometownState}` : ''}` :
+                      'Unknown';
                     
                     if (currentDestination) {
                       // When traveling: USERNAME then NEARBY TRAVELER [DESTINATION]
@@ -3473,12 +3475,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         </>
                       );
                     } else {
-                      // When home: USERNAME then NEARBY LOCAL [HOMETOWN CITY]
+                      // When home: USERNAME then NEARBY LOCAL [HOMETOWN CITY, STATE]
                       return (
                         <>
                           <h1 className="text-2xl sm:text-3xl font-bold text-black">@{user.username}</h1>
                           <div className="text-lg font-medium text-black">
-                            NEARBY LOCAL {hometownCity}
+                            NEARBY LOCAL {hometown}
                           </div>
                         </>
                       );
