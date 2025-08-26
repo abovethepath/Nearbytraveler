@@ -4323,7 +4323,7 @@ Questions? Just reply to this message. Welcome aboard!
     console.log("🟢 EVENTS ENDPOINT HIT! Query:", req.query, "URL:", req.url);
     try {
       if (process.env.NODE_ENV === 'development') console.log(`📅 DIRECT API: Fetching events with query:`, req.query);
-      const { city } = req.query;
+      const { city, state, country } = req.query;
 
       let eventsQuery = [];
       console.log(`📅 EVENTS DEBUG: City parameter received: "${city}", type: ${typeof city}`);
