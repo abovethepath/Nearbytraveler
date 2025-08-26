@@ -1,11 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useToast } from "@/hooks/use-toast";
-import { Send, Users, ArrowLeft, Loader2 } from "lucide-react";
+import { Send, Users, ArrowLeft, Loader2, RefreshCw } from "lucide-react";
 
 interface ChatMessage {
   id: number;
@@ -33,8 +31,6 @@ interface Chatroom {
 }
 
 export default function FixedChatroom() {
-  const [, navigate] = useLocation();
-  const { toast } = useToast();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
   // State
@@ -46,6 +42,7 @@ export default function FixedChatroom() {
   const [isLeaving, setIsLeaving] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   
   // Get chatroom ID from URL
   const pathSegments = window.location.pathname.split('/');
@@ -54,7 +51,6 @@ export default function FixedChatroom() {
   // Get current user - TRY MULTIPLE SOURCES
   const getCurrentUser = () => {
     try {
-      // Try travelconnect_user first
       let storedUser = localStorage.getItem('travelconnect_user');
       if (storedUser) {
         const user = JSON.parse(storedUser);
@@ -62,7 +58,6 @@ export default function FixedChatroom() {
         return user;
       }
       
-      // Try user as backup
       storedUser = localStorage.getItem('user');
       if (storedUser) {
         const user = JSON.parse(storedUser);
@@ -81,24 +76,24 @@ export default function FixedChatroom() {
   const currentUser = getCurrentUser();
   const currentUserId = currentUser?.id;
   
-  console.log('🔍 CHATROOM DEBUG:', {
-    chatroomId,
-    currentUserId,
-    currentUserName: currentUser?.username
-  });
-  
   // Check if user is a member
   const userIsMember = members.some(member => member.user_id === currentUserId);
   
-  // Make authenticated API request with EXACT headers the server expects
+  // Show toast-like notifications
+  const showNotification = (message: string, type: 'success' | 'error' | 'info' = 'info') => {
+    console.log(`${type.toUpperCase()}: ${message}`);
+    // You can integrate with your toast system here
+  };
+  
+  // Make authenticated API request
   const apiRequest = async (url: string, options: any = {}) => {
     if (!currentUserId) {
-      throw new Error('No user ID found');
+      throw new Error('No user ID found - please log in');
     }
     
     const headers = {
       'Content-Type': 'application/json',
-      'x-user-id': String(currentUserId), // EXACT header the server expects
+      'x-user-id': String(currentUserId),
       ...options.headers
     };
     
@@ -123,49 +118,118 @@ export default function FixedChatroom() {
     return data;
   };
   
-  // Load initial data
-  const loadData = async () => {
+  // Load chatroom details
+  const loadChatroomDetails = async () => {
+    try {
+      console.log('📋 Loading chatroom details...');
+      const chatroomResponse = await apiRequest(`/api/chatrooms/${chatroomId}`);
+      
+      // Handle different response formats
+      let chatroomData;
+      if (Array.isArray(chatroomResponse)) {
+        chatroomData = chatroomResponse[0];
+      } else if (chatroomResponse.chatroom) {
+        chatroomData = chatroomResponse.chatroom;
+      } else {
+        chatroomData = chatroomResponse;
+      }
+      
+      console.log('✅ Chatroom details loaded:', chatroomData);
+      setChatroom(chatroomData);
+      
+      return chatroomData;
+    } catch (error) {
+      console.error('❌ Failed to load chatroom details:', error);
+      throw error;
+    }
+  };
+  
+  // Load members
+  const loadMembers = async () => {
+    try {
+      console.log('👥 Loading members...');
+      const membersResponse = await apiRequest(`/api/chatrooms/${chatroomId}/members`);
+      
+      // Handle different response formats
+      let membersData = [];
+      if (Array.isArray(membersResponse)) {
+        membersData = membersResponse;
+      } else if (membersResponse.members && Array.isArray(membersResponse.members)) {
+        membersData = membersResponse.members;
+      } else if (membersResponse.data && Array.isArray(membersResponse.data)) {
+        membersData = membersResponse.data;
+      }
+      
+      console.log('✅ Members loaded:', membersData.length, 'members');
+      setMembers(membersData);
+      
+      return membersData;
+    } catch (error) {
+      console.error('❌ Failed to load members:', error);
+      // Don't throw - members might not be accessible if not joined
+      setMembers([]);
+      return [];
+    }
+  };
+  
+  // Load messages
+  const loadMessages = async () => {
+    try {
+      console.log('💬 Loading messages...');
+      const messagesResponse = await apiRequest(`/api/chatrooms/${chatroomId}/messages`);
+      
+      // Handle different response formats
+      let messagesData = [];
+      if (Array.isArray(messagesResponse)) {
+        messagesData = messagesResponse;
+      } else if (messagesResponse.messages && Array.isArray(messagesResponse.messages)) {
+        messagesData = messagesResponse.messages;
+      } else if (messagesResponse.data && Array.isArray(messagesResponse.data)) {
+        messagesData = messagesResponse.data;
+      }
+      
+      console.log('✅ Messages loaded:', messagesData.length, 'messages');
+      setMessages(messagesData);
+      
+      return messagesData;
+    } catch (error) {
+      console.error('❌ Failed to load messages:', error);
+      setMessages([]);
+      return [];
+    }
+  };
+  
+  // Load all data
+  const loadAllData = async () => {
     if (!currentUserId) {
       console.log('❌ Cannot load data - no user ID');
+      setError('Please log in to access the chatroom');
       setLoading(false);
       return;
     }
     
     try {
       setLoading(true);
-      console.log('🔄 Loading chatroom data for ID:', chatroomId);
+      setError(null);
+      console.log('🔄 Loading all chatroom data for ID:', chatroomId);
       
-      // Get chatroom details first
-      const chatroomData = await apiRequest(`/api/chatrooms/${chatroomId}`);
-      console.log('✅ Chatroom data received:', chatroomData);
-      setChatroom(Array.isArray(chatroomData) ? chatroomData[0] : chatroomData);
+      // Load chatroom details first
+      await loadChatroomDetails();
       
-      // Get members
-      const membersData = await apiRequest(`/api/chatrooms/${chatroomId}/members`);
-      console.log('✅ Members data received:', membersData);
-      setMembers(Array.isArray(membersData) ? membersData : []);
+      // Load members
+      const membersData = await loadMembers();
       
-      // Check if user is a member and load messages
-      const isMember = Array.isArray(membersData) && membersData.some(m => m.user_id === currentUserId);
-      console.log('🔍 User is member?', isMember);
+      // Check if user is a member and load messages if so
+      const isMember = membersData.some(m => m.user_id === currentUserId);
+      console.log('🔍 User is member after load?', isMember);
       
       if (isMember) {
-        try {
-          const messagesData = await apiRequest(`/api/chatrooms/${chatroomId}/messages`);
-          console.log('✅ Messages data received:', messagesData);
-          setMessages(Array.isArray(messagesData) ? messagesData : []);
-        } catch (error) {
-          console.log('⚠️ Could not load messages:', error);
-        }
+        await loadMessages();
       }
       
     } catch (error) {
       console.error('❌ Error loading chatroom data:', error);
-      toast({
-        title: "Error",
-        description: `Failed to load chatroom: ${error}`,
-        variant: "destructive"
-      });
+      setError(`Failed to load chatroom: ${error.message}`);
     } finally {
       setLoading(false);
     }
@@ -176,25 +240,22 @@ export default function FixedChatroom() {
     if (!currentUserId || isJoining || userIsMember) return;
     
     setIsJoining(true);
+    setError(null);
+    
     try {
       console.log('🚪 Joining chatroom:', chatroomId);
       await apiRequest(`/api/chatrooms/${chatroomId}/join`, { method: 'POST' });
       
-      toast({
-        title: "✅ Success",
-        description: "Joined chatroom successfully!",
-        className: "bg-green-50 text-green-900 border-green-200"
-      });
+      showNotification('✅ Successfully joined the chatroom!', 'success');
       
-      // Reload data
-      await loadData();
+      // Force reload all data after joining
+      console.log('🔄 Reloading data after join...');
+      await loadAllData();
+      
     } catch (error) {
       console.error('❌ Error joining chatroom:', error);
-      toast({
-        title: "❌ Error", 
-        description: `Failed to join: ${error}`,
-        variant: "destructive"
-      });
+      setError(`Failed to join chatroom: ${error.message}`);
+      showNotification(`Failed to join: ${error.message}`, 'error');
     } finally {
       setIsJoining(false);
     }
@@ -205,25 +266,25 @@ export default function FixedChatroom() {
     if (!currentUserId || isLeaving || !userIsMember) return;
     
     setIsLeaving(true);
+    setError(null);
+    
     try {
       console.log('🚪 Leaving chatroom:', chatroomId);
       await apiRequest(`/api/chatrooms/${chatroomId}/leave`, { method: 'POST' });
       
-      toast({
-        title: "✅ Success",
-        description: "Left chatroom successfully",
-        className: "bg-orange-50 text-orange-900 border-orange-200"
-      });
+      showNotification('✅ Successfully left the chatroom', 'success');
       
-      // Go back to chatroom list
-      setTimeout(() => navigate('/city-chatrooms'), 1000);
+      // Clear data and navigate back
+      setMessages([]);
+      setMembers([]);
+      setTimeout(() => {
+        window.location.href = '/city-chatrooms';
+      }, 1000);
+      
     } catch (error) {
       console.error('❌ Error leaving chatroom:', error);
-      toast({
-        title: "❌ Error",
-        description: `Failed to leave: ${error}`,
-        variant: "destructive"
-      });
+      setError(`Failed to leave chatroom: ${error.message}`);
+      showNotification(`Failed to leave: ${error.message}`, 'error');
     } finally {
       setIsLeaving(false);
     }
@@ -234,6 +295,8 @@ export default function FixedChatroom() {
     if (!messageText.trim() || !currentUserId || !userIsMember || isSending) return;
     
     setIsSending(true);
+    setError(null);
+    
     try {
       console.log('💬 Sending message:', messageText);
       await apiRequest(`/api/chatrooms/${chatroomId}/messages`, {
@@ -243,52 +306,56 @@ export default function FixedChatroom() {
       
       setMessageText("");
       
-      // Reload messages
-      const messagesData = await apiRequest(`/api/chatrooms/${chatroomId}/messages`);
-      setMessages(Array.isArray(messagesData) ? messagesData : []);
+      // Reload messages to get the new one
+      await loadMessages();
       
     } catch (error) {
       console.error('❌ Error sending message:', error);
-      toast({
-        title: "❌ Error",
-        description: `Failed to send: ${error}`,
-        variant: "destructive"
-      });
+      setError(`Failed to send message: ${error.message}`);
+      showNotification(`Failed to send message: ${error.message}`, 'error');
     } finally {
       setIsSending(false);
     }
   };
   
-  // Load data on mount
+  // Load data on mount and when chatroom changes
   useEffect(() => {
-    loadData();
+    loadAllData();
   }, [chatroomId, currentUserId]);
   
-  // Auto-scroll to bottom
+  // Auto-scroll to bottom when messages change
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
   
+  // Loading state
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
-        <div className="flex items-center space-x-2">
-          <Loader2 className="w-6 h-6 animate-spin" />
-          <span>Loading chatroom...</span>
+        <div className="flex items-center space-x-3">
+          <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
+          <div>
+            <p className="text-lg font-semibold">Loading chatroom...</p>
+            <p className="text-sm text-gray-600">Please wait</p>
+          </div>
         </div>
       </div>
     );
   }
   
+  // Not logged in state
   if (!currentUser) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
         <Card className="w-full max-w-md">
-          <CardContent className="p-6 text-center">
-            <h2 className="text-xl font-bold mb-4">❌ Not Logged In</h2>
-            <p className="mb-4">Please log in to access the chatroom</p>
-            <Button className="mt-4" onClick={() => navigate('/')}>
-              Go Home
+          <CardContent className="p-8 text-center">
+            <h2 className="text-2xl font-bold mb-4 text-red-600">❌ Not Logged In</h2>
+            <p className="text-gray-600 dark:text-gray-300 mb-6">Please log in to access the chatroom</p>
+            <Button 
+              className="w-full" 
+              onClick={() => window.location.href = '/'}
+            >
+              Go to Login
             </Button>
           </CardContent>
         </Card>
@@ -298,38 +365,42 @@ export default function FixedChatroom() {
   
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
-      <div className="container mx-auto px-4 py-6 max-w-4xl">
+      <div className="container mx-auto px-4 py-6 max-w-5xl">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-4">
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => navigate('/city-chatrooms')}
-              className="flex items-center space-x-2"
+              onClick={() => window.location.href = '/city-chatrooms'}
+              className="flex items-center space-x-2 hover:bg-purple-100"
             >
               <ArrowLeft className="w-4 h-4" />
-              <span>Back</span>
+              <span>Back to Chatrooms</span>
             </Button>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                {chatroom?.name || `Chatroom ${chatroomId}`}
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                {chatroom?.name ? `🏠 ${chatroom.name}` : `Chatroom #${chatroomId}`}
               </h1>
               <p className="text-sm text-gray-600 dark:text-gray-300">
-                {members.length} member{members.length !== 1 ? 's' : ''} • User: {currentUser.username}
+                {members.length} member{members.length !== 1 ? 's' : ''} • 
+                Logged in as: <strong>{currentUser.username}</strong>
+                {chatroom?.city && ` • ${chatroom.city}`}
+                {chatroom?.state && `, ${chatroom.state}`}
               </p>
             </div>
           </div>
           
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-3">
             <Button
               variant="outline"
               size="sm"
-              onClick={loadData}
+              onClick={loadAllData}
               className="flex items-center space-x-2"
+              disabled={loading}
             >
-              <Users className="w-4 h-4" />
-              <span>{members.length}</span>
+              <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+              <span>Refresh</span>
             </Button>
             
             {userIsMember ? (
@@ -341,14 +412,14 @@ export default function FixedChatroom() {
                 className="flex items-center space-x-2"
               >
                 {isLeaving && <Loader2 className="w-4 h-4 animate-spin" />}
-                <span>{isLeaving ? 'Leaving...' : 'Leave'}</span>
+                <span>{isLeaving ? 'Leaving...' : 'Leave Chat'}</span>
               </Button>
             ) : (
               <Button
                 size="sm"
                 onClick={joinChatroom}
                 disabled={isJoining}
-                className="flex items-center space-x-2 bg-green-600 hover:bg-green-700"
+                className="flex items-center space-x-2 bg-green-600 hover:bg-green-700 text-white"
               >
                 {isJoining && <Loader2 className="w-4 h-4 animate-spin" />}
                 <span>{isJoining ? 'Joining...' : 'Join Chatroom'}</span>
@@ -357,163 +428,222 @@ export default function FixedChatroom() {
           </div>
         </div>
         
-        {/* Debug Info */}
-        <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900 rounded-lg text-sm">
-          <strong>🔍 Debug Info:</strong> User ID: {currentUserId}, Chatroom: {chatroomId}, Is Member: {userIsMember ? '✅' : '❌'}
-        </div>
+        {/* Error Display */}
+        {error && (
+          <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <p className="text-red-800 font-medium">❌ {error}</p>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={loadAllData}
+              className="mt-2"
+            >
+              Try Again
+            </Button>
+          </div>
+        )}
         
-        {/* Membership Status */}
-        <div className="mb-4">
-          <div className={`px-4 py-3 rounded-lg text-sm font-medium ${
-            userIsMember 
-              ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' 
-              : 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200'
-          }`}>
-            {userIsMember 
-              ? '✅ You are a member of this chatroom - you can send messages' 
-              : '⚠️ You are not a member - click Join to participate'
-            }
+        {/* Status Info */}
+        <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+            <div>
+              <strong>User Status:</strong>
+              <span className={`ml-2 px-2 py-1 rounded text-xs ${
+                userIsMember 
+                  ? 'bg-green-100 text-green-800' 
+                  : 'bg-orange-100 text-orange-800'
+              }`}>
+                {userIsMember ? '✅ Member' : '⚠️ Not Member'}
+              </span>
+            </div>
+            <div>
+              <strong>Members:</strong> {members.length} people
+            </div>
+            <div>
+              <strong>Messages:</strong> {messages.length} total
+            </div>
           </div>
         </div>
         
-        {/* Members List */}
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Users className="w-5 h-5" />
-              <span>Members ({members.length})</span>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={loadData}
-                className="ml-auto"
-              >
-                🔄 Refresh
-              </Button>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {members.map((member) => (
-                <div key={member.user_id} className="flex items-center space-x-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-800">
-                  <Avatar className="w-10 h-10">
-                    <AvatarImage src={member.profile_image} />
-                    <AvatarFallback>{member.username[0]?.toUpperCase()}</AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                      {member.username}
-                      {member.user_id === currentUserId && ' (YOU)'}
-                    </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 capitalize">
-                      ID: {member.user_id} • {member.role || 'member'}
-                    </p>
-                  </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Members Sidebar */}
+          <div className="lg:col-span-1">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <Users className="w-5 h-5" />
+                  <span>Members ({members.length})</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3 max-h-96 overflow-y-auto">
+                  {members.length === 0 ? (
+                    <div className="text-center py-8">
+                      <p className="text-gray-500 dark:text-gray-400 mb-4">
+                        {userIsMember ? 'No members loaded' : 'Join to see members'}
+                      </p>
+                      <Button onClick={loadMembers} variant="outline" size="sm">
+                        🔄 Refresh Members
+                      </Button>
+                    </div>
+                  ) : (
+                    members.map((member) => (
+                      <div 
+                        key={`${member.user_id}-${member.id}`} 
+                        className="flex items-center space-x-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-800"
+                      >
+                        <Avatar className="w-10 h-10">
+                          <AvatarImage src={member.profile_image} />
+                          <AvatarFallback className="bg-purple-100 text-purple-600">
+                            {member.username?.[0]?.toUpperCase() || '?'}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                            {member.username || member.name || 'Unknown User'}
+                            {member.user_id === currentUserId && (
+                              <span className="ml-2 px-2 py-0.5 bg-blue-100 text-blue-800 text-xs rounded">
+                                YOU
+                              </span>
+                            )}
+                          </p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 capitalize">
+                            {member.role || 'member'}
+                          </p>
+                        </div>
+                      </div>
+                    ))
+                  )}
                 </div>
-              ))}
-            </div>
-            
-            {members.length === 0 && (
-              <div className="text-center py-8">
-                <p className="text-gray-500 dark:text-gray-400 mb-4">No members loaded</p>
-                <Button onClick={loadData} variant="outline">
-                  🔄 Try Loading Again
-                </Button>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-        
-        {/* Messages Area */}
-        {userIsMember ? (
-          <Card className="mb-6">
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                <span>Messages ({messages.length})</span>
-                <Button variant="ghost" size="sm" onClick={loadData}>
-                  🔄 Refresh
-                </Button>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="h-96 overflow-y-auto space-y-4 mb-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                {messages.length === 0 ? (
-                  <div className="text-center py-8">
-                    <p className="text-gray-500 dark:text-gray-400">No messages yet. Start the conversation!</p>
-                  </div>
-                ) : (
-                  messages.map((message) => (
-                    <div
-                      key={message.id}
-                      className={`flex space-x-3 ${
-                        message.senderId === currentUserId ? 'justify-end' : 'justify-start'
-                      }`}
-                    >
-                      <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-                        message.senderId === currentUserId
-                          ? 'bg-blue-600 text-white ml-auto'
-                          : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white'
-                      }`}>
-                        <p className="text-xs opacity-75 mb-1">
-                          {message.senderId === currentUserId ? 'You' : message.senderUsername}
+              </CardContent>
+            </Card>
+          </div>
+          
+          {/* Chat Area */}
+          <div className="lg:col-span-2">
+            {userIsMember ? (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center justify-between">
+                    <span>Chat Messages ({messages.length})</span>
+                    <Button onClick={loadMessages} variant="ghost" size="sm">
+                      <RefreshCw className="w-4 h-4" />
+                    </Button>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {/* Messages Area */}
+                  <div className="h-96 overflow-y-auto space-y-3 mb-4 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg border">
+                    {messages.length === 0 ? (
+                      <div className="text-center py-12">
+                        <p className="text-gray-500 dark:text-gray-400 mb-4">
+                          💬 No messages yet
                         </p>
-                        <p className="text-sm">{message.content}</p>
-                        <p className="text-xs opacity-50 mt-1">
-                          {new Date(message.timestamp).toLocaleTimeString()}
+                        <p className="text-sm text-gray-400">
+                          Start the conversation!
                         </p>
                       </div>
+                    ) : (
+                      messages.map((message, index) => (
+                        <div
+                          key={`${message.id}-${index}`}
+                          className={`flex ${
+                            message.senderId === currentUserId ? 'justify-end' : 'justify-start'
+                          }`}
+                        >
+                          <div className={`max-w-xs lg:max-w-md px-4 py-3 rounded-lg shadow-sm ${
+                            message.senderId === currentUserId
+                              ? 'bg-purple-600 text-white'
+                              : 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white border'
+                          }`}>
+                            <div className="flex items-center space-x-2 mb-1">
+                              <p className="text-xs font-medium opacity-75">
+                                {message.senderId === currentUserId 
+                                  ? 'You' 
+                                  : message.senderUsername || 'Unknown User'
+                                }
+                              </p>
+                              <p className="text-xs opacity-50">
+                                {new Date(message.timestamp).toLocaleTimeString()}
+                              </p>
+                            </div>
+                            <p className="text-sm leading-relaxed">{message.content}</p>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                    <div ref={messagesEndRef} />
+                  </div>
+                  
+                  {/* Message Input */}
+                  <div className="flex space-x-3">
+                    <Input
+                      value={messageText}
+                      onChange={(e) => setMessageText(e.target.value)}
+                      placeholder="Type your message..."
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                          e.preventDefault();
+                          sendMessage();
+                        }
+                      }}
+                      disabled={isSending}
+                      className="flex-1"
+                      maxLength={500}
+                    />
+                    <Button
+                      onClick={sendMessage}
+                      disabled={!messageText.trim() || isSending}
+                      className="flex items-center space-x-2 bg-purple-600 hover:bg-purple-700"
+                    >
+                      {isSending ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <Send className="w-4 h-4" />
+                      )}
+                      <span className="hidden sm:inline">
+                        {isSending ? 'Sending...' : 'Send'}
+                      </span>
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : (
+              <Card>
+                <CardContent className="p-12 text-center">
+                  <div className="max-w-md mx-auto">
+                    <div className="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                      <Users className="w-10 h-10 text-purple-600" />
                     </div>
-                  ))
-                )}
-                <div ref={messagesEndRef} />
-              </div>
-              
-              {/* Message Input */}
-              <div className="flex space-x-2">
-                <Input
-                  value={messageText}
-                  onChange={(e) => setMessageText(e.target.value)}
-                  placeholder="Type your message..."
-                  onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-                  disabled={isSending}
-                  className="flex-1"
-                />
-                <Button
-                  onClick={sendMessage}
-                  disabled={!messageText.trim() || isSending}
-                  className="flex items-center space-x-2"
-                >
-                  {isSending ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <Send className="w-4 h-4" />
-                  )}
-                  <span className="hidden sm:inline">
-                    {isSending ? 'Sending...' : 'Send'}
-                  </span>
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        ) : (
-          <Card>
-            <CardContent className="p-8 text-center">
-              <h3 className="text-xl font-bold mb-4">🚪 Join to Chat</h3>
-              <p className="text-gray-600 dark:text-gray-300 mb-6">
-                Join the chatroom to see messages and participate in conversations
-              </p>
-              <Button
-                onClick={joinChatroom}
-                disabled={isJoining}
-                size="lg"
-                className="flex items-center space-x-2 bg-green-600 hover:bg-green-700"
-              >
-                {isJoining && <Loader2 className="w-4 h-4 animate-spin" />}
-                <span>{isJoining ? 'Joining...' : 'Join Chatroom'}</span>
-              </Button>
-            </CardContent>
-          </Card>
-        )}
+                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+                      🚪 Join to Start Chatting
+                    </h3>
+                    <p className="text-gray-600 dark:text-gray-300 mb-8 leading-relaxed">
+                      Join this chatroom to see messages, connect with other members, and participate in conversations.
+                    </p>
+                    <Button
+                      onClick={joinChatroom}
+                      disabled={isJoining}
+                      size="lg"
+                      className="w-full flex items-center justify-center space-x-3 bg-green-600 hover:bg-green-700 text-white py-3"
+                    >
+                      {isJoining && <Loader2 className="w-5 h-5 animate-spin" />}
+                      <span className="text-lg font-medium">
+                        {isJoining ? 'Joining Chatroom...' : 'Join Chatroom Now'}
+                      </span>
+                    </Button>
+                    
+                    {error && (
+                      <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+                        <p className="text-red-800 text-sm">{error}</p>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
