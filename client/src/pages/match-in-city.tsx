@@ -680,8 +680,8 @@ export default function MatchInCity() {
                     No matching users yet. Add some activities to find people with similar interests!
                   </p>
                 ) : (
-                  matchingUsers.map((matchUser) => (
-                    <div key={matchUser.id} className="bg-white/5 rounded-lg p-4 border border-white/10">
+                  matchingUsers.map((matchUser, index) => (
+                    <div key={`${matchUser.id}-${matchUser.activityName || index}`} className="bg-white/5 rounded-lg p-4 border border-white/10">
                       <div className="flex items-center gap-3 mb-3">
                         <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-purple-600 rounded-full flex items-center justify-center">
                           <Users className="w-5 h-5 text-white" />
