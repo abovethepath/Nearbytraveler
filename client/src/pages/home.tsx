@@ -585,9 +585,29 @@ export default function Home() {
       return unique;
     }, []);
 
-    // Sort with member-created events first
+    // Sort with LOCATION PRIORITY FIRST - hometown events before distant cities
     const sortedEvents = uniqueEvents.sort((a: any, b: any) => {
-      // Prioritize member-created events (not AI-generated) first
+      // Get location priority scores (higher = more important)
+      const getLocationPriority = (event: any) => {
+        if (!event.sourceLocation) return 0;
+        
+        // Hometown events get highest priority
+        if (event.sourceLocation.type === 'hometown') return 100;
+        // Current travel destination gets second priority  
+        if (event.sourceLocation.type === 'current_travel') return 80;
+        // Planned travel destinations get lower priority
+        if (event.sourceLocation.type === 'planned_travel') return 60;
+        
+        return 0;
+      };
+
+      const aPriority = getLocationPriority(a);
+      const bPriority = getLocationPriority(b);
+      
+      // Sort by location priority first (hometown events first!)
+      if (aPriority !== bPriority) return bPriority - aPriority;
+
+      // Within same location priority, prioritize member-created events
       const aMemberCreated = !a.isAIGenerated;
       const bMemberCreated = !b.isAIGenerated;
 
@@ -601,7 +621,7 @@ export default function Home() {
       if (userCreatedA && !userCreatedB) return -1;
       if (!userCreatedA && userCreatedB) return 1;
 
-      // Then sort by date - earliest upcoming events first
+      // Finally sort by date - earliest upcoming events first
       const dateA = new Date(a.date);
       const dateB = new Date(b.date);
       return dateA.getTime() - dateB.getTime();
