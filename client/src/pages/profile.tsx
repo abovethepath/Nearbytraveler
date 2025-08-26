@@ -343,6 +343,9 @@ const createProfileSchema = (userType: string) => {
       sexualPreferenceVisible: z.boolean().default(false),
       secretActivities: z.string().optional(),
       travelingWithChildren: z.boolean().default(false),
+      childrenAges: z.string().max(100, "Children ages must be 100 characters or less").optional(),
+      isVeteran: z.boolean().default(false),
+      isActiveDuty: z.boolean().default(false),
       travelWhy: z.string().optional(),
       travelHow: z.string().optional(),
       travelBudget: z.string().optional(),
@@ -1473,7 +1476,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           bio: user.bio || "",
           secretActivities: user.secretActivities || "",
           veteranStatus: user.veteranStatus || "",
-          childrenAges: user.childrenAges || "",
           hometownCity: user.hometownCity || "",
           hometownState: user.hometownState || "",
           hometownCountry: user.hometownCountry || "",
@@ -3732,9 +3734,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">Family:</span>
                       <span className="flex-1 break-words flex items-center gap-1">
                         <Users className="w-4 h-4" /> Traveling with children
-                        {(user as any).childrenAges && (
+                        {(user.childrenAges || (user as any).children_ages) && (
                           <span className="text-sm text-gray-500 dark:text-gray-400">
-                            (Ages: {(user as any).childrenAges})
+                            (Ages: {user.childrenAges || (user as any).children_ages})
                           </span>
                         )}
                       </span>
@@ -3742,17 +3744,17 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   )}
 
                   {/* Military Status for non-business users */}
-                  {user.userType !== 'business' && (user.isVeteran || user.isActiveDuty) && (
+                  {user.userType !== 'business' && (user.isVeteran || (user as any).is_veteran || user.isActiveDuty || (user as any).is_active_duty) && (
                     <div className="flex items-start">
                       <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">Military:</span>
                       <span className="flex-1 break-words flex items-center gap-2">
-                        {user.isVeteran && (
+                        {(user.isVeteran || (user as any).is_veteran) && (
                           <span className="inline-flex items-center gap-1 text-sm font-medium text-green-700 dark:text-green-400">
                             <span className="text-green-600">✓</span>
                             Veteran
                           </span>
                         )}
-                        {user.isActiveDuty && (
+                        {(user.isActiveDuty || (user as any).is_active_duty) && (
                           <span className="inline-flex items-center gap-1 text-sm font-medium text-blue-700 dark:text-blue-400">
                             <span className="text-blue-600">✓</span>
                             Active Duty
