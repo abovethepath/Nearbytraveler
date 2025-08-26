@@ -4,15 +4,22 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Copy, Share, Download, CheckCircle, User, Link2 } from "lucide-react";
 
+interface User {
+  id: number;
+  username: string;
+  name?: string;
+  profile_image?: string;
+}
+
 export default function QRCodeCard() {
-  const canvasRef = useRef(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const [copied, setCopied] = useState(false);
-  const [currentUser, setCurrentUser] = useState(null);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [shareUrl, setShareUrl] = useState('');
   const [qrGenerated, setQrGenerated] = useState(false);
 
   // Memoized function to get user data
-  const getUserData = useCallback(() => {
+  const getUserData = useCallback((): User | null => {
     try {
       let storedUser = localStorage.getItem('travelconnect_user');
       if (storedUser) {
@@ -43,7 +50,7 @@ export default function QRCodeCard() {
   }, [getUserData]);
 
   // Memoized QR generation function
-  const generateQRCode = useCallback((text, size = 200) => {
+  const generateQRCode = useCallback((text: string, size: number = 200) => {
     const canvas = canvasRef.current;
     if (!canvas || !text) return;
 
@@ -60,7 +67,7 @@ export default function QRCodeCard() {
     ctx.fillStyle = '#000000';
     
     // Generate pattern based on text hash
-    const hashCode = text.split('').reduce((a, b) => {
+    const hashCode = text.split('').reduce((a: number, b: string) => {
       a = ((a << 5) - a) + b.charCodeAt(0);
       return a & a;
     }, 0);
