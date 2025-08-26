@@ -688,7 +688,8 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           UNION
           SELECT DISTINCT substring(travel_destination from '^([^,]+)') as city_name FROM users WHERE travel_destination IS NOT NULL AND travel_destination != ''
         ) cities
-        WHERE city_name IS NOT NULL AND city_name != ''
+        WHERE city_name IS NOT NULL AND city_name != '' 
+        AND city_name NOT IN ('Test City', 'Global', 'test city', 'global')
         ORDER BY city_name
       `);
 
