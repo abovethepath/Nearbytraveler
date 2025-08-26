@@ -257,10 +257,10 @@ export function PeopleDiscoveryWidget({
                     src={person.profileImage} 
                     alt={person.name}
                     loading="lazy"
-                    className="w-40 h-40 object-cover rounded-lg border-2 border-white dark:border-gray-600 shadow-lg"
+                    className="w-48 h-48 object-cover rounded-lg border-2 border-white dark:border-gray-600 shadow-lg"
                   />
                 ) : (
-                  <div className="w-40 h-40 text-6xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-bold rounded-lg flex items-center justify-center border-2 border-white dark:border-gray-600 shadow-lg">
+                  <div className="w-48 h-48 text-7xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-bold rounded-lg flex items-center justify-center border-2 border-white dark:border-gray-600 shadow-lg">
                     {person.username?.charAt(0)?.toUpperCase() || "U"}
                   </div>
                 )}
@@ -345,11 +345,11 @@ export function PeopleDiscoveryWidget({
                 <img 
                   src={person.profileImage} 
                   alt={person.name}
-                  className="w-40 h-40 object-cover rounded-lg border-2 border-white dark:border-gray-600 shadow-lg"
+                  className="w-48 h-48 object-cover rounded-lg border-2 border-white dark:border-gray-600 shadow-lg"
                   loading="lazy"
                 />
               ) : (
-                <div className="w-40 h-40 text-6xl bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 font-bold rounded-lg flex items-center justify-center border-2 border-white dark:border-gray-600 shadow-lg">
+                <div className="w-48 h-48 text-7xl bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 font-bold rounded-lg flex items-center justify-center border-2 border-white dark:border-gray-600 shadow-lg">
                   {person.username?.charAt(0)?.toUpperCase() || "U"}
                 </div>
               )}
@@ -426,7 +426,7 @@ export function PeopleDiscoveryWidget({
       {/* People Grid - 2 per row on all screen sizes */}
       {/* ✅ Click capture protection to prevent parent handlers from interfering */}
       <div 
-        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
+        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
         onClickCapture={(e) => e.stopPropagation()}
       >
         {people.slice(0, displayCount).map((person) => (
