@@ -218,31 +218,40 @@ function QuickMeetupChat() {
   };
 
   const formatTimeRemaining = (expiresAt: string) => {
+    // Debug what we're getting
+    console.log('🕐 EXPIRATION STRING:', expiresAt);
+    
     const now = new Date();
+    console.log('🕐 NOW:', now.toISOString());
     
-    // Handle the timezone issue by adjusting for UTC offset
-    let expiration = new Date(expiresAt);
-    // If it's a UTC timestamp, we need to adjust for local timezone
-    if (expiresAt.includes('Z') || expiresAt.includes('+')) {
-      // Convert UTC to local time by subtracting timezone offset
-      const timezoneOffsetMs = now.getTimezoneOffset() * 60 * 1000;
-      expiration = new Date(expiration.getTime() - timezoneOffsetMs);
-    }
+    // Parse the expiration time
+    const expiration = new Date(expiresAt);
+    console.log('🕐 PARSED EXPIRATION:', expiration.toISOString());
     
-    const timeDiff = expiration.getTime() - now.getTime();
+    // Calculate difference in milliseconds
+    const timeDiffMs = expiration.getTime() - now.getTime();
+    console.log('🕐 TIME DIFF MS:', timeDiffMs);
     
-    if (timeDiff <= 0) {
+    if (timeDiffMs <= 0) {
       return "Expired";
     }
     
-    const totalMinutes = Math.floor(timeDiff / (1000 * 60));
+    // Convert to minutes
+    const totalMinutes = Math.floor(timeDiffMs / (1000 * 60));
+    console.log('🕐 TOTAL MINUTES:', totalMinutes);
+    
+    // For debugging, let's force show just minutes if under 60
+    if (totalMinutes < 60) {
+      return `${totalMinutes}m left`;
+    }
+    
     const hours = Math.floor(totalMinutes / 60);
     const minutes = totalMinutes % 60;
     
-    if (hours > 0) {
-      return `${hours}h ${minutes}m left`;
+    if (minutes === 0) {
+      return `${hours}h left`;
     } else {
-      return `${minutes}m left`;
+      return `${hours}h ${minutes}m left`;
     }
   };
 
