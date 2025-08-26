@@ -34,11 +34,34 @@ import { AuthContext } from "@/App";
 import { authStorage } from "@/lib/auth";
 
 import { formatDateForDisplay, getCurrentTravelDestination } from "@/lib/dateUtils";
+import { METRO_AREAS } from "@shared/constants";
 import { COUNTRIES, CITIES_BY_COUNTRY } from "@/lib/locationData";
 import { SmartLocationInput } from "@/components/SmartLocationInput";
 import { calculateAge, formatDateOfBirthForInput, validateDateInput, getDateInputConstraints } from "@/lib/ageUtils";
 import { isTopChoiceInterest } from "@/lib/topChoicesUtils";
 import { BUSINESS_TYPES } from "../../../shared/base-options";
+
+// Helper function to check if two cities are in the same metro area
+function areInSameMetroArea(city1: string, city2: string): boolean {
+  for (const metroArea of Object.values(METRO_AREAS)) {
+    const cities = metroArea.cities.map(c => c.toLowerCase());
+    if (cities.includes(city1?.toLowerCase()) && cities.includes(city2?.toLowerCase())) {
+      return true;
+    }
+  }
+  return false;
+}
+
+// Helper function to get metro area name for a city
+function getMetroAreaName(cityName: string): string {
+  for (const [metroKey, metroArea] of Object.entries(METRO_AREAS)) {
+    const cities = metroArea.cities.map(c => c.toLowerCase());
+    if (cities.includes(cityName?.toLowerCase())) {
+      return metroKey; // Returns "Los Angeles" for LA metro cities
+    }
+  }
+  return cityName; // Return original city name if not in a metro area
+}
 
 // State/Province arrays - consistent with signup forms
 const US_STATES = [
@@ -3437,9 +3460,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 <div className="space-y-2 text-black w-full mt-2">
                   {(() => {
                     const currentDestination = getCurrentTravelDestination(travelPlans || []);
-                    const hometown = user.hometownCity ? 
-                      `${user.hometownCity}${user.hometownState ? `, ${user.hometownState}` : ''}${user.hometownCountry ? `, ${user.hometownCountry}` : ''}` :
-                      (user.location || 'Hometown');
+                    const hometownCity = user.hometownCity || 'Unknown';
                     
                     if (currentDestination) {
                       // When traveling: USERNAME then NEARBY TRAVELER [DESTINATION]
@@ -3452,12 +3473,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         </>
                       );
                     } else {
-                      // When home: USERNAME then NEARBY LOCAL [HOMETOWN]
+                      // When home: USERNAME then NEARBY LOCAL [METRO AREA]
+                      const metroAreaName = getMetroAreaName(hometownCity);
                       return (
                         <>
                           <h1 className="text-2xl sm:text-3xl font-bold text-black">@{user.username}</h1>
                           <div className="text-lg font-medium text-black">
-                            NEARBY LOCAL {hometown}
+                            NEARBY LOCAL {metroAreaName}
                           </div>
                         </>
                       );
