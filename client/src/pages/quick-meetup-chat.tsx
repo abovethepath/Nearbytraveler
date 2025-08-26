@@ -219,15 +219,9 @@ function QuickMeetupChat() {
 
   const formatTimeRemaining = (expiresAt: string) => {
     const now = new Date();
-    const expiration = new Date(expiresAt);
+    // Remove the timezone offset issue by parsing as local time
+    const expiration = new Date(expiresAt.replace('Z', ''));
     const timeDiff = expiration.getTime() - now.getTime();
-    
-    console.log('🕐 TIME DEBUG:', { 
-      now: now.toISOString(), 
-      expiration: expiration.toISOString(), 
-      timeDiff, 
-      expiresAt 
-    });
     
     if (timeDiff <= 0) {
       return "Expired";
@@ -236,8 +230,6 @@ function QuickMeetupChat() {
     const totalMinutes = Math.floor(timeDiff / (1000 * 60));
     const hours = Math.floor(totalMinutes / 60);
     const minutes = totalMinutes % 60;
-    
-    console.log('🕐 TIME CALC:', { totalMinutes, hours, minutes });
     
     if (hours > 0) {
       return `${hours}h ${minutes}m left`;
@@ -397,18 +389,10 @@ function QuickMeetupChat() {
                               )}
                             </h4>
                             <span className="text-xs text-gray-500 dark:text-gray-400">
-                              {console.log('🕐 MSG DEBUG:', msg) || ''}
-                              {msg.sentAt ? new Date(msg.sentAt).toLocaleDateString('en-US', { 
+                              {new Date(msg.sentAt).toLocaleDateString('en-US', { 
                                 month: 'short', 
                                 day: 'numeric' 
-                              }) : new Date().toLocaleDateString('en-US', { 
-                                month: 'short', 
-                                day: 'numeric' 
-                              })} • {msg.sentAt ? new Date(msg.sentAt).toLocaleTimeString('en-US', { 
-                                hour: 'numeric', 
-                                minute: '2-digit',
-                                hour12: true 
-                              }) : new Date().toLocaleTimeString('en-US', { 
+                              })} • {new Date(msg.sentAt).toLocaleTimeString('en-US', { 
                                 hour: 'numeric', 
                                 minute: '2-digit',
                                 hour12: true 
@@ -418,7 +402,7 @@ function QuickMeetupChat() {
                           
                           {/* Message Text */}
                           <div className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
-                            {(msg.content || '').split('\n').map((line, index) => (
+                            {(msg.message || msg.content || '').split('\n').map((line, index) => (
                               <p key={index} className={index > 0 ? 'mt-2' : ''}>
                                 {line}
                               </p>
