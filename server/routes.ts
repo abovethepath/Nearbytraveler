@@ -4393,14 +4393,15 @@ Questions? Just reply to this message. Welcome aboard!
         if (process.env.NODE_ENV === 'development') console.log(`🎪 EVENTS: Event details:`, eventsQuery.map(e => `${e.title} in ${e.city}`));
         
         // 🤖 AI EVENT GENERATION: If city has very few events, generate more with OpenAI
-        if (eventsQuery.length <= 3) {
+        // DISABLED: Don't generate Austin/Vegas events for LA metro areas
+        if (eventsQuery.length <= 3 && !cityName.toLowerCase().includes('austin') && !cityName.toLowerCase().includes('vegas')) {
           console.log(`🤖 AI TRIGGER: ${cityName} has only ${eventsQuery.length} events - generating AI events with OpenAI`);
           try {
             // Generate AI events for this city in the background (don't wait for completion)
             setImmediate(async () => {
               try {
                 const { createAIEventsInDatabase } = await import('./openaiEventGenerator');
-                await createAIEventsInDatabase(cityName, state || 'TX', country || 'USA');
+                await createAIEventsInDatabase(cityName, state || 'CA', country || 'USA');
               } catch (aiError) {
                 console.error(`🚫 AI EVENT GENERATION FAILED for ${cityName}:`, aiError);
               }

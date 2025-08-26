@@ -46,15 +46,6 @@ export async function generateCitySpecificEvents(cityName: string, state: string
       - "Griffith Observatory Stargazing Night" at Griffith Observatory
       - "Venice Beach Volleyball Tournament" at Venice Beach
       - "Hollywood Walk of Fame Tour" on Hollywood Boulevard`;
-    } else if (cityName.toLowerCase().includes('austin')) {
-      citySpecificExamples = `Examples for Austin:
-      - "Texas State Capitol Building Tour" at State Capitol
-      - "Austin City Limits Music Festival" at Zilker Park
-      - "South by Southwest Tech Panel" at Austin Convention Center
-      - "Lady Bird Lake Kayak Adventure" at Lady Bird Lake
-      - "6th Street Live Music Crawl" on 6th Street
-      - "Franklin Barbecue Food Tour" in East Austin
-      - "University of Texas Campus Tour" at UT Campus`;
     } else if (cityName.toLowerCase().includes('chicago')) {
       citySpecificExamples = `Examples for Chicago:
       - "Cubs Baseball Game" at Wrigley Field
@@ -64,15 +55,6 @@ export async function generateCitySpecificEvents(cityName: string, state: string
       - "Art Institute of Chicago Tour" at Art Institute
       - "Chicago Architecture Boat Tour" on Chicago River
       - "Deep Dish Pizza Tour" in Lincoln Park`;
-    } else if (cityName.toLowerCase().includes('las vegas')) {
-      citySpecificExamples = `Examples for Las Vegas:
-      - "Cirque du Soleil Show" at Bellagio
-      - "High Roller Observation Wheel" at The LINQ
-      - "Bellagio Fountain Show" at Bellagio
-      - "Fremont Street Light Show" at Fremont Street
-      - "Red Rock Canyon Hiking" at Red Rock Canyon
-      - "Vegas Golden Knights Hockey Game" at T-Mobile Arena
-      - "Magic Show at MGM Grand" at MGM Grand`;
     } else {
       citySpecificExamples = `Focus on local landmarks, attractions, and cultural events specific to ${cityName}`;
     }
