@@ -551,46 +551,68 @@ export default function MatchInCity() {
                   </Button>
                 )}
 
-                {/* Interactive Activity Pills - Toggle to Add to Your Profile */}
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
-                  {cityActivities.map((activity) => {
-                    const userActivity = userActivities.find(ua => ua.activityId === activity.id);
-                    const isToggled = !!userActivity;
+                {/* ORIGINAL DENSE COLORFUL ACTIVITY GRID */}
+                <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-1.5">
+                  {[
+                    "Hermosa Beach Festival", "Union Square farmers market", "Lower East Side history", "Williamsburg hipster spots", 
+                    "SoHo shopping sprees", "Artist studio tours", "Frick Collection", "Natural History Museum",
+                    "Guggenheim visits", "Museum of Modern Art", "Top of the Rock views", "9/11 Memorial visits",
+                    "One World Observatory", "Times Square people watching", "Statue of Liberty tours", "Craft cocktail making",
+                    "Deli sandwich tours", "Michelin star dining", "Live jazz at Blue Note", "Dance clubs",
+                    "Street art in Bushwick", "Karaoke nights", "Gallery hopping Chelsea", "MoMA art exhibitions",
+                    "East River waterfront", "High Line strolls", "Brooklyn Bridge walks", "Street food adventures",
+                    "Restaurant Week dining", "Bagel shop mornings", "Pizza crawl Brooklyn", "Rooftop bar hopping",
+                    "Madison Square Garden events", "Comedy clubs in Village", "Off-Broadway theater", "Central Park activities",
+                    "Prospect Park activities", "Brooklyn Museum tours", "Yankee Stadium TS", "Coney Island fun",
+                    "Food truck adventures", "Wine bar adventures", "Michelin Observatory", "Brooklyn Bridge", 
+                    "Manhattan Beach volleyball", "Craft beer adventures", "Food hall adventures", "Museum visits",
+                    "Griffith Observatory", "Venice Beach skateboarding", "Santa Monica Pier rides", "Hollywood Sign Hike",
+                    "Beverly Hills Shopping", "Universal Studios", "Getty Center visits", "LACMA art exhibitions",
+                    "Downtown LA food tours", "Griffith Observatory", "Melrose shopping", "Rodeo Drive tours"
+                  ].map((activityName, index) => {
+                    // Create temporary activity object for toggling
+                    const tempActivity = { id: `temp-${index}`, activityName, cityName: selectedCity };
+                    const isToggled = userActivities.some(ua => ua.activityName === activityName);
                     
+                    // Assign colors like the original
+                    const colors = [
+                      "bg-blue-500 hover:bg-blue-600",
+                      "bg-orange-500 hover:bg-orange-600", 
+                      "bg-cyan-500 hover:bg-cyan-600",
+                      "bg-purple-500 hover:bg-purple-600",
+                      "bg-green-500 hover:bg-green-600",
+                      "bg-red-500 hover:bg-red-600"
+                    ];
+                    const colorClass = isToggled ? "bg-green-500 hover:bg-green-600" : colors[index % colors.length];
+                    
+                    return (
+                      <Button
+                        key={`activity-pill-${index}`}
+                        onClick={() => toggleActivity(tempActivity)}
+                        size="sm"
+                        className={`${colorClass} text-white font-medium px-2 py-1.5 rounded text-xs h-auto min-h-[32px] transition-all duration-200 text-left leading-tight`}
+                      >
+                        {activityName}
+                      </Button>
+                    );
+                  })}
+                  
+                  {/* Add user's custom activities */}
+                  {cityActivities.map((activity) => {
+                    const isToggled = userActivities.some(ua => ua.activityId === activity.id);
                     return (
                       <Button
                         key={activity.id}
                         onClick={() => toggleActivity(activity)}
                         size="sm"
                         className={`${
-                          isToggled 
-                            ? "bg-green-500 hover:bg-green-600 ring-2 ring-green-300" 
-                            : "bg-blue-500 hover:bg-blue-600"
-                        } text-white font-medium px-3 py-2 rounded-lg text-xs text-left h-auto min-h-[40px] transition-all duration-200 shadow-sm hover:shadow-md`}
+                          isToggled ? "bg-green-500 hover:bg-green-600" : "bg-gray-600 hover:bg-gray-700"
+                        } text-white font-medium px-2 py-1.5 rounded text-xs h-auto min-h-[32px] transition-all duration-200 text-left leading-tight`}
                       >
                         {activity.activityName}
-                        {isToggled && (
-                          <span className="ml-2 text-green-200">✓</span>
-                        )}
                       </Button>
                     );
                   })}
-                  
-                  {/* Show message if no activities exist */}
-                  {cityActivities.length === 0 && (
-                    <div className="col-span-full text-center py-8">
-                      <p className="text-white/70 mb-4">No activities available yet for {selectedCity}</p>
-                      <p className="text-white/50 text-sm">Be the first to add an activity!</p>
-                    </div>
-                  )}
-                </div>
-                
-                {/* Instructions */}
-                <div className="mt-4 p-4 bg-white/5 rounded-lg border border-white/10">
-                  <p className="text-white/70 text-sm">
-                    💡 <strong>How it works:</strong> Click any activity to toggle it on/off. 
-                    Toggled activities (green with ✓) appear on your profile and you'll be matched with others who selected the same activities!
-                  </p>
                 </div>
               </CardContent>
             </Card>
