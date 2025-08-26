@@ -805,71 +805,15 @@ export default function MatchInCity() {
                 </div>
               </div>
 
-              {/* Featured Los Angeles Metro - FRONT AND CENTER (Same Size) */}
-              {(filteredCities.some(city => isLAAreaCity(city.city, city.state)) || filteredCities.some(city => city.city.includes("Los Angeles Metro"))) && (
-            <div className="mb-12">
-              <div className="text-center mb-8">
-                <h2 className="text-4xl font-bold text-white mb-4">🌟 LOS ANGELES METRO</h2>
-                <p className="text-white/90 text-lg font-semibold">Full Platform Features • Most Active City</p>
-              </div>
-              <div className="flex justify-center mb-8">
-                <div className="grid grid-cols-1 max-w-sm">
-                  {filteredCities.filter(city => isLAAreaCity(city.city, city.state) || city.city.includes("Los Angeles Metro")).map((city, index) => (
-                    <Card
-                      key={`featured-${city.city}-${city.state}-${index}`}
-                      className="group cursor-pointer transform hover:scale-105 transition-all duration-300 overflow-hidden relative bg-gradient-to-br from-orange-500/40 to-red-500/40 backdrop-blur-sm border-orange-400/80 ring-4 ring-orange-300/60 shadow-xl shadow-orange-500/50"
-                      onClick={() => {
-                        setSelectedCity(city.city);
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                      }}
-                    >
-                      <div className="relative h-32 overflow-hidden">
-                        <div className="w-full h-full bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center">
-                          <MapPin className="w-12 h-12 text-white/60" />
-                        </div>
-                        <div className="absolute inset-0 bg-black/20" />
-                        <div className="absolute top-2 right-2">
-                          <Badge className="bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs px-2 py-1 animate-pulse font-bold">
-                            🌟 FEATURED
-                          </Badge>
-                        </div>
-                      </div>
-                      <CardContent className="p-4">
-                        <div className="flex items-center gap-2 mb-2">
-                          <MapPin className="w-4 h-4 text-orange-300" />
-                          <h3 className="font-semibold text-lg text-orange-100 truncate">{city.city}</h3>
-                        </div>
-                        <p className="text-sm text-orange-200/90 mb-3 truncate">
-                          {city.state && `${city.state}, `}{city.country}
-                        </p>
-                        <div className="text-center mb-3">
-                          <p className="text-white/80 text-xs">All features active</p>
-                        </div>
-                        <Button 
-                          className="w-full text-sm bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white py-2"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setSelectedCity(city.city);
-                          }}
-                        >
-                          Explore LA Metro
-                        </Button>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              </div>
-            </div>
-              )}
 
-              {/* Other Cities Grid - Bigger cards */}
-              {filteredCities.filter(city => !isLAAreaCity(city.city, city.state) && !city.city.includes("Los Angeles Metro")).length > 0 && (
+              {/* Cities Grid - Bigger cards */}
+              {filteredCities.length > 0 && (
             <div className="mb-8">
               <div className="text-center mb-8">
-                <h3 className="text-4xl font-bold text-white mb-4">Other Cities</h3>
+                <h3 className="text-4xl font-bold text-white mb-4">Cities</h3>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-                {filteredCities.filter(city => !isLAAreaCity(city.city, city.state) && !city.city.includes("Los Angeles Metro")).map((city, index) => (
+                {filteredCities.map((city, index) => (
                   <Card
                     key={`other-${city.city}-${city.state}-${index}`}
                     className="group cursor-pointer transform hover:scale-105 transition-all duration-300 overflow-hidden relative bg-white/10 backdrop-blur-sm border-white/20 hover:border-white/40"
