@@ -45,7 +45,8 @@ export default function QRCodeCard() {
     if (user) {
       setCurrentUser(user);
       const baseUrl = window.location.origin;
-      const url = `${baseUrl}/profile/${user.id}`;
+      // Create a referral signup link instead of profile link
+      const url = `${baseUrl}/?ref=${user.username}&signup=true`;
       setShareUrl(url);
     }
   }, [getUserData]);
@@ -111,8 +112,8 @@ export default function QRCodeCard() {
   // Share via Web Share API or fallback
   const shareProfile = async () => {
     const shareData = {
-      title: `Connect with ${currentUser?.username || 'me'} on TravelConnect`,
-      text: `Check out my travel profile and let's explore together!`,
+      title: `Join ${currentUser?.username || 'me'} on Nearby Traveler!`,
+      text: `Hey! I'm on Nearby Traveler - the best app for connecting with travelers and locals. Join me and let's explore together!`,
       url: shareUrl
     };
 
@@ -178,12 +179,12 @@ export default function QRCodeCard() {
           </div>
         </div>
 
-        {/* Profile URL */}
+        {/* Referral URL */}
         <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
           <div className="flex items-center space-x-2 mb-2">
             <Link2 className="w-4 h-4 text-gray-500 dark:text-gray-400" />
             <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-              Your Profile Link
+              Your Referral Signup Link
             </span>
           </div>
           <p className="text-xs text-gray-600 dark:text-gray-400 break-all font-mono bg-white dark:bg-gray-800 p-2 rounded border">
@@ -206,7 +207,7 @@ export default function QRCodeCard() {
             ) : (
               <>
                 <Copy className="w-4 h-4" />
-                <span>Copy Link</span>
+                <span>Copy Invite Link</span>
               </>
             )}
           </Button>
@@ -218,7 +219,7 @@ export default function QRCodeCard() {
               className="flex items-center justify-center space-x-2"
             >
               <Share className="w-4 h-4" />
-              <span>Share</span>
+              <span>Share Invite</span>
             </Button>
             
             <Button 
@@ -236,12 +237,12 @@ export default function QRCodeCard() {
         {/* Instructions */}
         <div className="text-center space-y-2">
           <p className="text-sm text-gray-600 dark:text-gray-300">
-            Share this QR code with friends to connect instantly
+            Share this QR code to invite friends to join Nearby Traveler
           </p>
           <div className="flex justify-center space-x-4 text-xs text-gray-500 dark:text-gray-400">
-            <span>✓ Scan with camera</span>
-            <span>✓ Share link</span>
-            <span>✓ Auto-connect</span>
+            <span>✓ Scan to signup</span>
+            <span>✓ Quick join</span>
+            <span>✓ Auto-referral</span>
           </div>
         </div>
       </CardContent>
