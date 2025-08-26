@@ -3694,19 +3694,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     </div>
                   )}
 
-                  {/* Military Status for non-business users */}
-                  {user?.userType !== 'business' && user.isVeteran && (
-                    <div className="flex items-start">
-                      <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">Military:</span>
-                      <span className="text-red-600 font-semibold flex-1 break-words">Veteran</span>
-                    </div>
-                  )}
-                  {user?.userType !== 'business' && user.isActiveDuty && (
-                    <div className="flex items-start">
-                      <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">Military:</span>
-                      <span className="text-blue-600 font-semibold flex-1 break-words">Active Duty</span>
-                    </div>
-                  )}
 
                   {user.sexualPreferenceVisible && user.sexualPreference && (
                     <div className="flex items-start">
