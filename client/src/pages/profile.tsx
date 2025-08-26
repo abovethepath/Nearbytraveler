@@ -7965,7 +7965,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   {/* Family Travel Section */}
                   <div className="space-y-4">
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white border-b pb-2">
-                      Family Travel
+                      Family Travel and/or Willing to Meet Families
                     </h3>
                     
                     <FormField
