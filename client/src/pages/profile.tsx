@@ -3473,13 +3473,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         </>
                       );
                     } else {
-                      // When home: USERNAME then NEARBY LOCAL [METRO AREA]
-                      const metroAreaName = getMetroAreaName(hometownCity);
+                      // When home: USERNAME then NEARBY LOCAL [HOMETOWN CITY]
                       return (
                         <>
                           <h1 className="text-2xl sm:text-3xl font-bold text-black">@{user.username}</h1>
                           <div className="text-lg font-medium text-black">
-                            NEARBY LOCAL {metroAreaName}
+                            NEARBY LOCAL {hometownCity}
                           </div>
                         </>
                       );
