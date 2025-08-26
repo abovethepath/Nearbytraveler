@@ -120,7 +120,6 @@ export default function MatchInCity() {
   const [editingActivity, setEditingActivity] = useState<any>(null);
   const [userActivities, setUserActivities] = useState<any[]>([]);
   const [cityActivities, setCityActivities] = useState<any[]>([]);
-  const [matchingUsers, setMatchingUsers] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const { toast } = useToast();
   const { user } = useAuth();
@@ -149,7 +148,6 @@ export default function MatchInCity() {
     if (selectedCity) {
       fetchCityActivities();
       fetchUserActivities();
-      fetchMatchingUsers();
     }
   }, [selectedCity]);
 
@@ -178,17 +176,6 @@ export default function MatchInCity() {
     }
   };
 
-  const fetchMatchingUsers = async () => {
-    try {
-      const response = await fetch(`/api/matching-users/${encodeURIComponent(selectedCity)}`);
-      if (response.ok) {
-        const users = await response.json();
-        setMatchingUsers(users);
-      }
-    } catch (error) {
-      console.error('Error fetching matching users:', error);
-    }
-  };
 
   const addActivity = async () => {
     if (!newActivityName.trim() || !newActivityDescription.trim()) return;
@@ -705,66 +692,6 @@ export default function MatchInCity() {
             </Card>
           </div>
 
-          {/* Matching Users */}
-          <div>
-            <Card className="bg-white/10 backdrop-blur-sm border-white/20">
-              <CardHeader>
-                <CardTitle className="text-white flex items-center gap-2">
-                  <Users className="w-5 h-5" />
-                  Matching People ({matchingUsers.length})
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {matchingUsers.length === 0 ? (
-                  <p className="text-white/70 text-center py-8">
-                    No matching users yet. Add some activities to find people with similar interests!
-                  </p>
-                ) : (
-                  matchingUsers.map((matchUser, index) => (
-                    <div key={`${matchUser.id}-${matchUser.activityName || index}`} className="bg-white/5 rounded-lg p-4 border border-white/10">
-                      <div className="flex items-center gap-3 mb-3">
-                        <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-purple-600 rounded-full flex items-center justify-center">
-                          <Users className="w-5 h-5 text-white" />
-                        </div>
-                        <div>
-                          <h4 className="font-medium text-white">{matchUser.username}</h4>
-                          <p className="text-white/70 text-sm">{matchUser.userType || 'Traveler'}</p>
-                        </div>
-                      </div>
-                      
-                      {matchUser.commonActivities && matchUser.commonActivities.length > 0 && (
-                        <div className="mb-3">
-                          <p className="text-white/70 text-sm mb-2">Common interests:</p>
-                          <div className="flex flex-wrap gap-1">
-                            {matchUser.commonActivities.slice(0, 3).map((activity: string, index: number) => (
-                              <Badge key={index} variant="secondary" className="bg-blue-500/20 text-blue-200 text-xs">
-                                {activity}
-                              </Badge>
-                            ))}
-                            {matchUser.commonActivities.length > 3 && (
-                              <Badge variant="secondary" className="bg-white/10 text-white/70 text-xs">
-                                +{matchUser.commonActivities.length - 3} more
-                              </Badge>
-                            )}
-                          </div>
-                        </div>
-                      )}
-                      
-                      <Button 
-                        size="sm" 
-                        className="w-full bg-white/10 hover:bg-white/20 text-white border-white/20"
-                        variant="outline"
-                        onClick={() => setLocation(`/profile/${matchUser.id}`)}
-                      >
-                        <Zap className="w-4 h-4 mr-2" />
-                        View Profile
-                      </Button>
-                    </div>
-                  ))
-                )}
-              </CardContent>
-            </Card>
-          </div>
         </div>
       </div>
     </div>
