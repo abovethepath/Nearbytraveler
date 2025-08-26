@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Copy, Share, Download, CheckCircle, User, Link2 } from "lucide-react";
+import QRCode from "qrcode";
 
 interface User {
   id: number;
@@ -49,66 +50,24 @@ export default function QRCodeCard() {
     }
   }, [getUserData]);
 
-  // Memoized QR generation function
-  const generateQRCode = useCallback((text: string, size: number = 200) => {
+  // Memoized QR generation function using proper QRCode library
+  const generateQRCode = useCallback(async (text: string) => {
     const canvas = canvasRef.current;
     if (!canvas || !text) return;
 
-    const ctx = canvas.getContext('2d');
-    canvas.width = size;
-    canvas.height = size;
-
-    // Clear canvas
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0, 0, size, size);
-
-    // Create a simple QR-like pattern (for demo - in production use a proper QR library)
-    const moduleSize = size / 25;
-    ctx.fillStyle = '#000000';
-    
-    // Generate pattern based on text hash
-    const hashCode = text.split('').reduce((a: number, b: string) => {
-      a = ((a << 5) - a) + b.charCodeAt(0);
-      return a & a;
-    }, 0);
-    
-    // Create QR-like pattern
-    for (let row = 0; row < 25; row++) {
-      for (let col = 0; col < 25; col++) {
-        const hash = (hashCode + row * 25 + col) % 4;
-        if (hash < 2) {
-          ctx.fillRect(col * moduleSize, row * moduleSize, moduleSize, moduleSize);
+    try {
+      await QRCode.toCanvas(canvas, text, {
+        width: 200,
+        margin: 2,
+        color: {
+          dark: '#000000',
+          light: '#FFFFFF'
         }
-      }
+      });
+      setQrGenerated(true);
+    } catch (error) {
+      console.error('Error generating QR code:', error);
     }
-
-    // Add corner markers (QR code style)
-    const markerSize = moduleSize * 7;
-    
-    // Top-left marker
-    ctx.fillRect(0, 0, markerSize, markerSize);
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(moduleSize, moduleSize, markerSize - 2 * moduleSize, markerSize - 2 * moduleSize);
-    ctx.fillStyle = '#000000';
-    ctx.fillRect(moduleSize * 2, moduleSize * 2, markerSize - 4 * moduleSize, markerSize - 4 * moduleSize);
-
-    // Top-right marker
-    ctx.fillStyle = '#000000';
-    ctx.fillRect(size - markerSize, 0, markerSize, markerSize);
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(size - markerSize + moduleSize, moduleSize, markerSize - 2 * moduleSize, markerSize - 2 * moduleSize);
-    ctx.fillStyle = '#000000';
-    ctx.fillRect(size - markerSize + moduleSize * 2, moduleSize * 2, markerSize - 4 * moduleSize, markerSize - 4 * moduleSize);
-
-    // Bottom-left marker
-    ctx.fillStyle = '#000000';
-    ctx.fillRect(0, size - markerSize, markerSize, markerSize);
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(moduleSize, size - markerSize + moduleSize, markerSize - 2 * moduleSize, markerSize - 2 * moduleSize);
-    ctx.fillStyle = '#000000';
-    ctx.fillRect(moduleSize * 2, size - markerSize + moduleSize * 2, markerSize - 4 * moduleSize, markerSize - 4 * moduleSize);
-
-    setQrGenerated(true);
   }, []);
 
   // Generate QR code when shareUrl is available - run only once
