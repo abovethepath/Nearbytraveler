@@ -4282,7 +4282,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </h4>
                   <div className="flex flex-wrap gap-2 p-3 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 rounded-lg border border-blue-200 dark:border-blue-700">
                     {MOST_POPULAR_INTERESTS.slice(0, 12).map((item) => (
-                      <div key={item} className="inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none bg-gradient-to-r from-blue-500 to-purple-500 text-white border-0 shadow-sm">
+                      <div key={item} className="inline-flex items-center justify-center h-8 rounded-full px-4 text-sm font-medium whitespace-nowrap leading-none bg-gradient-to-r from-blue-500 to-purple-500 text-white border-0 shadow-sm">
                         {item}
                       </div>
                     ))}
@@ -4319,7 +4319,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                     setTempInterests([...tempInterests, interest]);
                                   }
                                 }}
-                                className={`inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none border-0 transition-all ${
+                                className={`inline-flex items-center justify-center h-8 rounded-full px-4 text-sm font-medium whitespace-nowrap leading-none border-0 transition-all ${
                                   isSelected
                                     ? 'bg-green-600 text-white font-bold transform scale-105'
                                     : 'bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-800 dark:text-blue-200 dark:hover:bg-blue-700'
@@ -4370,7 +4370,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           <p className="text-sm font-medium text-gray-700 mb-2">Selected Additional Interests:</p>
                           <div className="flex flex-wrap gap-2">
                             {tempInterests.filter(interest => !MOST_POPULAR_INTERESTS.includes(interest)).map((interest) => (
-                              <div key={interest} className="inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0">
+                              <div key={interest} className="inline-flex items-center justify-center h-8 rounded-full px-4 text-sm font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0">
                                 {interest}
                                 <button
                                   onClick={() => setTempInterests(tempInterests.filter(i => i !== interest))}
@@ -4413,12 +4413,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               return (
                                 <>
                                   {topInterests.map((interest, index) => (
-                                    <div key={`interest-${index}`} className="inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0">
+                                    <div key={`interest-${index}`} className="inline-flex items-center justify-center h-8 rounded-full px-4 text-sm font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0">
                                       {interest}
                                     </div>
                                   ))}
                                   {remaining > 0 && (
-                                    <div className="inline-flex items-center justify-center h-7 rounded-full px-2 text-[11px] font-medium whitespace-nowrap leading-none border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 bg-transparent">
+                                    <div className="inline-flex items-center justify-center h-8 rounded-full px-3 text-sm font-medium whitespace-nowrap leading-none border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 bg-transparent">
                                       +{remaining} more
                                     </div>
                                   )}
