@@ -222,6 +222,13 @@ function QuickMeetupChat() {
     const expiration = new Date(expiresAt);
     const timeDiff = expiration.getTime() - now.getTime();
     
+    console.log('🕐 TIME DEBUG:', { 
+      now: now.toISOString(), 
+      expiration: expiration.toISOString(), 
+      timeDiff, 
+      expiresAt 
+    });
+    
     if (timeDiff <= 0) {
       return "Expired";
     }
@@ -229,6 +236,8 @@ function QuickMeetupChat() {
     const totalMinutes = Math.floor(timeDiff / (1000 * 60));
     const hours = Math.floor(totalMinutes / 60);
     const minutes = totalMinutes % 60;
+    
+    console.log('🕐 TIME CALC:', { totalMinutes, hours, minutes });
     
     if (hours > 0) {
       return `${hours}h ${minutes}m left`;
@@ -388,10 +397,18 @@ function QuickMeetupChat() {
                               )}
                             </h4>
                             <span className="text-xs text-gray-500 dark:text-gray-400">
-                              {new Date(msg.createdAt).toLocaleDateString('en-US', { 
+                              {console.log('🕐 MSG DEBUG:', msg) || ''}
+                              {msg.sentAt ? new Date(msg.sentAt).toLocaleDateString('en-US', { 
                                 month: 'short', 
                                 day: 'numeric' 
-                              })} • {new Date(msg.createdAt).toLocaleTimeString('en-US', { 
+                              }) : new Date().toLocaleDateString('en-US', { 
+                                month: 'short', 
+                                day: 'numeric' 
+                              })} • {msg.sentAt ? new Date(msg.sentAt).toLocaleTimeString('en-US', { 
+                                hour: 'numeric', 
+                                minute: '2-digit',
+                                hour12: true 
+                              }) : new Date().toLocaleTimeString('en-US', { 
                                 hour: 'numeric', 
                                 minute: '2-digit',
                                 hour12: true 
