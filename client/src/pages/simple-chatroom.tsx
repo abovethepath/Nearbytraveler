@@ -75,7 +75,7 @@ export default function SimpleChatroomPage() {
 
   // Get chatroom details
   const { data: chatroom, isLoading: chatroomLoading } = useQuery<Chatroom>({
-    queryKey: [`/api/simple-chatrooms/${chatroomId}`],
+    queryKey: [`/api/chatrooms/${chatroomId}`],
     enabled: !!(currentUserId && chatroomId && !isNaN(chatroomId)),
     staleTime: 10 * 60 * 1000, // 10 minutes - chatroom details rarely change
     refetchOnWindowFocus: false,
@@ -83,7 +83,7 @@ export default function SimpleChatroomPage() {
 
   // Get members list - check if current user is a member
   const { data: members = [], refetch: refetchMembers } = useQuery<ChatMember[]>({
-    queryKey: [`/api/simple-chatrooms/${chatroomId}/members`],
+    queryKey: [`/api/chatrooms/${chatroomId}/members`],
     enabled: !!(currentUserId && chatroomId && !isNaN(chatroomId)),
     refetchInterval: 10000, // 10 seconds
     staleTime: 0, // Always fetch fresh data
@@ -104,18 +104,9 @@ export default function SimpleChatroomPage() {
     });
   }
 
-  // Get member count
-  const { data: memberCountResp, refetch: refetchMemberCount } = useQuery<{memberCount: number}>({
-    queryKey: [`/api/simple-chatrooms/${chatroomId}/members/count`],
-    enabled: !!(currentUserId && chatroomId && !isNaN(chatroomId)),
-    refetchInterval: 10000, // 10 seconds
-    staleTime: 0, // Always fetch fresh data
-    refetchOnWindowFocus: false,
-  });
-
   // Get messages - only fetch if user is joined
   const { data: messages = [], isLoading: messagesLoading, isFetching: messagesFetching, refetch: refetchMessages } = useQuery<ChatMessage[]>({
-    queryKey: [`/api/simple-chatrooms/${chatroomId}/messages`],
+    queryKey: [`/api/chatrooms/${chatroomId}/messages`],
     enabled: !!(currentUserId && chatroomId && !isNaN(chatroomId) && userIsMember),
     refetchInterval: userIsMember ? 8000 : false, // Poll every 8 seconds if joined
     staleTime: 30000, // 30 seconds
@@ -133,7 +124,7 @@ export default function SimpleChatroomPage() {
     setIsJoining(true);
     
     try {
-      const response = await fetch(`/api/simple-chatrooms/${chatroomId}/join`, {
+      const response = await fetch(`/api/chatrooms/${chatroomId}/join`, {
         method: "POST",
         headers: { 
           "x-user-id": String(currentUserId),
@@ -149,12 +140,10 @@ export default function SimpleChatroomPage() {
           className: "bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100",
         });
         // Refresh data immediately - clear cache and refetch
-        queryClient.removeQueries({ queryKey: [`/api/simple-chatrooms/${chatroomId}/members/count`] });
-        queryClient.removeQueries({ queryKey: [`/api/simple-chatrooms/${chatroomId}/members`] });
+        queryClient.removeQueries({ queryKey: [`/api/chatrooms/${chatroomId}/members`] });
         
         // Force immediate refresh to update UI
         refetchMembers();
-        refetchMemberCount();
       } else {
         throw new Error("Failed to join chatroom");
       }
@@ -176,7 +165,7 @@ export default function SimpleChatroomPage() {
     
     setIsLeaving(true);
     try {
-      const response = await fetch(`/api/simple-chatrooms/${chatroomId}/leave`, {
+      const response = await fetch(`/api/chatrooms/${chatroomId}/leave`, {
         method: "POST",
         headers: { 
           "x-user-id": String(currentUserId),
@@ -191,9 +180,8 @@ export default function SimpleChatroomPage() {
           description: "You have successfully left the chatroom",
           className: "bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100",
         });
-        queryClient.invalidateQueries({ queryKey: [`/api/simple-chatrooms/${chatroomId}/members/count`] });
-        queryClient.invalidateQueries({ queryKey: [`/api/simple-chatrooms/${chatroomId}/members`] });
-        queryClient.removeQueries({ queryKey: [`/api/simple-chatrooms/${chatroomId}/messages`] });
+        queryClient.invalidateQueries({ queryKey: [`/api/chatrooms/${chatroomId}/members`] });
+        queryClient.removeQueries({ queryKey: [`/api/chatrooms/${chatroomId}/messages`] });
         setTimeout(() => navigate('/city-chatrooms'), 1000);
       } else {
         throw new Error("Failed to leave chatroom");
@@ -211,7 +199,7 @@ export default function SimpleChatroomPage() {
     }
   }
 
-  const memberCount = memberCountResp?.memberCount ?? 0;
+  const memberCount = members.length;
 
   // Send message mutation
   const sendMessageMutation = useMutation({
@@ -219,7 +207,7 @@ export default function SimpleChatroomPage() {
       if (!currentUser?.id) throw new Error("User not found");
       if (!userIsMember) throw new Error("You must join the chatroom first");
 
-      const res = await fetch(`/api/simple-chatrooms/${chatroomId}/messages`, {
+      const res = await fetch(`/api/chatrooms/${chatroomId}/messages`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -238,7 +226,7 @@ export default function SimpleChatroomPage() {
     onSuccess: () => {
       setMessageText("");
       queryClient.invalidateQueries({ 
-        queryKey: [`/api/simple-chatrooms/${chatroomId}/messages`],
+        queryKey: [`/api/chatrooms/${chatroomId}/messages`],
         exact: true 
       });
     },
