@@ -28,65 +28,49 @@ const FEATURED_CITIES = [
     city: "New York City",
     state: "New York",
     country: "United States",
-    gradient: "from-blue-600 to-purple-800",
-    userCount: 1250,
-    eventCount: 89
+    gradient: "from-blue-600 to-purple-800"
   },
   {
     city: "Los Angeles",
     state: "California", 
     country: "United States",
-    gradient: "from-orange-500 to-red-600",
-    userCount: 890,
-    eventCount: 67
+    gradient: "from-orange-500 to-red-600"
   },
   {
     city: "Portland",
     state: "Oregon",
     country: "United States", 
-    gradient: "from-green-500 to-blue-600",
-    userCount: 445,
-    eventCount: 34
+    gradient: "from-green-500 to-blue-600"
   },
   {
     city: "Boston",
     state: "Massachusetts",
     country: "United States",
-    gradient: "from-red-500 to-orange-600", 
-    userCount: 567,
-    eventCount: 41
+    gradient: "from-red-500 to-orange-600"
   },
   {
     city: "San Francisco",
     state: "California",
     country: "United States",
-    gradient: "from-teal-500 to-cyan-600",
-    userCount: 789,
-    eventCount: 56
+    gradient: "from-teal-500 to-cyan-600"
   },
   {
     city: "Chicago",
     state: "Illinois", 
     country: "United States",
-    gradient: "from-indigo-500 to-purple-600",
-    userCount: 623,
-    eventCount: 48
+    gradient: "from-indigo-500 to-purple-600"
   },
   {
     city: "Miami",
     state: "Florida",
     country: "United States",
-    gradient: "from-pink-500 to-orange-500",
-    userCount: 401,
-    eventCount: 29
+    gradient: "from-pink-500 to-orange-500"
   },
   {
     city: "Seattle",
     state: "Washington",
     country: "United States",
-    gradient: "from-gray-600 to-blue-700",
-    userCount: 512,
-    eventCount: 38
+    gradient: "from-gray-600 to-blue-700"
   }
 ];
 
@@ -371,7 +355,11 @@ export default function MatchInCity() {
           {/* Featured Cities Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 max-w-7xl mx-auto">
             {filteredCities.map((city, index) => (
-              <Card key={city.city} className="group overflow-hidden bg-white/5 backdrop-blur-lg border-white/10 hover:bg-white/10 transition-all duration-500 hover:scale-105 cursor-pointer">
+              <Card 
+                key={city.city} 
+                onClick={() => setSelectedCity(city.city)}
+                className="group overflow-hidden bg-white/5 backdrop-blur-lg border-white/10 hover:bg-white/10 transition-all duration-500 hover:scale-105 cursor-pointer"
+              >
                 <div className="relative">
                   {/* Vibrant Gradient Background */}
                   <div className="aspect-video overflow-hidden">
@@ -401,26 +389,13 @@ export default function MatchInCity() {
                     <p className="text-blue-300 text-sm mt-2">Collaborative travel guide</p>
                   </div>
 
-                  {/* Stats */}
-                  <div className="flex justify-between items-center mb-6 text-sm">
-                    <div className="flex items-center gap-1 text-blue-200">
-                      <Users className="w-4 h-4" />
-                      <span>{city.userCount} users</span>
-                    </div>
-                    <div className="flex items-center gap-1 text-blue-200">
-                      <Calendar className="w-4 h-4" />
-                      <span>{city.eventCount} events</span>
+                  {/* Action Message */}
+                  <div className="text-center">
+                    <div className="bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-300 shadow-lg group-hover:shadow-xl flex items-center justify-center">
+                      <Zap className="w-5 h-5 mr-2" />
+                      Start City Matching
                     </div>
                   </div>
-
-                  {/* Action Button */}
-                  <Button 
-                    onClick={() => setSelectedCity(city.city)}
-                    className="w-full bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-semibold py-3 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl"
-                  >
-                    <Zap className="w-5 h-5 mr-2" />
-                    Start City Matching
-                  </Button>
                 </CardContent>
               </Card>
             ))}
