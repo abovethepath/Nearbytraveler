@@ -496,81 +496,142 @@ export default function SimpleChatroomPage() {
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {messages.map((message) => (
-                    <div
-                      key={message.id}
-                      className={`flex items-start gap-3 ${message.sender_id === currentUserId ? 'justify-end' : 'justify-start'}`}
-                    >
-                      {/* Avatar for others' messages (left side) */}
-                      {message.sender_id !== currentUserId && (
-                        <button
-                          onClick={() => navigate(`/profile/${message.sender_id}`)}
-                          className="flex-shrink-0 mt-1 hover:opacity-80 transition-opacity"
-                        >
-                          <Avatar className="w-8 h-8 border border-gray-200 dark:border-gray-600">
-                            {message.profile_image ? (
-                              <AvatarImage src={message.profile_image} alt={message.username} />
-                            ) : (
-                              <AvatarFallback className="text-xs bg-gradient-to-br from-blue-400 to-purple-500 text-white">
-                                {(message.username || 'U').charAt(0).toUpperCase()}
-                              </AvatarFallback>
-                            )}
-                          </Avatar>
-                        </button>
-                      )}
-                      
-                      <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-                        message.sender_id === currentUserId
-                          ? 'bg-blue-500 text-white'
-                          : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-600'
-                      }`}>
-                        <div className={`text-xs mb-1 font-medium ${
-                          message.sender_id === currentUserId 
-                            ? 'text-blue-100' 
-                            : 'text-gray-700 dark:text-gray-300'
-                        }`}>
-                          <button
-                            onClick={() => navigate(`/profile/${message.sender_id}`)}
-                            className="hover:underline"
-                          >
-                            {message.username || 'Unknown'}
-                          </button>
-                        </div>
-                        <div className={`font-medium ${
-                          message.sender_id === currentUserId 
-                            ? 'text-white' 
-                            : 'text-gray-900 dark:text-white'
-                        }`}>
-                          {message.content}
-                        </div>
-                        <div className={`text-xs mt-1 ${
-                          message.sender_id === currentUserId 
-                            ? 'text-blue-100' 
-                            : 'text-gray-600 dark:text-gray-400'
-                        }`}>
-                          {new Date(message.created_at).toLocaleTimeString()}
-                        </div>
-                      </div>
+                  {messages.map((message, index) => {
+                    // Enhanced sender identification - try multiple field matching
+                    const sender = members.find((m) => 
+                      m.user_id === message.senderId || 
+                      m.user_id === message.sender_id ||
+                      m.user_id === message.userId ||
+                      m.id === message.senderId ||
+                      m.id === message.sender_id ||
+                      String(m.user_id) === String(message.senderId) ||
+                      String(m.id) === String(message.senderId)
+                    );
+                    
+                    const isCurrentUser = message.senderId === currentUserId || 
+                                        message.sender_id === currentUserId ||
+                                        message.userId === currentUserId;
+                    
+                    // Enhanced sender name - try multiple fields
+                    const senderName = sender?.username || sender?.name || 
+                                     message.senderUsername || message.sender_username || 
+                                     message.username || `User ${message.senderId || message.sender_id}`;
+                    
+                    // Enhanced timestamp parsing - handle multiple formats
+                    let displayTime = 'Just now';
+                    if (message.timestamp) {
+                      try {
+                        const date = new Date(message.timestamp);
+                        if (!isNaN(date.getTime())) {
+                          displayTime = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                        }
+                      } catch (e) {
+                        // If timestamp parsing fails, try different formats
+                        if (message.created_at) {
+                          const date = new Date(message.created_at);
+                          if (!isNaN(date.getTime())) {
+                            displayTime = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                          }
+                        }
+                      }
+                    } else if (message.created_at) {
+                      try {
+                        const date = new Date(message.created_at);
+                        if (!isNaN(date.getTime())) {
+                          displayTime = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                        }
+                      } catch (e) {
+                        console.error('Date parsing error:', e);
+                      }
+                    }
 
-                      {/* Avatar for current user's messages (right side) */}
-                      {message.sender_id === currentUserId && (
-                        <button
-                          onClick={() => navigate(`/profile/${message.sender_id}`)}
-                          className="flex-shrink-0 mt-1 hover:opacity-80 transition-opacity"
-                        >
-                          <Avatar className="w-8 h-8 border border-gray-200 dark:border-gray-600">
-                            {message.profile_image ? (
-                              <AvatarImage src={message.profile_image} alt={message.username} />
-                            ) : (
-                              <AvatarFallback className="text-xs bg-gradient-to-br from-blue-400 to-purple-500 text-white">
-                                {(message.username || 'U').charAt(0).toUpperCase()}
+                    return (
+                      <div
+                        key={`${message.id}-${index}`}
+                        className={`flex items-start gap-3 ${isCurrentUser ? 'justify-end' : 'justify-start'}`}
+                      >
+                        {/* Avatar for others' messages (left side) */}
+                        {!isCurrentUser && (
+                          <div 
+                            className="flex-shrink-0 mt-1 cursor-pointer group relative"
+                            onClick={() => sender && navigate(`/profile/${sender.user_id || sender.id}`)}
+                          >
+                            <Avatar className="w-8 h-8 border border-gray-200 dark:border-gray-600 hover:border-blue-400 dark:hover:border-blue-400 transition-all duration-200 group-hover:scale-105">
+                              <AvatarImage 
+                                src={sender?.profile_image || message.senderProfileImage || message.profile_image} 
+                                alt={`${senderName}'s avatar`}
+                                className="object-cover"
+                              />
+                              <AvatarFallback className="text-xs bg-gradient-to-br from-blue-400 to-purple-500 text-white font-semibold">
+                                {senderName[0]?.toUpperCase() || 'U'}
                               </AvatarFallback>
+                            </Avatar>
+                            
+                            {/* Online indicator */}
+                            <div className="absolute -bottom-1 -right-1 w-3 h-3 border-2 border-white dark:border-gray-800 rounded-full bg-gray-400"></div>
+                            
+                            {/* Hover tooltip */}
+                            {sender && (
+                              <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 dark:bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
+                                View {senderName}'s Profile
+                              </div>
                             )}
-                          </Avatar>
-                        </button>
-                      )}
-                    </div>
-                  ))}
+                          </div>
+                        )}
+                        
+                        <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg shadow-sm ${
+                          isCurrentUser
+                            ? 'bg-blue-500 text-white'
+                            : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-600'
+                        }`}>
+                          <div className={`text-xs mb-1 font-medium ${
+                            isCurrentUser 
+                              ? 'text-blue-100' 
+                              : 'text-gray-700 dark:text-gray-300'
+                          }`}>
+                            <button
+                              onClick={() => !isCurrentUser && sender && navigate(`/profile/${sender.user_id || sender.id}`)}
+                              className="hover:underline"
+                            >
+                              {isCurrentUser ? 'You' : senderName}
+                            </button>
+                            <span className="ml-2 text-xs">
+                              {displayTime}
+                            </span>
+                          </div>
+                          <div className={`font-medium leading-relaxed ${
+                            isCurrentUser 
+                              ? 'text-white' 
+                              : 'text-gray-900 dark:text-white'
+                          }`}>
+                            {message.content || message.message || message.text || 'No message content'}
+                          </div>
+                        </div>
+
+                        {/* Avatar for current user's messages (right side) */}
+                        {isCurrentUser && (
+                          <div 
+                            className="flex-shrink-0 mt-1 cursor-pointer group relative"
+                            onClick={() => navigate(`/profile/${currentUserId}`)}
+                          >
+                            <Avatar className="w-8 h-8 border border-gray-200 dark:border-gray-600 hover:border-blue-400 dark:hover:border-blue-400 transition-all duration-200 group-hover:scale-105">
+                              <AvatarImage 
+                                src={currentUser?.profileImage || sender?.profile_image || message.profile_image} 
+                                alt={`${senderName}'s avatar`}
+                                className="object-cover"
+                              />
+                              <AvatarFallback className="text-xs bg-blue-500 text-white font-semibold">
+                                {senderName[0]?.toUpperCase() || 'U'}
+                              </AvatarFallback>
+                            </Avatar>
+                            
+                            {/* Online indicator for current user */}
+                            <div className="absolute -bottom-1 -right-1 w-3 h-3 border-2 border-white dark:border-gray-800 rounded-full bg-green-400"></div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                   {/* Subtle indicator when fetching new messages */}
                   {messagesFetching && !messagesLoading && (
                     <div className="flex justify-center">
