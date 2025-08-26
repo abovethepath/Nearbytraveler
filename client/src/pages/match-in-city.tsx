@@ -30,67 +30,9 @@ import {
 
 // Removed problematic city images and photo gallery functions
 
-// Metro consolidation function - matches the backend logic
+// DISABLED: Metro consolidation per user request - return original city names
 const consolidateToMetroArea = (city: string, state?: string): string => {
-  if (!city) return city;
-  
-  const METRO_AREAS = [
-    {
-      mainCity: 'Los Angeles Metro',
-      state: 'California',
-      cities: [
-        'Los Angeles', 'Santa Monica', 'Venice', 'Venice Beach', 'El Segundo', 
-        'Manhattan Beach', 'Beverly Hills', 'West Hollywood', 'Pasadena', 
-        'Burbank', 'Glendale', 'Long Beach', 'Torrance', 'Inglewood', 
-        'Compton', 'Downey', 'Pomona', 'Playa del Rey', 'Redondo Beach',
-        'Culver City', 'Marina del Rey', 'Hermosa Beach', 'Hawthorne',
-        'Gardena', 'Carson', 'Lakewood', 'Norwalk', 'Whittier', 'Montebello',
-        'East Los Angeles', 'Monterey Park', 'Alhambra', 'South Pasadena',
-        'San Fernando', 'North Hollywood', 'Hollywood', 'Studio City',
-        'Sherman Oaks', 'Encino', 'Reseda', 'Van Nuys', 'Northridge',
-        'Malibu', 'Pacific Palisades', 'Brentwood', 'Westwood', 'Century City',
-        'West LA', 'Koreatown', 'Mid-City', 'Miracle Mile', 'Los Feliz',
-        'Silver Lake', 'Echo Park', 'Downtown LA', 'Arts District', 'Little Tokyo',
-        'Chinatown', 'Boyle Heights', 'East LA', 'Highland Park', 'Eagle Rock',
-        'Atwater Village', 'Glassell Park', 'Mount Washington', 'Cypress Park',
-        'Sun Valley', 'Pacoima', 'Sylmar', 'Granada Hills', 'Porter Ranch',
-        'Chatsworth', 'Canoga Park', 'Woodland Hills', 'Tarzana', 'Panorama City',
-        'Mission Hills', 'Sepulveda', 'Arleta', 'San Pedro', 'Wilmington',
-        'Harbor City', 'Harbor Gateway', 'Watts', 'South LA', 'Crenshaw',
-        'Leimert Park', 'View Park', 'Baldwin Hills', 'Ladera Heights'
-      ]
-    },
-    {
-      mainCity: 'New York City',
-      state: 'New York',
-      cities: [
-        'New York City', 'New York', 'NYC', 'Manhattan', 'Brooklyn', 'Queens', 
-        'Bronx', 'Staten Island', 'Long Island City', 'Astoria', 'Flushing',
-        'Jamaica', 'Forest Hills', 'Williamsburg', 'Park Slope', 'DUMBO',
-        'Brooklyn Heights', 'Red Hook', 'Greenpoint', 'Bushwick', 'Crown Heights',
-        'Bay Ridge', 'Bensonhurst', 'Coney Island', 'Brighton Beach', 'Sheepshead Bay',
-        'Harlem', 'East Harlem', 'Washington Heights', 'Inwood', 'Upper East Side',
-        'Upper West Side', 'Midtown', 'Lower East Side', 'SoHo', 'Tribeca',
-        'Greenwich Village', 'East Village', 'Chelsea', 'Hell\'s Kitchen', 'Financial District'
-      ]
-    }
-  ];
-  
-  for (const metro of METRO_AREAS) {
-    const cityMatch = metro.cities.some(metroCity => 
-      metroCity.toLowerCase() === city.toLowerCase()
-    );
-    
-    if (cityMatch) {
-      if (state && metro.state && metro.state.toLowerCase() !== state.toLowerCase()) {
-        continue;
-      }
-      console.log(`🌍 FRONTEND METRO CONSOLIDATION: ${city} → ${metro.mainCity}`);
-      return metro.mainCity;
-    }
-  }
-  
-  return city;
+  return city; // No consolidation
 };
 
 export default function MatchInCity() {
@@ -132,6 +74,9 @@ export default function MatchInCity() {
   const [citySearchTerm, setCitySearchTerm] = useState('');
   const [selectedEvent, setSelectedEvent] = useState<any>(null);
   const [showEventModal, setShowEventModal] = useState(false);
+  const [citiesLoading, setCitiesLoading] = useState(true);
+  const [searchingCity, setSearchingCity] = useState(false);
+  const [searchError, setSearchError] = useState('');
 
   // Fetch all cities on component mount
   useEffect(() => {
@@ -215,6 +160,7 @@ export default function MatchInCity() {
   // Removed city photos functionality to improve performance
 
   const fetchAllCities = async () => {
+    setCitiesLoading(true);
     try {
       const response = await fetch('/api/city-stats');
       if (response.ok) {
@@ -269,6 +215,8 @@ export default function MatchInCity() {
       }
     } catch (error) {
       console.error('Error fetching cities:', error);
+    } finally {
+      setCitiesLoading(false);
     }
   };
 
@@ -767,6 +715,38 @@ export default function MatchInCity() {
     }
   };
 
+  const handleCustomCitySearch = async (cityName: string) => {
+    setSearchingCity(true);
+    setSearchError('');
+    
+    try {
+      // Set the city immediately to show the city page
+      setSelectedCity(cityName);
+      setCitySearchTerm(''); // Clear after setting the city
+      
+      // Check if the city has any activities after a short delay
+      setTimeout(async () => {
+        try {
+          const response = await fetch(`/api/city-activities/${encodeURIComponent(cityName)}`);
+          if (response.ok) {
+            const activities = await response.json();
+            if (activities.length === 0) {
+              setSearchError(`No activities found for ${cityName}. AI might not have data for this location yet.`);
+            }
+          }
+        } catch (error) {
+          setSearchError(`Could not load data for ${cityName}. AI might not have information about this location.`);
+        } finally {
+          setSearchingCity(false);
+        }
+      }, 3000); // Give AI time to process
+      
+    } catch (error) {
+      setSearchError(`Unable to search for ${cityName}. Please try again or choose a different city.`);
+      setSearchingCity(false);
+    }
+  };
+
   console.log('🎯 RENDERING - selectedCity:', selectedCity);
   
   if (!selectedCity) {
@@ -775,196 +755,103 @@ export default function MatchInCity() {
       <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800">
         <div className="container mx-auto px-4 py-4">
           {/* Header */}
-          <div className="text-center mb-4">
-            <h1 className="text-2xl font-bold text-white mb-2">
+          <div className="text-center mb-6">
+            <h1 className="text-4xl font-bold text-white mb-4">
               🎯 City-Specific Matching
             </h1>
-            <p className="text-sm text-white/80 max-w-2xl mx-auto">
+            <p className="text-xl text-white/80 max-w-3xl mx-auto">
               Find People Who Want to Do What You Want to Do
             </p>
           </div>
 
-          {/* Comprehensive How it Works Section */}
-          <Card className="mb-6 bg-white/10 backdrop-blur-sm border-white/20">
-            <CardContent className="text-white p-4">
-              <div className="text-center mb-4">
-                <h2 className="text-xl font-bold text-white mb-2">🎯 How City-Specific Matching Works</h2>
-                <p className="text-white/80 text-sm">Revolutionary way to find travel companions and local friends</p>
-              </div>
-              
-              <div className="grid md:grid-cols-2 gap-4 mb-4">
-                <div className="bg-green-500/20 p-3 rounded-lg">
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="bg-green-500 rounded-full w-6 h-6 flex items-center justify-center text-white text-sm font-bold">1</div>
-                    <h3 className="font-bold text-sm">Add Your Activities</h3>
-                  </div>
-                  <div className="text-xs mb-2 font-mono bg-black/20 p-2 rounded">
-                    + "Comic-Con" + "Auto Show" + "Ted Talk" + "Coachella" + "South by Southwest" + "Lollapalooza" + "New York Fashion Week" + "Mardi Gras"
-                  </div>
-                  <ul className="text-xs space-y-1 text-green-100">
-                    <li>• Add specific events, activities, or interests</li>
-                    <li>• Create your unique activity profile</li>
-                    <li>• Show what you're passionate about</li>
-                  </ul>
-                </div>
-                
-                <div className="bg-blue-500/20 p-3 rounded-lg">
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="bg-blue-500 rounded-full w-6 h-6 flex items-center justify-center text-white text-sm font-bold">2</div>
-                    <h3 className="font-bold text-sm">Click What Others Added</h3>
-                  </div>
-                  <p className="text-xs mb-2">
-                    Browse activities others have added and click to add them to your profile.
-                  </p>
-                  <ul className="text-xs space-y-1 text-blue-100">
-                    <li>• Discover new activities from locals</li>
-                    <li>• Find hidden gems and insider experiences</li>
-                    <li>• Build connections through shared interests</li>
-                  </ul>
-                </div>
-              </div>
-              
-              <div className="grid md:grid-cols-3 gap-3 mb-4">
-                <div className="bg-purple-500/20 p-3 rounded-lg">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Target className="w-4 h-4 text-purple-300" />
-                    <h4 className="font-bold text-xs">Smart Matching</h4>
-                  </div>
-                  <p className="text-xs text-purple-100">
-                    Our AI finds people with overlapping interests and activities in your chosen city.
-                  </p>
-                </div>
-                
-                <div className="bg-orange-500/20 p-3 rounded-lg">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Users className="w-4 h-4 text-orange-300" />
-                    <h4 className="font-bold text-xs">Connect Instantly</h4>
-                  </div>
-                  <p className="text-xs text-orange-100">
-                    Message matches directly or join group activities with multiple people.
-                  </p>
-                </div>
-                
-                <div className="bg-pink-500/20 p-3 rounded-lg">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Heart className="w-4 h-4 text-pink-300" />
-                    <h4 className="font-bold text-xs">Real Experiences</h4>
-                  </div>
-                  <p className="text-xs text-pink-100">
-                    Turn shared interests into real meetups, events, and lasting friendships.
-                  </p>
-                </div>
-              </div>
-              
-              <div className="bg-gradient-to-r from-indigo-500/20 to-purple-500/20 p-3 rounded-lg">
-                <h4 className="font-bold text-sm mb-2 text-center">💡 Why This Works Better Than Traditional Apps</h4>
-                <div className="grid md:grid-cols-2 gap-3 text-xs">
-                  <div>
-                    <p className="font-semibold text-indigo-200">Activity-Based Matching:</p>
-                    <p className="text-indigo-100">Connect over what you actually want to do, not just photos</p>
-                  </div>
-                  <div>
-                    <p className="font-semibold text-purple-200">Local Insider Knowledge:</p>
-                    <p className="text-purple-100">Discover authentic experiences from people who know the city</p>
-                  </div>
-                  <div>
-                    <p className="font-semibold text-indigo-200">Group Dynamics:</p>
-                    <p className="text-indigo-100">Join activities with multiple people for safer, more fun experiences</p>
-                  </div>
-                  <div>
-                    <p className="font-semibold text-purple-200">Travel & Local Balance:</p>
-                    <p className="text-purple-100">Perfect mix of travelers seeking experiences and locals sharing knowledge</p>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* City Search */}
-          <div className="mb-4">
-            <div className="max-w-md mx-auto">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/60 w-4 h-4" />
-                <Input
-                  placeholder="Search cities..."
-                  value={citySearchTerm}
-                  onChange={(e) => setCitySearchTerm(e.target.value)}
-                  className="pl-9 py-2 text-sm bg-white/10 border-white/20 text-white placeholder-white/50 focus:border-white/40"
-                />
-              </div>
+          {/* Show loading state */}
+          {citiesLoading ? (
+            <div className="text-center py-16">
+              <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
+              <p className="text-white/70 mt-4 text-lg">Loading cities...</p>
             </div>
-          </div>
-
-          {/* Cities Grid - Enhanced for LA */}
-          {/* Featured Los Angeles Section - BETA CITY SPOTLIGHT */}
-          {filteredCities.some(city => isLAAreaCity(city.city, city.state)) && (
-            <div className="mb-12">
-              {/* BETA City Header */}
-              <div className="text-center mb-6">
-                <h2 className="text-3xl font-bold text-white mb-2">🌟 BETA CITY</h2>
-                <p className="text-white/80 text-lg">Full features available in Los Angeles Metro</p>
+          ) : (
+            <>
+              {/* City Search */}
+              <div className="mb-6">
+                <div className="max-w-md mx-auto">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/60 w-4 h-4" />
+                    <Input
+                      placeholder="Search cities..."
+                      value={citySearchTerm}
+                      onChange={(e) => setCitySearchTerm(e.target.value)}
+                      className="pl-9 py-2 text-sm bg-white/10 border-white/20 text-white placeholder-white/50 focus:border-white/40"
+                    />
+                  </div>
+                </div>
               </div>
-              <div className="flex justify-center">
-                {filteredCities.filter(city => isLAAreaCity(city.city, city.state)).map((city, index) => {
-                  const isLA = isLAAreaCity(city.city, city.state);
-                  return (
+
+              {/* Featured Los Angeles Metro - FRONT AND CENTER (Same Size) */}
+              {(filteredCities.some(city => isLAAreaCity(city.city, city.state)) || filteredCities.some(city => city.city.includes("Los Angeles Metro"))) && (
+            <div className="mb-12">
+              <div className="text-center mb-8">
+                <h2 className="text-4xl font-bold text-white mb-4">🌟 LOS ANGELES METRO</h2>
+                <p className="text-white/90 text-lg font-semibold">Full Platform Features • Most Active City</p>
+              </div>
+              <div className="flex justify-center mb-8">
+                <div className="grid grid-cols-1 max-w-sm">
+                  {filteredCities.filter(city => isLAAreaCity(city.city, city.state) || city.city.includes("Los Angeles Metro")).map((city, index) => (
                     <Card
                       key={`featured-${city.city}-${city.state}-${index}`}
-                      className="group cursor-pointer transform hover:scale-105 transition-all duration-300 overflow-hidden relative bg-gradient-to-br from-orange-500/40 to-red-500/40 backdrop-blur-sm border-orange-400/80 ring-8 ring-orange-300/60 shadow-2xl shadow-orange-500/40 max-w-2xl w-full mx-auto"
+                      className="group cursor-pointer transform hover:scale-105 transition-all duration-300 overflow-hidden relative bg-gradient-to-br from-orange-500/40 to-red-500/40 backdrop-blur-sm border-orange-400/80 ring-4 ring-orange-300/60 shadow-xl shadow-orange-500/50"
                       onClick={() => {
                         setSelectedCity(city.city);
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                       }}
                     >
-                      <div className="relative h-56 overflow-hidden">
+                      <div className="relative h-32 overflow-hidden">
                         <div className="w-full h-full bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center">
-                          <MapPin className="w-16 h-16 text-white/60" />
+                          <MapPin className="w-12 h-12 text-white/60" />
                         </div>
                         <div className="absolute inset-0 bg-black/20" />
-                        <div className="absolute top-3 right-3">
-                          <Badge className="bg-gradient-to-r from-orange-500 to-red-500 text-white text-sm px-3 py-1 animate-pulse">
-                            🌟 BETA CITY
-                          </Badge>
-                        </div>
-                        <div className="absolute top-3 left-3">
-                          <Badge className="bg-gradient-to-r from-green-500 to-blue-500 text-white text-sm px-3 py-1">
-                            Full Features
+                        <div className="absolute top-2 right-2">
+                          <Badge className="bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs px-2 py-1 animate-pulse font-bold">
+                            🌟 FEATURED
                           </Badge>
                         </div>
                       </div>
-                      <CardContent className="p-8">
-                        <div className="flex items-center justify-center gap-3 mb-3">
-                          <MapPin className="w-6 h-6 text-orange-300" />
-                          <h3 className="font-bold text-3xl text-orange-100 drop-shadow-lg text-center">{city.city}</h3>
+                      <CardContent className="p-4">
+                        <div className="flex items-center gap-2 mb-2">
+                          <MapPin className="w-4 h-4 text-orange-300" />
+                          <h3 className="font-semibold text-lg text-orange-100 truncate">{city.city}</h3>
                         </div>
-                        <p className="text-lg mb-6 text-orange-200/90 font-medium text-center">
+                        <p className="text-sm text-orange-200/90 mb-3 truncate">
                           {city.state && `${city.state}, `}{city.country}
                         </p>
-                        <div className="text-center mb-6">
-                          <p className="text-white/90 text-base">All platform features active • Most users online</p>
+                        <div className="text-center mb-3">
+                          <p className="text-white/80 text-xs">All features active</p>
                         </div>
                         <Button 
-                          className="w-full font-bold transition-all duration-300 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white shadow-xl text-xl py-4 transform hover:scale-105"
+                          className="w-full text-sm bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white py-2"
                           onClick={(e) => {
                             e.stopPropagation();
                             setSelectedCity(city.city);
                           }}
                         >
-                          🌟 Start Matching in LA
+                          Explore LA Metro
                         </Button>
                       </CardContent>
                     </Card>
-                  );
-                })}
+                  ))}
+                </div>
               </div>
             </div>
-          )}
+              )}
 
-          {/* Other Cities Grid - 4 per row as requested */}
-          {filteredCities.filter(city => !isLAAreaCity(city.city, city.state)).length > 0 && (
+              {/* Other Cities Grid - Bigger cards */}
+              {filteredCities.filter(city => !isLAAreaCity(city.city, city.state) && !city.city.includes("Los Angeles Metro")).length > 0 && (
             <div className="mb-8">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {filteredCities.filter(city => !isLAAreaCity(city.city, city.state)).map((city, index) => (
+              <div className="text-center mb-8">
+                <h3 className="text-4xl font-bold text-white mb-4">Other Cities</h3>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+                {filteredCities.filter(city => !isLAAreaCity(city.city, city.state) && !city.city.includes("Los Angeles Metro")).map((city, index) => (
                   <Card
                     key={`other-${city.city}-${city.state}-${index}`}
                     className="group cursor-pointer transform hover:scale-105 transition-all duration-300 overflow-hidden relative bg-white/10 backdrop-blur-sm border-white/20 hover:border-white/40"
@@ -973,23 +860,22 @@ export default function MatchInCity() {
                       window.scrollTo({ top: 0, behavior: 'smooth' });
                     }}
                   >
-                    <div className="relative h-24 overflow-hidden">
+                    <div className="relative h-32 overflow-hidden">
                       <div className={`w-full h-full bg-gradient-to-br ${city.gradient} flex items-center justify-center`}>
-                        <MapPin className="w-8 h-8 text-white/60" />
+                        <MapPin className="w-12 h-12 text-white/60" />
                       </div>
                       <div className="absolute inset-0 bg-black/20" />
                     </div>
-                    <CardContent className="p-3">
-                      <div className="flex items-center gap-1 mb-1">
-                        <MapPin className="w-3 h-3 text-white/80" />
-                        <h3 className="font-semibold text-sm text-white truncate">{city.city}</h3>
+                    <CardContent className="p-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <MapPin className="w-4 h-4 text-white/80" />
+                        <h3 className="font-semibold text-lg text-white truncate">{city.city}</h3>
                       </div>
-                      <p className="text-xs text-white/60 mb-2 truncate">
+                      <p className="text-sm text-white/60 mb-3 truncate">
                         {city.state && `${city.state}, `}{city.country}
                       </p>
                       <Button 
-                        size="sm"
-                        className="w-full text-xs bg-blue-500 hover:bg-blue-600 text-white"
+                        className="w-full text-sm bg-blue-500 hover:bg-blue-600 text-white py-2"
                         onClick={(e) => {
                           e.stopPropagation();
                           setSelectedCity(city.city);
@@ -1000,8 +886,79 @@ export default function MatchInCity() {
                     </CardContent>
                   </Card>
                 ))}
+                </div>
               </div>
+              )}
+
+              {/* Search for Other Cities Tab */}
+              <div className="mb-8">
+            <Card className="bg-white/10 backdrop-blur-sm border-white/20">
+              <CardContent className="p-6">
+                <div className="text-center mb-4">
+                  <h3 className="text-2xl font-bold text-white mb-2">🔍 Search Any City</h3>
+                  <p className="text-white/70">Don't see your city? Search for any city worldwide</p>
+                </div>
+                <div className="max-w-md mx-auto">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/60 w-5 h-5" />
+                    <Input
+                      placeholder="Type any city name (e.g., Tokyo, Paris, Sydney)..."
+                      value={citySearchTerm}
+                      onChange={(e) => setCitySearchTerm(e.target.value)}
+                      className="pl-10 py-3 text-lg bg-white/20 border-white/30 text-white placeholder-white/50 focus:border-white/60"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && citySearchTerm.trim() && !searchingCity) {
+                          handleCustomCitySearch(citySearchTerm.trim());
+                        }
+                      }}
+                    />
+                  </div>
+                  <div className="mt-3 text-center">
+                    <Button 
+                      onClick={() => {
+                        if (citySearchTerm.trim() && !searchingCity) {
+                          handleCustomCitySearch(citySearchTerm.trim());
+                        }
+                      }}
+                      disabled={!citySearchTerm.trim() || searchingCity}
+                      className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold px-6 py-2 flex items-center gap-2"
+                    >
+                      {searchingCity ? (
+                        <>
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                          Searching...
+                        </>
+                      ) : (
+                        'Search This City'
+                      )}
+                    </Button>
+                  </div>
+                  
+                  {/* Search Status Messages */}
+                  {searchingCity && (
+                    <div className="mt-4 p-4 bg-blue-500/20 border border-blue-400/30 rounded-lg">
+                      <div className="flex items-center gap-2 text-blue-200">
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-200"></div>
+                        <p className="text-sm font-medium">Searching for city data...</p>
+                      </div>
+                      <p className="text-xs text-blue-300 mt-1">AI is generating activities and events for {selectedCity}. This may take a few moments.</p>
+                    </div>
+                  )}
+                  
+                  {searchError && (
+                    <div className="mt-4 p-4 bg-yellow-500/20 border border-yellow-400/30 rounded-lg">
+                      <div className="text-yellow-200">
+                        <p className="text-sm font-medium">Limited Results Found</p>
+                        <p className="text-xs text-yellow-300 mt-1">{searchError}</p>
+                        <p className="text-xs text-yellow-300 mt-2">AI isn't always perfect at finding city data. You can still explore the city and add your own activities!</p>
+                      </div>
+                    </div>
+                  )}
+                  </div>
+                </CardContent>
+              </Card>
             </div>
+            </>
           )}
 
         </div>
@@ -1047,22 +1004,11 @@ export default function MatchInCity() {
 
         {/* Removed problematic photo gallery */}
 
-        {/* HOW MATCHING WORKS - Compact explanation */}
-        <Card className="mb-4 bg-white/5 backdrop-blur-sm border-white/10">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-white flex items-center gap-2 text-sm">
-              <Users className="w-4 h-4" />
-              How Activity Matching Works
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="text-white/90">
-            <div className="space-y-1 text-xs">
-              <p><strong>1. Select Activities:</strong> Click the colorful pills below to add them to your "Things I Want to Do" profile section.</p>
-              <p><strong>2. Find Matches:</strong> The system finds other users who selected the same activities in {selectedCity}.</p>
-              <p><strong>3. Connect & Plan:</strong> View matched users below and click "Connect" to start planning activities together!</p>
-              <div className="bg-blue-500/10 p-2 rounded text-xs mt-2">
-                <p>💡 <strong>Tip:</strong> Select specific activities for better matches!</p>
-              </div>
+        {/* HOW MATCHING WORKS - Small compact widget */}
+        <Card className="mb-3 bg-white/5 backdrop-blur-sm border-white/10 max-w-2xl">
+          <CardContent className="p-3">
+            <div className="text-white/80 text-xs">
+              <strong className="text-blue-400">Quick Start:</strong> Click blue activities below to add them to your profile, then see who else wants to do the same things in {selectedCity}!
             </div>
           </CardContent>
         </Card>
@@ -1301,19 +1247,19 @@ export default function MatchInCity() {
         </div>
 
         {/* My Personal Selections Section */}
-        <Card className="mb-6 bg-green-900/20 backdrop-blur-sm border-green-500/30">
+        <Card className="mb-6 bg-white/10 backdrop-blur-sm border-white/20">
           <CardHeader>
-            <CardTitle className="text-green-400 flex items-center gap-2">
+            <CardTitle className="text-white flex items-center gap-2">
               <Heart className="w-5 h-5" />
-              Things I Want to Do in {selectedCity}
+              My Selected Activities in {selectedCity}
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-green-100 text-sm mb-3">
-              These are YOUR selected activities and events that appear on your profile and help others find you:
+            <div className="text-white/80 text-sm mb-3">
+              Activities you've selected that appear on your profile:
             </div>
             {userActivities.length === 0 && userEvents.length === 0 ? (
-              <p className="text-green-300/60 text-sm italic">Click blue activities and events above to add them to your personal list!</p>
+              <p className="text-white/60 text-sm italic">Click blue activities above to add them to your list!</p>
             ) : (
               <div className="flex flex-wrap gap-2">
                 {/* User Activities */}
@@ -1324,7 +1270,7 @@ export default function MatchInCity() {
                   return (
                     <div
                       key={`activity-${userActivity.id}`}
-                      className="relative group px-3 py-1 rounded-lg text-sm font-medium bg-gradient-to-r from-green-500 to-green-600 text-white border border-green-400/20 shadow-sm"
+                      className="relative group px-3 py-1 rounded-lg text-sm font-medium bg-purple-600 hover:bg-purple-700 text-white border border-purple-400/30 shadow-sm"
                     >
                       <span>{globalActivity.activityName}</span>
                       <button
@@ -1348,7 +1294,7 @@ export default function MatchInCity() {
                     return (
                       <div
                         key={`event-${userEvent.id}`}
-                        className="relative group px-3 py-1 rounded-lg text-sm font-medium bg-gradient-to-r from-green-500 to-green-600 text-white border border-green-400/20 shadow-sm"
+                        className="relative group px-3 py-1 rounded-lg text-sm font-medium bg-purple-600 hover:bg-purple-700 text-white border border-purple-400/30 shadow-sm"
                       >
                         <span>📅 {userEvent.eventtitle || userEvent.eventTitle || (userEvent.eventId ? `Event ${userEvent.eventId}` : "Saved Event")}</span>
                         <button
@@ -1379,7 +1325,7 @@ export default function MatchInCity() {
                   return (
                     <div
                       key={`event-${userEvent.id}`}
-                      className="relative group px-3 py-1 rounded-lg text-sm font-medium bg-gradient-to-r from-green-500 to-green-600 text-white border border-green-400/20 shadow-sm"
+                      className="relative group px-3 py-1 rounded-lg text-sm font-medium bg-purple-600 hover:bg-purple-700 text-white border border-purple-400/30 shadow-sm"
                     >
                       <span>📅 {globalEvent.title}</span>
                       <button
@@ -1403,28 +1349,28 @@ export default function MatchInCity() {
             <CardHeader>
               <CardTitle className="text-white flex items-center gap-2">
                 <Users className="w-5 h-5" />
-                People Interested ({matchingUsers.length})
+                People Interested ({(matchingUsers || []).length})
               </CardTitle>
             </CardHeader>
             <CardContent>
-              {(matchingUsers as any[]).length === 0 ? (
+              {(matchingUsers || []).length === 0 ? (
                 <div className="text-center py-6 text-white/60">
                   <Users className="w-12 h-12 mx-auto opacity-30 mb-3" />
                   <p className="text-sm">Add activities and events to find people with similar interests!</p>
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {(matchingUsers as any[]).slice(0, 5).map((user: any, index: number) => (
+                  {(matchingUsers || []).slice(0, 5).map((user: any, index: number) => (
                     <div key={user.id || index} className="flex items-center gap-3 p-3 bg-white/5 rounded-lg">
                       <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white font-semibold">
                         {user.username?.[0]?.toUpperCase() || '?'}
                       </div>
                       <div className="flex-1">
                         <div className="text-white font-medium">{user.username || 'Anonymous'}</div>
-                        {user.sharedActivityNames && user.sharedActivityNames.length > 0 && (
+                        {user.sharedActivityNames && Array.isArray(user.sharedActivityNames) && user.sharedActivityNames.length > 0 && (
                           <div className="text-white/50 text-xs mt-1">
-                            Both interested in: {user.sharedActivityNames.slice(0, 2).join(', ')}
-                            {user.sharedActivityNames.length > 2 && ` +${user.sharedActivityNames.length - 2} more`}
+                            Both interested in: {(user.sharedActivityNames || []).slice(0, 2).join(', ')}
+                            {(user.sharedActivityNames || []).length > 2 && ` +${(user.sharedActivityNames || []).length - 2} more`}
                           </div>
                         )}
                         <div className="text-white/60 text-xs">
