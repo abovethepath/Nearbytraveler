@@ -2359,19 +2359,19 @@ export default function Home() {
             )}
 
 
-            {/* Local Events Section */}
-            <div className="space-y-6">
+            {/* Events Section - Simplified */}
+            <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-purple-800 bg-clip-text text-transparent">
-                  Local Events
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
+                  Upcoming Events
                 </h2>
                 <Button 
                   variant="ghost" 
                   size="sm" 
-                  className="bg-gradient-to-r from-purple-500 to-orange-500 text-white hover:from-purple-600 hover:to-orange-600 rounded-xl shadow-lg"
+                  className="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200"
                   onClick={() => setLocation('/events')}
                 >
-                  <Calendar className="w-4 h-4 mr-2" />
+                  <Calendar className="w-4 h-4 mr-1" />
                   View All
                 </Button>
               </div>
@@ -2483,96 +2483,45 @@ export default function Home() {
               )}
             </div>
 
-            {/* Quick Meetups Section - Only show for non-business users */}
-            {user?.userType !== 'business' && effectiveUser?.userType !== 'business' && (
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                    Ready to Meet
-                  </h3>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="text-xs text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
-                    onClick={() => setLocation('/quick-meetups')}
-                  >
-                    <Calendar className="w-3 h-3 mr-1" />
+
+            {/* Quick Actions Section - Consolidated */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Quick Deals */}
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border shadow-sm">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="font-semibold text-sm text-gray-900 dark:text-white">Flash Deals</h3>
+                  <Button size="sm" variant="ghost" onClick={() => setLocation('/deals')}>
+                    <Store className="w-4 h-4 mr-1" />
                     View All
                   </Button>
                 </div>
-
-                {/* Quick Meetup Widget - Simplified on Mobile */}
-                {isMobile ? (
-                  <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border shadow-sm">
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="font-semibold text-sm">Quick Meetups</h3>
-                      <Button size="sm" variant="ghost" onClick={() => setLocation('/quick-meetups')}>
-                        View All
-                      </Button>
-                    </div>
-                    <p className="text-xs text-gray-600 dark:text-gray-400">Find spontaneous meetups nearby</p>
-                  </div>
-                ) : (
-                  <QuickMeetupWidget />
-                )}
-              </div>
-            )}
-
-            {/* Quick Deals Section - Flash Deals with Timers */}
-            <div className="space-y-6">
-              <QuickDealsDiscovery 
-                userLocation={{
-                  city: effectiveUser?.hometownCity || "",
-                  state: effectiveUser?.hometownState || "",
-                  country: effectiveUser?.hometownCountry || "United States"
-                }}
-              />
-            </div>
-
-            {/* Discover Businesses Section */}
-            <div className="space-y-6">
-              <div className="flex items-center justify-between">
-                <h2 className="text-3xl font-bold bg-gradient-to-r from-green-600 to-green-800 bg-clip-text text-transparent">
-                  Local Businesses
-                </h2>
+                <p className="text-xs text-gray-600 dark:text-gray-400 mb-3">Limited-time local offers</p>
                 <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="bg-gradient-to-r from-green-500 to-orange-500 text-white hover:from-green-600 hover:to-orange-600 rounded-xl shadow-lg"
+                  className="w-full text-sm bg-gradient-to-r from-green-500 to-orange-500 text-white hover:from-green-600 hover:to-orange-600"
                   onClick={() => setLocation('/deals')}
                 >
-                  <Briefcase className="w-4 h-4 mr-2" />
-                  View All
+                  Browse Deals
                 </Button>
               </div>
 
-              {/* Business Grid - Simplified on Mobile */}
-              {isMobile ? (
+              {/* Quick Meetups - Only for non-business users */}
+              {user?.userType !== 'business' && effectiveUser?.userType !== 'business' && (
                 <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border shadow-sm">
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="font-semibold text-sm">Local Deals</h3>
-                    <Button size="sm" variant="ghost" onClick={() => setLocation('/deals')}>
-                      <Briefcase className="w-4 h-4 mr-1" />
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="font-semibold text-sm text-gray-900 dark:text-white">Ready to Meet</h3>
+                    <Button size="sm" variant="ghost" onClick={() => setLocation('/quick-meetups')}>
+                      <Calendar className="w-4 h-4 mr-1" />
                       View All
                     </Button>
                   </div>
-                  <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">Discover local business offers and deals</p>
+                  <p className="text-xs text-gray-600 dark:text-gray-400 mb-3">Spontaneous meetups nearby</p>
                   <Button 
-                    className="w-full text-sm bg-gradient-to-r from-green-500 to-orange-500 text-white hover:from-green-600 hover:to-orange-600"
-                    onClick={() => setLocation('/deals')}
+                    className="w-full text-sm bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:from-blue-600 hover:to-purple-600"
+                    onClick={() => setLocation('/quick-meetups')}
                   >
-                    Browse Local Deals
+                    Find Meetups
                   </Button>
                 </div>
-              ) : (
-                <BusinessesGrid 
-                  currentLocation={{
-                    city: effectiveUser?.hometownCity || "",
-                    state: effectiveUser?.hometownState || "",
-                    country: effectiveUser?.hometownCountry || "United States"
-                  }}
-                  travelPlans={travelPlans}
-                />
               )}
             </div>
 
