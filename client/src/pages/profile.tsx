@@ -3446,6 +3446,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           <div className="text-lg font-medium text-blue-600">
                             Nearby Traveler {currentDestination}
                           </div>
+                          <div className="text-sm text-gray-600 dark:text-gray-400">
+                            From {hometown}
+                          </div>
                         </>
                       );
                     } else {
