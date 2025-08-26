@@ -218,8 +218,14 @@ function QuickMeetupChat() {
   };
 
   const formatTimeRemaining = (expiresAt: string) => {
-    // Parse as local time by treating it as a local timestamp
-    const expiration = new Date(expiresAt.replace(' ', 'T'));
+    // The backend sends "2025-08-26 05:59:00.085" which is LOCAL time
+    // We need to parse it as local time, not UTC
+    const [datePart, timePart] = expiresAt.split(' ');
+    const [year, month, day] = datePart.split('-').map(Number);
+    const [hour, minute, second] = timePart.split(':').map(Number);
+    
+    // Create date in local timezone (not UTC)
+    const expiration = new Date(year, month - 1, day, hour, minute, Math.floor(second));
     
     const now = new Date();
     const timeDiffMs = expiration.getTime() - now.getTime();
@@ -228,7 +234,7 @@ function QuickMeetupChat() {
       return "Expired";
     }
     
-    // Show the actual expiration time instead of countdown
+    // Show the actual expiration time
     return `Until ${expiration.toLocaleTimeString('en-US', { 
       hour: 'numeric', 
       minute: '2-digit',
