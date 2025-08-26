@@ -87,6 +87,7 @@ function areInSameMetroArea(city1: string, city2: string): boolean {
 
 export default function MatchInCity() {
   const [location, setLocation] = useLocation();
+  // FORCE EMPTY selectedCity to always show city selection page first
   const [selectedCity, setSelectedCity] = useState<string>('');
   const [newActivityName, setNewActivityName] = useState('');
   const [newActivityDescription, setNewActivityDescription] = useState('');
@@ -99,6 +100,16 @@ export default function MatchInCity() {
   const [searchTerm, setSearchTerm] = useState('');
   const { toast } = useToast();
   const { user } = useAuth();
+
+  // Debug: Make sure selectedCity stays empty on page load
+  useEffect(() => {
+    console.log('🔍 MatchInCity loaded - selectedCity:', selectedCity);
+    // Force reset to empty if somehow it got set
+    if (selectedCity !== '') {
+      console.log('🚨 Forcing selectedCity reset to empty string');
+      setSelectedCity('');
+    }
+  }, []);
 
   // Get user data from localStorage (same as other working components)
   const getUserData = () => {
