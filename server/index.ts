@@ -71,57 +71,8 @@ console.log('🚀 REGISTERING CRITICAL API ROUTES FIRST TO BYPASS VITE INTERCEPT
 // REMOVED: This conflicted with the proper filtering endpoint in routes.ts
 // The events endpoint is now handled in routes.ts with proper city filtering
 
-app.get('/api/business-deals', async (req, res) => {
-  try {
-    console.log('💰 DIRECT API: Fetching business deals');
-    
-    // Import metro consolidation helpers
-    const { isLAMetroCity, getMetroArea } = await import('../shared/constants.js');
-    
-    // First get the business offers
-    const offers = await db.select()
-      .from(businessOffers)
-      .where(eq(businessOffers.isActive, true))
-      .orderBy(desc(businessOffers.createdAt));
-    
-    // Then add business info to each offer
-    const offersWithBusinessInfo = await Promise.all(offers.map(async (offer) => {
-      const businessUser = await db.select()
-        .from(users)
-        .where(eq(users.id, offer.businessId))
-        .limit(1);
-      
-      const business = businessUser[0] || {};
-      
-      // LA METRO CONSOLIDATION: Check if this deal is in LA Metro area
-      const offerCity = offer.city || '';
-      const isInLAMetro = isLAMetroCity(offerCity);
-      const metroArea = getMetroArea(offerCity);
-      
-      return {
-        ...offer,
-        businessName: business.businessName || 'Business',
-        businessDescription: business.bio || '',
-        businessType: business.userType || 'business',
-        businessLocation: business.location || offer.city,
-        businessEmail: business.email || '',
-        businessPhone: business.phoneNumber || '',
-        businessAddress: business.streetAddress || '',
-        businessImage: business.profileImage || '',
-        // Add metro tags for frontend filtering
-        isLAMetro: isInLAMetro,
-        metroArea: metroArea
-      };
-    }));
-    
-    console.log('💰 DIRECT API: Found', offersWithBusinessInfo.length, 'active business offers');
-    console.log('🌍 LA METRO DEALS:', offersWithBusinessInfo.filter(d => d.isLAMetro).length, 'deals in LA metro area');
-    res.json(offersWithBusinessInfo);
-  } catch (error: any) {
-    console.error('🔥 Error in business deals API:', error);
-    res.status(500).json({ error: 'Failed to get business deals' });
-  }
-});
+// REMOVED: This conflicted with the proper filtering endpoint in routes.ts
+// The business-deals endpoint is now handled in routes.ts with proper city filtering
 
 app.get('/api/quick-meetups', async (req, res) => {
   try {

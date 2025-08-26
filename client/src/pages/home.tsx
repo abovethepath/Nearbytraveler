@@ -638,25 +638,25 @@ export default function Home() {
 
   // Fetch business offers from ALL locations (hometown + all travel destinations)
   const { data: allBusinessOffers = [], isLoading: businessOffersLoading } = useQuery<any[]>({
-    queryKey: [`/api/business-offers/all-locations`, discoveryLocations.allCities.map(loc => loc.city)],
+    queryKey: [`/api/business-deals/all-locations`, discoveryLocations.allCities.map(loc => loc.city)],
     queryFn: async () => {
       if (!discoveryLocations.allCities.length) return [];
 
-      console.log('Fetching business offers from ALL locations:', discoveryLocations.allCities);
+      console.log('Fetching business deals from ALL locations:', discoveryLocations.allCities);
 
-      // Fetch business offers from all cities in parallel
+      // Fetch business deals from all cities in parallel
       const offerPromises = discoveryLocations.allCities.map(async (location) => {
         const cityName = location.city.split(',')[0].trim();
-        console.log(`Fetching business offers for ${location.type}:`, cityName);
+        console.log(`Fetching business deals for ${location.type}:`, cityName);
 
         try {
           const response = await fetch(`/api/business-deals?city=${encodeURIComponent(cityName)}`);
-          if (!response.ok) throw new Error(`Failed to fetch business offers for ${cityName}`);
+          if (!response.ok) throw new Error(`Failed to fetch business deals for ${cityName}`);
           const data = await response.json();
-          console.log(`${location.type} Business Offers API response:`, data.length, 'offers for', cityName);
+          console.log(`${location.type} Business Deals API response:`, data.length, 'deals for', cityName);
           return data.map((offer: any) => ({ ...offer, sourceLocation: location }));
         } catch (error) {
-          console.error(`Error fetching business offers for ${cityName}:`, error);
+          console.error(`Error fetching business deals for ${cityName}:`, error);
           return [];
         }
       });
@@ -669,7 +669,7 @@ export default function Home() {
         index === self.findIndex((o) => o.id === offer.id)
       );
 
-      console.log('Combined business offers:', unique.length, 'offers from ALL', discoveryLocations.allCities.length, 'locations');
+      console.log('Combined business deals:', unique.length, 'deals from ALL', discoveryLocations.allCities.length, 'locations');
       return unique;
     },
     enabled: discoveryLocations.allCities.length > 0 && !!currentUserId && !isLoadingTravelPlans && !isLoadingUserProfile,
