@@ -3439,28 +3439,22 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       (user.location || 'Hometown');
                     
                     if (currentDestination) {
-                      // When traveling: NEARBY TRAVELER [DESTINATION]
+                      // When traveling: USERNAME then NEARBY TRAVELER [DESTINATION]
                       return (
                         <>
                           <h1 className="text-2xl sm:text-3xl font-bold text-black">@{user.username}</h1>
-                          <div className="text-lg sm:text-xl font-semibold text-blue-600 mt-1">
-                            NEARBY TRAVELER {currentDestination.toUpperCase()}
-                          </div>
-                          <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                            From {hometown}
+                          <div className="text-lg font-medium text-blue-600">
+                            Nearby Traveler {currentDestination}
                           </div>
                         </>
                       );
                     } else {
-                      // When home: NEARBY LOCAL [HOMETOWN]
+                      // When home: USERNAME then NEARBY LOCAL [HOMETOWN]
                       return (
                         <>
                           <h1 className="text-2xl sm:text-3xl font-bold text-black">@{user.username}</h1>
-                          <div className="text-lg sm:text-xl font-semibold text-orange-600 mt-1">
-                            NEARBY LOCAL {hometown.toUpperCase()}
-                          </div>
-                          <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                            Currently home
+                          <div className="text-lg font-medium text-orange-600">
+                            Nearby Local {hometown}
                           </div>
                         </>
                       );
