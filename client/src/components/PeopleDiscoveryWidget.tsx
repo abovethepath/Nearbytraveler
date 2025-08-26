@@ -429,7 +429,7 @@ export function PeopleDiscoveryWidget({
         className="grid grid-cols-1 sm:grid-cols-2 gap-6"
         onClickCapture={(e) => e.stopPropagation()}
       >
-        {people.slice(0, displayCount).map((person) => (
+        {people && people.slice(0, displayCount).map((person) => (
           <PersonWithCommonalities 
             key={person.id} 
             person={person}
@@ -438,7 +438,7 @@ export function PeopleDiscoveryWidget({
       </div>
 
       {/* Show More Button */}
-      {people.length > displayCount && (
+      {people && people.length > displayCount && (
         <div className="text-center mt-6">
           <button
             onClick={() => setDisplayCount(prev => prev + 4)}
