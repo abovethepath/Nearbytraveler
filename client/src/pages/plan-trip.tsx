@@ -829,12 +829,15 @@ export default function PlanTrip() {
                         <button
                           key={interest}
                           type="button"
-                          onClick={() => {
-                            if (tripPlan.interests.includes(interest)) {
-                              setTripPlan(prev => ({ ...prev, interests: prev.interests.filter(i => i !== interest) }));
-                            } else {
-                              setTripPlan(prev => ({ ...prev, interests: [...prev.interests, interest] }));
-                            }
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setTripPlan(prev => {
+                              const newInterests = prev.interests.includes(interest)
+                                ? prev.interests.filter(i => i !== interest)
+                                : [...prev.interests, interest];
+                              return { ...prev, interests: newInterests };
+                            });
                           }}
                           className={`px-2 sm:px-3 py-2 sm:py-3 rounded-md text-xs sm:text-sm font-medium transition-all break-words overflow-hidden text-center leading-tight ${
                             tripPlan.interests.includes(interest)
@@ -867,12 +870,15 @@ export default function PlanTrip() {
                         key={interest}
                         type="button"
                         variant={tripPlan.interests.includes(interest) ? "default" : "outline"}
-                        onClick={() => {
-                          if (tripPlan.interests.includes(interest)) {
-                            setTripPlan(prev => ({ ...prev, interests: prev.interests.filter(i => i !== interest) }));
-                          } else {
-                            setTripPlan(prev => ({ ...prev, interests: [...prev.interests, interest] }));
-                          }
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setTripPlan(prev => {
+                            const newInterests = prev.interests.includes(interest)
+                              ? prev.interests.filter(i => i !== interest)
+                              : [...prev.interests, interest];
+                            return { ...prev, interests: newInterests };
+                          });
                         }}
                         className="h-auto py-2 sm:py-3 px-2 sm:px-3 text-xs sm:text-sm font-medium transition-colors duration-200 bg-white dark:bg-gray-600 border-gray-200 dark:border-gray-500 hover:bg-blue-50 dark:hover:bg-blue-800 break-words overflow-hidden text-center leading-tight"
                       >
@@ -904,12 +910,15 @@ export default function PlanTrip() {
                           key={`activity-${index}`}
                           variant={isSelected ? "default" : "outline"}
                           size="sm"
-                          onClick={() => {
-                            if (isSelected) {
-                              setTripPlan(prev => ({ ...prev, activities: prev.activities.filter(a => a !== activity) }));
-                            } else {
-                              setTripPlan(prev => ({ ...prev, activities: [...prev.activities, activity] }));
-                            }
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setTripPlan(prev => {
+                              const newActivities = prev.activities.includes(activity)
+                                ? prev.activities.filter(a => a !== activity)
+                                : [...prev.activities, activity];
+                              return { ...prev, activities: newActivities };
+                            });
                           }}
                           className={`h-8 px-3 text-xs transition-all ${
                             isSelected 
@@ -945,18 +954,15 @@ export default function PlanTrip() {
                           key={`event-${index}`}
                           variant={isSelected ? "default" : "outline"}
                           size="sm"
-                          onClick={() => {
-                            if (isSelected) {
-                              setTripPlan(prev => ({
-                                ...prev,
-                                events: prev.events.filter(e => e !== event)
-                              }));
-                            } else {
-                              setTripPlan(prev => ({
-                                ...prev,
-                                events: [...prev.events, event]
-                              }));
-                            }
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setTripPlan(prev => {
+                              const newEvents = prev.events.includes(event)
+                                ? prev.events.filter(evt => evt !== event)
+                                : [...prev.events, event];
+                              return { ...prev, events: newEvents };
+                            });
                           }}
                           className={`h-8 px-3 text-xs transition-all ${
                             isSelected 
@@ -996,20 +1002,20 @@ export default function PlanTrip() {
                   Accommodation on This Trip *
                 </Label>
                 <Select value={tripPlan.accommodation} onValueChange={(value) => setTripPlan(prev => ({ ...prev, accommodation: value }))}>
-                  <SelectTrigger className="text-sm sm:text-base h-9 sm:h-10 md:h-11">
+                  <SelectTrigger className="bg-white dark:bg-gray-800 text-black dark:text-white border-gray-300 dark:border-gray-600 text-sm sm:text-base h-9 sm:h-10 md:h-11">
                     <SelectValue placeholder="Select type" />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="hotel-booked">Hotel Booked</SelectItem>
-                    <SelectItem value="hostel-booked">Hostel Booked</SelectItem>
-                    <SelectItem value="airbnb-booked">Airbnb Booked</SelectItem>
-                    <SelectItem value="hotel">Looking for Hotel</SelectItem>
-                    <SelectItem value="hostel">Looking for Hostel</SelectItem>
-                    <SelectItem value="airbnb">Looking for Airbnb</SelectItem>
-                    <SelectItem value="couch">Looking for Couch</SelectItem>
-                    <SelectItem value="friends-family">Stay with Friends/Family</SelectItem>
-                    <SelectItem value="camping">Camping</SelectItem>
-                    <SelectItem value="undecided">Undecided</SelectItem>
+                  <SelectContent className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 shadow-lg">
+                    <SelectItem value="hotel-booked" className="bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">Hotel Booked</SelectItem>
+                    <SelectItem value="hostel-booked" className="bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">Hostel Booked</SelectItem>
+                    <SelectItem value="airbnb-booked" className="bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">Airbnb Booked</SelectItem>
+                    <SelectItem value="hotel" className="bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">Looking for Hotel</SelectItem>
+                    <SelectItem value="hostel" className="bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">Looking for Hostel</SelectItem>
+                    <SelectItem value="airbnb" className="bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">Looking for Airbnb</SelectItem>
+                    <SelectItem value="couch" className="bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">Looking for Couch</SelectItem>
+                    <SelectItem value="friends-family" className="bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">Stay with Friends/Family</SelectItem>
+                    <SelectItem value="camping" className="bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">Camping</SelectItem>
+                    <SelectItem value="undecided" className="bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">Undecided</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -1025,14 +1031,14 @@ export default function PlanTrip() {
                   <SelectTrigger className="bg-white dark:bg-gray-800 text-black dark:text-white border-gray-300 dark:border-gray-600 text-sm sm:text-base h-9 sm:h-10 md:h-11">
                     <SelectValue placeholder="Select transportation method" />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Flight">Flight</SelectItem>
-                    <SelectItem value="Car">Car</SelectItem>
-                    <SelectItem value="Car Rental Need">Car Rental Need</SelectItem>
-                    <SelectItem value="Train">Train</SelectItem>
-                    <SelectItem value="Bus">Bus</SelectItem>
-                    <SelectItem value="Cruise">Cruise</SelectItem>
-                    <SelectItem value="Other">Other</SelectItem>
+                  <SelectContent className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 shadow-lg">
+                    <SelectItem value="Flight" className="bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">Flight</SelectItem>
+                    <SelectItem value="Car" className="bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">Car</SelectItem>
+                    <SelectItem value="Car Rental Need" className="bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">Car Rental Need</SelectItem>
+                    <SelectItem value="Train" className="bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">Train</SelectItem>
+                    <SelectItem value="Bus" className="bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">Bus</SelectItem>
+                    <SelectItem value="Cruise" className="bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">Cruise</SelectItem>
+                    <SelectItem value="Other" className="bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">Other</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
