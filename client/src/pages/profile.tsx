@@ -3452,7 +3452,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     {user.businessName || user.name || `@${user.username}`}
                   </h1>
                   <div className="flex items-center gap-2 text-sm sm:text-base">
-                    <span className="inline-flex items-center justify-center h-7 rounded-full px-3 text-xs font-medium bg-blue-500 text-white">
+                    <span className="inline-flex items-center justify-center h-8 rounded-full px-4 text-xs font-medium bg-blue-500 text-white">
                       Nearby Business
                     </span>
                     {user.businessType && <span className="text-black/80">• {user.businessType}</span>}
@@ -6347,7 +6347,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     {tempLanguages.length > 0 && (
                       <div className="flex flex-wrap gap-2 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
                         {tempLanguages.map((language) => (
-                          <div key={language} className="inline-flex items-center justify-center h-8 rounded-full px-3 text-sm font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0">
+                          <div key={language} className="inline-flex items-center justify-center h-8 rounded-full px-4 text-xs font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0">
                             {language}
                             <button
                               onClick={() => setTempLanguages(tempLanguages.filter(l => l !== language))}
@@ -6585,7 +6585,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                   });
                                 });
                             }}
-                            className="h-7 w-16 px-2 text-xs"
+                            className="h-8 w-16 px-2 text-xs"
                           >
                             Accept
                           </Button>
@@ -6611,7 +6611,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                   });
                                 });
                             }}
-                            className="h-7 w-16 px-2 text-xs"
+                            className="h-8 w-16 px-2 text-xs"
                           >
                             Decline
                           </Button>
@@ -6742,7 +6742,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       {tempCountries.length > 0 && (
                         <div className="flex flex-wrap gap-2 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
                           {tempCountries.map((country) => (
-                            <div key={country} className="inline-flex items-center justify-center h-8 rounded-full px-3 text-sm font-medium whitespace-nowrap leading-none bg-green-500 text-white border-0">
+                            <div key={country} className="inline-flex items-center justify-center h-8 rounded-full px-4 text-xs font-medium whitespace-nowrap leading-none bg-green-500 text-white border-0">
                               {country}
                               <button
                                 onClick={() => setTempCountries(tempCountries.filter(c => c !== country))}
