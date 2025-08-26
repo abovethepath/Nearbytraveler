@@ -22,14 +22,13 @@ import {
   Calendar
 } from "lucide-react";
 
-// City data with beautiful backgrounds matching the screenshot
+// City data with vibrant gradient backgrounds
 const FEATURED_CITIES = [
   {
     city: "New York City",
     state: "New York",
     country: "United States",
     gradient: "from-blue-600 to-purple-800",
-    image: "https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=800&q=80",
     userCount: 1250,
     eventCount: 89
   },
@@ -38,7 +37,6 @@ const FEATURED_CITIES = [
     state: "California", 
     country: "United States",
     gradient: "from-orange-500 to-red-600",
-    image: "https://images.unsplash.com/photo-1544989164-925f34938ea0?w=800&q=80",
     userCount: 890,
     eventCount: 67
   },
@@ -47,7 +45,6 @@ const FEATURED_CITIES = [
     state: "Oregon",
     country: "United States", 
     gradient: "from-green-500 to-blue-600",
-    image: "https://images.unsplash.com/photo-1545093149-618ce3bcf49d?w=800&q=80",
     userCount: 445,
     eventCount: 34
   },
@@ -56,7 +53,6 @@ const FEATURED_CITIES = [
     state: "Massachusetts",
     country: "United States",
     gradient: "from-red-500 to-orange-600", 
-    image: "https://images.unsplash.com/photo-1558469370-e1c6b21ee809?w=800&q=80",
     userCount: 567,
     eventCount: 41
   },
@@ -65,7 +61,6 @@ const FEATURED_CITIES = [
     state: "California",
     country: "United States",
     gradient: "from-teal-500 to-cyan-600",
-    image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
     userCount: 789,
     eventCount: 56
   },
@@ -74,7 +69,6 @@ const FEATURED_CITIES = [
     state: "Illinois", 
     country: "United States",
     gradient: "from-indigo-500 to-purple-600",
-    image: "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=800&q=80",
     userCount: 623,
     eventCount: 48
   },
@@ -83,7 +77,6 @@ const FEATURED_CITIES = [
     state: "Florida",
     country: "United States",
     gradient: "from-pink-500 to-orange-500",
-    image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
     userCount: 401,
     eventCount: 29
   },
@@ -92,7 +85,6 @@ const FEATURED_CITIES = [
     state: "Washington",
     country: "United States",
     gradient: "from-gray-600 to-blue-700",
-    image: "https://images.unsplash.com/photo-1541698444083-023c97d3f4b6?w=800&q=80",
     userCount: 512,
     eventCount: 38
   }
@@ -381,26 +373,12 @@ export default function MatchInCity() {
             {filteredCities.map((city, index) => (
               <Card key={city.city} className="group overflow-hidden bg-white/5 backdrop-blur-lg border-white/10 hover:bg-white/10 transition-all duration-500 hover:scale-105 cursor-pointer">
                 <div className="relative">
-                  {/* City Image */}
+                  {/* Vibrant Gradient Background */}
                   <div className="aspect-video overflow-hidden">
-                    <img 
-                      src={city.image}
-                      alt={city.city}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                      onError={(e) => {
-                        // Fallback to gradient if image fails to load
-                        e.currentTarget.style.display = 'none';
-                        const nextElement = e.currentTarget.nextElementSibling as HTMLElement;
-                        if (nextElement) {
-                          nextElement.style.display = 'flex';
-                        }
-                      }}
-                    />
-                    {/* Fallback gradient */}
                     <div 
-                      className={`w-full h-full bg-gradient-to-br ${city.gradient} items-center justify-center hidden`}
+                      className={`w-full h-full bg-gradient-to-br ${city.gradient} flex items-center justify-center group-hover:scale-110 transition-transform duration-700`}
                     >
-                      <MapPin className="w-12 h-12 text-white" />
+                      <MapPin className="w-12 h-12 text-white/80" />
                     </div>
                   </div>
                   
