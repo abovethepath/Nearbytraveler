@@ -329,7 +329,7 @@ export default function FixedChatroom() {
     }
   };
   
-  // Send message
+  // Send message - ENHANCED with multiple format attempts
   const sendMessage = async () => {
     if (!messageText.trim() || !currentUserId || !userIsMember || isSending) return;
     
@@ -338,13 +338,56 @@ export default function FixedChatroom() {
     
     try {
       addDebug(`💬 Sending message: "${messageText.substring(0, 50)}..."`);
-      await apiRequest(`/api/chatrooms/${chatroomId}/messages`, {
-        method: 'POST',
-        body: JSON.stringify({ content: messageText.trim() })
-      });
+      
+      // Try multiple request formats for sending messages
+      let messageSuccessful = false;
+      let lastError = null;
+      
+      const messageEndpoints = [
+        `/api/chatrooms/${chatroomId}/messages`,
+        `/api/chatroom/${chatroomId}/messages`,
+        `/api/chatrooms/${chatroomId}/message`
+      ];
+      
+      const messageBodyFormats = [
+        JSON.stringify({ content: messageText.trim(), user_id: currentUserId }),
+        JSON.stringify({ content: messageText.trim(), userId: currentUserId }),
+        JSON.stringify({ content: messageText.trim(), senderId: currentUserId }),
+        JSON.stringify({ message: messageText.trim(), user_id: currentUserId }),
+        JSON.stringify({ text: messageText.trim(), user_id: currentUserId }),
+        JSON.stringify({ content: messageText.trim() }) // Original format
+      ];
+      
+      for (const endpoint of messageEndpoints) {
+        if (messageSuccessful) break;
+        
+        for (const body of messageBodyFormats) {
+          if (messageSuccessful) break;
+          
+          try {
+            addDebug(`🔄 Trying message: POST ${endpoint} with body: ${body.substring(0, 100)}...`);
+            
+            await apiRequest(endpoint, {
+              method: 'POST',
+              body: body
+            });
+            
+            addDebug('✅ Message sent successfully!');
+            messageSuccessful = true;
+            break;
+            
+          } catch (error: any) {
+            addDebug(`⚠️ ${endpoint} failed: ${error.message}`);
+            lastError = error;
+          }
+        }
+      }
+      
+      if (!messageSuccessful) {
+        throw lastError || new Error('All message send attempts failed');
+      }
       
       setMessageText("");
-      addDebug('✅ Message sent successfully');
       
       // Reload messages
       setTimeout(async () => {
