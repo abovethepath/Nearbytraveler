@@ -4322,8 +4322,11 @@ Questions? Just reply to this message. Welcome aboard!
   app.get("/api/events", async (req, res) => {
     console.log("🟢 EVENTS ENDPOINT HIT! Query:", req.query, "URL:", req.url);
     try {
-      if (process.env.NODE_ENV === 'development') console.log(`📅 DIRECT API: Fetching events with query:`, req.query);
+      console.log(`📅 EVENTS DEBUG: Full query parameters:`, req.query);
       const { city, state, country } = req.query;
+      console.log(`📅 EVENTS DEBUG: Extracted city="${city}" state="${state}" country="${country}"`);
+      console.log(`📅 EVENTS DEBUG: City type: ${typeof city}, truthy: ${!!city}, trimmed: "${typeof city === 'string' ? city.trim() : 'N/A'}"`);
+      if (process.env.NODE_ENV === 'development') console.log(`📅 DIRECT API: Fetching events with query:`, req.query);
 
       let eventsQuery = [];
       console.log(`📅 EVENTS DEBUG: City parameter received: "${city}", type: ${typeof city}`);

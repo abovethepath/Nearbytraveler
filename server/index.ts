@@ -68,25 +68,8 @@ app.use(cors({
 // Register these API routes BEFORE any other middleware to prevent Vite interception
 console.log('🚀 REGISTERING CRITICAL API ROUTES FIRST TO BYPASS VITE INTERCEPTION');
 
-app.get('/api/events', async (req, res) => {
-  try {
-    console.log('📅 DIRECT API: Fetching events');
-    const now = new Date();
-    const sixWeeksFromNow = new Date(now.getTime() + (42 * 24 * 60 * 60 * 1000));
-    
-    const eventsQuery = await db.select().from(events)
-      .where(and(
-        gte(events.date, now),
-        lte(events.date, sixWeeksFromNow)
-      ))
-      .orderBy(asc(events.date));
-    
-    res.json(eventsQuery);
-  } catch (error: any) {
-    console.error('🔥 Error in events API:', error);
-    res.status(500).json({ error: 'Failed to get events' });
-  }
-});
+// REMOVED: This conflicted with the proper filtering endpoint in routes.ts
+// The events endpoint is now handled in routes.ts with proper city filtering
 
 app.get('/api/business-deals', async (req, res) => {
   try {
