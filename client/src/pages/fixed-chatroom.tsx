@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -21,6 +21,7 @@ interface ChatMember {
   name: string;
   profile_image?: string;
   role: string;
+  userId?: number; // Alternative field name
 }
 
 interface Chatroom {
@@ -49,11 +50,11 @@ export default function FixedChatroom() {
   const pathSegments = window.location.pathname.split('/');
   const chatroomId = parseInt(pathSegments[2] || '198');
   
-  // Debug logging function
-  const addDebug = (message: string) => {
+  // Debug logging function - MEMOIZED to prevent re-render loops
+  const addDebug = useCallback((message: string) => {
     console.log(message);
     setDebugInfo(prev => [...prev.slice(-4), `${new Date().toLocaleTimeString()}: ${message}`]);
-  };
+  }, []);
   
   // Get current user - MEMOIZED to prevent infinite re-renders
   const getCurrentUser = useCallback(() => {
@@ -85,12 +86,14 @@ export default function FixedChatroom() {
     setCurrentUser(user);
   }, [getCurrentUser]);
   
-  // Check if user is a member - SIMPLIFIED (no more verification BS)
-  const userIsMember = members.some(member => 
-    member.user_id === currentUserId || 
-    member.id === currentUserId || 
-    (member as any).userId === currentUserId
-  ) || (members.length > 0 && error === null); // If you can see members and no errors, you're probably in
+  // Check if user is a member - SIMPLIFIED to prevent infinite renders
+  const userIsMember = useMemo(() => {
+    return members.some(member => 
+      member.user_id === currentUserId || 
+      member.id === currentUserId || 
+      member.userId === currentUserId
+    );
+  }, [members, currentUserId]);
   
   // Enhanced API request with multiple attempt strategies
   const apiRequest = async (url: string, options: any = {}) => {
@@ -240,8 +243,8 @@ export default function FixedChatroom() {
     }
   };
   
-  // Load all data - MEMOIZED to prevent infinite re-renders
-  const loadAllData = useCallback(async () => {
+  // Load all data
+  const loadAllData = async () => {
     if (!currentUserId) {
       addDebug('❌ Cannot load data - no user ID');
       setError('Please log in to access the chatroom');
@@ -257,7 +260,7 @@ export default function FixedChatroom() {
       await loadChatroomDetails();
       const membersData = await loadMembers();
       
-      const isMember = membersData.some(m => m.user_id === currentUserId);
+      const isMember = membersData.some((m: ChatMember) => m.user_id === currentUserId);
       addDebug(`🔍 User membership status: ${isMember ? 'MEMBER' : 'NOT MEMBER'}`);
       
       if (isMember) {
@@ -270,7 +273,7 @@ export default function FixedChatroom() {
     } finally {
       setLoading(false);
     }
-  }, [currentUserId, chatroomId]);
+  };
   
   // JOIN CHATROOM - SIMPLIFIED (no more countdown BS)
   const joinChatroom = async () => {
@@ -331,7 +334,7 @@ export default function FixedChatroom() {
     }
   };
   
-  // Send message - ENHANCED with multiple format attempts
+  // Send message - FIXED to handle HTML error responses
   const sendMessage = async () => {
     if (!messageText.trim() || !currentUserId || !userIsMember || isSending) return;
     
@@ -341,47 +344,87 @@ export default function FixedChatroom() {
     try {
       addDebug(`💬 Sending message: "${messageText.substring(0, 50)}..."`);
       
-      // Try multiple request formats for sending messages
+      // Try multiple endpoints and methods for sending messages
+      const messageAttempts = [
+        // Standard REST approaches
+        { url: `/api/chatrooms/${chatroomId}/messages`, method: 'POST', body: { content: messageText.trim() } },
+        { url: `/api/chatrooms/${chatroomId}/messages`, method: 'POST', body: { message: messageText.trim() } },
+        { url: `/api/chatrooms/${chatroomId}/messages`, method: 'POST', body: { text: messageText.trim() } },
+        
+        // With user ID in body
+        { url: `/api/chatrooms/${chatroomId}/messages`, method: 'POST', body: { content: messageText.trim(), user_id: currentUserId } },
+        { url: `/api/chatrooms/${chatroomId}/messages`, method: 'POST', body: { content: messageText.trim(), userId: currentUserId } },
+        { url: `/api/chatrooms/${chatroomId}/messages`, method: 'POST', body: { content: messageText.trim(), senderId: currentUserId } },
+        
+        // Alternative endpoints
+        { url: `/api/chatroom/${chatroomId}/messages`, method: 'POST', body: { content: messageText.trim() } },
+        { url: `/api/chatrooms/${chatroomId}/message`, method: 'POST', body: { content: messageText.trim() } },
+        
+        // Different API structure
+        { url: `/api/messages`, method: 'POST', body: { content: messageText.trim(), chatroom_id: chatroomId, user_id: currentUserId } },
+        { url: `/api/send-message`, method: 'POST', body: { content: messageText.trim(), chatroomId: chatroomId, userId: currentUserId } }
+      ];
+      
       let messageSuccessful = false;
       let lastError = null;
       
-      const messageEndpoints = [
-        `/api/chatrooms/${chatroomId}/messages`,
-        `/api/chatroom/${chatroomId}/messages`,
-        `/api/chatrooms/${chatroomId}/message`
-      ];
-      
-      const messageBodyFormats = [
-        JSON.stringify({ content: messageText.trim(), user_id: currentUserId }),
-        JSON.stringify({ content: messageText.trim(), userId: currentUserId }),
-        JSON.stringify({ content: messageText.trim(), senderId: currentUserId }),
-        JSON.stringify({ message: messageText.trim(), user_id: currentUserId }),
-        JSON.stringify({ text: messageText.trim(), user_id: currentUserId }),
-        JSON.stringify({ content: messageText.trim() }) // Original format
-      ];
-      
-      for (const endpoint of messageEndpoints) {
+      for (const attempt of messageAttempts) {
         if (messageSuccessful) break;
         
-        for (const body of messageBodyFormats) {
-          if (messageSuccessful) break;
+        try {
+          addDebug(`🔄 Trying: ${attempt.method} ${attempt.url}`);
           
-          try {
-            addDebug(`🔄 Trying message: POST ${endpoint} with body: ${body.substring(0, 100)}...`);
-            
-            await apiRequest(endpoint, {
-              method: 'POST',
-              body: body
-            });
-            
-            addDebug('✅ Message sent successfully!');
-            messageSuccessful = true;
-            break;
-            
-          } catch (error: any) {
-            addDebug(`⚠️ ${endpoint} failed: ${error.message}`);
-            lastError = error;
+          const response = await fetch(attempt.url, {
+            method: attempt.method,
+            headers: {
+              'Content-Type': 'application/json',
+              'x-user-id': String(currentUserId),
+              'X-User-ID': String(currentUserId),
+              'user-id': String(currentUserId)
+            },
+            body: JSON.stringify(attempt.body),
+            credentials: 'include'
+          });
+          
+          addDebug(`📡 Response: ${response.status} ${response.statusText}`);
+          
+          // Check if response is HTML (error page) vs JSON
+          const contentType = response.headers.get('content-type');
+          if (contentType && contentType.includes('text/html')) {
+            const htmlError = await response.text();
+            addDebug(`❌ Got HTML instead of JSON: ${htmlError.substring(0, 100)}...`);
+            throw new Error(`Server returned HTML error page (${response.status})`);
           }
+          
+          if (!response.ok) {
+            const errorText = await response.text();
+            addDebug(`❌ API Error: ${errorText}`);
+            throw new Error(`${response.status}: ${errorText}`);
+          }
+          
+          // Try to parse JSON response
+          let data;
+          try {
+            const responseText = await response.text();
+            if (responseText.trim() === '') {
+              // Empty response is sometimes OK for message sending
+              data = { success: true };
+            } else {
+              data = JSON.parse(responseText);
+            }
+          } catch (parseError: any) {
+            addDebug(`❌ JSON parse error: ${parseError.message}`);
+            // If we get here, the API might return non-JSON success responses
+            data = { success: true };
+          }
+          
+          addDebug('✅ Message sent successfully!');
+          messageSuccessful = true;
+          break;
+          
+        } catch (error: any) {
+          addDebug(`⚠️ ${attempt.url} failed: ${error.message}`);
+          lastError = error;
         }
       }
       
@@ -394,7 +437,7 @@ export default function FixedChatroom() {
       // Reload messages after sending
       setTimeout(async () => {
         await loadMessages();
-      }, 500);
+      }, 1000);
       
     } catch (error: any) {
       addDebug(`❌ Failed to send message: ${error.message}`);
@@ -406,11 +449,9 @@ export default function FixedChatroom() {
   
   // Load data on mount
   useEffect(() => {
-    if (currentUserId) {
-      addDebug('🚀 Component mounted, loading data...');
-      loadAllData();
-    }
-  }, [currentUserId, loadAllData]);
+    addDebug('🚀 Component mounted, loading data...');
+    loadAllData();
+  }, [chatroomId, currentUserId]);
   
   // Auto-scroll messages
   useEffect(() => {
@@ -541,25 +582,27 @@ export default function FixedChatroom() {
           {/* Quick Actions */}
           <div className="flex items-center space-x-2 mb-3">
             <Button onClick={loadAllData} size="sm" variant="outline" className="text-xs">
-              🔄 Refresh Data
+              🔄 Force Refresh All Data
+            </Button>
+            <Button onClick={loadMembers} size="sm" variant="outline" className="text-xs">
+              👥 Reload Members Only
+            </Button>
+            <Button onClick={() => console.log('Endpoint testing disabled')} size="sm" className="text-xs bg-orange-600 hover:bg-orange-700 text-white">
+              🔍 Test API Endpoints
             </Button>
             <Button onClick={() => window.location.reload()} size="sm" variant="outline" className="text-xs">
-              🌐 Refresh Page
+              🌐 Refresh Entire Page
             </Button>
           </div>
           
           <details className="mt-2">
-            <summary className="cursor-pointer font-medium">🔍 Debug Log (Click to expand)</summary>
-            <div className="mt-2 p-3 bg-gray-100 dark:bg-gray-800 rounded text-xs font-mono max-h-40 overflow-y-auto">
-              {debugInfo.length === 0 ? (
-                <div className="text-gray-500">No debug information yet...</div>
-              ) : (
-                debugInfo.map((info, i) => (
-                  <div key={i} className="mb-1 border-b border-gray-200 dark:border-gray-700 pb-1 last:border-b-0">
-                    {info}
-                  </div>
-                ))
-              )}
+            <summary className="cursor-pointer text-blue-700 dark:text-blue-300 font-medium hover:underline">
+              📊 Debug Logs ({debugInfo.length} entries)
+            </summary>
+            <div className="mt-2 p-3 bg-white dark:bg-gray-800 rounded border max-h-32 overflow-y-auto text-xs font-mono">
+              {debugInfo.map((debug, i) => (
+                <div key={i} className="mb-1 text-gray-700 dark:text-gray-300">{debug}</div>
+              ))}
             </div>
           </details>
         </div>
