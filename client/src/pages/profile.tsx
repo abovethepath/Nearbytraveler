@@ -1449,6 +1449,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         profileForm.reset({
           bio: user.bio || "",
           secretActivities: user.secretActivities || "",
+          veteranStatus: user.veteranStatus || "",
+          ageOfChildren: user.ageOfChildren || "",
           hometownCity: user.hometownCity || "",
           hometownState: user.hometownState || "",
           hometownCountry: user.hometownCountry || "",
@@ -7958,6 +7960,54 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         <div className="text-xs text-gray-500 text-right">
                           {field.value?.length || 0}/500 characters
                         </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Veteran Status Field */}
+                  <FormField
+                    control={profileForm.control}
+                    name="veteranStatus"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Veteran Status</FormLabel>
+                        <FormControl>
+                          <Select onValueChange={field.onChange} value={field.value || ''}>
+                            <SelectTrigger className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600">
+                              <SelectValue placeholder="Select veteran status" />
+                            </SelectTrigger>
+                            <SelectContent className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600">
+                              <SelectItem value="none">Not a veteran</SelectItem>
+                              <SelectItem value="veteran">Veteran</SelectItem>
+                              <SelectItem value="active">Active duty</SelectItem>
+                              <SelectItem value="reserve">Reserve/National Guard</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Age of Children Field */}
+                  <FormField
+                    control={profileForm.control}
+                    name="ageOfChildren"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Age of Children (if applicable)</FormLabel>
+                        <FormControl>
+                          <Input 
+                            {...field} 
+                            placeholder="e.g., 8, 12, 16 or 'None'"
+                            className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
+                            maxLength={100}
+                          />
+                        </FormControl>
+                        <FormDescription className="text-xs text-gray-500 dark:text-gray-400">
+                          List ages separated by commas, or write "None" if no children
+                        </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
