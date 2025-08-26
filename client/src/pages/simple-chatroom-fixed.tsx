@@ -71,8 +71,8 @@ export default function SimpleChatroomFixed() {
   const fetchChatroomData = async () => {
     try {
       const [chatroomRes, membersRes] = await Promise.all([
-        fetch(`/api/simple-chatrooms/${chatroomId}`),
-        fetch(`/api/simple-chatrooms/${chatroomId}/members`)
+        fetch(`/api/chatrooms/${chatroomId}`),
+        fetch(`/api/chatrooms/${chatroomId}/members`)
       ]);
       
       if (chatroomRes.ok) {
@@ -96,7 +96,7 @@ export default function SimpleChatroomFixed() {
     if (!userIsMember) return;
     
     try {
-      const res = await fetch(`/api/simple-chatrooms/${chatroomId}/messages`);
+      const res = await fetch(`/api/chatrooms/${chatroomId}/messages`);
       if (res.ok) {
         const messagesData = await res.json();
         setMessages(Array.isArray(messagesData) ? messagesData : []);
@@ -112,7 +112,7 @@ export default function SimpleChatroomFixed() {
     
     setIsJoining(true);
     try {
-      const res = await fetch(`/api/simple-chatrooms/${chatroomId}/join`, {
+      const res = await fetch(`/api/chatrooms/${chatroomId}/join`, {
         method: "POST",
         headers: { 
           "x-user-id": String(currentUserId),
@@ -149,7 +149,7 @@ export default function SimpleChatroomFixed() {
     
     setIsLeaving(true);
     try {
-      const res = await fetch(`/api/simple-chatrooms/${chatroomId}/leave`, {
+      const res = await fetch(`/api/chatrooms/${chatroomId}/leave`, {
         method: "POST",
         headers: { 
           "x-user-id": String(currentUserId),
@@ -184,7 +184,7 @@ export default function SimpleChatroomFixed() {
     if (!messageText.trim() || !userIsMember) return;
     
     try {
-      const res = await fetch(`/api/simple-chatrooms/${chatroomId}/messages`, {
+      const res = await fetch(`/api/chatrooms/${chatroomId}/messages`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
