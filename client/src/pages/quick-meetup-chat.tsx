@@ -218,41 +218,22 @@ function QuickMeetupChat() {
   };
 
   const formatTimeRemaining = (expiresAt: string) => {
-    // Debug what we're getting
-    console.log('🕐 EXPIRATION STRING:', expiresAt);
+    // Parse as local time by treating it as a local timestamp
+    const expiration = new Date(expiresAt.replace(' ', 'T'));
     
     const now = new Date();
-    console.log('🕐 NOW:', now.toISOString());
-    
-    // Parse the expiration time
-    const expiration = new Date(expiresAt);
-    console.log('🕐 PARSED EXPIRATION:', expiration.toISOString());
-    
-    // Calculate difference in milliseconds
     const timeDiffMs = expiration.getTime() - now.getTime();
-    console.log('🕐 TIME DIFF MS:', timeDiffMs);
     
     if (timeDiffMs <= 0) {
       return "Expired";
     }
     
-    // Convert to minutes
-    const totalMinutes = Math.floor(timeDiffMs / (1000 * 60));
-    console.log('🕐 TOTAL MINUTES:', totalMinutes);
-    
-    // For debugging, let's force show just minutes if under 60
-    if (totalMinutes < 60) {
-      return `${totalMinutes}m left`;
-    }
-    
-    const hours = Math.floor(totalMinutes / 60);
-    const minutes = totalMinutes % 60;
-    
-    if (minutes === 0) {
-      return `${hours}h left`;
-    } else {
-      return `${hours}h ${minutes}m left`;
-    }
+    // Show the actual expiration time instead of countdown
+    return `Until ${expiration.toLocaleTimeString('en-US', { 
+      hour: 'numeric', 
+      minute: '2-digit',
+      hour12: true 
+    })}`;
   };
 
   if (!meetupId) {
