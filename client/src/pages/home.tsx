@@ -2376,7 +2376,7 @@ export default function Home() {
                   return eventCity.includes(userCity) || userCity.includes(eventCity);
                 })}
                 currentUserLocation={getCurrentUserLocation()}
-                title={`Events Near ${getCurrentUserLocation().split(',')[0]}`}
+                title="Events Near You"
                 showViewAll={true}
                 onEventClick={(event) => setLocation(`/events/${event.id}`)}
                 onViewAll={() => setLocation('/events')}
