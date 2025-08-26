@@ -206,7 +206,6 @@ export default function LocationSortedEvents({
             <Users className="w-4 h-4 text-green-500" />
             <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
               {event.attendeeCount || 1} going
-              {event.capacity && ` • ${event.capacity} max`}
             </span>
             {/* Price */}
             {event.price !== undefined && (
