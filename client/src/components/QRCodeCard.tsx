@@ -45,8 +45,8 @@ export default function QRCodeCard() {
     if (user) {
       setCurrentUser(user);
       const baseUrl = window.location.origin;
-      // Create a referral signup link instead of profile link
-      const url = `${baseUrl}/?ref=${user.username}&signup=true`;
+      // Create a referral signup link with auto-connect
+      const url = `${baseUrl}/?ref=${user.username}&signup=true&connect=${user.id}`;
       setShareUrl(url);
     }
   }, [getUserData]);
@@ -113,7 +113,7 @@ export default function QRCodeCard() {
   const shareProfile = async () => {
     const shareData = {
       title: `Join ${currentUser?.username || 'me'} on Nearby Traveler!`,
-      text: `Hey! I'm on Nearby Traveler - the best app for connecting with travelers and locals. Join me and let's explore together!`,
+      text: `Hey! I'm on Nearby Traveler - the best app for connecting with travelers and locals. Scan this to join and we'll automatically be connected as friends!`,
       url: shareUrl
     };
 
@@ -237,12 +237,12 @@ export default function QRCodeCard() {
         {/* Instructions */}
         <div className="text-center space-y-2">
           <p className="text-sm text-gray-600 dark:text-gray-300">
-            Share this QR code to invite friends to join Nearby Traveler
+            Share this QR code to invite friends - they'll join and you'll be connected automatically
           </p>
           <div className="flex justify-center space-x-4 text-xs text-gray-500 dark:text-gray-400">
-            <span>✓ Scan to signup</span>
-            <span>✓ Quick join</span>
-            <span>✓ Auto-referral</span>
+            <span>✓ Scan to join</span>
+            <span>✓ Auto-connect</span>
+            <span>✓ Instant friends</span>
           </div>
         </div>
       </CardContent>
