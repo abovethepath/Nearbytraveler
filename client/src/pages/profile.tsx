@@ -7906,7 +7906,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           <Textarea 
                             {...field} 
                             placeholder="Describe your business and services..."
-                            className="min-h-[100px] resize-none"
+                            className="min-h-[100px] resize-none text-black dark:text-white"
                             maxLength={1000}
                           />
                         </FormControl>
@@ -7931,7 +7931,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           <Textarea 
                             {...field} 
                             placeholder="Tell us about yourself..."
-                            className="min-h-[100px] resize-none"
+                            className="min-h-[100px] resize-none text-black dark:text-white"
                             maxLength={1000}
                           />
                         </FormControl>
@@ -7953,7 +7953,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           <Textarea 
                             {...field} 
                             placeholder="Fill this out for others to see secret activities, hidden gems, local spots, or insider tips that only locals know about. Example: There's a hidden waterfall behind the old mill that locals love, or try the secret menu at Joe's Diner..."
-                            className="min-h-[80px] resize-none"
+                            className="min-h-[80px] resize-none text-black dark:text-white"
                             maxLength={500}
                           />
                         </FormControl>
@@ -8847,7 +8847,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       <Textarea
                         {...field}
                         placeholder="Share your experience with this person..."
-                        className="min-h-[100px]"
+                        className="min-h-[100px] text-black dark:text-white"
                       />
                     </FormControl>
                     <FormMessage />
@@ -8950,7 +8950,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       <Textarea
                         {...field}
                         placeholder="Share your experience with this person..."
-                        className="min-h-[100px]"
+                        className="min-h-[100px] text-black dark:text-white"
                       />
                     </FormControl>
                     <FormMessage />
