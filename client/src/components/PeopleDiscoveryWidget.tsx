@@ -39,7 +39,7 @@ export function PeopleDiscoveryWidget({
   const [, setLocation] = useLocation();
   const { user: currentUser } = useContext(AuthContext);
   const currentUserId = propCurrentUserId || currentUser?.id;
-  const [displayCount, setDisplayCount] = React.useState(6); // Show 6 people initially (3 rows x 2 cols)
+  const [displayCount, setDisplayCount] = React.useState(8); // Show 8 people initially (2 rows x 4 cols)
 
   // Debug current user ID
   React.useEffect(() => {
@@ -257,10 +257,10 @@ export function PeopleDiscoveryWidget({
                     src={person.profileImage} 
                     alt={person.name}
                     loading="lazy"
-                    className="w-32 h-32 object-cover rounded-lg border-2 border-white dark:border-gray-600 shadow-lg"
+                    className="w-40 h-40 object-cover rounded-lg border-2 border-white dark:border-gray-600 shadow-lg"
                   />
                 ) : (
-                  <div className="w-32 h-32 text-5xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-bold rounded-lg flex items-center justify-center border-2 border-white dark:border-gray-600 shadow-lg">
+                  <div className="w-40 h-40 text-6xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-bold rounded-lg flex items-center justify-center border-2 border-white dark:border-gray-600 shadow-lg">
                     {person.username?.charAt(0)?.toUpperCase() || "U"}
                   </div>
                 )}
@@ -323,7 +323,7 @@ export function PeopleDiscoveryWidget({
 
     return (
       <div
-        className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 hover:shadow-lg transition-all duration-200 cursor-pointer text-gray-900 dark:text-white relative h-96"
+        className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 hover:shadow-lg transition-all duration-200 cursor-pointer text-gray-900 dark:text-white relative h-auto"
         onClick={handleCardClick}
       >
         {/* Online Status - Top Right */}
@@ -345,11 +345,11 @@ export function PeopleDiscoveryWidget({
                 <img 
                   src={person.profileImage} 
                   alt={person.name}
-                  className="w-32 h-32 object-cover rounded-lg border-2 border-white dark:border-gray-600 shadow-lg"
+                  className="w-40 h-40 object-cover rounded-lg border-2 border-white dark:border-gray-600 shadow-lg"
                   loading="lazy"
                 />
               ) : (
-                <div className="w-32 h-32 text-5xl bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 font-bold rounded-lg flex items-center justify-center border-2 border-white dark:border-gray-600 shadow-lg">
+                <div className="w-40 h-40 text-6xl bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 font-bold rounded-lg flex items-center justify-center border-2 border-white dark:border-gray-600 shadow-lg">
                   {person.username?.charAt(0)?.toUpperCase() || "U"}
                 </div>
               )}
@@ -426,7 +426,7 @@ export function PeopleDiscoveryWidget({
       {/* People Grid - 2 per row on all screen sizes */}
       {/* ✅ Click capture protection to prevent parent handlers from interfering */}
       <div 
-        className="grid grid-cols-1 sm:grid-cols-2 gap-6"
+        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
         onClickCapture={(e) => e.stopPropagation()}
       >
         {people.slice(0, displayCount).map((person) => (
@@ -441,7 +441,7 @@ export function PeopleDiscoveryWidget({
       {people.length > displayCount && (
         <div className="text-center mt-6">
           <button
-            onClick={() => setDisplayCount(prev => prev + 4)}
+            onClick={() => setDisplayCount(prev => prev + 8)}
             className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
             Show More
