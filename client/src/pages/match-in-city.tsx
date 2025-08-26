@@ -1037,6 +1037,41 @@ export default function MatchInCity() {
             🔵 Click blue activities to add them to your personal list below • ✏️ Edit/delete to change for EVERYONE
           </div>
 
+          {/* Add Activity Section - Moved above activities */}
+          <div className="mb-4" data-add-activity-section>
+            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg p-3">
+              <h3 className="text-white text-sm font-medium mb-2">+ Add Activity</h3>
+              <div className="space-y-2">
+                <Input
+                  placeholder="Add activity or event"
+                  value={newActivityName}
+                  onChange={(e) => setNewActivityName(e.target.value)}
+                  className="w-full bg-white/10 border-white/20 text-white placeholder-white/40 text-sm h-8"
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter' && newActivityName.trim()) {
+                      addActivity();
+                    }
+                  }}
+                />
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="Optional description"
+                    value={newActivityDescription}
+                    onChange={(e) => setNewActivityDescription(e.target.value)}
+                    className="flex-1 bg-white/10 border-white/20 text-white placeholder-white/40 text-sm h-8"
+                  />
+                  <Button
+                    onClick={addActivity}
+                    disabled={!newActivityName.trim() || isLoading}
+                    className="bg-green-600 hover:bg-green-700 text-white px-3 h-8 text-sm"
+                  >
+                    Add
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+
 
 
           <TooltipProvider>
@@ -1602,40 +1637,6 @@ export default function MatchInCity() {
           </Dialog>
         )}
 
-        {/* Compact Add Activity Section - Moved to bottom */}
-        <div className="mt-8 mb-4" data-add-activity-section>
-          <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg p-3">
-            <h3 className="text-white text-sm font-medium mb-2">+ Add Activity</h3>
-            <div className="space-y-2">
-              <Input
-                placeholder="Add activity or event"
-                value={newActivityName}
-                onChange={(e) => setNewActivityName(e.target.value)}
-                className="w-full bg-white/10 border-white/20 text-white placeholder-white/40 text-sm h-8"
-                onKeyPress={(e) => {
-                  if (e.key === 'Enter' && newActivityName.trim()) {
-                    addActivity();
-                  }
-                }}
-              />
-              <div className="flex gap-2">
-                <Input
-                  placeholder="Optional description"
-                  value={newActivityDescription}
-                  onChange={(e) => setNewActivityDescription(e.target.value)}
-                  className="flex-1 bg-white/10 border-white/20 text-white placeholder-white/40 text-sm h-8"
-                />
-                <Button
-                  onClick={addActivity}
-                  disabled={!newActivityName.trim() || isLoading}
-                  className="bg-green-600 hover:bg-green-700 text-white px-3 h-8 text-sm"
-                >
-                  Add
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );
