@@ -9380,7 +9380,20 @@ Questions? Just reply to this message. Welcome aboard!
       if (process.env.NODE_ENV === 'development') console.log(`🏠 CHATROOM MESSAGES: Getting messages for chatroom ${roomId}`);
 
       const messages = await storage.getChatroomMessages(roomId);
-      return res.json(messages);
+      
+      // Flatten the message structure for frontend compatibility
+      const flattenedMessages = messages.map(msg => ({
+        id: msg.id,
+        chatroom_id: roomId,
+        sender_id: msg.senderId,
+        content: msg.content,
+        created_at: msg.createdAt,
+        username: msg.user?.username || 'Unknown',
+        name: msg.user?.name || 'Unknown User',
+        profile_image: msg.user?.profileImage
+      }));
+      
+      return res.json(flattenedMessages);
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error fetching chatroom messages:", error);
       return res.status(500).json({ message: "Failed to fetch messages" });

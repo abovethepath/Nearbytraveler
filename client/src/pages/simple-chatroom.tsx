@@ -18,6 +18,7 @@ interface ChatMessage {
   created_at: string;
   username: string;
   name: string;
+  profile_image?: string;
 }
 
 interface Chatroom {
@@ -349,7 +350,11 @@ export default function SimpleChatroomPage() {
                 {/* Show first 8 members in header */}
                 <div className="flex flex-wrap gap-2">
                   {members.slice(0, 8).map((member) => (
-                    <div key={member.user_id} className="flex items-center gap-2 bg-gray-50 dark:bg-gray-700 rounded-full px-3 py-1.5 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                    <button
+                      key={member.user_id}
+                      onClick={() => navigate(`/profile/${member.user_id}`)}
+                      className="flex items-center gap-2 bg-gray-50 dark:bg-gray-700 rounded-full px-3 py-1.5 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                    >
                       <Avatar className="w-6 h-6">
                         {member.profile_image ? (
                           <AvatarImage src={member.profile_image} alt={member.username} />
@@ -366,7 +371,7 @@ export default function SimpleChatroomPage() {
                       {member.user_id === currentUserId && (
                         <span className="text-xs bg-green-500 text-white rounded px-1.5 py-0.5">You</span>
                       )}
-                    </div>
+                    </button>
                   ))}
                   {members.length > 8 && (
                     <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
@@ -419,8 +424,26 @@ export default function SimpleChatroomPage() {
                   {messages.map((message) => (
                     <div
                       key={message.id}
-                      className={`flex ${message.sender_id === currentUserId ? 'justify-end' : 'justify-start'}`}
+                      className={`flex items-start gap-3 ${message.sender_id === currentUserId ? 'justify-end' : 'justify-start'}`}
                     >
+                      {/* Avatar for others' messages (left side) */}
+                      {message.sender_id !== currentUserId && (
+                        <button
+                          onClick={() => navigate(`/profile/${message.sender_id}`)}
+                          className="flex-shrink-0 mt-1 hover:opacity-80 transition-opacity"
+                        >
+                          <Avatar className="w-8 h-8 border border-gray-200 dark:border-gray-600">
+                            {message.profile_image ? (
+                              <AvatarImage src={message.profile_image} alt={message.username} />
+                            ) : (
+                              <AvatarFallback className="text-xs bg-gradient-to-br from-blue-400 to-purple-500 text-white">
+                                {(message.username || 'U').charAt(0).toUpperCase()}
+                              </AvatarFallback>
+                            )}
+                          </Avatar>
+                        </button>
+                      )}
+                      
                       <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
                         message.sender_id === currentUserId
                           ? 'bg-blue-500 text-white'
@@ -431,7 +454,12 @@ export default function SimpleChatroomPage() {
                             ? 'text-blue-100' 
                             : 'text-gray-700 dark:text-gray-300'
                         }`}>
-                          {message.username || 'Unknown'}
+                          <button
+                            onClick={() => navigate(`/profile/${message.sender_id}`)}
+                            className="hover:underline"
+                          >
+                            {message.username || 'Unknown'}
+                          </button>
                         </div>
                         <div className={`font-medium ${
                           message.sender_id === currentUserId 
@@ -448,6 +476,24 @@ export default function SimpleChatroomPage() {
                           {new Date(message.created_at).toLocaleTimeString()}
                         </div>
                       </div>
+
+                      {/* Avatar for current user's messages (right side) */}
+                      {message.sender_id === currentUserId && (
+                        <button
+                          onClick={() => navigate(`/profile/${message.sender_id}`)}
+                          className="flex-shrink-0 mt-1 hover:opacity-80 transition-opacity"
+                        >
+                          <Avatar className="w-8 h-8 border border-gray-200 dark:border-gray-600">
+                            {message.profile_image ? (
+                              <AvatarImage src={message.profile_image} alt={message.username} />
+                            ) : (
+                              <AvatarFallback className="text-xs bg-gradient-to-br from-blue-400 to-purple-500 text-white">
+                                {(message.username || 'U').charAt(0).toUpperCase()}
+                              </AvatarFallback>
+                            )}
+                          </Avatar>
+                        </button>
+                      )}
                     </div>
                   ))}
                   {/* Subtle indicator when fetching new messages */}
@@ -496,9 +542,10 @@ export default function SimpleChatroomPage() {
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                 {members.map((member) => (
-                  <div 
-                    key={member.user_id} 
-                    className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-600/50 transition-colors"
+                  <button
+                    key={member.user_id}
+                    onClick={() => navigate(`/profile/${member.user_id}`)}
+                    className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-600/50 transition-colors text-left w-full"
                   >
                     <Avatar className="w-10 h-10 border-2 border-white dark:border-gray-600 shadow-sm">
                       {member.profile_image ? (
@@ -529,7 +576,7 @@ export default function SimpleChatroomPage() {
                         {member.name || 'No display name'}
                       </div>
                     </div>
-                  </div>
+                  </button>
                 ))}
               </div>
               
