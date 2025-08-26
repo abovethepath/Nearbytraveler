@@ -391,7 +391,10 @@ export default function MatchInCity() {
                       onError={(e) => {
                         // Fallback to gradient if image fails to load
                         e.currentTarget.style.display = 'none';
-                        e.currentTarget.nextElementSibling.style.display = 'flex';
+                        const nextElement = e.currentTarget.nextElementSibling as HTMLElement;
+                        if (nextElement) {
+                          nextElement.style.display = 'flex';
+                        }
                       }}
                     />
                     {/* Fallback gradient */}

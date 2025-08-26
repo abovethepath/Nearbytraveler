@@ -10286,6 +10286,56 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // CITY MATCHING SYSTEM - Get users who have matched activities in a specific city
+  app.get('/api/matching-users/:city', async (req, res) => {
+    try {
+      const { city } = req.params;
+      
+      if (!city) {
+        return res.status(400).json({ error: 'City parameter is required' });
+      }
+
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`🎯 CITY MATCH: Fetching users with activities in ${city}`);
+      }
+
+      // Get users who have matched activities in this city
+      const matchingUsers = await db
+        .select({
+          id: users.id,
+          username: users.username,
+          name: users.name,
+          email: users.email,
+          userType: users.userType,
+          bio: users.bio,
+          location: users.location,
+          hometownCity: users.hometownCity,
+          hometownState: users.hometownState,
+          hometownCountry: users.hometownCountry,
+          profileImage: users.profileImage,
+          activityName: userCityInterests.activityName,
+          cityName: userCityInterests.cityName,
+          createdAt: userCityInterests.createdAt
+        })
+        .from(users)
+        .innerJoin(userCityInterests, eq(users.id, userCityInterests.userId))
+        .where(and(
+          ilike(userCityInterests.cityName, `%${city}%`),
+          eq(userCityInterests.isActive, true)
+        ))
+        .orderBy(desc(userCityInterests.createdAt));
+
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`🎯 CITY MATCH: Found ${matchingUsers.length} users with activities in ${city}`);
+      }
+      
+      res.json(matchingUsers);
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error('Error fetching matching users:', error);
+      res.status(500).json({ error: 'Failed to fetch matching users' });
+    }
+  });
+
   // QR CODE & REFERRAL SYSTEM ROUTES
   
   // Generate referral code and QR code for user
