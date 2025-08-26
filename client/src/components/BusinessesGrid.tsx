@@ -170,16 +170,16 @@ export default function BusinessesGrid({ currentLocation, travelPlans = [] }: Bu
                     />
                   )}
                   <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2 min-w-0">
-                      <h3 className="font-semibold text-gray-900 dark:text-white text-base md:text-lg truncate">
-                        {title}
-                      </h3>
-                      {category && (
-                        <span className="chip bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-200 shrink-0">
+                    <h3 className="font-semibold text-gray-900 dark:text-white text-base md:text-lg break-words">
+                      {title}
+                    </h3>
+                    {category && (
+                      <div className="mt-1">
+                        <span className="chip bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-200 text-xs">
                           {category}
                         </span>
-                      )}
-                    </div>
+                      </div>
+                    )}
 
                     {/* Location row WITH STREET ADDRESS */}
                     <div className="mt-1 flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 min-w-0">
