@@ -6,7 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Zap, Clock, MapPin, Users, Coffee, Plus, MessageCircle } from 'lucide-react';
+import { Zap, Clock, MapPin, Users, Coffee, Plus, MessageCircle, Edit3, Trash2, MessageSquare } from 'lucide-react';
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
@@ -205,6 +205,31 @@ export function QuickMeetupWidget({ city, profileUserId }: { city?: string; prof
       });
     }
   });
+
+  // Delete meetup mutation
+  const deleteMutation = useMutation({
+    mutationFn: async (meetupId: number) => {
+      return await apiRequest('DELETE', `/api/quick-meetups/${meetupId}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/quick-meetups'] });
+      toast({
+        title: "Deleted!",
+        description: "Your meetup has been deleted.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete meetup",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const deleteMeetup = (meetupId: number) => {
+    deleteMutation.mutate(meetupId);
+  };
 
   const handleCreateMeetup = () => {
     console.log('🔥 CLICKED: Post My Availability button');
@@ -464,18 +489,62 @@ export function QuickMeetupWidget({ city, profileUserId }: { city?: string; prof
                             >
                               @{meetup.organizerUsername || 'Unknown'} {isOwn && '(you)'}
                             </p>
-                            {!isOwn && meetup.organizerId && (
+                            {/* Action buttons */}
+                            <div className="flex items-center gap-1">
+                              {!isOwn && meetup.organizerId && (
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    window.location.href = `/chat/${meetup.organizerId}`;
+                                  }}
+                                  className="p-1 rounded-full hover:bg-orange-100 dark:hover:bg-orange-900/30 transition-colors"
+                                  title="Message organizer"
+                                >
+                                  <MessageCircle className="w-3 h-3 text-orange-500" />
+                                </button>
+                              )}
+                              
+                              {/* Group Chat Button - Available to all participants */}
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  window.location.href = `/chat/${meetup.organizerId}`;
+                                  window.location.href = `/quick-meetup-chat/${meetup.id}`;
                                 }}
-                                className="ml-1 p-1 rounded-full hover:bg-orange-100 dark:hover:bg-orange-900/30 transition-colors"
-                                title="Send message"
+                                className="p-1 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors"
+                                title="Join group chat"
                               >
-                                <MessageCircle className="w-3 h-3 text-orange-500" />
+                                <MessageSquare className="w-3 h-3 text-blue-500" />
                               </button>
-                            )}
+
+                              {/* Edit/Delete buttons for owner */}
+                              {isOwn && (
+                                <>
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      // TODO: Implement edit modal
+                                      console.log('Edit meetup:', meetup.id);
+                                    }}
+                                    className="p-1 rounded-full hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors"
+                                    title="Edit meetup"
+                                  >
+                                    <Edit3 className="w-3 h-3 text-green-500" />
+                                  </button>
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      if (confirm('Delete this meetup? This action cannot be undone.')) {
+                                        deleteMeetup(meetup.id);
+                                      }
+                                    }}
+                                    className="p-1 rounded-full hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
+                                    title="Delete meetup"
+                                  >
+                                    <Trash2 className="w-3 h-3 text-red-500" />
+                                  </button>
+                                </>
+                              )}
+                            </div>
                           </div>
                           <p className="text-[11px] text-gray-500 dark:text-gray-400">
                             {meetup.organizerName && `${meetup.organizerName} • `}Posted {new Date(meetup.createdAt).toLocaleDateString()}
