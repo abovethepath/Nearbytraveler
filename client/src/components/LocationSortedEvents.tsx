@@ -200,33 +200,17 @@ export default function LocationSortedEvents({
           </div>
         )}
 
-        {/* Stats Row */}
+        {/* Who's Going */}
         <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center space-x-3">
-            {/* Attendees */}
-            {event.attendeeCount !== undefined && (
-              <div className="flex items-center space-x-1">
-                <Users className="w-4 h-4 text-green-500" />
-                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  {event.attendeeCount}
-                  {event.capacity && `/${event.capacity}`}
-                </span>
-              </div>
-            )}
-
-            {/* Rating */}
-            {event.rating && (
-              <div className="flex items-center space-x-1">
-                <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  {event.rating.toFixed(1)}
-                </span>
-              </div>
-            )}
-
+          <div className="flex items-center space-x-2">
+            <Users className="w-4 h-4 text-green-500" />
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              {event.attendeeCount || 1} going
+              {event.capacity && ` • ${event.capacity} max`}
+            </span>
             {/* Price */}
             {event.price !== undefined && (
-              <span className="text-sm font-medium text-green-600 dark:text-green-400">
+              <span className="text-sm font-medium text-green-600 dark:text-green-400 ml-3">
                 {event.price === 0 ? 'Free' : `$${event.price}`}
               </span>
             )}
@@ -240,21 +224,6 @@ export default function LocationSortedEvents({
           )}
         </div>
 
-        {/* Tags */}
-        {event.tags && event.tags.length > 0 && (
-          <div className="flex flex-wrap gap-1 mb-3">
-            {event.tags.slice(0, 3).map((tag, index) => (
-              <Badge key={index} variant="outline" className="text-xs text-gray-700 dark:text-gray-300">
-                {tag}
-              </Badge>
-            ))}
-            {event.tags.length > 3 && (
-              <Badge variant="outline" className="text-xs text-gray-600 dark:text-gray-400">
-                +{event.tags.length - 3} more
-              </Badge>
-            )}
-          </div>
-        )}
 
         {/* Location Priority Indicator */}
         {currentUserLocation && (
@@ -287,26 +256,14 @@ export default function LocationSortedEvents({
           
           <Button
             size="sm"
-            variant="outline"
             onClick={(e) => {
               e.stopPropagation();
-              // Handle interested/save action
+              // Handle join event action
             }}
-            className="text-xs border-purple-300 text-purple-600 hover:bg-purple-50 dark:border-purple-600 dark:text-purple-400 dark:hover:bg-purple-900/20"
+            className="flex-1 text-xs bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-medium"
           >
-            <Heart className="w-3 h-3" />
-          </Button>
-          
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={(e) => {
-              e.stopPropagation();
-              // Handle share action
-            }}
-            className="text-xs border-blue-300 text-blue-600 hover:bg-blue-50 dark:border-blue-600 dark:text-blue-400 dark:hover:bg-blue-900/20"
-          >
-            <Share2 className="w-3 h-3" />
+            <Users className="w-3 h-3 mr-1" />
+            Join Event
           </Button>
         </div>
       </CardContent>
