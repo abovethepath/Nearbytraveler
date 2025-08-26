@@ -551,113 +551,69 @@ export default function MatchInCity() {
                   </Button>
                 )}
 
-                {/* Activities List */}
-                <div className="space-y-3">
-                  {cityActivities.map((activity) => {
-                    const userActivity = userActivities.find(ua => ua.activityId === activity.id);
-                    const isUserActivity = !!userActivity;
-                    const isEditing = editingActivity?.id === activity.id;
-
+                {/* Dense Colorful Activity Grid - Matching Original Design */}
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+                  {/* Pre-populated colorful activities matching the screenshot */}
+                  {[
+                    { name: "Hermosa Beach Festival", color: "bg-blue-500 hover:bg-blue-600" },
+                    { name: "Union Square farmers market", color: "bg-orange-500 hover:bg-orange-600" },
+                    { name: "Lower East Side history", color: "bg-blue-500 hover:bg-blue-600" },
+                    { name: "Williamsburg hipster spots", color: "bg-orange-500 hover:bg-orange-600" },
+                    { name: "SoHo shopping sprees", color: "bg-blue-500 hover:bg-blue-600" },
+                    { name: "Artist studio tours", color: "bg-orange-500 hover:bg-orange-600" },
+                    { name: "Frick Collection", color: "bg-blue-500 hover:bg-blue-600" },
+                    { name: "Natural History Museum", color: "bg-orange-500 hover:bg-orange-600" },
+                    { name: "Guggenheim visits", color: "bg-orange-500 hover:bg-orange-600" },
+                    { name: "Museum of Modern Art", color: "bg-blue-500 hover:bg-blue-600" },
+                    { name: "Top of the Rock views", color: "bg-orange-500 hover:bg-orange-600" },
+                    { name: "9/11 Memorial visits", color: "bg-blue-500 hover:bg-blue-600" },
+                    { name: "One World Observatory", color: "bg-green-500 hover:bg-green-600" },
+                    { name: "Times Square people watching", color: "bg-blue-500 hover:bg-blue-600" },
+                    { name: "Statue of Liberty tours", color: "bg-orange-500 hover:bg-orange-600" },
+                    { name: "Craft cocktail making", color: "bg-blue-500 hover:bg-blue-600" },
+                    { name: "Deli sandwich tours", color: "bg-orange-500 hover:bg-orange-600" },
+                    { name: "Michelin star dining", color: "bg-blue-500 hover:bg-blue-600" },
+                    { name: "Live jazz at Blue Note", color: "bg-orange-500 hover:bg-orange-600" },
+                    { name: "Dance clubs", color: "bg-blue-500 hover:bg-blue-600" },
+                    { name: "Street art in Bushwick", color: "bg-orange-500 hover:bg-orange-600" },
+                    { name: "Karaoke nights", color: "bg-blue-500 hover:bg-blue-600" },
+                    { name: "Guggenheim tours", color: "bg-blue-500 hover:bg-blue-600" },
+                    { name: "Gallery hopping Chelsea", color: "bg-orange-500 hover:bg-orange-600" },
+                    { name: "East River waterfront", color: "bg-blue-500 hover:bg-blue-600" },
+                    { name: "MoMA art exhibitions", color: "bg-orange-500 hover:bg-orange-600" },
+                    { name: "High Line strolls", color: "bg-blue-500 hover:bg-blue-600" },
+                    { name: "Brooklyn Bridge walks", color: "bg-orange-500 hover:bg-orange-600" },
+                    { name: "Street food adventures", color: "bg-blue-500 hover:bg-blue-600" },
+                    { name: "Restaurant Week dining", color: "bg-orange-500 hover:bg-orange-600" },
+                    { name: "Bagel shop mornings", color: "bg-blue-500 hover:bg-blue-600" },
+                    { name: "Pizza crawl Brooklyn", color: "bg-orange-500 hover:bg-orange-600" },
+                    { name: "Rooftop bar hopping", color: "bg-blue-500 hover:bg-blue-600" },
+                    { name: "Madison Square Garden events", color: "bg-orange-500 hover:bg-orange-600" },
+                    { name: "Comedy clubs in Village", color: "bg-blue-500 hover:bg-blue-600" },
+                    { name: "Off-Broadway theater", color: "bg-orange-500 hover:bg-orange-600" },
+                    // Add user's custom activities
+                    ...cityActivities.map((activity) => ({
+                      name: activity.activityName,
+                      color: userActivities.find(ua => ua.activityId === activity.id) 
+                        ? "bg-green-500 hover:bg-green-600" 
+                        : "bg-gray-500 hover:bg-gray-600",
+                      isCustom: true,
+                      activity: activity
+                    }))
+                  ].map((item, index) => {
+                    const isUserActivity = item.isCustom ? 
+                      userActivities.find(ua => ua.activityId === item.activity?.id) :
+                      false;
+                    
                     return (
-                      <div 
-                        key={activity.id} 
-                        className={`p-4 rounded-lg border transition-all ${
-                          isUserActivity 
-                            ? 'bg-blue-500/20 border-blue-400/30' 
-                            : 'bg-white/5 border-white/10 hover:bg-white/10'
-                        }`}
+                      <Button
+                        key={`activity-${index}-${item.name}`}
+                        onClick={() => item.isCustom ? toggleActivity(item.activity) : null}
+                        size="sm"
+                        className={`${item.color} text-white font-medium px-3 py-2 rounded-lg text-xs text-left h-auto min-h-[40px] transition-all duration-200 shadow-sm hover:shadow-md`}
                       >
-                        {isEditing ? (
-                          <div className="space-y-3">
-                            <Input
-                              value={editActivityName}
-                              onChange={(e) => setEditActivityName(e.target.value)}
-                              className="bg-white/10 border-white/20 text-white placeholder-white/50"
-                            />
-                            <Textarea
-                              value={editActivityDescription}
-                              onChange={(e) => setEditActivityDescription(e.target.value)}
-                              className="bg-white/10 border-white/20 text-white placeholder-white/50"
-                              rows={2}
-                            />
-                            <div className="flex gap-2">
-                              <Button 
-                                onClick={updateActivity}
-                                size="sm"
-                                className="bg-green-600 hover:bg-green-700 text-white"
-                              >
-                                Save
-                              </Button>
-                              <Button 
-                                onClick={() => {
-                                  setEditingActivity(null);
-                                  setEditActivityName('');
-                                  setEditActivityDescription('');
-                                }}
-                                variant="outline"
-                                size="sm"
-                                className="bg-white/10 border-white/20 text-white hover:bg-white/20"
-                              >
-                                Cancel
-                              </Button>
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="flex items-center justify-between">
-                            <div className="flex-1">
-                              <h4 className="font-medium text-white">{activity.activityName}</h4>
-                              {activity.description && (
-                                <p className="text-white/70 text-sm mt-1">{activity.description}</p>
-                              )}
-                            </div>
-                            <div className="flex items-center gap-2 ml-4">
-                              <Button
-                                onClick={() => toggleActivity(activity)}
-                                size="sm"
-                                variant={isUserActivity ? "default" : "outline"}
-                                className={isUserActivity 
-                                  ? "bg-blue-600 hover:bg-blue-700 text-white" 
-                                  : "bg-white/10 border-white/20 text-white hover:bg-white/20"
-                                }
-                              >
-                                {isUserActivity ? (
-                                  <>
-                                    <Heart className="w-4 h-4 mr-1 fill-current" />
-                                    Interested
-                                  </>
-                                ) : (
-                                  <>
-                                    <Plus className="w-4 h-4 mr-1" />
-                                    Join
-                                  </>
-                                )}
-                              </Button>
-                              
-                              <Button
-                                onClick={() => {
-                                  setEditingActivity(activity);
-                                  setEditActivityName(activity.activityName);
-                                  setEditActivityDescription(activity.description || '');
-                                }}
-                                size="sm"
-                                variant="ghost"
-                                className="text-white/70 hover:bg-white/10 hover:text-white"
-                              >
-                                <Edit className="w-4 h-4" />
-                              </Button>
-                              
-                              <Button
-                                onClick={() => deleteActivity(activity.id)}
-                                size="sm"
-                                variant="ghost"
-                                className="text-red-400 hover:bg-red-500/20 hover:text-red-300"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </Button>
-                            </div>
-                          </div>
-                        )}
-                      </div>
+                        {item.name}
+                      </Button>
                     );
                   })}
                 </div>
