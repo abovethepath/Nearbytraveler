@@ -618,6 +618,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const [tempEvents, setTempEvents] = useState<string[]>([]);
   const [tempLanguages, setTempLanguages] = useState<string[]>([]);
   const [tempCountries, setTempCountries] = useState<string[]>([]);
+  const [customLanguageInput, setCustomLanguageInput] = useState("");
+  const [customCountryInput, setCustomCountryInput] = useState("");
   const [tempBio, setTempBio] = useState("");
   
   // Reference modal states
@@ -2734,6 +2736,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     setTempLanguages([]);
     setTempCountries([]);
     setTempBio("");
+    setCustomLanguageInput('');
+    setCustomCountryInput('');
     setBusinessDescriptionForm({
       services: '',
       specialOffers: '',
@@ -6273,6 +6277,46 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       </PopoverContent>
                     </Popover>
                     
+                    {/* Custom Language Input */}
+                    <div className="mt-3">
+                      <label className="text-xs font-medium mb-1 block text-gray-600 dark:text-gray-400">
+                        Add Custom Language (hit Enter after each)
+                      </label>
+                      <div className="flex space-x-2">
+                        <Input
+                          placeholder="e.g., Sign Language, Mandarin"
+                          value={customLanguageInput}
+                          onChange={(e) => setCustomLanguageInput(e.target.value)}
+                          onKeyPress={(e) => {
+                            if (e.key === 'Enter') {
+                              e.preventDefault();
+                              const trimmed = customLanguageInput.trim();
+                              if (trimmed && !tempLanguages.includes(trimmed)) {
+                                setTempLanguages([...tempLanguages, trimmed]);
+                                setCustomLanguageInput('');
+                              }
+                            }
+                          }}
+                          className="text-xs dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+                        />
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            const trimmed = customLanguageInput.trim();
+                            if (trimmed && !tempLanguages.includes(trimmed)) {
+                              setTempLanguages([...tempLanguages, trimmed]);
+                              setCustomLanguageInput('');
+                            }
+                          }}
+                          className="h-8 px-2"
+                        >
+                          <Plus className="w-3 h-3" />
+                        </Button>
+                      </div>
+                    </div>
+
                     {/* Show selected languages */}
                     {tempLanguages.length > 0 && (
                       <div className="flex flex-wrap gap-2 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
@@ -6628,6 +6672,46 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         </PopoverContent>
                       </Popover>
                       
+                      {/* Custom Country Input */}
+                      <div className="mt-3">
+                        <label className="text-xs font-medium mb-1 block text-gray-600 dark:text-gray-400">
+                          Add Custom Country (hit Enter after each)
+                        </label>
+                        <div className="flex space-x-2">
+                          <Input
+                            placeholder="e.g., Vatican City, San Marino"
+                            value={customCountryInput}
+                            onChange={(e) => setCustomCountryInput(e.target.value)}
+                            onKeyPress={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault();
+                                const trimmed = customCountryInput.trim();
+                                if (trimmed && !tempCountries.includes(trimmed)) {
+                                  setTempCountries([...tempCountries, trimmed]);
+                                  setCustomCountryInput('');
+                                }
+                              }
+                            }}
+                            className="text-xs dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+                          />
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              const trimmed = customCountryInput.trim();
+                              if (trimmed && !tempCountries.includes(trimmed)) {
+                                setTempCountries([...tempCountries, trimmed]);
+                                setCustomCountryInput('');
+                              }
+                            }}
+                            className="h-8 px-2"
+                          >
+                            <Plus className="w-3 h-3" />
+                          </Button>
+                        </div>
+                      </div>
+
                       {/* Show selected countries */}
                       {tempCountries.length > 0 && (
                         <div className="flex flex-wrap gap-2 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
