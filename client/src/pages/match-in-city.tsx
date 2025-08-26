@@ -501,6 +501,39 @@ export default function MatchInCity() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
+                {/* Header Instructions */}
+                <div className="bg-gradient-to-br from-blue-600/20 to-purple-600/20 rounded-lg p-6 border border-blue-400/30">
+                  <div className="text-center mb-4">
+                    <h2 className="text-2xl font-bold text-white mb-2">🎯 City-Specific Matching</h2>
+                    <p className="text-blue-200 text-lg">
+                      THE POINT OF THIS SITE: Add activities to your city's list and get matched with 
+                      people who want to do the same things! Create a living, collaborative city guide with 
+                      city experiences.
+                    </p>
+                  </div>
+                  
+                  <div className="bg-purple-600/30 rounded-lg p-4 mb-4">
+                    <h3 className="text-white font-semibold mb-2 flex items-center gap-2">
+                      🎯 Click to Match!
+                    </h3>
+                    <p className="text-purple-200 text-sm">
+                      Click any activity to show you're interested! Connect with others who want the same experience.
+                    </p>
+                  </div>
+
+                  <div className="space-y-3">
+                    <h3 className="text-white font-semibold">✨ How This Works:</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-blue-200">
+                      <div>• <strong>Add activities:</strong> Type anything (concerts, events, meetups) and hit Enter</div>
+                      <div>• <strong>Click activities:</strong> Click any activity to add it to your profile as something you want to do</div>
+                      <div>• <strong>Edit activities:</strong> Any user can click the edit button to update entries</div>
+                      <div>• <strong>Delete activities:</strong> Remove outdated events (like "U2 concert Sunday" after Sunday)</div>
+                      <div>• <strong>Community-driven:</strong> Everyone builds the activity list together for this city</div>
+                      <div>• <strong>Earn sure:</strong> Create popular activities - earn +2 aura points when people match them!</div>
+                    </div>
+                  </div>
+                </div>
+
                 {/* Add Activity Form */}
                 {showAddForm && (
                   <div className="bg-white/5 rounded-lg p-4 border border-white/10">
