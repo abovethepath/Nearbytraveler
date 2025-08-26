@@ -3464,8 +3464,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       `${user.hometownCity}${user.hometownState ? `, ${user.hometownState}` : ''}` :
                       'Unknown';
                     
-                    if (currentDestination) {
-                      // When traveling: USERNAME then NEARBY TRAVELER [DESTINATION]
+                    // Check if user is currently in their hometown city
+                    const currentLocation = user.location || '';
+                    const isInHometown = user.hometownCity && currentLocation.toLowerCase().includes(user.hometownCity.toLowerCase());
+                    
+                    if (currentDestination && !isInHometown) {
+                      // When traveling away from home: USERNAME then NEARBY TRAVELER [DESTINATION]
                       return (
                         <>
                           <h1 className="text-2xl sm:text-3xl font-bold text-black">@{user.username}</h1>
@@ -3475,7 +3479,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         </>
                       );
                     } else {
-                      // When home: USERNAME then NEARBY LOCAL [HOMETOWN CITY, STATE]
+                      // When at home or no travel plans: USERNAME then NEARBY LOCAL [HOMETOWN CITY, STATE]
                       return (
                         <>
                           <h1 className="text-2xl sm:text-3xl font-bold text-black">@{user.username}</h1>
