@@ -91,8 +91,12 @@ export default function FixedChatroom() {
     }
   }, []);
   
-  // Check if user is a member
-  const userIsMember = members.some(member => member.user_id === currentUserId);
+  // Enhanced membership check - sometimes the API response format varies
+  const userIsMember = currentUserId ? members.some(member => 
+    member.user_id === currentUserId || 
+    member.id === currentUserId || 
+    (member as any).userId === currentUserId
+  ) : false;
   
   // Enhanced API request with multiple attempt strategies
   const apiRequest = async (url: string, options: any = {}) => {
@@ -208,6 +212,26 @@ export default function FixedChatroom() {
       }
       
       addDebug(`✅ Members loaded: ${membersData.length} people`);
+      
+      // Debug member details to understand the structure
+      if (membersData.length > 0 && currentUserId) {
+        const memberStructure = membersData[0];
+        addDebug(`👤 Member structure: ${Object.keys(memberStructure).join(', ')}`);
+        
+        const foundMember = membersData.find(m => 
+          m.user_id === currentUserId || 
+          m.id === currentUserId || 
+          (m as any).userId === currentUserId
+        );
+        
+        if (foundMember) {
+          addDebug(`✅ Found current user in members: ${JSON.stringify(foundMember).substring(0, 80)}...`);
+        } else {
+          addDebug(`❌ Current user (${currentUserId}) not found in member list`);
+          addDebug(`👥 Member IDs: ${membersData.map(m => m.user_id || m.id || (m as any).userId).join(', ')}`);
+        }
+      }
+      
       setMembers(membersData);
       return membersData;
     } catch (error: any) {
@@ -259,7 +283,11 @@ export default function FixedChatroom() {
       await loadChatroomDetails();
       const membersData = await loadMembers();
       
-      const isMember = membersData.some((m: any) => m.user_id === currentUserId);
+      const isMember = membersData.some((m: ChatMember) => 
+        m.user_id === currentUserId || 
+        m.id === currentUserId || 
+        (m as any).userId === currentUserId
+      );
       addDebug(`🔍 User membership status: ${isMember ? 'MEMBER' : 'NOT MEMBER'}`);
       
       if (isMember) {
@@ -348,23 +376,30 @@ export default function FixedChatroom() {
       setJoinProgress('Verifying membership...');
       let membershipVerified = false;
       let retryCount = 0;
-      const maxRetries = 5;
+      const maxRetries = 3; // Reduced from 5 to make it faster
       
       while (!membershipVerified && retryCount < maxRetries) {
         retryCount++;
         addDebug(`🔍 Verification attempt ${retryCount}/${maxRetries}...`);
         setJoinProgress(`Verification attempt ${retryCount}/${maxRetries}...`);
         
-        // Wait before checking (progressively longer delays)
+        // Wait before checking (shorter delays)
         if (retryCount > 1) {
-          await new Promise(resolve => setTimeout(resolve, retryCount * 1000));
+          await new Promise(resolve => setTimeout(resolve, retryCount * 500));
         }
         
         // Reload members to check membership
         const freshMembers = await loadMembers();
-        const isMemberNow = freshMembers.some((m: any) => m.user_id === currentUserId);
+        
+        // Check multiple possible membership formats
+        const isMemberNow = freshMembers.some((m: ChatMember) => 
+          m.user_id === currentUserId || 
+          m.id === currentUserId || 
+          (m as any).userId === currentUserId
+        );
         
         addDebug(`📊 Membership check ${retryCount}: ${isMemberNow ? 'MEMBER' : 'NOT MEMBER'}`);
+        addDebug(`👥 Found ${freshMembers.length} members in latest check`);
         
         if (isMemberNow) {
           membershipVerified = true;
@@ -375,16 +410,21 @@ export default function FixedChatroom() {
           await loadAllData();
           setJoinProgress('Successfully joined!');
           break;
+        } else if (freshMembers.length > 0) {
+          // If we can see members but we're not in the list, something might be wrong with our check
+          addDebug(`🔍 Debug: Members found but current user (${currentUserId}) not detected`);
+          addDebug(`🔍 Raw member data: ${JSON.stringify(freshMembers.slice(0, 2)).substring(0, 200)}...`);
+          setJoinProgress(`Not yet verified, retrying in ${retryCount * 0.5} seconds...`);
         } else {
           addDebug(`⏳ Not yet a member, waiting longer... (attempt ${retryCount})`);
-          setJoinProgress(`Not yet verified, retrying in ${retryCount + 1} seconds...`);
+          setJoinProgress(`No members found, retrying in ${retryCount * 0.5} seconds...`);
         }
       }
       
       if (!membershipVerified) {
         addDebug('❌ Membership verification failed after all retries');
         setJoinProgress('');
-        setError('Join appeared successful but membership not confirmed. Please try the manual options below.');
+        setError('Join API succeeded but membership verification failed. Please try the manual options below or refresh the page.');
       } else {
         addDebug('✅ Successfully joined and verified!');
         setJoinProgress('');
@@ -466,7 +506,7 @@ export default function FixedChatroom() {
         addDebug('✅ Manual check successful - you are now a member!');
       } else {
         addDebug('❌ Manual check - still not a member');
-        setError('Still not a member. Try the join process again.');
+        setError('Still not a member. Try the join process again or refresh the page.');
       }
     } catch (error: any) {
       addDebug(`❌ Manual check failed: ${error.message}`);
@@ -479,6 +519,41 @@ export default function FixedChatroom() {
   const forceRefreshPage = () => {
     addDebug('🔄 Force refresh requested');
     window.location.reload();
+  };
+  
+  const tryDirectJoin = async () => {
+    if (!currentUserId || isJoining) return;
+    
+    setIsJoining(true);
+    setError(null);
+    
+    try {
+      addDebug('🎯 Attempting direct join without verification delays...');
+      
+      // Try the most common endpoint directly
+      const response = await apiRequest(`/api/chatrooms/${chatroomId}/join`, {
+        method: 'POST',
+        body: JSON.stringify({})
+      });
+      
+      addDebug(`✅ Direct join response: ${JSON.stringify(response).substring(0, 100)}...`);
+      
+      // Immediate membership check
+      await loadAllData();
+      
+      if (userIsMember) {
+        setError(null);
+        addDebug('🎉 Direct join successful!');
+      } else {
+        setError('Direct join completed but membership not confirmed. You may already be a member - try refreshing.');
+      }
+      
+    } catch (error: any) {
+      addDebug(`❌ Direct join failed: ${error.message}`);
+      setError(`Direct join failed: ${error.message}`);
+    } finally {
+      setIsJoining(false);
+    }
   };
   
   // Load data when user is available
@@ -626,7 +701,7 @@ export default function FixedChatroom() {
           </div>
           
           {/* Enhanced Debug Controls */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-3">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-2 mb-3">
             <Button variant="outline" size="sm" onClick={loadAllData} disabled={loading}>
               🔄 Force Refresh All
             </Button>
@@ -635,6 +710,9 @@ export default function FixedChatroom() {
             </Button>
             <Button variant="outline" size="sm" onClick={checkMembershipAgain}>
               🔍 Check Membership
+            </Button>
+            <Button variant="outline" size="sm" onClick={tryDirectJoin} disabled={isJoining}>
+              🎯 Direct Join
             </Button>
             <Button variant="outline" size="sm" onClick={forceRefreshPage}>
               🌐 Refresh Page
@@ -658,7 +736,7 @@ export default function FixedChatroom() {
               <AlertCircle className="w-5 h-5 text-red-500 mt-0.5" />
               <div className="flex-1">
                 <p className="text-red-800 font-medium">{error}</p>
-                <div className="mt-3 grid grid-cols-2 md:grid-cols-4 gap-2">
+                <div className="mt-3 grid grid-cols-2 md:grid-cols-5 gap-2">
                   <Button variant="outline" size="sm" onClick={loadAllData}>
                     🔄 Retry Load
                   </Button>
@@ -667,6 +745,9 @@ export default function FixedChatroom() {
                   </Button>
                   <Button variant="outline" size="sm" onClick={joinChatroom} disabled={isJoining}>
                     🚪 Try Join Again
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={tryDirectJoin} disabled={isJoining}>
+                    🎯 Direct Join
                   </Button>
                   <Button variant="outline" size="sm" onClick={() => setError(null)}>
                     ✕ Dismiss
@@ -873,17 +954,30 @@ export default function FixedChatroom() {
                     <p className="text-gray-600 dark:text-gray-300 mb-8 leading-relaxed">
                       Join this chatroom to see messages, connect with other members, and participate in conversations.
                     </p>
-                    <Button
-                      onClick={joinChatroom}
-                      disabled={isJoining}
-                      size="lg"
-                      className="w-full flex items-center justify-center space-x-3 bg-green-600 hover:bg-green-700 text-white py-3"
-                    >
-                      {isJoining && <Loader2 className="w-5 h-5 animate-spin" />}
-                      <span className="text-lg font-medium">
-                        {isJoining ? 'Joining Chatroom...' : 'Join Chatroom Now'}
-                      </span>
-                    </Button>
+                    
+                    <div className="space-y-3">
+                      <Button
+                        onClick={joinChatroom}
+                        disabled={isJoining}
+                        size="lg"
+                        className="w-full flex items-center justify-center space-x-3 bg-green-600 hover:bg-green-700 text-white py-3"
+                      >
+                        {isJoining && <Loader2 className="w-5 h-5 animate-spin" />}
+                        <span className="text-lg font-medium">
+                          {isJoining ? 'Joining Chatroom...' : 'Join Chatroom Now'}
+                        </span>
+                      </Button>
+                      
+                      <Button
+                        onClick={tryDirectJoin}
+                        disabled={isJoining}
+                        variant="outline"
+                        size="lg"
+                        className="w-full"
+                      >
+                        🎯 Try Direct Join (Faster)
+                      </Button>
+                    </div>
                     
                     {error && (
                       <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-lg">
@@ -892,8 +986,8 @@ export default function FixedChatroom() {
                           <Button variant="outline" size="sm" onClick={checkMembershipAgain}>
                             🔍 Check Again
                           </Button>
-                          <Button variant="outline" size="sm" onClick={joinChatroom} disabled={isJoining}>
-                            🚪 Try Join Again
+                          <Button variant="outline" size="sm" onClick={forceRefreshPage}>
+                            🌐 Refresh Page
                           </Button>
                         </div>
                       </div>
