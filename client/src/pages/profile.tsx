@@ -3431,23 +3431,46 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </div>
                 </div>
               ) : (
-                <div className="space-y-1 text-black w-full mt-2">
-                  {/* Username */}
-                  <h1 className="text-xl sm:text-3xl font-bold text-black truncate">@{user.username}</h1>
-
-                  {/* Location/status — Centralized location display */}
-                  <div className="text-sm text-gray-600 dark:text-gray-400 flex flex-wrap items-center gap-x-3 gap-y-1">
-                    <span>From: <span className="font-medium">{user.hometownCity || user.location?.split(',')[0] || 'Hometown not set'}{user.hometownState ? `, ${user.hometownState}` : ''}{user.hometownCountry ? `, ${user.hometownCountry}` : ''}</span></span>
-                    <span>{(() => {
-                      const currentDestination = getCurrentTravelDestination(travelPlans || []);
-                      return currentDestination ? `Currently in ${currentDestination}` : 'Currently home';
-                    })()}</span>
-                  </div>
+                <div className="space-y-2 text-black w-full mt-2">
+                  {(() => {
+                    const currentDestination = getCurrentTravelDestination(travelPlans || []);
+                    const hometown = user.hometownCity ? 
+                      `${user.hometownCity}${user.hometownState ? `, ${user.hometownState}` : ''}${user.hometownCountry ? `, ${user.hometownCountry}` : ''}` :
+                      (user.location || 'Hometown');
+                    
+                    if (currentDestination) {
+                      // When traveling: NEARBY TRAVELER [DESTINATION]
+                      return (
+                        <>
+                          <h1 className="text-3xl sm:text-5xl md:text-6xl font-bold text-black leading-tight">
+                            NEARBY TRAVELER<br />
+                            <span className="text-blue-600">{currentDestination.toUpperCase()}</span>
+                          </h1>
+                          <div className="text-sm text-gray-600 dark:text-gray-400">
+                            <span className="font-medium">@{user.username}</span> • From {hometown}
+                          </div>
+                        </>
+                      );
+                    } else {
+                      // When home: NEARBY LOCAL [HOMETOWN]
+                      return (
+                        <>
+                          <h1 className="text-3xl sm:text-5xl md:text-6xl font-bold text-black leading-tight">
+                            NEARBY LOCAL<br />
+                            <span className="text-orange-600">{hometown.toUpperCase()}</span>
+                          </h1>
+                          <div className="text-sm text-gray-600 dark:text-gray-400">
+                            <span className="font-medium">@{user.username}</span> • Currently home
+                          </div>
+                        </>
+                      );
+                    }
+                  })()}
 
                   {/* Stats */}
-                  <div className="flex items-center flex-wrap gap-2 text-xs sm:text-sm w-full">
-                    <span className="font-medium">🌍 {countriesVisited?.length || 0} countries</span>
-                    <span className="font-medium">⭐ {references?.length || 0} references</span>
+                  <div className="flex items-center flex-wrap gap-4 text-sm font-medium w-full mt-3">
+                    <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full">🌍 {countriesVisited?.length || 0} countries</span>
+                    <span className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full">⭐ {references?.length || 0} references</span>
                   </div>
                 </div>
               )}
