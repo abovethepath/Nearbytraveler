@@ -147,6 +147,7 @@ export const users = pgTable("users", {
   
   // Travel Intent fields (TangoTrips-inspired)
   travelWhy: text("travel_why"), // Why they travel: adventure, connection, culture, relaxation
+  travelWhat: text("travel_what").array(), // What interests them: food, art, music, photography, etc.
   travelHow: text("travel_how"), // How they travel: planner, spontaneous, social, independent
   travelBudget: text("travel_budget"), // Budget range: budget, moderate, premium
   travelGroup: text("travel_group"), // Group type: solo, couple, friends, family

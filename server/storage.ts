@@ -684,6 +684,7 @@ export class DatabaseStorage implements IStorage {
         hometownCountry: 'hometown_country',
         travelStyle: 'travel_style',
         travelWhy: 'travel_why',
+        travelWhat: 'travel_what',
         travelHow: 'travel_how',
         travelBudget: 'travel_budget',
         travelGroup: 'travel_group',
