@@ -178,7 +178,7 @@ export default function LocationSortedEvents({
             {event.attendeeCount !== undefined && (
               <div className="flex items-center space-x-1">
                 <Users className="w-4 h-4 text-green-500" />
-                <span className="text-sm font-medium">
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                   {event.attendeeCount}
                   {event.capacity && `/${event.capacity}`}
                 </span>
@@ -189,7 +189,7 @@ export default function LocationSortedEvents({
             {event.rating && (
               <div className="flex items-center space-x-1">
                 <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                <span className="text-sm font-medium">
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                   {event.rating.toFixed(1)}
                 </span>
               </div>
@@ -205,7 +205,7 @@ export default function LocationSortedEvents({
 
           {/* Distance */}
           {event.distance !== undefined && (
-            <span className="text-xs text-gray-500">
+            <span className="text-xs text-gray-600 dark:text-gray-400">
               {formatDistance(event.distance)}
             </span>
           )}
@@ -215,12 +215,12 @@ export default function LocationSortedEvents({
         {event.tags && event.tags.length > 0 && (
           <div className="flex flex-wrap gap-1 mb-3">
             {event.tags.slice(0, 3).map((tag, index) => (
-              <Badge key={index} variant="outline" className="text-xs">
+              <Badge key={index} variant="outline" className="text-xs text-gray-700 dark:text-gray-300">
                 {tag}
               </Badge>
             ))}
             {event.tags.length > 3 && (
-              <Badge variant="outline" className="text-xs text-gray-500">
+              <Badge variant="outline" className="text-xs text-gray-600 dark:text-gray-400">
                 +{event.tags.length - 3} more
               </Badge>
             )}
