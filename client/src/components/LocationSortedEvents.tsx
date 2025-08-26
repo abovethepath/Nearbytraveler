@@ -239,15 +239,15 @@ export default function LocationSortedEvents({
           </>
         )}
 
-        {/* Action Buttons */}
-        <div className="flex space-x-2 mt-4">
+        {/* Action Buttons - Stacked vertically */}
+        <div className="flex flex-col space-y-2 mt-4">
           <Button
             size="sm"
             onClick={(e) => {
               e.stopPropagation();
               onEventClick?.(event);
             }}
-            className="flex-1 text-xs bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-medium"
+            className="w-full text-xs bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-medium"
           >
             <ExternalLink className="w-3 h-3 mr-1" />
             View Event
@@ -259,7 +259,7 @@ export default function LocationSortedEvents({
               e.stopPropagation();
               // Handle join event action
             }}
-            className="flex-1 text-xs bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-medium"
+            className="w-full text-xs bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-medium"
           >
             <Users className="w-3 h-3 mr-1" />
             Join Event
@@ -278,11 +278,6 @@ export default function LocationSortedEvents({
               <Calendar className="w-5 h-5 text-white" />
             </div>
             <span className="text-xl font-bold bg-gradient-to-r from-purple-700 to-blue-700 bg-clip-text text-transparent dark:from-purple-400 dark:to-blue-400">{title}</span>
-            {currentUserLocation && (
-              <Badge className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-xs">
-                Near {currentUserLocation}
-              </Badge>
-            )}
           </CardTitle>
           {showViewAll && (
             <Button 

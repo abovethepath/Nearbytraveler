@@ -2364,17 +2364,7 @@ export default function Home() {
             {/* Events Section - Location-Based with Enhanced Styling */}
             <div className="bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50 dark:from-purple-900/20 dark:via-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6 border border-purple-100 dark:border-purple-800">
               <LocationSortedEvents
-                events={events.filter(event => {
-                  const userLocation = getCurrentUserLocation();
-                  if (!userLocation || !event.city) return false;
-                  
-                  // Extract city from user location (handle formats like "City, State" or "City, State, Country")
-                  const userCity = userLocation.split(',')[0].trim().toLowerCase();
-                  const eventCity = event.city.toLowerCase();
-                  
-                  // Check if event is in the same city as the user
-                  return eventCity.includes(userCity) || userCity.includes(eventCity);
-                })}
+                events={events}
                 currentUserLocation={getCurrentUserLocation()}
                 title="Events Near You"
                 showViewAll={true}
