@@ -1366,9 +1366,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           travelBudget: user.travelBudget || "",
           travelGroup: user.travelGroup || "",
           travelingWithChildren: travelingWithChildrenValue,
-          childrenAges: (user as any).childrenAges || "",
-          isVeteran: Boolean(user.isVeteran),
-          isActiveDuty: Boolean(user.isActiveDuty),
+          childrenAges: (user as any).children_ages || (user as any).childrenAges || "",
+          isVeteran: Boolean((user as any).is_veteran || user.isVeteran),
+          isActiveDuty: Boolean((user as any).is_active_duty || user.isActiveDuty),
           // interests: user.interests || [],
           // activities: user.activities || [],
           // events: user.events || [],
@@ -1457,9 +1457,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           sexualPreferenceVisible: !!user.sexualPreferenceVisible,
           travelStyle: user.travelStyle || [],
           travelingWithChildren: !!user.travelingWithChildren,
-          childrenAges: user.childrenAges || "",
-          isVeteran: !!user.isVeteran,
-          isActiveDuty: !!user.isActiveDuty,
+          childrenAges: (user as any).children_ages || (user as any).childrenAges || "",
+          isVeteran: !!((user as any).is_veteran || user.isVeteran),
+          isActiveDuty: !!((user as any).is_active_duty || user.isActiveDuty),
         });
       }
     }
@@ -3694,6 +3694,27 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         {(user as any).childrenAges && (
                           <span className="text-sm text-gray-500 dark:text-gray-400">
                             (Ages: {(user as any).childrenAges})
+                          </span>
+                        )}
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Military Status for non-business users */}
+                  {user.userType !== 'business' && (user.isVeteran || user.isActiveDuty) && (
+                    <div className="flex items-start">
+                      <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">Military:</span>
+                      <span className="flex-1 break-words flex items-center gap-2">
+                        {user.isVeteran && (
+                          <span className="inline-flex items-center gap-1 text-sm font-medium text-green-700 dark:text-green-400">
+                            <span className="text-green-600">✓</span>
+                            Veteran
+                          </span>
+                        )}
+                        {user.isActiveDuty && (
+                          <span className="inline-flex items-center gap-1 text-sm font-medium text-blue-700 dark:text-blue-400">
+                            <span className="text-blue-600">✓</span>
+                            Active Duty
                           </span>
                         )}
                       </span>
