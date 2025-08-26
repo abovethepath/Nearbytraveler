@@ -240,8 +240,8 @@ export default function FixedChatroom() {
     }
   };
   
-  // Load all data
-  const loadAllData = async () => {
+  // Load all data - MEMOIZED to prevent infinite re-renders
+  const loadAllData = useCallback(async () => {
     if (!currentUserId) {
       addDebug('❌ Cannot load data - no user ID');
       setError('Please log in to access the chatroom');
@@ -270,7 +270,7 @@ export default function FixedChatroom() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentUserId, chatroomId]);
   
   // JOIN CHATROOM - SIMPLIFIED (no more countdown BS)
   const joinChatroom = async () => {
@@ -410,7 +410,7 @@ export default function FixedChatroom() {
       addDebug('🚀 Component mounted, loading data...');
       loadAllData();
     }
-  }, [chatroomId, currentUserId]);
+  }, [currentUserId, loadAllData]);
   
   // Auto-scroll messages
   useEffect(() => {

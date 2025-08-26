@@ -1,0 +1,284 @@
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Copy, Share, Download, CheckCircle, User, Link2 } from "lucide-react";
+
+export default function QRCodeCard() {
+  const canvasRef = useRef(null);
+  const [copied, setCopied] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+  const [shareUrl, setShareUrl] = useState('');
+  const [qrGenerated, setQrGenerated] = useState(false);
+
+  // Memoized function to get user data
+  const getUserData = useCallback(() => {
+    try {
+      let storedUser = localStorage.getItem('travelconnect_user');
+      if (storedUser) {
+        return JSON.parse(storedUser);
+      }
+      
+      storedUser = localStorage.getItem('user');
+      if (storedUser) {
+        return JSON.parse(storedUser);
+      }
+      
+      return null;
+    } catch (e) {
+      console.error('Error parsing user data:', e);
+      return null;
+    }
+  }, []);
+
+  // Initialize user data once
+  useEffect(() => {
+    const user = getUserData();
+    if (user) {
+      setCurrentUser(user);
+      const baseUrl = window.location.origin;
+      const url = `${baseUrl}/profile/${user.id}`;
+      setShareUrl(url);
+    }
+  }, [getUserData]);
+
+  // Memoized QR generation function
+  const generateQRCode = useCallback((text, size = 200) => {
+    const canvas = canvasRef.current;
+    if (!canvas || !text) return;
+
+    const ctx = canvas.getContext('2d');
+    canvas.width = size;
+    canvas.height = size;
+
+    // Clear canvas
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, size, size);
+
+    // Create a simple QR-like pattern (for demo - in production use a proper QR library)
+    const moduleSize = size / 25;
+    ctx.fillStyle = '#000000';
+    
+    // Generate pattern based on text hash
+    const hashCode = text.split('').reduce((a, b) => {
+      a = ((a << 5) - a) + b.charCodeAt(0);
+      return a & a;
+    }, 0);
+    
+    // Create QR-like pattern
+    for (let row = 0; row < 25; row++) {
+      for (let col = 0; col < 25; col++) {
+        const hash = (hashCode + row * 25 + col) % 4;
+        if (hash < 2) {
+          ctx.fillRect(col * moduleSize, row * moduleSize, moduleSize, moduleSize);
+        }
+      }
+    }
+
+    // Add corner markers (QR code style)
+    const markerSize = moduleSize * 7;
+    
+    // Top-left marker
+    ctx.fillRect(0, 0, markerSize, markerSize);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(moduleSize, moduleSize, markerSize - 2 * moduleSize, markerSize - 2 * moduleSize);
+    ctx.fillStyle = '#000000';
+    ctx.fillRect(moduleSize * 2, moduleSize * 2, markerSize - 4 * moduleSize, markerSize - 4 * moduleSize);
+
+    // Top-right marker
+    ctx.fillStyle = '#000000';
+    ctx.fillRect(size - markerSize, 0, markerSize, markerSize);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(size - markerSize + moduleSize, moduleSize, markerSize - 2 * moduleSize, markerSize - 2 * moduleSize);
+    ctx.fillStyle = '#000000';
+    ctx.fillRect(size - markerSize + moduleSize * 2, moduleSize * 2, markerSize - 4 * moduleSize, markerSize - 4 * moduleSize);
+
+    // Bottom-left marker
+    ctx.fillStyle = '#000000';
+    ctx.fillRect(0, size - markerSize, markerSize, markerSize);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(moduleSize, size - markerSize + moduleSize, markerSize - 2 * moduleSize, markerSize - 2 * moduleSize);
+    ctx.fillStyle = '#000000';
+    ctx.fillRect(moduleSize * 2, size - markerSize + moduleSize * 2, markerSize - 4 * moduleSize, markerSize - 4 * moduleSize);
+
+    setQrGenerated(true);
+  }, []);
+
+  // Generate QR code when shareUrl is available - run only once
+  useEffect(() => {
+    if (shareUrl && canvasRef.current && !qrGenerated) {
+      generateQRCode(shareUrl);
+    }
+  }, [shareUrl, generateQRCode, qrGenerated]);
+
+  // Copy URL to clipboard
+  const copyToClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = shareUrl;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
+  // Download QR code as image
+  const downloadQR = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const link = document.createElement('a');
+    link.download = `${currentUser?.username || 'profile'}-qr-code.png`;
+    link.href = canvas.toDataURL();
+    link.click();
+  };
+
+  // Share via Web Share API or fallback
+  const shareProfile = async () => {
+    const shareData = {
+      title: `Connect with ${currentUser?.username || 'me'} on TravelConnect`,
+      text: `Check out my travel profile and let's explore together!`,
+      url: shareUrl
+    };
+
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch (err) {
+        console.log('Share cancelled or failed:', err);
+      }
+    } else {
+      // Fallback to copying URL
+      copyToClipboard();
+    }
+  };
+
+  if (!currentUser) {
+    return (
+      <Card className="w-full max-w-md mx-auto bg-white dark:bg-gray-800 border dark:border-gray-700">
+        <CardContent className="p-8 text-center">
+          <div className="w-16 h-16 bg-gray-200 dark:bg-gray-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <User className="w-8 h-8 text-gray-400 dark:text-gray-300" />
+          </div>
+          <p className="text-gray-600 dark:text-gray-300">Please log in to generate your QR code</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <Card className="w-full max-w-md mx-auto bg-white dark:bg-gray-800 border dark:border-gray-700 shadow-lg">
+      <CardHeader className="text-center pb-4">
+        <div className="flex flex-col items-center space-y-3">
+          <Avatar className="w-16 h-16 ring-4 ring-blue-100 dark:ring-blue-800">
+            <AvatarImage src={currentUser.profile_image} alt={currentUser.username} />
+            <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white text-lg font-bold">
+              {currentUser.username?.[0]?.toUpperCase() || 'U'}
+            </AvatarFallback>
+          </Avatar>
+          <div>
+            <CardTitle className="text-xl font-bold text-gray-900 dark:text-white">
+              {currentUser.username}
+            </CardTitle>
+            <p className="text-sm text-gray-600 dark:text-gray-300">
+              {currentUser.name || 'Travel Enthusiast'}
+            </p>
+          </div>
+        </div>
+      </CardHeader>
+
+      <CardContent className="space-y-6">
+        {/* QR Code */}
+        <div className="flex justify-center">
+          <div className="p-4 bg-white dark:bg-gray-100 rounded-xl shadow-inner border-2 border-gray-100 dark:border-gray-200">
+            <canvas 
+              ref={canvasRef} 
+              className="block"
+              style={{ 
+                width: '200px', 
+                height: '200px',
+                imageRendering: 'pixelated'
+              }}
+            />
+          </div>
+        </div>
+
+        {/* Profile URL */}
+        <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+          <div className="flex items-center space-x-2 mb-2">
+            <Link2 className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              Your Profile Link
+            </span>
+          </div>
+          <p className="text-xs text-gray-600 dark:text-gray-400 break-all font-mono bg-white dark:bg-gray-800 p-2 rounded border">
+            {shareUrl}
+          </p>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="grid grid-cols-1 gap-3">
+          <Button 
+            onClick={copyToClipboard} 
+            className="w-full flex items-center justify-center space-x-2"
+            variant={copied ? "default" : "outline"}
+          >
+            {copied ? (
+              <>
+                <CheckCircle className="w-4 h-4" />
+                <span>Copied!</span>
+              </>
+            ) : (
+              <>
+                <Copy className="w-4 h-4" />
+                <span>Copy Link</span>
+              </>
+            )}
+          </Button>
+          
+          <div className="grid grid-cols-2 gap-2">
+            <Button 
+              onClick={shareProfile}
+              variant="outline"
+              className="flex items-center justify-center space-x-2"
+            >
+              <Share className="w-4 h-4" />
+              <span>Share</span>
+            </Button>
+            
+            <Button 
+              onClick={downloadQR}
+              variant="outline"
+              disabled={!qrGenerated}
+              className="flex items-center justify-center space-x-2"
+            >
+              <Download className="w-4 h-4" />
+              <span>Download</span>
+            </Button>
+          </div>
+        </div>
+
+        {/* Instructions */}
+        <div className="text-center space-y-2">
+          <p className="text-sm text-gray-600 dark:text-gray-300">
+            Share this QR code with friends to connect instantly
+          </p>
+          <div className="flex justify-center space-x-4 text-xs text-gray-500 dark:text-gray-400">
+            <span>✓ Scan with camera</span>
+            <span>✓ Share link</span>
+            <span>✓ Auto-connect</span>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
