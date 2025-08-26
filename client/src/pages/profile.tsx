@@ -1467,6 +1467,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     }
   }, [isEditMode, user, userLoading, profileForm]);
 
+
   // Form for editing references
   const editReferenceForm = useForm({
     defaultValues: {
@@ -7777,7 +7778,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
       {/* Profile Edit Modal */}
       <Dialog open={isEditMode} onOpenChange={setIsEditMode}>
-        <DialogContent className="max-w-[95vw] w-full md:max-w-2xl max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 opacity-100 backdrop-blur-none" style={{backgroundColor: 'white', opacity: 1}}>
+        <DialogContent className="max-w-[95vw] w-full md:max-w-2xl max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700">
           <DialogHeader>
             <div className="flex items-center justify-between">
               <DialogTitle>Edit Profile</DialogTitle>
@@ -7903,7 +7904,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           <Textarea 
                             {...field} 
                             placeholder="Describe your business and services..."
-                            className="min-h-[100px] resize-none text-black dark:text-white"
+                            className="min-h-[100px] resize-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
                             maxLength={1000}
                           />
                         </FormControl>
@@ -7928,7 +7929,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           <Textarea 
                             {...field} 
                             placeholder="Tell us about yourself..."
-                            className="min-h-[100px] resize-none text-black dark:text-white"
+                            className="min-h-[100px] resize-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
                             maxLength={1000}
                           />
                         </FormControl>
@@ -7950,7 +7951,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           <Textarea 
                             {...field} 
                             placeholder="Fill this out for others to see secret activities, hidden gems, local spots, or insider tips that only locals know about. Example: There's a hidden waterfall behind the old mill that locals love, or try the secret menu at Joe's Diner..."
-                            className="min-h-[80px] resize-none text-black dark:text-white"
+                            className="min-h-[80px] resize-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
                             maxLength={500}
                           />
                         </FormControl>

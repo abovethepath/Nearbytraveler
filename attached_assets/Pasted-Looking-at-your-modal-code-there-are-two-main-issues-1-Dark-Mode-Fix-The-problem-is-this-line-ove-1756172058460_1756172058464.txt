@@ -1,0 +1,95 @@
+Looking at your modal code, there are two main issues:
+1. Dark Mode Fix
+The problem is this line overriding your dark mode classes:
+javascriptstyle={{backgroundColor: 'white', opacity: 1}}
+Fix the DialogContent:
+jsx<DialogContent className="max-w-[95vw] w-full md:max-w-2xl max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700">
+  {/* Remove the style prop completely */}
+Add proper dark mode to form inputs:
+jsx<Textarea 
+  {...field} 
+  placeholder="Tell us about yourself..."
+  className="min-h-[100px] resize-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
+  maxLength={1000}
+/>
+2. Data Not Saving Issue
+The form likely isn't persisting data properly. Here are the fixes:
+Add these useEffects to populate the form when modal opens:
+jsx// Add this useEffect to populate form when user data loads
+useEffect(() => {
+  if (user && isEditMode) {
+    console.log('🔄 Populating form with user data:', user);
+    
+    if (user.userType === 'business') {
+      profileForm.reset({
+        businessDescription: user.businessDescription || '',
+        hometownCity: user.hometownCity || '',
+        hometownState: user.hometownState || '',
+        hometownCountry: user.hometownCountry || '',
+        // Add other business fields
+      });
+    } else {
+      profileForm.reset({
+        bio: user.bio || '',
+        secretActivities: user.secretActivities || '',
+        hometownCity: user.hometownCity || '',
+        hometownState: user.hometownState || '',
+        hometownCountry: user.hometownCountry || '',
+        // Add other traveler fields
+      });
+    }
+  }
+}, [user, isEditMode, profileForm]);
+Fix the onSubmitProfile function:
+jsxconst onSubmitProfile = async (data) => {
+  console.log('🚀 Submitting profile data:', data);
+  
+  try {
+    // Make sure all required fields are present
+    const submitData = {
+      ...data,
+      userType: user.userType,
+      // Include any other required fields
+    };
+    
+    console.log('📤 Final submit data:', submitData);
+    
+    await editProfile.mutateAsync(submitData);
+    
+    // Close modal on success
+    setIsEditMode(false);
+    
+    toast({
+      title: "Profile Updated",
+      description: "Your profile has been saved successfully",
+    });
+    
+  } catch (error) {
+    console.error('❌ Profile save error:', error);
+    toast({
+      title: "Error",
+      description: error.message || "Failed to save profile",
+      variant: "destructive",
+    });
+  }
+};
+Ensure the mutation properly updates the user data:
+jsxconst editProfile = useMutation({
+  mutationFn: async (data) => {
+    // Your API call here
+    const response = await apiRequest('PUT', '/api/users/profile', data);
+    return response;
+  },
+  onSuccess: (data) => {
+    // Update the user query cache so data persists
+    queryClient.setQueryData(['user'], data);
+    queryClient.invalidateQueries(['user']);
+  }
+});
+These fixes will:
+
+Remove the forced white background for proper dark mode
+Populate the form with existing user data when opened
+Ensure data saves properly and persists when navigating
+
+The key issues were the style override preventing dark mode and missing form population when the modal opens.RetryClaude can make mistakes. Please double-check responses.Research Sonnet 4
