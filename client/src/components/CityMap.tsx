@@ -237,7 +237,7 @@ export function CityMap({ city, state, country }: CityMapProps) {
       <CardContent className="space-y-4">
         {/* ✅ Notice moved here + hard wrapping for tiny screens */}
         <p className="text-xs sm:text-sm text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-900/20 p-3 rounded-lg border border-amber-200 dark:border-amber-800 wrap-any">
-          <strong className="font-semibold">Map Notice:</strong> Interactive maps are provided for general reference only. Location accuracy and availability may vary. We are not responsible for map functionality or data accuracy.
+          <strong className="font-semibold">BETA Map Notice:</strong> Interactive maps are provided for general reference only. Location accuracy and availability may vary. We are not responsible for map functionality or data accuracy.
         </p>
 
         <div className="flex flex-wrap gap-4 text-sm">
