@@ -46,6 +46,7 @@ export default function FixedChatroom() {
   const [debugInfo, setDebugInfo] = useState<string[]>([]);
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [currentUserId, setCurrentUserId] = useState<number | null>(null);
+  const [joinProgress, setJoinProgress] = useState<string>('');
   
   // Get chatroom ID from URL
   const pathSegments = window.location.pathname.split('/');
@@ -54,7 +55,7 @@ export default function FixedChatroom() {
   // Debug logging function
   const addDebug = (message: string) => {
     console.log(message);
-    setDebugInfo(prev => [...prev.slice(-4), `${new Date().toLocaleTimeString()}: ${message}`]);
+    setDebugInfo(prev => [...prev.slice(-6), `${new Date().toLocaleTimeString()}: ${message}`]);
   };
   
   // Get current user function
@@ -273,7 +274,7 @@ export default function FixedChatroom() {
     }
   };
   
-  // JOIN CHATROOM - Multiple endpoint attempts
+  // JOIN CHATROOM - Enhanced with retry logic
   const joinChatroom = async () => {
     if (!currentUserId || isJoining || userIsMember) {
       addDebug('⚠️ Join blocked - missing user ID, already joining, or already member');
@@ -282,6 +283,7 @@ export default function FixedChatroom() {
     
     setIsJoining(true);
     setError(null);
+    setJoinProgress('Starting join process...');
     
     // Try multiple possible join endpoints
     const joinEndpoints = [
@@ -297,11 +299,13 @@ export default function FixedChatroom() {
       JSON.stringify({ user_id: currentUserId }),
       JSON.stringify({ userId: currentUserId }),
       JSON.stringify({ action: 'join' }),
-      JSON.stringify({ chatroom_id: chatroomId, user_id: currentUserId })
+      JSON.stringify({ chatroom_id: chatroomId, user_id: currentUserId }),
+      JSON.stringify({ chatroomId: chatroomId, userId: currentUserId })
     ];
     
     try {
       addDebug(`🚪 Attempting to join chatroom ${chatroomId}...`);
+      setJoinProgress('Attempting to join chatroom...');
       
       let joinSuccessful = false;
       let lastError: any = null;
@@ -315,14 +319,17 @@ export default function FixedChatroom() {
           
           try {
             addDebug(`🔄 Trying: POST ${endpoint} with body: ${body}`);
+            setJoinProgress(`Trying join endpoint: ${endpoint}...`);
             
-            await apiRequest(endpoint, { 
+            const response = await apiRequest(endpoint, { 
               method: 'POST',
               body: body
             });
             
-            addDebug('✅ Join request successful!');
+            addDebug('✅ Join API call successful!');
+            addDebug(`📊 Join response: ${JSON.stringify(response).substring(0, 100)}...`);
             joinSuccessful = true;
+            setJoinProgress('Join API call successful! Verifying membership...');
             break;
             
           } catch (error: any) {
@@ -336,17 +343,57 @@ export default function FixedChatroom() {
         throw lastError || new Error('All join attempts failed');
       }
       
-      addDebug('🎉 Successfully joined! Reloading data...');
+      // Enhanced verification with retries
+      addDebug('🔄 Verifying membership with retry logic...');
+      setJoinProgress('Verifying membership...');
+      let membershipVerified = false;
+      let retryCount = 0;
+      const maxRetries = 5;
       
-      // Wait a moment then reload
-      setTimeout(async () => {
-        await loadAllData();
-      }, 500);
+      while (!membershipVerified && retryCount < maxRetries) {
+        retryCount++;
+        addDebug(`🔍 Verification attempt ${retryCount}/${maxRetries}...`);
+        setJoinProgress(`Verification attempt ${retryCount}/${maxRetries}...`);
+        
+        // Wait before checking (progressively longer delays)
+        if (retryCount > 1) {
+          await new Promise(resolve => setTimeout(resolve, retryCount * 1000));
+        }
+        
+        // Reload members to check membership
+        const freshMembers = await loadMembers();
+        const isMemberNow = freshMembers.some((m: any) => m.user_id === currentUserId);
+        
+        addDebug(`📊 Membership check ${retryCount}: ${isMemberNow ? 'MEMBER' : 'NOT MEMBER'}`);
+        
+        if (isMemberNow) {
+          membershipVerified = true;
+          addDebug('🎉 Membership verified! Loading all data...');
+          setJoinProgress('Membership verified! Loading data...');
+          
+          // Full reload of all data
+          await loadAllData();
+          setJoinProgress('Successfully joined!');
+          break;
+        } else {
+          addDebug(`⏳ Not yet a member, waiting longer... (attempt ${retryCount})`);
+          setJoinProgress(`Not yet verified, retrying in ${retryCount + 1} seconds...`);
+        }
+      }
       
-      setError(null);
+      if (!membershipVerified) {
+        addDebug('❌ Membership verification failed after all retries');
+        setJoinProgress('');
+        setError('Join appeared successful but membership not confirmed. Please try the manual options below.');
+      } else {
+        addDebug('✅ Successfully joined and verified!');
+        setJoinProgress('');
+        setError(null);
+      }
       
     } catch (error: any) {
-      addDebug(`❌ All join attempts failed: ${error.message}`);
+      addDebug(`❌ Join process failed: ${error.message}`);
+      setJoinProgress('');
       setError(`Failed to join chatroom: ${error.message}`);
     } finally {
       setIsJoining(false);
@@ -405,6 +452,33 @@ export default function FixedChatroom() {
     } finally {
       setIsSending(false);
     }
+  };
+  
+  // Manual recovery functions
+  const checkMembershipAgain = async () => {
+    try {
+      setLoading(true);
+      addDebug('🔍 Manual membership check requested...');
+      await loadMembers();
+      if (userIsMember) {
+        await loadMessages();
+        setError(null);
+        addDebug('✅ Manual check successful - you are now a member!');
+      } else {
+        addDebug('❌ Manual check - still not a member');
+        setError('Still not a member. Try the join process again.');
+      }
+    } catch (error: any) {
+      addDebug(`❌ Manual check failed: ${error.message}`);
+      setError(`Manual check failed: ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  const forceRefreshPage = () => {
+    addDebug('🔄 Force refresh requested');
+    window.location.reload();
   };
   
   // Load data when user is available
@@ -495,7 +569,7 @@ export default function FixedChatroom() {
               disabled={loading}
             >
               <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-              <span>Refresh</span>
+              <span>Refresh All</span>
             </Button>
             
             {userIsMember ? (
@@ -523,9 +597,19 @@ export default function FixedChatroom() {
           </div>
         </div>
         
+        {/* Join Progress Display */}
+        {joinProgress && (
+          <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="flex items-center space-x-3">
+              <Loader2 className="w-5 h-5 animate-spin text-blue-600" />
+              <p className="text-blue-800 font-medium">{joinProgress}</p>
+            </div>
+          </div>
+        )}
+        
         {/* Debug Panel */}
         <div className="mb-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-sm">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-3">
             <div>
               <strong>Status:</strong>
               <span className={`ml-2 px-2 py-1 rounded text-xs font-semibold ${
@@ -538,11 +622,28 @@ export default function FixedChatroom() {
             </div>
             <div><strong>User ID:</strong> {currentUserId}</div>
             <div><strong>Chatroom ID:</strong> {chatroomId}</div>
+            <div><strong>Members Count:</strong> {members.length}</div>
+          </div>
+          
+          {/* Enhanced Debug Controls */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-3">
+            <Button variant="outline" size="sm" onClick={loadAllData} disabled={loading}>
+              🔄 Force Refresh All
+            </Button>
+            <Button variant="outline" size="sm" onClick={loadMembers}>
+              👥 Reload Members
+            </Button>
+            <Button variant="outline" size="sm" onClick={checkMembershipAgain}>
+              🔍 Check Membership
+            </Button>
+            <Button variant="outline" size="sm" onClick={forceRefreshPage}>
+              🌐 Refresh Page
+            </Button>
           </div>
           
           <details className="mt-2">
-            <summary className="cursor-pointer font-medium">🔍 Debug Log (Click to expand)</summary>
-            <div className="mt-2 p-2 bg-gray-100 dark:bg-gray-800 rounded text-xs font-mono max-h-32 overflow-y-auto">
+            <summary className="cursor-pointer font-medium">🔍 Enhanced Debug Log (Click to expand)</summary>
+            <div className="mt-2 p-2 bg-gray-100 dark:bg-gray-800 rounded text-xs font-mono max-h-40 overflow-y-auto">
               {debugInfo.map((info, i) => (
                 <div key={i} className="mb-1">{info}</div>
               ))}
@@ -550,16 +651,22 @@ export default function FixedChatroom() {
           </details>
         </div>
         
-        {/* Error Display */}
+        {/* Enhanced Error Display */}
         {error && (
           <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
             <div className="flex items-start space-x-3">
               <AlertCircle className="w-5 h-5 text-red-500 mt-0.5" />
               <div className="flex-1">
                 <p className="text-red-800 font-medium">{error}</p>
-                <div className="mt-2 space-x-2">
+                <div className="mt-3 grid grid-cols-2 md:grid-cols-4 gap-2">
                   <Button variant="outline" size="sm" onClick={loadAllData}>
-                    🔄 Retry
+                    🔄 Retry Load
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={checkMembershipAgain}>
+                    🔍 Check Again
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={joinChatroom} disabled={isJoining}>
+                    🚪 Try Join Again
                   </Button>
                   <Button variant="outline" size="sm" onClick={() => setError(null)}>
                     ✕ Dismiss
@@ -780,7 +887,15 @@ export default function FixedChatroom() {
                     
                     {error && (
                       <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-                        <p className="text-red-800 text-sm">{error}</p>
+                        <p className="text-red-800 text-sm mb-3">{error}</p>
+                        <div className="grid grid-cols-2 gap-2">
+                          <Button variant="outline" size="sm" onClick={checkMembershipAgain}>
+                            🔍 Check Again
+                          </Button>
+                          <Button variant="outline" size="sm" onClick={joinChatroom} disabled={isJoining}>
+                            🚪 Try Join Again
+                          </Button>
+                        </div>
                       </div>
                     )}
                   </div>
