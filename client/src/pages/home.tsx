@@ -2361,15 +2361,27 @@ export default function Home() {
             )}
 
 
-            {/* Events Section - Enhanced with Location Sorting */}
-            <LocationSortedEvents
-              events={events}
-              currentUserLocation={getCurrentUserLocation()}
-              title="Upcoming Events"
-              showViewAll={true}
-              onEventClick={(event) => setLocation(`/events/${event.id}`)}
-              onViewAll={() => setLocation('/events')}
-            />
+            {/* Events Section - Location-Based with Enhanced Styling */}
+            <div className="bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50 dark:from-purple-900/20 dark:via-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6 border border-purple-100 dark:border-purple-800">
+              <LocationSortedEvents
+                events={events.filter(event => {
+                  const userLocation = getCurrentUserLocation();
+                  if (!userLocation || !event.city) return false;
+                  
+                  // Extract city from user location (handle formats like "City, State" or "City, State, Country")
+                  const userCity = userLocation.split(',')[0].trim().toLowerCase();
+                  const eventCity = event.city.toLowerCase();
+                  
+                  // Check if event is in the same city as the user
+                  return eventCity.includes(userCity) || userCity.includes(eventCity);
+                })}
+                currentUserLocation={getCurrentUserLocation()}
+                title={`Events Near ${getCurrentUserLocation().split(',')[0]}`}
+                showViewAll={true}
+                onEventClick={(event) => setLocation(`/events/${event.id}`)}
+                onViewAll={() => setLocation('/events')}
+              />
+            </div>
 
 
             {/* Local Businesses Section */}

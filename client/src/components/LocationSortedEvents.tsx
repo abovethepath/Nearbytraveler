@@ -108,12 +108,12 @@ export default function LocationSortedEvents({
   };
 
   const EventCard = ({ event }: { event: Event }) => (
-    <Card className="cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] bg-white dark:bg-gray-800">
-      <CardContent className="p-4">
+    <Card className="cursor-pointer transition-all duration-300 hover:shadow-xl hover:scale-[1.03] bg-gradient-to-br from-white via-purple-50/30 to-blue-50/30 dark:from-gray-800 dark:via-purple-900/20 dark:to-blue-900/20 border-l-4 border-l-purple-400">
+      <CardContent className="p-5">
         {/* Event Header with Image */}
-        <div className="flex items-start space-x-3 mb-3">
+        <div className="flex items-start space-x-4 mb-4">
           {event.eventImage && (
-            <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
+            <div className="w-20 h-20 rounded-xl overflow-hidden flex-shrink-0 ring-2 ring-purple-200 dark:ring-purple-700">
               <img 
                 src={event.eventImage} 
                 alt={event.title}
@@ -125,11 +125,11 @@ export default function LocationSortedEvents({
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between">
               <div>
-                <h4 className="font-semibold text-gray-900 dark:text-white line-clamp-2 mb-1">
+                <h4 className="font-bold text-lg text-gray-900 dark:text-white line-clamp-2 mb-2">
                   {event.title}
                 </h4>
                 {event.category && (
-                  <Badge variant="secondary" className="text-xs mb-2">
+                  <Badge className="bg-gradient-to-r from-purple-500 to-blue-500 text-white text-xs mb-2">
                     {event.category}
                   </Badge>
                 )}
@@ -146,22 +146,28 @@ export default function LocationSortedEvents({
         )}
 
         {/* Date and Time */}
-        <div className="flex items-center space-x-2 mb-2 text-sm text-gray-600 dark:text-gray-300">
-          <Calendar className="w-4 h-4 flex-shrink-0" />
-          <span>{formatEventDate(event.date, event.time)}</span>
+        <div className="flex items-center space-x-2 mb-3 text-sm font-medium">
+          <div className="flex items-center space-x-2 bg-gradient-to-r from-purple-100 to-blue-100 dark:from-purple-800/30 dark:to-blue-800/30 rounded-lg px-3 py-1.5">
+            <Calendar className="w-4 h-4 text-purple-600 dark:text-purple-400 flex-shrink-0" />
+            <span className="text-purple-800 dark:text-purple-200">{formatEventDate(event.date, event.time)}</span>
+          </div>
         </div>
 
         {/* Location */}
-        <div className="flex items-start space-x-2 mb-2 text-sm text-gray-600 dark:text-gray-300">
-          <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
-          <span className="break-words">{formatEventLocation(event)}</span>
+        <div className="flex items-start space-x-2 mb-3 text-sm">
+          <div className="flex items-center space-x-2 bg-gradient-to-r from-blue-100 to-indigo-100 dark:from-blue-800/30 dark:to-indigo-800/30 rounded-lg px-3 py-1.5">
+            <MapPin className="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+            <span className="text-blue-800 dark:text-blue-200 break-words">{formatEventLocation(event)}</span>
+          </div>
         </div>
 
         {/* Organizer */}
         {event.organizer && (
-          <div className="flex items-center space-x-2 mb-3 text-sm text-gray-600 dark:text-gray-300">
-            <Users className="w-4 h-4 flex-shrink-0" />
-            <span>by {event.organizer}</span>
+          <div className="flex items-center space-x-2 mb-3 text-sm">
+            <div className="flex items-center space-x-2 bg-gradient-to-r from-green-100 to-emerald-100 dark:from-green-800/30 dark:to-emerald-800/30 rounded-lg px-3 py-1.5">
+              <Users className="w-4 h-4 text-green-600 dark:text-green-400 flex-shrink-0" />
+              <span className="text-green-800 dark:text-green-200">by {event.organizer}</span>
+            </div>
           </div>
         )}
 
@@ -227,7 +233,7 @@ export default function LocationSortedEvents({
             {(event.city?.toLowerCase().includes(currentUserLocation.toLowerCase()) || 
               event.location?.toLowerCase().includes(currentUserLocation.toLowerCase())) && (
               <div className="mb-3">
-                <Badge className="bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200 text-xs">
+                <Badge className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-xs animate-pulse">
                   <MapPin className="w-3 h-3 mr-1" />
                   In your area
                 </Badge>
@@ -237,14 +243,14 @@ export default function LocationSortedEvents({
         )}
 
         {/* Action Buttons */}
-        <div className="flex space-x-2">
+        <div className="flex space-x-2 mt-4">
           <Button
             size="sm"
             onClick={(e) => {
               e.stopPropagation();
               onEventClick?.(event);
             }}
-            className="flex-1 text-xs"
+            className="flex-1 text-xs bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-medium"
           >
             <ExternalLink className="w-3 h-3 mr-1" />
             View Event
@@ -257,7 +263,7 @@ export default function LocationSortedEvents({
               e.stopPropagation();
               // Handle interested/save action
             }}
-            className="text-xs"
+            className="text-xs border-purple-300 text-purple-600 hover:bg-purple-50 dark:border-purple-600 dark:text-purple-400 dark:hover:bg-purple-900/20"
           >
             <Heart className="w-3 h-3" />
           </Button>
@@ -269,7 +275,7 @@ export default function LocationSortedEvents({
               e.stopPropagation();
               // Handle share action
             }}
-            className="text-xs"
+            className="text-xs border-blue-300 text-blue-600 hover:bg-blue-50 dark:border-blue-600 dark:text-blue-400 dark:hover:bg-blue-900/20"
           >
             <Share2 className="w-3 h-3" />
           </Button>
@@ -279,20 +285,27 @@ export default function LocationSortedEvents({
   );
 
   return (
-    <Card className="w-full">
-      <CardHeader>
+    <Card className="w-full bg-gradient-to-br from-white via-purple-50/20 to-blue-50/20 dark:from-gray-900 dark:via-purple-900/10 dark:to-blue-900/10 border-purple-200 dark:border-purple-700 shadow-lg">
+      <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center space-x-2">
-            <Calendar className="w-5 h-5" />
-            <span>{title}</span>
+            <div className="p-2 bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg">
+              <Calendar className="w-5 h-5 text-white" />
+            </div>
+            <span className="text-xl font-bold bg-gradient-to-r from-purple-700 to-blue-700 bg-clip-text text-transparent dark:from-purple-400 dark:to-blue-400">{title}</span>
             {currentUserLocation && (
-              <Badge variant="secondary" className="text-xs">
+              <Badge className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-xs">
                 Near {currentUserLocation}
               </Badge>
             )}
           </CardTitle>
           {showViewAll && (
-            <Button variant="outline" size="sm" onClick={onViewAll}>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={onViewAll}
+              className="border-purple-300 text-purple-600 hover:bg-purple-50 dark:border-purple-600 dark:text-purple-400 dark:hover:bg-purple-900/20"
+            >
               View All Events
             </Button>
           )}
