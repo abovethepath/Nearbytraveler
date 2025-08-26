@@ -472,8 +472,8 @@ export default function MatchInCity() {
     <div className="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-800">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-4">
+        <div className="text-center mb-8">
+          <div className="flex items-center justify-center gap-3 mb-4">
             <Button 
               onClick={() => setSelectedCity('')}
               variant="outline"
@@ -482,9 +482,42 @@ export default function MatchInCity() {
             >
               <ArrowLeft className="w-4 h-4" />
             </Button>
-            <div>
-              <h1 className="text-3xl font-bold text-white">🎯 {selectedCity}</h1>
-              <p className="text-white/70">Find people with similar interests</p>
+            <h1 className="text-4xl font-bold text-white flex items-center gap-3">
+              🎯 {selectedCity}
+            </h1>
+          </div>
+          <p className="text-xl text-blue-200 mb-6">Add activities and events. Others click to match.</p>
+          
+          {/* Quick Add Form */}
+          <div className="max-w-2xl mx-auto mb-8">
+            <div className="bg-gradient-to-r from-blue-600/20 to-purple-600/20 rounded-lg p-6 border border-blue-400/30">
+              <h3 className="text-white font-semibold mb-3 flex items-center justify-center gap-2">
+                ✨ Add Activities & Events
+              </h3>
+              <p className="text-blue-200 text-sm mb-4">
+                Type a specific event or activity in THIS city and hit enter, keep adding as many as you can think of
+              </p>
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                if (newActivityName.trim()) {
+                  addActivity();
+                }
+              }} className="flex gap-3">
+                <Input
+                  placeholder="Type a specific event or activity in THIS city and hit enter..."
+                  value={newActivityName}
+                  onChange={(e) => setNewActivityName(e.target.value)}
+                  className="flex-1 bg-white/10 border-white/20 text-white placeholder-white/50 h-12"
+                />
+                <Button 
+                  type="submit"
+                  className="bg-green-600 hover:bg-green-700 text-white px-6"
+                  disabled={!newActivityName.trim()}
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add
+                </Button>
+              </form>
             </div>
           </div>
         </div>
@@ -534,55 +567,6 @@ export default function MatchInCity() {
                   </div>
                 </div>
 
-                {/* Add Activity Form */}
-                {showAddForm && (
-                  <div className="bg-white/5 rounded-lg p-4 border border-white/10">
-                    <div className="space-y-3">
-                      <Input
-                        placeholder="Activity name..."
-                        value={newActivityName}
-                        onChange={(e) => setNewActivityName(e.target.value)}
-                        className="bg-white/10 border-white/20 text-white placeholder-white/50"
-                      />
-                      <Textarea
-                        placeholder="Activity description..."
-                        value={newActivityDescription}
-                        onChange={(e) => setNewActivityDescription(e.target.value)}
-                        className="bg-white/10 border-white/20 text-white placeholder-white/50"
-                        rows={3}
-                      />
-                      <div className="flex gap-2">
-                        <Button 
-                          onClick={addActivity}
-                          className="bg-green-600 hover:bg-green-700 text-white"
-                          size="sm"
-                        >
-                          Add Activity
-                        </Button>
-                        <Button 
-                          onClick={() => setShowAddForm(false)}
-                          variant="outline"
-                          size="sm"
-                          className="bg-white/10 border-white/20 text-white hover:bg-white/20"
-                        >
-                          Cancel
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Add Activity Button */}
-                {!showAddForm && (
-                  <Button 
-                    onClick={() => setShowAddForm(true)}
-                    className="bg-white/10 hover:bg-white/20 text-white border-white/20"
-                    variant="outline"
-                  >
-                    <Plus className="w-4 h-4 mr-2" />
-                    Add Activity
-                  </Button>
-                )}
 
                 {/* ORIGINAL DENSE COLORFUL ACTIVITY GRID */}
                 <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-1.5">
