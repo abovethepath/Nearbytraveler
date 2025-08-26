@@ -18,8 +18,7 @@ import {
   Target,
   Zap,
   ArrowLeft,
-  Camera,
-  X
+  Calendar
 } from "lucide-react";
 
 // City data with beautiful backgrounds matching the screenshot
@@ -110,7 +109,6 @@ export default function MatchInCity() {
   const [userActivities, setUserActivities] = useState<any[]>([]);
   const [cityActivities, setCityActivities] = useState<any[]>([]);
   const [matchingUsers, setMatchingUsers] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const { toast } = useToast();
   const { user } = useAuth();
@@ -496,6 +494,7 @@ export default function MatchInCity() {
                 <CardTitle className="text-white flex items-center gap-2">
                   <Target className="w-5 h-5" />
                   City Activities
+                  <span className="text-sm text-white/70 font-normal">(Activities you toggle here will appear as green pills on your profile!)</span>
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -724,7 +723,7 @@ export default function MatchInCity() {
             </Card>
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }
