@@ -318,7 +318,7 @@ export default function Deals() {
               </CardTitle>
               <div className="flex flex-wrap items-center gap-1 sm:gap-2">
                 {deal.discountCode && (
-                  <div className="inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none bg-gray-500 text-white border-0">
+                  <div className="inline-flex items-center justify-center h-8 rounded-full px-4 text-xs font-medium whitespace-nowrap leading-none bg-gray-500 text-white border-0">
                     Code: {deal.discountCode}
                   </div>
                 )}
@@ -329,7 +329,7 @@ export default function Deals() {
           {/* Time Remaining - Mobile Responsive */}
           <div className="flex flex-wrap items-center gap-2 mt-2 overflow-hidden break-words">
             {instant ? <Timer className="w-3 h-3 sm:w-4 sm:h-4 text-orange-500 flex-shrink-0" /> : <Clock className="w-3 h-3 sm:w-4 sm:h-4 text-blue-500 flex-shrink-0" />}
-            <div className={`inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none border-0 ${expired ? 'bg-red-500 text-white' : instant ? 'bg-orange-500 text-white' : 'bg-blue-500 text-white'}`}>
+            <div className={`inline-flex items-center justify-center h-8 rounded-full px-4 text-xs font-medium whitespace-nowrap leading-none border-0 ${expired ? 'bg-red-500 text-white' : instant ? 'bg-orange-500 text-white' : 'bg-blue-500 text-white'}`}>
               {expired ? 'Expired' : getTimeRemaining(deal.validUntil)}
             </div>
             {!expired && (
@@ -469,11 +469,11 @@ export default function Deals() {
           )}
           
           <div className="flex justify-center flex-wrap gap-2 sm:gap-4 mt-4 overflow-hidden break-words">
-            <div className="inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0">
+            <div className="inline-flex items-center justify-center h-8 rounded-full px-4 text-xs font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0">
               <Store className="w-3 h-3 mr-1" />
               {activeDeals.length} Available
             </div>
-            <div className="inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none bg-orange-500 text-white border-0">
+            <div className="inline-flex items-center justify-center h-8 rounded-full px-4 text-xs font-medium whitespace-nowrap leading-none bg-orange-500 text-white border-0">
               <Zap className="w-3 h-3 mr-1" />
               {instantDeals.length} Flash Deals
             </div>
@@ -512,7 +512,7 @@ export default function Deals() {
                 </Button>
               )}
             </div>
-            <div className="inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none bg-gray-500 text-white border-0 mt-2">
+            <div className="inline-flex items-center justify-center h-8 rounded-full px-4 text-xs font-medium whitespace-nowrap leading-none bg-gray-500 text-white border-0 mt-2">
               {(() => {
                 const activeCity = selectedCity || effectiveUser?.hometownCity || '';
                 const dealCount = filteredDeals.length;
