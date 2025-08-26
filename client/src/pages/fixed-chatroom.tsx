@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -55,33 +55,35 @@ export default function FixedChatroom() {
     setDebugInfo(prev => [...prev.slice(-4), `${new Date().toLocaleTimeString()}: ${message}`]);
   };
   
-  // Get current user
-  const getCurrentUser = () => {
+  // Get current user - MEMOIZED to prevent infinite re-renders
+  const getCurrentUser = useCallback(() => {
     try {
       let storedUser = localStorage.getItem('travelconnect_user');
       if (storedUser) {
         const user = JSON.parse(storedUser);
-        addDebug(`✅ Found user in travelconnect_user: ${user.username} (ID: ${user.id})`);
         return user;
       }
       
       storedUser = localStorage.getItem('user');
       if (storedUser) {
         const user = JSON.parse(storedUser);
-        addDebug(`✅ Found user in user: ${user.username} (ID: ${user.id})`);
         return user;
       }
       
-      addDebug('❌ No user found in localStorage');
       return null;
-    } catch (e: any) {
-      addDebug(`❌ Error parsing user: ${e.message}`);
+    } catch (e) {
       return null;
     }
-  };
+  }, []);
   
-  const currentUser = getCurrentUser();
+  const [currentUser, setCurrentUser] = useState<any>(null);
   const currentUserId = currentUser?.id;
+  
+  // Initialize current user
+  useEffect(() => {
+    const user = getCurrentUser();
+    setCurrentUser(user);
+  }, [getCurrentUser]);
   
   // Check if user is a member - SIMPLIFIED (no more verification BS)
   const userIsMember = members.some(member => 
@@ -389,7 +391,7 @@ export default function FixedChatroom() {
       
       setMessageText("");
       
-      // Reload messages
+      // Reload messages after sending
       setTimeout(async () => {
         await loadMessages();
       }, 500);
@@ -404,8 +406,10 @@ export default function FixedChatroom() {
   
   // Load data on mount
   useEffect(() => {
-    addDebug('🚀 Component mounted, loading data...');
-    loadAllData();
+    if (currentUserId) {
+      addDebug('🚀 Component mounted, loading data...');
+      loadAllData();
+    }
   }, [chatroomId, currentUserId]);
   
   // Auto-scroll messages
