@@ -1,0 +1,1049 @@
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+2:01:14 AM [vite] (client) hmr update /src/pages/profile.tsx, /src/index.css?v=smNyyMonz3nSFmsrOgXMX
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+2:01:15 AM [vite] (client) hmr update /src/pages/profile.tsx, /src/index.css?v=smNyyMonz3nSFmsrOgXMX (x2)
+Origin: undefined
+⚡ DIRECT API: Fetching quick meetups
+Origin: undefined
+Origin: undefined
+🎯 DIRECT API: Fetching quick deals
+Origin: undefined
+Database connected successfully
+Origin: undefined
+Origin: undefined
+DatabaseStorage.getTravelPlansByUserId - Getting travel plans for user ID: 34
+DatabaseStorage.getTravelPlansByUserId - Found plans: 1 for user 34
+2:01:15 AM [express] GET /api/travel-plans/34 304 in 26ms :: [{"id":16,"userId":34,"destination":"Ro…
+Origin: undefined
+🔍 USERS SEARCH FILTERS: {
+  location: undefined,
+  interests: undefined,
+  activities: undefined,
+  userType: undefined,
+  gender: undefined,
+  sexualPreference: undefined,
+  minAge: undefined,
+  maxAge: undefined,
+  search: undefined
+}
+🔍 USERS: NO CONDITIONS - returning ALL users (this is the bug!)
+Database connected successfully
+Database connected successfully
+🎯 DIRECT API: Found 0 active quick deals
+🌍 LA METRO QUICK DEALS: 0 deals in LA metro area
+2:01:15 AM [express] GET /api/messages/34 304 in 140ms :: [{"id":44,"senderId":34,"receiverId":12,"c…
+Origin: undefined
+Origin: undefined
+🔍 USERS SEARCH FILTERS: {
+  location: undefined,
+  interests: undefined,
+  activities: undefined,
+  userType: undefined,
+  gender: undefined,
+  sexualPreference: undefined,
+  minAge: undefined,
+  maxAge: undefined,
+  search: undefined
+}
+🔍 USERS: NO CONDITIONS - returning ALL users (this is the bug!)
+🔍 USERS SEARCH RESULT: 14 users found with filters
+2:01:15 AM [express] GET /api/users 200 in 142ms :: [{"id":3,"username":"nearbylocal","email":"aaron…
+Origin: undefined
+2:01:15 AM [express] GET /api/users/34 304 in 51ms :: {"id":34,"username":"nearbytravels","email":"a…
+2:01:15 AM [express] GET /api/messages/34/unread-count 304 in 24ms :: {"unreadCount":"0"}
+Origin: undefined
+🔍 USERS SEARCH RESULT: 14 users found with filters
+2:01:16 AM [express] GET /api/users 200 in 141ms :: [{"id":3,"username":"nearbylocal","email":"aaron…
+Origin: undefined
+🔍 USERS SEARCH FILTERS: {
+  location: undefined,
+  interests: undefined,
+  activities: undefined,
+  userType: undefined,
+  gender: undefined,
+  sexualPreference: undefined,
+  minAge: undefined,
+  maxAge: undefined,
+  search: undefined
+}
+🔍 USERS: NO CONDITIONS - returning ALL users (this is the bug!)
+🔍 USERS SEARCH RESULT: 14 users found with filters
+2:01:16 AM [express] GET /api/users 304 in 52ms :: [{"id":3,"username":"nearbylocal","email":"aaronm…
+Origin: undefined
+ New WebSocket connection
+Origin: undefined
+Origin: undefined
+2:01:16 AM [express] GET /api/connections/34/requests 304 in 31ms :: []
+2:01:16 AM [express] GET /api/users/34 200 in 26ms :: {"id":34,"username":"nearbytravels","email":"a…
+Origin: undefined
+Origin: undefined
+⚡ DIRECT API: Fetching quick meetups
+Origin: undefined
+Origin: undefined
+🎯 DIRECT API: Fetching quick deals
+Origin: undefined
+DatabaseStorage.getTravelPlansByUserId - Getting travel plans for user ID: 34
+Origin: undefined
+🎯 DIRECT API: Found 0 active quick deals
+🌍 LA METRO QUICK DEALS: 0 deals in LA metro area
+DatabaseStorage.getTravelPlansByUserId - Found plans: 1 for user 34
+2:01:16 AM [express] GET /api/travel-plans/34 304 in 22ms :: [{"id":16,"userId":34,"destination":"Ro…
+2:01:16 AM [express] GET /api/messages/34 304 in 23ms :: [{"id":44,"senderId":34,"receiverId":12,"co…
+Origin: undefined
+🔍 USERS SEARCH FILTERS: {
+  location: undefined,
+  interests: undefined,
+  activities: undefined,
+  userType: undefined,
+  gender: undefined,
+  sexualPreference: undefined,
+  minAge: undefined,
+  maxAge: undefined,
+  search: undefined
+}
+🔍 USERS: NO CONDITIONS - returning ALL users (this is the bug!)
+Origin: undefined
+2:01:16 AM [express] GET /api/users/34 304 in 24ms :: {"id":34,"username":"nearbytravels","email":"a…
+Origin: undefined
+🔍 USERS SEARCH FILTERS: {
+  location: undefined,
+  interests: undefined,
+  activities: undefined,
+  userType: undefined,
+  gender: undefined,
+  sexualPreference: undefined,
+  minAge: undefined,
+  maxAge: undefined,
+  search: undefined
+}
+🔍 USERS: NO CONDITIONS - returning ALL users (this is the bug!)
+Origin: undefined
+Origin: undefined
+2:01:16 AM [express] GET /api/messages/34/unread-count 304 in 23ms :: {"unreadCount":"0"}
+🔍 USERS SEARCH RESULT: 14 users found with filters
+2:01:16 AM [express] GET /api/users 304 in 48ms :: [{"id":3,"username":"nearbylocal","email":"aaronm…
+🔍 USERS SEARCH RESULT: 14 users found with filters
+2:01:16 AM [express] GET /api/users 304 in 131ms :: [{"id":3,"username":"nearbylocal","email":"aaron…
+📥 WebSocket message received: { type: 'auth', userId: 34, username: 'nearbytravels' }
+ User nearbytravels (34) authenticated via WebSocket
+Origin: undefined
+🔍 USERS SEARCH FILTERS: {
+  location: undefined,
+  interests: undefined,
+  activities: undefined,
+  userType: undefined,
+  gender: undefined,
+  sexualPreference: undefined,
+  minAge: undefined,
+  maxAge: undefined,
+  search: undefined
+}
+🔍 USERS: NO CONDITIONS - returning ALL users (this is the bug!)
+🔍 USERS SEARCH RESULT: 14 users found with filters
+2:01:17 AM [express] GET /api/users 304 in 50ms :: [{"id":3,"username":"nearbylocal","email":"aaronm…
+Origin: undefined
+ New WebSocket connection
+Origin: undefined
+🏢 DIRECT API: Fetching businesses
+Origin: undefined
+🗺️ CITY MAP DATA: Fetching map data for Rome, N/A, Italy
+🗺️ METRO CHECK: Testing "Rome" against LA cities
+🗺️ METRO RESULT: Rome is LA metro: false
+🗺️ METRO: Searching for users in cities: Rome
+🗺️ METRO: Searching for users in cities: [ 'Rome' ] ...
+🗺️ TRAVEL PLANS: Searching for active travelers to cities: Rome
+🗺️ COORDS DEBUG: Looking up city "Rome" (type: string)
+📍 CITY GEOCODING DISABLED: Skipping geocoding for "Rome" (prevented 431 errors)
+🗺️ COORDINATES: Rome coords: [34.0522, -118.2437]
+🗺️ COORDINATE RANGES: Lat: 33.5522 to 34.5522, Lng: -118.7437 to -117.7437
+Origin: undefined
+🗺️ MAP BUSINESSES: Fetching businesses with geolocation for Rome 
+Origin: undefined
+📅 DIRECT API: Fetching events
+🏢 DIRECT API: Found 3 businesses
+🗺️ EVENTS METRO: Searching event cities: [ 'Rome' ] ...
+🗺️ GEOLOCATION BUSINESSES: Found 0 businesses with GPS coordinates and active deals/events
+✅ MAP BUSINESSES API: Found 0 businesses with GPS coordinates and active deals/events
+2:01:17 AM [express] GET /api/businesses/map 304 in 23ms :: []
+🗺️ BUSINESSES: Found 0 businesses with active events/deals in Rome
+🗺️ CITY MAP DATA: Found 0 users, 0 events, 0 businesses for Rome
+2:01:17 AM [express] GET /api/city-map-data 304 in 69ms :: {"users":[],"events":[],"businesses":[]}
+Database connected successfully
+Origin: undefined
+Origin: undefined
+2:01:17 AM [express] GET /api/connections/34/requests 304 in 24ms :: []
+2:01:17 AM [express] GET /api/users/34 200 in 46ms :: {"id":34,"username":"nearbytravels","email":"a…
+Origin: undefined
+Origin: undefined
+🔮 COMPATIBILITY: Getting compatibility between users 34 and 1
+🔮 COMPATIBILITY: Getting compatibility between users 34 and 29
+Origin: undefined
+🔮 COMPATIBILITY: Getting compatibility between users 34 and 28
+Origin: undefined
+🔮 COMPATIBILITY: Getting compatibility between users 34 and 23
+Origin: undefined
+🔮 COMPATIBILITY: Getting compatibility between users 34 and 15
+Origin: undefined
+🎯 DIRECT API: Fetching quick deals
+🎯 DIRECT API: Found 0 active quick deals
+🌍 LA METRO QUICK DEALS: 0 deals in LA metro area
+🔮 COMPATIBILITY: Found users - nearbytravels and dylanthemutt1
+🔮 COMPATIBILITY: Found users - nearbytravels and dylanthemutt
+🔮 COMPATIBILITY: Found users - nearbytravels and nearbylocal13
+🔮 COMPATIBILITY: Found users - nearbytravels and nearbytravlr
+🔮 COMPATIBILITY: Travel plans - user1: 1, user2: 0
+🔮 COMPATIBILITY: Raw score result: {
+  userId: 29,
+  score: 0.42061191626409017,
+  reasons: [
+    '25 shared interests: single and looking, nightlife & dancing, meet locals/travelers',
+    '20 popular travel interests in common',
+    '6 shared events: charity events, club nights, community events',
+    'Current traveler can get local insights'
+  ],
+  compatibilityLevel: 'low',
+  sharedInterests: [
+    'single and looking',
+    'nightlife & dancing',
+    'meet locals/travelers',
+    'craft beer & breweries',
+    'cocktail bars',
+    'happy hour deals',
+    'local food specialties',
+    'cheap eats',
+    'fine dining',
+    'brunch spots',
+    'food tours / trucks',
+    'city tours & sightseeing',
+    'historical / walking tours',
+    'architecture',
+    'local hidden gems',
+    'photography',
+    'festivals & events',
+    'live music venues',
+    'beach activities',
+    'off the path adventures',
+    'family activities',
+    'rooftop bars',
+    'ethnic cuisine',
+    'art galleries',
+    'museums'
+  ],
+  sharedActivities: [],
+  sharedEvents: [
+    'charity events',
+    'club nights',
+    'community events',
+    'networking events',
+    'karaoke nights',
+    'speed dating events'
+  ],
+  sharedTravelIntent: [],
+  locationOverlap: false,
+  dateOverlap: false,
+  userTypeCompatibility: true,
+  travelIntentCompatibility: false
+}
+🔮 COMPATIBILITY: Score between nearbytravels and dylanthemutt1: 42%
+2:01:18 AM [express] GET /api/compatibility/34/29 304 in 134ms :: {"userId":29,"score":0.42061191626…
+🔮 COMPATIBILITY: Travel plans - user1: 1, user2: 1
+🔮 COMPATIBILITY: Raw score result: {
+  userId: 28,
+  score: 0.3739130434782609,
+  reasons: [
+    '17 shared interests: single and looking, nightlife & dancing, meet locals/travelers',
+    '16 popular travel interests in common',
+    'Traveling within 0 days of each other',
+    'Current traveler can get local insights'
+  ],
+  compatibilityLevel: 'low',
+  sharedInterests: [
+    'single and looking',
+    'nightlife & dancing',
+    'meet locals/travelers',
+    'craft beer & breweries',
+    'cocktail bars',
+    'local food specialties',
+    'fine dining',
+    'food tours / trucks',
+    'local hidden gems',
+    'photography',
+    'beach activities',
+    'boat & water tours',
+    'off the path adventures',
+    'rooftop bars',
+    'ethnic cuisine',
+    'art galleries',
+    'museums'
+  ],
+  sharedActivities: [],
+  sharedEvents: [],
+  sharedTravelIntent: [],
+  locationOverlap: false,
+  dateOverlap: false,
+  userTypeCompatibility: true,
+  travelIntentCompatibility: false
+}
+🔮 COMPATIBILITY: Score between nearbytravels and dylanthemutt: 37%
+2:01:18 AM [express] GET /api/compatibility/34/28 304 in 134ms :: {"userId":28,"score":0.37391304347…
+🔮 COMPATIBILITY: Travel plans - user1: 1, user2: 1
+🔮 COMPATIBILITY: Raw score result: {
+  userId: 23,
+  score: 0.4295652173913043,
+  reasons: [
+    '27 shared interests: single and looking, nightlife & dancing, meet locals/travelers',
+    '21 popular travel interests in common',
+    '4 shared events: charity events, community events, networking events',
+    'Traveling within 6 days of each other',
+    'Current traveler can get local insights'
+  ],
+  compatibilityLevel: 'low',
+  sharedInterests: [
+    'single and looking',
+    'nightlife & dancing',
+    'meet locals/travelers',
+    'craft beer & breweries',
+    'cocktail bars',
+    'happy hour deals',
+    'wine & vineyards',
+    'local food specialties',
+    'cheap eats',
+    'fine dining',
+    'brunch spots',
+    'food tours / trucks',
+    'local coffee shops',
+    'city tours & sightseeing',
+    'historical / walking tours',
+    'local hidden gems',
+    'photography',
+    'festivals & events',
+    'live music venues',
+    'beach activities',
+    'boat & water tours',
+    'off the path adventures',
+    'family activities',
+    'rooftop bars',
+    'ethnic cuisine',
+    'art galleries',
+    'museums'
+  ],
+  sharedActivities: [],
+  sharedEvents: [
+    'charity events',
+    'community events',
+    'networking events',
+    'speed dating events'
+  ],
+  sharedTravelIntent: [],
+  locationOverlap: false,
+  dateOverlap: false,
+  userTypeCompatibility: true,
+  travelIntentCompatibility: false
+}
+🔮 COMPATIBILITY: Score between nearbytravels and nearbylocal13: 43%
+2:01:18 AM [express] GET /api/compatibility/34/23 304 in 141ms :: {"userId":23,"score":0.42956521739…
+🔮 COMPATIBILITY: Travel plans - user1: 1, user2: 0
+🔮 COMPATIBILITY: Raw score result: {
+  userId: 1,
+  score: 0.043478260869565216,
+  reasons: [ 'Compatible for networking and travel connections' ],
+  compatibilityLevel: 'low',
+  sharedInterests: [],
+  sharedActivities: [],
+  sharedEvents: [],
+  sharedTravelIntent: [],
+  locationOverlap: false,
+  dateOverlap: false,
+  userTypeCompatibility: true,
+  travelIntentCompatibility: false
+}
+🔮 COMPATIBILITY: Score between nearbytravels and nearbytravlr: 4%
+2:01:18 AM [express] GET /api/compatibility/34/1 304 in 151ms :: {"userId":1,"score":0.0434782608695…
+Origin: undefined
+🏢 DIRECT API: Fetching businesses
+📥 WebSocket message received: { type: 'auth', userId: 34, username: 'nearbytravels' }
+ User nearbytravels (34) authenticated via WebSocket
+Database connected successfully
+🏢 DIRECT API: Found 3 businesses
+Origin: undefined
+🏢 DIRECT API: Fetching businesses
+Origin: undefined
+📅 DIRECT API: Fetching events
+Origin: undefined
+📅 DIRECT API: Fetching events
+🏢 DIRECT API: Found 3 businesses
+🔮 COMPATIBILITY: Found users - nearbytravels and nearbylocal2
+Origin: undefined
+💰 DIRECT API: Fetching business deals
+Origin: undefined
+💰 DIRECT API: Fetching business deals
+🔮 COMPATIBILITY: Travel plans - user1: 1, user2: 0
+🔮 COMPATIBILITY: Raw score result: {
+  userId: 15,
+  score: 0.34782608695652173,
+  reasons: [
+    '28 shared interests: single and looking, nightlife & dancing, meet locals/travelers',
+    '21 popular travel interests in common',
+    'Current traveler can get local insights'
+  ],
+  compatibilityLevel: 'low',
+  sharedInterests: [
+    'single and looking',
+    'nightlife & dancing',
+    'meet locals/travelers',
+    'craft beer & breweries',
+    'cocktail bars',
+    'happy hour deals',
+    'wine & vineyards',
+    'local food specialties',
+    'cheap eats',
+    'fine dining',
+    'brunch spots',
+    'food tours / trucks',
+    'local coffee shops',
+    'city tours & sightseeing',
+    'historical / walking tours',
+    'architecture',
+    'local hidden gems',
+    'photography',
+    'festivals & events',
+    'live music venues',
+    'beach activities',
+    'boat & water tours',
+    'off the path adventures',
+    'family activities',
+    'rooftop bars',
+    'ethnic cuisine',
+    'art galleries',
+    'museums'
+  ],
+  sharedActivities: [],
+  sharedEvents: [],
+  sharedTravelIntent: [],
+  locationOverlap: false,
+  dateOverlap: false,
+  userTypeCompatibility: true,
+  travelIntentCompatibility: false
+}
+🔮 COMPATIBILITY: Score between nearbytravels and nearbylocal2: 35%
+2:01:18 AM [express] GET /api/compatibility/34/15 304 in 302ms :: {"userId":15,"score":0.34782608695…
+💰 DIRECT API: Found 4 active business offers
+🌍 LA METRO DEALS: 4 deals in LA metro area
+Origin: undefined
+⚡ DIRECT API: Fetching quick meetups
+💰 DIRECT API: Found 4 active business offers
+🌍 LA METRO DEALS: 4 deals in LA metro area
+Origin: undefined
+⚡ DIRECT API: Fetching quick meetups
+Origin: undefined
+🎯 DIRECT API: Fetching quick deals
+Origin: undefined
+🏢 DIRECT API: Fetching businesses
+Origin: undefined
+🏢 DIRECT API: Fetching businesses
+Origin: undefined
+🎯 DIRECT API: Found 0 active quick deals
+🌍 LA METRO QUICK DEALS: 0 deals in LA metro area
+🗺️ CITY MAP DATA: Fetching map data for Rome, N/A, Italy
+🗺️ METRO CHECK: Testing "Rome" against LA cities
+🗺️ METRO RESULT: Rome is LA metro: false
+🗺️ METRO: Searching for users in cities: Rome
+🗺️ METRO: Searching for users in cities: [ 'Rome' ] ...
+🗺️ TRAVEL PLANS: Searching for active travelers to cities: Rome
+🗺️ COORDS DEBUG: Looking up city "Rome" (type: string)
+📍 CITY GEOCODING DISABLED: Skipping geocoding for "Rome" (prevented 431 errors)
+🗺️ COORDINATES: Rome coords: [34.0522, -118.2437]
+🗺️ COORDINATE RANGES: Lat: 33.5522 to 34.5522, Lng: -118.7437 to -117.7437
+Origin: undefined
+🗺️ MAP BUSINESSES: Fetching businesses with geolocation for Rome 
+🏢 DIRECT API: Found 3 businesses
+🏢 DIRECT API: Found 3 businesses
+🗺️ EVENTS METRO: Searching event cities: [ 'Rome' ] ...
+🗺️ GEOLOCATION BUSINESSES: Found 0 businesses with GPS coordinates and active deals/events
+✅ MAP BUSINESSES API: Found 0 businesses with GPS coordinates and active deals/events
+2:01:18 AM [express] GET /api/businesses/map 304 in 23ms :: []
+Origin: undefined
+📅 DIRECT API: Fetching events
+🗺️ BUSINESSES: Found 0 businesses with active events/deals in Rome
+🗺️ CITY MAP DATA: Found 0 users, 0 events, 0 businesses for Rome
+2:01:18 AM [express] GET /api/city-map-data 304 in 73ms :: {"users":[],"events":[],"businesses":[]}
+Origin: undefined
+📅 DIRECT API: Fetching events
+Origin: undefined
+💰 DIRECT API: Fetching business deals
+Origin: undefined
+💰 DIRECT API: Fetching business deals
+Origin: undefined
+⚡ DIRECT API: Fetching quick meetups
+💰 DIRECT API: Found 4 active business offers
+🌍 LA METRO DEALS: 4 deals in LA metro area
+Origin: undefined
+⚡ DIRECT API: Fetching quick meetups
+Origin: undefined
+2:01:18 AM [express] GET /api/travel-plans/user/34 200 in 9ms
+💰 DIRECT API: Found 4 active business offers
+🌍 LA METRO DEALS: 4 deals in LA metro area
+Origin: undefined
+Origin: undefined
+Origin: undefined
+Origin: undefined
+Origin: undefined
+Origin: undefined
+2:01:19 AM [express] GET /api/travel-plans/user/1 200 in 229ms
+2:01:19 AM [express] GET /api/travel-plans/user/29 200 in 12ms
+2:01:19 AM [express] GET /api/users/34/references 304 in 484ms :: {"references":[],"counts":{"total"…
+2:01:19 AM [express] GET /api/users/1 304 in 25ms :: {"id":1,"username":"nearbytravlr","email":"info…
+2:01:19 AM [express] GET /api/users/1/references 304 in 24ms :: {"references":[],"counts":{"total":0…
+2:01:19 AM [express] GET /api/users/29 304 in 28ms :: {"id":29,"username":"dylanthemutt1","email":"d…
+2:01:19 AM [vite] (client) warning: Duplicate key "childrenAges" in object literal
+1504|            travelStyle: user.travelStyle || [],
+1505|            travelingWithChildren: !!user.travelingWithChildren,
+1506|            childrenAges: user.childrenAges || (user as any).children_ages || "",
+   |            ^
+1507|            isVeteran: !!user.isVeteran || !!(user as any).is_veteran,
+1508|            isActiveDuty: !!user.isActiveDuty || !!(user as any).is_active_duty
+
+  Plugin: vite:esbuild
+  File: /home/runner/workspace/client/src/pages/profile.tsx
+Origin: undefined
+Origin: undefined
+Origin: undefined
+Origin: undefined
+2:01:19 AM [express] GET /api/travel-plans/user/28 200 in 7ms
+Origin: undefined
+2:01:19 AM [express] GET /api/travel-plans/user/23 200 in 5ms
+Origin: undefined
+2:01:19 AM [express] GET /api/users/29/references 304 in 23ms :: {"references":[],"counts":{"total":…
+2:01:19 AM [express] GET /api/users/28/references 304 in 25ms :: {"references":[],"counts":{"total":…
+2:01:19 AM [express] GET /api/users/23 304 in 27ms :: {"id":23,"username":"nearbylocal13","email":"a…
+2:01:19 AM [express] GET /api/users/28 304 in 48ms :: {"id":28,"username":"dylanthemutt","email":"dy…
+Origin: undefined
+2:01:20 AM [express] GET /api/travel-plans/user/15 200 in 4ms
+Origin: undefined
+Origin: undefined
+Origin: undefined
+Origin: undefined
+🔮 COMPATIBILITY: Getting compatibility between users 34 and 1
+2:01:20 AM [express] GET /api/users/23/references 304 in 23ms :: {"references":[],"counts":{"total":…
+2:01:20 AM [express] GET /api/users/15/references 304 in 26ms :: {"references":[],"counts":{"total":…
+🔮 COMPATIBILITY: Found users - nearbytravels and nearbytravlr
+2:01:20 AM [express] GET /api/users/15 304 in 67ms :: {"id":15,"username":"nearbylocal2","email":"aa…
+🔮 COMPATIBILITY: Travel plans - user1: 1, user2: 0
+🔮 COMPATIBILITY: Raw score result: {
+  userId: 1,
+  score: 0.043478260869565216,
+  reasons: [ 'Compatible for networking and travel connections' ],
+  compatibilityLevel: 'low',
+  sharedInterests: [],
+  sharedActivities: [],
+  sharedEvents: [],
+  sharedTravelIntent: [],
+  locationOverlap: false,
+  dateOverlap: false,
+  userTypeCompatibility: true,
+  travelIntentCompatibility: false
+}
+🔮 COMPATIBILITY: Score between nearbytravels and nearbytravlr: 4%
+2:01:20 AM [express] GET /api/compatibility/34/1 304 in 93ms :: {"userId":1,"score":0.04347826086956…
+Origin: undefined
+🔮 COMPATIBILITY: Getting compatibility between users 34 and 29
+Origin: undefined
+🔮 COMPATIBILITY: Getting compatibility between users 34 and 28
+🔮 COMPATIBILITY: Found users - nearbytravels and dylanthemutt1
+🔮 COMPATIBILITY: Found users - nearbytravels and dylanthemutt
+Origin: undefined
+🔮 COMPATIBILITY: Getting compatibility between users 34 and 23
+Origin: undefined
+🔮 COMPATIBILITY: Getting compatibility between users 34 and 15
+🔮 COMPATIBILITY: Travel plans - user1: 1, user2: 0
+🔮 COMPATIBILITY: Raw score result: {
+  userId: 29,
+  score: 0.42061191626409017,
+  reasons: [
+    '25 shared interests: single and looking, nightlife & dancing, meet locals/travelers',
+    '20 popular travel interests in common',
+    '6 shared events: charity events, club nights, community events',
+    'Current traveler can get local insights'
+  ],
+  compatibilityLevel: 'low',
+  sharedInterests: [
+    'single and looking',
+    'nightlife & dancing',
+    'meet locals/travelers',
+    'craft beer & breweries',
+    'cocktail bars',
+    'happy hour deals',
+    'local food specialties',
+    'cheap eats',
+    'fine dining',
+    'brunch spots',
+    'food tours / trucks',
+    'city tours & sightseeing',
+    'historical / walking tours',
+    'architecture',
+    'local hidden gems',
+    'photography',
+    'festivals & events',
+    'live music venues',
+    'beach activities',
+    'off the path adventures',
+    'family activities',
+    'rooftop bars',
+    'ethnic cuisine',
+    'art galleries',
+    'museums'
+  ],
+  sharedActivities: [],
+  sharedEvents: [
+    'charity events',
+    'club nights',
+    'community events',
+    'networking events',
+    'karaoke nights',
+    'speed dating events'
+  ],
+  sharedTravelIntent: [],
+  locationOverlap: false,
+  dateOverlap: false,
+  userTypeCompatibility: true,
+  travelIntentCompatibility: false
+}
+🔮 COMPATIBILITY: Score between nearbytravels and dylanthemutt1: 42%
+2:01:20 AM [express] GET /api/compatibility/34/29 304 in 100ms :: {"userId":29,"score":0.42061191626…
+🔮 COMPATIBILITY: Travel plans - user1: 1, user2: 1
+🔮 COMPATIBILITY: Raw score result: {
+  userId: 28,
+  score: 0.3739130434782609,
+  reasons: [
+    '17 shared interests: single and looking, nightlife & dancing, meet locals/travelers',
+    '16 popular travel interests in common',
+    'Traveling within 0 days of each other',
+    'Current traveler can get local insights'
+  ],
+  compatibilityLevel: 'low',
+  sharedInterests: [
+    'single and looking',
+    'nightlife & dancing',
+    'meet locals/travelers',
+    'craft beer & breweries',
+    'cocktail bars',
+    'local food specialties',
+    'fine dining',
+    'food tours / trucks',
+    'local hidden gems',
+    'photography',
+    'beach activities',
+    'boat & water tours',
+    'off the path adventures',
+    'rooftop bars',
+    'ethnic cuisine',
+    'art galleries',
+    'museums'
+  ],
+  sharedActivities: [],
+  sharedEvents: [],
+  sharedTravelIntent: [],
+  locationOverlap: false,
+  dateOverlap: false,
+  userTypeCompatibility: true,
+  travelIntentCompatibility: false
+}
+🔮 COMPATIBILITY: Score between nearbytravels and dylanthemutt: 37%
+2:01:20 AM [express] GET /api/compatibility/34/28 304 in 105ms :: {"userId":28,"score":0.37391304347…
+Origin: undefined
+🌤️ WEATHER: Getting weather for Rome, undefined, Italy
+🌤️ WEATHER: Fetching real weather data for "Rome, Italy"
+🔑 WEATHER: Using API key: Present
+🌐 WEATHER: Making request to: http://api.weatherapi.com/v1/current.json?key=API_KEY_HIDDEN&q=Rome%2C%20Italy&aqi=no
+🔮 COMPATIBILITY: Found users - nearbytravels and nearbylocal13
+🔮 COMPATIBILITY: Found users - nearbytravels and nearbylocal2
+🔮 COMPATIBILITY: Travel plans - user1: 1, user2: 1
+🔮 COMPATIBILITY: Raw score result: {
+  userId: 23,
+  score: 0.4295652173913043,
+  reasons: [
+    '27 shared interests: single and looking, nightlife & dancing, meet locals/travelers',
+    '21 popular travel interests in common',
+    '4 shared events: charity events, community events, networking events',
+    'Traveling within 6 days of each other',
+    'Current traveler can get local insights'
+  ],
+  compatibilityLevel: 'low',
+  sharedInterests: [
+    'single and looking',
+    'nightlife & dancing',
+    'meet locals/travelers',
+    'craft beer & breweries',
+    'cocktail bars',
+    'happy hour deals',
+    'wine & vineyards',
+    'local food specialties',
+    'cheap eats',
+    'fine dining',
+    'brunch spots',
+    'food tours / trucks',
+    'local coffee shops',
+    'city tours & sightseeing',
+    'historical / walking tours',
+    'local hidden gems',
+    'photography',
+    'festivals & events',
+    'live music venues',
+    'beach activities',
+    'boat & water tours',
+    'off the path adventures',
+    'family activities',
+    'rooftop bars',
+    'ethnic cuisine',
+    'art galleries',
+    'museums'
+  ],
+  sharedActivities: [],
+  sharedEvents: [
+    'charity events',
+    'community events',
+    'networking events',
+    'speed dating events'
+  ],
+  sharedTravelIntent: [],
+  locationOverlap: false,
+  dateOverlap: false,
+  userTypeCompatibility: true,
+  travelIntentCompatibility: false
+}
+🔮 COMPATIBILITY: Score between nearbytravels and nearbylocal13: 43%
+2:01:20 AM [express] GET /api/compatibility/34/23 304 in 152ms :: {"userId":23,"score":0.42956521739…
+Origin: undefined
+📡 WEATHER: Response status: 200 OK
+Origin: undefined
+✅ WEATHER: Received data for Rome, temp: 72.1°F
+2:01:20 AM [express] GET /api/weather 304 in 110ms :: {"location":{"name":"Rome","region":"Lazio","c…
+🔮 COMPATIBILITY: Travel plans - user1: 1, user2: 0
+🔮 COMPATIBILITY: Raw score result: {
+  userId: 15,
+  score: 0.34782608695652173,
+  reasons: [
+    '28 shared interests: single and looking, nightlife & dancing, meet locals/travelers',
+    '21 popular travel interests in common',
+    'Current traveler can get local insights'
+  ],
+  compatibilityLevel: 'low',
+  sharedInterests: [
+    'single and looking',
+    'nightlife & dancing',
+    'meet locals/travelers',
+    'craft beer & breweries',
+    'cocktail bars',
+    'happy hour deals',
+    'wine & vineyards',
+    'local food specialties',
+    'cheap eats',
+    'fine dining',
+    'brunch spots',
+    'food tours / trucks',
+    'local coffee shops',
+    'city tours & sightseeing',
+    'historical / walking tours',
+    'architecture',
+    'local hidden gems',
+    'photography',
+    'festivals & events',
+    'live music venues',
+    'beach activities',
+    'boat & water tours',
+    'off the path adventures',
+    'family activities',
+    'rooftop bars',
+    'ethnic cuisine',
+    'art galleries',
+    'museums'
+  ],
+  sharedActivities: [],
+  sharedEvents: [],
+  sharedTravelIntent: [],
+  locationOverlap: false,
+  dateOverlap: false,
+  userTypeCompatibility: true,
+  travelIntentCompatibility: false
+}
+🔮 COMPATIBILITY: Score between nearbytravels and nearbylocal2: 35%
+2:01:20 AM [express] GET /api/compatibility/34/15 304 in 166ms :: {"userId":15,"score":0.34782608695…
+Origin: undefined
+2:01:20 AM [express] GET /api/travel-plans/user/34 200 in 38ms
+2:01:20 AM [express] GET /api/travel-plans/user/1 200 in 39ms
+2:01:20 AM [express] GET /api/travel-plans/user/29 200 in 23ms
+Origin: undefined
+2:01:20 AM [express] GET /api/users/1/references 304 in 23ms :: {"references":[],"counts":{"total":0…
+Origin: undefined
+2:01:20 AM [express] GET /api/users/34/references 304 in 22ms :: {"references":[],"counts":{"total":…
+Origin: undefined
+2:01:20 AM [express] GET /api/users/1 304 in 23ms :: {"id":1,"username":"nearbytravlr","email":"info…
+Origin: undefined
+Origin: undefined
+2:01:20 AM [express] GET /api/travel-plans/user/23 200 in 3ms
+2:01:20 AM [express] GET /api/users/29 304 in 24ms :: {"id":29,"username":"dylanthemutt1","email":"d…
+Origin: undefined
+2:01:20 AM [express] GET /api/travel-plans/user/28 200 in 2ms
+Origin: undefined
+2:01:20 AM [express] GET /api/users/29/references 304 in 22ms :: {"references":[],"counts":{"total":…
+Origin: undefined
+2:01:20 AM [express] GET /api/users/28/references 304 in 23ms :: {"references":[],"counts":{"total":…
+Origin: undefined
+2:01:20 AM [express] GET /api/users/23 304 in 23ms :: {"id":23,"username":"nearbylocal13","email":"a…
+Origin: undefined
+2:01:20 AM [express] GET /api/users/28 304 in 23ms :: {"id":28,"username":"dylanthemutt","email":"dy…
+Origin: undefined
+Origin: undefined
+2:01:20 AM [express] GET /api/travel-plans/user/15 200 in 5ms
+Origin: undefined
+2:01:20 AM [express] GET /api/users/23/references 304 in 22ms :: {"references":[],"counts":{"total":…
+Origin: undefined
+2:01:20 AM [express] GET /api/users/15/references 304 in 22ms :: {"references":[],"counts":{"total":…
+2:01:20 AM [express] GET /api/users/15 304 in 24ms :: {"id":15,"username":"nearbylocal2","email":"aa…
+Origin: undefined
+🌤️ WEATHER: Getting weather for Rome, undefined, Italy
+🌤️ WEATHER: Fetching real weather data for "Rome, Italy"
+🔑 WEATHER: Using API key: Present
+🌐 WEATHER: Making request to: http://api.weatherapi.com/v1/current.json?key=API_KEY_HIDDEN&q=Rome%2C%20Italy&aqi=no
+📡 WEATHER: Response status: 200 OK
+✅ WEATHER: Received data for Rome, temp: 72.1°F
+2:01:20 AM [express] GET /api/weather 304 in 20ms :: {"location":{"name":"Rome","region":"Lazio","co…
+Origin: undefined
+2:01:20 AM [express] GET /api/travel-plans/user/34 200 in 3ms
+Origin: undefined
+2:01:27 AM [express] GET /api/messages/34/unread-count 304 in 23ms :: {"unreadCount":"0"}
+Origin: undefined
+2:01:28 AM [express] GET /api/messages/34/unread-count 304 in 23ms :: {"unreadCount":"0"}
+Origin: undefined
+2:01:38 AM [express] GET /api/messages/34/unread-count 304 in 25ms :: {"unreadCount":"0"}
+Origin: undefined
+2:01:38 AM [express] GET /api/messages/34/unread-count 304 in 23ms :: {"unreadCount":"0"}
+Origin: undefined
+⚡ DIRECT API: Fetching quick meetups
+Origin: undefined
+⚡ DIRECT API: Fetching quick meetups
+Origin: undefined
+2:01:48 AM [express] GET /api/messages/34/unread-count 304 in 23ms :: {"unreadCount":"0"}
+Origin: undefined
+2:01:48 AM [express] GET /api/messages/34/unread-count 304 in 23ms :: {"unreadCount":"0"}
+Origin: undefined
+🎯 DIRECT API: Fetching quick deals
+🎯 DIRECT API: Found 0 active quick deals
+🌍 LA METRO QUICK DEALS: 0 deals in LA metro area
+Origin: undefined
+🎯 DIRECT API: Fetching quick deals
+🎯 DIRECT API: Found 0 active quick deals
+🌍 LA METRO QUICK DEALS: 0 deals in LA metro area
+🔴 User nearbytravels (34) disconnected
+🔴 User nearbytravels (34) disconnected
+Origin: undefined
+2:01:58 AM [express] GET /api/messages/34/unread-count 304 in 23ms :: {"unreadCount":"0"}
+Origin: undefined
+2:01:58 AM [express] GET /api/messages/34/unread-count 304 in 23ms :: {"unreadCount":"0"}
+ New WebSocket connection
+📥 WebSocket message received: { type: 'auth', userId: 34, username: 'nearbytravels' }
+ User nearbytravels (34) authenticated via WebSocket
+ New WebSocket connection
+📥 WebSocket message received: { type: 'auth', userId: 34, username: 'nearbytravels' }
+ User nearbytravels (34) authenticated via WebSocket
+Origin: undefined
+2:02:09 AM [express] GET /api/messages/34/unread-count 304 in 23ms :: {"unreadCount":"0"}
+Origin: undefined
+2:02:09 AM [express] GET /api/messages/34/unread-count 304 in 23ms :: {"unreadCount":"0"}
+Origin: undefined
+⚡ DIRECT API: Fetching quick meetups
+Origin: undefined
+⚡ DIRECT API: Fetching quick meetups
+Origin: undefined
+🎯 DIRECT API: Fetching quick deals
+Origin: undefined
+🎯 DIRECT API: Found 0 active quick deals
+🌍 LA METRO QUICK DEALS: 0 deals in LA metro area
+Origin: undefined
+🎯 DIRECT API: Fetching quick deals
+Database connected successfully
+🎯 DIRECT API: Found 0 active quick deals
+🌍 LA METRO QUICK DEALS: 0 deals in LA metro area
+2:02:19 AM [express] GET /api/messages/34/unread-count 304 in 148ms :: {"unreadCount":"0"}
+Origin: undefined
+2:02:19 AM [express] GET /api/messages/34/unread-count 304 in 23ms :: {"unreadCount":"0"}
+Origin: undefined
+Database connected successfully
+2:02:30 AM [express] GET /api/messages/34/unread-count 304 in 151ms :: {"unreadCount":"0"}
+Origin: undefined
+2:02:30 AM [express] GET /api/messages/34/unread-count 304 in 23ms :: {"unreadCount":"0"}
+Origin: undefined
+Database connected successfully
+2:02:40 AM [express] GET /api/messages/34/unread-count 304 in 152ms :: {"unreadCount":"0"}
+Origin: undefined
+2:02:40 AM [express] GET /api/messages/34/unread-count 304 in 22ms :: {"unreadCount":"0"}
+Origin: undefined
+⚡ DIRECT API: Fetching quick meetups
+Origin: undefined
+⚡ DIRECT API: Fetching quick meetups
+Origin: undefined
+🎯 DIRECT API: Fetching quick deals
+🎯 DIRECT API: Found 0 active quick deals
+🌍 LA METRO QUICK DEALS: 0 deals in LA metro area
+Origin: undefined
+🎯 DIRECT API: Fetching quick deals
+🎯 DIRECT API: Found 0 active quick deals
+🌍 LA METRO QUICK DEALS: 0 deals in LA metro area
+Origin: undefined
+2:02:50 AM [express] GET /api/messages/34/unread-count 304 in 22ms :: {"unreadCount":"0"}
+Origin: undefined
+2:02:50 AM [express] GET /api/messages/34/unread-count 304 in 22ms :: {"unreadCount":"0"}
+🔴 User nearbytravels (34) disconnected
+🔴 User nearbytravels (34) disconnected
+ New WebSocket connection
+📥 WebSocket message received: { type: 'auth', userId: 34, username: 'nearbytravels' }
+ User nearbytravels (34) authenticated via WebSocket
+ New WebSocket connection
+2:03:00 AM [vite] (client) hmr update /src/pages/profile.tsx, /src/index.css?v=smNyyMonz3nSFmsrOgXMX
+📥 WebSocket message received: { type: 'auth', userId: 34, username: 'nearbytravels' }
+ User nearbytravels (34) authenticated via WebSocket
+Origin: undefined
+2:03:01 AM [express] GET /api/messages/34/unread-count 304 in 22ms :: {"unreadCount":"0"}
+Origin: undefined
+2:03:01 AM [express] GET /api/messages/34/unread-count 304 in 23ms :: {"unreadCount":"0"}
+Origin: undefined
+Database connected successfully
+2:03:11 AM [express] GET /api/messages/34/unread-count 304 in 161ms :: {"unreadCount":"0"}
+Origin: undefined
+2:03:11 AM [express] GET /api/messages/34/unread-count 304 in 22ms :: {"unreadCount":"0"}
+2:03:17 AM [vite] (client) hmr update /src/pages/profile.tsx, /src/index.css?v=smNyyMonz3nSFmsrOgXMX (x2)
+Origin: undefined
+⚡ DIRECT API: Fetching quick meetups
+Origin: undefined
+⚡ DIRECT API: Fetching quick meetups
+Origin: undefined
+🎯 DIRECT API: Fetching quick deals
+🎯 DIRECT API: Found 0 active quick deals
+🌍 LA METRO QUICK DEALS: 0 deals in LA metro area
+Origin: undefined
+🎯 DIRECT API: Fetching quick deals
+🎯 DIRECT API: Found 0 active quick deals
+🌍 LA METRO QUICK DEALS: 0 deals in LA metro area
+Origin: undefined
+2:03:21 AM [express] GET /api/messages/34/unread-count 304 in 24ms :: {"unreadCount":"0"}
+Origin: undefined
+2:03:22 AM [express] GET /api/messages/34/unread-count 304 in 23ms :: {"unreadCount":"0"}
+Origin: undefined
+Database connected successfully
+2:03:32 AM [express] GET /api/messages/34/unread-count 304 in 137ms :: {"unreadCount":"0"}
+Origin: undefined
+2:03:32 AM [express] GET /api/messages/34/unread-count 304 in 23ms :: {"unreadCount":"0"}
+Origin: undefined
+2:03:38 AM [express] GET /api/messages/34 304 in 23ms :: [{"id":44,"senderId":34,"receiverId":12,"co…
+Origin: undefined
+2:03:38 AM [express] GET /api/messages/34 304 in 25ms :: [{"id":44,"senderId":34,"receiverId":12,"co…
+Origin: undefined
+2:03:41 AM [express] GET /api/messages/34 304 in 23ms :: [{"id":44,"senderId":34,"receiverId":12,"co…
+Origin: undefined
+2:03:41 AM [express] GET /api/messages/34 304 in 22ms :: [{"id":44,"senderId":34,"receiverId":12,"co…
+Origin: undefined
+2:03:42 AM [express] GET /api/messages/34 304 in 23ms :: [{"id":44,"senderId":34,"receiverId":12,"co…
+Origin: undefined
+2:03:42 AM [express] GET /api/messages/34 304 in 23ms :: [{"id":44,"senderId":34,"receiverId":12,"co…
+Origin: undefined
+2:03:42 AM [express] GET /api/messages/34/unread-count 304 in 23ms :: {"unreadCount":"0"}
+Origin: undefined
+2:03:43 AM [express] GET /api/messages/34/unread-count 304 in 22ms :: {"unreadCount":"0"}
+Origin: undefined
+⚡ DIRECT API: Fetching quick meetups
+Origin: undefined
+⚡ DIRECT API: Fetching quick meetups
+Origin: undefined
+🎯 DIRECT API: Fetching quick deals
+🎯 DIRECT API: Found 0 active quick deals
+🌍 LA METRO QUICK DEALS: 0 deals in LA metro area
+Origin: undefined
+🎯 DIRECT API: Fetching quick deals
+🎯 DIRECT API: Found 0 active quick deals
+🌍 LA METRO QUICK DEALS: 0 deals in LA metro area
+Origin: undefined
+2:03:53 AM [express] GET /api/messages/34/unread-count 304 in 23ms :: {"unreadCount":"0"}
+Origin: undefined
+2:03:53 AM [express] GET /api/messages/34/unread-count 304 in 22ms :: {"unreadCount":"0"}
+Origin: undefined
+2:03:56 AM [express] GET /api/users/34 200 in 46ms :: {"id":34,"username":"nearbytravels","email":"a…
+Origin: undefined
+Origin: undefined
+🏠 CHATROOM PARTICIPATION: Getting chatroom participation for user 34
+Travel plan status update: [object Object] completed, [object Object] active, [object Object] planned
+Origin: undefined
+2:03:56 AM [express] GET /api/users/34/connections 200 in 12ms
+Origin: undefined
+Origin: undefined
+📸 PHOTOS: Getting photos for user 34 (limit: 20, offset: 0)
+DatabaseStorage.getUserPhotos - Getting photos for user ID: 34 (limit: 20, offset: 0)
+Origin: undefined
+Automatically saved 0 completed trip itineraries to past trips
+2:03:56 AM [express] GET /api/travel-plans-with-itineraries/34 304 in 136ms :: [{"id":16,"userId":34…
+2:03:57 AM [vite] (client) Pre-transform error: Duplicate declaration "User"
+  243 |
+  244 |
+> 245 | import type { User, UserPhoto, PassportStamp, TravelPlan } from "@shared/schema";
+      |               ^^^^
+  246 | import { insertUserReferenceSchema } from "@shared/schema";
+  247 | import { getAllInterests, getAllActivities, getAllEvents, getAllLanguages, validateSelections, MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS } from "../../../shared/base-options";
+  248 |
+  Plugin: vite:react-babel
+  File: /home/runner/workspace/client/src/pages/profile.tsx
