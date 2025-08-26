@@ -471,8 +471,16 @@ export default function MatchInCity() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-800">
       <div className="container mx-auto px-4 py-8">
-        {/* Header */}
+        {/* Header with REQUIRED Branding */}
         <div className="text-center mb-8">
+          {/* CRITICAL BRANDING - NEVER REMOVE */}
+          <div className="mb-6">
+            <h1 className="text-5xl font-bold text-white mb-2">
+              NEARBY TRAVELER {selectedCity}
+            </h1>
+            <p className="text-2xl text-orange-300 font-semibold">@{currentUser?.username}</p>
+          </div>
+          
           <div className="flex items-center justify-center gap-3 mb-4">
             <Button 
               onClick={() => setSelectedCity('')}
@@ -482,9 +490,9 @@ export default function MatchInCity() {
             >
               <ArrowLeft className="w-4 h-4" />
             </Button>
-            <h1 className="text-4xl font-bold text-white flex items-center gap-3">
-              🎯 {selectedCity}
-            </h1>
+            <h2 className="text-3xl font-bold text-white flex items-center gap-3">
+              🎯 City Match
+            </h2>
           </div>
           <p className="text-xl text-blue-200 mb-6">Add activities and events. Others click to match.</p>
           
