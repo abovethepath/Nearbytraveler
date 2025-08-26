@@ -476,12 +476,20 @@ export default function MatchInCity() {
           {/* CRITICAL BRANDING - NEVER REMOVE */}
           <div className="mb-6">
             <h1 className="text-5xl font-bold text-white mb-2">
-              {currentUser?.hometownCity === selectedCity ? 
+              {selectedCity === currentUser?.hometownCity ? 
                 `NEARBY LOCAL ${selectedCity}` : 
                 `NEARBY TRAVELER ${selectedCity}`
               }
             </h1>
-            <p className="text-2xl text-orange-300 font-semibold">@{currentUser?.username}</p>
+            <p className="text-2xl text-orange-300 font-semibold">
+              @{currentUser?.username} • 
+              <span className="text-blue-300">
+                {selectedCity === currentUser?.hometownCity ? '🏠 At Home' : '✈️ Traveling'}
+              </span>
+            </p>
+            <p className="text-lg text-white/60">
+              Your hometown: {currentUser?.hometownCity}, {currentUser?.hometownState}
+            </p>
           </div>
           
           <div className="flex items-center justify-center gap-3 mb-4">
