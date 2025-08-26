@@ -51,6 +51,7 @@ import { QuickMeetupWidget } from "@/components/QuickMeetupWidget";
 import QuickDealsDiscovery from "@/components/QuickDealsDiscovery";
 import CityMap from "@/components/CityMap";
 import PeopleDiscoveryWidget from "@/components/PeopleDiscoveryWidget";
+import LocationSortedEvents from "@/components/LocationSortedEvents";
 
 
 // Import centralized constants for consistency
@@ -2360,129 +2361,15 @@ export default function Home() {
             )}
 
 
-            {/* Events Section - Simplified */}
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
-                  Upcoming Events
-                </h2>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200"
-                  onClick={() => setLocation('/events')}
-                >
-                  <Calendar className="w-4 h-4 mr-1" />
-                  View All
-                </Button>
-              </div>
-
-
-
-              {eventsLoading ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-                  {[1, 2, 3].map(i => (
-                    <div key={i} className="animate-pulse bg-gray-100 h-48 rounded-lg" />
-                  ))}
-                </div>
-              ) : events.length === 0 ? (
-                <div className="text-center py-6 sm:py-8">
-                  <Calendar className="w-10 sm:w-12 h-10 sm:h-12 text-gray-300 mx-auto mb-4" />
-                  <p className="text-sm sm:text-base text-gray-500 mb-2">No events found in your area</p>
-                  <p className="text-xs sm:text-sm text-gray-400">Check back later for new events</p>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-                  {events.slice(0, eventsDisplayCount).map((event) => (
-                    <article 
-                      key={event.id} 
-                      className="event-card relative overflow-hidden rounded-2xl bg-gray-800/40 shadow-sm text-left-important hover:shadow-lg cursor-pointer"
-                      onClick={() => setLocation(`/events/${event.id}`)}
-                    >
-                      {/* Image (no overlay needed) */}
-                      <div className="relative">
-                        <img 
-                          src={event.imageUrl || 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400&h=300&fit=crop'} 
-                          alt={event.title} 
-                          className="w-full aspect-[16/9] object-cover" 
-                          loading="lazy" 
-                        />
-                      </div>
-
-                      {/* Pills live in normal flow (hotfix enforces non-absolute) */}
-                      <div className="pills px-4 pt-3 flex flex-wrap gap-2">
-                        {event.category && <span className="chip bg-gray-900/80 text-white">{event.category}</span>}
-                        {(event as any).participantCount && (
-                          <span className="chip bg-purple-600 text-white">{(event as any).participantCount} attending</span>
-                        )}
-                      </div>
-
-                      {/* Content */}
-                      <div className="p-4 md:p-5">
-                        <h3 className="text-white text-base md:text-lg font-semibold leading-snug line-clamp-2">{event.title}</h3>
-                        {event.description && <p className="mt-1 text-sm text-gray-300 leading-relaxed wrap-any">{event.description}</p>}
-
-                        <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
-                          {event.location && (
-                            <div className="minw0 flex items-center gap-2 text-sm text-gray-300">
-                              <MapPin className="h-4 w-4 shrink-0" />
-                              <span className="wrap-any whitespace-normal">{event.location}</span>
-                            </div>
-                          )}
-                          {event.date && (
-                            <div className="minw0 flex items-center gap-2 text-sm text-gray-300">
-                              <Calendar className="h-4 w-4 shrink-0" />
-                              <span className="wrap-any whitespace-normal">
-                                {(() => {
-                                  const eventDate = new Date(event.date);
-                                  const currentYear = new Date().getFullYear();
-                                  const eventYear = eventDate.getFullYear();
-                                  const dateStr = eventDate.toLocaleDateString('en-US', { 
-                                    month: 'short', 
-                                    day: 'numeric',
-                                    year: eventYear !== currentYear ? 'numeric' : undefined
-                                  });
-                                  const timeStr = eventDate.toLocaleTimeString('en-US', { 
-                                    hour: 'numeric', 
-                                    minute: '2-digit',
-                                    hour12: true 
-                                  });
-                                  return `${dateStr} at ${timeStr}`;
-                                })()}
-                              </span>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </article>
-                  ))}
-                </div>
-              )}
-
-              {/* Load More / Load Less buttons for Events */}
-              {!eventsLoading && events.length > 3 && (
-                <div className="text-center pt-4 space-x-3">
-                  {eventsDisplayCount < events.length && (
-                    <Button
-                      variant="outline"
-                      onClick={() => setEventsDisplayCount(Math.min(eventsDisplayCount + 6, events.length))}
-                      className="bg-purple-50 hover:bg-purple-100 text-purple-700 border-purple-200 hover:border-purple-300 dark:bg-purple-900 dark:hover:bg-purple-800 dark:text-purple-200 dark:border-purple-700"
-                    >
-                      Load More ({Math.min(6, events.length - eventsDisplayCount)} more events)
-                    </Button>
-                  )}
-                  {eventsDisplayCount > 3 && (
-                    <Button
-                      variant="outline"
-                      onClick={() => setEventsDisplayCount(3)}
-                      className="bg-gray-50 hover:bg-gray-100 dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white dark:border-gray-500"
-                    >
-                      Load Less
-                    </Button>
-                  )}
-                </div>
-              )}
-            </div>
+            {/* Events Section - Enhanced with Location Sorting */}
+            <LocationSortedEvents
+              events={events}
+              currentUserLocation={getCurrentUserLocation()}
+              title="Upcoming Events"
+              showViewAll={true}
+              onEventClick={(event) => setLocation(`/events/${event.id}`)}
+              onViewAll={() => setLocation('/events')}
+            />
 
 
             {/* Local Businesses Section */}

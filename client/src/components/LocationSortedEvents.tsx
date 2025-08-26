@@ -1,0 +1,318 @@
+import React from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Calendar, MapPin, Clock, Users, Star, ExternalLink, Heart, Share2 } from 'lucide-react';
+
+interface Event {
+  id: number;
+  title: string;
+  description?: string;
+  eventImage?: string;
+  date: string;
+  time?: string;
+  location?: string;
+  city?: string;
+  state?: string;
+  country?: string;
+  venue?: string;
+  organizer?: string;
+  category?: string;
+  price?: number;
+  capacity?: number;
+  attendeeCount?: number;
+  rating?: number;
+  tags?: string[];
+  distance?: number;
+}
+
+interface LocationSortedEventsProps {
+  events: Event[];
+  currentUserLocation?: string;
+  title?: string;
+  showViewAll?: boolean;
+  onEventClick?: (event: Event) => void;
+  onViewAll?: () => void;
+}
+
+export default function LocationSortedEvents({ 
+  events, 
+  currentUserLocation, 
+  title = "Upcoming Events",
+  showViewAll = true,
+  onEventClick,
+  onViewAll 
+}: LocationSortedEventsProps) {
+
+  // Sort events by location proximity and date
+  const sortedEvents = React.useMemo(() => {
+    if (!events) return [];
+    
+    return [...events].sort((a, b) => {
+      // If we have current user location, prioritize same city
+      if (currentUserLocation) {
+        const currentCity = currentUserLocation.toLowerCase();
+        const aInCurrentCity = a.city?.toLowerCase().includes(currentCity.toLowerCase()) || 
+                               a.location?.toLowerCase().includes(currentCity.toLowerCase());
+        const bInCurrentCity = b.city?.toLowerCase().includes(currentCity.toLowerCase()) ||
+                               b.location?.toLowerCase().includes(currentCity.toLowerCase());
+        
+        if (aInCurrentCity && !bInCurrentCity) return -1;
+        if (!aInCurrentCity && bInCurrentCity) return 1;
+      }
+      
+      // Then sort by distance if available
+      if (a.distance !== undefined && b.distance !== undefined) {
+        return a.distance - b.distance;
+      }
+      
+      // Finally by date (soonest first)
+      return new Date(a.date).getTime() - new Date(b.date).getTime();
+    });
+  }, [events, currentUserLocation]);
+
+  const formatEventLocation = (event: Event) => {
+    const parts = [];
+    if (event.venue) parts.push(event.venue);
+    if (event.city) parts.push(event.city);
+    if (event.state) parts.push(event.state);
+    
+    return parts.join(', ') || event.location || 'Location TBD';
+  };
+
+  const formatEventDate = (dateString: string, time?: string) => {
+    const date = new Date(dateString);
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    
+    const isToday = date.toDateString() === today.toDateString();
+    const isTomorrow = date.toDateString() === tomorrow.toDateString();
+    
+    let dateLabel = '';
+    if (isToday) dateLabel = 'Today';
+    else if (isTomorrow) dateLabel = 'Tomorrow';
+    else dateLabel = date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+    
+    if (time) {
+      return `${dateLabel} at ${time}`;
+    }
+    return dateLabel;
+  };
+
+  const formatDistance = (distance?: number) => {
+    if (distance === undefined) return null;
+    if (distance < 1) return `${Math.round(distance * 1000)}m away`;
+    return `${distance.toFixed(1)}km away`;
+  };
+
+  const EventCard = ({ event }: { event: Event }) => (
+    <Card className="cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] bg-white dark:bg-gray-800">
+      <CardContent className="p-4">
+        {/* Event Header with Image */}
+        <div className="flex items-start space-x-3 mb-3">
+          {event.eventImage && (
+            <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
+              <img 
+                src={event.eventImage} 
+                alt={event.title}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          )}
+          
+          <div className="flex-1 min-w-0">
+            <div className="flex items-start justify-between">
+              <div>
+                <h4 className="font-semibold text-gray-900 dark:text-white line-clamp-2 mb-1">
+                  {event.title}
+                </h4>
+                {event.category && (
+                  <Badge variant="secondary" className="text-xs mb-2">
+                    {event.category}
+                  </Badge>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Event Description */}
+        {event.description && (
+          <p className="text-sm text-gray-600 dark:text-gray-300 mb-3 line-clamp-2">
+            {event.description}
+          </p>
+        )}
+
+        {/* Date and Time */}
+        <div className="flex items-center space-x-2 mb-2 text-sm text-gray-600 dark:text-gray-300">
+          <Calendar className="w-4 h-4 flex-shrink-0" />
+          <span>{formatEventDate(event.date, event.time)}</span>
+        </div>
+
+        {/* Location */}
+        <div className="flex items-start space-x-2 mb-2 text-sm text-gray-600 dark:text-gray-300">
+          <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
+          <span className="break-words">{formatEventLocation(event)}</span>
+        </div>
+
+        {/* Organizer */}
+        {event.organizer && (
+          <div className="flex items-center space-x-2 mb-3 text-sm text-gray-600 dark:text-gray-300">
+            <Users className="w-4 h-4 flex-shrink-0" />
+            <span>by {event.organizer}</span>
+          </div>
+        )}
+
+        {/* Stats Row */}
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center space-x-3">
+            {/* Attendees */}
+            {event.attendeeCount !== undefined && (
+              <div className="flex items-center space-x-1">
+                <Users className="w-4 h-4 text-green-500" />
+                <span className="text-sm font-medium">
+                  {event.attendeeCount}
+                  {event.capacity && `/${event.capacity}`}
+                </span>
+              </div>
+            )}
+
+            {/* Rating */}
+            {event.rating && (
+              <div className="flex items-center space-x-1">
+                <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                <span className="text-sm font-medium">
+                  {event.rating.toFixed(1)}
+                </span>
+              </div>
+            )}
+
+            {/* Price */}
+            {event.price !== undefined && (
+              <span className="text-sm font-medium text-green-600 dark:text-green-400">
+                {event.price === 0 ? 'Free' : `$${event.price}`}
+              </span>
+            )}
+          </div>
+
+          {/* Distance */}
+          {event.distance !== undefined && (
+            <span className="text-xs text-gray-500">
+              {formatDistance(event.distance)}
+            </span>
+          )}
+        </div>
+
+        {/* Tags */}
+        {event.tags && event.tags.length > 0 && (
+          <div className="flex flex-wrap gap-1 mb-3">
+            {event.tags.slice(0, 3).map((tag, index) => (
+              <Badge key={index} variant="outline" className="text-xs">
+                {tag}
+              </Badge>
+            ))}
+            {event.tags.length > 3 && (
+              <Badge variant="outline" className="text-xs text-gray-500">
+                +{event.tags.length - 3} more
+              </Badge>
+            )}
+          </div>
+        )}
+
+        {/* Location Priority Indicator */}
+        {currentUserLocation && (
+          <>
+            {(event.city?.toLowerCase().includes(currentUserLocation.toLowerCase()) || 
+              event.location?.toLowerCase().includes(currentUserLocation.toLowerCase())) && (
+              <div className="mb-3">
+                <Badge className="bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200 text-xs">
+                  <MapPin className="w-3 h-3 mr-1" />
+                  In your area
+                </Badge>
+              </div>
+            )}
+          </>
+        )}
+
+        {/* Action Buttons */}
+        <div className="flex space-x-2">
+          <Button
+            size="sm"
+            onClick={(e) => {
+              e.stopPropagation();
+              onEventClick?.(event);
+            }}
+            className="flex-1 text-xs"
+          >
+            <ExternalLink className="w-3 h-3 mr-1" />
+            View Event
+          </Button>
+          
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={(e) => {
+              e.stopPropagation();
+              // Handle interested/save action
+            }}
+            className="text-xs"
+          >
+            <Heart className="w-3 h-3" />
+          </Button>
+          
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={(e) => {
+              e.stopPropagation();
+              // Handle share action
+            }}
+            className="text-xs"
+          >
+            <Share2 className="w-3 h-3" />
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+
+  return (
+    <Card className="w-full">
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center space-x-2">
+            <Calendar className="w-5 h-5" />
+            <span>{title}</span>
+            {currentUserLocation && (
+              <Badge variant="secondary" className="text-xs">
+                Near {currentUserLocation}
+              </Badge>
+            )}
+          </CardTitle>
+          {showViewAll && (
+            <Button variant="outline" size="sm" onClick={onViewAll}>
+              View All Events
+            </Button>
+          )}
+        </div>
+      </CardHeader>
+      
+      <CardContent>
+        {sortedEvents.length === 0 ? (
+          <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+            <Calendar className="w-12 h-12 mx-auto mb-4 opacity-50" />
+            <p>No upcoming events found</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {sortedEvents.map((event) => (
+              <EventCard key={event.id} event={event} />
+            ))}
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
