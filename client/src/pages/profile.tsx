@@ -8033,71 +8033,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 </div>
               )}
 
-              {/* Location Section - Different for Business vs Traveler */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white border-b pb-2">
-                  {user?.userType === 'business' ? 'Business Location' : 'Hometown Location ** ONLY CHANGE IF YOU MOVE **'}
-                </h3>
-                
-                {/* Business users get street address and ZIP code fields first */}
-                {user?.userType === 'business' && (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FormField
-                      control={profileForm.control}
-                      name="streetAddress"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Street Address</FormLabel>
-                          <FormControl>
-                            <Input 
-                              {...field} 
-                              placeholder="123 Main Street"
-                              className="dark:bg-gray-800 dark:border-gray-600 dark:text-white"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={profileForm.control}
-                      name="zipCode"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>ZIP Code</FormLabel>
-                          <FormControl>
-                            <Input 
-                              {...field} 
-                              placeholder="12345"
-                              className="dark:bg-gray-800 dark:border-gray-600 dark:text-white"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                )}
-                
-                {/* Standard location dropdowns for all users */}
-                <SmartLocationInput
-                  city={profileForm.watch('hometownCity') || ''}
-                  state={profileForm.watch('hometownState') || ''}
-                  country={profileForm.watch('hometownCountry') || ''}
-                  onLocationChange={(location) => {
-                    profileForm.setValue('hometownCountry', location.country);
-                    profileForm.setValue('hometownState', location.state);
-                    profileForm.setValue('hometownCity', location.city);
-                  }}
-                  required={false}
-                  placeholder={{
-                    country: user?.userType === 'business' ? "Select your business country" : "Select your hometown country",
-                    state: user?.userType === 'business' ? "Select your business state/region" : "Select your hometown state/region", 
-                    city: user?.userType === 'business' ? "Select your business city" : "Select your hometown city"
-                  }}
-                />
-              </div>
 
               {/* Travel Style removed from general profile - it's trip-specific */}
 
@@ -8528,6 +8463,72 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               </div>
             </div>
             )}
+
+              {/* Location Section - Moved to bottom as requested */}
+              <div className="space-y-4 mt-8 pt-6 border-t border-gray-200 dark:border-gray-600">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white border-b pb-2">
+                  {user?.userType === 'business' ? 'Business Location' : 'Hometown Location ** ONLY CHANGE IF YOU MOVE **'}
+                </h3>
+                
+                {/* Business users get street address and ZIP code fields first */}
+                {user?.userType === 'business' && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      control={profileForm.control}
+                      name="streetAddress"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Street Address</FormLabel>
+                          <FormControl>
+                            <Input 
+                              {...field} 
+                              placeholder="123 Main Street"
+                              className="dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={profileForm.control}
+                      name="zipCode"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>ZIP Code</FormLabel>
+                          <FormControl>
+                            <Input 
+                              {...field} 
+                              placeholder="12345"
+                              className="dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                )}
+                
+                {/* Standard location dropdowns for all users */}
+                <SmartLocationInput
+                  city={profileForm.watch('hometownCity') || ''}
+                  state={profileForm.watch('hometownState') || ''}
+                  country={profileForm.watch('hometownCountry') || ''}
+                  onLocationChange={(location) => {
+                    profileForm.setValue('hometownCountry', location.country);
+                    profileForm.setValue('hometownState', location.state);
+                    profileForm.setValue('hometownCity', location.city);
+                  }}
+                  required={false}
+                  placeholder={{
+                    country: user?.userType === 'business' ? "Select your business country" : "Select your hometown country",
+                    state: user?.userType === 'business' ? "Select your business state/region" : "Select your hometown state/region", 
+                    city: user?.userType === 'business' ? "Select your business city" : "Select your hometown city"
+                  }}
+                />
+              </div>
 
               <div className="flex gap-2 pt-4">
                 <Button 
