@@ -98,7 +98,7 @@ const getCityCoordinates = (city: string, country: string): [number, number] => 
   
   // Check for Los Angeles metro area cities - default to LA coordinates
   const laCities = ['Los Angeles', 'Playa del Rey', 'Santa Monica', 'Venice', 'Beverly Hills', 'Hollywood', 'Culver City', 'Marina del Rey', 'Manhattan Beach', 'Hermosa Beach', 'Redondo Beach', 'El Segundo', 'West Hollywood', 'Pasadena', 'Burbank', 'Glendale', 'Long Beach', 'Torrance', 'Inglewood'];
-  if (laCities.some(laCity => city.toLowerCase().includes(laCity.toLowerCase()))) {
+  if (city && laCities.some(laCity => city.toLowerCase().includes(laCity.toLowerCase()))) {
     return [34.0522, -118.2437]; // Los Angeles center
   }
   
