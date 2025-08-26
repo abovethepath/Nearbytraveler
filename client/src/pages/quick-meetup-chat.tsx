@@ -219,8 +219,16 @@ function QuickMeetupChat() {
 
   const formatTimeRemaining = (expiresAt: string) => {
     const now = new Date();
-    // Remove the timezone offset issue by parsing as local time
-    const expiration = new Date(expiresAt.replace('Z', ''));
+    
+    // Handle the timezone issue by adjusting for UTC offset
+    let expiration = new Date(expiresAt);
+    // If it's a UTC timestamp, we need to adjust for local timezone
+    if (expiresAt.includes('Z') || expiresAt.includes('+')) {
+      // Convert UTC to local time by subtracting timezone offset
+      const timezoneOffsetMs = now.getTimezoneOffset() * 60 * 1000;
+      expiration = new Date(expiration.getTime() - timezoneOffsetMs);
+    }
+    
     const timeDiff = expiration.getTime() - now.getTime();
     
     if (timeDiff <= 0) {
