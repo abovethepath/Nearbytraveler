@@ -2391,30 +2391,112 @@ export default function Home() {
               {businessDeals && businessDeals.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {businessDeals.slice(0, businessesDisplayCount).map((deal: any) => (
-                    <Card key={deal.id} className="h-full flex flex-col cursor-pointer hover:shadow-lg transition-shadow">
-                      <CardContent className="p-4 flex-1">
-                        <div className="flex items-start justify-between mb-2">
-                          <h3 className="font-semibold text-base truncate pr-2">{deal.businessName || 'Business'}</h3>
-                          <Badge variant="secondary" className="text-xs shrink-0">
-                            {deal.businessLocation || 'Local'}
-                          </Badge>
+                    <Card 
+                      key={deal.id} 
+                      className="h-full flex flex-col cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-[1.02] bg-white dark:bg-gray-800"
+                      onClick={() => setLocation(`/profile/${deal.businessId}`)}
+                      data-testid={`business-card-${deal.businessId}`}
+                    >
+                      {/* Business Image Header */}
+                      {deal.businessImage && (
+                        <div className="relative w-full h-32 overflow-hidden rounded-t-lg">
+                          <img 
+                            src={deal.businessImage} 
+                            alt={deal.businessName || 'Business'}
+                            className="w-full h-full object-cover"
+                            loading="lazy"
+                          />
+                          {/* Business Type Badge */}
+                          {deal.businessType && (
+                            <div className="absolute top-2 right-2">
+                              <Badge variant="secondary" className="bg-white/90 text-gray-800 text-xs">
+                                {deal.businessType}
+                              </Badge>
+                            </div>
+                          )}
                         </div>
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">
-                          {deal.title || deal.businessDescription || 'Local business deal'}
-                        </p>
-                        <div className="flex items-center text-xs text-gray-500 space-x-3">
-                          {deal.businessPhone && (
-                            <span className="flex items-center">
-                              <Phone className="w-3 h-3 mr-1" />
-                              {deal.businessPhone}
-                            </span>
-                          )}
+                      )}
+                      
+                      <CardContent className="p-4 flex-1 flex flex-col">
+                        {/* Business Name and Location */}
+                        <div className="flex items-start justify-between mb-2">
+                          <h3 className="font-bold text-lg text-gray-900 dark:text-white line-clamp-1 pr-2" data-testid={`business-name-${deal.businessId}`}>
+                            {deal.businessName || 'Business Name'}
+                          </h3>
                           {deal.businessLocation && (
-                            <span className="flex items-center">
+                            <Badge variant="outline" className="text-xs shrink-0">
                               <MapPin className="w-3 h-3 mr-1" />
-                              {deal.businessLocation}
-                            </span>
+                              {deal.businessLocation.split(',')[0]}
+                            </Badge>
                           )}
+                        </div>
+                        
+                        {/* Business Description/Bio */}
+                        {deal.businessDescription && (
+                          <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-2 leading-relaxed" data-testid={`business-bio-${deal.businessId}`}>
+                            {deal.businessDescription}
+                          </p>
+                        )}
+                        
+                        {/* Current Deal/Offer */}
+                        {deal.title && (
+                          <div className="bg-orange-50 dark:bg-orange-900/30 border border-orange-200 dark:border-orange-700 rounded-lg p-3 mb-3">
+                            <h4 className="font-semibold text-orange-800 dark:text-orange-200 text-sm mb-1">
+                              Current Deal
+                            </h4>
+                            <p className="text-xs text-orange-700 dark:text-orange-300 line-clamp-2">
+                              {deal.title}
+                            </p>
+                            {deal.discountValue && (
+                              <div className="mt-1">
+                                <Badge className="bg-orange-600 text-white text-xs">
+                                  {deal.discountType === 'percentage' ? `${deal.discountValue}% OFF` : 
+                                   deal.discountType === 'fixed' ? `$${deal.discountValue} OFF` : 
+                                   `${deal.discountValue}`}
+                                </Badge>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                        
+                        {/* Contact Information */}
+                        <div className="space-y-2 mb-3 text-xs text-gray-600 dark:text-gray-400">
+                          {deal.businessAddress && (
+                            <div className="flex items-start space-x-2" data-testid={`business-address-${deal.businessId}`}>
+                              <MapPin className="w-3 h-3 mt-0.5 flex-shrink-0" />
+                              <span className="line-clamp-1">{deal.businessAddress}</span>
+                            </div>
+                          )}
+                          {deal.businessPhone && (
+                            <div className="flex items-center space-x-2" data-testid={`business-phone-${deal.businessId}`}>
+                              <Phone className="w-3 h-3 flex-shrink-0" />
+                              <span>{deal.businessPhone}</span>
+                            </div>
+                          )}
+                          {deal.businessWebsite && (
+                            <div className="flex items-center space-x-2" data-testid={`business-website-${deal.businessId}`}>
+                              <Globe className="w-3 h-3 flex-shrink-0" />
+                              <span className="text-blue-600 dark:text-blue-400 hover:underline line-clamp-1">
+                                {deal.businessWebsite.replace(/^https?:\/\//, '')}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                        
+                        {/* Action Button */}
+                        <div className="mt-auto">
+                          <Button 
+                            size="sm" 
+                            className="w-full bg-orange-600 hover:bg-orange-700 text-white"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setLocation(`/profile/${deal.businessId}`);
+                            }}
+                            data-testid={`view-business-${deal.businessId}`}
+                          >
+                            <Store className="w-3 h-3 mr-1" />
+                            View Business
+                          </Button>
                         </div>
                       </CardContent>
                     </Card>
