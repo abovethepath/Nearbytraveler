@@ -876,7 +876,7 @@ export default function MatchInCity() {
                     <div className="space-y-2">
                       <h4 className="text-gray-700 font-medium text-sm">Shared Interests:</h4>
                       <div className="flex flex-wrap gap-1">
-                        {user.sharedActivities.map((activity: string, index: number) => (
+                        {(user.sharedActivities || []).map((activity: string, index: number) => (
                           <span 
                             key={index}
                             className="bg-green-100 text-green-700 px-2 py-1 rounded text-xs"
