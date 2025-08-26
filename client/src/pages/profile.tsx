@@ -3467,12 +3467,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     return (
                       <>
                         <h1 className="text-2xl sm:text-3xl font-bold text-black">@{user.username}</h1>
-                        <div className="text-lg font-medium text-black">
-                          NEARBY LOCAL {hometown}
+                        <div className="flex items-center gap-2 text-lg font-medium text-black">
+                          <MapPin className="w-5 h-5 text-blue-600" />
+                          <span>NEARBY LOCAL {hometown}</span>
                         </div>
                         {currentDestination && (
-                          <div className="text-lg font-medium text-black">
-                            NEARBY TRAVELER {currentDestination}
+                          <div className="flex items-center gap-2 text-lg font-medium text-black">
+                            <Plane className="w-5 h-5 text-orange-600" />
+                            <span>NEARBY TRAVELER {currentDestination}</span>
                           </div>
                         )}
                       </>
