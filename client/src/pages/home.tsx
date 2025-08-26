@@ -678,6 +678,7 @@ export default function Home() {
   });
 
   const businessOffers = allBusinessOffers;
+  const businessDeals = allBusinessOffers; // Use business deals data for Local Businesses section
 
   // businessOffersLoading is now defined in the query above
 
@@ -2498,10 +2499,70 @@ export default function Home() {
                   View All
                 </Button>
               </div>
-              <BusinessesGrid 
-                displayCount={businessesDisplayCount}
-                onDisplayCountChange={setBusinessesDisplayCount}
-              />
+              
+              {/* Business Deals Display */}
+              {businessDeals && businessDeals.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {businessDeals.slice(0, businessesDisplayCount).map((deal: any) => (
+                    <Card key={deal.id} className="h-full flex flex-col cursor-pointer hover:shadow-lg transition-shadow">
+                      <CardContent className="p-4 flex-1">
+                        <div className="flex items-start justify-between mb-2">
+                          <h3 className="font-semibold text-base truncate pr-2">{deal.businessName || 'Business'}</h3>
+                          <Badge variant="secondary" className="text-xs shrink-0">
+                            {deal.businessLocation || 'Local'}
+                          </Badge>
+                        </div>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">
+                          {deal.title || deal.businessDescription || 'Local business deal'}
+                        </p>
+                        <div className="flex items-center text-xs text-gray-500 space-x-3">
+                          {deal.businessPhone && (
+                            <span className="flex items-center">
+                              <Phone className="w-3 h-3 mr-1" />
+                              {deal.businessPhone}
+                            </span>
+                          )}
+                          {deal.businessLocation && (
+                            <span className="flex items-center">
+                              <MapPin className="w-3 h-3 mr-1" />
+                              {deal.businessLocation}
+                            </span>
+                          )}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <Store className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+                  <p className="text-gray-500">No local businesses available</p>
+                </div>
+              )}
+
+              {/* Load More / Load Less buttons for Businesses */}
+              {businessDeals && businessDeals.length > 3 && (
+                <div className="text-center pt-4 space-x-3">
+                  {businessesDisplayCount < businessDeals.length && (
+                    <Button
+                      variant="outline"
+                      onClick={() => setBusinessesDisplayCount(Math.min(businessesDisplayCount + 3, businessDeals.length))}
+                      className="bg-orange-50 hover:bg-orange-100 text-orange-700 border-orange-200 hover:border-orange-300 dark:bg-orange-900 dark:hover:bg-orange-800 dark:text-orange-200 dark:border-orange-700"
+                    >
+                      Load More ({Math.min(3, businessDeals.length - businessesDisplayCount)} more businesses)
+                    </Button>
+                  )}
+                  {businessesDisplayCount > 3 && (
+                    <Button
+                      variant="outline"
+                      onClick={() => setBusinessesDisplayCount(3)}
+                      className="bg-gray-50 hover:bg-gray-100 dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white dark:border-gray-500"
+                    >
+                      Load Less
+                    </Button>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Quick Actions Section - Consolidated */}
