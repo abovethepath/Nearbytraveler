@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/App";
+import { METRO_AREAS } from "@shared/constants";
 import { 
   MapPin, 
   Plus, 
@@ -96,6 +97,17 @@ const FEATURED_CITIES = [
     eventCount: 38
   }
 ];
+
+// Helper function to check if two cities are in the same metro area
+function areInSameMetroArea(city1: string, city2: string): boolean {
+  for (const metroArea of Object.values(METRO_AREAS)) {
+    const cities = metroArea.cities.map(c => c.toLowerCase());
+    if (cities.includes(city1?.toLowerCase()) && cities.includes(city2?.toLowerCase())) {
+      return true;
+    }
+  }
+  return false;
+}
 
 export default function MatchInCity() {
   const [location, setLocation] = useLocation();
@@ -476,7 +488,7 @@ export default function MatchInCity() {
           {/* CRITICAL BRANDING - NEVER REMOVE */}
           <div className="mb-6">
             <h1 className="text-5xl font-bold text-white mb-2">
-              {selectedCity === currentUser?.hometownCity ? 
+              {selectedCity === currentUser?.hometownCity || areInSameMetroArea(selectedCity, currentUser?.hometownCity) ? 
                 `NEARBY LOCAL ${selectedCity}` : 
                 `NEARBY TRAVELER ${selectedCity}`
               }
@@ -484,11 +496,14 @@ export default function MatchInCity() {
             <p className="text-2xl text-orange-300 font-semibold">
               @{currentUser?.username} • 
               <span className="text-blue-300">
-                {selectedCity === currentUser?.hometownCity ? '🏠 At Home' : '✈️ Traveling'}
+                {selectedCity === currentUser?.hometownCity || areInSameMetroArea(selectedCity, currentUser?.hometownCity) ? '🏠 Local Area' : '✈️ Traveling'}
               </span>
             </p>
             <p className="text-lg text-white/60">
               Your hometown: {currentUser?.hometownCity}, {currentUser?.hometownState}
+              {areInSameMetroArea(selectedCity, currentUser?.hometownCity) && selectedCity !== currentUser?.hometownCity && 
+                <span className="text-green-300"> • Part of your metro area</span>
+              }
             </p>
           </div>
           
