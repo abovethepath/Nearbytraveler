@@ -137,133 +137,69 @@ export default function LocationSortedEvents({
   };
 
   const EventCard = ({ event }: { event: Event }) => (
-    <Card className="cursor-pointer transition-all duration-300 hover:shadow-xl hover:scale-[1.03] bg-gradient-to-br from-white via-purple-50/30 to-blue-50/30 dark:from-gray-800 dark:via-purple-900/20 dark:to-blue-900/20 border-l-4 border-l-purple-400">
-      <CardContent className="p-5">
-        {/* Event Header with Image */}
-        <div className="flex items-start space-x-4 mb-4">
-          {event.eventImage && (
-            <div className="w-20 h-20 rounded-xl overflow-hidden flex-shrink-0 ring-2 ring-purple-200 dark:ring-purple-700">
-              <img 
-                src={event.eventImage} 
-                alt={event.title}
-                className="w-full h-full object-cover"
-              />
-            </div>
-          )}
-          
+    <Card className="cursor-pointer transition-all duration-200 hover:shadow-md bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+      <CardContent className="p-3">
+        {/* Compact Header */}
+        <div className="flex items-start justify-between mb-2">
           <div className="flex-1 min-w-0">
-            <div className="flex items-start justify-between">
-              <div>
-                <h4 className="font-bold text-lg text-gray-900 dark:text-white line-clamp-2 mb-2">
-                  {event.title}
-                </h4>
-                {event.category && (
-                  <Badge className="bg-gradient-to-r from-purple-500 to-blue-500 text-white text-xs mb-2">
-                    {event.category}
-                  </Badge>
-                )}
+            <h4 className="font-semibold text-sm text-gray-900 dark:text-white line-clamp-1 mb-1">
+              {event.title}
+            </h4>
+            <div className="flex items-center space-x-3 text-xs text-gray-600 dark:text-gray-400">
+              <div className="flex items-center space-x-1">
+                <Calendar className="w-3 h-3" />
+                <span>{formatEventDate(event.date, event.time)}</span>
+              </div>
+              <div className="flex items-center space-x-1">
+                <MapPin className="w-3 h-3" />
+                <span className="truncate">{formatEventLocation(event)}</span>
               </div>
             </div>
           </div>
+          {event.category && (
+            <Badge className="bg-blue-500 text-white text-xs ml-2 flex-shrink-0">
+              {event.category}
+            </Badge>
+          )}
         </div>
 
-        {/* Event Description */}
-        {event.description && (
-          <p className="text-sm text-gray-600 dark:text-gray-300 mb-3 line-clamp-2">
-            {event.description}
-          </p>
-        )}
-
-        {/* Date and Time */}
-        <div className="flex items-center space-x-2 mb-3 text-sm font-medium">
-          <div className="flex items-center space-x-2 bg-gradient-to-r from-purple-100 to-blue-100 dark:from-purple-800/30 dark:to-blue-800/30 rounded-lg px-3 py-1.5">
-            <Calendar className="w-4 h-4 text-purple-600 dark:text-purple-400 flex-shrink-0" />
-            <span className="text-purple-800 dark:text-purple-200">{formatEventDate(event.date, event.time)}</span>
-          </div>
-        </div>
-
-        {/* Location */}
-        <div className="flex items-start space-x-2 mb-3 text-sm">
-          <div className="flex items-center space-x-2 bg-gradient-to-r from-blue-100 to-indigo-100 dark:from-blue-800/30 dark:to-indigo-800/30 rounded-lg px-3 py-1.5">
-            <MapPin className="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
-            <span className="text-blue-800 dark:text-blue-200 break-words">{formatEventLocation(event)}</span>
-          </div>
-        </div>
-
-        {/* Organizer */}
-        {event.organizer && (
-          <div className="flex items-center space-x-2 mb-3 text-sm">
-            <div className="flex items-center space-x-2 bg-gradient-to-r from-green-100 to-emerald-100 dark:from-green-800/30 dark:to-emerald-800/30 rounded-lg px-3 py-1.5">
-              <Users className="w-4 h-4 text-green-600 dark:text-green-400 flex-shrink-0" />
-              <span className="text-green-800 dark:text-green-200">by {event.organizer}</span>
-            </div>
-          </div>
-        )}
-
-        {/* Who's Going */}
-        <div className="flex items-center justify-between mb-3">
+        {/* Bottom Row: Attendees + Buttons */}
+        <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <Users className="w-4 h-4 text-green-500" />
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <Users className="w-3 h-3 text-gray-500" />
+            <span className="text-xs text-gray-600 dark:text-gray-400">
               {event.attendeeCount || 1} going
             </span>
-            {/* Price */}
-            {event.price !== undefined && (
-              <span className="text-sm font-medium text-green-600 dark:text-green-400 ml-3">
-                {event.price === 0 ? 'Free' : `$${event.price}`}
+            {event.organizer && (
+              <span className="text-xs text-gray-500 dark:text-gray-500">
+                by {event.organizer}
               </span>
             )}
           </div>
-
-          {/* Distance */}
-          {event.distance !== undefined && (
-            <span className="text-xs text-gray-600 dark:text-gray-400">
-              {formatDistance(event.distance)}
-            </span>
-          )}
-        </div>
-
-
-        {/* Location Priority Indicator */}
-        {currentUserLocation && (
-          <>
-            {(event.city?.toLowerCase().includes(currentUserLocation.toLowerCase()) || 
-              event.location?.toLowerCase().includes(currentUserLocation.toLowerCase())) && (
-              <div className="mb-3">
-                <Badge className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-xs animate-pulse">
-                  <MapPin className="w-3 h-3 mr-1" />
-                  In your area
-                </Badge>
-              </div>
-            )}
-          </>
-        )}
-
-        {/* Action Buttons - Stacked vertically */}
-        <div className="flex flex-col space-y-2 mt-4">
-          <Button
-            size="sm"
-            onClick={(e) => {
-              e.stopPropagation();
-              onEventClick?.(event);
-            }}
-            className="w-full text-xs bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-medium"
-          >
-            <ExternalLink className="w-3 h-3 mr-1" />
-            View Event
-          </Button>
           
-          <Button
-            size="sm"
-            onClick={(e) => {
-              e.stopPropagation();
-              // Handle join event action
-            }}
-            className="w-full text-xs bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-medium"
-          >
-            <Users className="w-3 h-3 mr-1" />
-            Join Event
-          </Button>
+          <div className="flex space-x-2">
+            <Button
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                onEventClick?.(event);
+              }}
+              className="text-xs px-2 py-1 h-6 bg-purple-600 hover:bg-purple-700 text-white"
+            >
+              View Event
+            </Button>
+            
+            <Button
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                // Handle join event action
+              }}
+              className="text-xs px-2 py-1 h-6 bg-green-600 hover:bg-green-700 text-white"
+            >
+              Join Event
+            </Button>
+          </div>
         </div>
       </CardContent>
     </Card>
@@ -299,7 +235,7 @@ export default function LocationSortedEvents({
             <p>No upcoming events found</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="space-y-2">
             {sortedEvents.map((event) => (
               <EventCard key={event.id} event={event} />
             ))}
