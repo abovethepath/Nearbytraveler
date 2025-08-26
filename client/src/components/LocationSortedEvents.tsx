@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Calendar, MapPin, Clock, Users, Star, ExternalLink, Heart, Share2 } from 'lucide-react';
+import { isLAMetroCity, getMetroCities } from '@shared/constants';
 
 interface Event {
   id: number;
@@ -50,16 +51,44 @@ export default function LocationSortedEvents({
     if (!events) return [];
     
     return [...events].sort((a, b) => {
-      // If we have current user location, prioritize same city
+      // If we have current user location, prioritize same city/metro area
       if (currentUserLocation) {
-        const currentCity = currentUserLocation.toLowerCase();
-        const aInCurrentCity = a.city?.toLowerCase().includes(currentCity.toLowerCase()) || 
-                               a.location?.toLowerCase().includes(currentCity.toLowerCase());
-        const bInCurrentCity = b.city?.toLowerCase().includes(currentCity.toLowerCase()) ||
-                               b.location?.toLowerCase().includes(currentCity.toLowerCase());
+        const currentCity = currentUserLocation.split(',')[0].trim();
         
-        if (aInCurrentCity && !bInCurrentCity) return -1;
-        if (!aInCurrentCity && bInCurrentCity) return 1;
+        // Check if current city is in LA Metro area
+        const isCurrentCityLAMetro = isLAMetroCity(currentCity);
+        const laMetroCities = isCurrentCityLAMetro ? getMetroCities(currentCity) : [];
+        
+        // Check if event is in current city or same metro area
+        const aInCurrentArea = () => {
+          const eventCity = a.city || a.location || '';
+          
+          // Direct city match
+          if (eventCity.toLowerCase().includes(currentCity.toLowerCase())) return true;
+          
+          // LA Metro area match
+          if (isCurrentCityLAMetro && isLAMetroCity(eventCity)) return true;
+          
+          return false;
+        };
+        
+        const bInCurrentArea = () => {
+          const eventCity = b.city || b.location || '';
+          
+          // Direct city match
+          if (eventCity.toLowerCase().includes(currentCity.toLowerCase())) return true;
+          
+          // LA Metro area match
+          if (isCurrentCityLAMetro && isLAMetroCity(eventCity)) return true;
+          
+          return false;
+        };
+        
+        const aInArea = aInCurrentArea();
+        const bInArea = bInCurrentArea();
+        
+        if (aInArea && !bInArea) return -1;
+        if (!aInArea && bInArea) return 1;
       }
       
       // Then sort by distance if available
