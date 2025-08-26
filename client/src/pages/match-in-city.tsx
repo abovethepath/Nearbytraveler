@@ -198,13 +198,15 @@ export default function MatchInCity() {
           };
         });
 
-        // Remove duplicates (in case of NYC consolidation)
+        // Remove duplicates (in case of NYC consolidation) and filter out test cities
         const uniqueCities = consolidatedCities.reduce((acc: any[], current: any) => {
           const exists = acc.find(city => 
             city.city.toLowerCase() === current.city.toLowerCase() && 
             city.state.toLowerCase() === current.state.toLowerCase()
           );
-          if (!exists) {
+          // Filter out test cities and global entries
+          const isTestCity = ['test city', 'global'].includes(current.city.toLowerCase());
+          if (!exists && !isTestCity) {
             acc.push(current);
           }
           return acc;
