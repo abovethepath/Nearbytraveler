@@ -10,9 +10,11 @@ interface SimpleAvatarProps {
   } | null;
   size?: 'sm' | 'md' | 'lg' | 'xl';
   className?: string;
+  clickable?: boolean; // Whether the avatar should be clickable
+  onClick?: () => void; // Custom click handler
 }
 
-export function SimpleAvatar({ user, size = 'md', className = '' }: SimpleAvatarProps) {
+export function SimpleAvatar({ user, size = 'md', className = '', clickable = true, onClick }: SimpleAvatarProps) {
   const [currentImage, setCurrentImage] = useState<string | null>(null);
   const [forceRefresh, setForceRefresh] = useState(0);
 
@@ -101,13 +103,27 @@ export function SimpleAvatar({ user, size = 'md', className = '' }: SimpleAvatar
     };
   }, [user?.id]);
 
+  const handleClick = () => {
+    if (onClick) {
+      onClick();
+    } else if (clickable && user?.id) {
+      window.location.href = `/profile/${user.id}`;
+    }
+  };
+
+  const cursorClass = clickable ? 'cursor-pointer hover:ring-2 hover:ring-orange-400 transition-all' : '';
+
   if (!user || !currentImage) {
     return (
-      <div className={`${sizeClasses[size]} ${className} bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center relative group cursor-help`}>
+      <div 
+        className={`${sizeClasses[size]} ${className} ${cursorClass} bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center relative group`}
+        onClick={handleClick}
+        title={clickable ? `View ${user?.username || 'User'}'s profile` : 'Complete your profile!'}
+      >
         <span className="text-white font-bold">{user?.username?.charAt(0)?.toUpperCase() || 'U'}</span>
         {/* Tooltip for profile completion reminder */}
         <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-10">
-          Complete your profile!
+          {clickable ? `View ${user?.username || 'User'}'s profile` : 'Complete your profile!'}
         </div>
       </div>
     );
@@ -117,8 +133,10 @@ export function SimpleAvatar({ user, size = 'md', className = '' }: SimpleAvatar
     <img
       src={currentImage}
       alt={`${user.username} avatar`}
-      className={`${sizeClasses[size]} ${className} rounded-full object-cover`}
+      className={`${sizeClasses[size]} ${className} ${cursorClass} rounded-full object-cover`}
       loading="lazy"
+      onClick={handleClick}
+      title={clickable ? `View ${user.username}'s profile` : undefined}
       onError={() => {
         // Fallback to generated avatar if image fails
         const fallbackAvatar = generateAvatar(user.username, user.avatarColor);
