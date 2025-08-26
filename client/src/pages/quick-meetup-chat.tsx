@@ -218,14 +218,15 @@ function QuickMeetupChat() {
   };
 
   const formatTimeRemaining = (expiresAt: string) => {
-    // The backend sends "2025-08-26 05:59:00.085" which is LOCAL time
-    // We need to parse it as local time, not UTC
+    // The backend is sending server time, we need to adjust for timezone difference
+    // Let's add 7 hours to compensate for the timezone offset
     const [datePart, timePart] = expiresAt.split(' ');
     const [year, month, day] = datePart.split('-').map(Number);
     const [hour, minute, second] = timePart.split(':').map(Number);
     
-    // Create date in local timezone (not UTC)
+    // Create date and subtract 7 hours to get correct local time
     const expiration = new Date(year, month - 1, day, hour, minute, Math.floor(second));
+    expiration.setHours(expiration.getHours() - 7); // Adjust for timezone
     
     const now = new Date();
     const timeDiffMs = expiration.getTime() - now.getTime();
