@@ -3027,31 +3027,7 @@ Questions? Just reply to this message. Welcome aboard!
         userWithoutPassword.customEvents = userWithoutPassword.customEvents;
       }
       
-      // MAP TRAVEL INTENT FIELDS: Convert snake_case database fields to camelCase for frontend
-      if (userWithoutPassword.travel_why !== undefined) {
-        userWithoutPassword.travelWhy = userWithoutPassword.travel_why;
-        delete userWithoutPassword.travel_why;
-      }
-      if (userWithoutPassword.travel_what !== undefined) {
-        userWithoutPassword.travelWhat = userWithoutPassword.travel_what;
-        delete userWithoutPassword.travel_what;
-      }
-      if (userWithoutPassword.travel_how !== undefined) {
-        userWithoutPassword.travelHow = userWithoutPassword.travel_how;
-        delete userWithoutPassword.travel_how;
-      }
-      if (userWithoutPassword.travel_budget !== undefined) {
-        userWithoutPassword.travelBudget = userWithoutPassword.travel_budget;
-        delete userWithoutPassword.travel_budget;
-      }
-      if (userWithoutPassword.travel_group !== undefined) {
-        userWithoutPassword.travelGroup = userWithoutPassword.travel_group;
-        delete userWithoutPassword.travel_group;
-      }
-      if (userWithoutPassword.travel_style !== undefined) {
-        userWithoutPassword.travelStyle = userWithoutPassword.travel_style;
-        delete userWithoutPassword.travel_style;
-      }
+      // Note: Travel intent fields are already in camelCase from database
       
       return res.json(userWithoutPassword);
     } catch (error: any) {
@@ -3089,27 +3065,7 @@ Questions? Just reply to this message. Welcome aboard!
         delete updates.travelStyle;
       }
       
-      // MAP TRAVEL INTENT FIELDS: Convert camelCase frontend fields to snake_case database fields
-      if (updates.travelWhy !== undefined) {
-        updates.travel_why = updates.travelWhy;
-        delete updates.travelWhy;
-      }
-      if (updates.travelWhat !== undefined) {
-        updates.travel_what = updates.travelWhat;
-        delete updates.travelWhat;
-      }
-      if (updates.travelHow !== undefined) {
-        updates.travel_how = updates.travelHow;
-        delete updates.travelHow;
-      }
-      if (updates.travelBudget !== undefined) {
-        updates.travel_budget = updates.travelBudget;
-        delete updates.travelBudget;
-      }
-      if (updates.travelGroup !== undefined) {
-        updates.travel_group = updates.travelGroup;
-        delete updates.travelGroup;
-      }
+      // Note: Travel intent fields are sent as camelCase and Drizzle handles snake_case mapping automatically
 
       // MAP BUSINESS FIELDS: Convert camelCase frontend fields to snake_case database fields
       if (updates.businessName !== undefined) {
