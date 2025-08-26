@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Clock, MapPin, Users, Search, Plus, MessageCircle, UserCheck, RotateCcw, Edit, Trash2, MoreHorizontal } from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useAuth } from '@/App';
 import { authStorage } from '@/lib/auth';
 import { QuickMeetupWidget } from '@/components/QuickMeetupWidget';
@@ -299,14 +300,35 @@ function QuickMeetupsPage() {
               {meetup.creator && (
                 <div className="flex items-center gap-1 ml-1">
                   <span>• by</span>
-                  {meetup.creator.profileImage && (
-                    <img 
-                      src={meetup.creator.profileImage} 
-                      alt={`${meetup.creator.username}'s avatar`}
-                      className="w-4 h-4 rounded-full object-cover border border-gray-300"
+                  <Avatar className="w-4 h-4 cursor-pointer hover:ring-2 hover:ring-orange-400 transition-all" 
+                          onClick={() => meetup.creator && (window.location.href = `/profile/${meetup.creator.id}`)}>
+                    <AvatarImage 
+                      src={meetup.creator.profileImage || ''} 
+                      alt={`${meetup.creator.username}'s profile`}
+                      className="object-cover" 
                     />
+                    <AvatarFallback className="text-[10px] bg-gradient-to-br from-blue-500 to-orange-500 text-white font-semibold">
+                      {(meetup.creator.username || meetup.creator.name || 'U').charAt(0).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span 
+                    className="cursor-pointer hover:text-orange-600 dark:hover:text-orange-400"
+                    onClick={() => meetup.creator && (window.location.href = `/profile/${meetup.creator.id}`)}
+                  >
+                    @{meetup.creator.username}
+                  </span>
+                  {meetup.creator.id !== actualUser?.id && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        window.location.href = `/chat/${meetup.creator.id}`;
+                      }}
+                      className="ml-1 p-0.5 rounded-full hover:bg-orange-100 dark:hover:bg-orange-900/30 transition-colors"
+                      title="Send message"
+                    >
+                      <MessageCircle className="w-3 h-3 text-orange-500" />
+                    </button>
                   )}
-                  <span>@{meetup.creator.username}</span>
                 </div>
               )}
             </div>

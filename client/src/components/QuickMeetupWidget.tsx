@@ -445,18 +445,40 @@ export function QuickMeetupWidget({ city, profileUserId }: { city?: string; prof
                     {/* Top row: avatar + author + countdown (wraps on small) */}
                     <div className="flex items-center justify-between gap-2 flex-wrap min-w-0">
                       <div className="flex items-center gap-2 min-w-0">
-                        <Avatar className="w-8 h-8 flex-shrink-0">
-                          <AvatarImage src={meetup.organizerProfileImage} className="object-cover" />
-                          <AvatarFallback className="text-xs bg-gradient-to-br from-blue-500 to-orange-500 text-white">
-                            {meetup.organizerUsername?.charAt(0)?.toUpperCase() || 'U'}
+                        <Avatar className="w-8 h-8 flex-shrink-0 cursor-pointer hover:ring-2 hover:ring-orange-400 transition-all" 
+                                onClick={() => !isOwn && meetup.organizerId && (window.location.href = `/profile/${meetup.organizerId}`)}>
+                          <AvatarImage 
+                            src={meetup.organizerProfileImage || ''} 
+                            alt={`${meetup.organizerUsername || 'User'}'s profile`}
+                            className="object-cover" 
+                          />
+                          <AvatarFallback className="text-xs bg-gradient-to-br from-blue-500 to-orange-500 text-white font-semibold">
+                            {(meetup.organizerUsername || meetup.organizerName || 'U').charAt(0).toUpperCase()}
                           </AvatarFallback>
                         </Avatar>
-                        <div className="min-w-0">
-                          <p className="text-xs font-medium text-gray-700 dark:text-gray-300 truncate">
-                            @{meetup.organizerUsername} {isOwn && '(you)'}
-                          </p>
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-1">
+                            <p 
+                              className={`text-xs font-medium text-gray-700 dark:text-gray-300 truncate ${!isOwn ? 'cursor-pointer hover:text-orange-600 dark:hover:text-orange-400' : ''}`}
+                              onClick={() => !isOwn && meetup.organizerId && (window.location.href = `/profile/${meetup.organizerId}`)}
+                            >
+                              @{meetup.organizerUsername || 'Unknown'} {isOwn && '(you)'}
+                            </p>
+                            {!isOwn && meetup.organizerId && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  window.location.href = `/chat/${meetup.organizerId}`;
+                                }}
+                                className="ml-1 p-1 rounded-full hover:bg-orange-100 dark:hover:bg-orange-900/30 transition-colors"
+                                title="Send message"
+                              >
+                                <MessageCircle className="w-3 h-3 text-orange-500" />
+                              </button>
+                            )}
+                          </div>
                           <p className="text-[11px] text-gray-500 dark:text-gray-400">
-                            Posted {new Date(meetup.createdAt).toLocaleDateString()}
+                            {meetup.organizerName && `${meetup.organizerName} • `}Posted {new Date(meetup.createdAt).toLocaleDateString()}
                           </p>
                         </div>
                       </div>
