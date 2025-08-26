@@ -1473,7 +1473,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           bio: user.bio || "",
           secretActivities: user.secretActivities || "",
           veteranStatus: user.veteranStatus || "",
-          ageOfChildren: user.ageOfChildren || "",
+          childrenAges: user.childrenAges || "",
           hometownCity: user.hometownCity || "",
           hometownState: user.hometownState || "",
           hometownCountry: user.hometownCountry || "",
@@ -8010,7 +8010,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   {/* Age of Children Field */}
                   <FormField
                     control={profileForm.control}
-                    name="ageOfChildren"
+                    name="childrenAges"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Age of Children (if applicable)</FormLabel>
@@ -8074,29 +8074,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       )}
                     />
 
-                    {/* Children Ages Field - Only show if traveling with children is checked */}
-                    {profileForm.watch('travelingWithChildren') && (
-                      <FormField
-                        control={profileForm.control}
-                        name="childrenAges"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Children's Ages</FormLabel>
-                            <FormControl>
-                              <Input
-                                placeholder="e.g., 3, 7, 12"
-                                {...field}
-                                className="dark:bg-gray-800 dark:border-gray-600 dark:text-white"
-                              />
-                            </FormControl>
-                            <FormDescription>
-                              Enter the ages of your children (separated by commas)
-                            </FormDescription>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    )}
                   </div>
                 </div>
               )}
