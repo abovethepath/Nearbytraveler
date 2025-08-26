@@ -3464,31 +3464,19 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       `${user.hometownCity}${user.hometownState ? `, ${user.hometownState}` : ''}` :
                       'Unknown';
                     
-                    // Check if user is currently in their hometown city
-                    const currentLocation = user.location || '';
-                    const isInHometown = user.hometownCity && currentLocation.toLowerCase().includes(user.hometownCity.toLowerCase());
-                    
-                    if (currentDestination && !isInHometown) {
-                      // When traveling away from home: USERNAME then NEARBY TRAVELER [DESTINATION]
-                      return (
-                        <>
-                          <h1 className="text-2xl sm:text-3xl font-bold text-black">@{user.username}</h1>
+                    return (
+                      <>
+                        <h1 className="text-2xl sm:text-3xl font-bold text-black">@{user.username}</h1>
+                        <div className="text-lg font-medium text-black">
+                          NEARBY LOCAL {hometown}
+                        </div>
+                        {currentDestination && (
                           <div className="text-lg font-medium text-black">
                             NEARBY TRAVELER {currentDestination}
                           </div>
-                        </>
-                      );
-                    } else {
-                      // When at home or no travel plans: USERNAME then NEARBY LOCAL [HOMETOWN CITY, STATE]
-                      return (
-                        <>
-                          <h1 className="text-2xl sm:text-3xl font-bold text-black">@{user.username}</h1>
-                          <div className="text-lg font-medium text-black">
-                            NEARBY LOCAL {hometown}
-                          </div>
-                        </>
-                      );
-                    }
+                        )}
+                      </>
+                    );
                   })()}
 
                   {/* Stats */}
