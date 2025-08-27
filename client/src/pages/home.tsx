@@ -43,6 +43,7 @@ import { SimpleAvatar } from "@/components/simple-avatar";
 
 import MessagesWidget from "@/components/MessagesWidget";
 import EventsWidget from "@/components/EventsWidget";
+import EventsGrid from "@/components/EventsGrid";
 import CurrentLocationWeatherWidget from "@/components/CurrentLocationWeatherWidget";
 import EnhancedDiscovery from "@/components/EnhancedDiscovery";
 
@@ -2612,142 +2613,14 @@ export default function Home() {
             )}
 
 
-            {/* Events Section - Enhanced with Location Details */}
-            <div className="bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50 dark:from-purple-900/20 dark:via-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6 border border-purple-100 dark:border-purple-800">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center">
-                  <Calendar className="w-5 h-5 mr-2 text-purple-600" />
-                  Events Near You
-                </h2>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setLocation('/events')}
-                  className="text-purple-600 border-purple-200 hover:bg-purple-50"
-                >
-                  View All Events
-                </Button>
-              </div>
-              
-              {events.length > 0 ? (
-                <div className="space-y-4">
-                  {events.slice(0, eventsDisplayCount).map((event: any) => (
-                    <Card 
-                      key={event.id}
-                      className="cursor-pointer hover:shadow-md transition-all duration-200 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-purple-100 dark:border-purple-800"
-                      onClick={() => setLocation(`/events/${event.id}`)}
-                    >
-                      <CardContent className="p-4">
-                        <div className="flex items-start gap-4">
-                          {/* Event Image */}
-                          {event.image && (
-                            <div className="w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden">
-                              <img 
-                                src={event.image} 
-                                alt={event.title}
-                                className="w-full h-full object-cover"
-                              />
-                            </div>
-                          )}
-                          
-                          {/* Event Details */}
-                          <div className="flex-1 min-w-0">
-                            <h3 className="font-semibold text-gray-900 dark:text-white mb-1 line-clamp-1">
-                              {event.title}
-                            </h3>
-                            
-                            {/* Date and Time */}
-                            <div className="flex items-center text-sm text-gray-600 dark:text-gray-400 mb-2">
-                              <Calendar className="w-4 h-4 mr-1" />
-                              {format(new Date(event.date), 'MMM dd, yyyy')}
-                              {event.time && (
-                                <span className="ml-2">• {event.time}</span>
-                              )}
-                            </div>
-                            
-                            {/* Location Details */}
-                            <div className="flex items-start text-sm text-gray-600 dark:text-gray-400 mb-2">
-                              <MapPin className="w-4 h-4 mr-1 mt-0.5 flex-shrink-0" />
-                              <div className="min-w-0">
-                                {/* Street Address */}
-                                {event.address && (
-                                  <div className="truncate">{event.address}</div>
-                                )}
-                                {/* City, State */}
-                                <div className="truncate">
-                                  {event.city && event.state ? `${event.city}, ${event.state}` : event.city || event.location}
-                                </div>
-                                {/* Venue Name if different from address */}
-                                {event.venue && event.venue !== event.address && (
-                                  <div className="text-xs text-gray-500 dark:text-gray-500 truncate">
-                                    at {event.venue}
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                            
-                            {/* Event Description */}
-                            {event.description && (
-                              <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2 mb-2">
-                                {event.description}
-                              </p>
-                            )}
-                            
-                            {/* Event Tags/Categories */}
-                            {event.category && (
-                              <div className="flex items-center gap-2">
-                                <Badge className="bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200 text-xs">
-                                  {event.category}
-                                </Badge>
-                                {event.price && (
-                                  <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 text-xs">
-                                    {event.price === 0 || event.price === '0' ? 'Free' : `$${event.price}`}
-                                  </Badge>
-                                )}
-                              </div>
-                            )}
-                          </div>
-                          
-                          {/* Action Button */}
-                          <div className="flex-shrink-0">
-                            <Button
-                              size="sm"
-                              className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setLocation(`/events/${event.id}`);
-                              }}
-                            >
-                              View Event
-                            </Button>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              ) : (
-                <Card className="p-8 text-center bg-white/50 dark:bg-gray-800/50">
-                  <Calendar className="w-12 h-12 mx-auto text-gray-400 mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No Events Found</h3>
-                  <p className="text-gray-600 dark:text-gray-400">
-                    Check back later for upcoming events in your area.
-                  </p>
-                </Card>
-              )}
-              
-              {/* Load More Events Button */}
-              {events.length > eventsDisplayCount && (
-                <div className="text-center mt-6">
-                  <Button
-                    variant="outline"
-                    onClick={() => setEventsDisplayCount(prev => prev + 3)}
-                    className="text-purple-600 border-purple-200 hover:bg-purple-50"
-                  >
-                    Load More Events ({events.length - eventsDisplayCount} remaining)
-                  </Button>
-                </div>
-              )}
+            {/* Events Section - Enhanced Grid Layout */}
+            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border shadow-sm">
+              <EventsGrid 
+                location={getCurrentUserLocation()}
+                limit={eventsDisplayCount}
+                showLocation={true}
+                className="events-grid-section"
+              />
             </div>
 
 

@@ -303,115 +303,132 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
             </h3>
           </div>
           
+          {/* Enhanced Location Display */}
           <div className="text-sm text-gray-600 dark:text-gray-300 mb-2">
             <div className="flex items-center gap-2">
               {(() => {
-                const today = new Date();
-                
-                // First, check if user has active travel plans using travel plans data
-                const activeTravelPlan = (userTravelPlans as TravelPlan[] || []).find((plan: TravelPlan) => {
-                  const startDate = parseLocalDate(plan.startDate);
-                  const endDate = parseLocalDate(plan.endDate);
-                  return startDate && endDate && today >= startDate && today <= endDate;
-                });
-                
-                if (activeTravelPlan) {
-                  const city = activeTravelPlan.destinationCity || activeTravelPlan.destination.split(',')[0];
-                  return (
-                    <>
-                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
-                        <span className="w-2 h-2 bg-green-500 rounded-full mr-1"></span>
-                        Traveling
-                      </span>
-                      <span className="text-green-700 dark:text-green-300 font-medium">
-                        📍 {city}
-                      </span>
-                    </>
-                  );
-                }
-                
-                // Check for future travel plans
-                const futureTravelPlan = (userTravelPlans as TravelPlan[] || []).find((plan: TravelPlan) => {
-                  const startDate = parseLocalDate(plan.startDate);
-                  return startDate && startDate > today;
-                });
-                
-                if (futureTravelPlan) {
-                  const startDate = parseLocalDate(futureTravelPlan.startDate);
-                  const options: Intl.DateTimeFormatOptions = { month: 'short', year: 'numeric' };
-                  const startMonth = startDate ? startDate.toLocaleDateString('en-US', options) : '';
-                  const city = futureTravelPlan.destinationCity || futureTravelPlan.destination.split(',')[0];
-                  return (
-                    <>
-                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">
-                        <span className="w-2 h-2 bg-blue-500 rounded-full mr-1"></span>
-                        Planning Trip
-                      </span>
-                      <span className="text-blue-700 dark:text-blue-300 font-medium">
-                        ✈️ {city} in {startMonth}
-                      </span>
-                    </>
-                  );
-                }
-                
-                // Fallback to checking user's direct travel fields
-                if (user.isCurrentlyTraveling && user.travelDestination) {
-                  const startDate = user.travelStartDate ? parseLocalDate(user.travelStartDate) : null;
-                  const endDate = user.travelEndDate ? parseLocalDate(user.travelEndDate) : null;
+                // Enhanced location display function
+                const getLocationDisplay = () => {
+                  // Priority 1: Use displayLocation if provided by parent component
+                  if (user.displayLocation) {
+                    return {
+                      text: user.displayLocation,
+                      isTravel: user.isCurrentlyTraveling
+                    };
+                  }
                   
-                  // Check if within travel dates
-                  if (startDate && endDate && today >= startDate && today <= endDate) {
-                    return (
+                  // Priority 2: Check if currently traveling with destination
+                  if (user.isCurrentlyTraveling && user.travelDestination) {
+                    return {
+                      text: user.travelDestination,
+                      isTravel: true
+                    };
+                  }
+                  
+                  // Priority 3: Check current travel plan
+                  if (user.currentTravelPlan?.destination) {
+                    return {
+                      text: user.currentTravelPlan.destination,
+                      isTravel: true
+                    };
+                  }
+                  
+                  // Priority 4: Check active travel plans from API
+                  const today = new Date();
+                  const activeTravelPlan = (userTravelPlans as TravelPlan[] || []).find((plan: TravelPlan) => {
+                    const startDate = parseLocalDate(plan.startDate);
+                    const endDate = parseLocalDate(plan.endDate);
+                    return startDate && endDate && today >= startDate && today <= endDate;
+                  });
+                  
+                  if (activeTravelPlan) {
+                    const destination = activeTravelPlan.destinationCity || activeTravelPlan.destination;
+                    return {
+                      text: destination,
+                      isTravel: true
+                    };
+                  }
+                  
+                  // Priority 5: Check if marked as traveling but no specific destination
+                  if (user.isCurrentlyTraveling) {
+                    return {
+                      text: "Currently Traveling",
+                      isTravel: true
+                    };
+                  }
+                  
+                  // Priority 6: Build hometown location
+                  const locationParts = [
+                    user.hometownCity,
+                    user.hometownState,
+                    user.hometownCountry
+                  ].filter(Boolean);
+                  
+                  if (locationParts.length > 0) {
+                    return {
+                      text: locationParts.join(', '),
+                      isTravel: false
+                    };
+                  }
+                  
+                  // Fallback: Use location field or default
+                  return {
+                    text: user.location || 'Location not specified',
+                    isTravel: false
+                  };
+                };
+
+                const locationInfo = getLocationDisplay();
+
+                return (
+                  <>
+                    {locationInfo.isTravel ? (
                       <>
                         <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
                           <span className="w-2 h-2 bg-green-500 rounded-full mr-1"></span>
                           Traveling
                         </span>
                         <span className="text-green-700 dark:text-green-300 font-medium">
-                          📍 {user.travelDestination}
+                          📍 {locationInfo.text}
                         </span>
                       </>
-                    );
-                  }
-                }
-                
-                // Show location based on user type and hometown
-                if (user.userType === 'business') {
-                  return (
-                    <>
-                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400">
-                        <span className="w-2 h-2 bg-purple-500 rounded-full mr-1"></span>
-                        Business
-                      </span>
-                      <span className="text-purple-900 dark:text-white font-medium">
-                        🏢 {user.hometownCity || 'Los Angeles'}
-                      </span>
-                    </>
-                  );
-                } else {
-                  // For locals and travelers not currently traveling, show their hometown
-                  return (
-                    <>
-                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300">
-                        <span className="w-2 h-2 bg-gray-500 rounded-full mr-1"></span>
-                        From
-                      </span>
-                      <span className="text-gray-900 dark:text-white font-medium">
-                        🏠 {(user.hometownCity || user.hometown || user.location || '').split(',')[0]}
-                        {userTravelPlans && userTravelPlans.length > 0 && getCurrentTravelDestination(userTravelPlans) && (
-                          <span className="text-blue-600 dark:text-blue-400 ml-2">
-                            → {getCurrentTravelDestination(userTravelPlans)}
-                          </span>
-                        )}
-                      </span>
-                      {compatibilityData && (compatibilityData.sharedInterests?.length > 0 || compatibilityData.sharedActivities?.length > 0 || compatibilityData.sharedEvents?.length > 0) && (
-                        <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full ml-2">
-                          {(compatibilityData.sharedInterests?.length || 0) + (compatibilityData.sharedActivities?.length || 0) + (compatibilityData.sharedEvents?.length || 0)} in common
+                    ) : user.userType === 'business' ? (
+                      <>
+                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400">
+                          <span className="w-2 h-2 bg-purple-500 rounded-full mr-1"></span>
+                          Business
                         </span>
-                      )}
-                    </>
-                  );
-                }
+                        <span className="text-purple-900 dark:text-white font-medium">
+                          🏢 {locationInfo.text}
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300">
+                          <span className="w-2 h-2 bg-gray-500 rounded-full mr-1"></span>
+                          From
+                        </span>
+                        <span className="text-gray-900 dark:text-white font-medium">
+                          🏠 {locationInfo.text}
+                        </span>
+                      </>
+                    )}
+                    
+                    {/* Travel Status Badge */}
+                    {locationInfo.isTravel && (
+                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 ml-2">
+                        ✈️ Traveling
+                      </span>
+                    )}
+                    
+                    {/* Things in Common Badge */}
+                    {compatibilityData && (compatibilityData.sharedInterests?.length > 0 || compatibilityData.sharedActivities?.length > 0 || compatibilityData.sharedEvents?.length > 0) && (
+                      <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full ml-2">
+                        {(compatibilityData.sharedInterests?.length || 0) + (compatibilityData.sharedActivities?.length || 0) + (compatibilityData.sharedEvents?.length || 0)} in common
+                      </span>
+                    )}
+                  </>
+                );
               })()}
             </div>
           </div>

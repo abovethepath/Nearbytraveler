@@ -1,0 +1,139 @@
+// In your UserCard component (components/user-card.tsx), update the location display:
+
+const UserCard = ({ user, currentUserId, showThingsInCommon, thingsInCommon, isCurrentUser }) => {
+  
+  // Enhanced location display function
+  const getLocationDisplay = () => {
+    // Priority 1: Use displayLocation if provided by parent component
+    if (user.displayLocation) {
+      return {
+        text: user.displayLocation,
+        isTravel: user.isCurrentlyTraveling
+      };
+    }
+    
+    // Priority 2: Check if currently traveling with destination
+    if (user.isCurrentlyTraveling && user.travelDestination) {
+      return {
+        text: user.travelDestination,
+        isTravel: true
+      };
+    }
+    
+    // Priority 3: Check current travel plan
+    if (user.currentTravelPlan?.destination) {
+      return {
+        text: user.currentTravelPlan.destination,
+        isTravel: true
+      };
+    }
+    
+    // Priority 4: Check if marked as traveling but no specific destination
+    if (user.isCurrentlyTraveling) {
+      return {
+        text: "Currently Traveling",
+        isTravel: true
+      };
+    }
+    
+    // Priority 5: Build hometown location
+    const locationParts = [
+      user.hometownCity,
+      user.hometownState,
+      user.hometownCountry
+    ].filter(Boolean);
+    
+    if (locationParts.length > 0) {
+      return {
+        text: locationParts.join(', '),
+        isTravel: false
+      };
+    }
+    
+    // Fallback: Use location field or default
+    return {
+      text: user.location || 'Location not specified',
+      isTravel: false
+    };
+  };
+
+  const locationInfo = getLocationDisplay();
+
+  return (
+    <Card className="user-card hover:shadow-lg transition-shadow">
+      <CardContent className="p-4">
+        {/* User Avatar and Basic Info */}
+        <div className="flex items-start gap-3 mb-3">
+          <SimpleAvatar 
+            user={user} 
+            size="md" 
+            className="flex-shrink-0"
+          />
+          
+          <div className="flex-1 min-w-0">
+            <h3 className="font-semibold truncate">
+              {user.username || 'Anonymous User'}
+            </h3>
+            
+            {/* Enhanced Location Display */}
+            <div className="flex items-center gap-1 text-sm text-gray-600 mb-1">
+              {locationInfo.isTravel ? (
+                <Plane className="h-4 w-4 text-blue-500" />
+              ) : (
+                <MapPin className="h-4 w-4" />
+              )}
+              <span className={locationInfo.isTravel ? "text-blue-600 font-medium" : ""}>
+                {locationInfo.text}
+              </span>
+            </div>
+            
+            {/* Travel Status Badge */}
+            {locationInfo.isTravel && (
+              <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-800 mb-2">
+                <Plane className="h-3 w-3 mr-1" />
+                Traveling
+              </Badge>
+            )}
+            
+            {/* Age and other info */}
+            {user.age && (
+              <p className="text-sm text-gray-500">
+                Age {user.age}
+              </p>
+            )}
+          </div>
+        </div>
+        
+        {/* Things in Common */}
+        {showThingsInCommon && thingsInCommon > 0 && (
+          <div className="flex items-center gap-1 mb-2">
+            <Users className="h-4 w-4 text-green-600" />
+            <span className="text-sm text-green-600 font-medium">
+              {thingsInCommon} things in common
+            </span>
+          </div>
+        )}
+        
+        {/* User Type Badge */}
+        {user.userType && (
+          <Badge variant="outline" className="text-xs mb-2">
+            {user.userType.charAt(0).toUpperCase() + user.userType.slice(1)}
+          </Badge>
+        )}
+        
+        {/* Action Buttons */}
+        <div className="flex gap-2 mt-3">
+          <Button size="sm" variant="outline" className="flex-1">
+            <MessageCircle className="h-4 w-4 mr-1" />
+            Message
+          </Button>
+          <Button size="sm" variant="outline">
+            <Users className="h-4 w-4" />
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
+export default UserCard;
