@@ -158,7 +158,7 @@ export function ContextualBusinessRecommendations({ userId, limit = 8 }: Context
             <span>📍 {data.context.location}</span>
             <span>🎯 {data.context.interests} interests</span>
             <span>⭐ Avg Score: {data.meta.averageScore}</span>
-            <span>{data.context.isTraverling ? '✈️ Traveling' : '🏠 Local'}</span>
+            <span>{data.context.isTraverling ? `✈️ ${data.context.travelDestination || 'Traveling'}` : '🏠 Local'}</span>
           </div>
         </div>
       </CardHeader>
