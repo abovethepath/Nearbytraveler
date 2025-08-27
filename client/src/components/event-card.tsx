@@ -154,50 +154,9 @@ export default function EventCard({ event, compact = false, featured = false }: 
               loading="lazy"
             />
 
-            {/* md+ pills below image (hotfix forces static positioning) */}
-            <div className="pills hidden md:flex px-4 pt-3 gap-2 flex-wrap">
-              {featured && (
-                <span className="chip bg-travel-blue text-white">
-                  Featured
-                </span>
-              )}
-              {event.category && (
-                <span className="chip bg-gray-900/80 text-white">
-                  {event.category}
-                </span>
-              )}
-              {event.isSpontaneous && (
-                <span className="chip bg-orange-500 text-white">
-                  ⚡ Last Minute
-                </span>
-              )}
-            </div>
           </div>
         )}
 
-        {/* MOBILE chips (not overlay) */}
-        <div className="pills md:hidden px-4 pt-3 flex flex-wrap gap-2">
-          {featured && (
-            <span className="chip bg-travel-blue text-white">
-              Featured
-            </span>
-          )}
-          {event.category && (
-            <span className="chip bg-gray-700 dark:bg-gray-600 text-white">
-              {event.category}
-            </span>
-          )}
-          {event.isSpontaneous && (
-            <span className="chip bg-orange-500 text-white">
-              ⚡ Last Minute
-            </span>
-          )}
-          {event.isRecurring && (
-            <span className="chip bg-purple-500 text-white">
-              🔄 Recurring
-            </span>
-          )}
-        </div>
 
         {/* Content */}
         <div className="p-4 md:p-5 space-y-3">
@@ -229,26 +188,6 @@ export default function EventCard({ event, compact = false, featured = false }: 
             </div>
           </div>
 
-          {/* Only show essential info badges */}
-          <div className="flex flex-wrap gap-2">
-            {event.costEstimate && (
-              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                💰 {event.costEstimate}
-              </span>
-            )}
-            
-            {event.urgency === 'urgent' && (
-              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
-                🚨 Urgent
-              </span>
-            )}
-            
-            {event.maxParticipants && (
-              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                👥 Max {event.maxParticipants}
-              </span>
-            )}
-          </div>
 
           {/* Actions */}
           <div className="flex gap-2 pt-2">
