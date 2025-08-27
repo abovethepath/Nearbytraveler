@@ -135,6 +135,7 @@ export default function Home() {
 
   // Helper function to display travel destinations exactly as entered by user
   const formatTravelDestination = (destination: string | null): string => {
+    console.log('🎯 formatTravelDestination called with:', destination);
     if (!destination) return "Traveling";
     
     // Simply return the destination as stored - no restrictions
@@ -2512,7 +2513,7 @@ export default function Home() {
                                 <div className="text-blue-600 dark:text-blue-400 truncate flex items-center">
                                   <Plane className="w-3 h-3 mr-1 flex-shrink-0" />
                                   <span className="truncate">
-                                    {getCurrentUserLocation()}
+                                    {formatTravelDestination(enrichedUser.travelDestination)}
                                   </span>
                                 </div>
                                 <div className="text-gray-500 dark:text-gray-400 truncate">
@@ -2622,7 +2623,7 @@ export default function Home() {
                                     <div className="text-blue-600 dark:text-blue-400 truncate flex items-center">
                                       <Plane className="w-3 h-3 mr-1 flex-shrink-0" />
                                       <span className="truncate">
-                                        {getCurrentUserLocation()}
+                                        {formatTravelDestination(enrichedUser.travelDestination)}
                                       </span>
                                     </div>
                                     <div className="text-gray-500 dark:text-gray-400 truncate">
