@@ -307,57 +307,25 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
           <div className="text-sm text-gray-600 dark:text-gray-300 mb-2">
             <div className="flex items-center gap-2">
               {(() => {
-                // Enhanced location display function
+                // EXACT SAME LOGIC AS WEATHER WIDGET - Determine user's current location
                 const getLocationDisplay = () => {
-                  // Priority 1: Use displayLocation if provided by parent component
-                  if (user.displayLocation) {
-                    return {
-                      text: user.displayLocation,
-                      isTravel: user.isCurrentlyTraveling
-                    };
+                  // Check if user is currently traveling using travel plans (EXACT same logic as weather widget)
+                  const currentDestination = getCurrentTravelDestination(userTravelPlans || []);
+                  if (currentDestination && user.hometownCity) {
+                    const travelDestination = currentDestination.toLowerCase();
+                    const hometown = user.hometownCity.toLowerCase();
+                    
+                    // Only show as traveler if destination is different from hometown
+                    if (!travelDestination.includes(hometown) && !hometown.includes(travelDestination)) {
+                      // User is traveling - show travel destination (same as weather widget)
+                      return {
+                        text: currentDestination,
+                        isTravel: true
+                      };
+                    }
                   }
                   
-                  // Priority 2: Check if currently traveling with destination
-                  if (user.isCurrentlyTraveling && user.travelDestination) {
-                    return {
-                      text: user.travelDestination,
-                      isTravel: true
-                    };
-                  }
-                  
-                  // Priority 3: Check current travel plan
-                  if (user.currentTravelPlan?.destination) {
-                    return {
-                      text: user.currentTravelPlan.destination,
-                      isTravel: true
-                    };
-                  }
-                  
-                  // Priority 4: Check active travel plans from API
-                  const today = new Date();
-                  const activeTravelPlan = (userTravelPlans as TravelPlan[] || []).find((plan: TravelPlan) => {
-                    const startDate = parseLocalDate(plan.startDate);
-                    const endDate = parseLocalDate(plan.endDate);
-                    return startDate && endDate && today >= startDate && today <= endDate;
-                  });
-                  
-                  if (activeTravelPlan) {
-                    const destination = activeTravelPlan.destinationCity || activeTravelPlan.destination;
-                    return {
-                      text: destination,
-                      isTravel: true
-                    };
-                  }
-                  
-                  // Priority 5: Check if marked as traveling but no specific destination
-                  if (user.isCurrentlyTraveling) {
-                    return {
-                      text: "Currently Traveling",
-                      isTravel: true
-                    };
-                  }
-                  
-                  // Priority 6: Build hometown location
+                  // User is at home - show hometown (same as weather widget)
                   const locationParts = [
                     user.hometownCity,
                     user.hometownState,
@@ -371,7 +339,7 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
                     };
                   }
                   
-                  // Fallback: Use location field or default
+                  // Fallback
                   return {
                     text: user.location || 'Location not specified',
                     isTravel: false
