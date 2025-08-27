@@ -45,26 +45,99 @@ export function PeopleDiscoveryWidget({
   const formatTravelDestination = (destination: string | null): string => {
     if (!destination) return "Traveling";
     
-    // Map major cities to proper "City, Country" format
-    const cityCountryMap: Record<string, string> = {
-      'Rome': 'Rome, Italy',
-      'Paris': 'Paris, France', 
-      'London': 'London, UK',
-      'Berlin': 'Berlin, Germany',
-      'Madrid': 'Madrid, Spain',
+    // Comprehensive international cities mapping
+    const internationalCities: Record<string, string> = {
       'Barcelona': 'Barcelona, Spain',
+      'Madrid': 'Madrid, Spain', 
+      'London': 'London, UK',
+      'Edinburgh': 'Edinburgh, UK',
+      'Paris': 'Paris, France',
+      'Rome': 'Rome, Italy',
       'Milan': 'Milan, Italy',
+      'Berlin': 'Berlin, Germany',
+      'Munich': 'Munich, Germany',
+      'Amsterdam': 'Amsterdam, Netherlands',
+      'Prague': 'Prague, Czech Republic',
+      'Vienna': 'Vienna, Austria',
+      'Lisbon': 'Lisbon, Portugal',
+      'Dublin': 'Dublin, Ireland',
+      'Stockholm': 'Stockholm, Sweden',
       'Tokyo': 'Tokyo, Japan',
+      'Seoul': 'Seoul, South Korea',
+      'Bangkok': 'Bangkok, Thailand',
+      'Singapore': 'Singapore',
+      'Hong Kong': 'Hong Kong',
+      'Sydney': 'Sydney, Australia',
+      'Melbourne': 'Melbourne, Australia',
+      'Toronto': 'Toronto, Canada',
+      'Vancouver': 'Vancouver, Canada',
+      'Mexico City': 'Mexico City, Mexico',
+      'São Paulo': 'São Paulo, Brazil',
+      'Buenos Aires': 'Buenos Aires, Argentina',
+      'Cairo': 'Cairo, Egypt',
+      'Cape Town': 'Cape Town, South Africa',
+      'Dubai': 'Dubai, UAE',
+      'Tel Aviv': 'Tel Aviv, Israel',
+      'Mumbai': 'Mumbai, India',
+      'Delhi': 'Delhi, India',
+      'Bangalore': 'Bangalore, India',
+      'Budapest': 'Budapest, Hungary',
+      'Cannes': 'Cannes, France',
+      'Zurich': 'Zurich, Switzerland',
+      'Geneva': 'Geneva, Switzerland',
+      'Brussels': 'Brussels, Belgium',
+      'Oslo': 'Oslo, Norway',
+      'Copenhagen': 'Copenhagen, Denmark',
+      'Helsinki': 'Helsinki, Finland',
+      'Warsaw': 'Warsaw, Poland',
+      'Krakow': 'Krakow, Poland',
+      'Athens': 'Athens, Greece',
+      'Istanbul': 'Istanbul, Turkey',
+      'Moscow': 'Moscow, Russia',
+      'St. Petersburg': 'St. Petersburg, Russia'
+    };
+    
+    // US cities mapping (simplified to just add USA)
+    const usCities: Record<string, string> = {
       'New York': 'New York, USA',
       'Los Angeles': 'Los Angeles, USA',
       'Chicago': 'Chicago, USA',
-      'Miami': 'Miami, USA',
+      'Houston': 'Houston, USA',
+      'Phoenix': 'Phoenix, USA',
+      'Philadelphia': 'Philadelphia, USA',
+      'San Antonio': 'San Antonio, USA',
+      'San Diego': 'San Diego, USA',
+      'Dallas': 'Dallas, USA',
+      'San Jose': 'San Jose, USA',
+      'Austin': 'Austin, USA',
+      'Jacksonville': 'Jacksonville, USA',
       'San Francisco': 'San Francisco, USA',
+      'Columbus': 'Columbus, USA',
+      'Charlotte': 'Charlotte, USA',
+      'Fort Worth': 'Fort Worth, USA',
+      'Indianapolis': 'Indianapolis, USA',
+      'Seattle': 'Seattle, USA',
+      'Denver': 'Denver, USA',
+      'Washington': 'Washington, USA',
       'Boston': 'Boston, USA',
-      'Denver': 'Denver, USA'
+      'Nashville': 'Nashville, USA',
+      'Miami': 'Miami, USA',
+      'Las Vegas': 'Las Vegas, USA',
+      'Portland': 'Portland, USA',
+      'Detroit': 'Detroit, USA',
+      'Memphis': 'Memphis, USA'
     };
     
-    return cityCountryMap[destination] || destination;
+    // Check international cities first, then US cities
+    if (internationalCities[destination]) {
+      return internationalCities[destination];
+    }
+    if (usCities[destination]) {
+      return usCities[destination];
+    }
+    
+    // If not in our list, return as-is (could already be formatted like "City, Country")
+    return destination;
   };
 
   // Debug current user ID
