@@ -2719,7 +2719,7 @@ export default function Home() {
                 className="events-grid-section"
                 userId={currentUserId}
                 travelDestination={effectiveUser?.travelDestination}
-                useDualLocation={!!effectiveUser?.isCurrentlyTraveling}
+                useDualLocation={false}
               />
             </div>
 
