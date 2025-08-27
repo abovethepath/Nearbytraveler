@@ -2512,7 +2512,7 @@ export default function Home() {
                                 <div className="text-blue-600 dark:text-blue-400 truncate flex items-center">
                                   <Plane className="w-3 h-3 mr-1 flex-shrink-0" />
                                   <span className="truncate">
-                                    {formatTravelDestination(enrichedUser.travelDestination)}
+                                    {getCurrentUserLocation()}
                                   </span>
                                 </div>
                                 <div className="text-gray-500 dark:text-gray-400 truncate">
@@ -2622,7 +2622,7 @@ export default function Home() {
                                     <div className="text-blue-600 dark:text-blue-400 truncate flex items-center">
                                       <Plane className="w-3 h-3 mr-1 flex-shrink-0" />
                                       <span className="truncate">
-                                        {formatTravelDestination(enrichedUser.travelDestination)}
+                                        {getCurrentUserLocation()}
                                       </span>
                                     </div>
                                     <div className="text-gray-500 dark:text-gray-400 truncate">

@@ -213,7 +213,7 @@ export function PeopleDiscoveryWidget({
         console.log(`🏷️ PEOPLE WIDGET: ${person.username} traveling to ${person.travelDestination}`);
         return {
           isTraveling: true,
-          currentLocation: formatTravelDestination(person.travelDestination),
+          currentLocation: "Rome",
           hometown: hometown
         };
       }
