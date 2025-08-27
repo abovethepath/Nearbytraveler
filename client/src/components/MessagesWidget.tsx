@@ -28,19 +28,19 @@ function MessagesWidget({ userId }: MessagesWidgetProps) {
 
   return (
     <Card 
-      className="bg-white dark:bg-gray-800 cursor-pointer hover:shadow-lg transition-shadow duration-300 border-gray-200 dark:border-gray-700"
+      className="bg-gradient-to-br from-blue-50 via-white to-orange-50 dark:from-blue-900/20 dark:via-gray-800 dark:to-orange-900/20 cursor-pointer hover:shadow-2xl transition-all duration-300 border-2 border-blue-200 dark:border-blue-600/30 hover:border-orange-300 dark:hover:border-orange-500/40"
       onClick={() => setLocation("/messages")}
     >
       <CardContent className="p-6">
         <div className="mb-4">
           <div className="flex items-center gap-2 mb-2">
-            <MessageCircle className="w-5 h-5 text-travel-blue" />
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Messages</h3>
+            <MessageCircle className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+            <h3 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">Messages</h3>
           </div>
           <Button 
             variant="outline" 
             size="sm" 
-            className="bg-blue-600 hover:bg-blue-700 text-white border-0 transition-colors"
+            className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white border-0 transition-all duration-300 shadow-md hover:shadow-lg font-semibold"
             onClick={(e) => {
               e.stopPropagation();
               setLocation("/requests");
@@ -63,14 +63,14 @@ function MessagesWidget({ userId }: MessagesWidgetProps) {
               <div
                 key={message.id || index} 
                 onClick={() => setLocation("/messages")}
-                className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg p-3 transition-all duration-200 border border-gray-100 dark:border-gray-600"
+                className="cursor-pointer hover:bg-gradient-to-r hover:from-blue-50 hover:to-orange-50 dark:hover:from-blue-900/30 dark:hover:to-orange-900/30 rounded-xl p-4 transition-all duration-300 border-2 border-blue-100 dark:border-blue-700/50 hover:border-orange-200 dark:hover:border-orange-600/50 hover:shadow-lg bg-gradient-to-r from-white via-blue-50/30 to-orange-50/30 dark:from-gray-800/50 dark:via-blue-900/10 dark:to-orange-900/10"
               >
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  <span className="text-sm font-bold text-blue-700 dark:text-blue-300">
                     {isFromMe ? `To: ${otherUser?.username || "Unknown"}` : `From: ${otherUser?.username || "Unknown"}`}
                   </span>
                   {message.createdAt && (
-                    <span className="text-xs text-gray-400 dark:text-gray-500">
+                    <span className="text-xs font-medium text-orange-600 dark:text-orange-400">
                       {new Date(message.createdAt).toLocaleDateString('en-US', { 
                         month: 'short', 
                         day: 'numeric',
@@ -80,7 +80,7 @@ function MessagesWidget({ userId }: MessagesWidgetProps) {
                     </span>
                   )}
                 </div>
-                <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
+                <p className="text-sm text-gray-800 dark:text-gray-200 line-clamp-2 font-medium">
                   {message.content && message.content.length > 100 
                     ? `${message.content.substring(0, 100)}...` 
                     : message.content}
@@ -90,12 +90,12 @@ function MessagesWidget({ userId }: MessagesWidgetProps) {
             })}
           {messages.filter(message => message.senderId !== message.receiverId).length === 0 && (
             <div className="text-center py-4">
-              <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">No recent messages</p>
+              <p className="text-sm text-gray-600 dark:text-gray-300 mb-3 font-medium">No recent messages</p>
               <Button 
                 variant="outline" 
                 size="sm"
                 onClick={() => setLocation("/messages")}
-                className="bg-orange-600 hover:bg-orange-700 text-white border-0"
+                className="bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white border-0 shadow-md hover:shadow-lg font-semibold transition-all duration-300"
               >
                 Start Chatting
               </Button>
