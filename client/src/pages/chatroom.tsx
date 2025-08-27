@@ -39,6 +39,15 @@ export default function ChatroomPage() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [messageText, setMessageText] = useState("");
   
+  // Redirect invalid chatroom IDs to a valid LA Metro chatroom
+  useEffect(() => {
+    if (chatroomId === 200 || chatroomId === 201 || chatroomId === 202) {
+      // These IDs don't exist, redirect to valid LA Metro chatroom
+      window.location.href = '/chatroom/198'; // Let's Meet Up Los Angeles Metro
+      return;
+    }
+  }, [chatroomId]);
+  
   // Get current user with fallback
   const getCurrentUser = () => {
     try {
