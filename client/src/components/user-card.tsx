@@ -357,36 +357,22 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
                   <>
                     {locationInfo.isTravel ? (
                       <div className="flex items-center text-blue-600 dark:text-blue-400">
-                        ✈️
-                        <span className="ml-1 font-medium">{locationInfo.text}</span>
+                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">
+                          ✈️ {locationInfo.text}
+                        </span>
                       </div>
                     ) : user.userType === 'business' ? (
                       <>
                         <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400">
-                          <span className="w-2 h-2 bg-purple-500 rounded-full mr-1"></span>
-                          Business
-                        </span>
-                        <span className="text-purple-900 dark:text-white font-medium">
                           🏢 {locationInfo.text}
                         </span>
                       </>
                     ) : (
                       <>
                         <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300">
-                          <span className="w-2 h-2 bg-gray-500 rounded-full mr-1"></span>
-                          From
-                        </span>
-                        <span className="text-gray-900 dark:text-white font-medium">
                           🏠 {locationInfo.text}
                         </span>
                       </>
-                    )}
-                    
-                    {/* Travel Status Badge */}
-                    {locationInfo.isTravel && (
-                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 ml-2">
-                        ✈️ Traveling
-                      </span>
                     )}
                     
                     {/* Things in Common Badge */}
