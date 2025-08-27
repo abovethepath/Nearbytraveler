@@ -157,34 +157,36 @@ function getRandomFutureDate(): string {
 }
 
 function getFallbackEvents(cityName: string, state?: string, country?: string): CityEvent[] {
-  // Fallback events if AI fails
+  // Fallback events if AI fails - handle undefined/null city names
+  const safeCityName = cityName && cityName !== 'undefined' && cityName !== 'null' ? cityName : 'Local';
+  
   return [
     {
-      title: `${cityName} Community Meetup`,
-      description: `Join locals for a community gathering in ${cityName}`,
-      location: `${cityName} Community Center`,
+      title: `${safeCityName} Community Meetup`,
+      description: `Join locals for a community gathering in ${safeCityName}`,
+      location: `${safeCityName} Community Center`,
       category: 'Community & Social',
       date: getRandomFutureDate(),
       price: 10,
-      city: cityName,
+      city: safeCityName,
       state: state || '',
       country: country || '',
       maxParticipants: 30,
-      tags: [cityName.toLowerCase(), 'community'],
+      tags: [safeCityName.toLowerCase(), 'community'],
       isPublic: true
     },
     {
-      title: `${cityName} Local Food Tour`,
-      description: `Discover the best local cuisine ${cityName} has to offer`,
-      location: `Downtown ${cityName}`,
+      title: `${safeCityName} Local Food Tour`,
+      description: `Discover the best local cuisine ${safeCityName} has to offer`,
+      location: `Downtown ${safeCityName}`,
       category: 'Food & Dining',
       date: getRandomFutureDate(),
       price: 35,
-      city: cityName,
+      city: safeCityName,
       state: state || '',
       country: country || '',
       maxParticipants: 20,
-      tags: [cityName.toLowerCase(), 'food', 'local'],
+      tags: [safeCityName.toLowerCase(), 'food', 'local'],
       isPublic: true
     }
   ];

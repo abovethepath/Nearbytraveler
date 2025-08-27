@@ -232,9 +232,18 @@ const EventsGrid = ({
                 {/* Action Button - Like business "View Business" */}
                 <Button 
                   className="w-full bg-orange-600 hover:bg-orange-700 text-white font-medium py-2"
-                  onClick={() => setNavigationLocation(`/events/${event.id}`)}
+                  onClick={() => {
+                    // Check if it's an external event (has eventUrl)
+                    if (event.eventUrl && event.eventUrl.startsWith('http')) {
+                      // Open external event directly
+                      window.open(event.eventUrl, '_blank');
+                    } else {
+                      // Navigate to internal event details
+                      setNavigationLocation(`/events/${event.id}`);
+                    }
+                  }}
                 >
-                  View Event
+                  {event.eventUrl && event.eventUrl.startsWith('http') ? 'View on External Site' : 'View Event'}
                 </Button>
               </CardContent>
             </Card>
