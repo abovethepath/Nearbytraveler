@@ -2827,10 +2827,16 @@ export default function Home() {
                       
                       <CardContent className="p-4 flex-1 flex flex-col">
                         {/* Business Name and Location */}
-                        <div className="flex items-start justify-between mb-2">
-                          <h3 className="font-bold text-lg text-gray-900 dark:text-white line-clamp-1 pr-2" data-testid={`business-name-${deal.businessId}`}>
+                        <div className="mb-2">
+                          <h3 className="font-bold text-lg text-gray-900 dark:text-white line-clamp-1" data-testid={`business-name-${deal.businessId}`}>
                             {deal.businessName || 'Business Name'}
                           </h3>
+                          {deal.businessLocation && (
+                            <div className="flex items-center gap-1 text-gray-500 dark:text-gray-400 text-sm mt-1">
+                              <MapPin className="h-3 w-3 flex-shrink-0" />
+                              <span>{deal.businessLocation.split(',')[0]}</span>
+                            </div>
+                          )}
                         </div>
                         
                         {/* Business Description/Bio */}
@@ -2854,7 +2860,7 @@ export default function Home() {
                                 <Badge className="bg-orange-600 text-white text-xs">
                                   {deal.discountType === 'percentage' ? `${deal.discountValue}% OFF` : 
                                    deal.discountType === 'fixed' ? `$${deal.discountValue} OFF` : 
-                                   `${deal.discountValue}`}
+                                   deal.discountValue}
                                 </Badge>
                               </div>
                             )}
