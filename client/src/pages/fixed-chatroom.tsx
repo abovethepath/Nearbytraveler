@@ -44,17 +44,11 @@ export default function FixedChatroom() {
   const [isSending, setIsSending] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [debugInfo, setDebugInfo] = useState<string[]>([]);
   
   // Get chatroom ID from URL
   const pathSegments = window.location.pathname.split('/');
   const chatroomId = parseInt(pathSegments[2] || '198');
   
-  // Debug logging function - MEMOIZED to prevent re-render loops
-  const addDebug = useCallback((message: string) => {
-    console.log(message);
-    setDebugInfo(prev => [...prev.slice(-4), `${new Date().toLocaleTimeString()}: ${message}`]);
-  }, []);
   
   // Get current user - MEMOIZED to prevent infinite re-renders
   const getCurrentUser = useCallback(() => {
@@ -121,9 +115,6 @@ export default function FixedChatroom() {
       }
     ];
     
-    addDebug(`🌐 Attempting API call: ${url}`);
-    addDebug(`📝 User ID: ${currentUserId}`);
-    addDebug(`📦 Method: ${options.method || 'GET'}`);
     
     let lastError: any;
     
@@ -132,7 +123,6 @@ export default function FixedChatroom() {
       const headers = headerVariations[i];
       
       try {
-        addDebug(`🔄 Attempt ${i + 1} with headers: ${Object.keys(headers).join(', ')}`);
         
         const response = await fetch(url, {
           ...options,
@@ -140,11 +130,9 @@ export default function FixedChatroom() {
           credentials: 'include'
         });
         
-        addDebug(`📡 Response: ${response.status} ${response.statusText}`);
         
         if (!response.ok) {
           const errorText = await response.text();
-          addDebug(`❌ Response error: ${errorText}`);
           lastError = new Error(`${response.status}: ${errorText}`);
           
           // If it's a 401/403, try next header variation
@@ -155,12 +143,10 @@ export default function FixedChatroom() {
         }
         
         const data = await response.json();
-        addDebug(`✅ Success with attempt ${i + 1}`);
-        addDebug(`📊 Data received: ${JSON.stringify(data).substring(0, 100)}...`);
         return data;
         
       } catch (fetchError: any) {
-        addDebug(`⚠️ Attempt ${i + 1} failed: ${fetchError.message}`);
+        (`⚠️ Attempt ${i + 1} failed: ${fetchError.message}`);
         lastError = fetchError;
       }
     }
@@ -172,7 +158,7 @@ export default function FixedChatroom() {
   // Load chatroom details
   const loadChatroomDetails = async () => {
     try {
-      addDebug('📋 Loading chatroom details...');
+      ('📋 Loading chatroom details...');
       const chatroomResponse = await apiRequest(`/api/chatrooms/${chatroomId}`);
       
       let chatroomData;
@@ -184,11 +170,11 @@ export default function FixedChatroom() {
         chatroomData = chatroomResponse;
       }
       
-      addDebug(`✅ Chatroom loaded: ${chatroomData.name}`);
+      (`✅ Chatroom loaded: ${chatroomData.name}`);
       setChatroom(chatroomData);
       return chatroomData;
     } catch (error: any) {
-      addDebug(`❌ Failed to load chatroom: ${error.message}`);
+      (`❌ Failed to load chatroom: ${error.message}`);
       throw error;
     }
   };
@@ -196,7 +182,7 @@ export default function FixedChatroom() {
   // Load members
   const loadMembers = async () => {
     try {
-      addDebug('👥 Loading members...');
+      ('👥 Loading members...');
       const membersResponse = await apiRequest(`/api/chatrooms/${chatroomId}/members`);
       
       let membersData = [];
@@ -208,11 +194,11 @@ export default function FixedChatroom() {
         membersData = membersResponse.data;
       }
       
-      addDebug(`✅ Members loaded: ${membersData.length} people`);
+      (`✅ Members loaded: ${membersData.length} people`);
       setMembers(membersData);
       return membersData;
     } catch (error: any) {
-      addDebug(`❌ Failed to load members: ${error.message}`);
+      (`❌ Failed to load members: ${error.message}`);
       setMembers([]);
       return [];
     }
@@ -221,7 +207,7 @@ export default function FixedChatroom() {
   // Load messages
   const loadMessages = async () => {
     try {
-      addDebug('💬 Loading messages...');
+      ('💬 Loading messages...');
       const messagesResponse = await apiRequest(`/api/chatrooms/${chatroomId}/messages`);
       
       let messagesData = [];
@@ -233,11 +219,11 @@ export default function FixedChatroom() {
         messagesData = messagesResponse.data;
       }
       
-      addDebug(`✅ Messages loaded: ${messagesData.length} messages`);
+      (`✅ Messages loaded: ${messagesData.length} messages`);
       setMessages(messagesData);
       return messagesData;
     } catch (error: any) {
-      addDebug(`❌ Failed to load messages: ${error.message}`);
+      (`❌ Failed to load messages: ${error.message}`);
       setMessages([]);
       return [];
     }
@@ -246,7 +232,7 @@ export default function FixedChatroom() {
   // Load all data
   const loadAllData = async () => {
     if (!currentUserId) {
-      addDebug('❌ Cannot load data - no user ID');
+      ('❌ Cannot load data - no user ID');
       setError('Please log in to access the chatroom');
       setLoading(false);
       return;
@@ -255,20 +241,20 @@ export default function FixedChatroom() {
     try {
       setLoading(true);
       setError(null);
-      addDebug(`🔄 Loading all data for chatroom ${chatroomId}`);
+      (`🔄 Loading all data for chatroom ${chatroomId}`);
       
       await loadChatroomDetails();
       const membersData = await loadMembers();
       
       const isMember = membersData.some((m: ChatMember) => m.user_id === currentUserId);
-      addDebug(`🔍 User membership status: ${isMember ? 'MEMBER' : 'NOT MEMBER'}`);
+      (`🔍 User membership status: ${isMember ? 'MEMBER' : 'NOT MEMBER'}`);
       
       if (isMember) {
         await loadMessages();
       }
       
     } catch (error: any) {
-      addDebug(`❌ Error loading data: ${error.message}`);
+      (`❌ Error loading data: ${error.message}`);
       setError(`Failed to load chatroom: ${error.message}`);
     } finally {
       setLoading(false);
@@ -278,7 +264,7 @@ export default function FixedChatroom() {
   // JOIN CHATROOM - SIMPLIFIED (no more countdown BS)
   const joinChatroom = async () => {
     if (!currentUserId || isJoining) {
-      addDebug('⚠️ Join blocked - missing user ID or already joining');
+      ('⚠️ Join blocked - missing user ID or already joining');
       return;
     }
     
@@ -286,7 +272,7 @@ export default function FixedChatroom() {
     setError(null);
     
     try {
-      addDebug(`🚪 Joining chatroom ${chatroomId}...`);
+      (`🚪 Joining chatroom ${chatroomId}...`);
       
       // Try the most common join endpoint
       await apiRequest(`/api/chatrooms/${chatroomId}/join`, { 
@@ -294,7 +280,7 @@ export default function FixedChatroom() {
         body: JSON.stringify({})
       });
       
-      addDebug('✅ Join successful! Reloading data...');
+      ('✅ Join successful! Reloading data...');
       
       // Just reload data - no verification countdown
       setTimeout(async () => {
@@ -303,7 +289,7 @@ export default function FixedChatroom() {
       }, 1000);
       
     } catch (error: any) {
-      addDebug(`❌ Join failed: ${error.message}`);
+      (`❌ Join failed: ${error.message}`);
       setError(`Failed to join: ${error.message}`);
     } finally {
       setIsJoining(false);
@@ -318,16 +304,16 @@ export default function FixedChatroom() {
     setError(null);
     
     try {
-      addDebug(`🚪 Leaving chatroom ${chatroomId}...`);
+      (`🚪 Leaving chatroom ${chatroomId}...`);
       await apiRequest(`/api/chatrooms/${chatroomId}/leave`, { method: 'POST' });
       
-      addDebug('✅ Successfully left chatroom');
+      ('✅ Successfully left chatroom');
       setTimeout(() => {
         window.location.href = '/city-chatrooms';
       }, 1000);
       
     } catch (error: any) {
-      addDebug(`❌ Failed to leave: ${error.message}`);
+      (`❌ Failed to leave: ${error.message}`);
       setError(`Failed to leave chatroom: ${error.message}`);
     } finally {
       setIsLeaving(false);
@@ -342,7 +328,7 @@ export default function FixedChatroom() {
     setError(null);
     
     try {
-      addDebug(`💬 Sending message: "${messageText.substring(0, 50)}..."`);
+      (`💬 Sending message: "${messageText.substring(0, 50)}..."`);
       
       // Try multiple endpoints and methods for sending messages
       const messageAttempts = [
@@ -372,7 +358,7 @@ export default function FixedChatroom() {
         if (messageSuccessful) break;
         
         try {
-          addDebug(`🔄 Trying: ${attempt.method} ${attempt.url}`);
+          (`🔄 Trying: ${attempt.method} ${attempt.url}`);
           
           const response = await fetch(attempt.url, {
             method: attempt.method,
@@ -386,19 +372,19 @@ export default function FixedChatroom() {
             credentials: 'include'
           });
           
-          addDebug(`📡 Response: ${response.status} ${response.statusText}`);
+          (`📡 Response: ${response.status} ${response.statusText}`);
           
           // Check if response is HTML (error page) vs JSON
           const contentType = response.headers.get('content-type');
           if (contentType && contentType.includes('text/html')) {
             const htmlError = await response.text();
-            addDebug(`❌ Got HTML instead of JSON: ${htmlError.substring(0, 100)}...`);
+            (`❌ Got HTML instead of JSON: ${htmlError.substring(0, 100)}...`);
             throw new Error(`Server returned HTML error page (${response.status})`);
           }
           
           if (!response.ok) {
             const errorText = await response.text();
-            addDebug(`❌ API Error: ${errorText}`);
+            (`❌ API Error: ${errorText}`);
             throw new Error(`${response.status}: ${errorText}`);
           }
           
@@ -413,17 +399,17 @@ export default function FixedChatroom() {
               data = JSON.parse(responseText);
             }
           } catch (parseError: any) {
-            addDebug(`❌ JSON parse error: ${parseError.message}`);
+            (`❌ JSON parse error: ${parseError.message}`);
             // If we get here, the API might return non-JSON success responses
             data = { success: true };
           }
           
-          addDebug('✅ Message sent successfully!');
+          ('✅ Message sent successfully!');
           messageSuccessful = true;
           break;
           
         } catch (error: any) {
-          addDebug(`⚠️ ${attempt.url} failed: ${error.message}`);
+          (`⚠️ ${attempt.url} failed: ${error.message}`);
           lastError = error;
         }
       }
@@ -440,7 +426,7 @@ export default function FixedChatroom() {
       }, 1000);
       
     } catch (error: any) {
-      addDebug(`❌ Failed to send message: ${error.message}`);
+      (`❌ Failed to send message: ${error.message}`);
       setError(`Failed to send message: ${error.message}`);
     } finally {
       setIsSending(false);
@@ -449,7 +435,7 @@ export default function FixedChatroom() {
   
   // Load data on mount
   useEffect(() => {
-    addDebug('🚀 Component mounted, loading data...');
+    ('🚀 Component mounted, loading data...');
     loadAllData();
   }, [chatroomId, currentUserId]);
   
@@ -579,32 +565,7 @@ export default function FixedChatroom() {
             <div><strong>Members Count:</strong> {members.length}</div>
           </div>
           
-          {/* Quick Actions */}
-          <div className="flex items-center space-x-2 mb-3">
-            <Button onClick={loadAllData} size="sm" variant="outline" className="text-xs">
-              🔄 Force Refresh All Data
-            </Button>
-            <Button onClick={loadMembers} size="sm" variant="outline" className="text-xs">
-              👥 Reload Members Only
-            </Button>
-            <Button onClick={() => console.log('Endpoint testing disabled')} size="sm" className="text-xs bg-orange-600 hover:bg-orange-700 text-white">
-              🔍 Test API Endpoints
-            </Button>
-            <Button onClick={() => window.location.reload()} size="sm" variant="outline" className="text-xs">
-              🌐 Refresh Entire Page
-            </Button>
-          </div>
           
-          <details className="mt-2">
-            <summary className="cursor-pointer text-blue-700 dark:text-blue-300 font-medium hover:underline">
-              📊 Debug Logs ({debugInfo.length} entries)
-            </summary>
-            <div className="mt-2 p-3 bg-white dark:bg-gray-800 rounded border max-h-32 overflow-y-auto text-xs font-mono">
-              {debugInfo.map((debug, i) => (
-                <div key={i} className="mb-1 text-gray-700 dark:text-gray-300">{debug}</div>
-              ))}
-            </div>
-          </details>
         </div>
         
         {/* Error Display */}
