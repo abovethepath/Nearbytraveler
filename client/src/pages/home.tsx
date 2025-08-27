@@ -161,6 +161,7 @@ export default function Home() {
       if (userCompatibility.sameFamilyStatus) total += 1;
       if (userCompatibility.sameAge) total += 1;
       if (userCompatibility.sameGender) total += 1;
+      if (userCompatibility.travelIntentCompatibility) total += 1;
       
       return total;
     }

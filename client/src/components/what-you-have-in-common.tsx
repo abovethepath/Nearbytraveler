@@ -520,7 +520,11 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
                   (matchData.bothActiveDuty ? 1 : 0) +
                   (matchData.locationOverlap ? 1 : 0) +
                   (matchData.dateOverlap ? 1 : 0) +
-                  (matchData.userTypeCompatibility ? 1 : 0)
+                  (matchData.userTypeCompatibility ? 1 : 0) +
+                  (matchData.travelIntentCompatibility ? 1 : 0) +
+                  (matchData.sameGender ? 1 : 0) +
+                  (matchData.sameAge ? 1 : 0) +
+                  (matchData.sameFamilyStatus ? 1 : 0)
                 ) : commonalities.totalCount} Things
               </span>
             </Badge>
