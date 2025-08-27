@@ -17,6 +17,10 @@ interface PersonCard {
   userType: "traveler" | "local" | "business";
   isOnline?: boolean;
   currentUserId?: number;
+  // Travel data passed from home page enrichment
+  isCurrentlyTraveling?: boolean;
+  travelDestination?: string;
+  travelPlans?: any[];
 }
 
 interface PeopleDiscoveryWidgetProps {
@@ -71,19 +75,9 @@ export function PeopleDiscoveryWidget({
       return () => clearTimeout(timer);
     }, []);
 
-    // Fetch travel plans for this person to show travel destination
-    const { data: travelPlans, isLoading: travelPlansLoading } = useQuery({
-      queryKey: [`/api/travel-plans/user/${person.id}`],
-      enabled: !!person.id && !isLoading,
-      staleTime: Infinity,
-      gcTime: Infinity,
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
-      refetchInterval: false,
-      refetchIntervalInBackground: false,
-      refetchOnReconnect: false,
-      retry: false
-    });
+    // Use travel plans from home page enrichment instead of fetching
+    const travelPlans = person.travelPlans;
+    const travelPlansLoading = false;
 
     // Fetch user data to get countries visited and references count
     const { data: userData, isLoading: userDataLoading } = useQuery<User>({
@@ -213,20 +207,15 @@ export function PeopleDiscoveryWidget({
     // ALWAYS show both hometown AND current location - NEVER hide travel info
     const getCurrentLocation = () => {
       const hometown = person.location?.split(',')[0] || 'Hometown';
-      const activeTravelPlan = travelPlans && Array.isArray(travelPlans) ? 
-        (travelPlans as any).find((plan: any) => plan.status === 'active') : null;
       
-      if (activeTravelPlan) {
-        const travelDestination = activeTravelPlan.destination || activeTravelPlan.destinationCity;
-        
-        // ALWAYS show travel info when someone has an active travel plan
-        if (travelDestination) {
-          return {
-            isTraveling: true,
-            currentLocation: formatTravelDestination(travelDestination),
-            hometown: hometown
-          };
-        }
+      // Use enriched travel data from home page instead of fetching our own
+      if (person.isCurrentlyTraveling && person.travelDestination) {
+        console.log(`🏷️ PEOPLE WIDGET: ${person.username} traveling to ${person.travelDestination}`);
+        return {
+          isTraveling: true,
+          currentLocation: formatTravelDestination(person.travelDestination),
+          hometown: hometown
+        };
       }
       
       return {

@@ -2560,6 +2560,10 @@ export default function Home() {
                               distance: user.hometownCity && user.hometownState ? `${user.hometownCity}, ${user.hometownState}` : user.location || "New member",
                               commonInterests: [],
                               userType: user.userType as "traveler" | "local" | "business",
+                              // Pass enriched travel data from home page
+                              isCurrentlyTraveling: user.isCurrentlyTraveling,
+                              travelDestination: user.travelDestination,
+                              travelPlans: user.travelPlans // Pass the full travel plans data
                             };
                           })}
                           title="Nearby Travelers"
@@ -2574,6 +2578,8 @@ export default function Home() {
                           // Users are already enriched at query level - no need to re-enrich
                           const thingsInCommon = getThingsInCommon(enrichedUser);
                           const isCurrentlyTraveling = enrichedUser.isCurrentlyTraveling || enrichedUser.travelDestination;
+                          
+                          // Users are already enriched - ready for display
                           
                           return (
                             <button
