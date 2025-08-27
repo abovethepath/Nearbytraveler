@@ -249,7 +249,24 @@ export default function Home() {
   const getSortedUsers = (users: any[]) => {
     if (!users) return [];
 
-    return [...users].sort((a, b) => {
+    // Enrich users with travel destination data, especially the current user
+    const enrichedUsers = [...users].map(user => {
+      const currentUserId = effectiveUser?.id || currentUserProfile?.id;
+      
+      // If this is the current user, add travel destination from effectiveUser
+      if (user.id === currentUserId && effectiveUser) {
+        return {
+          ...user,
+          isCurrentlyTraveling: effectiveUser.isCurrentlyTraveling,
+          travelDestination: effectiveUser.travelDestination,
+          currentTravelPlan: effectiveUser.currentTravelPlan
+        };
+      }
+      
+      return user;
+    });
+
+    return enrichedUsers.sort((a, b) => {
       // Always put the current user first
       const currentUserId = user?.id || currentUserProfile?.id || effectiveUser?.id;
       if (a.id === currentUserId) return -1;
