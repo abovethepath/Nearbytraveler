@@ -921,14 +921,9 @@ export default function ConnectModal({ isOpen, onClose, userTravelPlans: propTra
                             <div className="flex-1">
                               <h4 className="text-xl font-bold group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors text-gray-900 dark:text-white mb-2">{user.username}</h4>
                               <p className="text-base text-gray-700 dark:text-gray-300 mb-3 leading-relaxed">{user.bio}</p>
-                              <div className="flex items-center gap-3 text-sm">
-                                <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-                                  <MapPin className="w-4 h-4" />
-                                  <span className="font-medium">{user.location}</span>
-                                </div>
-                                <Badge variant="secondary" className="bg-gradient-to-r from-blue-100 to-orange-100 text-blue-800 dark:from-blue-800 dark:to-orange-800 dark:text-blue-100 border-0 font-semibold px-3 py-1">
-                                  {getDisplayUserType(user, searchLocation)}
-                                </Badge>
+                              <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                                <MapPin className="w-4 h-4" />
+                                <span className="font-medium">{user.location}</span>
                               </div>
                             </div>
                           </div>
