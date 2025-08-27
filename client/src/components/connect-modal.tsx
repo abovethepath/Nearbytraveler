@@ -454,7 +454,7 @@ export default function ConnectModal({ isOpen, onClose, userTravelPlans: propTra
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[999999] flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={onClose}>
+    <div className="fixed inset-0 z-[999999] flex items-center justify-center bg-black backdrop-blur-sm" onClick={onClose}>
       <div 
         className="bg-gradient-to-br from-white via-blue-50 to-orange-50 dark:from-gray-800 dark:via-blue-900/20 dark:to-orange-900/20 rounded-2xl shadow-2xl max-w-5xl w-full max-h-[90vh] overflow-y-auto m-4 border border-blue-200/20 dark:border-blue-600/20"
         onClick={(e) => e.stopPropagation()}
