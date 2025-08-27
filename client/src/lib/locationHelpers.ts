@@ -414,12 +414,13 @@ export function formatLocationDisplay(location: LocationData): string {
 export function validateLocationForCountry(location: LocationData): { isValid: boolean; message?: string } {
   const { city, state, country } = location;
   
-  if (!city || !country) {
-    return { isValid: false, message: "City and Country are required" };
+  // For search functionality, allow empty fields - users can search without location
+  if (!city && !country && !state) {
+    return { isValid: true }; // All empty is valid for search
   }
   
-  // US requires state
-  if (country === "United States" && !state) {
+  // If country is provided, validate accordingly
+  if (country === "United States" && city && !state) {
     return { isValid: false, message: "State is required for US locations" };
   }
   
