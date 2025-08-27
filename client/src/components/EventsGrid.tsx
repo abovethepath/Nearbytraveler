@@ -84,9 +84,23 @@ const EventsGrid = ({
   });
 
   const allEvents = events.length > 0 ? events : fetchedEvents;
+  
+  // SORT: User-created events ALWAYS appear first, then external events
+  const sortedEvents = [...allEvents].sort((a, b) => {
+    // User-created events (no eventUrl or empty eventUrl) come first
+    const aIsUserCreated = !a.eventUrl || a.eventUrl === '';
+    const bIsUserCreated = !b.eventUrl || b.eventUrl === '';
+    
+    if (aIsUserCreated && !bIsUserCreated) return -1; // a comes first
+    if (!aIsUserCreated && bIsUserCreated) return 1;  // b comes first
+    
+    // If both are same type, maintain original order
+    return 0;
+  });
+  
   // Always use internal display count for load more functionality
   const currentDisplayCount = internalDisplayCount;
-  const displayEvents = allEvents.slice(0, currentDisplayCount);
+  const displayEvents = sortedEvents.slice(0, currentDisplayCount);
 
   const formatEventDate = (dateString: string) => {
     try {
@@ -136,7 +150,7 @@ const EventsGrid = ({
     );
   }
 
-  if (allEvents.length === 0) {
+  if (sortedEvents.length === 0) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <Card className="col-span-full bg-slate-800 border-slate-700">
@@ -188,14 +202,14 @@ const EventsGrid = ({
                   {eventTitle}
                 </h3>
                 
-                {/* Badges Row - Like business tags */}
-                <div className="flex flex-wrap gap-2 mb-3">
+                {/* Badges Row - Fixed overlap issue with proper spacing */}
+                <div className="flex flex-wrap gap-1 mb-3">
                   {event.category && (
-                    <Badge className="bg-blue-600 text-white text-xs px-2 py-1 font-medium">
+                    <Badge className="bg-blue-600 text-white text-xs px-2 py-1 font-medium whitespace-nowrap">
                       {event.category}
                     </Badge>
                   )}
-                  <Badge className="bg-purple-600 text-white text-xs px-2 py-1 font-medium">
+                  <Badge className="bg-purple-600 text-white text-xs px-2 py-1 font-medium whitespace-nowrap">
                     {eventDate}
                   </Badge>
                 </div>
@@ -253,14 +267,14 @@ const EventsGrid = ({
       </div>
 
       {/* Show More Button */}
-      {allEvents.length > currentDisplayCount && (
+      {sortedEvents.length > currentDisplayCount && (
         <div className="flex justify-center">
           <Button 
             variant="outline" 
             onClick={onShowMore || (() => setInternalDisplayCount(internalDisplayCount + 6))}
             className="px-8 border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white"
           >
-            Load More ({allEvents.length - currentDisplayCount} remaining)
+            Load More ({sortedEvents.length - currentDisplayCount} remaining)
           </Button>
         </div>
       )}
