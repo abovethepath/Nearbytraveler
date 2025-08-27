@@ -110,7 +110,31 @@ export default function Home() {
     // Calculate current travel status with proper destination logic
     const currentTravelPlan = getCurrentTravelDestination(travelPlans || []);
     const isCurrentlyTraveling = !!currentTravelPlan;
-    const travelDestination = currentTravelPlan?.destination || null;
+    
+    // Format travel destination with country info
+    let travelDestination = currentTravelPlan?.destination || null;
+    if (travelDestination) {
+      // Add country info for major cities
+      const cityCountryMap: Record<string, string> = {
+        'Rome': 'Rome, Italy',
+        'Paris': 'Paris, France', 
+        'London': 'London, UK',
+        'Berlin': 'Berlin, Germany',
+        'Madrid': 'Madrid, Spain',
+        'Barcelona': 'Barcelona, Spain',
+        'Milan': 'Milan, Italy',
+        'Tokyo': 'Tokyo, Japan',
+        'New York': 'New York, USA',
+        'Los Angeles': 'Los Angeles, USA',
+        'Chicago': 'Chicago, USA',
+        'Miami': 'Miami, USA',
+        'San Francisco': 'San Francisco, USA',
+        'Boston': 'Boston, USA',
+        'Denver': 'Denver, USA'
+      };
+      
+      travelDestination = cityCountryMap[travelDestination] || travelDestination;
+    }
 
     // Return enriched user data with travel context
     const enrichedUser = {
