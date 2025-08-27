@@ -642,12 +642,12 @@ export default function PlanTrip() {
 
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 overflow-hidden break-words">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-blue-50 to-orange-50 dark:from-gray-900 dark:via-blue-900/20 dark:to-gray-900 overflow-hidden break-words">
       {/* Hero Section - Mobile Responsive */}
       <div 
         className="relative h-48 sm:h-56 md:h-64 overflow-hidden bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: `url('/attached_assets/people-planning-vacation-trip-map-85261359_1750857749346.webp')`
+          backgroundImage: `linear-gradient(135deg, rgba(59, 130, 246, 0.8) 0%, rgba(147, 51, 234, 0.8) 50%, rgba(249, 115, 22, 0.8) 100%), url('/travelers%20coffee_1750995178947.png')`
         }}
       >
         <div className="absolute inset-0 bg-black/40" />
@@ -667,11 +667,11 @@ export default function PlanTrip() {
         <div className="relative z-10 h-full flex items-center justify-center px-2 sm:px-4">
           <div className="text-center text-white overflow-hidden break-words">
             <Compass className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-2 sm:mb-4" />
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-1 sm:mb-2 break-words">
-              {isEditMode ? "Edit Your Trip" : "Plan Your Trip"}
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-1 sm:mb-2 break-words drop-shadow-lg">
+              {isEditMode ? "Edit Your Trip" : "Plan Your Next Adventure"}
             </h1>
-            <p className="text-sm sm:text-lg md:text-xl opacity-90 break-words">
-              {isEditMode ? "Update your travel plan details" : "Discover your perfect travel companions"}
+            <p className="text-sm sm:text-lg md:text-xl opacity-90 break-words drop-shadow-md">
+              {isEditMode ? "Update your travel plan details" : "Connect with locals, fellow travelers, and businesses at your destination"}
             </p>
           </div>
         </div>
@@ -679,8 +679,8 @@ export default function PlanTrip() {
 
       {/* Trip Planning Form - Mobile Responsive Layout */}
       <div className="container max-w-4xl mx-auto px-2 sm:px-4 md:px-6 py-4 sm:py-6 md:py-8 overflow-hidden break-words">
-        <div className="bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden break-words">
-          <div className="p-4 sm:p-6 md:p-8 overflow-hidden break-words">
+        <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm border border-gray-200/50 dark:border-gray-600/50 shadow-xl rounded-2xl overflow-hidden break-words">
+          <div className="p-6 sm:p-8 md:p-10 overflow-hidden break-words">
             <div className="mb-4 sm:mb-6 text-center overflow-hidden break-words">
               <p className="text-xs sm:text-sm md:text-base text-gray-600 dark:text-gray-400 break-words">
                 Create your travel plan and connect with Nearby Locals, fellow Nearby Travelers and Nearby Businesses at your destination

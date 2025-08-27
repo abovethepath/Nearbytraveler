@@ -12,13 +12,14 @@ import { Calendar } from "@/components/ui/calendar";
 import { toast } from "@/hooks/use-toast";
 import { 
   Users, X, MapPin, CalendarIcon, Search, MessageCircle, UserPlus,
-  Plane, Home, Calendar as CalendarDays, Plus, Filter, ChevronDown, ChevronUp
+  Plane, Home, Calendar as CalendarDays, Plus, Filter, ChevronDown, ChevronUp, ChevronRight
 } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { format } from "date-fns";
 import { useLocation } from "wouter";
 import { apiRequest } from "@/lib/queryClient";
 import { authStorage } from "@/lib/auth";
-import { getAllInterests, getAllActivities, getAllEvents, getAllLanguages } from "../../../shared/base-options";
+import { getAllInterests, getAllActivities, getAllEvents, getAllLanguages, GENDER_OPTIONS, SEXUAL_PREFERENCE_OPTIONS, USER_TYPE_OPTIONS, TRAVELER_TYPE_OPTIONS, MILITARY_STATUS_OPTIONS } from "../../../shared/base-options";
 
 interface User {
   id: number;
@@ -60,9 +61,16 @@ interface ConnectModalProps {
 }
 
 interface SearchFilters {
+  gender: string[];
+  sexualPreference: string[];
+  minAge: string;
+  maxAge: string;
   interests: string[];
   activities: string[];
   events: string[];
+  userType: string[];
+  travelerTypes: string[];
+  militaryStatus: string[];
   languages: string[];
 }
 
@@ -76,9 +84,16 @@ export default function ConnectModal({ isOpen, onClose, userTravelPlans: propTra
   const [showStartCalendar, setShowStartCalendar] = useState(false);
   const [showEndCalendar, setShowEndCalendar] = useState(false);
   const [searchFilters, setSearchFilters] = useState<SearchFilters>({
+    gender: [],
+    sexualPreference: [],
+    minAge: "",
+    maxAge: "",
     interests: [],
     activities: [],
     events: [],
+    userType: [],
+    travelerTypes: [],
+    militaryStatus: [],
     languages: []
   });
   const [customInputs, setCustomInputs] = useState({
@@ -87,6 +102,24 @@ export default function ConnectModal({ isOpen, onClose, userTravelPlans: propTra
     events: "",
     languages: ""
   });
+  
+  // Enhanced filters state with collapsible sections
+  const [expandedSections, setExpandedSections] = useState({
+    demographics: false,
+    topChoices: false,
+    interests: false,
+    activities: false,
+    events: false,
+    travelerTypes: false,
+    militaryStatus: false
+  });
+  
+  const toggleSection = (section: keyof typeof expandedSections) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [section]: !prev[section]
+    }));
+  };
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [, setLocation] = useLocation();
   const queryClient = useQueryClient();
@@ -219,9 +252,16 @@ export default function ConnectModal({ isOpen, onClose, userTravelPlans: propTra
         location: searchLocation,
         ...(startDate && { startDate: startDate.toISOString() }),
         ...(endDate && { endDate: endDate.toISOString() }),
+        ...(searchFilters.gender.length > 0 && { gender: JSON.stringify(searchFilters.gender) }),
+        ...(searchFilters.sexualPreference.length > 0 && { sexualPreference: JSON.stringify(searchFilters.sexualPreference) }),
+        ...(searchFilters.minAge && { minAge: searchFilters.minAge }),
+        ...(searchFilters.maxAge && { maxAge: searchFilters.maxAge }),
         ...(searchFilters.interests.length > 0 && { interests: JSON.stringify(searchFilters.interests) }),
         ...(searchFilters.activities.length > 0 && { activities: JSON.stringify(searchFilters.activities) }),
         ...(searchFilters.events.length > 0 && { events: JSON.stringify(searchFilters.events) }),
+        ...(searchFilters.userType.length > 0 && { userType: JSON.stringify(searchFilters.userType) }),
+        ...(searchFilters.travelerTypes.length > 0 && { travelerTypes: JSON.stringify(searchFilters.travelerTypes) }),
+        ...(searchFilters.militaryStatus.length > 0 && { militaryStatus: JSON.stringify(searchFilters.militaryStatus) }),
         ...(searchFilters.languages.length > 0 && { languages: JSON.stringify(searchFilters.languages) })
       });
       
@@ -308,9 +348,16 @@ export default function ConnectModal({ isOpen, onClose, userTravelPlans: propTra
     setIsSearching(false);
     setHasSearched(false);
     setSearchFilters({
+      gender: [],
+      sexualPreference: [],
+      minAge: "",
+      maxAge: "",
       interests: [],
       activities: [],
       events: [],
+      userType: [],
+      travelerTypes: [],
+      militaryStatus: [],
       languages: []
     });
     setCustomInputs({

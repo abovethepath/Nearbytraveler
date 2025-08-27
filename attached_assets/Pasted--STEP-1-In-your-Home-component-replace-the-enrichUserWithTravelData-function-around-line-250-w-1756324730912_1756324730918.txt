@@ -1,0 +1,169 @@
+// STEP 1: In your Home component, replace the enrichUserWithTravelData function (around line 250) with:
+
+const getCurrentUserLocation = () => {
+  // Get from weather widget's exact logic
+  const currentTravelPlan = getCurrentTravelDestination(travelPlans || []);
+  if (currentTravelPlan?.destination) {
+    return currentTravelPlan.destination;
+  }
+  
+  if (enrichedEffectiveUser?.isCurrentlyTraveling && enrichedEffectiveUser?.travelDestination) {
+    return enrichedEffectiveUser.travelDestination;
+  }
+  
+  if (effectiveUser?.location) {
+    return effectiveUser.location;
+  }
+  
+  if (effectiveUser?.hometownCity) {
+    return [effectiveUser.hometownCity, effectiveUser.hometownState, effectiveUser.hometownCountry]
+      .filter(Boolean).join(', ');
+  }
+  
+  return "Location Unknown";
+};
+
+const enrichUserWithTravelData = (user: any, travelPlans: any[]) => {
+  if (!user) return user;
+  
+  const currentTravelDestination = getCurrentTravelDestination(travelPlans || []);
+  
+  if (user.id === effectiveUser?.id) {
+    // For current user, use weather widget's location logic
+    const currentLocation = getCurrentUserLocation();
+    const isCurrentlyTraveling = !!currentTravelDestination;
+    
+    return {
+      ...user,
+      travelDestination: currentTravelDestination?.destination || user.travelDestination,
+      isCurrentlyTraveling,
+      displayLocation: currentLocation, // This will show "Rome" instead of "Traveling"
+      locationContext: isCurrentlyTraveling ? 'traveling' : 'hometown'
+    };
+  }
+  
+  // For other users
+  return {
+    ...user,
+    displayLocation: user.isCurrentlyTraveling && user.travelDestination 
+      ? user.travelDestination 
+      : [user.hometownCity, user.hometownState, user.hometownCountry].filter(Boolean).join(', ') || user.location,
+    locationContext: user.isCurrentlyTraveling ? 'traveling' : 'hometown'
+  };
+};
+
+// STEP 2: Replace the prioritizeUsers function (around line 400) with:
+
+const prioritizeUsers = (users: User[]) => {
+  if (!users.length) return users;
+  
+  const currentLocation = getCurrentUserLocation();
+  const hometown = effectiveUser?.hometownCity;
+  
+  return users.sort((a, b) => {
+    // Current user always first
+    if (a.id === effectiveUser?.id) return -1;
+    if (b.id === effectiveUser?.id) return 1;
+    
+    // Score based on location relevance
+    let scoreA = 0, scoreB = 0;
+    
+    // Priority 1: Current travel location (highest priority)
+    if (currentLocation) {
+      if (a.displayLocation?.toLowerCase().includes(currentLocation.toLowerCase())) scoreA += 1000;
+      if (b.displayLocation?.toLowerCase().includes(currentLocation.toLowerCase())) scoreB += 1000;
+    }
+    
+    // Priority 2: Hometown location (medium priority) 
+    if (hometown) {
+      if (a.hometownCity?.toLowerCase().includes(hometown.toLowerCase())) scoreA += 500;
+      if (b.hometownCity?.toLowerCase().includes(hometown.toLowerCase())) scoreB += 500;
+    }
+    
+    // Priority 3: Shared interests
+    const parseArray = (data: any) => Array.isArray(data) ? data : [];
+    const userInterests = parseArray(effectiveUser?.interests);
+    
+    const aShared = parseArray(a.interests).filter(i => userInterests.includes(i)).length;
+    const bShared = parseArray(b.interests).filter(i => userInterests.includes(i)).length;
+    
+    scoreA += aShared * 10;
+    scoreB += bShared * 10;
+    
+    return scoreB - scoreA;
+  });
+};
+
+// STEP 3: Update your UserCard component to use displayLocation:
+// In your UserCard component, change this:
+
+// OLD:
+const getLocationText = () => {
+  if (user.isCurrentlyTraveling && user.travelDestination) {
+    return user.travelDestination;
+  }
+  // ... other logic
+};
+
+// NEW:
+const getLocationText = () => {
+  // Use enriched displayLocation first
+  if (user.displayLocation) {
+    return user.displayLocation; // This will show "Rome" for traveling users
+  }
+  
+  // Fallback
+  if (user.isCurrentlyTraveling && user.travelDestination) {
+    return user.travelDestination;
+  }
+  
+  return [user.hometownCity, user.hometownState, user.hometownCountry]
+    .filter(Boolean).join(', ') || user.location || 'Location not specified';
+};
+
+// STEP 4: Add event prioritization query (replace existing events query around line 280):
+
+const { data: prioritizedEvents = [] } = useQuery({
+  queryKey: ['/api/events/prioritized', effectiveUser?.id, getCurrentUserLocation()],
+  queryFn: async () => {
+    const currentLocation = getCurrentUserLocation();
+    const hometown = effectiveUser?.hometownCity;
+    
+    // Fetch all events
+    const response = await fetch(`/api/events?userId=${effectiveUser?.id}`);
+    const allEvents = await response.json();
+    
+    // Priority scoring for events
+    return allEvents.sort((a, b) => {
+      let scoreA = 0, scoreB = 0;
+      
+      // HIGHEST: User-created events
+      if (a.createdBy === effectiveUser?.id) scoreA += 10000;
+      if (b.createdBy === effectiveUser?.id) scoreB += 10000;
+      
+      // HIGH: Current travel location
+      if (currentLocation) {
+        if (a.location?.toLowerCase().includes(currentLocation.toLowerCase())) scoreA += 1000;
+        if (b.location?.toLowerCase().includes(currentLocation.toLowerCase())) scoreB += 1000;
+      }
+      
+      // MEDIUM: Hometown location
+      if (hometown) {
+        if (a.location?.toLowerCase().includes(hometown.toLowerCase())) scoreA += 500;
+        if (b.location?.toLowerCase().includes(hometown.toLowerCase())) scoreB += 500;
+      }
+      
+      return scoreB - scoreA;
+    });
+  },
+  enabled: !!effectiveUser?.id,
+});
+
+// STEP 5: Update your events section to use prioritized events:
+// Replace your <LocationSortedEvents> with:
+<EventsGrid
+  events={prioritizedEvents}
+  displayCount={6}
+  onShowMore={() => {/* handle show more */}}
+  className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm border border-gray-200/50 dark:border-gray-600/50 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300"
+/>
