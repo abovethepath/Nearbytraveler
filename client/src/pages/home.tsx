@@ -24,7 +24,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Globe, Users, MapPin, Briefcase, Calendar, Filter, X, ChevronDown, ChevronRight, MessageCircle, Camera, Search, Store, Hash, Tag, AlertCircle, ArrowUpDown, Clock, Zap, Star, Coffee, Phone } from "lucide-react";
+import { Globe, Users, MapPin, Briefcase, Calendar, Filter, X, ChevronDown, ChevronRight, MessageCircle, Camera, Search, Store, Hash, Tag, AlertCircle, ArrowUpDown, Clock, Zap, Star, Coffee, Phone, Plane } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
@@ -69,6 +69,47 @@ export default function Home() {
   const [connectModalMode, setConnectModalMode] = useState<'current' | 'hometown'>('current');
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [sortBy, setSortBy] = useState<'recent' | 'active' | 'compatibility' | 'travel_experience' | 'closest_nearby' | 'aura' | 'references' | 'alphabetical'>('recent');
+
+  // Function to calculate things in common between current user and another user
+  const getThingsInCommon = (otherUser: any) => {
+    if (!effectiveUser) return 0;
+    
+    let commonCount = 0;
+    
+    // Compare interests
+    const currentUserInterests = effectiveUser.interests || [];
+    const otherUserInterests = otherUser.interests || [];
+    const commonInterests = currentUserInterests.filter(interest => 
+      otherUserInterests.some(other => other.toLowerCase() === interest.toLowerCase())
+    );
+    commonCount += commonInterests.length;
+    
+    // Compare activities
+    const currentUserActivities = [...(effectiveUser.localActivities || []), ...(effectiveUser.preferredActivities || [])];
+    const otherUserActivities = [...(otherUser.localActivities || []), ...(otherUser.preferredActivities || [])];
+    const commonActivities = currentUserActivities.filter(activity => 
+      otherUserActivities.some(other => other.toLowerCase() === activity.toLowerCase())
+    );
+    commonCount += commonActivities.length;
+    
+    // Compare travel style
+    const currentUserTravelStyle = effectiveUser.travelStyle || [];
+    const otherUserTravelStyle = otherUser.travelStyle || [];
+    const commonTravelStyle = currentUserTravelStyle.filter(style => 
+      otherUserTravelStyle.some(other => other.toLowerCase() === style.toLowerCase())
+    );
+    commonCount += commonTravelStyle.length;
+    
+    // Compare languages
+    const currentUserLanguages = effectiveUser.languagesSpoken || [];
+    const otherUserLanguages = otherUser.languagesSpoken || [];
+    const commonLanguages = currentUserLanguages.filter(language => 
+      otherUserLanguages.some(other => other.toLowerCase() === language.toLowerCase())
+    );
+    commonCount += commonLanguages.length;
+    
+    return commonCount;
+  };
 
   // Function to sort users based on selected sorting option
   const getSortedUsers = (users: any[]) => {
