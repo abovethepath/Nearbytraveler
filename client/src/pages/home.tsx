@@ -1445,11 +1445,15 @@ export default function Home() {
             with <span className="hero-blue">Travelers</span> &{" "}
             <span className="hero-blue">Locals</span>
           </>
+        ) : effectiveUser?.isCurrentlyTraveling && effectiveUser?.travelDestination ? (
+          <>
+            <span className="text-orange-400">NEARBY TRAVELER</span>{" "}
+            <span className="hero-blue">{effectiveUser.travelDestination.toUpperCase()}</span>
+          </>
         ) : (
           <>
-            Connect with <span className="text-orange-400">Like-Minded</span>{" "}
-            <span className="hero-blue">Travelers</span> &{" "}
-            <span className="hero-blue">Locals</span>
+            <span className="text-orange-400">NEARBY LOCAL</span>{" "}
+            <span className="hero-blue">{effectiveUser?.hometownCity?.toUpperCase() || 'HOME'}</span>
           </>
         )}
       </h1>
