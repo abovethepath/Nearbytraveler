@@ -50,6 +50,13 @@ export function PeopleDiscoveryWidget({
     // Show loading state to prevent avatar blinking
     const [isLoading, setIsLoading] = useState(true);
     
+    // ✅ Do NOT gate on your local isLoading flag - Remove loading gate
+    const enabledCompat =
+      !!currentUserId &&
+      !!person.id &&
+      Number(currentUserId) !== Number(person.id);
+
+    // ALL HOOKS MUST BE CALLED BEFORE ANY EARLY RETURNS
     useEffect(() => {
       const timer = setTimeout(() => setIsLoading(false), 100);
       return () => clearTimeout(timer);
@@ -97,12 +104,6 @@ export function PeopleDiscoveryWidget({
       retry: false
     });
 
-    // ✅ Do NOT gate on your local isLoading flag - Remove loading gate
-    const enabledCompat =
-      !!currentUserId &&
-      !!person.id &&
-      Number(currentUserId) !== Number(person.id);
-
     const { data: compatibilityData, isLoading: compatibilityLoading } = useQuery({
       queryKey: [`/api/compatibility/${currentUserId}/${person.id}`],
       enabled: enabledCompat,
@@ -116,7 +117,39 @@ export function PeopleDiscoveryWidget({
       retry: false
     });
 
+    // COMPUTE VALUES AFTER ALL HOOKS
+    // NEW: count + list the top common items
+    const compatData = compatibilityData as any;
+    const countInCommon =
+      (compatData?.sharedInterests?.length || 0) +
+      (compatData?.sharedActivities?.length || 0) +
+      (compatData?.sharedEvents?.length || 0);
 
+    const topCommon: string[] = [
+      ...(compatData?.sharedInterests ?? []),
+      ...(compatData?.sharedActivities ?? []),
+      ...((compatData?.sharedEvents ?? []).map((e: any) => e?.title).filter(Boolean)),
+    ].slice(0, 3);
+
+    // Debug logging for compatibility data (moved to existing useEffect)
+    React.useEffect(() => {
+      if (compatibilityData) {
+        console.log(`🔥 DEBUG COMPATIBILITY for ${person.username}:`, {
+          compatData,
+          countInCommon,
+          topCommon,
+          sharedInterests: compatData?.sharedInterests?.length || 0,
+          sharedActivities: compatData?.sharedActivities?.length || 0,
+          sharedEvents: compatData?.sharedEvents?.length || 0
+        });
+        console.log(`✅ PEOPLE DISCOVERY: User ${person.username} (${person.id}) compatibility data:`, compatibilityData);
+      } else {
+        console.log(`❌ PEOPLE DISCOVERY: No compatibility data for ${person.username} (${person.id})`);
+      }
+    }, [compatibilityData, person.username, person.id, countInCommon, compatData, topCommon]);
+
+
+    // HELPER FUNCTIONS
     const getCountryFlag = (location: string) => {
       if (location.includes('United States') || location.includes('USA')) return '🇺🇸';
       if (location.includes('United Kingdom') || location.includes('UK')) return '🇬🇧';
@@ -195,36 +228,6 @@ export function PeopleDiscoveryWidget({
     };
 
     const locationInfo = getCurrentLocation();
-
-    // NEW: count + list the top common items
-    const compatData = compatibilityData as any;
-    const countInCommon =
-      (compatData?.sharedInterests?.length || 0) +
-      (compatData?.sharedActivities?.length || 0) +
-      (compatData?.sharedEvents?.length || 0);
-
-    const topCommon: string[] = [
-      ...(compatData?.sharedInterests ?? []),
-      ...(compatData?.sharedActivities ?? []),
-      ...((compatData?.sharedEvents ?? []).map((e: any) => e?.title).filter(Boolean)),
-    ].slice(0, 3);
-
-    // Debug logging for compatibility data (moved to existing useEffect)
-    React.useEffect(() => {
-      if (compatibilityData) {
-        console.log(`🔥 DEBUG COMPATIBILITY for ${person.username}:`, {
-          compatData,
-          countInCommon,
-          topCommon,
-          sharedInterests: compatData?.sharedInterests?.length || 0,
-          sharedActivities: compatData?.sharedActivities?.length || 0,
-          sharedEvents: compatData?.sharedEvents?.length || 0
-        });
-        console.log(`✅ PEOPLE DISCOVERY: User ${person.username} (${person.id}) compatibility data:`, compatibilityData);
-      } else {
-        console.log(`❌ PEOPLE DISCOVERY: No compatibility data for ${person.username} (${person.id})`);
-      }
-    }, [compatibilityData, person.username, person.id, countInCommon, compatData, topCommon]);
 
     // NEW: figure out an upcoming/active destination
     const getTravelBlurb = () => {
