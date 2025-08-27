@@ -351,15 +351,10 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
                 return (
                   <>
                     {locationInfo.isTravel ? (
-                      <>
-                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
-                          <span className="w-2 h-2 bg-green-500 rounded-full mr-1"></span>
-                          Traveling
-                        </span>
-                        <span className="text-green-700 dark:text-green-300 font-medium">
-                          📍 {locationInfo.text}
-                        </span>
-                      </>
+                      <div className="flex items-center text-blue-600 dark:text-blue-400">
+                        ✈️
+                        <span className="ml-1 font-medium">{locationInfo.text}</span>
+                      </div>
                     ) : user.userType === 'business' ? (
                       <>
                         <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400">
