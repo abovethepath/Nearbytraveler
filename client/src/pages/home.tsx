@@ -971,7 +971,7 @@ export default function Home() {
   const meetups = allMeetups;
 
   // Query users - prioritize specific location filter, otherwise show ALL users
-  const { data: users = [], isLoading: usersLoading } = useQuery<User[]>({
+  const { data: rawUsers = [], isLoading: usersLoading } = useQuery<User[]>({
     queryKey: ["/api/users/discover-people", { location: filters.location }],
     queryFn: async () => {
       const searchLocation = filters.location;
@@ -1003,6 +1003,19 @@ export default function Home() {
     gcTime: 0,
     refetchOnMount: 'always',
   });
+
+  // Enrich ALL users with travel data at query level (same pattern as effectiveUser)
+  const users = useMemo(() => {
+    if (!rawUsers.length) return [];
+    
+    console.log('🔄 ENRICHING USERS: Processing', rawUsers.length, 'users with travel data');
+    
+    return rawUsers.map(user => {
+      const enriched = enrichUserWithTravelData(user, user.travelPlans);
+      console.log(`🔄 USER ${user.username}: enriched with travel destination:`, enriched.travelDestination);
+      return enriched;
+    });
+  }, [rawUsers]);
 
   // Auto-detect business location for automatic nearby user discovery
   const getBusinessLocation = () => {
@@ -2452,23 +2465,22 @@ export default function Home() {
                 {/* Mobile grid: 2 cols on very small, 3 cols at ≥640px; desktop uses widget below */}
                 <div className="sm:hidden">
                   <div className="grid grid-cols-2 gap-3">
-                    {getSortedUsers(filteredUsers).slice(0, displayLimit).map((u: any) => {
-                      // Enrich user with travel data and debug
-                      const enrichedUser = enrichUserWithTravelData(u, u.travelPlans);
+                    {getSortedUsers(filteredUsers).slice(0, displayLimit).map((enrichedUser: any) => {
+                      // Users are already enriched at query level - just use the enriched data
                       const thingsInCommon = getThingsInCommon(enrichedUser);
                       const isCurrentlyTraveling = enrichedUser.isCurrentlyTraveling || enrichedUser.travelDestination;
                       
                       return (
                         <button
-                          key={u.id}
-                          onClick={() => setLocation(`/profile/${u.id}`)}
+                          key={enrichedUser.id}
+                          onClick={() => setLocation(`/profile/${enrichedUser.id}`)}
                           className="group text-left rounded-xl border bg-white dark:bg-gray-800 p-2 hover:shadow-sm"
                         >
                           <div className="relative w-full aspect-[4/5] rounded-lg overflow-hidden bg-gray-100">
-                            {u.profileImage ? (
+                            {enrichedUser.profileImage ? (
                               <img
-                                src={u.profileImage}
-                                alt={u.username}
+                                src={enrichedUser.profileImage}
+                                alt={enrichedUser.username}
                                 className="h-full w-full object-cover"
                                 loading="lazy"
                                 onError={(e) => {
@@ -2477,8 +2489,8 @@ export default function Home() {
                                 }}
                               />
                             ) : null}
-                            <div className={`${u.profileImage ? 'hidden' : ''} h-full w-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center`}>
-                              <span className="text-white font-bold text-lg">{u.username?.charAt(0)?.toUpperCase() || 'U'}</span>
+                            <div className={`${enrichedUser.profileImage ? 'hidden' : ''} h-full w-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center`}>
+                              <span className="text-white font-bold text-lg">{enrichedUser.username?.charAt(0)?.toUpperCase() || 'U'}</span>
                             </div>
                             
                             {/* Travel Indicator */}
@@ -2491,7 +2503,7 @@ export default function Home() {
                           <div className="mt-2 min-w-0 space-y-1">
                             {/* Username */}
                             <div className="text-sm font-semibold truncate text-gray-900 dark:text-white">
-                              @{u.username}
+                              @{enrichedUser.username}
                             </div>
                             
                             {/* Current Location or Hometown */}
@@ -2558,23 +2570,22 @@ export default function Home() {
 
                       {/* Desktop (≥1024px): force 4 across maximum */}
                       <div className="hidden lg:grid grid-cols-4 gap-4">
-                        {people.map((u: any) => {
-                          // Enrich user with travel data and debug
-                          const enrichedUser = enrichUserWithTravelData(u, u.travelPlans);
+                        {people.map((enrichedUser: any) => {
+                          // Users are already enriched at query level - no need to re-enrich
                           const thingsInCommon = getThingsInCommon(enrichedUser);
                           const isCurrentlyTraveling = enrichedUser.isCurrentlyTraveling || enrichedUser.travelDestination;
                           
                           return (
                             <button
-                              key={u.id}
-                              onClick={() => setLocation(`/profile/${u.id}`)}
+                              key={enrichedUser.id}
+                              onClick={() => setLocation(`/profile/${enrichedUser.id}`)}
                               className="group text-left rounded-xl border bg-white dark:bg-gray-800 p-3 hover:shadow-sm"
                             >
                               <div className="relative w-full aspect-[4/5] rounded-lg overflow-hidden bg-gray-100">
-                                {u.profileImage ? (
+                                {enrichedUser.profileImage ? (
                                   <img 
-                                    src={u.profileImage} 
-                                    alt={u.username} 
+                                    src={enrichedUser.profileImage} 
+                                    alt={enrichedUser.username} 
                                     className="h-full w-full object-cover"
                                     onError={(e) => {
                                       e.currentTarget.style.display = 'none';
@@ -2582,8 +2593,8 @@ export default function Home() {
                                     }}
                                   />
                                 ) : null}
-                                <div className={`${u.profileImage ? 'hidden' : ''} h-full w-full bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center`}>
-                                  <span className="text-white font-bold text-xl">{u.username?.charAt(0)?.toUpperCase() || 'U'}</span>
+                                <div className={`${enrichedUser.profileImage ? 'hidden' : ''} h-full w-full bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center`}>
+                                  <span className="text-white font-bold text-xl">{enrichedUser.username?.charAt(0)?.toUpperCase() || 'U'}</span>
                                 </div>
                                 
                                 {/* Travel Indicator */}
@@ -2596,7 +2607,7 @@ export default function Home() {
                               <div className="mt-3 min-w-0 space-y-1">
                                 {/* Username */}
                                 <div className="text-sm font-semibold truncate text-gray-900 dark:text-white">
-                                  @{u.username}
+                                  @{enrichedUser.username}
                                 </div>
                                 
                                 {/* Current Location or Hometown */}
