@@ -282,15 +282,17 @@ export default function Home() {
     enabled: !!(user?.id || currentUserProfile?.id || effectiveUser?.id),
   });
 
-  // ONLY USER-CREATED EVENTS: Filter out AI-generated events completely
+  // ONLY USER-CREATED EVENTS: Get events from user's hometown only (not all global events)
   const { data: userPriorityEvents = [] } = useQuery({
-    queryKey: ['/api/events', effectiveUser?.id],
+    queryKey: ['/api/events', effectiveUser?.hometownCity],
     queryFn: async () => {
-      const response = await fetch('/api/events');
-      const allEvents = await response.json();
+      // Get events from user's hometown city only (not all global events)
+      const userCity = effectiveUser?.hometownCity || 'Culver City';
+      const response = await fetch(`/api/events?city=${encodeURIComponent(userCity)}`);
+      const cityEvents = await response.json();
       
       // ONLY INCLUDE EVENTS WITH organizerId (user-created events)
-      const userCreatedEvents = allEvents.filter((event: any) => event.organizerId && event.organizerId > 0);
+      const userCreatedEvents = cityEvents.filter((event: any) => event.organizerId && event.organizerId > 0);
       
       return userCreatedEvents.sort((a, b) => {
         // USER CREATED EVENTS PRIORITY BY USER
@@ -304,7 +306,7 @@ export default function Home() {
         return new Date(b.startDate || b.createdAt).getTime() - new Date(a.startDate || a.createdAt).getTime();
       });
     },
-    enabled: !!effectiveUser?.id,
+    enabled: !!effectiveUser?.hometownCity,
   });
 
   // Function to get things in common using API compatibility data (matches profile page)
