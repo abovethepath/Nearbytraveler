@@ -9195,7 +9195,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       
       {/* Chatroom List Modal */}
       <Dialog open={showChatroomList} onOpenChange={setShowChatroomList}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="max-w-lg z-50 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 shadow-2xl">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Users className="w-5 h-5" />
