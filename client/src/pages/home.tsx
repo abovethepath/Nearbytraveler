@@ -160,52 +160,98 @@ export default function Home() {
     });
   };
 
-  // Enhanced user enrichment function - USE SAME LOGIC AS WEATHER WIDGET
-  const enrichUserWithTravelData = (user: any, travelPlans?: any[]) => {
-    debugTravelData("Raw user data", user, travelPlans);
+  // Function to get current location (same logic as weather widget)
+  const getCurrentUserLocation = () => {
+    // Get from weather widget's exact logic
+    const currentTravelPlan = getCurrentTravelDestination(travelPlans || []);
+    if (currentTravelPlan?.destination) {
+      return currentTravelPlan.destination;
+    }
     
-    let effectiveDestination = null;
-    let isTravel = false;
+    if (enrichedEffectiveUser?.isCurrentlyTraveling && enrichedEffectiveUser?.travelDestination) {
+      return enrichedEffectiveUser.travelDestination;
+    }
+    
+    if (effectiveUser?.location) {
+      return effectiveUser.location;
+    }
+    
+    if (effectiveUser?.hometownCity) {
+      return [effectiveUser.hometownCity, effectiveUser.hometownState, effectiveUser.hometownCountry]
+        .filter(Boolean).join(', ');
+    }
+    
+    return "Location Unknown";
+  };
 
-    // Use the EXACT same logic as the weather widget
-    const currentDestination = getCurrentTravelDestination(travelPlans || []);
-    if (currentDestination && user.hometownCity) {
-      const travelDestination = currentDestination.toLowerCase();
-      const hometown = user.hometownCity.toLowerCase();
+  const enrichUserWithTravelData = (user: any, travelPlans?: any[]) => {
+    if (!user) return user;
+    
+    const currentTravelDestination = getCurrentTravelDestination(travelPlans || []);
+    
+    if (user.id === effectiveUser?.id) {
+      // For current user, use weather widget's location logic
+      const currentLocation = getCurrentUserLocation();
+      const isCurrentlyTraveling = !!currentTravelDestination;
       
-      // Only show as traveler if destination is different from hometown
-      if (!travelDestination.includes(hometown) && !hometown.includes(travelDestination)) {
-        effectiveDestination = currentDestination;
-        isTravel = true;
-        console.log(`🎯 WEATHER WIDGET LOGIC: ${user.username} traveling to:`, effectiveDestination);
-      }
+      return {
+        ...user,
+        travelDestination: currentTravelDestination?.destination || user.travelDestination,
+        isCurrentlyTraveling,
+        displayLocation: currentLocation, // This will show "Rome" instead of "Traveling"
+        locationContext: isCurrentlyTraveling ? 'traveling' : 'hometown'
+      };
     }
-
-    // Fallback: Check user's current travel status
-    if (!effectiveDestination && user.isCurrentlyTraveling && user.travelDestination) {
-      effectiveDestination = user.travelDestination;
-      isTravel = true;
-      console.log(`🎯 User travel destination found for ${user.username}:`, effectiveDestination);
-    }
-
-    const enrichedUser = {
+    
+    // For other users
+    return {
       ...user,
-      displayLocation: effectiveDestination || (user.hometownCity ? `${user.hometownCity}, ${user.hometownState || user.hometownCountry}` : user.location),
-      isCurrentlyTraveling: isTravel,
-      travelDestination: effectiveDestination,
-      effectiveUser: {
-        travelDestination: effectiveDestination,
-        isCurrentlyTraveling: isTravel
-      }
+      displayLocation: user.isCurrentlyTraveling && user.travelDestination 
+        ? user.travelDestination 
+        : [user.hometownCity, user.hometownState, user.hometownCountry].filter(Boolean).join(', ') || user.location,
+      locationContext: user.isCurrentlyTraveling ? 'traveling' : 'hometown'
     };
+  };
 
-    console.log(`✅ Enriched user ${user.username}:`, {
-      displayLocation: enrichedUser.displayLocation,
-      isCurrentlyTraveling: enrichedUser.isCurrentlyTraveling,
-      travelDestination: enrichedUser.travelDestination
+  // Priority system for users
+  const prioritizeUsers = (users: any[]) => {
+    if (!users.length) return users;
+    
+    const currentLocation = getCurrentUserLocation();
+    const hometown = effectiveUser?.hometownCity;
+    
+    return users.sort((a, b) => {
+      // Current user always first
+      if (a.id === effectiveUser?.id) return -1;
+      if (b.id === effectiveUser?.id) return 1;
+      
+      // Score based on location relevance
+      let scoreA = 0, scoreB = 0;
+      
+      // Priority 1: Current travel location (highest priority)
+      if (currentLocation) {
+        if (a.displayLocation?.toLowerCase().includes(currentLocation.toLowerCase())) scoreA += 1000;
+        if (b.displayLocation?.toLowerCase().includes(currentLocation.toLowerCase())) scoreB += 1000;
+      }
+      
+      // Priority 2: Hometown location (medium priority) 
+      if (hometown) {
+        if (a.hometownCity?.toLowerCase().includes(hometown.toLowerCase())) scoreA += 500;
+        if (b.hometownCity?.toLowerCase().includes(hometown.toLowerCase())) scoreB += 500;
+      }
+      
+      // Priority 3: Shared interests
+      const parseArray = (data: any) => Array.isArray(data) ? data : [];
+      const userInterests = parseArray(effectiveUser?.interests);
+      
+      const aShared = parseArray(a.interests).filter(i => userInterests.includes(i)).length;
+      const bShared = parseArray(b.interests).filter(i => userInterests.includes(i)).length;
+      
+      scoreA += aShared * 10;
+      scoreB += bShared * 10;
+      
+      return scoreB - scoreA;
     });
-
-    return enrichedUser;
   };
 
   // Get compatibility data from API (matches profile page calculation)
@@ -446,29 +492,6 @@ export default function Home() {
   const isMobile = useIsMobile();
   const isDesktop = useIsDesktop();
 
-  // Helper function to get current user location for widgets
-  const getCurrentUserLocation = () => {
-    // If user context is not loaded yet, try to get from currentUserProfile or localStorage
-    const effectiveUser = user || currentUserProfile || (typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('travelconnect_user') || '{}') : null);
-
-    // First check if user is currently traveling
-    if (effectiveUser?.isCurrentlyTraveling && effectiveUser?.travelDestination) {
-      return effectiveUser.travelDestination;
-    }
-
-    // Then check if user has a full hometown location
-    if (effectiveUser?.hometownCity && effectiveUser?.hometownState && effectiveUser?.hometownCountry) {
-      return `${effectiveUser.hometownCity}, ${effectiveUser.hometownState}, ${effectiveUser.hometownCountry}`;
-    }
-
-    // Fallback to just the hometown city
-    if (effectiveUser?.hometownCity) {
-      return effectiveUser.hometownCity;
-    }
-
-    // Final fallback to location field
-    return effectiveUser?.location || 'Unknown';
-  };
 
   // Use static hero image to prevent caching issues - try URL encoding for space
   const staticHeroImage = '/travelers%20coffee_1750995178947.png';
@@ -995,18 +1018,21 @@ export default function Home() {
     refetchOnMount: 'always',
   });
 
-  // Enrich ALL users with travel data at query level (same pattern as effectiveUser)
+  // Enrich ALL users with travel data and apply prioritization
   const users = useMemo(() => {
     if (!rawUsers.length) return [];
     
     console.log('🔄 ENRICHING USERS: Processing', rawUsers.length, 'users with travel data');
     
-    return rawUsers.map(user => {
+    const enrichedUsers = rawUsers.map(user => {
       const enriched = enrichUserWithTravelData(user, user.travelPlans);
-      console.log(`🔄 USER ${user.username}: enriched with travel destination:`, enriched.travelDestination);
+      console.log(`🔄 USER ${user.username}: enriched with display location:`, enriched.displayLocation);
       return enriched;
     });
-  }, [rawUsers]);
+    
+    // Apply location-based prioritization
+    return prioritizeUsers(enrichedUsers);
+  }, [rawUsers, effectiveUser, travelPlans]);
 
   // Auto-detect business location for automatic nearby user discovery
   const getBusinessLocation = () => {
@@ -1032,74 +1058,6 @@ export default function Home() {
     });
   }
 
-  // Prioritize users by SHARED MATCHES (interests + activities + events) first, then location relevance
-  const prioritizeUsers = (users: User[]) => {
-    if (!effectiveUser?.interests?.length && !effectiveUser?.activities?.length) return users;
-
-    // Parse arrays safely
-    const parseArray = (data: any): string[] => {
-      if (!data) return [];
-      if (Array.isArray(data)) return data;
-      if (typeof data === 'string') {
-        try {
-          return JSON.parse(data);
-        } catch {
-          return [];
-        }
-      }
-      return [];
-    };
-
-    const currentUserInterests = parseArray(effectiveUser.interests);
-    const currentUserActivities = parseArray(effectiveUser.activities);
-    const userHometown = effectiveUser?.hometownCity?.toLowerCase() || '';
-    const userTravelDestinations = travelPlans?.map((plan: any) => plan.destination?.toLowerCase()) || [];
-
-    return users.sort((a, b) => {
-      // Priority 1: TOTAL SHARED MATCHES COUNT (interests + activities + events) - Most important factor
-      const aSharedInterests = parseArray(a.interests).filter((interest: string) => 
-        currentUserInterests.includes(interest)
-      ).length;
-      const aSharedActivities = parseArray(a.activities).filter((activity: string) => 
-        currentUserActivities.includes(activity)
-      ).length;
-      const aTotalShared = aSharedInterests + aSharedActivities;
-
-      const bSharedInterests = parseArray(b.interests).filter((interest: string) => 
-        currentUserInterests.includes(interest)
-      ).length;
-      const bSharedActivities = parseArray(b.activities).filter((activity: string) => 
-        currentUserActivities.includes(activity)
-      ).length;
-      const bTotalShared = bSharedInterests + bSharedActivities;
-
-      if (aTotalShared !== bTotalShared) {
-        return bTotalShared - aTotalShared; // Higher shared matches first
-      }
-
-      // Priority 2: Users from same hometown (but less important than interests)
-      const aFromHometown = a.hometownCity?.toLowerCase()?.includes(userHometown) || false;
-      const bFromHometown = b.hometownCity?.toLowerCase()?.includes(userHometown) || false;
-
-      if (aFromHometown && !bFromHometown) return -1;
-      if (!aFromHometown && bFromHometown) return 1;
-
-      // Priority 3: Users traveling to my destinations
-      const aToMyDestination = userTravelDestinations.some(dest => 
-        a.location?.toLowerCase().includes(dest) || 
-        a.travelDestination?.toLowerCase().includes(dest)
-      );
-      const bToMyDestination = userTravelDestinations.some(dest => 
-        b.location?.toLowerCase().includes(dest) || 
-        b.travelDestination?.toLowerCase().includes(dest)
-      );
-
-      if (aToMyDestination && !bToMyDestination) return -1;
-      if (!aToMyDestination && bToMyDestination) return 1;
-
-      return 0; // Keep original order for others
-    });
-  };
 
   const filteredUsers = prioritizeUsers(usersToFilter).filter(otherUser => {
     // Debug logging
