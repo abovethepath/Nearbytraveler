@@ -79,32 +79,32 @@ export default function Home() {
     // Compare interests
     const currentUserInterests = effectiveUser.interests || [];
     const otherUserInterests = otherUser.interests || [];
-    const commonInterests = currentUserInterests.filter(interest => 
-      otherUserInterests.some(other => other.toLowerCase() === interest.toLowerCase())
+    const commonInterests = currentUserInterests.filter((interest: string) => 
+      otherUserInterests.some((other: string) => other.toLowerCase() === interest.toLowerCase())
     );
     commonCount += commonInterests.length;
     
     // Compare activities
     const currentUserActivities = [...(effectiveUser.localActivities || []), ...(effectiveUser.preferredActivities || [])];
     const otherUserActivities = [...(otherUser.localActivities || []), ...(otherUser.preferredActivities || [])];
-    const commonActivities = currentUserActivities.filter(activity => 
-      otherUserActivities.some(other => other.toLowerCase() === activity.toLowerCase())
+    const commonActivities = currentUserActivities.filter((activity: string) => 
+      otherUserActivities.some((other: string) => other.toLowerCase() === activity.toLowerCase())
     );
     commonCount += commonActivities.length;
     
     // Compare travel style
     const currentUserTravelStyle = effectiveUser.travelStyle || [];
     const otherUserTravelStyle = otherUser.travelStyle || [];
-    const commonTravelStyle = currentUserTravelStyle.filter(style => 
-      otherUserTravelStyle.some(other => other.toLowerCase() === style.toLowerCase())
+    const commonTravelStyle = currentUserTravelStyle.filter((style: string) => 
+      otherUserTravelStyle.some((other: string) => other.toLowerCase() === style.toLowerCase())
     );
     commonCount += commonTravelStyle.length;
     
     // Compare languages
     const currentUserLanguages = effectiveUser.languagesSpoken || [];
     const otherUserLanguages = otherUser.languagesSpoken || [];
-    const commonLanguages = currentUserLanguages.filter(language => 
-      otherUserLanguages.some(other => other.toLowerCase() === language.toLowerCase())
+    const commonLanguages = currentUserLanguages.filter((language: string) => 
+      otherUserLanguages.some((other: string) => other.toLowerCase() === language.toLowerCase())
     );
     commonCount += commonLanguages.length;
     
