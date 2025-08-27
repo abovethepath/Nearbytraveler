@@ -33,26 +33,23 @@ interface ChatroomDetails {
 
 export default function ChatroomPage() {
   const params = useParams();
-  const chatroomId = parseInt(params.id || '0');
+  const rawChatroomId = parseInt(params.id || '0');
+  
+  // Force redirect invalid IDs immediately at the top
+  const chatroomId = (() => {
+    if (rawChatroomId === 200 || rawChatroomId === 201 || rawChatroomId === 202 || rawChatroomId > 213) {
+      console.log(`🔀 REDIRECT: Invalid chatroom ID ${rawChatroomId}, using 198 instead`);
+      // Force navigation to valid chatroom
+      setTimeout(() => window.location.replace('/chatroom/198'), 0);
+      return 198; // Use valid ID for now
+    }
+    return rawChatroomId;
+  })();
+  
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [messageText, setMessageText] = useState("");
-  
-  // Redirect invalid chatroom IDs to a valid LA Metro chatroom
-  useEffect(() => {
-    if (chatroomId === 200 || chatroomId === 201 || chatroomId === 202 || chatroomId > 213) {
-      // These IDs don't exist, redirect to valid LA Metro chatroom immediately
-      console.log(`🔀 REDIRECT: Invalid chatroom ID ${chatroomId}, redirecting to 198`);
-      window.location.replace('/chatroom/198'); // Let's Meet Up Los Angeles Metro
-      return;
-    }
-  }, [chatroomId]);
-  
-  // Don't render anything if we're redirecting
-  if (chatroomId === 200 || chatroomId === 201 || chatroomId === 202 || chatroomId > 213) {
-    return <div>Redirecting to valid chatroom...</div>;
-  }
   
   // Get current user with fallback
   const getCurrentUser = () => {
