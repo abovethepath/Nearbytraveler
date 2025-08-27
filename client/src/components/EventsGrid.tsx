@@ -84,7 +84,8 @@ const EventsGrid = ({
   });
 
   const allEvents = events.length > 0 ? events : fetchedEvents;
-  const currentDisplayCount = displayCount || internalDisplayCount;
+  // Always use internal display count for load more functionality
+  const currentDisplayCount = internalDisplayCount;
   const displayEvents = allEvents.slice(0, currentDisplayCount);
 
   const formatEventDate = (dateString: string) => {
