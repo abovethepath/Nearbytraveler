@@ -650,7 +650,6 @@ export default function PlanTrip() {
           backgroundImage: `linear-gradient(135deg, rgba(59, 130, 246, 0.8) 0%, rgba(147, 51, 234, 0.8) 50%, rgba(249, 115, 22, 0.8) 100%), url('/trip%20planning_1750857535371.webp')`
         }}
       >
-        <div className="absolute inset-0 bg-black/40" />
         {/* Close Button - Mobile Responsive */}
         <button
           onClick={() => {
