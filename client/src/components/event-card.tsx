@@ -200,19 +200,19 @@ export default function EventCard({ event, compact = false, featured = false }: 
         </div>
 
         {/* Content */}
-        <div className="p-4 md:p-5">
+        <div className="p-4 md:p-5 space-y-3">
           <h3 className="text-gray-900 dark:text-white text-lg font-semibold leading-snug line-clamp-2">
             {event.title}
           </h3>
 
           {event.description && (
-            <p className="mt-1 text-sm text-gray-600 dark:text-gray-300 leading-relaxed whitespace-normal break-words [overflow-wrap:anywhere] line-clamp-3">
+            <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed whitespace-normal break-words [overflow-wrap:anywhere] line-clamp-2">
               {event.description}
             </p>
           )}
 
           {/* Meta — wraps on small screens */}
-          <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+          <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
             <div className="min-w-0 flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
               <Calendar className="h-4 w-4 shrink-0 text-travel-blue" />
               <span className="truncate break-words [overflow-wrap:anywhere]">{formatEventDate(event.date)}</span>
@@ -230,7 +230,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
           </div>
 
           {/* Additional tags (mobile-friendly, no overlay) */}
-          <div className="mt-3 flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2">
             {event.costEstimate && (
               <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
                 💰 {event.costEstimate}
@@ -288,7 +288,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
           </div>
 
           {/* Actions */}
-          <div className="mt-4 flex gap-2">
+          <div className="flex gap-2 pt-2">
             <Button 
               size="sm" 
               variant="outline"
