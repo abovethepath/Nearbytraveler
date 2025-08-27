@@ -368,33 +368,41 @@ export default function SimpleChatroomPage() {
         {/* Header */}
         <Card className="mb-6">
           <CardHeader>
-            <div className="flex items-center gap-4">
-              <Button 
-                variant="ghost" 
-                size="sm"
-                onClick={() => navigate('/city-chatrooms')}
-              >
-                <ArrowLeft className="w-4 h-4" />
-              </Button>
-              <div>
-                <CardTitle className="text-xl">
-                  {chatroom?.name || "Loading chatroom..."}
-                </CardTitle>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                  {chatroom?.city && `${chatroom.city}, ${chatroom.state}`} · {memberCount} online
-                </p>
-                {!userIsMember && (
-                  <p className="text-sm text-orange-600 dark:text-orange-400 mt-1">
-                    You are not a member of this chatroom
+            {/* Mobile-First Responsive Header */}
+            <div className="space-y-3">
+              {/* Top row: Back button + Title */}
+              <div className="flex items-start gap-3">
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => navigate('/city-chatrooms')}
+                  className="flex-shrink-0 mt-1"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                </Button>
+                <div className="flex-1 min-w-0">
+                  <CardTitle className="text-lg sm:text-xl font-semibold leading-tight">
+                    <span className="break-words">{chatroom?.name || "Loading chatroom..."}</span>
+                  </CardTitle>
+                  <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1">
+                    {chatroom?.city && `${chatroom.city}, ${chatroom.state}`} · {memberCount} online
                   </p>
-                )}
+                  {!userIsMember && (
+                    <p className="text-xs sm:text-sm text-orange-600 dark:text-orange-400 mt-1">
+                      You are not a member of this chatroom
+                    </p>
+                  )}
+                </div>
               </div>
-              <div className="ml-auto flex gap-2">
+              
+              {/* Bottom row: Action buttons (mobile-friendly) */}
+              <div className="flex gap-2 flex-wrap">
                 <Button 
                   onClick={joinRoom} 
                   variant="secondary" 
                   size="sm"
                   disabled={isJoining || userIsMember}
+                  className="flex-1 sm:flex-none min-w-0"
                 >
                   {isJoining ? "Joining..." : userIsMember ? "Joined" : "Join"}
                 </Button>
@@ -403,6 +411,7 @@ export default function SimpleChatroomPage() {
                   variant="outline" 
                   size="sm"
                   disabled={isLeaving || !userIsMember}
+                  className="flex-1 sm:flex-none min-w-0"
                 >
                   {isLeaving ? "Leaving..." : "Leave"}
                 </Button>
