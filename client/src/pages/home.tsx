@@ -48,6 +48,8 @@ import EnhancedDiscovery from "@/components/EnhancedDiscovery";
 
 import BusinessesGrid from "@/components/BusinessesGrid";
 import { QuickMeetupWidget } from "@/components/QuickMeetupWidget";
+import { ContextualBusinessRecommendations } from "@/components/ContextualBusinessRecommendations";
+import { ContextualEventRecommendations } from "@/components/ContextualEventRecommendations";
 import QuickDealsDiscovery from "@/components/QuickDealsDiscovery";
 import CityMap from "@/components/CityMap";
 import PeopleDiscoveryWidget from "@/components/PeopleDiscoveryWidget";
@@ -2960,6 +2962,19 @@ export default function Home() {
                 </Button>
               </div>
             )}
+
+            {/* Contextual Recommendations Section */}
+            <div className="space-y-6 mt-8">
+              {/* Business Recommendations */}
+              <div>
+                <ContextualBusinessRecommendations userId={currentUserId} limit={6} />
+              </div>
+
+              {/* Event Recommendations */}
+              <div>
+                <ContextualEventRecommendations userId={currentUserId} limit={6} />
+              </div>
+            </div>
           </div>
 
           {/* Right Sidebar - Widgets - Simplified on Mobile */}
@@ -2974,6 +2989,11 @@ export default function Home() {
             {/* Messages Widget - Always Show */}
             <div>
               <MessagesWidget userId={currentUserId} />
+            </div>
+
+            {/* Events Near You Widget */}
+            <div>
+              <ContextualEventRecommendations userId={currentUserId} limit={6} />
             </div>
 
             {/* City Map Widget - Desktop Only - Interactive map showing users, events, and businesses */}

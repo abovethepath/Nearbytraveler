@@ -6634,6 +6634,196 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // Contextual event recommendations
+  app.get("/api/contextual-events/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const limit = parseInt(req.query.limit as string) || 8;
+
+      // Get user info and travel status
+      const user = await storage.getUser(userId.toString());
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      // Get user's travel plans to determine current location
+      const userTravelPlans = await db
+        .select()
+        .from(travelPlans)
+        .where(eq(travelPlans.userId, userId));
+
+      const activeTravelPlan = userTravelPlans.find(plan => plan.status === 'active');
+      const isTraverling = !!activeTravelPlan;
+      const currentLocation = isTraverling ? activeTravelPlan.destination : user.hometownCity;
+      const travelDestination = activeTravelPlan?.destination;
+
+      // Get user interests and activities for matching
+      const userInterests = parseArray(user.interests || []);
+      const userActivities = parseArray(user.localActivities || []).concat(parseArray(user.preferredActivities || []));
+
+      // Get events near current location
+      let eventsQuery = db
+        .select({
+          id: events.id,
+          title: events.title,
+          description: events.description,
+          location: events.location,
+          eventDate: events.eventDate,
+          startTime: events.startTime,
+          endTime: events.endTime,
+          category: events.category,
+          price: events.price,
+          freeEvent: events.freeEvent,
+          maxAttendees: events.maxAttendees,
+          organizer: events.organizer,
+          tags: events.tags,
+          attendeeCount: sql<number>`(
+            SELECT COUNT(*) 
+            FROM ${eventRsvps} 
+            WHERE ${eventRsvps.eventId} = ${events.id} 
+            AND ${eventRsvps.status} = 'attending'
+          )`.as('attendeeCount')
+        })
+        .from(events)
+        .where(
+          and(
+            gte(events.eventDate, new Date().toISOString().split('T')[0]),
+            or(
+              ilike(events.location, `%${currentLocation}%`),
+              ilike(events.location, `%${user.hometownCity}%`)
+            )
+          )
+        )
+        .limit(limit * 2); // Get more to filter and score
+
+      const nearbyEvents = await eventsQuery;
+
+      // Score events based on relevance
+      const scoredEvents = nearbyEvents.map(event => {
+        let score = 0;
+        const reasons = [];
+        const tags = [];
+
+        // Interest matching
+        const eventTags = parseArray(event.tags || []);
+        const interestMatches = userInterests.filter(interest => 
+          eventTags.some(tag => tag.toLowerCase().includes(interest.toLowerCase())) ||
+          event.title.toLowerCase().includes(interest.toLowerCase()) ||
+          event.description.toLowerCase().includes(interest.toLowerCase())
+        );
+        
+        if (interestMatches.length > 0) {
+          score += 0.4 * (interestMatches.length / userInterests.length);
+          reasons.push(`Matches ${interestMatches.length} of your interests`);
+          tags.push(...interestMatches.slice(0, 2));
+        }
+
+        // Activity matching
+        const activityMatches = userActivities.filter(activity => 
+          eventTags.some(tag => tag.toLowerCase().includes(activity.toLowerCase())) ||
+          event.title.toLowerCase().includes(activity.toLowerCase()) ||
+          event.description.toLowerCase().includes(activity.toLowerCase())
+        );
+        
+        if (activityMatches.length > 0) {
+          score += 0.3 * (activityMatches.length / userActivities.length);
+          reasons.push(`Matches your preferred activities`);
+          tags.push(...activityMatches.slice(0, 2));
+        }
+
+        // Location relevance
+        if (isTraverling && event.location.toLowerCase().includes(currentLocation.toLowerCase())) {
+          score += 0.2;
+          reasons.push(`Near your travel destination`);
+          tags.push('Travel destination');
+        } else if (!isTraverling && event.location.toLowerCase().includes(user.hometownCity.toLowerCase())) {
+          score += 0.15;
+          reasons.push(`In your hometown area`);
+          tags.push('Local event');
+        }
+
+        // Time relevance (events sooner get higher score)
+        const eventDate = new Date(event.eventDate);
+        const daysFromNow = Math.ceil((eventDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+        if (daysFromNow <= 7) {
+          score += 0.1;
+          reasons.push(`Coming up soon`);
+          tags.push('This week');
+        }
+
+        // Free events get slight boost
+        if (event.freeEvent) {
+          score += 0.05;
+          tags.push('Free');
+        }
+
+        // Popular events (more attendees)
+        if (event.attendeeCount > 10) {
+          score += 0.05;
+          reasons.push(`Popular event`);
+          tags.push('Popular');
+        }
+
+        const recommendationReason = reasons.length > 0 ? reasons[0] : 'Event in your area';
+
+        return {
+          eventId: event.id,
+          title: event.title,
+          description: event.description,
+          location: event.location,
+          startDate: event.eventDate,
+          category: event.category || 'Event',
+          price: event.price,
+          freeEvent: event.freeEvent,
+          attendeeCount: event.attendeeCount,
+          maxAttendees: event.maxAttendees,
+          organizer: event.organizer || 'Event Organizer',
+          relevanceScore: Math.min(score, 1), // Cap at 1
+          contextualFactors: {
+            locationMatch: isTraverling && event.location.toLowerCase().includes(currentLocation.toLowerCase()) ? 1 : 0.5,
+            interestMatch: interestMatches.length / Math.max(userInterests.length, 1),
+            timeRelevance: daysFromNow <= 7 ? 1 : 0.5,
+            weatherRelevance: 0.5,
+            travelContext: isTraverling ? 1 : 0,
+            socialProof: Math.min(event.attendeeCount / 20, 1),
+            personalHistory: 0.5
+          },
+          recommendationReason,
+          contextualTags: [...new Set(tags)].slice(0, 3) // Remove duplicates, limit to 3
+        };
+      });
+
+      // Sort by relevance score and take top results
+      const topEvents = scoredEvents
+        .sort((a, b) => b.relevanceScore - a.relevanceScore)
+        .slice(0, limit);
+
+      const averageScore = topEvents.length > 0 
+        ? topEvents.reduce((sum, event) => sum + event.relevanceScore, 0) / topEvents.length 
+        : 0;
+
+      res.json({
+        userId,
+        context: {
+          location: currentLocation,
+          isTraverling,
+          travelDestination,
+          interests: userInterests.length,
+          activities: userActivities.length
+        },
+        recommendations: topEvents,
+        meta: {
+          total: topEvents.length,
+          averageScore: Math.round(averageScore * 100) / 100
+        }
+      });
+
+    } catch (error: any) {
+      console.error('Contextual events error:', error);
+      res.status(500).json({ error: "Failed to get contextual events" });
+    }
+  });
+
   // Get business deals analytics
   app.get("/api/business-deals/analytics", async (req, res) => {
     try {
