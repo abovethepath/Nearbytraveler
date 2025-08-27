@@ -209,6 +209,19 @@ const EventsGrid = ({
                   {eventTitle}
                 </h3>
                 
+                {/* Date and Time - Clean text with icon */}
+                <div className="flex items-center gap-2 text-gray-300 text-sm mb-3">
+                  <Calendar className="h-4 w-4 flex-shrink-0" />
+                  <span>
+                    {eventDate}
+                    {startTime && (
+                      <span className="ml-2">at {startTime}</span>
+                    )}
+                    {endTime && startTime !== endTime && (
+                      <span> - {endTime}</span>
+                    )}
+                  </span>
+                </div>
 
                 {/* Description - Like business description */}
                 {event.description && (
