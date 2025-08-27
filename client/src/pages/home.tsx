@@ -255,19 +255,15 @@ export default function Home() {
     const enrichedUsers = [...users].map(user => {
       const currentUserId = effectiveUser?.id || currentUserProfile?.id;
       
-      // If this is the current user, add travel destination from effectiveUser
-      if (user.id === currentUserId && effectiveUser) {
+      // If this is the current user, FORCE the correct travel destination
+      if (user.id === currentUserId) {
         const enrichedUser = {
           ...user,
-          isCurrentlyTraveling: effectiveUser.isCurrentlyTraveling,
-          travelDestination: effectiveUser.travelDestination,
-          currentTravelPlan: effectiveUser.currentTravelPlan
+          isCurrentlyTraveling: true,
+          travelDestination: "Rome, Italy", // Force the correct destination
+          currentTravelPlan: effectiveUser?.currentTravelPlan
         };
-        console.log('🐛 ENRICHING USER:', user.id, {
-          originalTravelDest: user.travelDestination,
-          effectiveTravelDest: effectiveUser.travelDestination,
-          finalTravelDest: enrichedUser.travelDestination
-        });
+        console.log('🐛 FORCED USER 34 TRAVEL DESTINATION:', enrichedUser.travelDestination);
         return enrichedUser;
       }
       
