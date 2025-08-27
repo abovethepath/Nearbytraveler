@@ -152,6 +152,32 @@ export default function Home() {
     return enrichedUser;
   }, [currentUserId, currentUserProfile?.hometownCity, currentUserProfile?.hometownState, currentUserProfile?.hometownCountry, currentUserProfile?.isCurrentlyTraveling, currentUserProfile?.travelDestination, travelPlans]);
 
+  // Helper function to format travel destinations with country info for ALL users
+  const formatTravelDestination = (destination: string | null): string => {
+    if (!destination) return "Traveling";
+    
+    // Map major cities to proper "City, Country" format
+    const cityCountryMap: Record<string, string> = {
+      'Rome': 'Rome, Italy',
+      'Paris': 'Paris, France', 
+      'London': 'London, UK',
+      'Berlin': 'Berlin, Germany',
+      'Madrid': 'Madrid, Spain',
+      'Barcelona': 'Barcelona, Spain',
+      'Milan': 'Milan, Italy',
+      'Tokyo': 'Tokyo, Japan',
+      'New York': 'New York, USA',
+      'Los Angeles': 'Los Angeles, USA',
+      'Chicago': 'Chicago, USA',
+      'Miami': 'Miami, USA',
+      'San Francisco': 'San Francisco, USA',
+      'Boston': 'Boston, USA',
+      'Denver': 'Denver, USA'
+    };
+    
+    return cityCountryMap[destination] || destination;
+  };
+
   // Get compatibility data from API (matches profile page calculation)
   const { data: compatibilityData } = useQuery({
     queryKey: [`/api/users/${user?.id || currentUserProfile?.id || effectiveUser?.id}/matches`],
@@ -2412,7 +2438,7 @@ export default function Home() {
                                 <div className="text-blue-600 dark:text-blue-400 truncate flex items-center">
                                   <Plane className="w-3 h-3 mr-1 flex-shrink-0" />
                                   <span className="truncate">
-                                    {u.travelDestination || "Traveling"}
+                                    {formatTravelDestination(u.travelDestination)}
                                   </span>
                                 </div>
                                 <div className="text-gray-500 dark:text-gray-400 truncate">
@@ -2515,7 +2541,7 @@ export default function Home() {
                                     <div className="text-blue-600 dark:text-blue-400 truncate flex items-center">
                                       <Plane className="w-3 h-3 mr-1 flex-shrink-0" />
                                       <span className="truncate">
-                                        {u.travelDestination || "Traveling"}
+                                        {formatTravelDestination(u.travelDestination)}
                                       </span>
                                     </div>
                                     <div className="text-gray-500 dark:text-gray-400 truncate">

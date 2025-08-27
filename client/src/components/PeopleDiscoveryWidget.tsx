@@ -41,6 +41,32 @@ export function PeopleDiscoveryWidget({
   const currentUserId = propCurrentUserId || currentUser?.id;
   const [displayCount, setDisplayCount] = React.useState(8); // Show 8 people initially (2 rows x 4 cols)
 
+  // Helper function to format travel destinations with country info for ALL users
+  const formatTravelDestination = (destination: string | null): string => {
+    if (!destination) return "Traveling";
+    
+    // Map major cities to proper "City, Country" format
+    const cityCountryMap: Record<string, string> = {
+      'Rome': 'Rome, Italy',
+      'Paris': 'Paris, France', 
+      'London': 'London, UK',
+      'Berlin': 'Berlin, Germany',
+      'Madrid': 'Madrid, Spain',
+      'Barcelona': 'Barcelona, Spain',
+      'Milan': 'Milan, Italy',
+      'Tokyo': 'Tokyo, Japan',
+      'New York': 'New York, USA',
+      'Los Angeles': 'Los Angeles, USA',
+      'Chicago': 'Chicago, USA',
+      'Miami': 'Miami, USA',
+      'San Francisco': 'San Francisco, USA',
+      'Boston': 'Boston, USA',
+      'Denver': 'Denver, USA'
+    };
+    
+    return cityCountryMap[destination] || destination;
+  };
+
   // Debug current user ID
   React.useEffect(() => {
     console.log(`🔍 PEOPLE DISCOVERY WIDGET: currentUser:`, currentUser?.username || 'null', 'ID:', currentUserId || 'undefined', 'prop ID:', propCurrentUserId || 'undefined');
@@ -214,7 +240,7 @@ export function PeopleDiscoveryWidget({
         if (travelDestination) {
           return {
             isTraveling: true,
-            currentLocation: travelDestination,
+            currentLocation: formatTravelDestination(travelDestination),
             hometown: hometown
           };
         }
@@ -236,7 +262,7 @@ export function PeopleDiscoveryWidget({
       const active = plans.find(p => p?.status === 'active');
       if (active) {
         const city = active.destinationCity || active.destination?.split(',')[0];
-        if (city && city !== locationInfo.hometown) return `Traveling now: ${city}`;
+        if (city && city !== locationInfo.hometown) return `Traveling now: ${formatTravelDestination(city)}`;
       }
 
       const upcoming = plans
