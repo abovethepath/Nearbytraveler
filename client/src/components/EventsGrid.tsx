@@ -64,11 +64,14 @@ const EventsGrid = ({
       : ['/api/events/nearby', location],
     queryFn: async () => {
       if (useDualLocation && userId) {
-        console.log('🎯 EventsGrid: Fetching dual location events');
+        console.log('🎯 EventsGrid: Fetching dual location events', { userId, travelDestination, useDualLocation });
         const url = `/api/events/nearby-dual?userId=${userId}&travelDestination=${encodeURIComponent(travelDestination || '')}`;
+        console.log('🎯 EventsGrid: Calling URL:', url);
         const response = await fetch(url);
         if (!response.ok) throw new Error('Failed to fetch dual location events');
-        return response.json();
+        const data = await response.json();
+        console.log('🎯 EventsGrid: Got dual location events:', data.length);
+        return data;
       } else {
         console.log('🎯 EventsGrid: Fetching single location events');
         const url = location 
