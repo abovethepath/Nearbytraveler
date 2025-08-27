@@ -35,12 +35,10 @@ export default function ChatroomPage() {
   const params = useParams();
   const rawChatroomId = parseInt(params.id || '0');
   
-  console.log(`🔥 CHATROOM PAGE: Attempting to load chatroom ID: ${rawChatroomId}`);
   
   // Force redirect invalid IDs immediately at the top
   const chatroomId = (() => {
     if (rawChatroomId === 200 || rawChatroomId === 201 || rawChatroomId === 202 || rawChatroomId > 213) {
-      console.log(`🔀 REDIRECT: Invalid chatroom ID ${rawChatroomId}, redirecting to 198`);
       // Force immediate redirect
       window.location.href = '/chatroom/198';
       return 198; // Use valid ID temporarily
@@ -66,10 +64,6 @@ export default function ChatroomPage() {
   
   const currentUser = getCurrentUser();
   
-  // Debug user authentication
-  useEffect(() => {
-    console.log('🔥 CHATROOM DEBUG: Current user:', currentUser?.username || 'not found', 'ID:', currentUser?.id || 'undefined');
-  }, [currentUser]);
   
   // Scroll to top when entering chatroom
   useEffect(() => {
@@ -104,11 +98,10 @@ export default function ChatroomPage() {
       }
       
       const data = await response.json();
-      console.log('🔥 CHATROOM DEBUG: Messages loaded:', data?.length || 0, 'messages');
       return data;
     },
     onError: (error) => {
-      console.error('🔥 CHATROOM ERROR: Failed to load messages:', error);
+      console.error('Failed to load messages:', error);
     }
   });
 

@@ -94,16 +94,6 @@ export default function SimpleChatroomPage() {
   // Check membership when members data changes - SIMPLE CHECK ONLY
   const userIsMember = Array.isArray(members) ? members.some((member: ChatMember) => member.user_id === currentUserId) : false;
   
-  // DEBUG: Log what we're getting from API
-  if (process.env.NODE_ENV === 'development') {
-    console.log('🔍 MEMBERS DEBUG:', {
-      members: members,
-      membersLength: members?.length,
-      currentUserId: currentUserId,
-      userIsMember: userIsMember,
-      memberUserIds: Array.isArray(members) ? members.map(m => m.user_id) : 'NOT_ARRAY'
-    });
-  }
 
   // Get messages - only fetch if user is joined
   const { data: messages = [], isLoading: messagesLoading, isFetching: messagesFetching, refetch: refetchMessages } = useQuery<ChatMessage[]>({
@@ -208,8 +198,6 @@ export default function SimpleChatroomPage() {
       if (!currentUser?.id) throw new Error("User not found");
       if (!userIsMember) throw new Error("You must join the chatroom first");
 
-      console.log(`💬 Sending message: "${content.substring(0, 50)}..."`);
-      
       // Try multiple endpoints and methods for sending messages
       const messageAttempts = [
         // Standard REST approaches
@@ -238,7 +226,6 @@ export default function SimpleChatroomPage() {
         if (messageSuccessful) break;
         
         try {
-          console.log(`🔄 Trying message: POST ${attempt.url} with body: ${JSON.stringify(attempt.body)}...`);
           
           const response = await fetch(attempt.url, {
             method: 'POST',
@@ -252,19 +239,16 @@ export default function SimpleChatroomPage() {
             credentials: 'include'
           });
           
-          console.log(`📡 Response: ${response.status} ${response.statusText}`);
           
           // Check if response is HTML (error page) vs JSON
           const contentType = response.headers.get('content-type');
           if (contentType && contentType.includes('text/html')) {
             const htmlError = await response.text();
-            console.log(`❌ Got HTML instead of JSON: ${htmlError.substring(0, 100)}...`);
             throw new Error(`Server returned HTML error page (${response.status})`);
           }
           
           if (!response.ok) {
             const errorText = await response.text();
-            console.log(`❌ API Error: ${errorText}`);
             throw new Error(`${response.status}: ${errorText}`);
           }
           
@@ -279,17 +263,14 @@ export default function SimpleChatroomPage() {
               data = JSON.parse(responseText);
             }
           } catch (parseError) {
-            console.log(`❌ JSON parse error: ${parseError.message}`);
             // If we get here, the API might return non-JSON success responses
             data = { success: true };
           }
           
-          console.log('✅ Message sent successfully!');
           messageSuccessful = true;
           return data;
           
         } catch (error) {
-          console.log(`⚠️ ${attempt.url} failed: ${error.message}`);
           lastError = error;
         }
       }
@@ -306,7 +287,6 @@ export default function SimpleChatroomPage() {
       });
     },
     onError: (error: any) => {
-      console.log(`❌ Failed to send message: ${error.message}`);
       toast({
         title: "Failed to send message",
         description: error.message,

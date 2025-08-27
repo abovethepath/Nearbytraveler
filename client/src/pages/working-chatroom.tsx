@@ -107,8 +107,6 @@ export default function WorkingChatroom() {
         apiRequest(`/api/chatrooms/${chatroomId}/members`)
       ]);
       
-      console.log('✅ Chatroom data:', chatroomData);
-      console.log('✅ Members data:', membersData);
       
       setChatroom(Array.isArray(chatroomData) ? chatroomData[0] : chatroomData);
       setMembers(Array.isArray(membersData) ? membersData : []);
@@ -118,10 +116,8 @@ export default function WorkingChatroom() {
       if (isMember) {
         try {
           const messagesData = await apiRequest(`/api/chatrooms/${chatroomId}/messages`);
-          console.log('✅ Messages data:', messagesData);
           setMessages(Array.isArray(messagesData) ? messagesData : []);
         } catch (error) {
-          console.log('⚠️ Could not load messages (user may not be member):', error);
         }
       }
       
@@ -201,7 +197,6 @@ export default function WorkingChatroom() {
     
     setIsSending(true);
     try {
-      console.log('💬 Sending message:', messageText);
       await apiRequest(`/api/chatrooms/${chatroomId}/messages`, {
         method: 'POST',
         body: JSON.stringify({ content: messageText.trim() })
@@ -244,7 +239,6 @@ export default function WorkingChatroom() {
         const messagesData = await apiRequest(`/api/chatrooms/${chatroomId}/messages`);
         setMessages(Array.isArray(messagesData) ? messagesData : []);
       } catch (error) {
-        console.log('⚠️ Auto-refresh failed:', error);
       }
     }, 5000);
     
