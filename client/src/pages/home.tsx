@@ -2729,7 +2729,7 @@ export default function Home() {
             )}
 
 
-            {/* Nearby Traveler Community Events Section - PRIORITY */}
+            {/* Nearby Traveler Community Events Section - ONLY COMMUNITY EVENTS */}
             <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border shadow-sm">
               <div className="flex items-center justify-between mb-4">
                 <div>
@@ -2753,33 +2753,6 @@ export default function Home() {
                 travelDestination={effectiveUser?.travelDestination}
                 useDualLocation={!!effectiveUser?.isCurrentlyTraveling}
                 showCommunityOnly={true}
-              />
-            </div>
-
-            {/* External Events Section - API Events */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border shadow-sm">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <h2 className="text-xl font-bold text-gray-900 dark:text-white">Local Events & Activities</h2>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Popular events from local venues and organizations</p>
-                </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setLocation('/discover')}
-                  className="text-gray-600 dark:text-gray-400"
-                >
-                  <Sparkles className="w-4 h-4 mr-1" />
-                  Explore More
-                </Button>
-              </div>
-              <EventsGrid
-                events={userPriorityEvents?.filter((event: any) => !event.organizerId) || []}
-                displayCount={6}
-                onShowMore={() => {}}
-                travelDestination={effectiveUser?.travelDestination}
-                useDualLocation={!!effectiveUser?.isCurrentlyTraveling}
-                showExternalOnly={true}
               />
             </div>
 
