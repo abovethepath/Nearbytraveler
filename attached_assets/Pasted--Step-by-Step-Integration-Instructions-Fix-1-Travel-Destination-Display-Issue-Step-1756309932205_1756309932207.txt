@@ -1,0 +1,104 @@
+# Step-by-Step Integration Instructions
+
+## 🔧 Fix 1: Travel Destination Display Issue
+
+### Step 1: Add Debug Logs
+Add the debug code from the "Debugging Steps" artifact to see what data you're actually getting.
+
+### Step 2: Find Your User Grid Rendering
+Look for where you render users in your Home component. It might look something like:
+```jsx
+{users?.map(user => (
+  <UserCard key={user.id} user={user} ... />
+))}
+```
+
+### Step 3: Replace with Enriched Version
+Replace the user mapping with the `renderUserGrid()` function from the debugging artifact.
+
+### Step 4: Update UserCard Component
+Replace your existing UserCard component with the updated version that properly displays travel destinations.
+
+### Step 5: Check Browser Console
+1. Open browser dev tools (F12)
+2. Look for console logs starting with 🔍
+3. Verify that:
+   - `effectiveUser.travelDestination` shows "Rome"
+   - `effectiveUser.isCurrentlyTraveling` is `true`
+   - Enriched users have proper `displayLocation`
+
+---
+
+## 🌍 Fix 2: Dual Location Events
+
+### Step 1: Update Backend API
+Create the `/api/events/nearby-dual` endpoint using the code from the "Dual Location Events" artifact.
+
+### Step 2: Update Frontend Query
+In your Home component, replace the events query:
+```jsx
+// Replace this:
+const { data: nearbyEvents } = useQuery({
+  queryKey: [`/api/events/nearby`, getCurrentUserLocation()],
+  // ...
+});
+
+// With this:
+const { data: dualLocationEvents } = useQuery({
+  queryKey: [`/api/events/nearby-dual`, currentUserId, effectiveUser?.travelDestination],
+  enabled: !!currentUserId,
+});
+```
+
+### Step 3: Create Enhanced Events Component  
+Save the `EnhancedEventsGrid` component as `/components/EnhancedEventsGrid.tsx`
+
+### Step 4: Update Events Section
+Replace your events section with:
+```jsx
+<EnhancedEventsGrid
+  events={dualLocationEvents || []}
+  displayCount={eventsDisplayCount}
+  showLocationContext={true}
+  // ... other props
+/>
+```
+
+---
+
+## ✅ Expected Results
+
+### User Cards Should Show:
+- **Current User (You):** "Rome" with blue plane icon and "Currently in" badge
+- **Other Traveling Users:** Their actual destinations instead of "Traveling"
+- **Local Users:** Their hometown locations with house icon
+
+### Events Should Show:
+- **Blue badges:** "✈️ Near You in Rome" for Rome events
+- **Green badges:** "🏠 Back Home in [Your City]" for hometown events
+- Events sorted with current location prioritized
+
+---
+
+## 🐛 If Still Not Working
+
+1. **Check travel plans data structure:**
+   ```jsx
+   console.log('Travel plans:', travelPlans);
+   ```
+
+2. **Verify current travel detection:**
+   ```jsx
+   console.log('Current travel plan:', getCurrentTravelDestination(travelPlans || []));
+   ```
+
+3. **Check user enrichment:**
+   ```jsx
+   console.log('Enriched current user:', enrichedUsers.find(u => u.id === currentUserId));
+   ```
+
+4. **Verify UserCard receives correct data:**
+   Add logs inside the UserCard component to see what `user` prop contains.
+
+The key is ensuring the travel destination data flows correctly from:
+`travelPlans` → `effectiveUser` → `enrichedUser` → `UserCard`
