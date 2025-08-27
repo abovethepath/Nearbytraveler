@@ -1048,44 +1048,60 @@ export class DatabaseStorage implements IStorage {
       const cityName = city.split(',')[0].trim(); // Extract main city name
       console.log(`🎪 REAL EVENTS: Searching for REAL events in city: ${cityName}`);
       
+      // Import LA Metro area logic
+      const { isLAMetroCity, getMetroCities } = await import('../shared/constants');
+      
       // Import real event APIs
       const { fetchTicketmasterEvents } = await import('./apis/ticketmaster');
       const { fetchEventbriteEvents } = await import('./apis/eventbrite');
       
+      // Check if this is an LA Metro city - if so, search for ALL metro events
+      const searchCities = isLAMetroCity(cityName) ? getMetroCities(cityName) : [cityName];
+      console.log(`🎪 LA METRO: ${cityName} is LA Metro city: ${isLAMetroCity(cityName)}. Searching in ${searchCities.length} cities: ${searchCities.slice(0, 5).join(', ')}...`);
+      
+      // For external APIs, always use "Los Angeles" for LA Metro cities to get better results
+      const apiSearchCity = isLAMetroCity(cityName) ? 'Los Angeles' : cityName;
+      
       // Fetch REAL events from external APIs
       const [ticketmasterEvents, eventbriteEvents] = await Promise.all([
-        fetchTicketmasterEvents(cityName).catch(err => {
-          console.log(`🎫 TICKETMASTER: Error fetching ${cityName} events:`, err.message);
+        fetchTicketmasterEvents(apiSearchCity).catch(err => {
+          console.log(`🎫 TICKETMASTER: Error fetching ${apiSearchCity} events:`, err.message);
           return [];
         }),
-        fetchEventbriteEvents(cityName).catch(err => {
-          console.log(`🎪 EVENTBRITE: Error fetching ${cityName} events:`, err.message);
+        fetchEventbriteEvents(apiSearchCity).catch(err => {
+          console.log(`🎪 EVENTBRITE: Error fetching ${apiSearchCity} events:`, err.message);
           return [];
         })
       ]);
       
       const realEvents = [...ticketmasterEvents, ...eventbriteEvents];
-      console.log(`🎪 REAL EVENTS: Found ${realEvents.length} REAL events from APIs (${ticketmasterEvents.length} Ticketmaster + ${eventbriteEvents.length} Eventbrite)`);
+      console.log(`🎪 REAL EVENTS: Found ${realEvents.length} REAL events from APIs (${ticketmasterEvents.length} Ticketmaster + ${eventbriteEvents.length} Eventbrite) for ${apiSearchCity}`);
       
-      // Also get local database events to mix in
-      let whereCondition = or(
-        ilike(events.city, `%${cityName}%`),
-        ilike(events.location, `%${cityName}%`),
-        ilike(events.state, `%${cityName}%`)
-      )!;
+      // Get local database events - search ALL metro cities if it's LA Metro
+      let whereConditions = [];
+      for (const searchCity of searchCities) {
+        whereConditions.push(
+          or(
+            ilike(events.city, `%${searchCity}%`),
+            ilike(events.location, `%${searchCity}%`)
+          )
+        );
+      }
+      
+      const finalWhereCondition = whereConditions.length > 1 ? or(...whereConditions) : whereConditions[0];
       
       const today = new Date();
       today.setHours(0, 0, 0, 0); // Start of today
       
       const localEvents = await db.select().from(events)
         .where(and(
-          whereCondition, 
+          finalWhereCondition, 
           eq(events.isActive, true),
           gte(events.date, today) // Only future events
         ))
         .orderBy(asc(events.date)); // Upcoming events first
       
-      console.log(`🎪 REAL EVENTS: Found ${localEvents.length} local database events for ${cityName}`);
+      console.log(`🎪 REAL EVENTS: Found ${localEvents.length} local database events for LA Metro area (${searchCities.length} cities)`);
 
       // Get participant counts for local events
       const participantCounts = await Promise.all(
