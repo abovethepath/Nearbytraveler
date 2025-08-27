@@ -8781,7 +8781,7 @@ export class DatabaseStorage implements IStorage {
     try {
       // Since event chatrooms use the city chatroom infrastructure, 
       // we can use the existing city chatroom message methods
-      return await this.getCityChatroomMessages(chatroomId);
+      return await this.getChatroomMessages(chatroomId);
     } catch (error) {
       console.error('Error fetching event chatroom messages:', error);
       return [];
@@ -8792,7 +8792,12 @@ export class DatabaseStorage implements IStorage {
     try {
       // Since event chatrooms use the city chatroom infrastructure,
       // we can use the existing city chatroom message methods
-      return await this.createCityChatroomMessage(chatroomId, senderId, content);
+      return await this.createChatroomMessage({
+        chatroomId,
+        senderId,
+        content,
+        messageType: 'text'
+      });
     } catch (error) {
       console.error('Error creating event chatroom message:', error);
       throw error;
