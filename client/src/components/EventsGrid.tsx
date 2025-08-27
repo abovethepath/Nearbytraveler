@@ -129,7 +129,7 @@ const EventsGrid = ({
       <div className={`space-y-4 ${className}`}>
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-            {showLocation && location ? `Events in ${location}` : "Nearby Events"}
+            Events Near You
           </h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -168,7 +168,7 @@ const EventsGrid = ({
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-          {showLocation && location ? `Events in ${location}` : "Events Near Me"}
+          Events Near You
         </h2>
       </div>
       
