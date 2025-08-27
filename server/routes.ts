@@ -4351,21 +4351,32 @@ Questions? Just reply to this message. Welcome aboard!
         
         if (process.env.NODE_ENV === 'development') console.log(`🌍 EVENTS: Final searchCities array:`, searchCities);
         
-        // Search events in relevant cities - strict location matching
+        // Search events in relevant cities - OPTIMIZED single query
         const now = new Date();
         const sixWeeksFromNow = new Date(now.getTime() + (42 * 24 * 60 * 60 * 1000));
         
-        for (const searchCity of searchCities) {
-          if (process.env.NODE_ENV === 'development') console.log(`🔍 EVENTS: Searching for events in city: "${searchCity}"`);
-          const cityEvents = await db.select().from(events)
+        // PERFORMANCE FIX: Use single query with OR condition instead of loop
+        if (searchCities.length === 1) {
+          // Single city - simple query
+          eventsQuery = await db.select().from(events)
             .where(and(
-              eq(events.city, searchCity), // Use exact match to prevent bleeding
+              eq(events.city, searchCities[0]),
               gte(events.date, now),
               lte(events.date, sixWeeksFromNow)
             ))
             .orderBy(asc(events.date));
-          if (process.env.NODE_ENV === 'development') console.log(`🔍 EVENTS: Found ${cityEvents.length} events in "${searchCity}"`);
-          eventsQuery.push(...cityEvents);
+          if (process.env.NODE_ENV === 'development') console.log(`🔍 EVENTS: Found ${eventsQuery.length} events in "${searchCities[0]}"`);
+        } else {
+          // Multiple cities - single query with IN clause
+          const { inArray } = await import('drizzle-orm');
+          eventsQuery = await db.select().from(events)
+            .where(and(
+              inArray(events.city, searchCities),
+              gte(events.date, now),
+              lte(events.date, sixWeeksFromNow)
+            ))
+            .orderBy(asc(events.date));
+          if (process.env.NODE_ENV === 'development') console.log(`🔍 EVENTS: Found ${eventsQuery.length} events across ${searchCities.length} metro cities`);
         }
         
         // Remove duplicates based on event ID
