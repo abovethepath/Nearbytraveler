@@ -2930,19 +2930,6 @@ export default function Home() {
               </div>
             )}
 
-            {/* Events Section */}
-            <div className="space-y-6 mt-8">
-              <div>
-                <EventsGrid 
-                  events={[]} 
-                  showLocation={false}
-                  className="w-full"
-                  useDualLocation={true}
-                  userId={currentUserId}
-                  travelDestination={effectiveUser?.travelDestination}
-                />
-              </div>
-            </div>
           </div>
 
           {/* Right Sidebar - Widgets - Simplified on Mobile */}
