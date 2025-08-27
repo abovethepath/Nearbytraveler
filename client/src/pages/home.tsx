@@ -70,6 +70,64 @@ export default function Home() {
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [sortBy, setSortBy] = useState<'recent' | 'active' | 'compatibility' | 'travel_experience' | 'closest_nearby' | 'aura' | 'references' | 'alphabetical'>('recent');
 
+  const { user, setUser } = useContext(AuthContext);
+
+  // Fetch current user profile data
+  const getCurrentUserId = () => {
+    return user?.id || JSON.parse(localStorage.getItem('travelconnect_user') || '{}')?.id;
+  };
+
+  const getUserId = () => getCurrentUserId();
+  const currentUserId = getUserId();
+
+  const { data: currentUserProfile, isLoading: isLoadingCurrentUser } = useQuery<User>({
+    queryKey: [`/api/users/${currentUserId}`],
+    enabled: !!currentUserId,
+  });
+
+  const { data: travelPlans, isLoading: isLoadingTravelPlans } = useQuery({
+    queryKey: [`/api/travel-plans/${currentUserId}`],
+    enabled: !!currentUserId,
+  });
+
+  const matchedUsersUserId = currentUserId;
+
+  // Create effective user with proper travel context for metro area detection
+  const effectiveUser = useMemo(() => {
+    console.log('Discovery memo - currentUserId:', currentUserId);
+    
+    if (!currentUserId) {
+      return null;
+    }
+    
+    // Get the best available user data
+    const userData = currentUserProfile || user || JSON.parse(localStorage.getItem('travelconnect_user') || '{}');
+    
+    if (!userData?.id) {
+      return null;
+    }
+
+    // Calculate current travel status with proper destination logic
+    const currentTravelPlan = getCurrentTravelDestination(travelPlans || []);
+    const isCurrentlyTraveling = !!currentTravelPlan;
+    const travelDestination = currentTravelPlan?.destination || null;
+
+    // Return enriched user data with travel context
+    const enrichedUser = {
+      ...userData,
+      isCurrentlyTraveling,
+      travelDestination,
+      ...(currentTravelPlan && {
+        currentTravelPlan,
+        travelStartDate: currentTravelPlan.startDate,
+        travelEndDate: currentTravelPlan.endDate,
+        travelPlanId: currentTravelPlan.id
+      })
+    };
+
+    return enrichedUser;
+  }, [currentUserId, currentUserProfile?.hometownCity, currentUserProfile?.hometownState, currentUserProfile?.hometownCountry, currentUserProfile?.isCurrentlyTraveling, currentUserProfile?.travelDestination, travelPlans]);
+
   // Get compatibility data from API (matches profile page calculation)
   const { data: compatibilityData } = useQuery({
     queryKey: [`/api/users/${user?.id || currentUserProfile?.id || effectiveUser?.id}/matches`],
@@ -247,7 +305,6 @@ export default function Home() {
     }));
   };
 
-  const { user, setUser } = useContext(AuthContext);
   const isMobile = useIsMobile();
   const isDesktop = useIsDesktop();
 
