@@ -2338,7 +2338,7 @@ export default function Home() {
                   <div className="grid grid-cols-2 gap-3">
                     {getSortedUsers(filteredUsers).slice(0, displayLimit).map((u: any) => {
                       const thingsInCommon = getThingsInCommon(u);
-                      const isCurrentlyTraveling = u.isCurrentlyTraveling && u.travelDestination;
+                      const isCurrentlyTraveling = u.isCurrentlyTraveling || u.travelDestination;
                       
                       return (
                         <button
@@ -2440,7 +2440,7 @@ export default function Home() {
                       <div className="hidden lg:grid grid-cols-4 gap-4">
                         {people.map((u: any) => {
                           const thingsInCommon = getThingsInCommon(u);
-                          const isCurrentlyTraveling = u.isCurrentlyTraveling && u.travelDestination;
+                          const isCurrentlyTraveling = u.isCurrentlyTraveling || u.travelDestination;
                           
                           return (
                             <button

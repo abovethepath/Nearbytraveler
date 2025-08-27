@@ -508,7 +508,20 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
             </Badge>
             <Badge className="bg-blue-500 text-white shadow-md border-blue-600 text-sm px-2 py-1 font-medium">
               <span style={{ color: 'white !important' }}>
-                {compatibilityData?.totalCommonalities ?? commonalities.totalCount} Things
+                {matchData ? (
+                  matchData.sharedInterests?.length + 
+                  matchData.sharedActivities?.length + 
+                  matchData.sharedEvents?.length + 
+                  matchData.sharedLanguages?.length + 
+                  matchData.sharedCountries?.length + 
+                  matchData.sharedTravelIntent?.length + 
+                  matchData.sharedSexualPreferences?.length +
+                  (matchData.bothVeterans ? 1 : 0) +
+                  (matchData.bothActiveDuty ? 1 : 0) +
+                  (matchData.locationOverlap ? 1 : 0) +
+                  (matchData.dateOverlap ? 1 : 0) +
+                  (matchData.userTypeCompatibility ? 1 : 0)
+                ) : commonalities.totalCount} Things
               </span>
             </Badge>
           </div>
