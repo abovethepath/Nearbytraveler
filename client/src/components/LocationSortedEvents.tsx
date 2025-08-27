@@ -103,9 +103,19 @@ export default function LocationSortedEvents({
 
   const formatEventLocation = (event: Event) => {
     const parts = [];
+    
+    // Add venue/business name first
     if (event.venue) parts.push(event.venue);
-    if (event.city) parts.push(event.city);
-    if (event.state) parts.push(event.state);
+    
+    // Add street address if available
+    if (event.address) parts.push(event.address);
+    
+    // Add city, state
+    if (event.city && event.state) {
+      parts.push(`${event.city}, ${event.state}`);
+    } else if (event.city) {
+      parts.push(event.city);
+    }
     
     return parts.join(', ') || event.location || 'Location TBD';
   };
