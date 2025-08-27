@@ -1,0 +1,65 @@
+Debug Step 1: Find What Your Weather Widget Actually Uses
+First, can you show me your CurrentLocationWeatherWidget component code? I need to see exactly how it gets the location that correctly shows "Rome".
+Debug Step 2: Find Your Actual UserCard Component
+The issue is likely in your UserCard component. Can you show me the current code for /components/user-card.tsx?
+Quick Fix While We Debug
+In your Home component, add this console logging right after line 275 (where you create enrichedEffectiveUser):
+javascript// Add this right after the enrichedEffectiveUser definition
+console.log('🔍 DEBUG - Weather widget location source:');
+console.log('- effectiveUser:', effectiveUser?.location);  
+console.log('- travelPlans:', travelPlans);
+console.log('- getCurrentTravelDestination result:', getCurrentTravelDestination(travelPlans || []));
+console.log('- enrichedEffectiveUser:', enrichedEffectiveUser);
+
+// Also add this in your users mapping (around line 550)
+console.log('🔍 DEBUG - User enrichment for first user:', users[0]);
+Then in your browser console, tell me what those logs show.
+Immediate Targeted Fix
+Based on your code, try replacing this section (around line 270):
+javascript// REPLACE THIS:
+const enrichedEffectiveUser = enrichUserWithTravelData(effectiveUser, travelPlans);
+
+// WITH THIS:
+const enrichedEffectiveUser = useMemo(() => {
+  if (!effectiveUser) return null;
+  
+  const currentTravelPlan = getCurrentTravelDestination(travelPlans || []);
+  const actualCurrentLocation = currentTravelPlan?.destination || effectiveUser.location;
+  
+  console.log('🔍 FIXED enrichedEffectiveUser:', {
+    id: effectiveUser.id,
+    originalLocation: effectiveUser.location,
+    travelDestination: currentTravelPlan?.destination,
+    actualCurrentLocation
+  });
+  
+  return {
+    ...effectiveUser,
+    isCurrentlyTraveling: !!currentTravelPlan,
+    travelDestination: currentTravelPlan?.destination,
+    actualCurrentLocation // Add this new field
+  };
+}, [effectiveUser, travelPlans]);
+And in your users section (around line 550 where you call PeopleDiscoveryWidget), replace it with:
+javascript<PeopleDiscoveryWidget 
+  users={finalUsers.map(user => ({
+    ...user,
+    // Force the location display for current user
+    displayLocation: user.id === effectiveUser?.id 
+      ? enrichedEffectiveUser?.actualCurrentLocation 
+      : user.isCurrentlyTraveling && user.travelDestination
+        ? user.travelDestination
+        : [user.hometownCity, user.hometownState, user.hometownCountry].filter(Boolean).join(', ')
+  }))}
+  isLoading={usersLoading}
+  error={usersError}
+  onLocationFilter={handleLocationFilter}
+  className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm border border-gray-200/50 dark:border-gray-600/50 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300"
+/>
+Try this change first and tell me:
+
+What the console logs show
+If the user card location changes
+Show me your CurrentLocationWeatherWidget component code so I can copy its exact logic
+
+The problem is I'm guessing at your data flow instead of seeing the actual components that work.RetryClaude can make mistakes. Please double-check responses.Research Sonnet 4

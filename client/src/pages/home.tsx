@@ -132,6 +132,35 @@ export default function Home() {
     return enrichedUser;
   }, [currentUserId, currentUserProfile?.hometownCity, currentUserProfile?.hometownState, currentUserProfile?.hometownCountry, currentUserProfile?.isCurrentlyTraveling, currentUserProfile?.travelDestination, travelPlans]);
 
+  // FIXED enrichedEffectiveUser using exact Weather Widget logic
+  const enrichedEffectiveUser = useMemo(() => {
+    if (!effectiveUser) return null;
+    
+    const currentTravelPlan = getCurrentTravelDestination(travelPlans || []);
+    const actualCurrentLocation = currentTravelPlan?.destination || effectiveUser.location;
+    
+    console.log('🔍 FIXED enrichedEffectiveUser:', {
+      id: effectiveUser.id,
+      originalLocation: effectiveUser.location,
+      travelDestination: currentTravelPlan?.destination,
+      actualCurrentLocation
+    });
+    
+    return {
+      ...effectiveUser,
+      isCurrentlyTraveling: !!currentTravelPlan,
+      travelDestination: currentTravelPlan?.destination,
+      actualCurrentLocation // Add this new field
+    };
+  }, [effectiveUser, travelPlans]);
+
+  // Debug logging as requested
+  console.log('🔍 DEBUG - Weather widget location source:');
+  console.log('- effectiveUser:', effectiveUser?.location);  
+  console.log('- travelPlans:', travelPlans);
+  console.log('- getCurrentTravelDestination result:', getCurrentTravelDestination(travelPlans || []));
+  console.log('- enrichedEffectiveUser:', enrichedEffectiveUser);
+
   // Helper function to display travel destinations exactly as entered by user
   const formatTravelDestination = (destination: string | null): string => {
     console.log('🎯 formatTravelDestination called with:', destination);
@@ -2500,12 +2529,32 @@ export default function Home() {
                       <div className="hidden sm:block lg:hidden">
                         <PeopleDiscoveryWidget
                           people={people.map((user: any) => {
+                            // FIXED: Use enriched location data for current user
+                            const isCurrentUser = user.id === (effectiveUser?.id || currentUserProfile?.id || user?.id);
+                            let displayLocation = user.hometownCity && user.hometownCountry ? `${user.hometownCity}, ${user.hometownCountry.replace("United States","USA")}` : user.location || "Location not set";
+                            
+                            // Apply enriched location logic for current user
+                            if (isCurrentUser && enrichedEffectiveUser) {
+                              console.log('🔍 FIXING location for current user:', {
+                                userId: user.id,
+                                originalLocation: displayLocation,
+                                travelDestination: enrichedEffectiveUser.travelDestination,
+                                actualCurrentLocation: enrichedEffectiveUser.actualCurrentLocation
+                              });
+                              
+                              if (enrichedEffectiveUser.travelDestination) {
+                                displayLocation = enrichedEffectiveUser.travelDestination;
+                              } else if (enrichedEffectiveUser.actualCurrentLocation) {
+                                displayLocation = enrichedEffectiveUser.actualCurrentLocation;
+                              }
+                            }
+                            
                             return {
                               id: user.id,
                               username: user.username,
                               name: user.username,
                               profileImage: user.profileImage,
-                              location: user.hometownCity && user.hometownCountry ? `${user.hometownCity}, ${user.hometownCountry.replace("United States","USA")}` : user.location || "Location not set",
+                              location: displayLocation,
                               distance: user.hometownCity && user.hometownState ? `${user.hometownCity}, ${user.hometownState}` : user.location || "New member",
                               commonInterests: [],
                               userType: user.userType as "traveler" | "local" | "business",
