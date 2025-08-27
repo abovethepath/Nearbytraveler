@@ -2712,25 +2712,15 @@ export default function Home() {
 
             {/* Events Section - Enhanced Grid Layout */}
             <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border shadow-sm">
-              {(() => {
-                console.log('🏠 HOME: EventsGrid props:', {
-                  currentUserId,
-                  travelDestination: effectiveUser?.travelDestination,
-                  isCurrentlyTraveling: effectiveUser?.isCurrentlyTraveling,
-                  useDualLocation: !!effectiveUser?.isCurrentlyTraveling
-                });
-                return (
-                  <EventsGrid 
-                    location={getCurrentUserLocation()}
-                    limit={eventsDisplayCount}
-                    showLocation={true}
-                    className="events-grid-section"
-                    userId={currentUserId}
-                    travelDestination={effectiveUser?.travelDestination}
-                    useDualLocation={!!effectiveUser?.isCurrentlyTraveling}
-                  />
-                );
-              })()}
+              <EventsGrid 
+                location={getCurrentUserLocation()}
+                limit={eventsDisplayCount}
+                showLocation={true}
+                className="events-grid-section"
+                userId={currentUserId}
+                travelDestination={effectiveUser?.travelDestination}
+                useDualLocation={!!effectiveUser?.isCurrentlyTraveling}
+              />
             </div>
 
 
