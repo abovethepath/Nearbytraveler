@@ -335,6 +335,19 @@ export function PeopleDiscoveryWidget({
         
         {/* Main Content */}
         <div className="flex flex-col h-full">
+          {/* Things in Common - At the very top */}
+          {countInCommon > 0 && (
+            <div className="mb-3 bg-gradient-to-r from-green-100 to-blue-100 dark:from-green-900/30 dark:to-blue-900/30 rounded-lg p-2">
+              <p className="text-gray-800 dark:text-gray-200 text-sm font-medium text-center">
+                <span className="text-green-700 dark:text-green-300 font-bold">{countInCommon} Things</span>{' '}
+                <span className="text-blue-700 dark:text-blue-300">in Common</span>
+              </p>
+              <p className="text-gray-600 dark:text-gray-300 text-xs text-center mt-1">
+                {topCommon.join(' • ')}
+              </p>
+            </div>
+          )}
+
           {/* Large Profile Photo - Clickable */}
           <div className="flex-1 flex items-center justify-center">
             <div 
@@ -369,19 +382,6 @@ export function PeopleDiscoveryWidget({
                 From: {locationInfo.hometown} • {locationInfo.isTraveling ? `Currently in ${locationInfo.currentLocation}` : 'Currently home'}
               </p>
             </div>
-
-            {/* Things in Common - Below location, above photo */}
-            {countInCommon > 0 && (
-              <div className="mb-3 bg-gradient-to-r from-green-100 to-blue-100 dark:from-green-900/30 dark:to-blue-900/30 rounded-lg p-2">
-                <p className="text-gray-800 dark:text-gray-200 text-sm font-medium text-center">
-                  <span className="text-green-700 dark:text-green-300 font-bold">{countInCommon} Things</span>{' '}
-                  <span className="text-blue-700 dark:text-blue-300">in Common</span>
-                </p>
-                <p className="text-gray-600 dark:text-gray-300 text-xs text-center mt-1">
-                  {topCommon.join(' • ')}
-                </p>
-              </div>
-            )}
 
             {/* Stats */}
             <div className="mb-2">
