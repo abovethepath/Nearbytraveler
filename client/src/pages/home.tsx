@@ -1014,6 +1014,11 @@ export default function Home() {
     // CRITICAL FIX: Exclude business users from "Discover People" section FIRST
     if (otherUser.userType === "business") return false;
 
+    // CRITICAL FIX: Hide main user @nearbytravlr (ID 1) from all discovery
+    if (otherUser.id === 1 || otherUser.username === 'nearbytravlr') {
+      return false;
+    }
+
     // CRITICAL FIX: Include current user when they're in their travel destination
     // Current user should appear in "Discover People" especially as newest member
     if (otherUser.id === effectiveUser?.id) {
