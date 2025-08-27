@@ -1,0 +1,50 @@
+
+> rest-express@1.0.0 dev
+> tsx server/index.ts
+
+The `fetchConnectionCache` option is deprecated (now always `true`)
+Environment check: { SENDGRID_API_KEY: 'NOT FOUND', NODE_ENV: undefined }
+🚀 REGISTERING CRITICAL API ROUTES FIRST TO BYPASS VITE INTERCEPTION
+✅ CRITICAL API ROUTES REGISTERED BEFORE OTHER MIDDLEWARE
+Starting server initialization...
+Basic routes added, starting lazy route registration...
+Loading minimal routes for startup...
+Quick login fix temporarily disabled for deployment stability
+Minimal routes registered successfully
+Loading main API routes from routes.ts...
+📱 SMS Service: Twilio credentials not configured - SMS notifications disabled
+✅ CHATROOM CREATION ENABLED: Creating chatrooms for new cities as needed
+✅ Main API routes registered successfully
+🚀 REGISTERING CRITICAL API ROUTES TO BYPASS VITE INTERCEPTION
+🔧 Setting up Vite development server...
+5:25:47 AM [express] serving on port 5000
+🚀 Server successfully started on http://0.0.0.0:5000
+⚠️  Background services temporarily disabled during startup debugging
+✅ Server started successfully (background services disabled)
+Origin: undefined
+Origin: undefined
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Browserslist: browsers data (caniuse-lite) is 10 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Database connected successfully
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+5:25:53 AM [vite] (client) Pre-transform error: /home/runner/workspace/client/src/pages/home.tsx: Identifier 'matchedUsersUserId' has already been declared. (551:8)
+
+  549 |
+  550 |   // Get current user ID for matched users query (use the same ID)
+> 551 |   const matchedUsersUserId = currentUserId;
+      |         ^
+  552 |
+  553 |   // Query for matched users data
+  554 |   const { data: matchedUsers = [], isLoading: matchedUsersLoading, refetch: refetchMatchedUsers } = useQuery<User[]>({
+  Plugin: vite:react-babel
+  File: /home/runner/workspace/client/src/pages/home.tsx:551:8
+  549|  
+  550|    // Get current user ID for matched users query (use the same ID)
+  551|    const matchedUsersUserId = currentUserId;
+     |          ^
+  552|  
+  553|    // Query for matched users data

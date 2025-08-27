@@ -547,8 +547,6 @@ export default function Home() {
 
 
 
-  // Get current user ID for matched users query (use the same ID)
-  const matchedUsersUserId = currentUserId;
 
   // Query for matched users data
   const { data: matchedUsers = [], isLoading: matchedUsersLoading, refetch: refetchMatchedUsers } = useQuery<User[]>({
@@ -600,8 +598,6 @@ export default function Home() {
     return datesOverlap(start1, end1, start2, end2);
   };
 
-  // Get effective user for filtering (prioritize fresh API data)
-  const effectiveUser = currentUserProfile || user || (typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('travelconnect_user') || '{}') : null);
 
   // Server now handles all metropolitan area consolidation automatically
   // No client-side consolidation needed
