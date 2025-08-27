@@ -282,15 +282,18 @@ export default function Home() {
     enabled: !!(user?.id || currentUserProfile?.id || effectiveUser?.id),
   });
 
-  // Fix 3: Add events query with user-created priority
+  // ONLY USER-CREATED EVENTS: Filter out AI-generated events completely
   const { data: userPriorityEvents = [] } = useQuery({
     queryKey: ['/api/events', effectiveUser?.id],
     queryFn: async () => {
       const response = await fetch('/api/events');
       const allEvents = await response.json();
       
-      return allEvents.sort((a, b) => {
-        // USER CREATED EVENTS ALWAYS FIRST
+      // ONLY INCLUDE EVENTS WITH organizerId (user-created events)
+      const userCreatedEvents = allEvents.filter((event: any) => event.organizerId && event.organizerId > 0);
+      
+      return userCreatedEvents.sort((a, b) => {
+        // USER CREATED EVENTS PRIORITY BY USER
         const aIsUserCreated = a.createdBy === effectiveUser?.id || a.userId === effectiveUser?.id;
         const bIsUserCreated = b.createdBy === effectiveUser?.id || b.userId === effectiveUser?.id;
         
