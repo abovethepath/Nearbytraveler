@@ -217,7 +217,7 @@ export function PeopleDiscoveryWidget({
         (travelPlans as any).find((plan: any) => plan.status === 'active') : null;
       
       if (activeTravelPlan) {
-        const travelDestination = activeTravelPlan.destinationCity || activeTravelPlan.destination?.split(',')[0];
+        const travelDestination = activeTravelPlan.destination || activeTravelPlan.destinationCity;
         
         // ALWAYS show travel info when someone has an active travel plan
         if (travelDestination) {
@@ -244,7 +244,7 @@ export function PeopleDiscoveryWidget({
 
       const active = plans.find(p => p?.status === 'active');
       if (active) {
-        const city = active.destinationCity || active.destination?.split(',')[0];
+        const city = active.destination || active.destinationCity;
         if (city && city !== locationInfo.hometown) return `Traveling now: ${formatTravelDestination(city)}`;
       }
 
@@ -253,8 +253,8 @@ export function PeopleDiscoveryWidget({
         .sort((a, b) => new Date(a.startDate || 0).getTime() - new Date(b.startDate || 0).getTime())[0];
 
       if (upcoming) {
-        const city = upcoming.destinationCity || upcoming.destination?.split(',')[0];
-        if (city && city !== locationInfo.hometown) return `Next trip: ${city}`;
+        const city = upcoming.destination || upcoming.destinationCity;
+        if (city && city !== locationInfo.hometown) return `Next trip: ${formatTravelDestination(city)}`;
       }
 
       return null;
