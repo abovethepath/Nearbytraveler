@@ -229,7 +229,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
             </div>
           </div>
 
-          {/* Additional tags (mobile-friendly, no overlay) */}
+          {/* Only show essential info badges */}
           <div className="flex flex-wrap gap-2">
             {event.costEstimate && (
               <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
@@ -248,43 +248,6 @@ export default function EventCard({ event, compact = false, featured = false }: 
                 👥 Max {event.maxParticipants}
               </span>
             )}
-
-            {/* Show specific event tags - filter out redundant tags */}
-            {event.tags && event.tags.length > 0 && event.tags
-              .filter((tag: string) => {
-                if (!tag || typeof tag !== 'string') return false;
-                
-                // Filter out tags that are redundant with the main category
-                const categoryLower = (event.category || '').toLowerCase();
-                const tagLower = tag.toLowerCase().trim();
-                
-                // Skip empty tags
-                if (!tagLower) return false;
-                
-                // Remove exact matches or substring matches with category keywords
-                const categoryWords = categoryLower.split(/[,&\s]+/).filter((word: string) => word.length > 2);
-                const tagWords = tagLower.split(/[\s]+/);
-                
-                // Check if any tag word matches any category word
-                for (const tagWord of tagWords) {
-                  for (const categoryWord of categoryWords) {
-                    if (tagWord.includes(categoryWord) || categoryWord.includes(tagWord)) {
-                      return false; // Filter out redundant tag
-                    }
-                  }
-                }
-                
-                return true; // Keep non-redundant tag
-              })
-              .slice(0, 3)
-              .map((tag: string, index: number) => (
-                <span 
-                  key={index}
-                  className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200"
-                >
-                  {tag}
-                </span>
-              ))}
           </div>
 
           {/* Actions */}
