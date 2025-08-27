@@ -134,6 +134,7 @@ export default function Home() {
 
   // Helper function to display travel destinations exactly as entered by user
   const formatTravelDestination = (destination: string | null): string => {
+    console.log('🐛 formatTravelDestination called with:', destination);
     if (!destination) return "Traveling";
     
     // Simply return the destination as stored - no restrictions
