@@ -168,8 +168,8 @@ export default function Home() {
       return currentTravelPlan.destination;
     }
     
-    if (enrichedEffectiveUser?.isCurrentlyTraveling && enrichedEffectiveUser?.travelDestination) {
-      return enrichedEffectiveUser.travelDestination;
+    if (effectiveUser?.isCurrentlyTraveling && effectiveUser?.travelDestination) {
+      return effectiveUser.travelDestination;
     }
     
     if (effectiveUser?.location) {
