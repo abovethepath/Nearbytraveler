@@ -160,41 +160,32 @@ export default function Home() {
     });
   };
 
-  // Enhanced user enrichment function
+  // Enhanced user enrichment function - USE SAME LOGIC AS WEATHER WIDGET
   const enrichUserWithTravelData = (user: any, travelPlans?: any[]) => {
     debugTravelData("Raw user data", user, travelPlans);
     
-    const today = new Date();
     let effectiveDestination = null;
     let isTravel = false;
 
-    // Priority 1: Check active travel plans
-    if (travelPlans?.length) {
-      const activePlan = travelPlans.find((plan: any) => {
-        const startDate = new Date(plan.startDate);
-        const endDate = new Date(plan.endDate);
-        return today >= startDate && today <= endDate;
-      });
+    // Use the EXACT same logic as the weather widget
+    const currentDestination = getCurrentTravelDestination(travelPlans || []);
+    if (currentDestination && user.hometownCity) {
+      const travelDestination = currentDestination.toLowerCase();
+      const hometown = user.hometownCity.toLowerCase();
       
-      if (activePlan) {
-        effectiveDestination = activePlan.destinationCity || activePlan.destination;
+      // Only show as traveler if destination is different from hometown
+      if (!travelDestination.includes(hometown) && !hometown.includes(travelDestination)) {
+        effectiveDestination = currentDestination;
         isTravel = true;
-        console.log(`🎯 Active travel plan found for ${user.username}:`, effectiveDestination);
+        console.log(`🎯 WEATHER WIDGET LOGIC: ${user.username} traveling to:`, effectiveDestination);
       }
     }
 
-    // Priority 2: Check user's current travel status
+    // Fallback: Check user's current travel status
     if (!effectiveDestination && user.isCurrentlyTraveling && user.travelDestination) {
       effectiveDestination = user.travelDestination;
       isTravel = true;
       console.log(`🎯 User travel destination found for ${user.username}:`, effectiveDestination);
-    }
-
-    // Priority 3: Check current travel plan field
-    if (!effectiveDestination && user.currentTravelPlan?.destination) {
-      effectiveDestination = user.currentTravelPlan.destination;
-      isTravel = true;
-      console.log(`🎯 Current travel plan found for ${user.username}:`, effectiveDestination);
     }
 
     const enrichedUser = {
