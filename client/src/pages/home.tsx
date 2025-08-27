@@ -71,42 +71,59 @@ export default function Home() {
   const [sortBy, setSortBy] = useState<'recent' | 'active' | 'compatibility' | 'travel_experience' | 'closest_nearby' | 'aura' | 'references' | 'alphabetical'>('recent');
 
   // Function to calculate things in common between current user and another user
+  // This should match the calculation used on profile pages
   const getThingsInCommon = (otherUser: any) => {
     if (!effectiveUser) return 0;
     
     let commonCount = 0;
     
-    // Compare interests
-    const currentUserInterests = effectiveUser.interests || [];
-    const otherUserInterests = otherUser.interests || [];
-    const commonInterests = currentUserInterests.filter((interest: string) => 
-      otherUserInterests.some((other: string) => other.toLowerCase() === interest.toLowerCase())
+    // Compare interests (both regular and travel interests)
+    const currentUserInterests = [...(effectiveUser.interests || []), ...(effectiveUser.travelInterests || [])];
+    const otherUserInterests = [...(otherUser.interests || []), ...(otherUser.travelInterests || [])];
+    const commonInterests = currentUserInterests.filter(interest => 
+      otherUserInterests.some(other => other.toLowerCase().trim() === interest.toLowerCase().trim())
     );
     commonCount += commonInterests.length;
     
-    // Compare activities
+    // Compare activities (both local and preferred activities)
     const currentUserActivities = [...(effectiveUser.localActivities || []), ...(effectiveUser.preferredActivities || [])];
     const otherUserActivities = [...(otherUser.localActivities || []), ...(otherUser.preferredActivities || [])];
-    const commonActivities = currentUserActivities.filter((activity: string) => 
-      otherUserActivities.some((other: string) => other.toLowerCase() === activity.toLowerCase())
+    const commonActivities = currentUserActivities.filter(activity => 
+      otherUserActivities.some(other => other.toLowerCase().trim() === activity.toLowerCase().trim())
     );
     commonCount += commonActivities.length;
     
-    // Compare travel style
+    // Compare travel style/types
     const currentUserTravelStyle = effectiveUser.travelStyle || [];
     const otherUserTravelStyle = otherUser.travelStyle || [];
-    const commonTravelStyle = currentUserTravelStyle.filter((style: string) => 
-      otherUserTravelStyle.some((other: string) => other.toLowerCase() === style.toLowerCase())
+    const commonTravelStyle = currentUserTravelStyle.filter(style => 
+      otherUserTravelStyle.some(other => other.toLowerCase().trim() === style.toLowerCase().trim())
     );
     commonCount += commonTravelStyle.length;
     
-    // Compare languages
+    // Compare languages spoken
     const currentUserLanguages = effectiveUser.languagesSpoken || [];
     const otherUserLanguages = otherUser.languagesSpoken || [];
-    const commonLanguages = currentUserLanguages.filter((language: string) => 
-      otherUserLanguages.some((other: string) => other.toLowerCase() === language.toLowerCase())
+    const commonLanguages = currentUserLanguages.filter(language => 
+      otherUserLanguages.some(other => other.toLowerCase().trim() === language.toLowerCase().trim())
     );
     commonCount += commonLanguages.length;
+    
+    // Compare local events interests
+    const currentUserEvents = [...(effectiveUser.localEvents || []), ...(effectiveUser.eventInterests || [])];
+    const otherUserEvents = [...(otherUser.localEvents || []), ...(otherUser.eventInterests || [])];
+    const commonEvents = currentUserEvents.filter(event => 
+      otherUserEvents.some(other => other.toLowerCase().trim() === event.toLowerCase().trim())
+    );
+    commonCount += commonEvents.length;
+    
+    // Compare countries visited/want to visit
+    const currentUserCountries = [...(effectiveUser.countriesVisited || []), ...(effectiveUser.countriesWantToVisit || [])];
+    const otherUserCountries = [...(otherUser.countriesVisited || []), ...(otherUser.countriesWantToVisit || [])];
+    const commonCountries = currentUserCountries.filter(country => 
+      otherUserCountries.some(other => other.toLowerCase().trim() === country.toLowerCase().trim())
+    );
+    commonCount += commonCountries.length;
     
     return commonCount;
   };
