@@ -739,9 +739,6 @@ export default function Events() {
                                 }`}>
                                   {createdEvents.some(e => e.id === event.id) ? 'Organizer' : 'Joined'}
                                 </Badge>
-                                <Badge variant="outline" className="shrink-0 text-xs">
-                                  {event.category}
-                                </Badge>
                                 {/* Recurring event indicator */}
                                 {event.isRecurring && (
                                   <Badge variant="outline" className="shrink-0 text-xs bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-300 dark:border-green-700">
@@ -912,9 +909,6 @@ export default function Events() {
                         <div className="flex flex-col sm:flex-row items-start sm:items-start justify-between gap-2">
                           <CardTitle className="text-base sm:text-lg line-clamp-2 dark:text-white flex-1">{event.title}</CardTitle>
                           <div className="flex flex-wrap gap-1">
-                            <Badge variant="secondary" className="shrink-0 text-xs">
-                              {event.category}
-                            </Badge>
                             {/* Recurring event indicator */}
                             {event.isRecurring && (
                               <Badge variant="outline" className="shrink-0 text-xs bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-300 dark:border-green-700">
@@ -1043,9 +1037,6 @@ export default function Events() {
                         <div className="flex items-start justify-between">
                           <CardTitle className="text-lg line-clamp-2 dark:text-white">{event.title}</CardTitle>
                           <div className="flex flex-col gap-1 ml-2">
-                            <Badge variant="secondary" className="shrink-0">
-                              {event.category}
-                            </Badge>
                             <Badge variant="outline" className="shrink-0 text-xs">
                               Ended
                             </Badge>

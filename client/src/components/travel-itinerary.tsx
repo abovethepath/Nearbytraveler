@@ -150,7 +150,6 @@ export default function TravelItinerary({ userId, destination, startDate, endDat
                         day: 'numeric' 
                       })}</div>
                     </div>
-                    <Badge variant="secondary" className="text-xs">{event.category}</Badge>
                   </div>
                 ))}
               </div>
@@ -315,9 +314,6 @@ export default function TravelItinerary({ userId, destination, startDate, endDat
                       
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                          <Badge variant="secondary" className="text-xs">
-                            {event.category}
-                          </Badge>
                           {event.price && (
                             <Badge variant="outline" className="text-xs">
                               ${event.price}

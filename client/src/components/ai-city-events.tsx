@@ -298,7 +298,6 @@ export default function AICityEvents({ cityName, currentUser }: AICityEventsProp
                       <CardContent className="p-4">
                         <div className="flex justify-between items-start mb-2">
                           <h3 className="font-semibold text-lg text-gray-900 dark:text-white">{event.title}</h3>
-                          <Badge variant="outline">{event.category}</Badge>
                         </div>
                         
                         <p className="text-gray-600 dark:text-gray-300 mb-3 line-clamp-2">{event.description}</p>
