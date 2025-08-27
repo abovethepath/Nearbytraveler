@@ -209,17 +209,6 @@ const EventsGrid = ({
                   {eventTitle}
                 </h3>
                 
-                {/* Badges Row - Fixed overlap issue with proper spacing */}
-                <div className="flex flex-wrap gap-1 mb-3">
-                  {event.category && (
-                    <Badge className="bg-blue-600 text-white text-xs px-2 py-1 font-medium whitespace-nowrap">
-                      {event.category}
-                    </Badge>
-                  )}
-                  <Badge className="bg-purple-600 text-white text-xs px-2 py-1 font-medium whitespace-nowrap">
-                    {eventDate}
-                  </Badge>
-                </div>
 
                 {/* Description - Like business description */}
                 {event.description && (
