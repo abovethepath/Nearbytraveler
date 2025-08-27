@@ -2240,47 +2240,70 @@ export default function Home() {
                 {/* Mobile grid: 2 cols on very small, 3 cols at ≥640px; desktop uses widget below */}
                 <div className="sm:hidden">
                   <div className="grid grid-cols-2 gap-3">
-                    {getSortedUsers(filteredUsers).slice(0, displayLimit).map((u: any) => (
-                      <button
-                        key={u.id}
-                        onClick={() => setLocation(`/profile/${u.id}`)}
-                        className="group text-left rounded-xl border bg-white dark:bg-gray-800 p-2 hover:shadow-sm"
-                      >
-                        <div className="relative w-full aspect-[4/5] rounded-lg overflow-hidden bg-gray-100">
-                          {u.profileImage ? (
-                            <img
-                              src={u.profileImage}
-                              alt={u.username}
-                              className="h-full w-full object-cover"
-                              loading="lazy"
-                              onError={(e) => {
-                                // Replace with colorful avatar if image fails to load
-                                e.currentTarget.style.display = 'none';
-                                e.currentTarget.nextElementSibling?.classList.remove('hidden');
-                              }}
-                            />
-                          ) : null}
-                          {/* Colorful fallback avatar with profile completion reminder */}
-                          <div className={`${u.profileImage ? 'hidden' : ''} h-full w-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center relative group cursor-help`}>
-                            <span className="text-white font-bold text-lg">{u.username?.charAt(0)?.toUpperCase() || 'U'}</span>
-                            {/* Tooltip */}
-                            <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-10">
-                              Upload a photo!
+                    {getSortedUsers(filteredUsers).slice(0, displayLimit).map((u: any) => {
+                      const thingsInCommon = getThingsInCommon(u);
+                      const isCurrentlyTraveling = u.isCurrentlyTraveling && u.travelDestination;
+                      
+                      return (
+                        <button
+                          key={u.id}
+                          onClick={() => setLocation(`/profile/${u.id}`)}
+                          className="group text-left rounded-xl border bg-white dark:bg-gray-800 p-2 hover:shadow-sm"
+                        >
+                          <div className="relative w-full aspect-[4/5] rounded-lg overflow-hidden bg-gray-100">
+                            {u.profileImage ? (
+                              <img
+                                src={u.profileImage}
+                                alt={u.username}
+                                className="h-full w-full object-cover"
+                                loading="lazy"
+                                onError={(e) => {
+                                  e.currentTarget.style.display = 'none';
+                                  e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                                }}
+                              />
+                            ) : null}
+                            <div className={`${u.profileImage ? 'hidden' : ''} h-full w-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center`}>
+                              <span className="text-white font-bold text-lg">{u.username?.charAt(0)?.toUpperCase() || 'U'}</span>
                             </div>
+                            
+                            {/* Travel Indicator */}
+                            {isCurrentlyTraveling && (
+                              <div className="absolute top-2 right-2 bg-blue-500 text-white rounded-full p-1">
+                                <Plane className="w-3 h-3" />
+                              </div>
+                            )}
                           </div>
-                        </div>
-                        <div className="mt-2 min-w-0">
-                          <div className="text-sm font-semibold truncate text-gray-900 dark:text-white">
-                            @{u.username}
+                          <div className="mt-2 min-w-0 space-y-1">
+                            {/* Username */}
+                            <div className="text-sm font-semibold truncate text-gray-900 dark:text-white">
+                              @{u.username}
+                            </div>
+                            
+                            {/* Current Location or Hometown */}
+                            {isCurrentlyTraveling ? (
+                              <div className="text-xs text-blue-600 dark:text-blue-400 truncate flex items-center">
+                                <Plane className="w-3 h-3 mr-1" />
+                                {u.travelDestination}
+                              </div>
+                            ) : (
+                              <div className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                                {u.hometownCity && u.hometownCountry
+                                  ? `${u.hometownCity}, ${u.hometownCountry.replace("United States", "USA")}`
+                                  : u.location || "Location not set"}
+                              </div>
+                            )}
+                            
+                            {/* Things in Common */}
+                            {thingsInCommon > 0 && (
+                              <div className="text-xs text-green-600 dark:text-green-400 truncate">
+                                {thingsInCommon} thing{thingsInCommon !== 1 ? 's' : ''} in common
+                              </div>
+                            )}
                           </div>
-                          <div className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                            {u.hometownCity && u.hometownCountry
-                              ? `${u.hometownCity}, ${u.hometownCountry.replace("United States", "USA")}`
-                              : u.location || "New member"}
-                          </div>
-                        </div>
-                      </button>
-                    ))}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
 
@@ -2310,42 +2333,75 @@ export default function Home() {
                         />
                       </div>
 
-                      {/* Desktop (≥1024px): force 4 across (5 on very wide) */}
-                      <div className="hidden lg:grid grid-cols-4 xl:grid-cols-5 gap-4">
-                        {people.map((u: any) => (
-                          <button
-                            key={u.id}
-                            onClick={() => setLocation(`/profile/${u.id}`)}
-                            className="group text-left rounded-xl border bg-white dark:bg-gray-800 p-3 hover:shadow-sm"
-                          >
-                            <div className="relative w-full aspect-[4/5] rounded-lg overflow-hidden bg-gray-100">
-                              {u.profileImage ? (
-                                <img 
-                                  src={u.profileImage} 
-                                  alt={u.username} 
-                                  className="h-full w-full object-cover"
-                                  onError={(e) => {
-                                    e.currentTarget.style.display = 'none';
-                                    e.currentTarget.nextElementSibling?.classList.remove('hidden');
-                                  }}
-                                />
-                              ) : null}
-                              {/* Colorful fallback avatar */}
-                              <div className={`${u.profileImage ? 'hidden' : ''} h-full w-full bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center relative group cursor-help`}>
-                                <span className="text-white font-bold text-xl">{u.username?.charAt(0)?.toUpperCase() || 'U'}</span>
-                                <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-10">
-                                  Add profile photo!
+                      {/* Desktop (≥1024px): force 4 across maximum */}
+                      <div className="hidden lg:grid grid-cols-4 gap-4">
+                        {people.map((u: any) => {
+                          const thingsInCommon = getThingsInCommon(u);
+                          const isCurrentlyTraveling = u.isCurrentlyTraveling && u.travelDestination;
+                          
+                          return (
+                            <button
+                              key={u.id}
+                              onClick={() => setLocation(`/profile/${u.id}`)}
+                              className="group text-left rounded-xl border bg-white dark:bg-gray-800 p-3 hover:shadow-sm"
+                            >
+                              <div className="relative w-full aspect-[4/5] rounded-lg overflow-hidden bg-gray-100">
+                                {u.profileImage ? (
+                                  <img 
+                                    src={u.profileImage} 
+                                    alt={u.username} 
+                                    className="h-full w-full object-cover"
+                                    onError={(e) => {
+                                      e.currentTarget.style.display = 'none';
+                                      e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                                    }}
+                                  />
+                                ) : null}
+                                <div className={`${u.profileImage ? 'hidden' : ''} h-full w-full bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center`}>
+                                  <span className="text-white font-bold text-xl">{u.username?.charAt(0)?.toUpperCase() || 'U'}</span>
                                 </div>
+                                
+                                {/* Travel Indicator */}
+                                {isCurrentlyTraveling && (
+                                  <div className="absolute top-2 right-2 bg-blue-500 text-white rounded-full p-1.5">
+                                    <Plane className="w-4 h-4" />
+                                  </div>
+                                )}
                               </div>
-                            </div>
-                            <div className="mt-2 min-w-0">
-                              <div className="text-sm font-semibold truncate text-gray-900 dark:text-white">@{u.username}</div>
-                              <div className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                                {u.hometownCity && u.hometownCountry ? `${u.hometownCity}, ${u.hometownCountry.replace("United States","USA")}` : u.location || "New member"}
+                              <div className="mt-3 min-w-0 space-y-1">
+                                {/* Username */}
+                                <div className="text-sm font-semibold truncate text-gray-900 dark:text-white">
+                                  @{u.username}
+                                </div>
+                                
+                                {/* Current Location or Hometown */}
+                                {isCurrentlyTraveling ? (
+                                  <div className="text-xs text-blue-600 dark:text-blue-400 truncate flex items-center">
+                                    <Plane className="w-3 h-3 mr-1" />
+                                    Currently in {u.travelDestination}
+                                  </div>
+                                ) : (
+                                  <div className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                                    📍 {u.hometownCity && u.hometownCountry 
+                                      ? `${u.hometownCity}, ${u.hometownCountry.replace("United States","USA")}` 
+                                      : u.location || "Location not set"}
+                                  </div>
+                                )}
+                                
+                                {/* Things in Common */}
+                                {thingsInCommon > 0 ? (
+                                  <div className="text-xs text-green-600 dark:text-green-400 font-medium">
+                                    ✨ {thingsInCommon} thing{thingsInCommon !== 1 ? 's' : ''} in common
+                                  </div>
+                                ) : (
+                                  <div className="text-xs text-gray-400 dark:text-gray-500">
+                                    No common interests yet
+                                  </div>
+                                )}
                               </div>
-                            </div>
-                          </button>
-                        ))}
+                            </button>
+                          );
+                        })}
                       </div>
                     </>
                   );
@@ -2402,16 +2458,142 @@ export default function Home() {
             )}
 
 
-            {/* Events Section - Location-Based with Enhanced Styling */}
+            {/* Events Section - Enhanced with Location Details */}
             <div className="bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50 dark:from-purple-900/20 dark:via-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6 border border-purple-100 dark:border-purple-800">
-              <LocationSortedEvents
-                events={events}
-                currentUserLocation={getCurrentUserLocation()}
-                title="Events Near You"
-                showViewAll={true}
-                onEventClick={(event) => setLocation(`/events/${event.id}`)}
-                onViewAll={() => setLocation('/events')}
-              />
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center">
+                  <Calendar className="w-5 h-5 mr-2 text-purple-600" />
+                  Events Near You
+                </h2>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setLocation('/events')}
+                  className="text-purple-600 border-purple-200 hover:bg-purple-50"
+                >
+                  View All Events
+                </Button>
+              </div>
+              
+              {events.length > 0 ? (
+                <div className="space-y-4">
+                  {events.slice(0, eventsDisplayCount).map((event: any) => (
+                    <Card 
+                      key={event.id}
+                      className="cursor-pointer hover:shadow-md transition-all duration-200 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-purple-100 dark:border-purple-800"
+                      onClick={() => setLocation(`/events/${event.id}`)}
+                    >
+                      <CardContent className="p-4">
+                        <div className="flex items-start gap-4">
+                          {/* Event Image */}
+                          {event.image && (
+                            <div className="w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden">
+                              <img 
+                                src={event.image} 
+                                alt={event.title}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                          )}
+                          
+                          {/* Event Details */}
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-semibold text-gray-900 dark:text-white mb-1 line-clamp-1">
+                              {event.title}
+                            </h3>
+                            
+                            {/* Date and Time */}
+                            <div className="flex items-center text-sm text-gray-600 dark:text-gray-400 mb-2">
+                              <Calendar className="w-4 h-4 mr-1" />
+                              {format(new Date(event.date), 'MMM dd, yyyy')}
+                              {event.time && (
+                                <span className="ml-2">• {event.time}</span>
+                              )}
+                            </div>
+                            
+                            {/* Location Details */}
+                            <div className="flex items-start text-sm text-gray-600 dark:text-gray-400 mb-2">
+                              <MapPin className="w-4 h-4 mr-1 mt-0.5 flex-shrink-0" />
+                              <div className="min-w-0">
+                                {/* Street Address */}
+                                {event.address && (
+                                  <div className="truncate">{event.address}</div>
+                                )}
+                                {/* City, State */}
+                                <div className="truncate">
+                                  {event.city && event.state ? `${event.city}, ${event.state}` : event.city || event.location}
+                                </div>
+                                {/* Venue Name if different from address */}
+                                {event.venue && event.venue !== event.address && (
+                                  <div className="text-xs text-gray-500 dark:text-gray-500 truncate">
+                                    at {event.venue}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                            
+                            {/* Event Description */}
+                            {event.description && (
+                              <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2 mb-2">
+                                {event.description}
+                              </p>
+                            )}
+                            
+                            {/* Event Tags/Categories */}
+                            {event.category && (
+                              <div className="flex items-center gap-2">
+                                <Badge className="bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200 text-xs">
+                                  {event.category}
+                                </Badge>
+                                {event.price && (
+                                  <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 text-xs">
+                                    {event.price === 0 || event.price === '0' ? 'Free' : `$${event.price}`}
+                                  </Badge>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                          
+                          {/* Action Button */}
+                          <div className="flex-shrink-0">
+                            <Button
+                              size="sm"
+                              className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setLocation(`/events/${event.id}`);
+                              }}
+                            >
+                              View Event
+                            </Button>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              ) : (
+                <Card className="p-8 text-center bg-white/50 dark:bg-gray-800/50">
+                  <Calendar className="w-12 h-12 mx-auto text-gray-400 mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No Events Found</h3>
+                  <p className="text-gray-600 dark:text-gray-400">
+                    Check back later for upcoming events in your area.
+                  </p>
+                </Card>
+              )}
+              
+              {/* Load More Events Button */}
+              {events.length > eventsDisplayCount && (
+                <div className="text-center mt-6">
+                  <Button
+                    variant="outline"
+                    onClick={() => setEventsDisplayCount(prev => prev + 3)}
+                    className="text-purple-600 border-purple-200 hover:bg-purple-50"
+                  >
+                    Load More Events ({events.length - eventsDisplayCount} remaining)
+                  </Button>
+                </div>
+              )}
             </div>
 
 
