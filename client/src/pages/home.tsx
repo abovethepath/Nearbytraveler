@@ -810,7 +810,7 @@ export default function Home() {
       console.log('Combined business deals:', unique.length, 'deals from ALL', discoveryLocations.allCities.length, 'locations');
       return unique;
     },
-    enabled: discoveryLocations.allCities.length > 0 && !!currentUserId && !isLoadingTravelPlans && !isLoadingUserProfile,
+    enabled: discoveryLocations.allCities.length > 0 && !!currentUserId && !isLoadingTravelPlans && !isLoadingCurrentUser,
     staleTime: 0,
     gcTime: 0,
   });
@@ -856,7 +856,7 @@ export default function Home() {
       console.log('Combined meetups:', unique.length, 'meetups from ALL', discoveryLocations.allCities.length, 'locations');
       return unique;
     },
-    enabled: discoveryLocations.allCities.length > 0 && !!currentUserId && !isLoadingTravelPlans && !isLoadingUserProfile,
+    enabled: discoveryLocations.allCities.length > 0 && !!currentUserId && !isLoadingTravelPlans && !isLoadingCurrentUser,
     staleTime: 30 * 1000, // 30-second cache
     gcTime: 0,
   });
