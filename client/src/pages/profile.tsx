@@ -3874,7 +3874,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           <div className="flex items-start justify-between mb-2">
                             <h4 className="font-semibold text-gray-900 dark:text-white">{deal.title}</h4>
                             <div className="inline-flex items-center justify-center h-8 rounded-full px-4 text-xs font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0">
-                              {deal.discountValue} {deal.discountType === 'percentage' ? '%' : ''} off
+                              {deal.discountValue}
                             </div>
                           </div>
                           <p className="text-gray-600 dark:text-gray-300 text-sm mb-3 line-clamp-2">{deal.description}</p>

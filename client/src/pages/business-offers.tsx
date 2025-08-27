@@ -183,18 +183,8 @@ export default function BusinessOffers({ businessId, dealId }: BusinessOffersPro
   };
 
   const getDiscountText = (offer: BusinessOffer) => {
-    switch (offer.discountType) {
-      case 'percentage':
-        return `${offer.discountValue}% off`;
-      case 'fixed_amount':
-        return `$${offer.discountValue} off`;
-      case 'buy_one_get_one':
-        return 'Buy One Get One';
-      case 'free_service':
-        return 'Free Service';
-      default:
-        return offer.discountValue;
-    }
+    // Let businesses format their own deals - just return the raw value
+    return offer.discountValue;
   };
 
   const isOfferExpired = (validUntil: string) => {

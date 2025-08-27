@@ -3261,7 +3261,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           <div className="flex items-start justify-between mb-2">
                             <h4 className="font-semibold text-gray-900 dark:text-white">{offer.title}</h4>
                             <Badge variant="secondary" className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                              {offer.discountValue} {offer.discountType === 'percentage' ? '%' : ''} off
+                              {offer.discountValue}
                             </Badge>
                           </div>
                           <p className="text-gray-600 dark:text-gray-300 text-sm mb-3 line-clamp-2">{offer.description}</p>
