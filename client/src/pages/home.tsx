@@ -2822,14 +2822,6 @@ export default function Home() {
                             className="w-full h-full object-cover"
                             loading="lazy"
                           />
-                          {/* Business Type Badge */}
-                          {deal.businessType && (
-                            <div className="absolute top-2 right-2">
-                              <Badge variant="secondary" className="bg-white/90 text-gray-800 text-xs">
-                                {deal.businessType}
-                              </Badge>
-                            </div>
-                          )}
                         </div>
                       )}
                       
@@ -2839,12 +2831,6 @@ export default function Home() {
                           <h3 className="font-bold text-lg text-gray-900 dark:text-white line-clamp-1 pr-2" data-testid={`business-name-${deal.businessId}`}>
                             {deal.businessName || 'Business Name'}
                           </h3>
-                          {deal.businessLocation && (
-                            <Badge variant="outline" className="text-xs shrink-0">
-                              <MapPin className="w-3 h-3 mr-1" />
-                              {deal.businessLocation.split(',')[0]}
-                            </Badge>
-                          )}
                         </div>
                         
                         {/* Business Description/Bio */}
