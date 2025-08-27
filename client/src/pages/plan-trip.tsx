@@ -647,7 +647,7 @@ export default function PlanTrip() {
       <div 
         className="relative h-48 sm:h-56 md:h-64 overflow-hidden bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: `linear-gradient(135deg, rgba(59, 130, 246, 0.8) 0%, rgba(147, 51, 234, 0.8) 50%, rgba(249, 115, 22, 0.8) 100%), url('/trip%20planning_1750857535371.webp')`
+          backgroundImage: `linear-gradient(135deg, rgba(59, 130, 246, 0.3) 0%, rgba(147, 51, 234, 0.3) 50%, rgba(249, 115, 22, 0.3) 100%), url('/trip%20planning_1750857535371.webp')`
         }}
       >
         {/* Close Button - Mobile Responsive */}
