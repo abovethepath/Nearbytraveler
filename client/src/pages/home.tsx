@@ -70,9 +70,40 @@ export default function Home() {
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [sortBy, setSortBy] = useState<'recent' | 'active' | 'compatibility' | 'travel_experience' | 'closest_nearby' | 'aura' | 'references' | 'alphabetical'>('recent');
 
-  // Function to calculate things in common between current user and another user
-  // This should match the calculation used on profile pages
+  // Get compatibility data from API (matches profile page calculation)
+  const { data: compatibilityData } = useQuery({
+    queryKey: [`/api/users/${user?.id || currentUserProfile?.id || effectiveUser?.id}/matches`],
+    enabled: !!(user?.id || currentUserProfile?.id || effectiveUser?.id),
+  });
+
+  // Function to get things in common using API compatibility data (matches profile page)
   const getThingsInCommon = (otherUser: any) => {
+    if (!compatibilityData || !otherUser) return 0;
+    
+    // Find the compatibility data for this specific user
+    const userCompatibility = compatibilityData.find((match: any) => match.userId === otherUser.id);
+    
+    if (userCompatibility) {
+      // Calculate total from all shared categories
+      let total = 0;
+      total += userCompatibility.sharedInterests?.length || 0;
+      total += userCompatibility.sharedActivities?.length || 0;
+      total += userCompatibility.sharedEvents?.length || 0;
+      total += userCompatibility.sharedLanguages?.length || 0;
+      total += userCompatibility.sharedCountries?.length || 0;
+      total += userCompatibility.sharedTravelIntent?.length || 0;
+      
+      // Add boolean matches
+      if (userCompatibility.locationOverlap) total += 1;
+      if (userCompatibility.dateOverlap) total += 1;
+      if (userCompatibility.userTypeCompatibility) total += 1;
+      if (userCompatibility.bothVeterans) total += 1;
+      if (userCompatibility.bothActiveDuty) total += 1;
+      
+      return total;
+    }
+    
+    // Fallback to simple local calculation if API data not available
     if (!effectiveUser) return 0;
     
     let commonCount = 0;
@@ -85,7 +116,7 @@ export default function Home() {
     );
     commonCount += commonInterests.length;
     
-    // Compare activities (both local and preferred activities)
+    // Compare activities
     const currentUserActivities = [...(effectiveUser.localActivities || []), ...(effectiveUser.preferredActivities || [])];
     const otherUserActivities = [...(otherUser.localActivities || []), ...(otherUser.preferredActivities || [])];
     const commonActivities = currentUserActivities.filter(activity => 
@@ -93,37 +124,13 @@ export default function Home() {
     );
     commonCount += commonActivities.length;
     
-    // Compare travel style/types
-    const currentUserTravelStyle = effectiveUser.travelStyle || [];
-    const otherUserTravelStyle = otherUser.travelStyle || [];
-    const commonTravelStyle = currentUserTravelStyle.filter((style: string) => 
-      otherUserTravelStyle.some((other: string) => other.toLowerCase().trim() === style.toLowerCase().trim())
-    );
-    commonCount += commonTravelStyle.length;
-    
-    // Compare languages spoken
+    // Compare languages
     const currentUserLanguages = effectiveUser.languagesSpoken || [];
     const otherUserLanguages = otherUser.languagesSpoken || [];
     const commonLanguages = currentUserLanguages.filter((language: string) => 
       otherUserLanguages.some((other: string) => other.toLowerCase().trim() === language.toLowerCase().trim())
     );
     commonCount += commonLanguages.length;
-    
-    // Compare local events interests
-    const currentUserEvents = [...(effectiveUser.localEvents || []), ...(effectiveUser.eventInterests || [])];
-    const otherUserEvents = [...(otherUser.localEvents || []), ...(otherUser.eventInterests || [])];
-    const commonEvents = currentUserEvents.filter(event => 
-      otherUserEvents.some(other => other.toLowerCase().trim() === event.toLowerCase().trim())
-    );
-    commonCount += commonEvents.length;
-    
-    // Compare countries visited/want to visit
-    const currentUserCountries = [...(effectiveUser.countriesVisited || []), ...(effectiveUser.countriesWantToVisit || [])];
-    const otherUserCountries = [...(otherUser.countriesVisited || []), ...(otherUser.countriesWantToVisit || [])];
-    const commonCountries = currentUserCountries.filter(country => 
-      otherUserCountries.some(other => other.toLowerCase().trim() === country.toLowerCase().trim())
-    );
-    commonCount += commonCountries.length;
     
     return commonCount;
   };
@@ -133,6 +140,12 @@ export default function Home() {
     if (!users) return [];
 
     return [...users].sort((a, b) => {
+      // Always put the current user first
+      const currentUserId = user?.id || currentUserProfile?.id || effectiveUser?.id;
+      if (a.id === currentUserId) return -1;
+      if (b.id === currentUserId) return 1;
+
+      // Then apply the selected sorting
       switch (sortBy) {
         case 'closest_nearby':
           // Sort by location proximity - prioritize same city, then state, then country
@@ -2299,9 +2312,16 @@ export default function Home() {
                             
                             {/* Current Location or Hometown */}
                             {isCurrentlyTraveling ? (
-                              <div className="text-xs text-blue-600 dark:text-blue-400 truncate flex items-center">
-                                <Plane className="w-3 h-3 mr-1" />
-                                {u.travelDestination}
+                              <div className="text-xs space-y-1">
+                                <div className="text-blue-600 dark:text-blue-400 truncate flex items-center">
+                                  <Plane className="w-3 h-3 mr-1" />
+                                  Currently in {u.travelDestination}
+                                </div>
+                                <div className="text-gray-500 dark:text-gray-400 truncate">
+                                  From {u.hometownCity && u.hometownCountry
+                                    ? `${u.hometownCity}, ${u.hometownCountry.replace("United States", "USA")}`
+                                    : u.location || "Location not set"}
+                                </div>
                               </div>
                             ) : (
                               <div className="text-xs text-gray-500 dark:text-gray-400 truncate">
@@ -2393,9 +2413,16 @@ export default function Home() {
                                 
                                 {/* Current Location or Hometown */}
                                 {isCurrentlyTraveling ? (
-                                  <div className="text-xs text-blue-600 dark:text-blue-400 truncate flex items-center">
-                                    <Plane className="w-3 h-3 mr-1" />
-                                    Currently in {u.travelDestination}
+                                  <div className="text-xs space-y-1">
+                                    <div className="text-blue-600 dark:text-blue-400 truncate flex items-center">
+                                      <Plane className="w-3 h-3 mr-1" />
+                                      Currently in {u.travelDestination}
+                                    </div>
+                                    <div className="text-gray-500 dark:text-gray-400 truncate">
+                                      📍 From {u.hometownCity && u.hometownCountry 
+                                        ? `${u.hometownCity}, ${u.hometownCountry.replace("United States","USA")}` 
+                                        : u.location || "Location not set"}
+                                    </div>
                                   </div>
                                 ) : (
                                   <div className="text-xs text-gray-500 dark:text-gray-400 truncate">
