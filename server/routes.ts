@@ -4425,15 +4425,17 @@ Questions? Just reply to this message. Welcome aboard!
           }
         }
       } else {
-        // Return events in next 6 weeks if no city specified - EARLIEST FIRST
-        // ENHANCED: Limit to next 6 weeks to include all upcoming events
+        // Return ONLY USER-CREATED events in next 6 weeks if no city specified
+        // FILTER OUT AI-GENERATED EVENTS: Only include events with organizer_id > 0
         const now = new Date();
         const sixWeeksFromNow = new Date(now.getTime() + (42 * 24 * 60 * 60 * 1000));
         
         eventsQuery = await db.select().from(events)
           .where(and(
             gte(events.date, now),
-            lte(events.date, sixWeeksFromNow)
+            lte(events.date, sixWeeksFromNow),
+            gt(events.organizerId, 0), // ONLY USER-CREATED EVENTS
+            eq(events.isAiGenerated, false) // EXCLUDE AI-GENERATED EVENTS
           ));
         
         // PRIORITY SORTING: User-created events first, then by date
@@ -4449,7 +4451,7 @@ Questions? Just reply to this message. Welcome aboard!
           // If both are the same type, sort by date (earliest first)
           return new Date(a.date).getTime() - new Date(b.date).getTime();
         });
-        if (process.env.NODE_ENV === 'development') console.log(`🎪 EVENTS: Returning ${eventsQuery.length} events in next 6 weeks`);
+        if (process.env.NODE_ENV === 'development') console.log(`🎪 EVENTS: Returning ${eventsQuery.length} USER-CREATED events in next 6 weeks (filtered out AI events)`);
       }
 
       // CRITICAL: Add participant counts to all events
