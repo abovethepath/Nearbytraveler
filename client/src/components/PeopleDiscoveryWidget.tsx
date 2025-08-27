@@ -116,14 +116,6 @@ export function PeopleDiscoveryWidget({
       retry: false
     });
 
-    // Debug logging for navigation issues
-    React.useEffect(() => {
-      if (compatibilityData) {
-        console.log(`✅ PEOPLE DISCOVERY: User ${person.username} (${person.id}) compatibility data:`, compatibilityData);
-      } else {
-        console.log(`❌ PEOPLE DISCOVERY: No compatibility data for ${person.username} (${person.id})`);
-      }
-    }, [compatibilityData, person.username, person.id, currentUserId]);
 
     const getCountryFlag = (location: string) => {
       if (location.includes('United States') || location.includes('USA')) return '🇺🇸';
@@ -217,7 +209,7 @@ export function PeopleDiscoveryWidget({
       ...((compatData?.sharedEvents ?? []).map((e: any) => e?.title).filter(Boolean)),
     ].slice(0, 3);
 
-    // Debug logging for compatibility data
+    // Debug logging for compatibility data (moved to existing useEffect)
     React.useEffect(() => {
       if (compatibilityData) {
         console.log(`🔥 DEBUG COMPATIBILITY for ${person.username}:`, {
@@ -228,8 +220,11 @@ export function PeopleDiscoveryWidget({
           sharedActivities: compatData?.sharedActivities?.length || 0,
           sharedEvents: compatData?.sharedEvents?.length || 0
         });
+        console.log(`✅ PEOPLE DISCOVERY: User ${person.username} (${person.id}) compatibility data:`, compatibilityData);
+      } else {
+        console.log(`❌ PEOPLE DISCOVERY: No compatibility data for ${person.username} (${person.id})`);
       }
-    }, [compatibilityData, person.username, countInCommon]);
+    }, [compatibilityData, person.username, person.id, countInCommon, compatData, topCommon]);
 
     // NEW: figure out an upcoming/active destination
     const getTravelBlurb = () => {
