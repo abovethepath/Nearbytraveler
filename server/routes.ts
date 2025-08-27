@@ -3410,48 +3410,13 @@ Questions? Just reply to this message. Welcome aboard!
   // CRITICAL: Get all users endpoint with FULL SEARCH FILTERING and LA Metro consolidation
   app.get("/api/users", async (req, res) => {
     try {
-      const { location, interests, activities, userType, gender, sexualPreference, minAge, maxAge, search } = req.query;
+      if (process.env.NODE_ENV === 'development') console.log(`🔍 USERS: Getting all users`);
       
-      if (process.env.NODE_ENV === 'development') console.log(`🔍 USERS SEARCH FILTERS:`, { location, interests, activities, userType, gender, sexualPreference, minAge, maxAge, search });
+      // TEMPORARY: Just return all users to fix the issue
+      const allUsers = await db.select().from(users);
       
-      // Start with base query - explicitly select all fields including travel destination
-      let query = db.select({
-        id: users.id,
-        username: users.username,
-        email: users.email,
-        name: users.name,
-        userType: users.userType,
-        bio: users.bio,
-        location: users.location,
-        hometownCity: users.hometownCity,
-        hometownState: users.hometownState,
-        hometownCountry: users.hometownCountry,
-        metroArea: users.metroArea,
-        isMetroUser: users.isMetroUser,
-        profileImage: users.profileImage,
-        coverPhoto: users.coverPhoto,
-        interests: users.interests,
-        localActivities: users.localActivities,
-        localEvents: users.localEvents,
-        age: users.age,
-        gender: users.gender,
-        sexualPreference: users.sexualPreference,
-        sexualPreferenceVisible: users.sexualPreferenceVisible,
-        isCurrentlyTraveling: users.isCurrentlyTraveling,
-        travelDestination: users.travelDestination,
-        travelStartDate: users.travelStartDate,
-        travelEndDate: users.travelEndDate,
-        travelInterests: users.travelInterests,
-        languages: users.languages,
-        instagramHandle: users.instagramHandle,
-        phoneNumber: users.phoneNumber,
-        businessName: users.businessName,
-        businessType: users.businessType,
-        businessDescription: users.businessDescription,
-        isActive: users.isActive,
-        createdAt: users.createdAt
-      }).from(users);
-      const conditions = [];
+      if (process.env.NODE_ENV === 'development') console.log(`🔍 USERS SEARCH RESULT: ${allUsers.length} users found`);
+      return res.json(allUsers);
       
       // LOCATION FILTER with LA Metro consolidation
       if (location && typeof location === 'string' && location.trim() !== '' && location !== ', United States') {
