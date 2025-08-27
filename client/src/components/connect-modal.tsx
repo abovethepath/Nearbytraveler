@@ -465,9 +465,9 @@ export default function ConnectModal({ isOpen, onClose, userTravelPlans: propTra
               <div className="bg-gradient-to-r from-blue-600 to-orange-500 p-3 rounded-xl">
                 <Users className="w-6 h-6 text-white" />
               </div>
-              <div>
-                <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">Connect with Travelers & Locals</h2>
-                <p className="text-gray-600 dark:text-gray-300 text-lg mt-1">
+              <div className="flex-1 min-w-0">
+                <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent leading-tight">Connect with Travelers & Locals</h2>
+                <p className="text-gray-600 dark:text-gray-300 text-base mt-1">
                   Find and connect with amazing people in your area
                 </p>
               </div>
@@ -697,7 +697,7 @@ export default function ConnectModal({ isOpen, onClose, userTravelPlans: propTra
                         onClick={() => handleFilterToggle("interests", interest)}
                         className={`h-6 px-2 text-xs transition-colors ${
                           isSelected 
-                            ? "bg-green-600 hover:bg-green-700 text-white border-green-600" 
+                            ? "bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white border-0" 
                             : "bg-blue-100 hover:bg-blue-200 text-blue-800 border-blue-300 dark:bg-blue-800 dark:text-blue-100 dark:border-blue-600"
                         }`}
                       >
@@ -741,7 +741,7 @@ export default function ConnectModal({ isOpen, onClose, userTravelPlans: propTra
                         onClick={() => handleFilterToggle("activities", activity)}
                         className={`h-6 px-2 text-xs transition-colors ${
                           isSelected 
-                            ? "bg-green-600 hover:bg-green-700 text-white border-green-600" 
+                            ? "bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white border-0" 
                             : "bg-blue-100 hover:bg-blue-200 text-blue-800 border-blue-300 dark:bg-blue-800 dark:text-blue-100 dark:border-blue-600"
                         }`}
                       >
@@ -785,7 +785,7 @@ export default function ConnectModal({ isOpen, onClose, userTravelPlans: propTra
                         onClick={() => handleFilterToggle("events", event)}
                         className={`h-6 px-2 text-xs transition-colors ${
                           isSelected 
-                            ? "bg-green-600 hover:bg-green-700 text-white border-green-600" 
+                            ? "bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white border-0" 
                             : "bg-blue-100 hover:bg-blue-200 text-blue-800 border-blue-300 dark:bg-blue-800 dark:text-blue-100 dark:border-blue-600"
                         }`}
                       >
@@ -829,7 +829,7 @@ export default function ConnectModal({ isOpen, onClose, userTravelPlans: propTra
                         onClick={() => handleFilterToggle("languages", language)}
                         className={`h-6 px-2 text-xs transition-colors ${
                           isSelected 
-                            ? "bg-green-600 hover:bg-green-700 text-white border-green-600" 
+                            ? "bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white border-0" 
                             : "bg-blue-100 hover:bg-blue-200 text-blue-800 border-blue-300 dark:bg-blue-800 dark:text-blue-100 dark:border-blue-600"
                         }`}
                       >
