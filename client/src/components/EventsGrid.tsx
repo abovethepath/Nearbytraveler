@@ -165,6 +165,13 @@ const EventsGrid = ({
 
   return (
     <>
+      {/* Header */}
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+          {showLocation && location ? `Events in ${location}` : "Events Near Me"}
+        </h2>
+      </div>
+      
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
         {displayEvents.map((event: Event) => {
           const eventDate = formatEventDate(event.startDate || event.date || '');
