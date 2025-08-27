@@ -41,12 +41,18 @@ export default function ChatroomPage() {
   
   // Redirect invalid chatroom IDs to a valid LA Metro chatroom
   useEffect(() => {
-    if (chatroomId === 200 || chatroomId === 201 || chatroomId === 202) {
-      // These IDs don't exist, redirect to valid LA Metro chatroom
-      window.location.href = '/chatroom/198'; // Let's Meet Up Los Angeles Metro
+    if (chatroomId === 200 || chatroomId === 201 || chatroomId === 202 || chatroomId > 213) {
+      // These IDs don't exist, redirect to valid LA Metro chatroom immediately
+      console.log(`🔀 REDIRECT: Invalid chatroom ID ${chatroomId}, redirecting to 198`);
+      window.location.replace('/chatroom/198'); // Let's Meet Up Los Angeles Metro
       return;
     }
   }, [chatroomId]);
+  
+  // Don't render anything if we're redirecting
+  if (chatroomId === 200 || chatroomId === 201 || chatroomId === 202 || chatroomId > 213) {
+    return <div>Redirecting to valid chatroom...</div>;
+  }
   
   // Get current user with fallback
   const getCurrentUser = () => {
