@@ -457,10 +457,6 @@ export default function SimpleChatroomPage() {
               </div>
             )}
             
-            {/* Debug info - temporary */}
-            <div className="mt-2 text-xs text-gray-500">
-              Debug: {members?.length || 0} members, userIsMember: {userIsMember ? 'YES' : 'NO'}, currentUserId: {currentUserId}
-            </div>
           </CardHeader>
         </Card>
 
@@ -497,25 +493,12 @@ export default function SimpleChatroomPage() {
               ) : (
                 <div className="space-y-3">
                   {messages.map((message, index) => {
-                    // Enhanced sender identification - try multiple field matching
-                    const sender = members.find((m) => 
-                      m.user_id === message.senderId || 
-                      m.user_id === message.sender_id ||
-                      m.user_id === message.userId ||
-                      m.id === message.senderId ||
-                      m.id === message.sender_id ||
-                      String(m.user_id) === String(message.senderId) ||
-                      String(m.id) === String(message.senderId)
-                    );
+                    // Simplified sender identification using correct API structure
+                    const isCurrentUser = message.sender_id === currentUserId;
                     
-                    const isCurrentUser = message.senderId === currentUserId || 
-                                        message.sender_id === currentUserId ||
-                                        message.userId === currentUserId;
-                    
-                    // Enhanced sender name - try multiple fields
-                    const senderName = sender?.username || sender?.name || 
-                                     message.senderUsername || message.sender_username || 
-                                     message.username || `User ${message.senderId || message.sender_id}`;
+                    // Use message username and profile_image from API response
+                    const senderName = message.username || 'Unknown User';
+                    const senderAvatar = message.profile_image;
                     
                     // Enhanced timestamp parsing - handle multiple formats
                     let displayTime = 'Just now';
@@ -554,11 +537,11 @@ export default function SimpleChatroomPage() {
                         {!isCurrentUser && (
                           <div 
                             className="flex-shrink-0 mt-1 cursor-pointer group relative"
-                            onClick={() => sender && navigate(`/profile/${sender.user_id || sender.id}`)}
+                            onClick={() => navigate(`/profile/${message.sender_id}`)}
                           >
                             <Avatar className="w-8 h-8 border border-gray-200 dark:border-gray-600 hover:border-blue-400 dark:hover:border-blue-400 transition-all duration-200 group-hover:scale-105">
                               <AvatarImage 
-                                src={sender?.profile_image || message.senderProfileImage || message.profile_image} 
+                                src={senderAvatar} 
                                 alt={`${senderName}'s avatar`}
                                 className="object-cover"
                               />
@@ -571,11 +554,9 @@ export default function SimpleChatroomPage() {
                             <div className="absolute -bottom-1 -right-1 w-3 h-3 border-2 border-white dark:border-gray-800 rounded-full bg-gray-400"></div>
                             
                             {/* Hover tooltip */}
-                            {sender && (
-                              <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 dark:bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
-                                View {senderName}'s Profile
-                              </div>
-                            )}
+                            <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 dark:bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
+                              View {senderName}'s Profile
+                            </div>
                           </div>
                         )}
                         
@@ -590,7 +571,7 @@ export default function SimpleChatroomPage() {
                               : 'text-gray-700 dark:text-gray-300'
                           }`}>
                             <button
-                              onClick={() => !isCurrentUser && sender && navigate(`/profile/${sender.user_id || sender.id}`)}
+                              onClick={() => !isCurrentUser && navigate(`/profile/${message.sender_id}`)}
                               className="hover:underline"
                             >
                               {isCurrentUser ? 'You' : senderName}
@@ -616,7 +597,7 @@ export default function SimpleChatroomPage() {
                           >
                             <Avatar className="w-8 h-8 border border-gray-200 dark:border-gray-600 hover:border-blue-400 dark:hover:border-blue-400 transition-all duration-200 group-hover:scale-105">
                               <AvatarImage 
-                                src={currentUser?.profileImage || sender?.profile_image || message.profile_image} 
+                                src={currentUser?.profileImage || senderAvatar} 
                                 alt={`${senderName}'s avatar`}
                                 className="object-cover"
                               />
