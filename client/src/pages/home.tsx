@@ -150,6 +150,7 @@ export default function Home() {
       total += userCompatibility.sharedLanguages?.length || 0;
       total += userCompatibility.sharedCountries?.length || 0;
       total += userCompatibility.sharedTravelIntent?.length || 0;
+      total += userCompatibility.sharedSexualPreferences?.length || 0;
       
       // Add boolean matches
       if (userCompatibility.locationOverlap) total += 1;
@@ -157,6 +158,9 @@ export default function Home() {
       if (userCompatibility.userTypeCompatibility) total += 1;
       if (userCompatibility.bothVeterans) total += 1;
       if (userCompatibility.bothActiveDuty) total += 1;
+      if (userCompatibility.sameFamilyStatus) total += 1;
+      if (userCompatibility.sameAge) total += 1;
+      if (userCompatibility.sameGender) total += 1;
       
       return total;
     }
@@ -189,6 +193,42 @@ export default function Home() {
       otherUserLanguages.some((other: string) => other.toLowerCase().trim() === language.toLowerCase().trim())
     );
     commonCount += commonLanguages.length;
+    
+    // Compare sexual preferences
+    const currentUserSexualPreferences = effectiveUser.sexualPreference || [];
+    const otherUserSexualPreferences = otherUser.sexualPreference || [];
+    const commonSexualPreferences = currentUserSexualPreferences.filter((pref: string) => 
+      otherUserSexualPreferences.some((other: string) => other.toLowerCase().trim() === pref.toLowerCase().trim())
+    );
+    commonCount += commonSexualPreferences.length;
+    
+    // Compare family status
+    if (effectiveUser.familyStatus && otherUser.familyStatus && 
+        effectiveUser.familyStatus.toLowerCase() === otherUser.familyStatus.toLowerCase()) {
+      commonCount += 1;
+    }
+    
+    // Compare veteran status
+    if (effectiveUser.isVeteran && otherUser.isVeteran) {
+      commonCount += 1;
+    }
+    
+    // Compare active duty status
+    if (effectiveUser.isActiveDuty && otherUser.isActiveDuty) {
+      commonCount += 1;
+    }
+    
+    // Compare age range (within 5 years considered a match)
+    if (effectiveUser.age && otherUser.age && 
+        Math.abs(effectiveUser.age - otherUser.age) <= 5) {
+      commonCount += 1;
+    }
+    
+    // Compare gender if both specified
+    if (effectiveUser.gender && otherUser.gender && 
+        effectiveUser.gender.toLowerCase() === otherUser.gender.toLowerCase()) {
+      commonCount += 1;
+    }
     
     return commonCount;
   };
@@ -505,34 +545,7 @@ export default function Home() {
     window.scrollTo(0, 0);
   }, []);
 
-  // Get user ID from context or localStorage
-  const getUserId = () => {
-    if (user?.id) return user.id;
-    try {
-      const storedUser = localStorage.getItem('travelconnect_user');
-      if (storedUser) {
-        const parsedUser = JSON.parse(storedUser);
-        return parsedUser?.id;
-      }
-    } catch {
-      return null;
-    }
-    return null;
-  };
 
-  const currentUserId = getUserId();
-
-  // Fetch current user's complete profile data
-  const { data: currentUserProfile, isLoading: isLoadingUserProfile } = useQuery<User>({
-    queryKey: [`/api/users/${currentUserId}`],
-    enabled: !!currentUserId,
-  });
-
-  // Fetch travel plans for the current user
-  const { data: travelPlans = [], isLoading: isLoadingTravelPlans } = useQuery<any[]>({
-    queryKey: [`/api/travel-plans/${currentUserId}`],
-    enabled: !!currentUserId,
-  });
 
   // Get current user ID for matched users query (use the same ID)
   const matchedUsersUserId = currentUserId;

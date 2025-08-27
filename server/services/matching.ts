@@ -10,10 +10,18 @@ export interface MatchScore {
   sharedActivities: string[];
   sharedEvents: string[];
   sharedTravelIntent: string[];
+  sharedSexualPreferences: string[];
   locationOverlap: boolean;
   dateOverlap: boolean;
   userTypeCompatibility: boolean;
   travelIntentCompatibility: boolean;
+  bothVeterans: boolean;
+  bothActiveDuty: boolean;
+  sameFamilyStatus: boolean;
+  sameAge: boolean;
+  sameGender: boolean;
+  sharedLanguages: string[];
+  sharedCountries: string[];
 }
 
 export interface MatchingPreferences {
@@ -100,7 +108,7 @@ export class TravelMatchingService {
   ): Promise<MatchScore> {
     const reasons: string[] = [];
     let totalScore = 0;
-    const maxScore = 115; // Updated max score: 25 (interests) + 15 (activities) + 10 (events) + 20 (location) + 15 (dates) + 10 (user type) + 5 (travel style) + 15 (travel intent)
+    const maxScore = 140; // Updated max score: 25 (interests) + 15 (activities) + 10 (events) + 20 (location) + 15 (dates) + 10 (user type) + 5 (travel style) + 15 (travel intent) + 5 (sexual preferences) + 5 (family status) + 5 (veteran status) + 5 (age) + 5 (languages)
 
     // Interest compatibility (25 points max)
     const interestScore = this.calculateInterestCompatibility(user1, user2);
@@ -151,6 +159,31 @@ export class TravelMatchingService {
     totalScore += travelIntentScore.score;
     reasons.push(...travelIntentScore.reasons);
 
+    // Sexual preference compatibility (5 points max - NEW)
+    const sexualPreferenceScore = this.calculateSexualPreferenceCompatibility(user1, user2);
+    totalScore += sexualPreferenceScore.score;
+    reasons.push(...sexualPreferenceScore.reasons);
+
+    // Family status compatibility (5 points max - NEW)
+    const familyStatusScore = this.calculateFamilyStatusCompatibility(user1, user2);
+    totalScore += familyStatusScore.score;
+    reasons.push(...familyStatusScore.reasons);
+
+    // Veteran status compatibility (5 points max - NEW)
+    const veteranStatusScore = this.calculateVeteranStatusCompatibility(user1, user2);
+    totalScore += veteranStatusScore.score;
+    reasons.push(...veteranStatusScore.reasons);
+
+    // Age compatibility (5 points max - NEW)
+    const ageScore = this.calculateAgeCompatibility(user1, user2);
+    totalScore += ageScore.score;
+    reasons.push(...ageScore.reasons);
+
+    // Language compatibility (5 points max - NEW)
+    const languageScore = this.calculateLanguageCompatibility(user1, user2);
+    totalScore += languageScore.score;
+    reasons.push(...languageScore.reasons);
+
     const normalizedScore = Math.min(totalScore / maxScore, 1);
     
     return {
@@ -162,10 +195,18 @@ export class TravelMatchingService {
       sharedActivities: this.getSharedActivities(user1, user2),
       sharedEvents: this.getSharedEvents(user1, user2),
       sharedTravelIntent: this.getSharedTravelIntent(user1, user2),
+      sharedSexualPreferences: this.getSharedSexualPreferences(user1, user2),
       locationOverlap: locationScore.hasOverlap,
       dateOverlap: dateScore.hasOverlap,
       userTypeCompatibility: userTypeScore.isCompatible,
-      travelIntentCompatibility: travelIntentScore.isCompatible
+      travelIntentCompatibility: travelIntentScore.isCompatible,
+      bothVeterans: veteranStatusScore.bothVeterans,
+      bothActiveDuty: veteranStatusScore.bothActiveDuty,
+      sameFamilyStatus: familyStatusScore.sameFamilyStatus,
+      sameAge: ageScore.sameAge,
+      sameGender: this.haveSameGender(user1, user2),
+      sharedLanguages: this.getSharedLanguages(user1, user2),
+      sharedCountries: this.getSharedCountries(user1, user2)
     };
   }
 
@@ -814,6 +855,164 @@ export class TravelMatchingService {
     if (score >= 0.7) return 'high';
     if (score >= 0.5) return 'medium';
     return 'low';
+  }
+
+  /**
+   * Calculate sexual preference compatibility
+   */
+  private calculateSexualPreferenceCompatibility(user1: User, user2: User) {
+    const user1Preferences = this.parseInterests(user1.sexualPreference);
+    const user2Preferences = this.parseInterests(user2.sexualPreference);
+    
+    const sharedPreferences = user1Preferences.filter(pref => 
+      user2Preferences.some(otherPref => 
+        this.areInterestsSimilar(pref, otherPref)
+      )
+    );
+
+    const score = Math.min(sharedPreferences.length * 2.5, 5); // 2.5 points per shared preference, max 5
+    const reasons = sharedPreferences.length > 0 
+      ? [`${sharedPreferences.length} shared sexual preference${sharedPreferences.length > 1 ? 's' : ''}: ${sharedPreferences.slice(0, 3).join(', ')}`]
+      : [];
+
+    return { score, reasons };
+  }
+
+  /**
+   * Calculate family status compatibility
+   */
+  private calculateFamilyStatusCompatibility(user1: User, user2: User) {
+    const sameFamilyStatus = user1.familyStatus && user2.familyStatus && 
+      user1.familyStatus.toLowerCase() === user2.familyStatus.toLowerCase();
+
+    const score = sameFamilyStatus ? 5 : 0;
+    const reasons = sameFamilyStatus 
+      ? [`Both have ${user1.familyStatus} family status`]
+      : [];
+
+    return { score, reasons, sameFamilyStatus: !!sameFamilyStatus };
+  }
+
+  /**
+   * Calculate veteran status compatibility
+   */
+  private calculateVeteranStatusCompatibility(user1: User, user2: User) {
+    const bothVeterans = user1.isVeteran && user2.isVeteran;
+    const bothActiveDuty = user1.isActiveDuty && user2.isActiveDuty;
+
+    let score = 0;
+    const reasons = [];
+
+    if (bothVeterans) {
+      score += 3;
+      reasons.push('Both are veterans');
+    }
+
+    if (bothActiveDuty) {
+      score += 2;
+      reasons.push('Both are active duty');
+    }
+
+    return { score, reasons, bothVeterans: !!bothVeterans, bothActiveDuty: !!bothActiveDuty };
+  }
+
+  /**
+   * Calculate age compatibility
+   */
+  private calculateAgeCompatibility(user1: User, user2: User) {
+    if (!user1.age || !user2.age) {
+      return { score: 0, reasons: [], sameAge: false };
+    }
+
+    const ageDifference = Math.abs(user1.age - user2.age);
+    let score = 0;
+    const reasons = [];
+    let sameAge = false;
+
+    if (ageDifference === 0) {
+      score = 5;
+      sameAge = true;
+      reasons.push('Same age');
+    } else if (ageDifference <= 2) {
+      score = 4;
+      reasons.push(`Close in age (${ageDifference} year difference)`);
+    } else if (ageDifference <= 5) {
+      score = 2;
+      reasons.push(`Similar age range (${ageDifference} year difference)`);
+    }
+
+    return { score, reasons, sameAge };
+  }
+
+  /**
+   * Calculate language compatibility
+   */
+  private calculateLanguageCompatibility(user1: User, user2: User) {
+    const user1Languages = this.parseInterests(user1.languagesSpoken);
+    const user2Languages = this.parseInterests(user2.languagesSpoken);
+    
+    const sharedLanguages = user1Languages.filter(lang => 
+      user2Languages.some(otherLang => 
+        this.areInterestsSimilar(lang, otherLang)
+      )
+    );
+
+    const score = Math.min(sharedLanguages.length * 1.5, 5); // 1.5 points per shared language, max 5
+    const reasons = sharedLanguages.length > 0 
+      ? [`${sharedLanguages.length} shared language${sharedLanguages.length > 1 ? 's' : ''}: ${sharedLanguages.slice(0, 3).join(', ')}`]
+      : [];
+
+    return { score, reasons };
+  }
+
+  /**
+   * Get shared sexual preferences
+   */
+  private getSharedSexualPreferences(user1: User, user2: User): string[] {
+    const user1Preferences = this.parseInterests(user1.sexualPreference);
+    const user2Preferences = this.parseInterests(user2.sexualPreference);
+    
+    return user1Preferences.filter(pref => 
+      user2Preferences.some(otherPref => 
+        this.areInterestsSimilar(pref, otherPref)
+      )
+    );
+  }
+
+  /**
+   * Get shared languages
+   */
+  private getSharedLanguages(user1: User, user2: User): string[] {
+    const user1Languages = this.parseInterests(user1.languagesSpoken);
+    const user2Languages = this.parseInterests(user2.languagesSpoken);
+    
+    return user1Languages.filter(lang => 
+      user2Languages.some(otherLang => 
+        this.areInterestsSimilar(lang, otherLang)
+      )
+    );
+  }
+
+  /**
+   * Get shared countries
+   */
+  private getSharedCountries(user1: User, user2: User): string[] {
+    const user1Countries = this.parseInterests(user1.countriesVisited);
+    const user2Countries = this.parseInterests(user2.countriesVisited);
+    
+    return user1Countries.filter(country => 
+      user2Countries.some(otherCountry => 
+        this.areInterestsSimilar(country, otherCountry)
+      )
+    );
+  }
+
+  /**
+   * Check if users have the same gender
+   */
+  private haveSameGender(user1: User, user2: User): boolean {
+    return !!(user1.gender && user2.gender && 
+      user1.gender.toLowerCase() === user2.gender.toLowerCase());
   }
 
   /**
