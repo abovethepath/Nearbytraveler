@@ -11,16 +11,13 @@ import { MessageCircle, Users, Send, ArrowLeft, Loader2 } from "lucide-react";
 
 interface ChatMessage {
   id: number;
-  senderId: number;
+  chatroom_id: number;
+  sender_id: number;
   content: string;
-  messageType: string;
-  createdAt: string;
-  user: {
-    id: number;
-    username: string;
-    name: string;
-    profileImage?: string;
-  };
+  created_at: string;
+  username: string;
+  name: string;
+  profile_image?: string;
 }
 
 interface ChatroomDetails {
@@ -42,17 +39,23 @@ export default function ChatroomPage() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [messageText, setMessageText] = useState("");
   
-  // Get current user
+  // Get current user with fallback
   const getCurrentUser = () => {
     try {
-      const storedUser = localStorage.getItem('travelconnect_user');
+      const storedUser = localStorage.getItem('travelconnect_user') || localStorage.getItem('user');
       return storedUser ? JSON.parse(storedUser) : null;
     } catch (e) {
+      console.error('Error parsing user from localStorage:', e);
       return null;
     }
   };
   
   const currentUser = getCurrentUser();
+  
+  // Debug user authentication
+  useEffect(() => {
+    console.log('🔥 CHATROOM DEBUG: Current user:', currentUser?.username || 'not found', 'ID:', currentUser?.id || 'undefined');
+  }, [currentUser]);
   
   // Scroll to top when entering chatroom
   useEffect(() => {
@@ -68,17 +71,27 @@ export default function ChatroomPage() {
   // Extract the first chatroom from array (API returns array)
   const chatroom = chatroomArray?.[0];
 
-  // Fetch messages
+  // Fetch messages with authentication header
   const { data: messages = [], isLoading } = useQuery<ChatMessage[]>({
     queryKey: [`/api/chatrooms/${chatroomId}/messages`],
     refetchInterval: 2000, // Refresh every 2 seconds
-    enabled: !!chatroomId,
-    onSuccess: (data) => {
-      console.log('🔥 CHATROOM DEBUG: Messages loaded:', data);
-      console.log('🔥 CHATROOM DEBUG: Messages count:', data?.length || 0);
-      if (data && data.length > 0) {
-        console.log('🔥 CHATROOM DEBUG: First message:', data[0]);
+    enabled: !!chatroomId && !!currentUser?.id,
+    queryFn: async () => {
+      if (!currentUser?.id) throw new Error("User not authenticated");
+      
+      const response = await fetch(`/api/chatrooms/${chatroomId}/messages`, {
+        headers: {
+          'x-user-id': currentUser.id.toString()
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Failed to fetch messages: ${response.status} ${response.statusText}`);
       }
+      
+      const data = await response.json();
+      console.log('🔥 CHATROOM DEBUG: Messages loaded:', data?.length || 0, 'messages');
+      return data;
     },
     onError: (error) => {
       console.error('🔥 CHATROOM ERROR: Failed to load messages:', error);
@@ -90,9 +103,15 @@ export default function ChatroomPage() {
     mutationFn: async (content: string) => {
       if (!currentUser) throw new Error("User not found");
       
-      const response = await apiRequest('POST', `/api/chatrooms/${chatroomId}/messages`, {
-        content: content.trim(),
-        userId: currentUser.id
+      const response = await fetch(`/api/chatrooms/${chatroomId}/messages`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-user-id': currentUser.id.toString()
+        },
+        body: JSON.stringify({
+          content: content.trim()
+        })
       });
       
       if (!response.ok) {
@@ -178,10 +197,6 @@ export default function ChatroomPage() {
         <Card className="mb-4">
           <CardContent className="p-4">
             <div className="h-96 overflow-y-auto space-y-3 mb-4" data-testid="messages-container">
-              {/* Debug messages state */}
-              <div className="text-xs bg-yellow-100 p-2 mb-2 rounded">
-                DEBUG: Loading={isLoading.toString()}, Messages Count={messages?.length || 0}, Messages={JSON.stringify(messages).slice(0, 100)}...
-              </div>
               
               {isLoading ? (
                 <div className="flex items-center justify-center h-full">
@@ -197,20 +212,27 @@ export default function ChatroomPage() {
                 messages.map((message) => (
                   <div
                     key={message.id}
-                    className={`flex ${message.senderId === currentUser?.id ? 'justify-end' : 'justify-start'}`}
+                    className={`flex ${message.sender_id === currentUser?.id ? 'justify-end' : 'justify-start'}`}
                     data-testid={`message-${message.id}`}
                   >
                     <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-                      message.senderId === currentUser?.id
+                      message.sender_id === currentUser?.id
                         ? 'bg-blue-500 text-white'
                         : 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white'
                     }`}>
-                      <div className="text-xs opacity-75 mb-1">
-                        {message.user?.username || 'Unknown'}
+                      <div className="flex items-center gap-2 text-xs opacity-75 mb-1">
+                        {message.profile_image && (
+                          <img 
+                            src={message.profile_image} 
+                            alt={message.username} 
+                            className="w-4 h-4 rounded-full object-cover"
+                          />
+                        )}
+                        <span>{message.username || 'Unknown'}</span>
                       </div>
                       <div>{message.content}</div>
                       <div className="text-xs opacity-75 mt-1">
-                        {new Date(message.createdAt).toLocaleTimeString()}
+                        {new Date(message.created_at).toLocaleTimeString()}
                       </div>
                     </div>
                   </div>
