@@ -183,6 +183,40 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
 
   // Helper function to determine if user is in their hometown vs traveling
   const getLocationContext = () => {
+    // For current user without search context, check if they're currently traveling
+    if (!searchLocation && isCurrentUserCard) {
+      const currentDestination = getCurrentTravelDestination(currentUserTravelPlans || []);
+      if (currentDestination && effectiveUser?.hometownCity) {
+        const travelDestination = currentDestination.toLowerCase();
+        const hometown = effectiveUser.hometownCity.toLowerCase();
+        
+        // Only show as traveler if destination is different from hometown
+        if (!travelDestination.includes(hometown) && !hometown.includes(travelDestination)) {
+          // Find the matching travel plan for date formatting
+          const matchingTravelPlan = (currentUserTravelPlans as TravelPlan[])?.find((plan: TravelPlan) => 
+            plan.destination?.toLowerCase().includes(travelDestination)
+          );
+          
+          if (matchingTravelPlan) {
+            const startDate = parseLocalDate(matchingTravelPlan.startDate);
+            const endDate = parseLocalDate(matchingTravelPlan.endDate);
+            
+            if (startDate && endDate) {
+              const formattedStart = startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+              const formattedEnd = endDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+              
+              return { 
+                type: 'traveling', 
+                title: `Visiting ${formattedStart} - ${formattedEnd}`,
+                dates: { start: startDate, end: endDate }
+              };
+            }
+          }
+        }
+      }
+      return { type: 'hometown', title: 'Local Expertise' };
+    }
+    
     if (!searchLocation) return { type: 'unknown', title: 'Areas of Interest' };
     
     // Check if this is their hometown
