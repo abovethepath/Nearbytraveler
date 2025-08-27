@@ -49,7 +49,6 @@ import EnhancedDiscovery from "@/components/EnhancedDiscovery";
 
 import BusinessesGrid from "@/components/BusinessesGrid";
 import { QuickMeetupWidget } from "@/components/QuickMeetupWidget";
-import { ContextualBusinessRecommendations } from "@/components/ContextualBusinessRecommendations";
 import { ContextualEventRecommendations } from "@/components/ContextualEventRecommendations";
 import QuickDealsDiscovery from "@/components/QuickDealsDiscovery";
 import CityMap from "@/components/CityMap";
@@ -2940,16 +2939,17 @@ export default function Home() {
               </div>
             )}
 
-            {/* Contextual Recommendations Section */}
+            {/* Events Section */}
             <div className="space-y-6 mt-8">
-              {/* Business Recommendations */}
               <div>
-                <ContextualBusinessRecommendations userId={currentUserId} limit={6} />
-              </div>
-
-              {/* Event Recommendations */}
-              <div>
-                <ContextualEventRecommendations userId={currentUserId} limit={6} />
+                <EventsGrid 
+                  events={[]} 
+                  showLocation={false}
+                  className="w-full"
+                  useDualLocation={true}
+                  userId={currentUserId}
+                  travelDestination={effectiveUser?.travelDestination}
+                />
               </div>
             </div>
           </div>
