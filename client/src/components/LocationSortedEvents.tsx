@@ -18,6 +18,7 @@ interface Event {
   state?: string;
   country?: string;
   venue?: string;
+  address?: string;
   organizer?: string;
   category?: string;
   price?: number;
