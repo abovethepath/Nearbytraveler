@@ -47,7 +47,7 @@ export function PeopleDiscoveryWidget({
 
   // Helper function to display travel destinations exactly as entered by user
   const formatTravelDestination = (destination: string | null): string => {
-    if (!destination) return "Traveling";
+    if (!destination) return "Location not specified";
     
     // Simply return the destination as stored - no restrictions
     // Users can enter any city/destination: Anaheim, Madrid, small towns, etc.
@@ -213,7 +213,7 @@ export function PeopleDiscoveryWidget({
         console.log(`🏷️ PEOPLE WIDGET: ${person.username} traveling to ${person.travelDestination}`);
         return {
           isTraveling: true,
-          currentLocation: person.travelDestination || "Traveling",
+          currentLocation: person.travelDestination || "Location not specified",
           hometown: hometown
         };
       }
