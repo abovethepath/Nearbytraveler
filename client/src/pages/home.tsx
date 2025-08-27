@@ -258,12 +258,18 @@ export default function Home() {
       
       // If this is the current user, add travel destination from effectiveUser
       if (user.id === currentUserId && effectiveUser) {
-        return {
+        const enrichedUser = {
           ...user,
           isCurrentlyTraveling: effectiveUser.isCurrentlyTraveling,
           travelDestination: effectiveUser.travelDestination,
           currentTravelPlan: effectiveUser.currentTravelPlan
         };
+        console.log('🐛 ENRICHING USER:', user.id, {
+          originalTravelDest: user.travelDestination,
+          effectiveTravelDest: effectiveUser.travelDestination,
+          finalTravelDest: enrichedUser.travelDestination
+        });
+        return enrichedUser;
       }
       
       return user;
@@ -2423,7 +2429,7 @@ export default function Home() {
                                 <div className="text-blue-600 dark:text-blue-400 truncate flex items-center">
                                   <Plane className="w-3 h-3 mr-1 flex-shrink-0" />
                                   <span className="truncate">
-                                    {formatTravelDestination(u.travelDestination)}
+                                    {console.log('🐛 USER CARD:', u.id, u.username, 'travelDestination:', u.travelDestination) || formatTravelDestination(u.travelDestination)}
                                   </span>
                                 </div>
                                 <div className="text-gray-500 dark:text-gray-400 truncate">
@@ -2526,7 +2532,7 @@ export default function Home() {
                                     <div className="text-blue-600 dark:text-blue-400 truncate flex items-center">
                                       <Plane className="w-3 h-3 mr-1 flex-shrink-0" />
                                       <span className="truncate">
-                                        {formatTravelDestination(u.travelDestination)}
+                                        {console.log('🐛 DESKTOP USER CARD:', u.id, u.username, 'travelDestination:', u.travelDestination) || formatTravelDestination(u.travelDestination)}
                                       </span>
                                     </div>
                                     <div className="text-gray-500 dark:text-gray-400 truncate">
