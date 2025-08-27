@@ -35,13 +35,15 @@ export default function ChatroomPage() {
   const params = useParams();
   const rawChatroomId = parseInt(params.id || '0');
   
+  console.log(`🔥 CHATROOM PAGE: Attempting to load chatroom ID: ${rawChatroomId}`);
+  
   // Force redirect invalid IDs immediately at the top
   const chatroomId = (() => {
     if (rawChatroomId === 200 || rawChatroomId === 201 || rawChatroomId === 202 || rawChatroomId > 213) {
-      console.log(`🔀 REDIRECT: Invalid chatroom ID ${rawChatroomId}, using 198 instead`);
-      // Force navigation to valid chatroom
-      setTimeout(() => window.location.replace('/chatroom/198'), 0);
-      return 198; // Use valid ID for now
+      console.log(`🔀 REDIRECT: Invalid chatroom ID ${rawChatroomId}, redirecting to 198`);
+      // Force immediate redirect
+      window.location.href = '/chatroom/198';
+      return 198; // Use valid ID temporarily
     }
     return rawChatroomId;
   })();
