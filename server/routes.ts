@@ -3414,8 +3414,43 @@ Questions? Just reply to this message. Welcome aboard!
       
       if (process.env.NODE_ENV === 'development') console.log(`🔍 USERS SEARCH FILTERS:`, { location, interests, activities, userType, gender, sexualPreference, minAge, maxAge, search });
       
-      // Start with base query
-      let query = db.select().from(users);
+      // Start with base query - explicitly select all fields including travel destination
+      let query = db.select({
+        id: users.id,
+        username: users.username,
+        email: users.email,
+        name: users.name,
+        userType: users.userType,
+        bio: users.bio,
+        location: users.location,
+        hometownCity: users.hometownCity,
+        hometownState: users.hometownState,
+        hometownCountry: users.hometownCountry,
+        metroArea: users.metroArea,
+        isMetroUser: users.isMetroUser,
+        profileImage: users.profileImage,
+        coverPhoto: users.coverPhoto,
+        interests: users.interests,
+        localActivities: users.localActivities,
+        localEvents: users.localEvents,
+        age: users.age,
+        gender: users.gender,
+        sexualPreference: users.sexualPreference,
+        sexualPreferenceVisible: users.sexualPreferenceVisible,
+        isCurrentlyTraveling: users.isCurrentlyTraveling,
+        travelDestination: users.travelDestination,
+        travelStartDate: users.travelStartDate,
+        travelEndDate: users.travelEndDate,
+        travelInterests: users.travelInterests,
+        languages: users.languages,
+        instagramHandle: users.instagramHandle,
+        phoneNumber: users.phoneNumber,
+        businessName: users.businessName,
+        businessType: users.businessType,
+        businessDescription: users.businessDescription,
+        isActive: users.isActive,
+        createdAt: users.createdAt
+      }).from(users);
       const conditions = [];
       
       // LOCATION FILTER with LA Metro consolidation
