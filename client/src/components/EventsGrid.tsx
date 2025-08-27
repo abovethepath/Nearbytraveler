@@ -92,16 +92,16 @@ const EventsGrid = ({
       const date = parseISO(dateString);
       
       if (isToday(date)) {
-        return { text: "Today", className: "bg-red-100 text-red-800" };
+        return { text: "Today", className: "bg-red-500 text-white" };
       } else if (isTomorrow(date)) {
-        return { text: "Tomorrow", className: "bg-orange-100 text-orange-800" };
+        return { text: "Tomorrow", className: "bg-orange-500 text-white" };
       } else if (isThisWeek(date)) {
-        return { text: format(date, "EEE"), className: "bg-blue-100 text-blue-800" };
+        return { text: format(date, "EEE"), className: "bg-blue-500 text-white" };
       } else {
-        return { text: format(date, "MMM d"), className: "bg-gray-100 text-gray-800" };
+        return { text: format(date, "MMM d"), className: "bg-gray-600 text-white" };
       }
     } catch {
-      return { text: "TBD", className: "bg-gray-100 text-gray-600" };
+      return { text: "TBD", className: "bg-gray-500 text-white" };
     }
   };
 
@@ -120,17 +120,19 @@ const EventsGrid = ({
 
   const getEventTypeColor = (category: string | undefined) => {
     const colors: Record<string, string> = {
-      'music': 'bg-purple-100 text-purple-800',
-      'food': 'bg-green-100 text-green-800',
-      'sports': 'bg-blue-100 text-blue-800',
-      'arts': 'bg-pink-100 text-pink-800',
-      'business': 'bg-gray-100 text-gray-800',
-      'technology': 'bg-indigo-100 text-indigo-800',
-      'social': 'bg-yellow-100 text-yellow-800',
-      'nightlife': 'bg-red-100 text-red-800',
-      'outdoor': 'bg-emerald-100 text-emerald-800',
+      'music': 'bg-purple-500 text-white',
+      'food': 'bg-green-500 text-white',
+      'sports': 'bg-blue-500 text-white',
+      'arts': 'bg-pink-500 text-white',
+      'business': 'bg-gray-700 text-white',
+      'technology': 'bg-indigo-500 text-white',
+      'social': 'bg-yellow-500 text-white',
+      'nightlife': 'bg-red-500 text-white',
+      'outdoor': 'bg-emerald-500 text-white',
+      'community': 'bg-teal-500 text-white',
+      'dining': 'bg-orange-500 text-white',
     };
-    return colors[category?.toLowerCase() || ''] || 'bg-gray-100 text-gray-600';
+    return colors[category?.toLowerCase() || ''] || 'bg-gray-600 text-white';
   };
 
   if (isLoading && events.length === 0) {
@@ -195,97 +197,76 @@ const EventsGrid = ({
           const eventTitle = event.name || event.title || 'Untitled Event';
           
           return (
-            <Card key={event.id} className="group hover:shadow-lg transition-all duration-200 hover:border-primary/50">
-              <CardHeader className="pb-3">
-                <div className="flex justify-between items-start gap-2">
-                  <CardTitle className="text-lg leading-tight group-hover:text-primary transition-colors">
-                    {eventTitle}
-                  </CardTitle>
-                  <Badge className={dateInfo.className} variant="secondary">
+            <Card key={event.id} className="bg-slate-800 text-white hover:bg-slate-700 transition-all duration-200 border-slate-700 group">
+              <CardContent className="p-4">
+                {/* Header with title and date - better layout */}
+                <div className="flex justify-between items-start mb-3">
+                  <div className="flex-1 pr-3">
+                    <h3 className="text-lg font-semibold text-white leading-tight group-hover:text-blue-300 transition-colors">
+                      {eventTitle}
+                    </h3>
+                  </div>
+                  <Badge className={`${dateInfo.className} text-xs font-medium flex-shrink-0`}>
                     {dateInfo.text}
                   </Badge>
                 </div>
                 
-                {/* Only show event category - NO LOCATION TAGS */}
+                {/* Category badge */}
                 {event.category && (
-                  <Badge className={getEventTypeColor(event.category)} variant="secondary">
+                  <Badge className={`${getEventTypeColor(event.category)} text-xs mb-3`}>
                     {event.category}
                   </Badge>
                 )}
-              </CardHeader>
-              
-              <CardContent className="space-y-3">
+
                 {/* Description */}
                 {event.description && (
-                  <p className="text-sm text-gray-600 leading-relaxed">
+                  <p className="text-sm text-gray-300 mb-3 leading-relaxed">
                     {event.description.length > 80 ? event.description.substring(0, 80) + '...' : event.description}
                   </p>
                 )}
 
-                {/* Location - just the actual location */}
-                <div className="flex items-start gap-2">
-                  <MapPin className="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" />
-                  <span className="text-sm text-gray-600">{event.location}</span>
+                {/* Location */}
+                <div className="flex items-center gap-2 mb-2 text-gray-300">
+                  <MapPin className="h-4 w-4 flex-shrink-0" />
+                  <span className="text-sm">{event.location}</span>
                 </div>
 
                 {/* Time */}
                 {(startTime || endTime) && (
-                  <div className="flex items-center gap-2">
-                    <Clock className="h-4 w-4 text-gray-400" />
-                    <span className="text-sm text-gray-600">
+                  <div className="flex items-center gap-2 mb-3 text-gray-300">
+                    <Clock className="h-4 w-4" />
+                    <span className="text-sm">
                       {startTime}
                       {endTime && startTime !== endTime && ` - ${endTime}`}
                     </span>
                   </div>
                 )}
 
-                {/* Price */}
-                {event.price && (
-                  <div className="flex items-center gap-2">
-                    <DollarSign className="h-4 w-4 text-gray-400" />
-                    <span className="text-sm font-medium text-green-600">
-                      {event.price}
+                {/* Bottom section: Attendees count and single action button */}
+                <div className="flex items-center justify-between pt-3 border-t border-slate-700">
+                  {/* Attendee count */}
+                  <div className="flex items-center gap-1 text-gray-400">
+                    <Users className="h-4 w-4" />
+                    <span className="text-sm">
+                      {event.attendeeCount || 0} interested
                     </span>
                   </div>
-                )}
-
-                {/* Capacity/Attendance */}
-                {(event.attendeeCount !== undefined || event.capacity) && (
-                  <div className="flex items-center gap-2">
-                    <Users className="h-4 w-4 text-gray-400" />
-                    <span className="text-sm text-gray-600">
-                      {event.attendeeCount || 0}
-                      {event.capacity && ` / ${event.capacity}`} 
-                      {event.capacity ? ' spots' : ' interested'}
-                    </span>
-                  </div>
-                )}
-
-                {/* Action Buttons */}
-                <div className="flex gap-2 pt-2">
-                  <Button 
-                    size="sm" 
-                    className="flex-1"
-                    onClick={() => setNavigationLocation(`/events/${event.id}`)}
-                  >
-                    <Users className="h-4 w-4 mr-1" />
-                    Join
-                  </Button>
                   
+                  {/* Single action button */}
                   <Button 
                     size="sm" 
-                    variant="outline"
+                    className="bg-blue-600 hover:bg-blue-700 text-white"
                     onClick={() => setNavigationLocation(`/events/${event.id}`)}
                   >
                     <ExternalLink className="h-4 w-4 mr-1" />
-                    Details
+                    View Details
                   </Button>
                 </div>
 
-                {/* Organizer */}
+                {/* Organizer info */}
                 {event.organizer && (
-                  <div className="text-xs text-gray-500 pt-1 border-t">
-                    Organized by {event.organizer}
+                  <div className="text-xs text-gray-400 mt-2">
+                    by {event.organizer}
                   </div>
                 )}
               </CardContent>
@@ -299,8 +280,8 @@ const EventsGrid = ({
         <div className="flex justify-center">
           <Button 
             variant="outline" 
-            onClick={onShowMore || (() => setInternalDisplayCount(internalDisplayCount + 6))} 
-            className="px-8"
+            onClick={onShowMore || (() => setInternalDisplayCount(internalDisplayCount + 6))}
+            className="px-8 border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white"
           >
             Show More Events ({allEvents.length - currentDisplayCount} more)
           </Button>
