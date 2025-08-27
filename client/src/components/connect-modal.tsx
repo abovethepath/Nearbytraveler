@@ -454,24 +454,28 @@ export default function ConnectModal({ isOpen, onClose, userTravelPlans: propTra
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[999999] flex items-center justify-center bg-black/50" onClick={onClose}>
+    <div className="fixed inset-0 z-[999999] flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={onClose}>
       <div 
-        className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto m-4"
+        className="bg-gradient-to-br from-white via-blue-50 to-orange-50 dark:from-gray-800 dark:via-blue-900/20 dark:to-orange-900/20 rounded-2xl shadow-2xl max-w-5xl w-full max-h-[90vh] overflow-y-auto m-4 border border-blue-200/20 dark:border-blue-600/20"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="p-6">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <Users className="w-5 h-5 text-gray-900 dark:text-white" />
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Connect with Travelers & Locals</h2>
+        <div className="p-8">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <div className="bg-gradient-to-r from-blue-600 to-orange-500 p-3 rounded-xl">
+                <Users className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">Connect with Travelers & Locals</h2>
+                <p className="text-gray-600 dark:text-gray-300 text-lg mt-1">
+                  Find and connect with amazing people in your area
+                </p>
+              </div>
             </div>
-            <Button variant="ghost" size="sm" onClick={onClose}>
-              <X className="w-4 h-4" />
+            <Button variant="ghost" size="sm" onClick={onClose} className="hover:bg-gray-100 dark:hover:bg-gray-700">
+              <X className="w-5 h-5" />
             </Button>
           </div>
-          <p className="text-gray-600 dark:text-gray-400 mb-6">
-            Find and connect with locals and travelers in your area
-          </p>
 
           <div className="space-y-6">
             {/* Quick Select Locations */}
@@ -899,50 +903,52 @@ export default function ConnectModal({ isOpen, onClose, userTravelPlans: propTra
                   )}
                 </h3>
                 
-                <div className="grid grid-cols-1 gap-4">
+                <div className="grid grid-cols-1 gap-6">
                   {searchResults.map((user) => (
-                    <Card key={user.id} className="hover:shadow-md transition-shadow cursor-pointer bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600">
-                      <CardContent className="p-4">
+                    <Card key={user.id} className="hover:shadow-2xl transition-all duration-300 cursor-pointer bg-gradient-to-br from-white via-blue-50/30 to-orange-50/30 dark:from-gray-800 dark:via-blue-900/20 dark:to-orange-900/20 border-2 border-transparent hover:border-blue-200 dark:hover:border-blue-600/30 rounded-2xl overflow-hidden">
+                      <CardContent className="p-6">
                         <div className="flex items-start justify-between">
                           <div 
-                            className="flex items-center space-x-4 flex-1 cursor-pointer"
+                            className="flex items-center space-x-6 flex-1 cursor-pointer group"
                             onClick={() => handleViewProfile(user.id)}
                           >
-                            <Avatar className="w-12 h-12">
-                              <AvatarImage src={user.profileImage} alt={user.username} />
-                              <AvatarFallback className="bg-gradient-to-br from-blue-500 to-orange-500 text-white">
+                            <Avatar className="w-16 h-16 ring-4 ring-blue-100 dark:ring-blue-800 group-hover:ring-blue-200 dark:group-hover:ring-blue-700 transition-all">
+                              <AvatarImage src={user.profileImage} alt={user.username} className="object-cover" />
+                              <AvatarFallback className="bg-gradient-to-br from-blue-500 to-orange-500 text-white text-xl font-bold">
                                 {user.username.charAt(0).toUpperCase()}
                               </AvatarFallback>
                             </Avatar>
                             <div className="flex-1">
-                              <h4 className="font-semibold hover:text-blue-600 transition-colors text-gray-900 dark:text-white">{user.username}</h4>
-                              <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">{user.bio}</p>
-                              <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
-                                <MapPin className="w-3 h-3" />
-                                <span>{user.location}</span>
-                                <Badge variant="secondary" className="text-xs">
+                              <h4 className="text-xl font-bold group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors text-gray-900 dark:text-white mb-2">{user.username}</h4>
+                              <p className="text-base text-gray-700 dark:text-gray-300 mb-3 leading-relaxed">{user.bio}</p>
+                              <div className="flex items-center gap-3 text-sm">
+                                <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                                  <MapPin className="w-4 h-4" />
+                                  <span className="font-medium">{user.location}</span>
+                                </div>
+                                <Badge variant="secondary" className="bg-gradient-to-r from-blue-100 to-orange-100 text-blue-800 dark:from-blue-800 dark:to-orange-800 dark:text-blue-100 border-0 font-semibold px-3 py-1">
                                   {getDisplayUserType(user, searchLocation)}
                                 </Badge>
                               </div>
                             </div>
                           </div>
-                          <div className="flex gap-2">
+                          <div className="flex gap-3">
                             <Button
-                              size="sm"
+                              size="lg"
                               variant="outline"
                               onClick={() => handleMessage(user.id)}
-                              className="flex items-center gap-1"
+                              className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0 hover:from-blue-600 hover:to-blue-700 font-semibold px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all"
                             >
-                              <MessageCircle className="w-3 h-3" />
+                              <MessageCircle className="w-4 h-4" />
                               Message
                             </Button>
                             <Button
-                              size="sm"
+                              size="lg"
                               onClick={() => handleConnect(user.id)}
                               disabled={connectMutation.isPending}
-                              className="flex items-center gap-1"
+                              className="flex items-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white border-0 hover:from-orange-600 hover:to-orange-700 font-semibold px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all"
                             >
-                              <UserPlus className="w-3 h-3" />
+                              <UserPlus className="w-4 h-4" />
                               {connectMutation.isPending ? "Connecting..." : "Connect"}
                             </Button>
                           </div>
