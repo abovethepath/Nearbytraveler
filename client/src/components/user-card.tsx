@@ -363,110 +363,65 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
             </h3>
           </div>
           
-          {/* Enhanced Location Display */}
+          {/* Location Display - Rebuilt from Weather Widget Logic */}
           <div className="text-sm text-gray-600 dark:text-gray-300 mb-2">
             <div className="flex items-center gap-2">
               {(() => {
-                // FOR CURRENT USER: Use weather widget's calculated location, FOR OTHERS: Use their travel data
-                const getLocationDisplay = () => {
-                  // Fix 5: PRIORITY - Use displayLocation if available from home page processing
-                  if ((user as any).displayLocation) {
-                    const displayLocation = (user as any).displayLocation;
-                    console.log('UserCard - Using displayLocation from home page:', displayLocation);
-                    
-                    // Check if this is a travel destination (different from hometown)
-                    const isTravel = user.hometownCity && 
-                      !displayLocation.toLowerCase().includes(user.hometownCity.toLowerCase()) &&
-                      !user.hometownCity.toLowerCase().includes(displayLocation.toLowerCase());
-                    
-                    return {
-                      text: displayLocation,
-                      isTravel: isTravel
-                    };
-                  }
-                  
-                  // For current user cards - use the EXACT weather widget calculated location
-                  if (isCurrentUserCard && currentUserCity && currentUserCountry) {
-                    console.log('UserCard - Using weather widget calculated location:', { currentUserCity, currentUserCountry });
-                    const displayLocation = currentUserCountry ? `${currentUserCity}, ${currentUserCountry}` : currentUserCity;
-                    
-                    // Check if this is a travel destination (different from hometown)
-                    const isTravel = user.hometownCity && 
-                      !currentUserCity.toLowerCase().includes(user.hometownCity.toLowerCase()) && 
-                      !user.hometownCity.toLowerCase().includes(currentUserCity.toLowerCase());
-                    
-                    return {
-                      text: displayLocation,
-                      isTravel: isTravel
-                    };
-                  }
-                  
-                  // For other users - use their travel data as before
+                // Get location text using same logic as weather widget
+                let locationText = "";
+                let isTravel = false;
+                
+                if (isCurrentUserCard && currentUserCity && currentUserCountry) {
+                  // For current user - use weather widget calculated location
+                  locationText = currentUserCountry ? `${currentUserCity}, ${currentUserCountry}` : currentUserCity;
+                  isTravel = user.hometownCity && 
+                    !currentUserCity.toLowerCase().includes(user.hometownCity.toLowerCase()) && 
+                    !user.hometownCity.toLowerCase().includes(currentUserCity.toLowerCase());
+                } else {
+                  // For other users - check their travel plans
                   const currentDestination = getCurrentTravelDestination(userTravelPlans || []);
                   if (currentDestination && user.hometownCity) {
                     const travelDestination = currentDestination.toLowerCase();
                     const hometown = user.hometownCity.toLowerCase();
                     
-                    // Only show as traveler if destination is different from hometown
                     if (!travelDestination.includes(hometown) && !hometown.includes(travelDestination)) {
-                      const parts = currentDestination.split(', ');
-                      let city = parts[0] || "";
-                      const country = parts[parts.length - 1] || "";
-                      
-                      if (city === 'Los Angeles Metro') {
-                        city = 'Los Angeles';
-                      }
-                      
-                      const displayLocation = country ? `${city}, ${country}` : city;
-                      return {
-                        text: displayLocation,
-                        isTravel: true
-                      };
+                      locationText = currentDestination;
+                      isTravel = true;
+                    } else {
+                      locationText = user.hometownCity + (user.hometownCountry ? `, ${user.hometownCountry}` : '');
+                      isTravel = false;
                     }
+                  } else {
+                    // Fallback to hometown
+                    locationText = user.hometownCity + (user.hometownCountry ? `, ${user.hometownCountry}` : '');
+                    isTravel = false;
                   }
-                  
-                  // Fallback - show hometown/location
-                  let city = user.hometownCity || "";
-                  const country = user.hometownCountry || "";
-                  
-                  if (city === 'Los Angeles Metro') {
-                    city = 'Los Angeles';
-                  }
-                  
-                  const displayLocation = country ? `${city}, ${country}` : city;
-                  return {
-                    text: displayLocation || user.location || 'Location not specified',
-                    isTravel: false
-                  };
-                };
-
-                const locationInfo = getLocationDisplay();
-
+                }
+                
+                // Default fallback
+                if (!locationText) {
+                  locationText = user.location || 'Location not specified';
+                }
+                
                 return (
                   <>
-                    {locationInfo.isTravel ? (
-                      <div className="flex items-center text-blue-600 dark:text-blue-400">
-                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">
-                          ✈️ {locationInfo.text}
-                        </span>
-                      </div>
+                    {isTravel ? (
+                      <span className="text-sm text-gray-600 dark:text-gray-300">
+                        ✈️ {locationText}
+                      </span>
                     ) : user.userType === 'business' ? (
-                      <>
-                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400">
-                          🏢 {locationInfo.text}
-                        </span>
-                      </>
+                      <span className="text-sm text-gray-600 dark:text-gray-300">
+                        🏢 {locationText}
+                      </span>
                     ) : (
-                      <>
-                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300">
-                          🏠 {locationInfo.text}
-                        </span>
-                      </>
+                      <span className="text-sm text-gray-600 dark:text-gray-300">
+                        🏠 {locationText}
+                      </span>
                     )}
                     
                     {/* Things in Common Badge */}
                     {compatibilityData && (compatibilityData.sharedInterests?.length > 0 || compatibilityData.sharedActivities?.length > 0 || compatibilityData.sharedEvents?.length > 0) && (
-                      <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full ml-2">
+                      <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full ml-2 dark:bg-blue-900/30 dark:text-blue-400">
                         {(compatibilityData.sharedInterests?.length || 0) + (compatibilityData.sharedActivities?.length || 0) + (compatibilityData.sharedEvents?.length || 0)} in common
                       </span>
                     )}
