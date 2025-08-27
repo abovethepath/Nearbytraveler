@@ -142,6 +142,81 @@ export default function Home() {
     return destination;
   };
 
+  // Debug logging function for travel destination data
+  const debugTravelData = (label: string, user: any, travelPlans?: any[]) => {
+    console.log(`🔍 ${label}:`, {
+      userId: user?.id,
+      username: user?.username,
+      isCurrentlyTraveling: user?.isCurrentlyTraveling,
+      travelDestination: user?.travelDestination,
+      currentTravelPlan: user?.currentTravelPlan,
+      travelPlansCount: travelPlans?.length || 0,
+      travelPlans: travelPlans?.map(tp => ({
+        destination: tp.destination,
+        destinationCity: tp.destinationCity,
+        startDate: tp.startDate,
+        endDate: tp.endDate
+      }))
+    });
+  };
+
+  // Enhanced user enrichment function
+  const enrichUserWithTravelData = (user: any, travelPlans?: any[]) => {
+    debugTravelData("Raw user data", user, travelPlans);
+    
+    const today = new Date();
+    let effectiveDestination = null;
+    let isTravel = false;
+
+    // Priority 1: Check active travel plans
+    if (travelPlans?.length) {
+      const activePlan = travelPlans.find((plan: any) => {
+        const startDate = new Date(plan.startDate);
+        const endDate = new Date(plan.endDate);
+        return today >= startDate && today <= endDate;
+      });
+      
+      if (activePlan) {
+        effectiveDestination = activePlan.destinationCity || activePlan.destination;
+        isTravel = true;
+        console.log(`🎯 Active travel plan found for ${user.username}:`, effectiveDestination);
+      }
+    }
+
+    // Priority 2: Check user's current travel status
+    if (!effectiveDestination && user.isCurrentlyTraveling && user.travelDestination) {
+      effectiveDestination = user.travelDestination;
+      isTravel = true;
+      console.log(`🎯 User travel destination found for ${user.username}:`, effectiveDestination);
+    }
+
+    // Priority 3: Check current travel plan field
+    if (!effectiveDestination && user.currentTravelPlan?.destination) {
+      effectiveDestination = user.currentTravelPlan.destination;
+      isTravel = true;
+      console.log(`🎯 Current travel plan found for ${user.username}:`, effectiveDestination);
+    }
+
+    const enrichedUser = {
+      ...user,
+      displayLocation: effectiveDestination || (user.hometownCity ? `${user.hometownCity}, ${user.hometownState || user.hometownCountry}` : user.location),
+      isCurrentlyTraveling: isTravel,
+      travelDestination: effectiveDestination,
+      effectiveUser: {
+        travelDestination: effectiveDestination,
+        isCurrentlyTraveling: isTravel
+      }
+    };
+
+    console.log(`✅ Enriched user ${user.username}:`, {
+      displayLocation: enrichedUser.displayLocation,
+      isCurrentlyTraveling: enrichedUser.isCurrentlyTraveling,
+      travelDestination: enrichedUser.travelDestination
+    });
+
+    return enrichedUser;
+  };
+
   // Get compatibility data from API (matches profile page calculation)
   const { data: compatibilityData } = useQuery({
     queryKey: [`/api/users/${user?.id || currentUserProfile?.id || effectiveUser?.id}/matches`],
@@ -2378,8 +2453,10 @@ export default function Home() {
                 <div className="sm:hidden">
                   <div className="grid grid-cols-2 gap-3">
                     {getSortedUsers(filteredUsers).slice(0, displayLimit).map((u: any) => {
-                      const thingsInCommon = getThingsInCommon(u);
-                      const isCurrentlyTraveling = u.isCurrentlyTraveling || u.travelDestination;
+                      // Enrich user with travel data and debug
+                      const enrichedUser = enrichUserWithTravelData(u, u.travelPlans);
+                      const thingsInCommon = getThingsInCommon(enrichedUser);
+                      const isCurrentlyTraveling = enrichedUser.isCurrentlyTraveling || enrichedUser.travelDestination;
                       
                       return (
                         <button
@@ -2423,20 +2500,20 @@ export default function Home() {
                                 <div className="text-blue-600 dark:text-blue-400 truncate flex items-center">
                                   <Plane className="w-3 h-3 mr-1 flex-shrink-0" />
                                   <span className="truncate">
-                                    {formatTravelDestination(u.travelDestination)}
+                                    {formatTravelDestination(enrichedUser.travelDestination)}
                                   </span>
                                 </div>
                                 <div className="text-gray-500 dark:text-gray-400 truncate">
-                                  From {u.hometownCity && u.hometownCountry
-                                    ? `${u.hometownCity}, ${u.hometownCountry.replace("United States", "USA")}`
-                                    : u.location || "Location not set"}
+                                  From {enrichedUser.hometownCity && enrichedUser.hometownCountry
+                                    ? `${enrichedUser.hometownCity}, ${enrichedUser.hometownCountry.replace("United States", "USA")}`
+                                    : enrichedUser.location || "Location not set"}
                                 </div>
                               </div>
                             ) : (
                               <div className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                                {u.hometownCity && u.hometownCountry
-                                  ? `${u.hometownCity}, ${u.hometownCountry.replace("United States", "USA")}`
-                                  : u.location || "Location not set"}
+                                {enrichedUser.hometownCity && enrichedUser.hometownCountry
+                                  ? `${enrichedUser.hometownCity}, ${enrichedUser.hometownCountry.replace("United States", "USA")}`
+                                  : enrichedUser.location || "Location not set"}
                               </div>
                             )}
                             
@@ -2482,8 +2559,10 @@ export default function Home() {
                       {/* Desktop (≥1024px): force 4 across maximum */}
                       <div className="hidden lg:grid grid-cols-4 gap-4">
                         {people.map((u: any) => {
-                          const thingsInCommon = getThingsInCommon(u);
-                          const isCurrentlyTraveling = u.isCurrentlyTraveling || u.travelDestination;
+                          // Enrich user with travel data and debug
+                          const enrichedUser = enrichUserWithTravelData(u, u.travelPlans);
+                          const thingsInCommon = getThingsInCommon(enrichedUser);
+                          const isCurrentlyTraveling = enrichedUser.isCurrentlyTraveling || enrichedUser.travelDestination;
                           
                           return (
                             <button
@@ -2526,20 +2605,20 @@ export default function Home() {
                                     <div className="text-blue-600 dark:text-blue-400 truncate flex items-center">
                                       <Plane className="w-3 h-3 mr-1 flex-shrink-0" />
                                       <span className="truncate">
-                                        {formatTravelDestination(u.travelDestination)}
+                                        {formatTravelDestination(enrichedUser.travelDestination)}
                                       </span>
                                     </div>
                                     <div className="text-gray-500 dark:text-gray-400 truncate">
-                                      📍 From {u.hometownCity && u.hometownCountry 
-                                        ? `${u.hometownCity}, ${u.hometownCountry.replace("United States","USA")}` 
-                                        : u.location || "Location not set"}
+                                      📍 From {enrichedUser.hometownCity && enrichedUser.hometownCountry 
+                                        ? `${enrichedUser.hometownCity}, ${enrichedUser.hometownCountry.replace("United States","USA")}` 
+                                        : enrichedUser.location || "Location not set"}
                                     </div>
                                   </div>
                                 ) : (
                                   <div className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                                    📍 {u.hometownCity && u.hometownCountry 
-                                      ? `${u.hometownCity}, ${u.hometownCountry.replace("United States","USA")}` 
-                                      : u.location || "Location not set"}
+                                    📍 {enrichedUser.hometownCity && enrichedUser.hometownCountry 
+                                      ? `${enrichedUser.hometownCity}, ${enrichedUser.hometownCountry.replace("United States","USA")}` 
+                                      : enrichedUser.location || "Location not set"}
                                   </div>
                                 )}
                                 
@@ -2620,6 +2699,9 @@ export default function Home() {
                 limit={eventsDisplayCount}
                 showLocation={true}
                 className="events-grid-section"
+                userId={currentUserId}
+                travelDestination={effectiveUser?.travelDestination}
+                useDualLocation={!!effectiveUser?.isCurrentlyTraveling}
               />
             </div>
 

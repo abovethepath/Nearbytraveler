@@ -4484,6 +4484,70 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // Get events from dual locations (current travel destination AND hometown)
+  app.get('/api/events/nearby-dual', async (req, res) => {
+    try {
+      const userId = parseInt(req.query.userId as string);
+      const travelDestination = req.query.travelDestination as string;
+      
+      if (!userId) {
+        return res.status(400).json({ error: 'User ID required' });
+      }
+
+      // Get user's hometown from database
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      const events = [];
+      
+      // Get events from travel destination (current location)
+      if (travelDestination) {
+        const travelCity = travelDestination.split(',')[0].trim();
+        console.log(`🎪 DUAL EVENTS: Fetching travel location events for ${travelCity}`);
+        
+        const travelEvents = await storage.getEventsByLocation(travelCity, '', '');
+        events.push(...travelEvents.map((event: any) => ({
+          ...event,
+          locationContext: 'travel',
+          locationLabel: `Near You in ${travelCity}`,
+          priority: 1
+        })));
+      }
+
+      // Get events from hometown
+      if (user.hometownCity) {
+        const hometownCity = user.hometownCity;
+        console.log(`🎪 DUAL EVENTS: Fetching hometown events for ${hometownCity}`);
+        
+        const hometownEvents = await storage.getEventsByLocation(hometownCity, '', '');
+        events.push(...hometownEvents.map((event: any) => ({
+          ...event,
+          locationContext: 'hometown',
+          locationLabel: `Back Home in ${hometownCity}`,
+          priority: 2
+        })));
+      }
+
+      // Remove duplicates and sort by priority then date
+      const uniqueEvents = events
+        .filter((event, index, self) => 
+          index === self.findIndex(e => e.id === event.id)
+        )
+        .sort((a, b) => {
+          if (a.priority !== b.priority) return a.priority - b.priority;
+          return new Date(a.date).getTime() - new Date(b.date).getTime();
+        });
+
+      console.log(`🎪 DUAL EVENTS: Returning ${uniqueEvents.length} events for user ${userId}`);
+      res.json(uniqueEvents);
+    } catch (error) {
+      console.error('Error fetching dual location events:', error);
+      res.status(500).json({ error: 'Failed to fetch events' });
+    }
+  });
+
   // 🤖 MANUAL AI EVENT GENERATION ENDPOINT - For testing and manual triggers
   app.post("/api/events/generate-ai/:city", async (req, res) => {
     try {

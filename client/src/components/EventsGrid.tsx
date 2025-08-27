@@ -12,6 +12,9 @@ interface EventsGridProps {
   limit?: number;
   showLocation?: boolean;
   className?: string;
+  userId?: number;
+  travelDestination?: string;
+  useDualLocation?: boolean;
 }
 
 interface Event {
@@ -35,24 +38,55 @@ interface Event {
   rating?: number;
   website?: string;
   ticketUrl?: string;
+  locationContext?: 'travel' | 'hometown';
+  locationLabel?: string;
+  priority?: number;
 }
 
-function EventsGrid({ location, limit = 6, showLocation = true, className = "" }: EventsGridProps) {
+function EventsGrid({ 
+  location, 
+  limit = 6, 
+  showLocation = true, 
+  className = "", 
+  userId,
+  travelDestination,
+  useDualLocation = false
+}: EventsGridProps) {
   const [, setNavigationLocation] = useLocation();
   const [displayCount, setDisplayCount] = useState(limit);
 
-  // Fetch events based on location or general events
+  // Debug logging for travel data
+  console.log('🔍 EventsGrid received props:', {
+    userId,
+    travelDestination,
+    useDualLocation,
+    location
+  });
+
+  // Fetch events - use dual location API if traveling, otherwise regular events
   const { data: events = [], isLoading } = useQuery({
-    queryKey: ['/api/events/nearby', location],
+    queryKey: useDualLocation 
+      ? [`/api/events/nearby-dual`, userId, travelDestination]
+      : ['/api/events/nearby', location],
     queryFn: async () => {
-      const url = location 
-        ? `/api/events?city=${encodeURIComponent(location)}`
-        : '/api/events/nearby';
-      
-      const response = await fetch(url);
-      if (!response.ok) throw new Error('Failed to fetch events');
-      return response.json();
+      if (useDualLocation && userId) {
+        console.log('🎯 EventsGrid: Fetching dual location events');
+        const url = `/api/events/nearby-dual?userId=${userId}&travelDestination=${encodeURIComponent(travelDestination || '')}`;
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('Failed to fetch dual location events');
+        return response.json();
+      } else {
+        console.log('🎯 EventsGrid: Fetching single location events');
+        const url = location 
+          ? `/api/events?city=${encodeURIComponent(location)}`
+          : '/api/events/nearby';
+        
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('Failed to fetch events');
+        return response.json();
+      }
     },
+    enabled: !useDualLocation || !!userId,
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
   });
 
@@ -150,6 +184,16 @@ function EventsGrid({ location, limit = 6, showLocation = true, className = "" }
                 
                 {/* Event badges overlay */}
                 <div className="absolute top-2 left-2 flex flex-col gap-1">
+                  {/* Location Context Badge */}
+                  {event.locationContext && event.locationLabel && (
+                    <Badge className={`${
+                      event.locationContext === 'travel' 
+                        ? 'bg-blue-500 text-white' 
+                        : 'bg-green-500 text-white'
+                    } border-0 text-xs`}>
+                      {event.locationContext === 'travel' ? '✈️' : '🏠'} {event.locationLabel}
+                    </Badge>
+                  )}
                   {event.isFree && (
                     <Badge className="bg-green-500 text-white border-0 text-xs">
                       FREE
@@ -168,6 +212,16 @@ function EventsGrid({ location, limit = 6, showLocation = true, className = "" }
                 
                 {/* Event badges overlay */}
                 <div className="absolute top-2 left-2 flex flex-col gap-1">
+                  {/* Location Context Badge */}
+                  {event.locationContext && event.locationLabel && (
+                    <Badge className={`${
+                      event.locationContext === 'travel' 
+                        ? 'bg-blue-500 text-white' 
+                        : 'bg-green-500 text-white'
+                    } border-0 text-xs`}>
+                      {event.locationContext === 'travel' ? '✈️' : '🏠'} {event.locationLabel}
+                    </Badge>
+                  )}
                   {event.isFree && (
                     <Badge className="bg-green-500 text-white border-0 text-xs">
                       FREE
