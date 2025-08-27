@@ -369,6 +369,22 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
               {(() => {
                 // FOR CURRENT USER: Use weather widget's calculated location, FOR OTHERS: Use their travel data
                 const getLocationDisplay = () => {
+                  // Fix 5: PRIORITY - Use displayLocation if available from home page processing
+                  if ((user as any).displayLocation) {
+                    const displayLocation = (user as any).displayLocation;
+                    console.log('UserCard - Using displayLocation from home page:', displayLocation);
+                    
+                    // Check if this is a travel destination (different from hometown)
+                    const isTravel = user.hometownCity && 
+                      !displayLocation.toLowerCase().includes(user.hometownCity.toLowerCase()) &&
+                      !user.hometownCity.toLowerCase().includes(displayLocation.toLowerCase());
+                    
+                    return {
+                      text: displayLocation,
+                      isTravel: isTravel
+                    };
+                  }
+                  
                   // For current user cards - use the EXACT weather widget calculated location
                   if (isCurrentUserCard && currentUserCity && currentUserCountry) {
                     console.log('UserCard - Using weather widget calculated location:', { currentUserCity, currentUserCountry });

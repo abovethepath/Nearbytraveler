@@ -191,26 +191,19 @@ export default function Home() {
 
   // Function to get current location (same logic as weather widget)
   const getCurrentUserLocation = () => {
-    // Get from weather widget's exact logic
+    // Use exact same logic as weather widget
     const currentTravelPlan = getCurrentTravelDestination(travelPlans || []);
     if (currentTravelPlan?.destination) {
-      return currentTravelPlan.destination;
+      return currentTravelPlan.destination; // This should be "Rome"
     }
-    
-    if (effectiveUser?.isCurrentlyTraveling && effectiveUser?.travelDestination) {
-      return effectiveUser.travelDestination;
+
+    if (enrichedEffectiveUser?.isCurrentlyTraveling && enrichedEffectiveUser?.travelDestination) {
+      return enrichedEffectiveUser.travelDestination; // This should be "Rome"  
     }
-    
-    if (effectiveUser?.location) {
-      return effectiveUser.location;
-    }
-    
-    if (effectiveUser?.hometownCity) {
-      return [effectiveUser.hometownCity, effectiveUser.hometownState, effectiveUser.hometownCountry]
-        .filter(Boolean).join(', ');
-    }
-    
-    return "Location Unknown";
+
+    const hometown = [effectiveUser?.hometownCity, effectiveUser?.hometownState, effectiveUser?.hometownCountry]
+      .filter(Boolean).join(', ');
+    return hometown || effectiveUser?.location || 'Unknown';
   };
 
   const enrichUserWithTravelData = (user: any, travelPlans?: any[]) => {
@@ -287,6 +280,28 @@ export default function Home() {
   const { data: compatibilityData } = useQuery({
     queryKey: [`/api/users/${user?.id || currentUserProfile?.id || effectiveUser?.id}/matches`],
     enabled: !!(user?.id || currentUserProfile?.id || effectiveUser?.id),
+  });
+
+  // Fix 3: Add events query with user-created priority
+  const { data: userPriorityEvents = [] } = useQuery({
+    queryKey: ['/api/events', effectiveUser?.id],
+    queryFn: async () => {
+      const response = await fetch('/api/events');
+      const allEvents = await response.json();
+      
+      return allEvents.sort((a, b) => {
+        // USER CREATED EVENTS ALWAYS FIRST
+        const aIsUserCreated = a.createdBy === effectiveUser?.id || a.userId === effectiveUser?.id;
+        const bIsUserCreated = b.createdBy === effectiveUser?.id || b.userId === effectiveUser?.id;
+        
+        if (aIsUserCreated && !bIsUserCreated) return -1;
+        if (!aIsUserCreated && bIsUserCreated) return 1;
+        
+        // Then by date
+        return new Date(b.startDate || b.createdAt).getTime() - new Date(a.startDate || a.createdAt).getTime();
+      });
+    },
+    enabled: !!effectiveUser?.id,
   });
 
   // Function to get things in common using API compatibility data (matches profile page)
@@ -1051,17 +1066,24 @@ export default function Home() {
   const users = useMemo(() => {
     if (!rawUsers.length) return [];
     
-    console.log('🔄 ENRICHING USERS: Processing', rawUsers.length, 'users with travel data');
+    const weatherWidgetLocation = getCurrentUserLocation(); // Get EXACT location weather widget uses
     
-    const enrichedUsers = rawUsers.map(user => {
+    return rawUsers.map(user => {
       const enriched = enrichUserWithTravelData(user, user.travelPlans);
-      console.log(`🔄 USER ${user.username}: enriched with display location:`, enriched.displayLocation);
+      
+      // For current user - use WEATHER WIDGET location
+      if (user.id === effectiveUser?.id) {
+        enriched.displayLocation = weatherWidgetLocation; // Force to use weather widget location
+      } else {
+        // For other users
+        enriched.displayLocation = enriched.isCurrentlyTraveling && enriched.travelDestination
+          ? enriched.travelDestination
+          : [user.hometownCity, user.hometownState, user.hometownCountry].filter(Boolean).join(', ');
+      }
+      
       return enriched;
     });
-    
-    // Apply location-based prioritization
-    return prioritizeUsers(enrichedUsers);
-  }, [rawUsers, effectiveUser, travelPlans]);
+  }, [rawUsers, travelPlans, effectiveUser?.id]);
 
   // Auto-detect business location for automatic nearby user discovery
   const getBusinessLocation = () => {
@@ -2709,12 +2731,10 @@ export default function Home() {
 
             {/* Events Section - Enhanced Grid Layout */}
             <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border shadow-sm">
-              <EventsGrid 
-                location={getCurrentUserLocation()}
-                limit={eventsDisplayCount}
-                showLocation={true}
-                className="events-grid-section"
-                userId={currentUserId}
+              <EventsGrid
+                events={userPriorityEvents}
+                displayCount={6}
+                onShowMore={() => {}}
                 travelDestination={effectiveUser?.travelDestination}
                 useDualLocation={!!effectiveUser?.isCurrentlyTraveling}
               />
