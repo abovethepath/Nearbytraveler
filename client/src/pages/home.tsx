@@ -96,16 +96,16 @@ export default function Home() {
     // Compare travel style/types
     const currentUserTravelStyle = effectiveUser.travelStyle || [];
     const otherUserTravelStyle = otherUser.travelStyle || [];
-    const commonTravelStyle = currentUserTravelStyle.filter(style => 
-      otherUserTravelStyle.some(other => other.toLowerCase().trim() === style.toLowerCase().trim())
+    const commonTravelStyle = currentUserTravelStyle.filter((style: string) => 
+      otherUserTravelStyle.some((other: string) => other.toLowerCase().trim() === style.toLowerCase().trim())
     );
     commonCount += commonTravelStyle.length;
     
     // Compare languages spoken
     const currentUserLanguages = effectiveUser.languagesSpoken || [];
     const otherUserLanguages = otherUser.languagesSpoken || [];
-    const commonLanguages = currentUserLanguages.filter(language => 
-      otherUserLanguages.some(other => other.toLowerCase().trim() === language.toLowerCase().trim())
+    const commonLanguages = currentUserLanguages.filter((language: string) => 
+      otherUserLanguages.some((other: string) => other.toLowerCase().trim() === language.toLowerCase().trim())
     );
     commonCount += commonLanguages.length;
     
