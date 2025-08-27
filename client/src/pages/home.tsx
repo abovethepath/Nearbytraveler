@@ -2381,8 +2381,10 @@ export default function Home() {
                             {isCurrentlyTraveling ? (
                               <div className="text-xs space-y-1">
                                 <div className="text-blue-600 dark:text-blue-400 truncate flex items-center">
-                                  <Plane className="w-3 h-3 mr-1" />
-                                  Currently in {u.travelDestination}
+                                  <Plane className="w-3 h-3 mr-1 flex-shrink-0" />
+                                  <span className="truncate">
+                                    {u.travelDestination || "Traveling"}
+                                  </span>
                                 </div>
                                 <div className="text-gray-500 dark:text-gray-400 truncate">
                                   From {u.hometownCity && u.hometownCountry
@@ -2482,8 +2484,10 @@ export default function Home() {
                                 {isCurrentlyTraveling ? (
                                   <div className="text-xs space-y-1">
                                     <div className="text-blue-600 dark:text-blue-400 truncate flex items-center">
-                                      <Plane className="w-3 h-3 mr-1" />
-                                      Currently in {u.travelDestination}
+                                      <Plane className="w-3 h-3 mr-1 flex-shrink-0" />
+                                      <span className="truncate">
+                                        {u.travelDestination || "Traveling"}
+                                      </span>
                                     </div>
                                     <div className="text-gray-500 dark:text-gray-400 truncate">
                                       📍 From {u.hometownCity && u.hometownCountry 
