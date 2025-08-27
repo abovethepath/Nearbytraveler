@@ -2968,10 +2968,6 @@ export default function Home() {
               <MessagesWidget userId={currentUserId} />
             </div>
 
-            {/* Events Near You Widget */}
-            <div>
-              <ContextualEventRecommendations userId={currentUserId} limit={6} />
-            </div>
 
             {/* City Map Widget - Desktop Only - Interactive map showing users, events, and businesses */}
             {isDesktop && (
