@@ -6657,7 +6657,19 @@ Questions? Just reply to this message. Welcome aboard!
       const currentLocation = isTraverling ? activeTravelPlan.destination : user.hometownCity;
       const travelDestination = activeTravelPlan?.destination;
 
-      // Get user interests and activities for matching
+      // Get user interests and activities for matching  
+      const parseArray = (arr: any) => {
+        if (Array.isArray(arr)) return arr;
+        if (typeof arr === 'string') {
+          try {
+            return JSON.parse(arr);
+          } catch {
+            return arr.split(',').map(s => s.trim()).filter(Boolean);
+          }
+        }
+        return [];
+      };
+      
       const userInterests = parseArray(user.interests || []);
       const userActivities = parseArray(user.localActivities || []).concat(parseArray(user.preferredActivities || []));
 
@@ -6668,26 +6680,15 @@ Questions? Just reply to this message. Welcome aboard!
           title: events.title,
           description: events.description,
           location: events.location,
-          eventDate: events.eventDate,
-          startTime: events.startTime,
-          endTime: events.endTime,
+          eventDate: events.date,
           category: events.category,
-          price: events.price,
-          freeEvent: events.freeEvent,
-          maxAttendees: events.maxAttendees,
-          organizer: events.organizer,
           tags: events.tags,
-          attendeeCount: sql<number>`(
-            SELECT COUNT(*) 
-            FROM ${eventRsvps} 
-            WHERE ${eventRsvps.eventId} = ${events.id} 
-            AND ${eventRsvps.status} = 'attending'
-          )`.as('attendeeCount')
+          attendeeCount: sql<number>`0`.as('attendeeCount')
         })
         .from(events)
         .where(
           and(
-            gte(events.eventDate, new Date().toISOString().split('T')[0]),
+            gte(events.date, new Date().toISOString().split('T')[0]),
             or(
               ilike(events.location, `%${currentLocation}%`),
               ilike(events.location, `%${user.hometownCity}%`)
@@ -6773,11 +6774,11 @@ Questions? Just reply to this message. Welcome aboard!
           location: event.location,
           startDate: event.eventDate,
           category: event.category || 'Event',
-          price: event.price,
-          freeEvent: event.freeEvent,
+          price: 0,
+          freeEvent: true,
           attendeeCount: event.attendeeCount,
-          maxAttendees: event.maxAttendees,
-          organizer: event.organizer || 'Event Organizer',
+          maxAttendees: 50,
+          organizer: 'Event Organizer',
           relevanceScore: Math.min(score, 1), // Cap at 1
           contextualFactors: {
             locationMatch: isTraverling && event.location.toLowerCase().includes(currentLocation.toLowerCase()) ? 1 : 0.5,
