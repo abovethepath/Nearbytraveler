@@ -106,21 +106,24 @@ export default function EventCard({ event, compact = false, featured = false }: 
   if (compact) {
     return (
       <div 
-        className={`border-l-4 ${getCategoryColor(event.category)} pl-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer`}
+        className="pl-2 py-2 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer"
         onClick={() => setLocation(`/events/${event.id}`)}
       >
         <div className="flex items-start justify-between">
-          <div className="flex-1">
-            <h4 className="font-medium text-gray-900 dark:text-white mb-1 text-crisp text-base md:text-lg">{event.title}</h4>
-            <p className="text-sm md:text-base text-gray-600 dark:text-gray-300 mb-2 text-crisp leading-relaxed">{event.description}</p>
-            <div className="flex items-center text-xs md:text-sm text-gray-500 dark:text-gray-400 space-x-4 text-crisp">
+          <div className="flex-1 min-w-0">
+            <h4 className="font-medium text-gray-900 dark:text-white mb-1 text-crisp text-base">{event.title}</h4>
+            <div className="flex flex-col text-xs text-gray-500 dark:text-gray-400 space-y-1 text-crisp">
               <span>
                 <Calendar className="w-3 h-3 inline mr-1" />
                 {formatEventDate(event.date)}
               </span>
-              <span>
-                <MapPin className="w-3 h-3 inline mr-1" />
-                {event.venueName && `${event.venueName}, `}{event.street || event.location}
+              <span className="flex items-start">
+                <MapPin className="w-3 h-3 inline mr-1 mt-0.5 flex-shrink-0" />
+                <span className="break-words">
+                  {event.venue_name && <><strong>{event.venue_name}</strong><br /></>}
+                  {event.street && <>{event.street}<br /></>}
+                  {event.city}, {event.state}
+                </span>
               </span>
             </div>
           </div>
@@ -128,7 +131,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
             <ImageLoader
               src={event.imageUrl}
               alt={event.title}
-              className="w-12 h-12 rounded-lg object-cover ml-3"
+              className="w-12 h-12 rounded-lg object-cover ml-3 flex-shrink-0"
               loading="lazy"
             />
           )}
@@ -217,7 +220,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
             <div className="min-w-0 flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
               <MapPin className="h-4 w-4 shrink-0 text-travel-blue" />
               <span className="truncate break-words [overflow-wrap:anywhere]">
-                {event.venueName && `${event.venueName}, `}{event.street || event.location}
+                {event.venue_name && `${event.venue_name}, `}{event.street || event.location}
               </span>
             </div>
             <div className="min-w-0 flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
