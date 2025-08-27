@@ -217,6 +217,20 @@ export function PeopleDiscoveryWidget({
       ...((compatData?.sharedEvents ?? []).map((e: any) => e?.title).filter(Boolean)),
     ].slice(0, 3);
 
+    // Debug logging for compatibility data
+    React.useEffect(() => {
+      if (compatibilityData) {
+        console.log(`🔥 DEBUG COMPATIBILITY for ${person.username}:`, {
+          compatData,
+          countInCommon,
+          topCommon,
+          sharedInterests: compatData?.sharedInterests?.length || 0,
+          sharedActivities: compatData?.sharedActivities?.length || 0,
+          sharedEvents: compatData?.sharedEvents?.length || 0
+        });
+      }
+    }, [compatibilityData, person.username, countInCommon]);
+
     // NEW: figure out an upcoming/active destination
     const getTravelBlurb = () => {
       const plans = Array.isArray(travelPlans) ? (travelPlans as any[]) : [];
@@ -336,15 +350,17 @@ export function PeopleDiscoveryWidget({
         {/* Main Content */}
         <div className="flex flex-col h-full">
           {/* Things in Common - At the very top */}
-          {countInCommon > 0 && (
+          {(countInCommon > 0 || compatibilityData) && (
             <div className="mb-3 bg-gradient-to-r from-green-100 to-blue-100 dark:from-green-900/30 dark:to-blue-900/30 rounded-lg p-2">
               <p className="text-gray-800 dark:text-gray-200 text-sm font-medium text-center">
-                <span className="text-green-700 dark:text-green-300 font-bold">{countInCommon} Things</span>{' '}
+                <span className="text-green-700 dark:text-green-300 font-bold">{countInCommon || 0} Things</span>{' '}
                 <span className="text-blue-700 dark:text-blue-300">in Common</span>
               </p>
-              <p className="text-gray-600 dark:text-gray-300 text-xs text-center mt-1">
-                {topCommon.join(' • ')}
-              </p>
+              {topCommon.length > 0 && (
+                <p className="text-gray-600 dark:text-gray-300 text-xs text-center mt-1">
+                  {topCommon.join(' • ')}
+                </p>
+              )}
             </div>
           )}
 
