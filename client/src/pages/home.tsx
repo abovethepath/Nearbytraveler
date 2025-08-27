@@ -282,17 +282,48 @@ export default function Home() {
     enabled: !!(user?.id || currentUserProfile?.id || effectiveUser?.id),
   });
 
-  // ONLY USER-CREATED EVENTS: Get events from user's hometown only (not all global events)
+  // ONLY USER-CREATED EVENTS: Get events from both hometown AND travel destination
   const { data: userPriorityEvents = [] } = useQuery({
-    queryKey: ['/api/events', effectiveUser?.hometownCity],
+    queryKey: ['/api/events', effectiveUser?.hometownCity, effectiveUser?.travelDestination],
     queryFn: async () => {
-      // Get events from user's hometown city only (not all global events)
-      const userCity = effectiveUser?.hometownCity || 'Culver City';
-      const response = await fetch(`/api/events?city=${encodeURIComponent(userCity)}`);
-      const cityEvents = await response.json();
+      const cities = [];
       
-      // ONLY INCLUDE EVENTS WITH organizerId (user-created events)
-      const userCreatedEvents = cityEvents.filter((event: any) => event.organizerId && event.organizerId > 0);
+      // Always include hometown
+      if (effectiveUser?.hometownCity) {
+        cities.push(effectiveUser.hometownCity);
+      }
+      
+      // Include travel destination if traveling
+      if (effectiveUser?.isCurrentlyTraveling && effectiveUser?.travelDestination) {
+        const travelCity = effectiveUser.travelDestination.split(',')[0].trim();
+        if (travelCity !== effectiveUser?.hometownCity) {
+          cities.push(travelCity);
+        }
+      }
+      
+      // If no cities, default to Culver City
+      if (cities.length === 0) {
+        cities.push('Culver City');
+      }
+      
+      console.log(`🎪 HOME: Fetching events from cities:`, cities);
+      
+      // Fetch events from all relevant cities
+      const allEvents = [];
+      for (const city of cities) {
+        try {
+          const response = await fetch(`/api/events?city=${encodeURIComponent(city)}`);
+          const cityEvents = await response.json();
+          allEvents.push(...cityEvents);
+        } catch (error) {
+          console.error(`Failed to fetch events for ${city}:`, error);
+        }
+      }
+      
+      // ONLY INCLUDE EVENTS WITH organizerId (user-created events) and remove duplicates
+      const userCreatedEvents = allEvents
+        .filter((event: any) => event.organizerId && event.organizerId > 0)
+        .filter((event, index, arr) => arr.findIndex(e => e.id === event.id) === index); // Remove duplicates
       
       return userCreatedEvents.sort((a, b) => {
         // USER CREATED EVENTS PRIORITY BY USER
@@ -306,7 +337,7 @@ export default function Home() {
         return new Date(b.startDate || b.createdAt).getTime() - new Date(a.startDate || a.createdAt).getTime();
       });
     },
-    enabled: !!effectiveUser?.hometownCity,
+    enabled: !!effectiveUser,
   });
 
   // Function to get things in common using API compatibility data (matches profile page)
