@@ -1,0 +1,148 @@
+const EventsGrid = ({ events = [], displayCount = 6, onShowMore }) => {
+  const displayEvents = events.slice(0, displayCount);
+
+  const formatEventDate = (dateString) => {
+    try {
+      const date = parseISO(dateString);
+      return format(date, "MMM d");
+    } catch {
+      return "TBD";
+    }
+  };
+
+  const formatTime = (timeString) => {
+    if (!timeString) return null;
+    try {
+      const [hours, minutes] = timeString.split(':');
+      const hour = parseInt(hours);
+      const ampm = hour >= 12 ? 'PM' : 'AM';
+      const displayHour = hour % 12 || 12;
+      return `${displayHour}:${minutes} ${ampm}`;
+    } catch {
+      return timeString;
+    }
+  };
+
+  if (!events || events.length === 0) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <Card className="col-span-full bg-slate-800 border-slate-700">
+          <CardContent className="flex flex-col items-center justify-center py-8">
+            <Calendar className="h-12 w-12 text-gray-400 mb-4" />
+            <p className="text-gray-400 text-center">No events found near you.</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+        {displayEvents.map((event) => {
+          const eventDate = formatEventDate(event.startDate);
+          const startTime = formatTime(event.startTime);
+          const endTime = formatTime(event.endTime);
+          
+          // Always at least 1 attendee (the creator)
+          const attendeeCount = Math.max(event.attendeeCount || 0, 1);
+          
+          return (
+            <Card key={event.id} className="bg-slate-800 border-slate-700 hover:bg-slate-750 transition-colors overflow-hidden">
+              {/* Large Event Photo - Like Business Cards */}
+              <div className="relative h-40 bg-slate-700 overflow-hidden">
+                {event.imageUrl ? (
+                  <img 
+                    src={event.imageUrl} 
+                    alt={event.name}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  // Default placeholder with category-based gradient
+                  <div className="w-full h-full bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center">
+                    <div className="text-center text-white">
+                      <Calendar className="h-12 w-12 mx-auto mb-2 opacity-60" />
+                      <p className="text-sm opacity-80">Event Image</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <CardContent className="p-4">
+                {/* Event Title - Prominent like business name */}
+                <h3 className="text-white font-bold text-lg mb-2 leading-tight">
+                  {event.name}
+                </h3>
+                
+                {/* Badges Row - Like business tags */}
+                <div className="flex flex-wrap gap-2 mb-3">
+                  {event.category && (
+                    <Badge className="bg-blue-600 text-white text-xs px-2 py-1 font-medium">
+                      {event.category}
+                    </Badge>
+                  )}
+                  <Badge className="bg-purple-600 text-white text-xs px-2 py-1 font-medium">
+                    {eventDate}
+                  </Badge>
+                </div>
+
+                {/* Description - Like business description */}
+                {event.description && (
+                  <p className="text-gray-300 text-sm mb-3 leading-relaxed">
+                    {event.description.length > 70 ? event.description.substring(0, 70) + '...' : event.description}
+                  </p>
+                )}
+
+                {/* Deal-style Time Display */}
+                {startTime && (
+                  <div className="bg-slate-700 rounded-lg p-2 mb-3">
+                    <div className="text-orange-400 text-xs font-medium mb-1">Event Time</div>
+                    <div className="text-white font-bold text-sm">
+                      {startTime}
+                      {endTime && startTime !== endTime && ` - ${endTime}`}
+                    </div>
+                  </div>
+                )}
+
+                {/* Location - Like business location */}
+                <div className="flex items-start gap-2 text-gray-300 text-sm mb-3">
+                  <MapPin className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                  <span>{event.location}</span>
+                </div>
+
+                {/* Attendee count - Like business contact info */}
+                <div className="flex items-center gap-2 text-gray-400 text-sm mb-3">
+                  <Users className="h-4 w-4" />
+                  <span>{attendeeCount} interested</span>
+                </div>
+
+                {/* Action Button - Like business "View Business" */}
+                <Button 
+                  className="w-full bg-orange-600 hover:bg-orange-700 text-white font-medium py-2"
+                  onClick={() => {
+                    console.log('View event details:', event.id);
+                  }}
+                >
+                  View Event
+                </Button>
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
+
+      {/* Show More Button */}
+      {events.length > displayCount && (
+        <div className="flex justify-center">
+          <Button 
+            variant="outline" 
+            onClick={onShowMore}
+            className="px-8 border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white"
+          >
+            Load More ({events.length - displayCount} remaining)
+          </Button>
+        </div>
+      )}
+    </>
+  );
+};

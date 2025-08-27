@@ -36,11 +36,12 @@ interface Event {
   attendeeCount?: number;
   capacity?: number;
   organizer?: string;
+  imageUrl?: string;
   locationContext?: 'travel' | 'hometown';
   locationLabel?: string;
 }
 
-// Clean EventsGrid with professional dark theme styling
+// Business Card Style EventsGrid with Large Photos
 const EventsGrid = ({ 
   events = [], 
   displayCount = 6, 
@@ -120,11 +121,13 @@ const EventsGrid = ({
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {[...Array(6)].map((_, i) => (
             <div key={i} className="animate-pulse">
-              <div className="bg-slate-800 rounded-lg border border-slate-700 p-4">
-                <div className="h-32 bg-slate-700 rounded-lg mb-3"></div>
-                <div className="h-4 bg-slate-700 rounded w-3/4 mb-2"></div>
-                <div className="h-3 bg-slate-700 rounded w-full mb-2"></div>
-                <div className="h-3 bg-slate-700 rounded w-1/2"></div>
+              <div className="bg-slate-800 rounded-lg border border-slate-700 overflow-hidden">
+                <div className="h-40 bg-slate-700"></div>
+                <div className="p-4">
+                  <div className="h-4 bg-slate-700 rounded w-3/4 mb-2"></div>
+                  <div className="h-3 bg-slate-700 rounded w-full mb-2"></div>
+                  <div className="h-3 bg-slate-700 rounded w-1/2"></div>
+                </div>
               </div>
             </div>
           ))}
@@ -159,73 +162,81 @@ const EventsGrid = ({
           const attendeeCount = Math.max(event.attendeeCount || 0, 1);
           
           return (
-            <Card key={event.id} className="bg-slate-800 border-slate-700 hover:bg-slate-750 transition-colors">
+            <Card key={event.id} className="bg-slate-800 border-slate-700 hover:bg-slate-750 transition-colors overflow-hidden">
+              {/* Large Event Photo - Like Business Cards */}
+              <div className="relative h-40 bg-slate-700 overflow-hidden">
+                {event.imageUrl ? (
+                  <img 
+                    src={event.imageUrl} 
+                    alt={eventTitle}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  // Default placeholder with category-based gradient
+                  <div className="w-full h-full bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center">
+                    <div className="text-center text-white">
+                      <Calendar className="h-12 w-12 mx-auto mb-2 opacity-60" />
+                      <p className="text-sm opacity-80">Event Image</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+
               <CardContent className="p-4">
-                {/* Event Title */}
-                <h3 className="text-white font-semibold text-lg mb-2 leading-tight">
+                {/* Event Title - Prominent like business name */}
+                <h3 className="text-white font-bold text-lg mb-2 leading-tight">
                   {eventTitle}
                 </h3>
                 
-                {/* Small category badge - only if needed */}
-                {event.category && (
-                  <Badge className="bg-slate-600 text-gray-300 text-xs px-2 py-1 mb-3">
-                    {event.category}
+                {/* Badges Row - Like business tags */}
+                <div className="flex flex-wrap gap-2 mb-3">
+                  {event.category && (
+                    <Badge className="bg-blue-600 text-white text-xs px-2 py-1 font-medium">
+                      {event.category}
+                    </Badge>
+                  )}
+                  <Badge className="bg-purple-600 text-white text-xs px-2 py-1 font-medium">
+                    {eventDate}
                   </Badge>
-                )}
+                </div>
 
-                {/* Description */}
+                {/* Description - Like business description */}
                 {event.description && (
                   <p className="text-gray-300 text-sm mb-3 leading-relaxed">
-                    {event.description.length > 80 ? event.description.substring(0, 80) + '...' : event.description}
+                    {event.description.length > 70 ? event.description.substring(0, 70) + '...' : event.description}
                   </p>
                 )}
 
-                {/* Date with prominent styling */}
-                <div className="mb-3">
-                  <Badge className="bg-purple-600 text-white font-semibold px-3 py-1">
-                    {eventDate}
-                  </Badge>
-                  {/* Start and End Time */}
-                  {startTime && (
-                    <div className="text-gray-400 text-sm mt-1">
+                {/* Deal-style Time Display */}
+                {startTime && (
+                  <div className="bg-slate-700 rounded-lg p-2 mb-3">
+                    <div className="text-orange-400 text-xs font-medium mb-1">Event Time</div>
+                    <div className="text-white font-bold text-sm">
                       {startTime}
                       {endTime && startTime !== endTime && ` - ${endTime}`}
                     </div>
-                  )}
-                </div>
-
-                {/* Location */}
-                <div className="flex items-start gap-2 mb-4">
-                  <MapPin className="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" />
-                  <span className="text-gray-300 text-sm">{event.location}</span>
-                </div>
-
-                {/* Bottom section - properly contained */}
-                <div className="flex items-center justify-between">
-                  {/* Attendee count */}
-                  <div className="flex items-center gap-1 text-gray-400">
-                    <Users className="h-4 w-4" />
-                    <span className="text-sm">
-                      {attendeeCount} {attendeeCount === 1 ? 'person' : 'people'} interested
-                    </span>
-                  </div>
-                  
-                  {/* Compact action button */}
-                  <Button 
-                    size="sm" 
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 text-sm"
-                    onClick={() => setNavigationLocation(`/events/${event.id}`)}
-                  >
-                    View
-                  </Button>
-                </div>
-
-                {/* Organizer - if space allows */}
-                {event.organizer && (
-                  <div className="text-xs text-gray-500 mt-2 pt-2 border-t border-slate-700">
-                    by {event.organizer}
                   </div>
                 )}
+
+                {/* Location - Like business location */}
+                <div className="flex items-start gap-2 text-gray-300 text-sm mb-3">
+                  <MapPin className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                  <span>{event.location}</span>
+                </div>
+
+                {/* Attendee count - Like business contact info */}
+                <div className="flex items-center gap-2 text-gray-400 text-sm mb-3">
+                  <Users className="h-4 w-4" />
+                  <span>{attendeeCount} interested</span>
+                </div>
+
+                {/* Action Button - Like business "View Business" */}
+                <Button 
+                  className="w-full bg-orange-600 hover:bg-orange-700 text-white font-medium py-2"
+                  onClick={() => setNavigationLocation(`/events/${event.id}`)}
+                >
+                  View Event
+                </Button>
               </CardContent>
             </Card>
           );
