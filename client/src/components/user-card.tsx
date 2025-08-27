@@ -31,6 +31,10 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
   const { toast } = useToast();
   const [, setLocation] = useLocation();
   const { isVisible, celebrationData, triggerCelebration, hideCelebration } = useConnectionCelebration();
+  
+  // EXACT weather widget logic for current user location display
+  const [currentUserCity, setCurrentUserCity] = useState<string>("");
+  const [currentUserCountry, setCurrentUserCountry] = useState<string>("");
 
   // Emergency fallback - check localStorage directly if context fails
   const [fallbackUser, setFallbackUser] = useState<User | null>(null);
@@ -76,6 +80,62 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
     enabled: !!user.id,
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
   });
+
+  // For current user only: fetch their travel plans to determine current location (EXACT weather widget logic)
+  const isCurrentUserCard = effectiveUser && (user.id === effectiveUser.id || user.id === currentUserId);
+  const { data: currentUserTravelPlans, isLoading: plansLoading } = useQuery({
+    queryKey: [`/api/travel-plans/${effectiveUser?.id}`],
+    enabled: !!effectiveUser?.id && isCurrentUserCard,
+  });
+
+  // EXACT weather widget useEffect for current user location determination
+  React.useEffect(() => {
+    if (!isCurrentUserCard || !effectiveUser?.id || plansLoading) return;
+
+    console.log('UserCard - Current user data:', {
+      hometownCity: effectiveUser.hometownCity,
+      hometownCountry: effectiveUser.hometownCountry,
+      travelPlans: currentUserTravelPlans?.length || 0
+    });
+
+    // Check if user is currently traveling using travel plans (same logic as weather widget)
+    const currentDestination = getCurrentTravelDestination(currentUserTravelPlans || []);
+    if (currentDestination && effectiveUser.hometownCity) {
+      const travelDestination = currentDestination.toLowerCase();
+      const hometown = effectiveUser.hometownCity.toLowerCase();
+      
+      // Only show as traveler if destination is different from hometown
+      if (!travelDestination.includes(hometown) && !hometown.includes(travelDestination)) {
+        // User is traveling - set travel destination
+        const parts = currentDestination.split(', ');
+        let city = parts[0] || "";
+        const country = parts[parts.length - 1] || "";
+        
+        // Fix: Weather API doesn't recognize "Los Angeles Metro" - use "Los Angeles" instead
+        if (city === 'Los Angeles Metro') {
+          city = 'Los Angeles';
+        }
+        
+        console.log('UserCard - Using travel destination:', { city, country });
+        setCurrentUserCity(city);
+        setCurrentUserCountry(country);
+        return;
+      }
+    }
+    
+    // User is at home - set hometown
+    let city = effectiveUser.hometownCity || "";
+    const country = effectiveUser.hometownCountry || "";
+    
+    // Fix: Weather API doesn't recognize "Los Angeles Metro" - use "Los Angeles" instead
+    if (city === 'Los Angeles Metro') {
+      city = 'Los Angeles';
+    }
+    
+    console.log('UserCard - Using hometown:', { city, country });
+    setCurrentUserCity(city);
+    setCurrentUserCountry(country);
+  }, [effectiveUser, currentUserTravelPlans, plansLoading, isCurrentUserCard]);
 
 
 
@@ -307,9 +367,25 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
           <div className="text-sm text-gray-600 dark:text-gray-300 mb-2">
             <div className="flex items-center gap-2">
               {(() => {
-                // COPIED EXACT WEATHER WIDGET LOGIC - Determine user's current location
+                // FOR CURRENT USER: Use weather widget's calculated location, FOR OTHERS: Use their travel data
                 const getLocationDisplay = () => {
-                  // Check if user is currently traveling using travel plans (EXACT same logic as weather widget)
+                  // For current user cards - use the EXACT weather widget calculated location
+                  if (isCurrentUserCard && currentUserCity && currentUserCountry) {
+                    console.log('UserCard - Using weather widget calculated location:', { currentUserCity, currentUserCountry });
+                    const displayLocation = currentUserCountry ? `${currentUserCity}, ${currentUserCountry}` : currentUserCity;
+                    
+                    // Check if this is a travel destination (different from hometown)
+                    const isTravel = user.hometownCity && 
+                      !currentUserCity.toLowerCase().includes(user.hometownCity.toLowerCase()) && 
+                      !user.hometownCity.toLowerCase().includes(currentUserCity.toLowerCase());
+                    
+                    return {
+                      text: displayLocation,
+                      isTravel: isTravel
+                    };
+                  }
+                  
+                  // For other users - use their travel data as before
                   const currentDestination = getCurrentTravelDestination(userTravelPlans || []);
                   if (currentDestination && user.hometownCity) {
                     const travelDestination = currentDestination.toLowerCase();
@@ -317,12 +393,10 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
                     
                     // Only show as traveler if destination is different from hometown
                     if (!travelDestination.includes(hometown) && !hometown.includes(travelDestination)) {
-                      // User is traveling - show travel destination (EXACT weather widget logic)
                       const parts = currentDestination.split(', ');
                       let city = parts[0] || "";
                       const country = parts[parts.length - 1] || "";
                       
-                      // Fix: Same as weather widget - handle Los Angeles Metro
                       if (city === 'Los Angeles Metro') {
                         city = 'Los Angeles';
                       }
@@ -335,11 +409,10 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
                     }
                   }
                   
-                  // User is at home - show hometown (EXACT weather widget logic)
+                  // Fallback - show hometown/location
                   let city = user.hometownCity || "";
                   const country = user.hometownCountry || "";
                   
-                  // Fix: Same as weather widget - handle Los Angeles Metro  
                   if (city === 'Los Angeles Metro') {
                     city = 'Los Angeles';
                   }
