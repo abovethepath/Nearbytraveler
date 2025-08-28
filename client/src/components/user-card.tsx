@@ -389,8 +389,8 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
           </div>
         )}
       
-      <CardContent className="p-6 pt-10">
-        <div className="space-y-3">
+      <CardContent className="p-4 sm:p-6 pt-8 sm:pt-10">
+        <div className="space-y-2 sm:space-y-3 flex flex-col h-full">
           <div className="flex items-center justify-between mb-2">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white truncate">
               @{user.username}
@@ -465,7 +465,7 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
             </div>
           </div>
           
-          <p className="text-gray-700 dark:text-gray-300 mb-3 line-clamp-2">{user.bio}</p>
+          <p className="text-gray-700 dark:text-gray-300 mb-4 sm:mb-3 line-clamp-2 sm:line-clamp-3">{user.bio}</p>
           
           {/* Travel Interests & Preferences */}
           {((user.travelInterests?.length || 0) > 0 || (user.preferredActivities?.length || 0) > 0 || (user.plannedEvents?.length || 0) > 0) && (
@@ -579,7 +579,7 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
 
 
           
-          <div className="flex gap-2 mt-auto">
+          <div className="flex gap-2 mt-auto pt-2 sm:pt-0">
             {(() => {
               console.log(`🔘 BUTTON: Rendering for user ${user.username} (id: ${user.id}), connectionStatus:`, connectionStatus);
               console.log(`🔘 BUTTON: effectiveUser:`, effectiveUser);
@@ -589,7 +589,7 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
               if (user.username === 'nearbytraveler' || connectionStatus?.status === 'accepted') {
                 return (
                   <Button 
-                    className="flex-1 bg-green-600 hover:bg-green-700 text-white text-sm px-3 py-2 h-10 min-w-0"
+                    className="flex-1 bg-green-600 hover:bg-green-700 text-white text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-2 h-8 sm:h-10 min-w-0"
                     disabled
                   >
                     Connected
@@ -598,7 +598,7 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
               } else if (connectionStatus?.status === 'pending') {
                 return (
                   <Button 
-                    className="flex-1 bg-gray-500 text-white cursor-not-allowed text-sm px-3 py-2 h-10 min-w-0"
+                    className="flex-1 bg-gray-500 text-white cursor-not-allowed text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-2 h-8 sm:h-10 min-w-0"
                     disabled
                   >
                     Pending
@@ -607,7 +607,7 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
               } else {
                 return (
                   <Button 
-                    className="flex-1 bg-travel-blue hover:bg-blue-700 text-white btn-bounce text-sm px-3 py-2 h-10 min-w-0"
+                    className="flex-1 bg-travel-blue hover:bg-blue-700 text-white btn-bounce text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-2 h-8 sm:h-10 min-w-0"
                     onClick={handleConnect}
                     disabled={connectMutation.isPending}
                   >
@@ -617,7 +617,7 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
               }
             })()}
             <Button 
-              className="flex-1 bg-orange-500 hover:bg-orange-600 text-white btn-bounce text-sm px-3 py-2 h-10 min-w-0"
+              className="flex-1 bg-orange-500 hover:bg-orange-600 text-white btn-bounce text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-2 h-8 sm:h-10 min-w-0"
               onClick={() => setLocation(`/messages?userId=${user.id}`)}
             >
               Message
