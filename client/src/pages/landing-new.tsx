@@ -131,12 +131,12 @@ export default function Landing() {
                       {/* From the Founder - Now visible on mobile */}
                       <div className="mt-6 sm:mt-8 p-4 sm:p-6 bg-black/40 backdrop-blur-sm rounded-2xl border border-white/20">
                         <p className="text-sm sm:text-base md:text-xl lg:text-2xl text-white leading-relaxed px-1 sm:px-2">
-                          <span className="text-orange-300 font-bold">"For over 15 years I've hosted and toured 400+ travelers from over 40 countries as a local creating amazing experiences.</span>
-                          <span className="text-white"> I built Nearby Traveler to do exactly that - meet real locals and real travelers while creating amazing new travel adventures and expanding my social circle of friends."</span>
+                          <span className="text-orange-300 font-bold">"For over 15 years, I've opened my home and city to more than 400 travelers from over 50 countries. Each visit showed me how powerful travel becomes when strangers connect like friends.</span>
+                          <span className="text-white"> I built Nearby Traveler to share that same experience with the world—bringing locals and travelers together to create real friendships and unforgettable adventures."</span>
                         </p>
                         <div className="mt-3 sm:mt-4 text-center">
                           <p className="text-white font-bold text-base sm:text-lg">— Aaron, Founder</p>
-                          <p className="text-orange-200 text-xs sm:text-sm">400+ travelers hosted • 40+ countries • 15+ years</p>
+                          <p className="text-orange-200 text-xs sm:text-sm">400+ travelers hosted • 50+ countries • 15+ years</p>
                         </div>
                       </div>
                     </div>
