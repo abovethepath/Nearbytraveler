@@ -429,7 +429,11 @@ export default function ItineraryPage({ travelPlanId: propTravelPlanId }: Itiner
                           Add Activity
                         </Button>
                       </DialogTrigger>
-                      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                      <DialogContent 
+                        className="max-w-2xl max-h-[90vh] overflow-y-auto overscroll-contain"
+                        onWheel={(e) => e.stopPropagation()}
+                        onTouchMove={(e) => e.stopPropagation()}
+                      >
                         <DialogHeader>
                           <DialogTitle className="text-black dark:text-white">Add New Activity</DialogTitle>
                         </DialogHeader>
@@ -656,7 +660,11 @@ export default function ItineraryPage({ travelPlanId: propTravelPlanId }: Itiner
         {/* Edit Item Dialog */}
         {editingItem && (
           <Dialog open={!!editingItem} onOpenChange={() => setEditingItem(null)}>
-            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogContent 
+              className="max-w-2xl max-h-[90vh] overflow-y-auto overscroll-contain"
+              onWheel={(e) => e.stopPropagation()}
+              onTouchMove={(e) => e.stopPropagation()}
+            >
               <DialogHeader>
                 <DialogTitle className="text-black dark:text-white">Edit Activity</DialogTitle>
               </DialogHeader>
