@@ -132,6 +132,7 @@ import BusinessCardPage from "@/pages/business-card";
 import QRCodePage from "@/pages/qr-code";
 import QRSimplePage from "@/pages/qr-simple";
 import LandingStreamlined from "@/pages/landing-new-streamlined";
+import LandingMinimal from "@/pages/landing-minimal";
 
 
 import Navbar from "@/components/navbar";
@@ -536,6 +537,11 @@ function Router() {
       // Show landing page for /landing route too
       if (location === '/landing') {
         return <LandingStreamlined />;
+      }
+
+      // Show minimal landing page for comparison
+      if (location === '/landing-minimal') {
+        return <LandingMinimal />;
       }
 
       // CRITICAL FIX: Allow profile routes even when user state is loading
