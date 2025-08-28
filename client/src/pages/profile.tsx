@@ -4316,7 +4316,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   <div className="flex items-center justify-between mb-3">
                     <h4 className="font-medium text-gray-800 dark:text-white flex items-center gap-2">
                       <Heart className="w-4 h-4 text-blue-500" />
-                      Your Interests
+                      {isOwnProfile ? 'Your Interests' : `${user?.name ? user.name + "'s" : user?.username + "'s"} Interests`}
                     </h4>
                   </div>
                   
@@ -4461,7 +4461,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   <div className="flex items-center justify-between mb-3">
                     <h4 className="font-medium text-gray-800 dark:text-white flex items-center gap-2">
                       <Globe className="w-4 h-4 text-green-500" />
-                      Your Activities
+                      {isOwnProfile ? 'Your Activities' : `${user?.name ? user.name + "'s" : user?.username + "'s"} Activities`}
                     </h4>
                   </div>
                   
@@ -4598,7 +4598,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   <div className="flex items-center justify-between mb-3">
                     <h4 className="font-medium text-gray-800 dark:text-white flex items-center gap-2">
                       <Calendar className="w-4 h-4 text-purple-500" />
-                      Your Events
+                      {isOwnProfile ? 'Your Events' : `${user?.name ? user.name + "'s" : user?.username + "'s"} Events`}
                     </h4>
                   </div>
                   
