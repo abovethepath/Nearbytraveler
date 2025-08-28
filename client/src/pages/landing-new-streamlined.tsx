@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import Footer from "@/components/footer";
 import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
 import { Users, Plane, Building2, Handshake } from "lucide-react";
+import { trackEvent } from "@/lib/analytics";
 
 export default function LandingStreamlined() {
   const [, setLocation] = useLocation();
@@ -24,7 +25,10 @@ export default function LandingStreamlined() {
       {/* Fixed CTA Button */}
       <div className="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 z-50">
         <Button 
-          onClick={() => setLocation('/auth')}
+          onClick={() => {
+            trackEvent('signup_cta_click', 'landing_page', 'floating_join_now');
+            setLocation('/auth');
+          }}
           className="bg-gradient-to-r from-blue-600 to-orange-600 hover:from-blue-700 hover:to-orange-700 text-white shadow-lg transition-all duration-300 hover:scale-105 px-4 sm:px-6 py-2 sm:py-3 rounded-full text-sm sm:text-base font-bold"
         >
           Join Now
@@ -74,7 +78,10 @@ export default function LandingStreamlined() {
                         {/* Primary signup CTA - Lowered and reasonably sized */}
                         <div className="mt-20 mb-8 px-4">
                           <Button
-                            onClick={() => setLocation('/auth')}
+                            onClick={() => {
+                              trackEvent('signup_cta_click', 'landing_page', 'main_hero_button');
+                              setLocation('/auth');
+                            }}
                             size="lg"
                             className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white font-bold px-8 py-3 rounded-xl shadow-lg transition-all duration-200 border-2 border-white max-w-md mx-auto"
                             style={{

@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "wouter";
+import { initGA } from "@/lib/analytics";
+import { useAnalytics } from "@/hooks/use-analytics";
 
 // PRODUCTION CACHE BUST: Force complete cache clear
 const CACHE_BUST_VERSION = '2025-08-17-FINAL-v' + Date.now();
@@ -173,6 +175,9 @@ function Router() {
   const [isLoading, setIsLoading] = useState(true);
   const [location, setLocation] = useLocation();
   const queryClient = useQueryClient();
+  
+  // Track page views for analytics
+  useAnalytics();
 
   const landingPageRoutes = [
     '/', '/landing', '/landing-new', '/auth', '/join', '/signup', '/signup/local', '/signup/traveler', '/signup/business',
@@ -1074,6 +1079,17 @@ function Router() {
 }
 
 function App() {
+  // Initialize Google Analytics when app loads
+  useEffect(() => {
+    // Verify required environment variable is present
+    if (!import.meta.env.VITE_GA_MEASUREMENT_ID) {
+      console.warn('Missing required Google Analytics key: VITE_GA_MEASUREMENT_ID');
+    } else {
+      initGA();
+      console.log('🔍 Google Analytics initialized with ID:', import.meta.env.VITE_GA_MEASUREMENT_ID);
+    }
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <GlobalHotfixes />
