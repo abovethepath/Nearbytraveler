@@ -27,7 +27,7 @@ export default function LandingStreamlined() {
         <Button 
           onClick={() => {
             trackEvent('signup_cta_click', 'landing_page', 'floating_join_now');
-            setLocation('/auth');
+            setLocation('/join');
           }}
           className="bg-gradient-to-r from-blue-600 to-orange-600 hover:from-blue-700 hover:to-orange-700 text-white shadow-lg transition-all duration-300 hover:scale-105 px-4 sm:px-6 py-2 sm:py-3 rounded-full text-sm sm:text-base font-bold"
         >
@@ -507,7 +507,7 @@ export default function LandingStreamlined() {
                 <h3 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 pr-8">Just Want Friends?</h3>
                 <p className="text-gray-200 leading-relaxed mb-4 sm:mb-6 text-sm sm:text-base">New to town? Feeling lonely? Want to try something new? Everyone needs community - and that's exactly what we're here for.</p>
                 <Button 
-                  onClick={() => setLocation('/auth')}
+                  onClick={() => setLocation('/join')}
                   className="bg-white text-gray-700 hover:bg-gray-50 font-bold w-full"
                 >
                   Start Connecting
@@ -521,7 +521,7 @@ export default function LandingStreamlined() {
                 Whatever brings you here, you belong here. 
               </p>
               <Button 
-                onClick={() => setLocation('/auth')}
+                onClick={() => setLocation('/join')}
                 size="lg"
                 className="bg-gradient-to-r from-blue-600 to-orange-600 hover:from-blue-700 hover:to-orange-700 text-white font-black text-lg sm:text-xl px-8 sm:px-12 py-4 sm:py-6 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300"
               >
@@ -537,7 +537,7 @@ export default function LandingStreamlined() {
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4">Start Your Adventure</h2>
             <p className="text-lg sm:text-xl mb-6 sm:mb-8 px-4">Join thousands of locals, travelers, and businesses already making real connections.</p>
             <Button 
-              onClick={() => setLocation('/auth')}
+              onClick={() => setLocation('/join')}
               className="bg-white text-blue-600 hover:bg-gray-100 px-6 sm:px-8 py-3 sm:py-4 text-lg sm:text-xl rounded-full shadow-lg transition-all duration-300 hover:scale-105"
             >
               Join Nearby Traveler Now
