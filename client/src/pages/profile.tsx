@@ -5874,6 +5874,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             )}
 
             {/* Quick Deals Widget for Business Users - Only show if deals exist */}
+            {console.log('🔥 FLASH DEALS DEBUG:', { 
+              isOwnProfile, 
+              userType: user?.userType, 
+              isBusinessUser: user?.userType === 'business',
+              quickDeals: quickDeals,
+              quickDealsLength: quickDeals?.length,
+              shouldShow: isOwnProfile && user?.userType === 'business' && quickDeals && quickDeals.length > 0 
+            })}
             {isOwnProfile && user?.userType === 'business' && quickDeals && quickDeals.length > 0 && (
               <div className="mt-6">
                 <QuickDealsWidget 
