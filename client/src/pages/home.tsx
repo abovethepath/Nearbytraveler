@@ -2943,23 +2943,25 @@ export default function Home() {
 
             {/* Quick Actions Section - Consolidated */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {/* Quick Deals */}
-              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border shadow-sm">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-semibold text-sm text-gray-900 dark:text-white">Flash Deals</h3>
-                  <Button size="sm" variant="ghost" onClick={() => setLocation('/deals')}>
-                    <Store className="w-4 h-4 mr-1" />
-                    View All
+              {/* Quick Deals - Only show if there are actual local deals available */}
+              {businessDeals && businessDeals.length > 0 && (
+                <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border shadow-sm">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="font-semibold text-sm text-gray-900 dark:text-white">Flash Deals</h3>
+                    <Button size="sm" variant="ghost" onClick={() => setLocation('/deals')}>
+                      <Store className="w-4 h-4 mr-1" />
+                      View All
+                    </Button>
+                  </div>
+                  <p className="text-xs text-gray-600 dark:text-gray-400 mb-3">Limited-time local offers</p>
+                  <Button 
+                    className="w-full text-sm bg-gradient-to-r from-green-500 to-orange-500 text-white hover:from-green-600 hover:to-orange-600"
+                    onClick={() => setLocation('/deals')}
+                  >
+                    Browse Deals
                   </Button>
                 </div>
-                <p className="text-xs text-gray-600 dark:text-gray-400 mb-3">Limited-time local offers</p>
-                <Button 
-                  className="w-full text-sm bg-gradient-to-r from-green-500 to-orange-500 text-white hover:from-green-600 hover:to-orange-600"
-                  onClick={() => setLocation('/deals')}
-                >
-                  Browse Deals
-                </Button>
-              </div>
+              )}
 
               {/* Quick Meetups - Only for non-business users */}
               {user?.userType !== 'business' && effectiveUser?.userType !== 'business' && (
