@@ -5766,7 +5766,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     className="bg-blue-500 text-white hover:bg-blue-600 border-blue-500"
                     onClick={() => setLocation('/photos')}
                   >
-                    <ImageIcon className="w-4 h-4 mr-2" />
                     View Gallery
                   </Button>
                   {isOwnProfile && (
@@ -5776,7 +5775,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         onClick={() => setLocation('/upload-photos')}
                         className="bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:from-blue-600 hover:to-purple-600"
                       >
-                        <Upload className="w-4 h-4 mr-2" />
                         Upload Photos
                       </Button>
                       <Button 
@@ -5785,7 +5783,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         onClick={() => document.getElementById('photo-upload')?.click()}
                         disabled={uploadingPhoto}
                       >
-                        <Camera className="w-4 h-4 mr-2" />
                         {uploadingPhoto ? 'Uploading...' : 'Quick Add'}
                       </Button>
                     </>
