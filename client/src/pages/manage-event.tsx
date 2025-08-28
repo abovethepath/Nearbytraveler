@@ -1126,13 +1126,13 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56">
-                  <DropdownMenuItem onClick={() => window.open(`/events/${eventId}`, '_blank')}>
-                    <Eye className="w-4 h-4 mr-2" />
-                    View as Guest
-                  </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => setLocation(`/events/${eventId}/participants`)}>
                     <Users className="w-4 h-4 mr-2" />
                     View Participants
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => window.open(`/events/${eventId}`, '_blank')}>
+                    <Eye className="w-4 h-4 mr-2" />
+                    View Event Page
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => {
                     const shareData = {
