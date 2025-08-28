@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import Footer from "@/components/footer";
 import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
+import { Users, Plane, Building2, Handshake } from "lucide-react";
 
 export default function LandingStreamlined() {
   const [, setLocation] = useLocation();
@@ -24,7 +25,7 @@ export default function LandingStreamlined() {
       <div className="fixed bottom-6 right-6 z-50">
         <Button 
           onClick={() => setLocation('/auth')}
-          className="bg-teal-600 hover:bg-teal-700 text-white shadow-lg transition-all duration-300 hover:scale-105 px-6 py-3 rounded-full"
+          className="bg-gradient-to-r from-blue-600 to-orange-600 hover:from-blue-700 hover:to-orange-700 text-white shadow-lg transition-all duration-300 hover:scale-105 px-6 py-3 rounded-full"
         >
           Join Now
         </Button>
@@ -419,7 +420,9 @@ export default function LandingStreamlined() {
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
               {/* Locals */}
               <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm text-center">
-                <div className="text-4xl mb-4">👥</div>
+                <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center">
+                  <Users className="w-8 h-8 text-blue-600" />
+                </div>
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">Locals</h3>
                 <p className="text-gray-600 dark:text-gray-400 mb-4">Turn your city into lasting friendships. Share your favorite spots, create events, and connect with travelers and fellow locals.</p>
                 <Button 
@@ -433,7 +436,9 @@ export default function LandingStreamlined() {
 
               {/* Travelers */}
               <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm text-center">
-                <div className="text-4xl mb-4">🌍</div>
+                <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-green-100 to-green-200 rounded-2xl flex items-center justify-center">
+                  <Plane className="w-8 h-8 text-green-600" />
+                </div>
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">Travelers</h3>
                 <p className="text-gray-600 dark:text-gray-400 mb-4">Skip the tourist traps. Meet locals who know the real city, join authentic events, and find travel buddies who share your interests.</p>
                 <Button 
@@ -447,7 +452,9 @@ export default function LandingStreamlined() {
 
               {/* Businesses */}
               <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm text-center">
-                <div className="text-4xl mb-4">🏢</div>
+                <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-purple-100 to-purple-200 rounded-2xl flex items-center justify-center">
+                  <Building2 className="w-8 h-8 text-purple-600" />
+                </div>
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">Businesses</h3>
                 <p className="text-gray-600 dark:text-gray-400 mb-4">Whether you run a bar, café, co-working space, or event venue—connect with travelers and locals looking for authentic experiences.</p>
                 <Button 
@@ -461,7 +468,9 @@ export default function LandingStreamlined() {
 
               {/* Networking */}
               <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm text-center">
-                <div className="text-4xl mb-4">🤝</div>
+                <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-orange-100 to-orange-200 rounded-2xl flex items-center justify-center">
+                  <Handshake className="w-8 h-8 text-orange-600" />
+                </div>
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">Networking</h3>
                 <p className="text-gray-600 dark:text-gray-400 mb-4">Heading to a conference, festival, or business trip? Connect before you arrive, meet like-minded people, and keep connections alive.</p>
                 <Button 
@@ -477,13 +486,13 @@ export default function LandingStreamlined() {
         </section>
 
         {/* Final CTA */}
-        <section className="text-center py-16 bg-gradient-to-r from-teal-600 to-blue-600 text-white rounded-2xl mb-16">
+        <section className="text-center py-16 bg-gradient-to-r from-blue-600 to-orange-600 text-white rounded-2xl mb-16">
           <div className="max-w-4xl mx-auto px-6">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">Start Your Adventure</h2>
             <p className="text-xl mb-8">Join thousands of locals, travelers, and businesses already making real connections.</p>
             <Button 
               onClick={() => setLocation('/auth')}
-              className="bg-white text-teal-600 hover:bg-gray-100 px-8 py-4 text-xl rounded-full shadow-lg transition-all duration-300 hover:scale-105"
+              className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-4 text-xl rounded-full shadow-lg transition-all duration-300 hover:scale-105"
             >
               Join Nearby Traveler Now
             </Button>
