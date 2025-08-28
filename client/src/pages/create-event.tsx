@@ -119,6 +119,8 @@ interface EventFormData {
   isRecurring?: boolean;
   recurrenceType?: string;
   recurrenceEnd?: string;
+  // Same-day event checkbox
+  isSameDay?: boolean;
 }
 
 export default function CreateEvent({ onEventCreated }: CreateEventProps) {
@@ -699,28 +701,53 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
                 )}
               </div>
 
+              {/* Same Day Checkbox */}
+              <div className="flex items-center gap-3 py-2">
+                <Checkbox
+                  id="isSameDay"
+                  checked={watch("isSameDay") || false}
+                  onCheckedChange={(checked) => {
+                    setValue("isSameDay", !!checked);
+                    if (checked) {
+                      // Auto-copy start date to end date
+                      const startDate = watch("date");
+                      if (startDate) {
+                        setValue("endDate", startDate);
+                      }
+                    }
+                  }}
+                />
+                <Label htmlFor="isSameDay" className="text-sm font-medium text-gray-700 dark:text-white cursor-pointer">
+                  ✅ Same day event (most events start and end on the same day)
+                </Label>
+              </div>
+
               {/* End Date & Time */}
               <div className="border rounded-lg p-4 space-y-4 bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
-                <h4 className="font-medium text-sm text-gray-700 dark:text-white uppercase tracking-wide">End Date & Time *</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="endDate" className="text-sm font-medium dark:text-white">
-                      Date *
-                    </Label>
-                    <Input
-                      id="endDate"
-                      type="date"
-                      {...register("endDate", { required: "End date is required" })}
-                      min={new Date().toISOString().split('T')[0]}
-                      max="9999-12-31"
-                      placeholder="20__-__-__"
-                      className="w-full bg-white dark:bg-gray-800 text-black dark:text-white border-gray-300 dark:border-gray-600"
-                      style={{ colorScheme: 'light dark' }}
-                    />
-                  </div>
+                <h4 className="font-medium text-sm text-gray-700 dark:text-white uppercase tracking-wide">
+                  {watch("isSameDay") ? "End Time *" : "End Date & Time *"}
+                </h4>
+                <div className={`grid ${watch("isSameDay") ? "grid-cols-1" : "grid-cols-1 md:grid-cols-2"} gap-4`}>
+                  {!watch("isSameDay") && (
+                    <div className="space-y-2">
+                      <Label htmlFor="endDate" className="text-sm font-medium dark:text-white">
+                        Date *
+                      </Label>
+                      <Input
+                        id="endDate"
+                        type="date"
+                        {...register("endDate", { required: !watch("isSameDay") ? "End date is required" : false })}
+                        min={new Date().toISOString().split('T')[0]}
+                        max="9999-12-31"
+                        placeholder="20__-__-__"
+                        className="w-full bg-white dark:bg-gray-800 text-black dark:text-white border-gray-300 dark:border-gray-600"
+                        style={{ colorScheme: 'light dark' }}
+                      />
+                    </div>
+                  )}
                   <div className="space-y-2">
                     <Label htmlFor="endTime" className="text-sm font-medium dark:text-white">
-                      Time *
+                      {watch("isSameDay") ? "End Time *" : "Time *"}
                     </Label>
                     <Input
                       id="endTime"

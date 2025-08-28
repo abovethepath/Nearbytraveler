@@ -46,7 +46,8 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
     requirements: "",
     tags: [] as string[],
     isPublic: true,
-    imageUrl: ""
+    imageUrl: "",
+    isSameDay: false
   });
   
   const [newTag, setNewTag] = useState("");
@@ -159,6 +160,39 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
   console.log('Event:', event ? { id: event.id, title: event.title, organizerId: event.organizerId } : 'No event loaded');
   console.log('User:', currentUser ? { id: currentUser.id, username: currentUser.username } : 'No user loaded');
   console.log('Is organizer:', isOrganizer);
+
+  // Delete event mutation
+  const deleteEventMutation = useMutation({
+    mutationFn: async () => {
+      const confirmed = window.confirm("Are you sure you want to cancel this event? This action cannot be undone.");
+      if (!confirmed) {
+        throw new Error("Deletion cancelled by user");
+      }
+      
+      const response = await apiRequest("DELETE", `/api/events/${eventId}`);
+      if (!response.ok) {
+        throw new Error(`Failed to delete event: ${response.status}`);
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Event Cancelled",
+        description: "Your event has been successfully cancelled.",
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/events'] });
+      setLocation('/events');
+    },
+    onError: (error: Error) => {
+      if (error.message !== "Deletion cancelled by user") {
+        toast({
+          title: "Delete Failed",
+          description: "Failed to cancel event. Please try again.",
+          variant: "destructive",
+        });
+      }
+    },
+  });
 
   // Update event mutation
   const updateEventMutation = useMutation({
@@ -1000,22 +1034,34 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
           </Card>
 
           {/* Action Buttons */}
-          <div className="flex gap-4 justify-end">
+          <div className="flex gap-4 justify-between">
             <Button
               type="button"
-              variant="outline"
-              onClick={() => window.history.back()}
+              variant="destructive"
+              onClick={() => deleteEventMutation.mutate()}
+              disabled={deleteEventMutation.isPending}
+              className="bg-red-600 text-white hover:bg-red-700"
             >
-              Cancel
+              <X className="w-4 h-4 mr-2" />
+              {deleteEventMutation.isPending ? "Canceling..." : "Cancel Event"}
             </Button>
-            <Button
-              type="submit"
-              disabled={updateEventMutation.isPending}
-              className="bg-gradient-to-r from-blue-500 to-orange-500 text-white hover:from-blue-600 hover:to-orange-600"
-            >
-              <Save className="w-4 h-4 mr-2" />
-              {updateEventMutation.isPending ? "Updating..." : "Update Event"}
-            </Button>
+            <div className="flex gap-4">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => window.history.back()}
+              >
+                Back
+              </Button>
+              <Button
+                type="submit"
+                disabled={updateEventMutation.isPending}
+                className="bg-gradient-to-r from-blue-500 to-orange-500 text-white hover:from-blue-600 hover:to-orange-600"
+              >
+                <Save className="w-4 h-4 mr-2" />
+                {updateEventMutation.isPending ? "Updating..." : "Update Event"}
+              </Button>
+            </div>
           </div>
         </form>
       </div>

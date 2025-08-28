@@ -4825,6 +4825,42 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // CRITICAL: Delete/Cancel event (organizer only)
+  app.delete("/api/events/:id", async (req, res) => {
+    try {
+      const eventId = parseInt(req.params.id);
+      const userId = req.user?.claims?.sub;
+      
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+      
+      if (process.env.NODE_ENV === 'development') console.log(`🗑️ EVENT DELETE: User ${userId} attempting to delete event ${eventId}`);
+      
+      // Get event to check if user is organizer
+      const event = await storage.getEvent(eventId);
+      if (!event) {
+        return res.status(404).json({ message: "Event not found" });
+      }
+      
+      if (event.organizerId !== userId) {
+        return res.status(403).json({ message: "Only the event organizer can delete this event" });
+      }
+      
+      // Delete the event
+      const success = await storage.deleteEvent(eventId);
+      if (success) {
+        if (process.env.NODE_ENV === 'development') console.log(`🗑️ EVENT DELETE: Event ${eventId} successfully deleted by organizer ${userId}`);
+        return res.json({ success: true, message: "Event successfully deleted" });
+      } else {
+        return res.status(500).json({ message: "Failed to delete event" });
+      }
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error deleting event:", error);
+      return res.status(500).json({ message: "Failed to delete event" });
+    }
+  });
+
   // CRITICAL: Leave event
   app.delete("/api/events/:id/leave", async (req, res) => {
     try {
