@@ -94,6 +94,25 @@ export default function LandingStreamlined() {
           </div>
         </div>
 
+        {/* FOUNDER QUOTE HIGHLIGHT */}
+        <div className="relative z-10 py-16 sm:py-20 overflow-hidden mb-8">
+          {/* Blue to orange gradient background */}
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-blue-500 to-orange-500"></div>
+          
+          <div className="relative max-w-4xl mx-auto px-4">
+            <div className="bg-gray-100/95 dark:bg-gray-800/95 backdrop-blur-sm rounded-2xl p-6 sm:p-8 shadow-2xl">
+              <blockquote className="text-lg sm:text-xl text-gray-900 dark:text-white leading-relaxed mb-4 text-center font-medium">
+                "For over 15 years, I've opened my home and city to more than 400 travelers from over 50 countries. Each visit showed me how powerful travel becomes when strangers connect like friends."
+              </blockquote>
+              <div className="text-center">
+                <p className="text-gray-700 dark:text-gray-300 font-semibold">
+                  — Aaron Lefkowitz, Founder Nearby Traveler, Inc.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* FROM THE FOUNDER SECTION - Original with 3 Icons */}
         <div className="relative z-10 py-16 sm:py-20 overflow-hidden mb-16">
           {/* Blue to orange gradient background */}
@@ -110,9 +129,6 @@ export default function LandingStreamlined() {
             {/* Main content with better readability */}
             <div className="max-w-3xl mx-auto">
               <div className="text-center mb-8">
-                <p className="text-xl sm:text-2xl text-white leading-relaxed font-medium mb-6">
-                  "For over 15 years, I've opened my home and city to more than 400 travelers from over 50 countries. Each visit showed me how powerful travel becomes when strangers connect like friends."
-                </p>
                 <p className="text-xl sm:text-2xl text-white leading-relaxed font-medium mb-6">
                   "As a traveler and local, I always loved meeting new people—but finding those who truly shared my interests wasn't easy."
                 </p>
