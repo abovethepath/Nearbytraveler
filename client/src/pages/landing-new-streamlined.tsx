@@ -120,7 +120,7 @@ export default function LandingStreamlined() {
           
           <div className="relative max-w-4xl mx-auto px-4">
             <div className="text-center mb-12">
-              <h2 className="text-3xl sm:text-4xl font-black text-white mb-4">
+              <h2 className="text-3xl sm:text-4xl font-black text-white mb-4" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', fontWeight: '900', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', letterSpacing: '-0.02em' }}>
                 From the Founder
               </h2>
               <div className="w-24 h-1 bg-gradient-to-r from-white to-blue-300 mx-auto rounded-full"></div>
@@ -129,10 +129,10 @@ export default function LandingStreamlined() {
             {/* Main content with better readability */}
             <div className="max-w-3xl mx-auto">
               <div className="text-center mb-8">
-                <p className="text-xl sm:text-2xl text-white leading-relaxed font-medium mb-6">
+                <p className="text-xl sm:text-2xl text-white leading-relaxed font-medium mb-6" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', fontWeight: '500', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', letterSpacing: '-0.01em' }}>
                   "As a traveler and local, I always loved meeting new people—but finding those who truly shared my interests wasn't easy."
                 </p>
-                <p className="text-2xl sm:text-3xl text-white font-bold leading-relaxed mb-6">
+                <p className="text-2xl sm:text-3xl text-white font-bold leading-relaxed mb-6" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', fontWeight: '700', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', letterSpacing: '-0.02em' }}>
                   That's why I created Nearby Traveler.
                 </p>
               </div>
