@@ -110,7 +110,7 @@ export default function LandingStreamlined() {
           <div className="relative max-w-4xl mx-auto px-4">
             <div className="bg-gray-100/95 dark:bg-gray-800/95 backdrop-blur-sm rounded-2xl p-6 sm:p-8 shadow-2xl">
               <blockquote className="text-lg sm:text-xl text-gray-900 dark:text-white leading-relaxed mb-4 text-center font-medium">
-                "For over 15 years, I've opened my home and city to more than 400 travelers from over 50 countries. Each visit showed me how powerful travel becomes when traveling strangers connect like friends."
+                "I was tired of touring cities alone while amazing people walked past me every day. Travelers spend billions on flights, hotels, and tours — yet the most valuable part of a trip, the people you meet, is left to chance."
               </blockquote>
               <div className="text-center">
                 <p className="text-gray-700 dark:text-gray-300 font-semibold">
@@ -137,9 +137,6 @@ export default function LandingStreamlined() {
             {/* Main content with better readability */}
             <div className="max-w-3xl mx-auto">
               <div className="text-center mb-8">
-                <p className="text-lg sm:text-xl text-white leading-relaxed font-medium mb-6" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', fontWeight: '500', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', letterSpacing: '-0.01em' }}>
-                  "I was tired of touring cities alone while amazing people walked past me every day. Travelers spend billions on flights, hotels, and tours — yet the most valuable part of a trip, the people you meet, is left to chance."
-                </p>
                 <p className="text-lg sm:text-xl text-white leading-relaxed font-medium mb-6" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', fontWeight: '500', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', letterSpacing: '-0.01em' }}>
                   "After 15 years of hosting 400+ travelers from 50 countries, I saw first-hand how one single connection can change everything."
                 </p>
