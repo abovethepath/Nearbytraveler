@@ -1053,7 +1053,7 @@ export default function MatchInCity() {
                         </button>
                       </TooltipTrigger>
                       {activity.description && (
-                        <TooltipContent className="max-w-xs">
+                        <TooltipContent className="max-w-xs bg-gray-900 text-white border-gray-700 shadow-xl">
                           <p className="text-sm">{activity.description}</p>
                         </TooltipContent>
                       )}
@@ -1219,7 +1219,7 @@ export default function MatchInCity() {
                             </button>
                           </div>
                         </TooltipTrigger>
-                        <TooltipContent className="max-w-xs">
+                        <TooltipContent className="max-w-xs bg-gray-900 text-white border-gray-700 shadow-xl">
                           <p className="text-sm font-medium">Click event name to view details and join</p>
                           <p className="text-xs text-gray-400 mt-1">Click + to add interest without joining</p>
                         </TooltipContent>
