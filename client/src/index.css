@@ -515,10 +515,22 @@ div[class*="bg-"][class*="text-"][class*="rounded"] {
     border-radius: 0;
   }
   
-  /* Fix Safari mobile positioning */
+  /* Fix Safari mobile positioning - CRITICAL */
   .fixed {
-    position: -webkit-sticky;
-    position: sticky;
+    position: fixed !important;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+  
+  /* Force mobile navigation to show */
+  [style*="position: fixed"][style*="bottom: 0"] {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 9999 !important;
+    display: block !important;
+    width: 100% !important;
   }
   
   /* Mobile container fixes */
@@ -535,9 +547,31 @@ div[class*="bg-"][class*="text-"][class*="rounded"] {
     gap: 1rem;
   }
   
-  /* Mobile navigation fixes */
+  /* Mobile navigation fixes - CRITICAL */
   nav {
-    z-index: 9999;
+    z-index: 9999 !important;
+  }
+  
+  /* Ensure mobile top navigation shows */
+  .md\\:hidden {
+    display: block !important;
+  }
+  
+  @media (min-width: 768px) {
+    .md\\:hidden {
+      display: none !important;
+    }
+  }
+  
+  /* Force mobile layout elements to show on small screens */
+  @media screen and (max-width: 767px) {
+    .hidden.md\\:block {
+      display: none !important;
+    }
+    
+    .block.md\\:hidden {
+      display: block !important;
+    }
   }
   
   /* Mobile modal fixes */

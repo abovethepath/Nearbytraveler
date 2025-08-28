@@ -37,7 +37,7 @@ export function MobileBottomNav() {
     refetchInterval: 10000, // Refetch every 10 seconds to catch new messages
   });
 
-  const unreadCount = unreadData?.unreadCount || 0;
+  const unreadCount = (unreadData as any)?.unreadCount || 0;
 
   console.log('📧 MobileBottomNav - Unread messages count:', unreadCount);
 
