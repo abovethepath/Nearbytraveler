@@ -306,7 +306,7 @@ export default function ItineraryPage({ travelPlanId: propTravelPlanId }: Itiner
                   Create Itinerary
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-md">
+              <DialogContent className="max-w-md bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
                 <DialogHeader>
                   <DialogTitle className="text-black dark:text-white">Create New Itinerary</DialogTitle>
                 </DialogHeader>
@@ -317,6 +317,7 @@ export default function ItineraryPage({ travelPlanId: propTravelPlanId }: Itiner
                       value={newItinerary.title}
                       onChange={(e) => setNewItinerary(prev => ({ ...prev, title: e.target.value }))}
                       placeholder="e.g., Milan Food & Culture Tour"
+                      className="bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-black dark:text-white"
                     />
                   </div>
                   <div>
@@ -325,6 +326,7 @@ export default function ItineraryPage({ travelPlanId: propTravelPlanId }: Itiner
                       value={newItinerary.description || ""}
                       onChange={(e) => setNewItinerary(prev => ({ ...prev, description: e.target.value }))}
                       placeholder="Brief description of your itinerary..."
+                      className="bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-black dark:text-white"
                     />
                   </div>
                   <div className="flex items-center gap-2">
