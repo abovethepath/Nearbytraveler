@@ -2848,7 +2848,7 @@ Questions? Just reply to this message. Welcome aboard!
       if (search && typeof search === 'string' && search.trim()) {
         const searchTerm = search.trim().toLowerCase();
         
-        // Create a subquery to find users with matching travel plan notes
+        // Create a subquery to find users with matching travel plan info (notes + destinations)
         const travelPlanSubquery = db
           .selectDistinct({ userId: travelPlans.userId })
           .from(travelPlans)
@@ -2857,7 +2857,12 @@ Questions? Just reply to this message. Welcome aboard!
               ilike(travelPlans.notes, `%${searchTerm}%`),
               ilike(travelPlans.accommodation, `%${searchTerm}%`),
               ilike(travelPlans.transportation, `%${searchTerm}%`),
-              ilike(travelPlans.autoTags, `%${searchTerm}%`)
+              ilike(travelPlans.autoTags, `%${searchTerm}%`),
+              // Location keyword search in travel destinations
+              ilike(travelPlans.destination, `%${searchTerm}%`), // Full destination string
+              ilike(travelPlans.destinationCity, `%${searchTerm}%`), // Destination city
+              ilike(travelPlans.destinationState, `%${searchTerm}%`), // Destination state
+              ilike(travelPlans.destinationCountry, `%${searchTerm}%`) // Destination country
             )
           );
         
@@ -2869,19 +2874,25 @@ Questions? Just reply to this message. Welcome aboard!
             ilike(users.interests, `%${searchTerm}%`),
             ilike(users.activities, `%${searchTerm}%`),
             ilike(users.sexualPreference, `%${searchTerm}%`),
-            ilike(users.gender, `%${searchTerm}%`), // Added gender search
-            ilike(users.militaryStatus, `%${searchTerm}%`), // Added military/veteran search
-            ilike(users.occupation, `%${searchTerm}%`), // Added occupation search
-            ilike(users.languages, `%${searchTerm}%`), // Added languages search
-            ilike(users.travelIntent, `%${searchTerm}%`), // Added travel intent search
-            ilike(users.travelerType, `%${searchTerm}%`), // Added traveler type search
-            ilike(users.diversityCategories, `%${searchTerm}%`), // Added diversity categories search
-            inArray(users.id, travelPlanSubquery) // Added travel plan notes search
+            ilike(users.gender, `%${searchTerm}%`),
+            ilike(users.militaryStatus, `%${searchTerm}%`),
+            ilike(users.occupation, `%${searchTerm}%`),
+            ilike(users.languages, `%${searchTerm}%`),
+            ilike(users.travelIntent, `%${searchTerm}%`),
+            ilike(users.travelerType, `%${searchTerm}%`),
+            ilike(users.diversityCategories, `%${searchTerm}%`),
+            // Location-based keyword search
+            ilike(users.location, `%${searchTerm}%`), // Current location
+            ilike(users.hometownCity, `%${searchTerm}%`), // Hometown city
+            ilike(users.hometownState, `%${searchTerm}%`), // Hometown state
+            ilike(users.hometownCountry, `%${searchTerm}%`), // Hometown country
+            ilike(users.currentCity, `%${searchTerm}%`), // Current city if different
+            inArray(users.id, travelPlanSubquery) // Travel plan notes search
           )
         );
         
         if (process.env.NODE_ENV === 'development') {
-          console.log(`🔍 COMPREHENSIVE SEARCH: Searching for "${searchTerm}" across ALL profile fields: name, username, bio, interests, activities, sexual preferences, gender, military status, occupation, languages, travel intent, traveler type, diversity categories, AND travel plan notes`);
+          console.log(`🔍 COMPREHENSIVE SEARCH: Searching for "${searchTerm}" across ALL profile fields: name, username, bio, interests, activities, sexual preferences, gender, military status, occupation, languages, travel intent, traveler type, diversity categories, location fields (current location, hometown city/state/country), AND travel plan notes`);
         }
       } else {
         // If no search term provided, require at least one other filter
