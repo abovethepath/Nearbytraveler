@@ -111,6 +111,9 @@ export default function LandingStreamlined() {
             <div className="max-w-3xl mx-auto">
               <div className="text-center mb-8">
                 <p className="text-xl sm:text-2xl text-white leading-relaxed font-medium mb-6">
+                  "For over 15 years, I've opened my home and city to more than 400 travelers from over 50 countries. Each visit showed me how powerful travel becomes when strangers connect like friends."
+                </p>
+                <p className="text-xl sm:text-2xl text-white leading-relaxed font-medium mb-6">
                   "As a traveler and local, I always loved meeting new people—but finding those who truly shared my interests wasn't easy."
                 </p>
                 <p className="text-2xl sm:text-3xl text-white font-bold leading-relaxed mb-6">
