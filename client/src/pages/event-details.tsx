@@ -387,10 +387,14 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
               {/* Tags */}
               {event.tags && event.tags.length > 0 && (
                 <div>
-                  <h3 className="font-semibold mb-2">Tags</h3>
+                  <h3 className="font-semibold mb-2 text-gray-900 dark:text-white">Tags</h3>
                   <div className="flex flex-wrap gap-2">
-                    {event.tags.map((tag) => (
-                      <Badge key={tag} variant="outline" className="text-xs">
+                    {event.tags.map((tag, index) => (
+                      <Badge 
+                        key={`${tag}-${index}`} 
+                        variant="secondary" 
+                        className="text-xs px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-0 hover:bg-gray-200 dark:hover:bg-gray-600"
+                      >
                         {tag}
                       </Badge>
                     ))}
