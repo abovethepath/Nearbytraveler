@@ -491,7 +491,7 @@ function MultiSelect({ options, selected, onChange, placeholder, maxDisplay = 3,
             ) : (
               <>
                 {selected.slice(0, maxDisplay).map((item) => (
-                  <div key={item} className={pillType === 'pill-interests' ? 'inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0' : pillType === 'pill-activities' ? 'inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none bg-green-500 text-white border-0' : 'inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none bg-purple-500 text-white border-0'}>
+                  <div key={item} className={pillType === 'pill-interests' ? 'inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0 appearance-none select-none' : pillType === 'pill-activities' ? 'inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none bg-green-500 text-white border-0 appearance-none select-none' : 'inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none bg-purple-500 text-white border-0 appearance-none select-none'}>
                     {item}
                   </div>
                 ))}
@@ -4550,12 +4550,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               return (
                                 <>
                                   {topActivities.map((activity, index) => (
-                                    <div key={`activity-${index}`} className="pill pill-activities inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-green-500 text-white border-0 appearance-none select-none gap-1.5" >
+                                    <div key={`activity-${index}`} className="pill pill-activities inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-green-500 text-white border-0 appearance-none select-none" >
                                       {activity}
                                     </div>
                                   ))}
                                   {remaining > 0 && (
-                                    <div className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-green-500 text-white border-0 appearance-none select-none gap-1.5">
+                                    <div className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-green-500 text-white border-0 appearance-none select-none">
                                       +{remaining} more
                                     </div>
                                   )}
@@ -4688,12 +4688,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               return (
                                 <>
                                   {topEvents.map((event, index) => (
-                                    <div key={`event-${index}`} className="pill pill-events inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-purple-500 text-white border-0 appearance-none select-none gap-1.5">
+                                    <div key={`event-${index}`} className="pill pill-events inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-purple-500 text-white border-0 appearance-none select-none">
                                       {event}
                                     </div>
                                   ))}
                                   {remaining > 0 && (
-                                    <div className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-purple-500 text-white border-0 appearance-none select-none gap-1.5">
+                                    <div className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-purple-500 text-white border-0 appearance-none select-none">
                                       +{remaining} more
                                     </div>
                                   )}
