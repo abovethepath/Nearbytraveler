@@ -160,7 +160,7 @@ export default function DiscoverPage() {
                     <div className="absolute inset-0 bg-black/20" />
                     <div className="absolute top-2 sm:top-4 right-2 sm:right-4">
                       <Badge className="bg-gradient-to-r from-orange-500 to-red-500 text-white text-sm sm:text-lg px-2 sm:px-4 py-1 sm:py-2">
-                        🌟 FOCUS
+                        🌟
                       </Badge>
                     </div>
                   </div>
