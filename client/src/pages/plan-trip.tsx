@@ -765,7 +765,7 @@ export default function PlanTrip() {
                           }
                         }}
                       />
-                      <Label htmlFor={`traveler-type-${type}`} className="text-xs sm:text-sm text-black dark:text-white break-words overflow-hidden">{type}</Label>
+                      <Label htmlFor={`traveler-type-${type}`} className="text-xs sm:text-sm text-black dark:text-white break-words overflow-hidden cursor-pointer">{type}</Label>
                     </div>
                   ))}
                 </div>
@@ -784,20 +784,22 @@ export default function PlanTrip() {
                 
                 {/* Military Status Checkboxes - Mobile Responsive */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-4 sm:mb-6 overflow-hidden break-words">
-                  <label className="flex items-center space-x-2 overflow-hidden break-words">
+                  <div className="flex items-center space-x-2 overflow-hidden break-words">
                     <Checkbox
+                      id="veteran-checkbox"
                       checked={tripPlan.isVeteran || false}
                       onCheckedChange={(checked) => setTripPlan(prev => ({ ...prev, isVeteran: !!checked }))}
                     />
-                    <span className="text-sm sm:text-base font-bold text-black dark:text-white break-words">I am a Veteran</span>
-                  </label>
-                  <label className="flex items-center space-x-2 overflow-hidden break-words">
+                    <Label htmlFor="veteran-checkbox" className="text-sm sm:text-base font-bold text-black dark:text-white break-words cursor-pointer">I am a Veteran</Label>
+                  </div>
+                  <div className="flex items-center space-x-2 overflow-hidden break-words">
                     <Checkbox
+                      id="active-duty-checkbox"
                       checked={tripPlan.isActiveDuty || false}
                       onCheckedChange={(checked) => setTripPlan(prev => ({ ...prev, isActiveDuty: !!checked }))}
                     />
-                    <span className="text-sm sm:text-base font-bold text-black dark:text-white break-words">I am active duty</span>
-                  </label>
+                    <Label htmlFor="active-duty-checkbox" className="text-sm sm:text-base font-bold text-black dark:text-white break-words cursor-pointer">I am active duty</Label>
+                  </div>
                 </div>
                 
                 {/* Top Choices Section */}

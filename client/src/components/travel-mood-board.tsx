@@ -167,8 +167,8 @@ export default function TravelMoodBoard() {
                 <Input name="title" placeholder="Mood board title" required />
                 <Textarea name="description" placeholder="Description (optional)" />
                 <Input name="destination" placeholder="Destination (optional)" />
-                <label className="flex items-center space-x-2">
-                  <input type="checkbox" name="isPublic" />
+                <label htmlFor="mood-board-public" className="flex items-center space-x-2 cursor-pointer">
+                  <input id="mood-board-public" type="checkbox" name="isPublic" />
                   <span>Make public</span>
                 </label>
                 <Button type="submit" disabled={createMoodBoard.isPending}>

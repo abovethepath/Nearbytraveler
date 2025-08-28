@@ -7495,13 +7495,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     control={form.control}
                     name="isVeteran"
                     render={({ field }) => (
-                      <label className="flex items-center space-x-2">
+                      <div className="flex items-center space-x-2">
                         <Checkbox
+                          id="profile-veteran-checkbox"
                           checked={field.value}
                           onCheckedChange={field.onChange}
                         />
-                        <span className="text-sm font-bold">I am a Veteran</span>
-                      </label>
+                        <Label htmlFor="profile-veteran-checkbox" className="text-sm font-bold cursor-pointer">I am a Veteran</Label>
+                      </div>
                     )}
                   />
                 </div>
@@ -7512,13 +7513,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     control={form.control}
                     name="isActiveDuty"
                     render={({ field }) => (
-                      <label className="flex items-center space-x-2">
+                      <div className="flex items-center space-x-2">
                         <Checkbox
+                          id="profile-active-duty-checkbox"
                           checked={field.value}
                           onCheckedChange={field.onChange}
                         />
-                        <span className="text-sm font-bold">I am active duty</span>
-                      </label>
+                        <Label htmlFor="profile-active-duty-checkbox" className="text-sm font-bold cursor-pointer">I am active duty</Label>
+                      </div>
                     )}
                   />
                 </div>

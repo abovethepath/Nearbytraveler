@@ -251,8 +251,9 @@ export function HostingOffers({ isOwnProfile = false, userId }: { isOwnProfile?:
               <label className="text-sm font-medium mb-2 block">Amenities & Services</label>
               <div className="grid grid-cols-3 gap-2">
                 {amenityOptions.map((amenity) => (
-                  <label key={amenity} className="flex items-center space-x-2 text-sm">
+                  <label key={amenity} className="flex items-center space-x-2 text-sm cursor-pointer">
                     <input
+                      id={`amenity-${amenity.replace(/\s+/g, '-').toLowerCase()}`}
                       type="checkbox"
                       checked={newOffer.amenities.includes(amenity)}
                       onChange={() => toggleAmenity(amenity)}
