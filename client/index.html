@@ -11,8 +11,12 @@
     <meta http-equiv="Expires" content="0" />
     
     <!-- CRITICAL Mobile Cache Busting Version - FORCE REFRESH -->
-    <meta name="app-version" content="mobile-layout-v7-20250828-IPHONE-FIXES" />
-    <meta name="cache-killer" content="1756400600000-FORCE-IPHONE-REFRESH" />
+    <meta name="app-version" content="mobile-layout-v8-EMERGENCY-CACHE-CLEAR" />
+    <meta name="cache-killer" content="1756401500000-EMERGENCY-IPHONE-REFRESH" />
+    
+    <!-- Additional Mobile Cache Busting -->
+    <meta http-equiv="Last-Modified" content="Tue, 28 Aug 2025 17:15:00 GMT" />
+    <meta name="mobile-cache-buster" content="emergency-clear-all-20250828" />
     
     <!-- PWA Configuration -->
     <link rel="manifest" href="/manifest.json" />
@@ -62,33 +66,48 @@
     
     <!-- Mobile Layout Cache Control -->
     <script>
-      console.log('✅ CRITICAL MOBILE LAYOUT v6-20250705 - SITE-WIDE FIXES DEPLOYED');
+      console.log('🚨 EMERGENCY MOBILE CACHE CLEAR v8 - BROKEN IPHONE SITE FIX');
       
-      // Force complete cache clear for critical mobile fixes
-      const currentVersion = 'v7-20250828-IPHONE';
-      if (localStorage.getItem('layout-version') !== currentVersion) {
-        console.log('🧹 CRITICAL: Clearing ALL caches for iPhone mobile fixes');
+      // EMERGENCY: Force complete cache clear for broken iPhone site
+      const currentVersion = 'v8-EMERGENCY-CACHE-CLEAR-20250828';
+      const lastVersion = localStorage.getItem('layout-version');
+      console.log('🔍 Current version check:', lastVersion, 'vs', currentVersion);
+      
+      if (lastVersion !== currentVersion) {
+        console.log('🚨 EMERGENCY: iPhone site broken - clearing ALL caches now!');
         localStorage.setItem('layout-version', currentVersion);
         
-        // Clear ALL browser caches
+        // EMERGENCY: Clear ALL browser caches aggressively
         if ('caches' in window) {
           caches.keys().then(function(names) {
             names.forEach(function(name) {
               caches.delete(name);
-              console.log('🗑️ Cleared cache:', name);
+              console.log('🗑️ EMERGENCY: Cleared cache:', name);
             });
           });
         }
         
-        // Clear additional storage
+        // Clear ALL storage types
         try {
           sessionStorage.clear();
-          console.log('🗑️ Cleared session storage');
+          console.log('🗑️ EMERGENCY: Cleared session storage');
         } catch (e) {
           console.log('⚠️ Could not clear session storage');
         }
         
-        console.log('💯 Mobile layout fixes applied - refresh complete');
+        // Clear any app-specific storage
+        try {
+          Object.keys(localStorage).forEach(key => {
+            if (key.includes('auth') || key.includes('user') || key.includes('travel') || key.includes('mobile') || key.includes('cache')) {
+              localStorage.removeItem(key);
+              console.log('🗑️ EMERGENCY: Cleared localStorage key:', key);
+            }
+          });
+        } catch (e) {
+          console.log('⚠️ Could not clear some localStorage keys');
+        }
+        
+        console.log('🚨 EMERGENCY iPhone cache clear complete - site should work now');
       }
     </script>
     
