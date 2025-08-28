@@ -461,21 +461,16 @@ app.use((req, res, next) => {
   }
 
   // Setup vite after ALL routes are registered
-  // Force production-style static serving for Replit deployment to prevent WebSocket issues
-  const isReplitDeployment = process.env.REPL_ID && process.env.REPLIT_DEPLOYMENT;
-  const isProduction = process.env.NODE_ENV === "production";
-  
-  if (isReplitDeployment || isProduction) {
-    console.log("📦 Setting up static file serving for Replit deployment...");
-    serveStatic(app);
-  } else {
-    console.log("🔧 Setting up Vite development server...");
-    try {
-      await setupVite(app, server);
-    } catch (viteError) {
-      console.error("⚠️ Vite setup failed, falling back to static serving:", viteError);
-      serveStatic(app);
-    }
+  // CRITICAL FIX: Always use Vite development mode to preserve API routes
+  // Static serving was overriding API routes in deployment
+  console.log("🔧 Setting up Vite development server for all environments...");
+  try {
+    await setupVite(app, server);
+    console.log("✅ Vite setup successful - API routes preserved");
+  } catch (viteError) {
+    console.error("⚠️ Vite setup failed:", viteError);
+    console.error("❌ CRITICAL: Cannot fall back to static serving as it breaks API routes");
+    process.exit(1);
   }
 
   // Add error handler AFTER all routes and Vite setup (critical placement)
