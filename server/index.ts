@@ -461,17 +461,48 @@ app.use((req, res, next) => {
   }
 
   // Setup vite after ALL routes are registered
-  // CRITICAL FIX v2: Always use Vite development mode to preserve API routes
-  // Static serving was overriding API routes in deployment - DEPLOYMENT CACHE BUSTER 2025-01-28
-  console.log("🔧 DEPLOYMENT FIX v2: Setting up Vite development server for all environments...");
-  console.log("🚨 CACHE BUSTER: Forcing deployment to use new server configuration");
-  try {
-    await setupVite(app, server);
-    console.log("✅ DEPLOYMENT FIX v2: Vite setup successful - API routes preserved");
-  } catch (viteError) {
-    console.error("⚠️ DEPLOYMENT FIX v2: Vite setup failed:", viteError);
-    console.error("❌ CRITICAL: Cannot fall back to static serving as it breaks API routes");
-    process.exit(1);
+  // CRITICAL FIX v3: Custom deployment setup that preserves API routes
+  const isReplitDeployment = process.env.REPL_ID && process.env.REPLIT_DEPLOYMENT;
+  const isProduction = process.env.NODE_ENV === "production";
+  
+  if (isReplitDeployment || isProduction) {
+    console.log("🚀 DEPLOYMENT FIX v3: Custom deployment setup preserving API routes...");
+    
+    // Custom static serving that ONLY serves index.html for non-API routes
+    const distPath = path.resolve(process.cwd(), "client", "dist");
+    console.log("📦 Static path:", distPath);
+    
+    // Serve static assets but NOT index.html (which would override API routes)
+    app.use(express.static(distPath, { index: false }));
+    
+    // Only serve index.html for frontend routes, preserving all API routes
+    app.use("*", (req, res, next) => {
+      // Preserve ALL API routes - never serve index.html for them
+      if (req.originalUrl.startsWith('/api/')) {
+        console.log("🔄 API route preserved:", req.originalUrl);
+        return next(); // Let API routes handle themselves
+      }
+      
+      // Serve index.html only for frontend routes
+      console.log("📄 Serving frontend for:", req.originalUrl);
+      res.sendFile(path.resolve(distPath, "index.html"), (err) => {
+        if (err) {
+          console.error("❌ Failed to serve index.html:", err);
+          res.status(404).send("Frontend not found");
+        }
+      });
+    });
+    
+    console.log("✅ DEPLOYMENT FIX v3: Custom setup complete - API routes preserved");
+  } else {
+    console.log("🔧 Development: Setting up Vite development server...");
+    try {
+      await setupVite(app, server);
+      console.log("✅ Vite development setup successful");
+    } catch (viteError) {
+      console.error("⚠️ Vite setup failed, falling back to static serving:", viteError);
+      serveStatic(app);
+    }
   }
 
   // Add error handler AFTER all routes and Vite setup (critical placement)
