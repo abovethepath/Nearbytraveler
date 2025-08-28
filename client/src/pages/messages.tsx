@@ -174,13 +174,14 @@ export default function Messages() {
 
   // Auto-select target conversation
   useEffect(() => {
-    if (targetUserId && conversations.length > 0 && !selectedConversation) {
+    if (targetUserId && conversations.length > 0) {
       const targetConv = conversations.find((conv: any) => conv.userId === parseInt(targetUserId));
       if (targetConv) {
         setSelectedConversation(parseInt(targetUserId));
+        console.log(`🎯 Auto-selected conversation for user ${targetUserId}:`, targetConv.username);
       }
     }
-  }, [targetUserId, conversations, selectedConversation]);
+  }, [targetUserId, conversations]);
 
   // Get messages for selected conversation (simplified to avoid duplication)
   const conversationMessages = selectedConversation 
@@ -334,8 +335,10 @@ export default function Messages() {
               .map((conv: any) => (
                 <div
                   key={conv.userId}
-                  className={`p-4 border-b border-gray-700 cursor-pointer hover:bg-gray-700 ${
-                    selectedConversation === conv.userId ? 'bg-gray-700' : ''
+                  className={`p-4 border-b border-gray-700 cursor-pointer transition-all duration-200 ${
+                    selectedConversation === conv.userId 
+                      ? 'bg-gradient-to-r from-blue-600 to-blue-700 border-l-4 border-l-blue-400 shadow-lg' 
+                      : 'hover:bg-gray-700 hover:border-l-4 hover:border-l-gray-500'
                   }`}
                   onClick={() => {
                     console.log('🔥 CONVERSATION CLICKED:', conv.username, 'ID:', conv.userId);

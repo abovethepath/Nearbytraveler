@@ -62,7 +62,10 @@ function MessagesWidget({ userId }: MessagesWidgetProps) {
             return (
               <div
                 key={message.id || index} 
-                onClick={() => setLocation("/messages")}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setLocation(`/messages?userId=${otherUserId}`);
+                }}
                 className="cursor-pointer hover:bg-gradient-to-r hover:from-blue-50 hover:to-orange-50 dark:hover:from-blue-900/30 dark:hover:to-orange-900/30 rounded-xl p-4 transition-all duration-300 border-2 border-blue-100 dark:border-blue-700/50 hover:border-orange-200 dark:hover:border-orange-600/50 hover:shadow-lg bg-gradient-to-r from-white via-blue-50/30 to-orange-50/30 dark:from-gray-800/50 dark:via-blue-900/10 dark:to-orange-900/10"
               >
                 <div className="flex items-center justify-between mb-2">
