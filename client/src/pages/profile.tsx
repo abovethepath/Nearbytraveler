@@ -1380,6 +1380,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           hometownCity: user.hometownCity || "",
           hometownState: user.hometownState || "",
           hometownCountry: user.hometownCountry || "",
+          dateOfBirth: user.dateOfBirth ? 
+            (typeof user.dateOfBirth === 'string' ? user.dateOfBirth : new Date(user.dateOfBirth).toISOString().split('T')[0]) : "",
           travelStyle: user.travelStyle || [],
           businessDescription: (user as any).business_description || (user as any).businessDescription || "",
           businessType: (user as any).business_type || (user as any).businessType || "",
@@ -1472,6 +1474,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           hometownCity: user.hometownCity || "",
           hometownState: user.hometownState || "",
           hometownCountry: user.hometownCountry || "",
+          dateOfBirth: user.dateOfBirth ? 
+            (typeof user.dateOfBirth === 'string' ? user.dateOfBirth : new Date(user.dateOfBirth).toISOString().split('T')[0]) : "",
           travelStyle: user.travelStyle || [],
           city: user.city || "",
           state: user.state || "",
@@ -1506,7 +1510,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           hometownCity: user.hometownCity || "",
           hometownState: user.hometownState || "",
           hometownCountry: user.hometownCountry || "",
-          dateOfBirth: user.dateOfBirth || "",
+          dateOfBirth: user.dateOfBirth ? 
+            (typeof user.dateOfBirth === 'string' ? user.dateOfBirth : new Date(user.dateOfBirth).toISOString().split('T')[0]) : "",
           ageVisible: !!user.ageVisible,
           gender: user.gender || "",
           sexualPreference: user.sexualPreference || [],
