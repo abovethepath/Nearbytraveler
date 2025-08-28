@@ -128,6 +128,7 @@ import ShareQR from "@/pages/share-qr";
 import BusinessCardPage from "@/pages/business-card";
 import QRCodePage from "@/pages/qr-code";
 import QRSimplePage from "@/pages/qr-simple";
+import LandingStreamlined from "@/pages/landing-new-streamlined";
 
 
 import Navbar from "@/components/navbar";
@@ -641,8 +642,14 @@ function Router() {
 
       // CRITICAL: Root path should always show landing page for unauthenticated users
       if (location === '/' || location === '') {
-        console.log('🏠 CACHE BUST v2 - Root path for unauthenticated user - showing landing page');
-        return <LandingNew />;
+        console.log('🏠 STREAMLINED LANDING - Root path for unauthenticated user - showing new streamlined version');
+        return <LandingStreamlined />;
+      }
+      
+      // Test route for new streamlined landing
+      if (location === '/landing-streamlined') {
+        console.log('🎯 TESTING - Streamlined landing page');
+        return <LandingStreamlined />;
       }
       
       // QR Code page - PUBLIC ACCESS for printing business cards
