@@ -486,10 +486,10 @@ function Router() {
         return <Auth />;
       }
 
-      // Allow access to join page - restore original SignupLocalTraveler
+      // Allow access to join page - use unified signup
       if (location === '/join') {
         console.log('Showing Join page');
-        return <SignupLocalTraveler />;
+        return <UnifiedSignup />;
       }
 
       // Show landing page
