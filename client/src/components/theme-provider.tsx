@@ -27,7 +27,11 @@ export function ThemeProvider({
   ...props
 }: ThemeProviderProps) {
   const [theme, setThemeState] = useState<Theme>(
-    () => (localStorage.getItem(storageKey) as Theme) || defaultTheme
+    () => {
+      // Force dark mode for landing page - ignore system preferences
+      const saved = localStorage.getItem(storageKey) as Theme;
+      return saved || "dark"; // Always default to dark, never system
+    }
   )
 
   useEffect(() => {
