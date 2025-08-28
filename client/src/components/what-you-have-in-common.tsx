@@ -502,11 +502,11 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
             <Heart className="w-6 h-6 text-red-500 animate-pulse" />
             What You Have in Common
           </CardTitle>
-          <div className="flex items-center gap-2">
-            <Badge className="bg-green-500 text-white shadow-md border-green-600 text-lg px-3 py-1 font-bold">
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <Badge className="bg-green-500 text-white shadow-md border-green-600 text-xs sm:text-sm px-2 py-1 font-bold whitespace-nowrap">
               <span style={{ color: 'white !important' }}>{commonalities.compatibilityPercentage}% Match</span>
             </Badge>
-            <Badge className="bg-blue-500 text-white shadow-md border-blue-600 text-sm px-2 py-1 font-medium">
+            <Badge className="bg-blue-500 text-white shadow-md border-blue-600 text-xs sm:text-sm px-2 py-1 font-medium whitespace-nowrap">
               <span style={{ color: 'white !important' }}>
                 {matchData ? (
                   matchData.sharedInterests?.length + 
@@ -525,7 +525,7 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
                   (matchData.sameGender ? 1 : 0) +
                   (matchData.sameAge ? 1 : 0) +
                   (matchData.sameFamilyStatus ? 1 : 0)
-                ) : commonalities.totalCount} Things
+                ) : commonalities.totalCount} Common
               </span>
             </Badge>
           </div>
@@ -542,9 +542,9 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
               <Heart className="w-5 h-5 text-red-500" />
               Shared Interests ({commonalities.sharedInterests.length})
             </h5>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1.5">
               {commonalities.sharedInterests.map((interest, index) => (
-                <div key={`shared-interest-${interest}-${index}`} className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
+                <div key={`shared-interest-${interest}-${index}`} className="inline-flex items-center justify-center h-8 sm:h-9 rounded-full px-3 sm:px-4 text-xs sm:text-sm font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none">
                   {interest}
                 </div>
               ))}
@@ -559,9 +559,9 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
               <Users className="w-5 h-5 text-green-500" />
               Shared Activities ({commonalities.sharedActivities.length})
             </h5>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1.5">
               {commonalities.sharedActivities.map((activity, index) => (
-                <div key={`shared-activity-${activity}-${index}`} className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-green-500 text-white border-0 appearance-none select-none gap-1.5">
+                <div key={`shared-activity-${activity}-${index}`} className="inline-flex items-center justify-center h-8 sm:h-9 rounded-full px-3 sm:px-4 text-xs sm:text-sm font-medium leading-none whitespace-nowrap bg-green-500 text-white border-0 appearance-none select-none">
                   {activity}
                 </div>
               ))}
@@ -593,9 +593,9 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
               <Calendar className="w-5 h-5 text-purple-500" />
               Shared Events ({commonalities.sharedEvents.length})
             </h5>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1.5">
               {commonalities.sharedEvents.map((event, index) => (
-                <div key={`shared-event-${event}-${index}`} className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-purple-500 text-white border-0 appearance-none select-none gap-1.5">
+                <div key={`shared-event-${event}-${index}`} className="inline-flex items-center justify-center h-8 sm:h-9 rounded-full px-3 sm:px-4 text-xs sm:text-sm font-medium leading-none whitespace-nowrap bg-purple-500 text-white border-0 appearance-none select-none">
                   {event}
                 </div>
               ))}

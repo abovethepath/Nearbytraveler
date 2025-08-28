@@ -3500,7 +3500,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     
                     return (
                       <>
-                        <h1 className="text-2xl sm:text-3xl font-bold text-black">@{user.username}</h1>
+                        <h1 className="text-lg xs:text-xl sm:text-2xl md:text-3xl font-bold text-black break-all">@{user.username}</h1>
                         <div className="flex items-center gap-2 text-lg font-medium text-black">
                           <MapPin className="w-5 h-5 text-blue-600" />
                           <span>NEARBY LOCAL {hometown}</span>
@@ -3594,16 +3594,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
 
 
-        {/* Things We Have in Common - Mobile Only */}
-        {!isOwnProfile && currentUser && user?.id && (
-          <div className="lg:hidden bg-white dark:bg-gray-800 rounded-2xl p-3 sm:p-4 mb-4 shadow-sm">
-            <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2 mb-3">
-              <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-red-500" />
-              Things We Have in Common
-            </h3>
-            <WhatYouHaveInCommon currentUserId={currentUser.id} otherUserId={user.id} />
-          </div>
-        )}
 
 
 
@@ -3697,7 +3687,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </div>
                 )}
 
-                {/* What you have in common (for other profiles) */}
+                {/* What you have in common (for other profiles) - Mobile and Desktop */}
                 {!isOwnProfile && currentUser && user?.id && (
                   <div>
                     <WhatYouHaveInCommon currentUserId={currentUser.id} otherUserId={user.id} />
