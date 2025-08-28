@@ -486,7 +486,7 @@ function Router() {
         return <Auth />;
       }
 
-      // Allow access to join page - use Auth component
+      // Allow access to join page - use Auth component which handles join
       if (location === '/join') {
         console.log('Showing Join page');
         return <Auth />;
