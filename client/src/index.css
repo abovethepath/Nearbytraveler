@@ -114,6 +114,28 @@ p, span, div, button, input, textarea, select {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* CTA Buttons and Pills - Extra Sharp Inter */
+.btn, button, [role="button"], .button,
+[class*="btn"], [class*="button"], [class*="cta"],
+.pill, [class*="pill"], .badge, [class*="badge"],
+.tag, [class*="tag"], .chip, [class*="chip"] {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.01em !important;
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+  text-rendering: optimizeLegibility !important;
+}
+
+/* Specific targeting for common button classes */
+.bg-orange-500, .bg-blue-500, .bg-blue-600, .bg-orange-600,
+[class*="bg-orange"], [class*="bg-blue"], [class*="bg-primary"],
+.rounded-full, .rounded-lg, .rounded-md {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+}
+
 :root {
   color-scheme: light;
   --background: 0 0% 100%;
