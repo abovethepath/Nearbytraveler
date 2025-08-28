@@ -2844,63 +2844,74 @@ Questions? Just reply to this message. Welcome aboard!
         whereConditions.push(ne(users.id, currentUserId));
       }
 
-      // Text search in name, username, bio, sexual preferences, AND travel plan notes
+      // Multi-keyword search - supports comma-separated terms
       if (search && typeof search === 'string' && search.trim()) {
-        const searchTerm = search.trim().toLowerCase();
+        const searchInput = search.trim().toLowerCase();
         
-        // Create a subquery to find users with matching travel plan info (notes + destinations)
-        const travelPlanSubquery = db
-          .selectDistinct({ userId: travelPlans.userId })
-          .from(travelPlans)
-          .where(
-            or(
-              ilike(travelPlans.notes, `%${searchTerm}%`),
-              ilike(travelPlans.accommodation, `%${searchTerm}%`),
-              ilike(travelPlans.transportation, `%${searchTerm}%`),
-              ilike(travelPlans.autoTags, `%${searchTerm}%`),
-              // Location keyword search in travel destinations
-              ilike(travelPlans.destination, `%${searchTerm}%`), // Full destination string
-              ilike(travelPlans.destinationCity, `%${searchTerm}%`), // Destination city
-              ilike(travelPlans.destinationState, `%${searchTerm}%`), // Destination state
-              ilike(travelPlans.destinationCountry, `%${searchTerm}%`) // Destination country
-            )
-          );
-        
-        whereConditions.push(
-          or(
-            ilike(users.name, `%${searchTerm}%`),
-            ilike(users.username, `%${searchTerm}%`),
-            ilike(users.bio, `%${searchTerm}%`),
-            ilike(users.interests, `%${searchTerm}%`),
-            ilike(users.activities, `%${searchTerm}%`),
-            ilike(users.sexualPreference, `%${searchTerm}%`),
-            ilike(users.gender, `%${searchTerm}%`),
-            ilike(users.militaryStatus, `%${searchTerm}%`),
-            ilike(users.occupation, `%${searchTerm}%`),
-            ilike(users.languages, `%${searchTerm}%`),
-            ilike(users.travelIntent, `%${searchTerm}%`),
-            ilike(users.travelerType, `%${searchTerm}%`),
-            ilike(users.diversityCategories, `%${searchTerm}%`),
-            // Business profile fields
-            ilike(users.businessName, `%${searchTerm}%`), // Business name
-            ilike(users.businessType, `%${searchTerm}%`), // Business type
-            ilike(users.businessDescription, `%${searchTerm}%`), // Business description
-            ilike(users.websiteUrl, `%${searchTerm}%`), // Website URL
-            ilike(users.phoneNumber, `%${searchTerm}%`), // Phone number
-            ilike(users.streetAddress, `%${searchTerm}%`), // Street address
-            // Location-based keyword search
-            ilike(users.location, `%${searchTerm}%`), // Current location
-            ilike(users.hometownCity, `%${searchTerm}%`), // Hometown city
-            ilike(users.hometownState, `%${searchTerm}%`), // Hometown state
-            ilike(users.hometownCountry, `%${searchTerm}%`), // Hometown country
-            ilike(users.currentCity, `%${searchTerm}%`), // Current city if different
-            ilike(users.zipCode, `%${searchTerm}%`), // ZIP code search
-            inArray(users.id, travelPlanSubquery) // Travel plan notes search
-          )
-        );
+        // Split by comma and clean up each term
+        const searchTerms = searchInput.split(',').map(term => term.trim()).filter(term => term.length > 0);
         
         if (process.env.NODE_ENV === 'development') {
-          console.log(`🔍 ULTIMATE COMPREHENSIVE SEARCH: Searching for "${searchTerm}" across ALL user profile fields: personal info, business details, locations, travel plans, interests, activities, demographics, AND everything else on their profile`);
+          console.log(`🔍 MULTI-KEYWORD SEARCH: Original input: "${searchInput}", Split into terms:`, searchTerms);
+        }
+        
+        // For each search term, create conditions that must ALL match (AND logic)
+        for (const searchTerm of searchTerms) {
+          // Create a subquery to find users with matching travel plan info for this term
+          const travelPlanSubquery = db
+            .selectDistinct({ userId: travelPlans.userId })
+            .from(travelPlans)
+            .where(
+              or(
+                ilike(travelPlans.notes, `%${searchTerm}%`),
+                ilike(travelPlans.accommodation, `%${searchTerm}%`),
+                ilike(travelPlans.transportation, `%${searchTerm}%`),
+                ilike(travelPlans.autoTags, `%${searchTerm}%`),
+                // Location keyword search in travel destinations
+                ilike(travelPlans.destination, `%${searchTerm}%`),
+                ilike(travelPlans.destinationCity, `%${searchTerm}%`),
+                ilike(travelPlans.destinationState, `%${searchTerm}%`),
+                ilike(travelPlans.destinationCountry, `%${searchTerm}%`)
+              )
+            );
+          
+          // Each search term must match somewhere in the user's profile (AND logic)
+          whereConditions.push(
+            or(
+              ilike(users.name, `%${searchTerm}%`),
+              ilike(users.username, `%${searchTerm}%`),
+              ilike(users.bio, `%${searchTerm}%`),
+              ilike(users.interests, `%${searchTerm}%`),
+              ilike(users.activities, `%${searchTerm}%`),
+              ilike(users.sexualPreference, `%${searchTerm}%`),
+              ilike(users.gender, `%${searchTerm}%`),
+              ilike(users.militaryStatus, `%${searchTerm}%`),
+              ilike(users.occupation, `%${searchTerm}%`),
+              ilike(users.languages, `%${searchTerm}%`),
+              ilike(users.travelIntent, `%${searchTerm}%`),
+              ilike(users.travelerType, `%${searchTerm}%`),
+              ilike(users.diversityCategories, `%${searchTerm}%`),
+              // Business profile fields
+              ilike(users.businessName, `%${searchTerm}%`),
+              ilike(users.businessType, `%${searchTerm}%`),
+              ilike(users.businessDescription, `%${searchTerm}%`),
+              ilike(users.websiteUrl, `%${searchTerm}%`),
+              ilike(users.phoneNumber, `%${searchTerm}%`),
+              ilike(users.streetAddress, `%${searchTerm}%`),
+              // Location-based keyword search
+              ilike(users.location, `%${searchTerm}%`),
+              ilike(users.hometownCity, `%${searchTerm}%`),
+              ilike(users.hometownState, `%${searchTerm}%`),
+              ilike(users.hometownCountry, `%${searchTerm}%`),
+              ilike(users.currentCity, `%${searchTerm}%`),
+              ilike(users.zipCode, `%${searchTerm}%`),
+              inArray(users.id, travelPlanSubquery)
+            )
+          );
+        }
+        
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`🔍 MULTI-KEYWORD SEARCH COMPLETE: Applied ${searchTerms.length} search term(s) with AND logic - users must match ALL keywords`);
         }
       } else {
         // If no search term provided, require at least one other filter
