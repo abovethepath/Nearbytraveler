@@ -2868,13 +2868,20 @@ Questions? Just reply to this message. Welcome aboard!
             ilike(users.bio, `%${searchTerm}%`),
             ilike(users.interests, `%${searchTerm}%`),
             ilike(users.activities, `%${searchTerm}%`),
-            ilike(users.sexualPreference, `%${searchTerm}%`), // Added sexual preferences search
+            ilike(users.sexualPreference, `%${searchTerm}%`),
+            ilike(users.gender, `%${searchTerm}%`), // Added gender search
+            ilike(users.militaryStatus, `%${searchTerm}%`), // Added military/veteran search
+            ilike(users.occupation, `%${searchTerm}%`), // Added occupation search
+            ilike(users.languages, `%${searchTerm}%`), // Added languages search
+            ilike(users.travelIntent, `%${searchTerm}%`), // Added travel intent search
+            ilike(users.travelerType, `%${searchTerm}%`), // Added traveler type search
+            ilike(users.diversityCategories, `%${searchTerm}%`), // Added diversity categories search
             inArray(users.id, travelPlanSubquery) // Added travel plan notes search
           )
         );
         
         if (process.env.NODE_ENV === 'development') {
-          console.log(`🔍 SEARCH DEBUG: Searching for "${searchTerm}" in name, username, bio, interests, activities, sexual preferences, AND travel plan notes`);
+          console.log(`🔍 COMPREHENSIVE SEARCH: Searching for "${searchTerm}" across ALL profile fields: name, username, bio, interests, activities, sexual preferences, gender, military status, occupation, languages, travel intent, traveler type, diversity categories, AND travel plan notes`);
         }
       } else {
         // If no search term provided, require at least one other filter
