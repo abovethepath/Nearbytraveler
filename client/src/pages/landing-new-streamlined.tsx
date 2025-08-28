@@ -80,7 +80,7 @@ export default function LandingStreamlined() {
                           <Button
                             onClick={() => {
                               trackEvent('signup_cta_click', 'landing_page', 'main_hero_button');
-                              setLocation('/auth');
+                              setLocation('/join');
                             }}
                             size="lg"
                             className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white font-bold px-8 py-3 rounded-xl shadow-lg transition-all duration-200 border-2 border-white max-w-md mx-auto"
