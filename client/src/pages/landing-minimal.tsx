@@ -5,10 +5,12 @@ import Footer from "@/components/footer";
 import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
 import { Users, Plane, Building2, Handshake } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
+import { useTheme } from "@/components/theme-provider";
 
 export default function LandingMinimal() {
   const [, setLocation] = useLocation();
   const [isMobile, setIsMobile] = useState(false);
+  const { setTheme } = useTheme();
 
   useEffect(() => {
     const checkMobile = () => {
@@ -20,9 +22,49 @@ export default function LandingMinimal() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  // Force light mode when component mounts
+  useEffect(() => {
+    setTheme('light');
+    // Also force it on the document element
+    document.documentElement.classList.remove('dark');
+    document.documentElement.classList.add('light');
+  }, [setTheme]);
+
   return (
-    <div className="bg-white min-h-screen font-sans">
-      {/* Force light mode by using white background */}
+    <div className="bg-white min-h-screen font-sans light-mode-forced" style={{
+      backgroundColor: 'white',
+      color: 'black'
+    }}>
+      {/* Force light mode completely */}
+      <style jsx>{`
+        .light-mode-forced,
+        .light-mode-forced *,
+        .light-mode-forced .dark\\:bg-gray-900,
+        .light-mode-forced .dark\\:bg-gray-800,
+        .light-mode-forced .dark\\:text-white,
+        .light-mode-forced .dark\\:text-gray-300 {
+          background-color: white !important;
+          color: black !important;
+        }
+        .light-mode-forced .bg-gray-50 {
+          background-color: #f9fafb !important;
+        }
+        .light-mode-forced .text-gray-900 {
+          color: #111827 !important;
+        }
+        .light-mode-forced .text-gray-700 {
+          color: #374151 !important;
+        }
+        .light-mode-forced .text-gray-600 {
+          color: #4b5563 !important;
+        }
+        .light-mode-forced .border-gray-200 {
+          border-color: #e5e7eb !important;
+        }
+        .light-mode-forced .bg-gray-100 {
+          background-color: #f3f4f6 !important;
+        }
+      `}</style>
       
       {/* Fixed CTA Button - Single color */}
       <div className="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 z-50">
