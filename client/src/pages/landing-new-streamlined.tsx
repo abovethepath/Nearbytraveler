@@ -168,7 +168,7 @@ export default function LandingStreamlined() {
                   <div className="flex items-center justify-center space-x-4">
                     <div>
                       <p className="text-xl font-black text-gray-900 dark:text-white">Aaron Lefkowitz</p>
-                      <p className="text-blue-600 font-bold">Founder, Nearby Traveler</p>
+                      <p className="text-blue-600 font-bold">Founder, Nearby Traveler, Inc.</p>
                     </div>
                   </div>
                 </div>
