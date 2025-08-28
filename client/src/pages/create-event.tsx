@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -143,6 +143,22 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
 
   // Get current user data
   const currentUser = JSON.parse(localStorage.getItem('travelconnect_user') || '{}');
+  
+  // Check for event template in localStorage
+  const loadEventTemplate = () => {
+    const templateData = localStorage.getItem('eventTemplate');
+    if (templateData) {
+      try {
+        const template = JSON.parse(templateData);
+        // Clear the template from storage after loading
+        localStorage.removeItem('eventTemplate');
+        return template;
+      } catch (error) {
+        console.error('Error loading event template:', error);
+      }
+    }
+    return null;
+  };
 
   const {
     register,
@@ -158,6 +174,42 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
     },
     mode: "onChange"
   });
+
+  // Load template data on component mount
+  React.useEffect(() => {
+    const template = loadEventTemplate();
+    if (template) {
+      // Apply template data to form
+      if (template.venueName) setValue("venueName", template.venueName);
+      if (template.street) setValue("street", template.street);
+      if (template.city) setValue("city", template.city);
+      if (template.state) setValue("state", template.state);
+      if (template.country) setValue("country", template.country);
+      if (template.category) setSelectedCategories([template.category]);
+      if (template.tags) setSelectedTags(template.tags);
+      if (template.requirements) setValue("requirements", template.requirements);
+      if (template.maxParticipants) setValue("maxParticipants", template.maxParticipants);
+      
+      // Update location state
+      if (template.country) {
+        setSelectedCountry(template.country);
+        if (template.country === "United States") {
+          setAvailableStates(Object.keys(US_CITIES_BY_STATE));
+        }
+      }
+      if (template.state) {
+        setSelectedState(template.state);
+        if (template.country === "United States" && US_CITIES_BY_STATE[template.state]) {
+          setAvailableCities(US_CITIES_BY_STATE[template.state]);
+        }
+      }
+      
+      toast({
+        title: "Template loaded!",
+        description: "Using your previous event as a template. Just add new title and date!"
+      });
+    }
+  }, []);
 
   // Tag management functions with limit
   const MAX_TAGS = 6;

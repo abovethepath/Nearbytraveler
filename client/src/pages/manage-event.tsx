@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { ArrowLeft, Calendar, MapPin, Users, Camera, Upload, X, Save, MoreHorizontal, Eye, Share2 } from "lucide-react";
+import { ArrowLeft, Calendar, MapPin, Users, Camera, Upload, X, Save, MoreHorizontal, Eye, Share2, Copy } from "lucide-react";
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
@@ -1149,6 +1149,53 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
                   }}>
                     <Share2 className="w-4 h-4 mr-2" />
                     Share Event
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => {
+                    // Create Instagram-optimized share text
+                    const instagramText = `🎉 ${formData.title}\n\n📍 ${formData.venueName ? formData.venueName + ', ' : ''}${formData.city}\n📅 ${new Date(formData.startDate).toLocaleDateString('en-US', { 
+                      weekday: 'long', 
+                      month: 'long', 
+                      day: 'numeric' 
+                    })}\n\n${formData.description ? formData.description.substring(0, 100) + (formData.description.length > 100 ? '...' : '') : 'Join us for an amazing event!'}\n\n#NearbyTraveler #${formData.city.replace(/\s+/g, '')}Events #Community ${formData.tags.map(tag => '#' + tag.replace(/\s+/g, '')).join(' ')}\n\nRSVP: ${window.location.origin}/events/${eventId}`;
+                    
+                    if (navigator.share) {
+                      navigator.share({
+                        title: `${formData.title} - Event`,
+                        text: instagramText
+                      });
+                    } else {
+                      navigator.clipboard.writeText(instagramText);
+                      toast({ 
+                        title: "Instagram post copied!", 
+                        description: "Perfect formatted text copied to clipboard - paste directly to Instagram!"
+                      });
+                    }
+                  }}>
+                    <Camera className="w-4 h-4 mr-2" />
+                    Share to Instagram
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => {
+                    // Navigate to create new event with current event as template
+                    const templateData = {
+                      venueName: formData.venueName,
+                      street: formData.street,
+                      city: formData.city,
+                      state: formData.state,
+                      country: formData.country,
+                      category: formData.category,
+                      tags: formData.tags,
+                      requirements: formData.requirements,
+                      maxParticipants: formData.maxParticipants
+                    };
+                    localStorage.setItem('eventTemplate', JSON.stringify(templateData));
+                    setLocation('/create-event');
+                    toast({ 
+                      title: "Template saved!", 
+                      description: "Create a new event using this one as a template"
+                    });
+                  }}>
+                    <Copy className="w-4 h-4 mr-2" />
+                    Duplicate Event
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem 

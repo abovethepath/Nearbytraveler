@@ -11,7 +11,7 @@ import { SmartLocationInput } from "@/components/SmartLocationInput";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import type { User } from "@shared/schema";
-import { EventCard } from "@/components/event-card";
+import EventCard from "@/components/event-card";
 import { Calendar } from "lucide-react";
 
 interface AdvancedSearchWidgetProps {

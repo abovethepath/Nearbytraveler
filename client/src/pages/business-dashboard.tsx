@@ -1082,20 +1082,71 @@ export default function BusinessDashboard() {
           </TabsContent>
 
           <TabsContent value="events" className="mt-6">
-            {/* Mobile-responsive Events Management */}
+            {/* Event Organizer Hub */}
             <div className="space-y-4 sm:space-y-6">
+              {/* Event Organizer Dashboard Header */}
+              <div className="bg-gradient-to-r from-blue-50 to-orange-50 dark:from-blue-900/20 dark:to-orange-900/20 p-4 sm:p-6 rounded-lg border border-blue-200 dark:border-blue-700">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0">
+                  <div>
+                    <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white flex items-center">
+                      <Calendar className="w-5 h-5 mr-2 text-blue-600" />
+                      Event Organizer Hub
+                    </h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
+                      Create, manage, and promote your community events with powerful organizer tools
+                    </p>
+                  </div>
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <Button 
+                      onClick={() => {
+                        // Navigate directly to create event
+                        window.location.href = '/create-event';
+                      }}
+                      className="w-full sm:w-auto bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white"
+                    >
+                      <Plus className="w-4 h-4 mr-2" />
+                      Create New Event
+                    </Button>
+                  </div>
+                </div>
+                
+                {/* Event Organizer Quick Stats */}
+                {businessEvents.length > 0 && (
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-4 pt-4 border-t border-blue-200 dark:border-blue-700">
+                    <div className="text-center">
+                      <div className="text-lg sm:text-xl font-bold text-blue-600">
+                        {businessEvents.length}
+                      </div>
+                      <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">Total Events</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-lg sm:text-xl font-bold text-green-600">
+                        {businessEvents.reduce((sum: number, event: any) => sum + (event.participantCount || 0), 0)}
+                      </div>
+                      <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">Total RSVPs</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-lg sm:text-xl font-bold text-orange-600">
+                        {businessEvents.filter((event: any) => new Date(event.date) >= new Date()).length}
+                      </div>
+                      <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">Upcoming</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-lg sm:text-xl font-bold text-purple-600">
+                        {Math.round((businessEvents.reduce((sum: number, event: any) => sum + (event.participantCount || 0), 0) / Math.max(businessEvents.length, 1)) * 10) / 10}
+                      </div>
+                      <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">Avg RSVPs</div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Events Management Section */}
               <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0">
                 <div>
-                  <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">Business Events</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-300">Manage your community events and gatherings</p>
+                  <h4 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">Your Events</h4>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">Manage and promote your community events</p>
                 </div>
-                <Button 
-                  onClick={() => window.location.href = '/create-event'}
-                  className="w-full sm:w-auto bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white"
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Create Event
-                </Button>
               </div>
 
               {isEventsLoading ? (
@@ -1174,6 +1225,60 @@ export default function BusinessDashboard() {
                             >
                               <Edit className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
                               Edit
+                            </Button>
+                          </div>
+                          
+                          {/* Event Organizer Quick Actions */}
+                          <div className="flex flex-col sm:flex-row gap-2 mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+                            <Button 
+                              size="sm" 
+                              variant="ghost"
+                              className="flex-1 sm:flex-none text-xs text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                              onClick={() => {
+                                // Create Instagram-optimized share text
+                                const instagramText = `🎉 ${event.title}\n\n📍 ${event.venueName ? event.venueName + ', ' : ''}${event.city}\n📅 ${new Date(event.date).toLocaleDateString('en-US', { 
+                                  weekday: 'long', 
+                                  month: 'long', 
+                                  day: 'numeric' 
+                                })}\n\n${event.description ? event.description.substring(0, 100) + (event.description.length > 100 ? '...' : '') : 'Join us for an amazing event!'}\n\n#NearbyTraveler #${event.city.replace(/\s+/g, '')}Events #Community ${event.tags?.map((tag: string) => '#' + tag.replace(/\s+/g, '')).join(' ') || ''}\n\nRSVP: ${window.location.origin}/events/${event.id}`;
+                                
+                                navigator.clipboard.writeText(instagramText);
+                                toast({ 
+                                  title: "Instagram post copied!", 
+                                  description: "Perfect formatted text copied - paste directly to Instagram!"
+                                });
+                              }}
+                            >
+                              <Camera className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
+                              Instagram
+                            </Button>
+                            <Button 
+                              size="sm" 
+                              variant="ghost"
+                              className="flex-1 sm:flex-none text-xs text-purple-600 hover:text-purple-700 hover:bg-purple-50 dark:hover:bg-purple-900/20"
+                              onClick={() => {
+                                // Save as template and navigate to create new event
+                                const templateData = {
+                                  venueName: event.venueName,
+                                  street: event.street,
+                                  city: event.city,
+                                  state: event.state,
+                                  country: event.country,
+                                  category: event.category,
+                                  tags: event.tags,
+                                  requirements: event.requirements,
+                                  maxParticipants: event.maxParticipants
+                                };
+                                localStorage.setItem('eventTemplate', JSON.stringify(templateData));
+                                window.location.href = '/create-event';
+                                toast({ 
+                                  title: "Template saved!", 
+                                  description: "Create a new event using this one as a template"
+                                });
+                              }}
+                            >
+                              <Zap className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
+                              Duplicate
                             </Button>
                           </div>
                         </div>
