@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <title>The NearbyTraveler.com - Social Travel Networking Platform</title>
     
     <!-- Aggressive Cache Control for Mobile Deployment -->
@@ -11,8 +11,8 @@
     <meta http-equiv="Expires" content="0" />
     
     <!-- CRITICAL Mobile Cache Busting Version - FORCE REFRESH -->
-    <meta name="app-version" content="mobile-layout-v6-20250705-SITE-WIDE-FIXES" />
-    <meta name="cache-killer" content="1751753400000-FORCE-MOBILE-REFRESH" />
+    <meta name="app-version" content="mobile-layout-v7-20250828-IPHONE-FIXES" />
+    <meta name="cache-killer" content="1756400600000-FORCE-IPHONE-REFRESH" />
     
     <!-- PWA Configuration -->
     <link rel="manifest" href="/manifest.json" />
@@ -65,9 +65,9 @@
       console.log('✅ CRITICAL MOBILE LAYOUT v6-20250705 - SITE-WIDE FIXES DEPLOYED');
       
       // Force complete cache clear for critical mobile fixes
-      const currentVersion = 'v6-20250705-SITE-WIDE';
+      const currentVersion = 'v7-20250828-IPHONE';
       if (localStorage.getItem('layout-version') !== currentVersion) {
-        console.log('🧹 CRITICAL: Clearing ALL caches for site-wide mobile fixes');
+        console.log('🧹 CRITICAL: Clearing ALL caches for iPhone mobile fixes');
         localStorage.setItem('layout-version', currentVersion);
         
         // Clear ALL browser caches
