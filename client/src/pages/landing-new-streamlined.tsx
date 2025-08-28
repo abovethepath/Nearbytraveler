@@ -137,11 +137,14 @@ export default function LandingStreamlined() {
             {/* Main content with better readability */}
             <div className="max-w-3xl mx-auto">
               <div className="text-center mb-8">
-                <p className="text-xl sm:text-2xl text-white leading-relaxed font-medium mb-6" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', fontWeight: '500', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', letterSpacing: '-0.01em' }}>
-                  "I was tired of sitting alone in hotel rooms while amazing people walked past me on the street every day."
+                <p className="text-lg sm:text-xl text-white leading-relaxed font-medium mb-6" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', fontWeight: '500', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', letterSpacing: '-0.01em' }}>
+                  "I was tired of touring cities alone while amazing people walked past me every day. Travelers spend billions on flights, hotels, and tours — yet the most valuable part of a trip, the people you meet, is left to chance."
                 </p>
-                <p className="text-2xl sm:text-3xl text-white font-bold leading-relaxed mb-6" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', fontWeight: '700', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', letterSpacing: '-0.02em' }}>
-                  So I built the solution I wished existed.
+                <p className="text-lg sm:text-xl text-white leading-relaxed font-medium mb-6" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', fontWeight: '500', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', letterSpacing: '-0.01em' }}>
+                  "After 15 years of hosting 400+ travelers from 50 countries, I saw first-hand how one single connection can change everything."
+                </p>
+                <p className="text-xl sm:text-2xl text-white font-bold leading-relaxed mb-6" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', fontWeight: '700', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', letterSpacing: '-0.02em' }}>
+                  "I built Nearby Traveler to make those connections possible for everyone — travelers and locals alike."
                 </p>
               </div>
               
