@@ -1677,9 +1677,8 @@ export default function Home() {
                       className="bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 hover:bg-red-100 dark:hover:bg-red-900/30"
                       data-testid="button-clear-all-filters-advanced"
                     >
-                      <X className="w-3 sm:w-4 h-3 sm:h-4 mr-1 sm:mr-2" />
                       <span className="hidden sm:inline">Clear All Filters</span>
-                      <span className="sm:hidden">Clear All</span>
+                      <span className="sm:hidden">Clear</span>
                     </Button>
                     <Button
                       className="bg-gradient-to-r from-blue-500 to-orange-500 text-white hover:from-blue-600 hover:to-orange-600"
@@ -1698,7 +1697,6 @@ export default function Home() {
                         }
                       }}
                     >
-                      <Search className="w-3 sm:w-4 h-3 sm:h-4 mr-1 sm:mr-2" />
                       Search Now
                     </Button>
                     <Button
@@ -2319,7 +2317,6 @@ export default function Home() {
                         }
                       }}
                     >
-                      <Search className="w-3 sm:w-4 h-3 sm:h-4 mr-1 sm:mr-2" />
                       Search Now
                     </Button>
                   </div>
