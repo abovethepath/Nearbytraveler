@@ -233,32 +233,6 @@ export default function DiscoverPage() {
                           : `${city.city}, ${city.country || 'Unknown Location'}`
                       }
                     </p>
-                    <div className="flex flex-wrap gap-1 sm:gap-2">
-                      {city.localCount > 0 && (
-                        <Badge variant="secondary" className="bg-white/20 text-white border-white/30 text-xs">
-                          <Users className="w-2 h-2 sm:w-3 sm:h-3 mr-0.5 sm:mr-1" />
-                          <span className="hidden sm:inline">{city.localCount} </span>
-                          <span className="sm:hidden">{city.localCount}</span>
-                          <span className="hidden sm:inline">{city.localCount === 1 ? 'Local' : 'Locals'}</span>
-                        </Badge>
-                      )}
-                      {city.travelerCount > 0 && (
-                        <Badge variant="secondary" className="bg-white/20 text-white border-white/30 text-xs">
-                          <Plane className="w-2 h-2 sm:w-3 sm:h-3 mr-0.5 sm:mr-1" />
-                          <span className="hidden sm:inline">{city.travelerCount} </span>
-                          <span className="sm:hidden">{city.travelerCount}</span>
-                          <span className="hidden sm:inline">{city.travelerCount === 1 ? 'Traveler' : 'Travelers'}</span>
-                        </Badge>
-                      )}
-                      {city.eventCount > 0 && (
-                        <Badge variant="secondary" className="bg-white/20 text-white border-white/30 text-xs">
-                          <Calendar className="w-2 h-2 sm:w-3 sm:h-3 mr-0.5 sm:mr-1" />
-                          <span className="hidden sm:inline">{city.eventCount} </span>
-                          <span className="sm:hidden">{city.eventCount}</span>
-                          <span className="hidden sm:inline">{city.eventCount === 1 ? 'Event' : 'Events'}</span>
-                        </Badge>
-                      )}
-                    </div>
                   </div>
                 </div>
               </Card>
