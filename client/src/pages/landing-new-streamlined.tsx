@@ -131,10 +131,10 @@ export default function LandingStreamlined() {
             <div className="max-w-3xl mx-auto">
               <div className="text-center mb-8">
                 <p className="text-xl sm:text-2xl text-white leading-relaxed font-medium mb-6" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', fontWeight: '500', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', letterSpacing: '-0.01em' }}>
-                  "As a traveler and local, I always loved meeting new people—but finding those who truly shared my interests wasn't easy."
+                  "I was tired of sitting alone in hotel rooms while amazing people walked past me on the street every day."
                 </p>
                 <p className="text-2xl sm:text-3xl text-white font-bold leading-relaxed mb-6" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', fontWeight: '700', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', letterSpacing: '-0.02em' }}>
-                  That's why I created Nearby Traveler.
+                  So I built the solution I wished existed.
                 </p>
               </div>
               
