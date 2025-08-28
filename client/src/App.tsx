@@ -648,9 +648,16 @@ function Router() {
         return <LandingNew />;
       }
       
-      // Force all unknown routes to landing page for unauthenticated users
-      console.log('❌ CACHE BUST v2 - Unknown route for unauthenticated user, showing landing page:', location);
-      return <LandingNew />;
+      // Check if this is a valid landing page route (including our public pages)
+      if (landingPageRoutes.includes(location)) {
+        // This handles all the routes we explicitly want to be public
+        console.log('✅ PUBLIC PAGE ACCESS - Valid landing page route:', location);
+        // Let it continue to the specific route handlers below (they're already in the landing page section)
+      } else {
+        // Force unknown routes to landing page for unauthenticated users
+        console.log('❌ CACHE BUST v2 - Unknown route for unauthenticated user, showing landing page:', location);
+        return <LandingNew />;
+      }
     }
 
     console.log('✅ USER AUTHENTICATED - routing to:', location, 'user:', user?.username || 'unknown user');
