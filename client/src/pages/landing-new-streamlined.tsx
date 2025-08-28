@@ -22,10 +22,10 @@ export default function LandingStreamlined() {
   return (
     <div className="bg-gray-50 dark:bg-gray-900 font-sans">
       {/* Fixed CTA Button */}
-      <div className="fixed bottom-6 right-6 z-50">
+      <div className="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 z-50">
         <Button 
           onClick={() => setLocation('/auth')}
-          className="bg-gradient-to-r from-blue-600 to-orange-600 hover:from-blue-700 hover:to-orange-700 text-white shadow-lg transition-all duration-300 hover:scale-105 px-6 py-3 rounded-full"
+          className="bg-gradient-to-r from-blue-600 to-orange-600 hover:from-blue-700 hover:to-orange-700 text-white shadow-lg transition-all duration-300 hover:scale-105 px-4 sm:px-6 py-2 sm:py-3 rounded-full text-sm sm:text-base font-bold"
         >
           Join Now
         </Button>
@@ -34,7 +34,7 @@ export default function LandingStreamlined() {
       <LandingHeader />
       <LandingHeaderSpacer />
 
-      <div className="max-w-6xl mx-auto px-4">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6">
         {/* HERO SECTION - With Original Photo */}
         <div className="relative z-10">
           <div className="bg-gray-800 dark:bg-gray-900 border-4 border-orange-500 shadow-lg">
@@ -413,24 +413,24 @@ export default function LandingStreamlined() {
         </div>
 
         {/* Everyone Welcome Section */}
-        <section className="py-20 mb-16 bg-gradient-to-br from-blue-50 via-orange-50 to-purple-50 dark:from-gray-800 dark:via-gray-900 dark:to-gray-800 rounded-3xl">
-          <div className="max-w-6xl mx-auto px-6">
-            <div className="text-center mb-16">
-              <h2 className="text-5xl font-black text-gray-900 dark:text-white mb-6">
+        <section className="py-12 sm:py-16 lg:py-20 mb-8 sm:mb-12 lg:mb-16 bg-gradient-to-br from-blue-50 via-orange-50 to-purple-50 dark:from-gray-800 dark:via-gray-900 dark:to-gray-800 rounded-2xl sm:rounded-3xl">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-8 sm:mb-12 lg:mb-16">
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-gray-900 dark:text-white mb-4 sm:mb-6 leading-tight">
                 Everyone's <span className="bg-gradient-to-r from-blue-600 to-orange-600 bg-clip-text text-transparent">Welcome Here</span>
               </h2>
-              <p className="text-2xl text-gray-600 dark:text-gray-300 max-w-4xl mx-auto leading-relaxed">
+              <p className="text-lg sm:text-xl lg:text-2xl text-gray-600 dark:text-gray-300 max-w-4xl mx-auto leading-relaxed px-4">
                 No matter who you are or why you're traveling - this is your community for making real connections
               </p>
             </div>
 
             {/* Dynamic Story Grid */}
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mb-8 sm:mb-12">
               {/* Solo Traveler */}
-              <div className="group relative bg-gradient-to-br from-blue-500 to-blue-600 p-8 rounded-2xl text-white transform hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-2xl">
-                <div className="absolute top-4 right-4 text-3xl opacity-80">✈️</div>
-                <h3 className="text-2xl font-bold mb-4">Solo Traveler?</h3>
-                <p className="text-blue-100 leading-relaxed mb-6">Turn that lonely hotel room into lifelong friendships. Meet locals who'll show you their secret spots and fellow travelers who get your wanderlust.</p>
+              <div className="group relative bg-gradient-to-br from-blue-500 to-blue-600 p-6 sm:p-8 rounded-2xl text-white transform hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-2xl">
+                <div className="absolute top-3 sm:top-4 right-3 sm:right-4 text-2xl sm:text-3xl opacity-80">✈️</div>
+                <h3 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 pr-8">Solo Traveler?</h3>
+                <p className="text-blue-100 leading-relaxed mb-4 sm:mb-6 text-sm sm:text-base">Turn that lonely hotel room into lifelong friendships. Meet locals who'll show you their secret spots and fellow travelers who get your wanderlust.</p>
                 <Button 
                   onClick={() => setLocation('/travelers-landing')}
                   className="bg-white text-blue-600 hover:bg-blue-50 font-bold w-full"
@@ -440,10 +440,10 @@ export default function LandingStreamlined() {
               </div>
 
               {/* Local */}
-              <div className="group relative bg-gradient-to-br from-green-500 to-teal-600 p-8 rounded-2xl text-white transform hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-2xl">
-                <div className="absolute top-4 right-4 text-3xl opacity-80">🏠</div>
-                <h3 className="text-2xl font-bold mb-4">Love Your City?</h3>
-                <p className="text-green-100 leading-relaxed mb-6">Share your favorite coffee shop, that hidden beach, or weekly trivia night. Turn your hometown knowledge into amazing new friendships.</p>
+              <div className="group relative bg-gradient-to-br from-green-500 to-teal-600 p-6 sm:p-8 rounded-2xl text-white transform hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-2xl">
+                <div className="absolute top-3 sm:top-4 right-3 sm:right-4 text-2xl sm:text-3xl opacity-80">🏠</div>
+                <h3 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 pr-8">Love Your City?</h3>
+                <p className="text-green-100 leading-relaxed mb-4 sm:mb-6 text-sm sm:text-base">Share your favorite coffee shop, that hidden beach, or weekly trivia night. Turn your hometown knowledge into amazing new friendships.</p>
                 <Button 
                   onClick={() => setLocation('/locals-landing')}
                   className="bg-white text-green-600 hover:bg-green-50 font-bold w-full"
@@ -453,10 +453,10 @@ export default function LandingStreamlined() {
               </div>
 
               {/* Business Traveler */}
-              <div className="group relative bg-gradient-to-br from-orange-500 to-red-600 p-8 rounded-2xl text-white transform hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-2xl">
-                <div className="absolute top-4 right-4 text-3xl opacity-80">💼</div>
-                <h3 className="text-2xl font-bold mb-4">Traveling for Work?</h3>
-                <p className="text-orange-100 leading-relaxed mb-6">Turn boring business trips into networking goldmines. Meet professionals, find conference buddies, or just grab dinner with cool people.</p>
+              <div className="group relative bg-gradient-to-br from-orange-500 to-red-600 p-6 sm:p-8 rounded-2xl text-white transform hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-2xl">
+                <div className="absolute top-3 sm:top-4 right-3 sm:right-4 text-2xl sm:text-3xl opacity-80">💼</div>
+                <h3 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 pr-8">Traveling for Work?</h3>
+                <p className="text-orange-100 leading-relaxed mb-4 sm:mb-6 text-sm sm:text-base">Turn boring business trips into networking goldmines. Meet professionals, find conference buddies, or just grab dinner with cool people.</p>
                 <Button 
                   onClick={() => setLocation('/networking-landing')}
                   className="bg-white text-orange-600 hover:bg-orange-50 font-bold w-full"
@@ -466,10 +466,10 @@ export default function LandingStreamlined() {
               </div>
 
               {/* Business Owner */}
-              <div className="group relative bg-gradient-to-br from-purple-500 to-pink-600 p-8 rounded-2xl text-white transform hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-2xl">
-                <div className="absolute top-4 right-4 text-3xl opacity-80">🎯</div>
-                <h3 className="text-2xl font-bold mb-4">Run a Business?</h3>
-                <p className="text-purple-100 leading-relaxed mb-6">Whether you own a bar, café, or co-working space - connect with travelers and locals looking for authentic experiences at your spot.</p>
+              <div className="group relative bg-gradient-to-br from-purple-500 to-pink-600 p-6 sm:p-8 rounded-2xl text-white transform hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-2xl">
+                <div className="absolute top-3 sm:top-4 right-3 sm:right-4 text-2xl sm:text-3xl opacity-80">🎯</div>
+                <h3 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 pr-8">Run a Business?</h3>
+                <p className="text-purple-100 leading-relaxed mb-4 sm:mb-6 text-sm sm:text-base">Whether you own a bar, café, or co-working space - connect with travelers and locals looking for authentic experiences at your spot.</p>
                 <Button 
                   onClick={() => setLocation('/business-landing')}
                   className="bg-white text-purple-600 hover:bg-purple-50 font-bold w-full"
@@ -479,10 +479,10 @@ export default function LandingStreamlined() {
               </div>
 
               {/* Event Lover */}
-              <div className="group relative bg-gradient-to-br from-indigo-500 to-purple-600 p-8 rounded-2xl text-white transform hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-2xl">
-                <div className="absolute top-4 right-4 text-3xl opacity-80">🎉</div>
-                <h3 className="text-2xl font-bold mb-4">Love Events?</h3>
-                <p className="text-indigo-100 leading-relaxed mb-6">From beach bonfires to art gallery walks - discover events you'd never find on tourist sites and meet people who share your interests.</p>
+              <div className="group relative bg-gradient-to-br from-indigo-500 to-purple-600 p-6 sm:p-8 rounded-2xl text-white transform hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-2xl">
+                <div className="absolute top-3 sm:top-4 right-3 sm:right-4 text-2xl sm:text-3xl opacity-80">🎉</div>
+                <h3 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 pr-8">Love Events?</h3>
+                <p className="text-indigo-100 leading-relaxed mb-4 sm:mb-6 text-sm sm:text-base">From beach bonfires to art gallery walks - discover events you'd never find on tourist sites and meet people who share your interests.</p>
                 <Button 
                   onClick={() => setLocation('/events-landing')}
                   className="bg-white text-indigo-600 hover:bg-indigo-50 font-bold w-full"
@@ -492,10 +492,10 @@ export default function LandingStreamlined() {
               </div>
 
               {/* Anyone Else */}
-              <div className="group relative bg-gradient-to-br from-gray-700 to-gray-800 p-8 rounded-2xl text-white transform hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-2xl">
-                <div className="absolute top-4 right-4 text-3xl opacity-80">🌟</div>
-                <h3 className="text-2xl font-bold mb-4">Just Want Friends?</h3>
-                <p className="text-gray-200 leading-relaxed mb-6">New to town? Feeling lonely? Want to try something new? Everyone needs community - and that's exactly what we're here for.</p>
+              <div className="group relative bg-gradient-to-br from-gray-700 to-gray-800 p-6 sm:p-8 rounded-2xl text-white transform hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-2xl">
+                <div className="absolute top-3 sm:top-4 right-3 sm:right-4 text-2xl sm:text-3xl opacity-80">🌟</div>
+                <h3 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 pr-8">Just Want Friends?</h3>
+                <p className="text-gray-200 leading-relaxed mb-4 sm:mb-6 text-sm sm:text-base">New to town? Feeling lonely? Want to try something new? Everyone needs community - and that's exactly what we're here for.</p>
                 <Button 
                   onClick={() => setLocation('/auth')}
                   className="bg-white text-gray-700 hover:bg-gray-50 font-bold w-full"
@@ -507,13 +507,13 @@ export default function LandingStreamlined() {
 
             {/* Bottom CTA */}
             <div className="text-center">
-              <p className="text-xl text-gray-600 dark:text-gray-300 mb-6">
+              <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-300 mb-4 sm:mb-6 px-4">
                 Whatever brings you here, you belong here. 
               </p>
               <Button 
                 onClick={() => setLocation('/auth')}
                 size="lg"
-                className="bg-gradient-to-r from-blue-600 to-orange-600 hover:from-blue-700 hover:to-orange-700 text-white font-black text-xl px-12 py-6 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300"
+                className="bg-gradient-to-r from-blue-600 to-orange-600 hover:from-blue-700 hover:to-orange-700 text-white font-black text-lg sm:text-xl px-8 sm:px-12 py-4 sm:py-6 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300"
               >
                 Join Your People Today
               </Button>
@@ -522,13 +522,13 @@ export default function LandingStreamlined() {
         </section>
 
         {/* Final CTA */}
-        <section className="text-center py-16 bg-gradient-to-r from-blue-600 to-orange-600 text-white rounded-2xl mb-16">
-          <div className="max-w-4xl mx-auto px-6">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Start Your Adventure</h2>
-            <p className="text-xl mb-8">Join thousands of locals, travelers, and businesses already making real connections.</p>
+        <section className="text-center py-12 sm:py-16 bg-gradient-to-r from-blue-600 to-orange-600 text-white rounded-2xl mb-8 sm:mb-16">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4">Start Your Adventure</h2>
+            <p className="text-lg sm:text-xl mb-6 sm:mb-8 px-4">Join thousands of locals, travelers, and businesses already making real connections.</p>
             <Button 
               onClick={() => setLocation('/auth')}
-              className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-4 text-xl rounded-full shadow-lg transition-all duration-300 hover:scale-105"
+              className="bg-white text-blue-600 hover:bg-gray-100 px-6 sm:px-8 py-3 sm:py-4 text-lg sm:text-xl rounded-full shadow-lg transition-all duration-300 hover:scale-105"
             >
               Join Nearby Traveler Now
             </Button>
