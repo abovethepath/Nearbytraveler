@@ -1074,7 +1074,7 @@ export default function PlanTrip() {
                     disabled={saveAsDefaults.isPending}
                     onClick={() => saveAsDefaults.mutate()}
                   >
-                    <span className="break-words">{saveAsDefaults.isPending ? "Saving..." : "Do you want to save as NEW Default Preferences?"}</span>
+                    <span className="break-words">{saveAsDefaults.isPending ? "Saving..." : "SAVE AS NEW DEFAULT PREFERENCE?"}</span>
                   </Button>
                 )}
                 
