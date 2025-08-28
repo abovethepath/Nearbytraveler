@@ -59,11 +59,11 @@ export default function LandingStreamlined() {
                   <main className="mt-8 sm:mt-16 md:mt-20 lg:mt-24 xl:mt-32 mx-auto max-w-full px-4">
                     <div className="text-center">
                       <div className="max-w-4xl mx-auto">
-                        <h1 className="px-3 leading-tight sm:leading-snug">
-                          <span className="block font-black text-[clamp(1.5rem,6vw,2.25rem)] text-white" style={{ fontWeight: '900', textShadow: '2px 2px 4px rgba(0,0,0,0.8)' }}>
-                            Skip the Tourist Traps, Connect Before Your Trip, Keep Connections Forever Create Lifelong Friends!!!
+                        <h1 className="px-3 leading-tight sm:leading-snug" style={{ fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
+                          <span className="block font-bold text-[clamp(1.5rem,6vw,2.25rem)] text-white" style={{ fontWeight: '700', textShadow: '1px 1px 3px rgba(0,0,0,0.7)', letterSpacing: '-0.02em' }}>
+                            Skip the Tourist Traps, Connect Before Your Trip, Keep Connections Forever and Create Lifelong Friends!!!
                           </span>
-                          <span className="block font-black text-[clamp(1.25rem,5.5vw,2rem)] mt-4" style={{ fontWeight: '900', textShadow: '2px 2px 4px rgba(0,0,0,0.8)' }}>
+                          <span className="block font-bold text-[clamp(1.25rem,5.5vw,2rem)] mt-4" style={{ fontWeight: '700', textShadow: '1px 1px 3px rgba(0,0,0,0.7)', letterSpacing: '-0.02em' }}>
                             <span className="text-amber-300 sm:text-orange-500">Meet Locals and Other </span>
                             <span className="text-blue-300 sm:text-blue-600">Nearby Travelers </span>
                             <span className="text-white">Right Now, Today!!!</span>
