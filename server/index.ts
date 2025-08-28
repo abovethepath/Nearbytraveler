@@ -461,14 +461,15 @@ app.use((req, res, next) => {
   }
 
   // Setup vite after ALL routes are registered
-  // CRITICAL FIX: Always use Vite development mode to preserve API routes
-  // Static serving was overriding API routes in deployment
-  console.log("🔧 Setting up Vite development server for all environments...");
+  // CRITICAL FIX v2: Always use Vite development mode to preserve API routes
+  // Static serving was overriding API routes in deployment - DEPLOYMENT CACHE BUSTER 2025-01-28
+  console.log("🔧 DEPLOYMENT FIX v2: Setting up Vite development server for all environments...");
+  console.log("🚨 CACHE BUSTER: Forcing deployment to use new server configuration");
   try {
     await setupVite(app, server);
-    console.log("✅ Vite setup successful - API routes preserved");
+    console.log("✅ DEPLOYMENT FIX v2: Vite setup successful - API routes preserved");
   } catch (viteError) {
-    console.error("⚠️ Vite setup failed:", viteError);
+    console.error("⚠️ DEPLOYMENT FIX v2: Vite setup failed:", viteError);
     console.error("❌ CRITICAL: Cannot fall back to static serving as it breaks API routes");
     process.exit(1);
   }
