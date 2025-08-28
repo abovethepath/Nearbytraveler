@@ -429,11 +429,11 @@ export default function ItineraryPage({ travelPlanId: propTravelPlanId }: Itiner
                           Add Activity
                         </Button>
                       </DialogTrigger>
-                      <DialogContent className="max-w-2xl">
+                      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                         <DialogHeader>
                           <DialogTitle className="text-black dark:text-white">Add New Activity</DialogTitle>
                         </DialogHeader>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pr-2">
                           <div>
                             <Label className="text-black dark:text-white">Date</Label>
                             <Input
@@ -656,11 +656,11 @@ export default function ItineraryPage({ travelPlanId: propTravelPlanId }: Itiner
         {/* Edit Item Dialog */}
         {editingItem && (
           <Dialog open={!!editingItem} onOpenChange={() => setEditingItem(null)}>
-            <DialogContent className="max-w-2xl">
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle className="text-black dark:text-white">Edit Activity</DialogTitle>
               </DialogHeader>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pr-2">
                 <div>
                   <Label className="text-black dark:text-white">Date</Label>
                   <Input
