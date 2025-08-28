@@ -3000,12 +3000,10 @@ export default function Home() {
 
           {/* Right Sidebar - Widgets - Simplified on Mobile */}
           <div className="col-span-1 lg:col-span-1 space-y-3 sm:space-y-6 min-w-0">
-            {/* Weather Widget - Desktop Only */}
-            {isDesktop && (
-              <div>
-                <CurrentLocationWeatherWidget />
-              </div>
-            )}
+            {/* Weather Widget - Show on All Devices */}
+            <div>
+              <CurrentLocationWeatherWidget />
+            </div>
 
             {/* Messages Widget - Always Show */}
             <div>
