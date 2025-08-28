@@ -684,7 +684,14 @@ export default function FixedChatroom() {
                         const isOwnMessage = message.senderId === currentUserId;
                         const senderMember = members.find(m => m.user_id === message.senderId || m.id === message.senderId);
                         const displayName = isOwnMessage ? 'You' : (senderMember?.username || message.senderUsername || 'Unknown User');
-                        const profileImage = isOwnMessage ? currentUser?.profileImage : (senderMember?.profile_image || message.senderProfileImage);
+                        
+                        // Better avatar logic - always use member profile images
+                        let profileImage = senderMember?.profile_image || message.senderProfileImage;
+                        
+                        // If it's own message and no member found, try current user's profile
+                        if (isOwnMessage && !profileImage) {
+                          profileImage = currentUser?.profileImage;
+                        }
                         
                         return (
                           <div key={`${message.id}-${index}`} className={`flex items-start space-x-3 mb-4 ${
