@@ -2408,8 +2408,8 @@ export default function Home() {
                 )}
               </div>
 
-              {/* Desktop Controls */}
-              {isDesktop && (
+              {/* Mobile & Desktop Controls */}
+              {(
                 <div className="flex items-center gap-2">
                   {/* Advanced Search Button */}
                   <Button
@@ -2419,7 +2419,8 @@ export default function Home() {
                     className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-none rounded-xl shadow-md"
                   >
                     <Search className="w-4 h-4 mr-2" />
-                    Advanced Search
+                    <span className="hidden sm:inline">Advanced Search</span>
+                    <span className="sm:hidden">Search</span>
                   </Button>
 
                   {/* Sort By Dropdown */}
@@ -2431,7 +2432,8 @@ export default function Home() {
                         className="bg-white/70 dark:bg-gray-700/70 backdrop-blur-sm border border-gray-200/50 dark:border-gray-600/50 text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 dark:hover:from-blue-900/30 dark:hover:to-purple-900/30 rounded-xl"
                     >
                       <ArrowUpDown className="w-4 h-4 mr-2" />
-                      Sort By
+                      <span className="hidden sm:inline">Sort By</span>
+                      <span className="sm:hidden">Sort</span>
                       <ChevronDown className="w-4 h-4 ml-2" />
                     </Button>
                   </DropdownMenuTrigger>
