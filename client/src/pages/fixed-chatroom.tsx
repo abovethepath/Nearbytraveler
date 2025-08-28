@@ -661,7 +661,7 @@ export default function FixedChatroom() {
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center justify-between">
-                    <span>💬 Chat Messages ({messages.length})</span>
+                    <span>💬 Chat Messages</span>
                     <Button onClick={loadMessages} variant="ghost" size="sm">
                       <RefreshCw className="w-4 h-4" />
                     </Button>
