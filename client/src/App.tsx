@@ -175,7 +175,7 @@ function Router() {
     '/', '/landing', '/landing-new', '/auth', '/join', '/signup', '/signup/local', '/signup/traveler', '/signup/business',
     '/events-landing', '/business-landing', '/locals-landing', '/travelers-landing', '/networking-landing', '/privacy', '/terms', '/cookies', '/about', '/getting-started',
     '/forgot-password', '/reset-password', '/welcome', '/welcome-business', '/welcome-travel-agent', '/quick-login', '/preview-landing', '/preview-first-landing',
-    '/travel-quiz', '/TravelIntentQuiz', '/signup/travel-agent'
+    '/travel-quiz', '/TravelIntentQuiz', '/signup/travel-agent', '/business-card'
   ];
   const isLandingPage = landingPageRoutes.includes(location);
 
@@ -597,6 +597,10 @@ function Router() {
       if (location === '/signup' || location === '/join') {
         console.log('Returning Auth component for /signup or /join');
         return <Auth />; // Will show JoinNowWidget when isLogin=false
+      }
+      if (location === '/business-card') {
+        console.log('Returning BusinessCard component for /business-card - PUBLIC ACCESS');
+        return <BusinessCardPage />;
       }
 
       // Enhanced routing for potentially authenticated users accessing main routes
