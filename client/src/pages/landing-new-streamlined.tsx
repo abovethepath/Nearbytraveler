@@ -102,7 +102,7 @@ export default function LandingStreamlined() {
           <div className="relative max-w-4xl mx-auto px-4">
             <div className="bg-gray-100/95 dark:bg-gray-800/95 backdrop-blur-sm rounded-2xl p-6 sm:p-8 shadow-2xl">
               <blockquote className="text-lg sm:text-xl text-gray-900 dark:text-white leading-relaxed mb-4 text-center font-medium">
-                "For over 15 years, I've opened my home and city to more than 400 travelers from over 50 countries. Each visit showed me how powerful travel becomes when strangers connect like friends."
+                "For over 15 years, I've opened my home and city to more than 400 travelers from over 50 countries. Each visit showed me how powerful travel becomes when traveling strangers connect like friends."
               </blockquote>
               <div className="text-center">
                 <p className="text-gray-700 dark:text-gray-300 font-semibold">
