@@ -486,10 +486,10 @@ function Router() {
         return <Auth />;
       }
 
-      // Allow access to join page - use Auth component which handles join
+      // Allow access to join page - restore original SignupLocalTraveler
       if (location === '/join') {
         console.log('Showing Join page');
-        return <Auth />;
+        return <SignupLocalTraveler />;
       }
 
       // Show landing page
