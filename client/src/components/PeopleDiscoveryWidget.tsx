@@ -5,6 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useQuery } from "@tanstack/react-query";
 import { AuthContext } from "@/App";
 import type { User, UserCityInterest, TravelPlan } from "@/../../shared/schema";
+import { getCurrentTravelDestination } from "@/lib/dateUtils";
 
 interface PersonCard {
   id: number;
@@ -206,16 +207,23 @@ export function PeopleDiscoveryWidget({
 
     // ALWAYS show both hometown AND current location - NEVER hide travel info
     const getCurrentLocation = () => {
-      const hometown = person.location?.split(',')[0] || 'Hometown';
+      const hometown = person.hometownCity || person.location?.split(',')[0] || 'Hometown';
       
-      // Use enriched travel data from home page instead of fetching our own
-      if (person.isCurrentlyTraveling && person.travelDestination) {
-        console.log(`🏷️ PEOPLE WIDGET: ${person.username} traveling to ${person.travelDestination}`);
-        return {
-          isTraveling: true,
-          currentLocation: person.travelDestination || "Location not specified",
-          hometown: hometown
-        };
+      // Use proper travel detection logic like other components
+      const currentDestination = getCurrentTravelDestination(travelPlans || []);
+      if (currentDestination && person.hometownCity) {
+        const travelDestination = currentDestination.toLowerCase();
+        const hometownLower = person.hometownCity.toLowerCase();
+        
+        // Only show as traveler if destination is different from hometown
+        if (!travelDestination.includes(hometownLower) && !hometownLower.includes(travelDestination)) {
+          console.log(`🏷️ PEOPLE WIDGET: ${person.username} traveling to ${currentDestination}`);
+          return {
+            isTraveling: true,
+            currentLocation: currentDestination,
+            hometown: hometown
+          };
+        }
       }
       
       return {
@@ -306,7 +314,7 @@ export function PeopleDiscoveryWidget({
                   <div className="flex items-center justify-center gap-1">
                     <MapPin className="w-4 h-4 text-green-500" />
                     <p className="text-green-600 dark:text-green-400 text-sm break-words px-1 text-center">
-                      Currently home
+                      Currently in {locationInfo.hometown}
                     </p>
                   </div>
                 )}
