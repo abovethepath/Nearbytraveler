@@ -469,7 +469,7 @@ app.use((req, res, next) => {
     console.log("🚀 DEPLOYMENT FIX v3: Custom deployment setup preserving API routes...");
     
     // Custom static serving that ONLY serves index.html for non-API routes
-    const distPath = path.resolve(process.cwd(), "client", "dist");
+    const distPath = path.resolve(process.cwd(), "dist", "public");
     console.log("📦 Static path:", distPath);
     
     // Serve static assets but NOT index.html (which would override API routes)
