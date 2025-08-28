@@ -120,7 +120,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
               <span className="flex items-start">
                 <MapPin className="w-3 h-3 inline mr-1 mt-0.5 flex-shrink-0" />
                 <span className="break-words">
-                  {event.venue_name && <><strong>{event.venue_name}</strong><br /></>}
+                  {event.venueName && <><strong>{event.venueName}</strong><br /></>}
                   {event.street && <>{event.street}<br /></>}
                   {event.city}, {event.state}
                 </span>
@@ -179,7 +179,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
             <div className="min-w-0 flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
               <MapPin className="h-4 w-4 shrink-0 text-travel-blue" />
               <span className="truncate break-words [overflow-wrap:anywhere]">
-                {event.venue_name && `${event.venue_name}, `}{event.street || event.location}
+                {event.venueName && `${event.venueName}, `}{event.street || event.location}
               </span>
             </div>
             <div className="min-w-0 flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
