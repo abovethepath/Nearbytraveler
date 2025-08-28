@@ -1125,7 +1125,7 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
                     Quick Actions
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56">
+                <DropdownMenuContent className="w-56 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-lg">
                   <DropdownMenuItem onClick={() => setLocation(`/events/${eventId}/participants`)}>
                     <Users className="w-4 h-4 mr-2" />
                     View Participants
