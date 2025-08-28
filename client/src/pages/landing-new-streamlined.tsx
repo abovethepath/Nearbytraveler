@@ -328,10 +328,10 @@ export default function LandingStreamlined() {
                       <div className="absolute -top-2 -right-2 w-6 h-6 bg-blue-400 rounded-full animate-bounce"></div>
                     </div>
                     <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-4 text-center">
-                      Join the Movement
+                      Start Your Journey
                     </h3>
                     <p className="text-gray-600 dark:text-gray-300 text-center leading-relaxed">
-                      Share your travel style, interests, and dream destinations. Our matching algorithm connects you with like-minded travelers and locals.
+                      Share your interests and where you're traveling. We connect you with locals and travelers who share your vibe—whether for business or pleasure.
                     </p>
                     <div className="mt-6 flex justify-center">
                       <div className="flex space-x-1">
