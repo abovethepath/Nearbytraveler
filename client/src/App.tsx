@@ -70,6 +70,7 @@ import Requests from "@/pages/requests";
 import Passport from "@/pages/passport";
 
 import Auth from "@/pages/auth";
+import JoinNowWidgetNew from "@/components/join-now-widget-new";
 // import SignupLocal from "@/pages/signup-local"; // Removed broken file
 import SignupLocalTraveler from "@/pages/signup-local-traveler";
 import SignupTraveling from "@/pages/signup-traveling";
@@ -479,10 +480,16 @@ function Router() {
 
 
 
-      // Allow access to auth and join pages 
-      if (location === '/auth' || location === '/join') {
+      // Allow access to auth page
+      if (location === '/auth') {
         console.log('Showing Auth page');
         return <Auth />;
+      }
+
+      // Allow access to join page with proper component
+      if (location === '/join') {
+        console.log('Showing Join page');
+        return <JoinNowWidgetNew />;
       }
 
       // Show landing page
