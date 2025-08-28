@@ -226,7 +226,7 @@ export default function EventsLanding() {
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transform transition-all duration-300 flex flex-col">
               <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-green-400 to-teal-500">
                 <img 
-                  src="/beach-bbq-bonfire.png" 
+                  src="/event page bbq party_1753299541268.png" 
                   alt="Beach BBQ event" 
                   className="w-full h-48 object-cover"
                 />
@@ -249,6 +249,126 @@ export default function EventsLanding() {
                   className="w-full bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white font-bold py-2 px-4 rounded text-center transition duration-200"
                 >
                   JOIN BBQ
+                </a>
+              </div>
+            </div>
+
+            {/* Taco Tuesday Event */}
+            <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transform transition-all duration-300 flex flex-col">
+              <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-yellow-400 to-orange-500">
+                <img 
+                  src="/image_1754973365104.png" 
+                  alt="Authentic taco stand with vintage neon sign" 
+                  className="w-full h-48 object-cover"
+                />
+              </div>
+              <div className="p-6 flex flex-col flex-grow">
+                <div className="mb-3">
+                  <h3 className="text-sm sm:text-base font-bold text-gray-900 mb-1 leading-tight">Taco Tuesday</h3>
+                  <p className="text-sm text-gray-600">Every Tuesday • $1.50 tacos</p>
+                </div>
+                
+                <div className="flex flex-wrap gap-2 mb-3">
+                  <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-medium">$1.50</span>
+                  <span className="bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full text-xs font-medium">Food</span>
+                </div>
+                
+                <p className="text-gray-700 text-xs sm:text-sm mb-4 flex-grow leading-relaxed">Join locals every Tuesday for authentic street tacos at unbeatable prices. Meet fellow taco lovers and discover the best Mexican spots in the city.</p>
+                <a
+                  href="/join"
+                  className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-bold py-2 px-4 rounded text-center transition duration-200"
+                >
+                  JOIN TACO TUESDAY
+                </a>
+              </div>
+            </div>
+
+            {/* Hollywood Sign Hike */}
+            <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transform transition-all duration-300 flex flex-col">
+              <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-blue-500 to-indigo-600">
+                <img 
+                  src="/image_1754974796221.png" 
+                  alt="Hollywood Sign at sunrise with mountain views" 
+                  className="w-full h-48 object-cover"
+                />
+              </div>
+              <div className="p-6 flex flex-col flex-grow">
+                <div className="mb-3">
+                  <h3 className="text-sm sm:text-base font-bold text-gray-900 mb-1 leading-tight">Hollywood Sign Hike</h3>
+                  <p className="text-sm text-gray-600">Every Saturday • 9:00 AM</p>
+                </div>
+                
+                <div className="flex flex-wrap gap-2 mb-3">
+                  <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs font-medium">Free</span>
+                  <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-medium">Hiking</span>
+                </div>
+                
+                <p className="text-gray-700 text-xs sm:text-sm mb-4 flex-grow leading-relaxed">Weekly hike to the iconic Hollywood Sign with locals and travelers. Amazing city views, great photos, and authentic LA hiking culture.</p>
+                <a
+                  href="/join"
+                  className="w-full bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white font-bold py-2 px-4 rounded text-center transition duration-200"
+                >
+                  JOIN HIKE
+                </a>
+              </div>
+            </div>
+
+            {/* Happy Hour Thursday */}
+            <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transform transition-all duration-300 flex flex-col">
+              <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-amber-500 to-orange-600">
+                <img 
+                  src="/image_1754975666980.png" 
+                  alt="Jameson's Pub exterior with green storefront and traditional Irish pub atmosphere" 
+                  className="w-full h-48 object-cover"
+                />
+              </div>
+              <div className="p-6 flex flex-col flex-grow">
+                <div className="mb-3">
+                  <h3 className="text-sm sm:text-base font-bold text-gray-900 mb-1 leading-tight">Happy Hour Thursday</h3>
+                  <p className="text-sm text-gray-600">Jameson Pub • Live Music</p>
+                </div>
+                
+                <div className="flex flex-wrap gap-2 mb-3">
+                  <span className="bg-amber-100 text-amber-700 px-2 py-1 rounded-full text-xs font-medium">Drinks</span>
+                  <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs font-medium">21+</span>
+                </div>
+                
+                <p className="text-gray-700 text-xs sm:text-sm mb-4 flex-grow leading-relaxed">Join locals and travelers for Thursday happy hour with live music at Jameson Pub. Great drinks, live bands, and authentic LA nightlife.</p>
+                <a
+                  href="/join"
+                  className="w-full bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-bold py-2 px-4 rounded text-center transition duration-200"
+                >
+                  JOIN HAPPY HOUR
+                </a>
+              </div>
+            </div>
+
+            {/* Sunset Yoga */}
+            <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transform transition-all duration-300 flex flex-col">
+              <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-pink-400 to-orange-500">
+                <img 
+                  src="/venice-beach-yoga.png" 
+                  alt="Sunset yoga on Venice Beach with people in poses" 
+                  className="w-full h-48 object-cover"
+                />
+              </div>
+              <div className="p-6 flex flex-col flex-grow">
+                <div className="mb-3">
+                  <h3 className="text-sm sm:text-base font-bold text-gray-900 mb-1 leading-tight">Sunset Yoga</h3>
+                  <p className="text-sm text-gray-600">Venice Beach • Every Sunday</p>
+                </div>
+                
+                <div className="flex flex-wrap gap-2 mb-3">
+                  <span className="bg-pink-100 text-pink-700 px-2 py-1 rounded-full text-xs font-medium">Free</span>
+                  <span className="bg-orange-100 text-orange-700 px-2 py-1 rounded-full text-xs font-medium">Wellness</span>
+                </div>
+                
+                <p className="text-gray-700 text-xs sm:text-sm mb-4 flex-grow leading-relaxed">Weekly sunset yoga sessions on Venice Beach with locals and travelers. All levels welcome - experience authentic LA beach wellness culture.</p>
+                <a
+                  href="/join"
+                  className="w-full bg-gradient-to-r from-pink-500 to-orange-500 hover:from-pink-600 hover:to-orange-600 text-white font-bold py-2 px-4 rounded text-center transition duration-200"
+                >
+                  JOIN YOGA
                 </a>
               </div>
             </div>
