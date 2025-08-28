@@ -127,6 +127,7 @@ import QRSignup from "@/pages/qr-signup";
 import ShareQR from "@/pages/share-qr";
 import BusinessCardPage from "@/pages/business-card";
 import QRCodePage from "@/pages/qr-code";
+import QRSimplePage from "@/pages/qr-simple";
 
 
 import Navbar from "@/components/navbar";
@@ -646,8 +647,8 @@ function Router() {
       
       // QR Code page - PUBLIC ACCESS for printing business cards
       if (location === '/qr-code') {
-        console.log('✅ QR Code generator for printing - PUBLIC ACCESS');
-        return <QRCodePage />;
+        console.log('🎯 QR CODE PAGE ACCESS - Cache Bust v4 - Showing SIMPLE QR generator');
+        return <QRSimplePage />;
       }
       
       // Check if this is a valid landing page route (including our public pages)
