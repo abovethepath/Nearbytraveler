@@ -136,8 +136,17 @@ export function MobileTopNav() {
                 <button className="px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800" onClick={() => go("/")}>
                   Business Dashboard
                 </button>
+                <button className="px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800" onClick={() => go("/business-dashboard")}>
+                  Manage Deals
+                </button>
                 <button className="px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800" onClick={() => go("/create-event")}>
                   Create Event
+                </button>
+                <button className="px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800" onClick={() => go("/events")}>
+                  View Events
+                </button>
+                <button className="px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800" onClick={() => go("/chatrooms")}>
+                  Chat Rooms
                 </button>
                 <button className="px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800" onClick={() => go("/messages")}>
                   Customer Messages
@@ -162,6 +171,15 @@ export function MobileTopNav() {
                 </button>
                 <button className="px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800" onClick={() => go("/events")}>
                   Events
+                </button>
+                <button className="px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800" onClick={() => go("/plan-trip")}>
+                  Plan Trip
+                </button>
+                <button className="px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800" onClick={() => go("/quick-meetups")}>
+                  Quick Meetups
+                </button>
+                <button className="px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800" onClick={() => go("/chatrooms")}>
+                  Chat Rooms
                 </button>
                 <button className="px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800" onClick={() => go("/match-in-city")}>
                   City Match
