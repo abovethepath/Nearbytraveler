@@ -1,12 +1,21 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
 import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
+import { useTheme } from "@/components/theme-provider";
 import Footer from "@/components/footer";
 import NetworkingHero from "@/components/NetworkingHero";
 
 export default function NetworkingLanding() {
   const [, setLocation] = useLocation();
+  const { setTheme } = useTheme();
+
+  // Force light mode when component mounts
+  useEffect(() => {
+    setTheme('light');
+    document.documentElement.classList.remove('dark');
+    document.documentElement.classList.add('light');
+  }, [setTheme]);
 
   return (
     <div className="bg-gray-50 dark:bg-gray-900 font-sans">

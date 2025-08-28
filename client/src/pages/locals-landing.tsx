@@ -1,12 +1,21 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
 import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
+import { useTheme } from "@/components/theme-provider";
 import Footer from "@/components/footer";
 const localsHeaderImage = "/ChatGPT Image Jul 23, 2025, 01_18_34 PM_1753301968074.png";
 
 export default function LocalsLanding() {
   const [, setLocation] = useLocation();
+  const { setTheme } = useTheme();
+
+  // Force light mode when component mounts
+  useEffect(() => {
+    setTheme('light');
+    document.documentElement.classList.remove('dark');
+    document.documentElement.classList.add('light');
+  }, [setTheme]);
 
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900">
