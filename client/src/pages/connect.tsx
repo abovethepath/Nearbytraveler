@@ -30,6 +30,7 @@ import { SEXUAL_PREFERENCE_OPTIONS } from "@/lib/formConstants";
 import { formatDateForDisplay } from "@/lib/dateUtils";
 import BackButton from "@/components/back-button";
 import ConnectModal from "@/components/connect-modal";
+import { AdvancedSearchWidget } from "@/components/AdvancedSearchWidget";
 import type { User, TravelPlan } from "@shared/schema";
 import { SmartLocationInput } from "@/components/SmartLocationInput";
 
@@ -49,14 +50,17 @@ export default function ConnectPage() {
   // Connect modal state - auto-open on page load
   const [showConnectModal, setShowConnectModal] = useState(true);
   const [connectModalMode, setConnectModalMode] = useState<'current' | 'hometown'>('current');
+  
+  // Advanced search modal state
+  const [showAdvancedSearch, setShowAdvancedSearch] = useState(false);
 
   // Handle URL parameters for tab switching
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const tabParam = urlParams.get('tab');
     if (tabParam === 'advanced-filters') {
-      setActiveTab('advanced-filters');
-      setShowConnectModal(false); // Close modal when going to advanced filters
+      setShowAdvancedSearch(true);
+      setShowConnectModal(false); // Close modal when going to advanced search
       // Clean up URL
       window.history.replaceState({}, '', '/connect');
     }
@@ -747,600 +751,46 @@ export default function ConnectPage() {
             </Card>
           </TabsContent>
 
-          {/* Advanced Filters Tab - Exact Copy from Home Page */}
+          {/* Advanced Search Tab - Using Proper Modal Interface */}
           <TabsContent value="advanced-filters" className="space-y-4 sm:space-y-6">
-            <Card className="p-4 sm:p-6 bg-gray-50 dark:bg-gray-800">
-              {/* Search Bar */}
-              <div className="mb-4 sm:mb-6 bg-white dark:bg-gray-700 p-3 sm:p-4 rounded-lg border dark:border-gray-600 shadow-sm">
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-3">
-                  <label className="text-xs sm:text-sm font-medium text-gray-700 flex items-center">
-                    <Search className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                    Search Users
-                  </label>
-                  <Button
-                    className="bg-gradient-to-r from-blue-500 to-orange-500 text-white hover:from-blue-600 hover:to-orange-600 w-full sm:w-auto"
-                    size="sm"
-                    onClick={handleAdvancedSearch}
-                    disabled={isAdvancedSearching}
-                  >
-                    <Search className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                    {isAdvancedSearching ? "Searching..." : "Search Now"}
-                  </Button>
+            <Card className="p-6 sm:p-8 bg-gradient-to-br from-blue-50 to-orange-50 dark:from-gray-800 dark:to-gray-900 border-2 border-dashed border-blue-300 dark:border-blue-600">
+              <CardContent className="text-center space-y-6">
+                <div className="space-y-4">
+                  <div className="w-16 h-16 mx-auto bg-gradient-to-r from-blue-500 to-orange-500 rounded-full flex items-center justify-center">
+                    <Filter className="w-8 h-8 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                      Advanced Search & Filters
+                    </h3>
+                    <p className="text-gray-600 dark:text-gray-400 max-w-md mx-auto">
+                      Use comprehensive filters to find exactly who you're looking for - by location, demographics, interests, activities, and more.
+                    </p>
+                  </div>
                 </div>
-                <Input
-                  placeholder="Search by name, username, city..."
-                  value={advancedFilters.search}
-                  onChange={(e) => setAdvancedFilters(prev => ({ ...prev, search: e.target.value }))}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      console.log('Enter pressed - search triggered');
-                    }
-                  }}
-                  className="w-full text-sm sm:text-base"
-                />
-              </div>
-              
-              {/* Gender Filter Section */}
-              <Collapsible open={expandedSections.gender} onOpenChange={() => toggleSection('gender')}>
-                <CollapsibleTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-between h-10 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
-                  >
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Gender Filter</span>
-                    <div className="flex items-center gap-2">
-                      {advancedFilters.gender.length > 0 && (
-                        <Badge variant="secondary" className="bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300">
-                          {advancedFilters.gender.length}
-                        </Badge>
-                      )}
-                      {expandedSections.gender ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-                    </div>
-                  </Button>
-                </CollapsibleTrigger>
-                <CollapsibleContent className="pt-3">
-                  <div className="flex flex-wrap gap-2">
-                    {["Male", "Female", "Trans Male", "Trans Female", "Non-Binary", "Other"].map((gender) => (
-                      <button
-                        key={gender}
-                        onClick={() => {
-                          if (advancedFilters.gender.includes(gender)) {
-                            setAdvancedFilters(prev => ({ ...prev, gender: prev.gender.filter(g => g !== gender) }));
-                          } else {
-                            setAdvancedFilters(prev => ({ ...prev, gender: [...prev.gender, gender] }));
-                          }
-                        }}
-                        className={`px-2 sm:px-4 py-1 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-colors ${
-                          advancedFilters.gender.includes(gender)
-                            ? 'bg-blue-500 text-white'
-                            : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                        }`}
-                      >
-                        {gender}
-                      </button>
-                    ))}
-                  </div>
-                </CollapsibleContent>
-              </Collapsible>
-
-              {/* Sexual Preference Filter Section */}
-              <Collapsible open={expandedSections.sexualPreference} onOpenChange={() => toggleSection('sexualPreference')}>
-                <CollapsibleTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-between h-10 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
-                  >
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Sexual Preference Filter</span>
-                    <div className="flex items-center gap-2">
-                      {advancedFilters.sexualPreference.length > 0 && (
-                        <Badge variant="secondary" className="bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300">
-                          {advancedFilters.sexualPreference.length}
-                        </Badge>
-                      )}
-                      {expandedSections.sexualPreference ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-                    </div>
-                  </Button>
-                </CollapsibleTrigger>
-                <CollapsibleContent className="pt-3">
-                  <div className="flex flex-wrap gap-2">
-                    {SEXUAL_PREFERENCE_OPTIONS.map((preference) => (
-                      <button
-                        key={preference}
-                        onClick={() => {
-                          if (advancedFilters.sexualPreference.includes(preference)) {
-                            setAdvancedFilters(prev => ({ ...prev, sexualPreference: prev.sexualPreference.filter(p => p !== preference) }));
-                          } else {
-                            setAdvancedFilters(prev => ({ ...prev, sexualPreference: [...prev.sexualPreference, preference] }));
-                          }
-                        }}
-                        className={`px-2 sm:px-4 py-1 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-colors ${
-                          advancedFilters.sexualPreference.includes(preference)
-                            ? 'bg-purple-500 text-white'
-                            : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                        }`}
-                      >
-                        {preference}
-                      </button>
-                    ))}
-                  </div>
-                </CollapsibleContent>
-              </Collapsible>
-
-              {/* User Type Filter Section */}
-              <Collapsible open={expandedSections.userType} onOpenChange={() => toggleSection('userType')}>
-                <CollapsibleTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-between h-10 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
-                  >
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">User Type Filter</span>
-                    <div className="flex items-center gap-2">
-                      {advancedFilters.userType.length > 0 && (
-                        <Badge variant="secondary" className="bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300">
-                          {advancedFilters.userType.length}
-                        </Badge>
-                      )}
-                      {expandedSections.userType ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-                    </div>
-                  </Button>
-                </CollapsibleTrigger>
-                <CollapsibleContent className="pt-3">
-                  <div className="flex flex-wrap gap-2">
-                    {["traveler", "local", "business"].map((type) => (
-                      <button
-                        key={type}
-                        onClick={() => {
-                          if (advancedFilters.userType.includes(type)) {
-                            setAdvancedFilters(prev => ({ ...prev, userType: prev.userType.filter(t => t !== type) }));
-                          } else {
-                            setAdvancedFilters(prev => ({ ...prev, userType: [...prev.userType, type] }));
-                          }
-                        }}
-                        className={`px-4 py-2 rounded-full text-sm font-medium transition-colors capitalize ${
-                          advancedFilters.userType.includes(type)
-                            ? 'bg-green-500 text-white'
-                            : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                        }`}
-                      >
-                        {type}
-                      </button>
-                    ))}
-                  </div>
-                </CollapsibleContent>
-              </Collapsible>
-
-              {/* Age Range Filter Section */}
-              <Collapsible open={expandedSections.ageRange} onOpenChange={() => toggleSection('ageRange')}>
-                <CollapsibleTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-between h-10 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
-                  >
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Age Range Filter</span>
-                    <div className="flex items-center gap-2">
-                      {(advancedFilters.minAge || advancedFilters.maxAge) && (
-                        <Badge variant="secondary" className="bg-gray-100 text-gray-700 dark:bg-gray-900 dark:text-gray-300">
-                          {advancedFilters.minAge || '?'}-{advancedFilters.maxAge || '?'}
-                        </Badge>
-                      )}
-                      {expandedSections.ageRange ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-                    </div>
-                  </Button>
-                </CollapsibleTrigger>
-                <CollapsibleContent className="pt-3">
-                  <div className="grid grid-cols-2 gap-2">
-                    <Input 
-                      type="number" 
-                      placeholder="Min Age"
-                      value={advancedFilters.minAge || ""}
-                      onChange={(e) => setAdvancedFilters(prev => ({ ...prev, minAge: e.target.value ? parseInt(e.target.value) : undefined }))}
-                      className="w-full text-sm px-3 py-2 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400"
-                    />
-                    <Input 
-                      type="number" 
-                      placeholder="Max Age"
-                      value={advancedFilters.maxAge || ""}
-                      onChange={(e) => setAdvancedFilters(prev => ({ ...prev, maxAge: e.target.value ? parseInt(e.target.value) : undefined }))}
-                      className="w-full text-sm px-3 py-2 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400"
-                    />
-                  </div>
-                </CollapsibleContent>
-              </Collapsible>
-
-              {/* Traveler Type Filter Section */}
-              <Collapsible open={expandedSections.travelerType} onOpenChange={() => toggleSection('travelerType')}>
-                <CollapsibleTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-between h-10 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
-                  >
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Traveler Type Filter</span>
-                    <div className="flex items-center gap-2">
-                      {advancedFilters.travelerTypes.length > 0 && (
-                        <Badge variant="secondary" className="bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300">
-                          {advancedFilters.travelerTypes.length}
-                        </Badge>
-                      )}
-                      {expandedSections.travelerType ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-                    </div>
-                  </Button>
-                </CollapsibleTrigger>
-                <CollapsibleContent className="pt-3">
-                  <div className="flex flex-wrap gap-2">
-                    {BASE_TRAVELER_TYPES.map((type) => (
-                      <button
-                        key={type}
-                        onClick={() => {
-                          if (advancedFilters.travelerTypes.includes(type)) {
-                            setAdvancedFilters(prev => ({ ...prev, travelerTypes: prev.travelerTypes.filter(t => t !== type) }));
-                          } else {
-                            setAdvancedFilters(prev => ({ ...prev, travelerTypes: [...prev.travelerTypes, type] }));
-                          }
-                        }}
-                        className={`px-2 sm:px-4 py-1 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-colors ${
-                          advancedFilters.travelerTypes.includes(type)
-                            ? 'bg-orange-500 text-white'
-                            : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                        }`}
-                      >
-                        {type}
-                      </button>
-                    ))}
-                  </div>
-                </CollapsibleContent>
-              </Collapsible>
-
-              {/* Location Filter - Use SmartLocationInput for consistency */}
-              <div className="mb-4">
-                <label className="text-sm font-medium text-gray-700 dark:text-white mb-2 block">Location Filter</label>
-                <div className="space-y-2">
-                  <SmartLocationInput
-                    city={locationFilter.city}
-                    state={locationFilter.state}
-                    country={locationFilter.country}
-                    onLocationChange={(location) => {
-                      setLocationFilter(location);
-                      const fullLocation = `${location.city}${location.state ? `, ${location.state}` : ""}, ${location.country}`;
-                      setAdvancedFilters(prev => ({ ...prev, location: fullLocation }));
-                    }}
-                    required={false}
-                    placeholder={{
-                      country: "Select country to filter by",
-                      state: "Select state/region",
-                      city: "Select city to filter by"
-                    }}
-                  />
-                  <Select 
-                    value={advancedFilters.location} 
-                    onValueChange={(value) => setAdvancedFilters(prev => ({ ...prev, location: value === "clear" ? "" : value }))}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Or select from your destinations" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="clear">Clear location filter</SelectItem>
-                      {user?.hometown && (
-                        <SelectItem value={user.hometown}>
-                          🏠 {user.hometown} (Hometown)
-                        </SelectItem>
-                      )}
-                      {user?.location && user.location !== user.hometown && (
-                        <SelectItem value={user.location}>
-                          📍 {user.location} (Current)
-                      </SelectItem>
-                      )}
-                      {userTravelPlans?.filter(plan => plan.destination).map((plan, index) => (
-                        <SelectItem key={index} value={plan.destination}>
-                          ✈️ {plan.destination} (Travel Plan)
-                        </SelectItem>
-                      ))}
-                      {user?.travelDestination && 
-                       !userTravelPlans.some(plan => plan.destination === user.travelDestination) && (
-                        <SelectItem value={user.travelDestination}>
-                          🗺️ {user.travelDestination}
-                        </SelectItem>
-                      )}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              {/* Top Choices for Most Travelers Section */}
-              <Collapsible open={expandedSections.topChoices} onOpenChange={() => toggleSection('topChoices')}>
-                <CollapsibleTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-between h-10 bg-gradient-to-r from-blue-50 to-orange-50 dark:from-blue-900/20 dark:to-orange-900/20 border-blue-200 dark:border-blue-700 hover:from-blue-100 hover:to-orange-100 dark:hover:from-blue-900/30 dark:hover:to-orange-900/30"
-                  >
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">⭐ Top Choices for Most Travelers</span>
-                    <div className="flex items-center gap-2">
-                      {getMostPopularInterests().filter(choice => advancedFilters.interests.includes(choice)).length > 0 && (
-                        <Badge variant="secondary" className="bg-gradient-to-r from-blue-100 to-orange-100 text-gray-800 dark:from-blue-900 dark:to-orange-900 dark:text-gray-200">
-                          {getMostPopularInterests().filter(choice => advancedFilters.interests.includes(choice)).length}
-                        </Badge>
-                      )}
-                      {expandedSections.topChoices ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-                    </div>
-                  </Button>
-                </CollapsibleTrigger>
-                <CollapsibleContent className="pt-3">
-                  <div className="flex flex-wrap gap-2">
-                    {getMostPopularInterests().map((choice) => (
-                      <button
-                        key={choice}
-                        onClick={() => {
-                          if (advancedFilters.interests.includes(choice)) {
-                            setAdvancedFilters(prev => ({ 
-                              ...prev, 
-                              interests: prev.interests.filter(i => i !== choice) 
-                            }));
-                          } else {
-                            setAdvancedFilters(prev => ({ 
-                              ...prev, 
-                              interests: [...prev.interests, choice] 
-                            }));
-                          }
-                        }}
-                        className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
-                          advancedFilters.interests.includes(choice)
-                            ? 'bg-gradient-to-r from-blue-500 to-orange-500 text-white'
-                            : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                        }`}
-                      >
-                        {choice}
-                      </button>
-                    ))}
-                  </div>
-                </CollapsibleContent>
-              </Collapsible>
-
-              {/* Interests Filter Section */}
-              <Collapsible open={expandedSections.interests} onOpenChange={() => toggleSection('interests')}>
-                <CollapsibleTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-between h-10 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
-                  >
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Interests Filter</span>
-                    <div className="flex items-center gap-2">
-                      {advancedFilters.interests.length > 0 && (
-                        <Badge variant="secondary" className="bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300">
-                          {advancedFilters.interests.length}
-                        </Badge>
-                      )}
-                      {expandedSections.interests ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-                    </div>
-                  </Button>
-                </CollapsibleTrigger>
-                <CollapsibleContent className="pt-3">
-                  <div className="flex flex-wrap gap-2">
-                    {getAllInterests().filter(interest => !getMostPopularInterests().includes(interest)).map((interest) => {
-                      const displayText = interest.startsWith("**") && interest.endsWith("**") ? 
-                        interest.slice(2, -2) : interest;
-                      
-                      return (
-                        <button
-                          key={interest}
-                          onClick={() => {
-                            if (advancedFilters.interests.includes(interest)) {
-                              setAdvancedFilters(prev => ({ ...prev, interests: prev.interests.filter(i => i !== interest) }));
-                            } else {
-                              setAdvancedFilters(prev => ({ ...prev, interests: [...prev.interests, interest] }));
-                            }
-                          }}
-                          className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
-                            advancedFilters.interests.includes(interest)
-                              ? 'bg-blue-500 text-white'
-                              : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                          }`}
-                        >
-                          {displayText}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </CollapsibleContent>
-              </Collapsible>
-
-              {/* Activities Filter Section */}
-              <Collapsible open={expandedSections.activities} onOpenChange={() => toggleSection('activities')}>
-                <CollapsibleTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-between h-10 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
-                  >
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Activities Filter</span>
-                    <div className="flex items-center gap-2">
-                      {advancedFilters.activities.length > 0 && (
-                        <Badge variant="secondary" className="bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300">
-                          {advancedFilters.activities.length}
-                        </Badge>
-                      )}
-                      {expandedSections.activities ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-                    </div>
-                  </Button>
-                </CollapsibleTrigger>
-                <CollapsibleContent className="pt-3">
-                  <div className="flex flex-wrap gap-2">
-                    {getAllActivities().map((activity, index) => (
-                      <button
-                        key={`filter-activity-${activity}-${index}`}
-                        onClick={() => {
-                          if (advancedFilters.activities.includes(activity)) {
-                            setAdvancedFilters(prev => ({ ...prev, activities: prev.activities.filter(a => a !== activity) }));
-                          } else {
-                            setAdvancedFilters(prev => ({ ...prev, activities: [...prev.activities, activity] }));
-                          }
-                        }}
-                        className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
-                          advancedFilters.activities.includes(activity)
-                            ? 'bg-green-500 text-white'
-                            : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                        }`}
-                      >
-                        {activity}
-                      </button>
-                    ))}
-                  </div>
-                </CollapsibleContent>
-              </Collapsible>
-
-              {/* Events Filter Section */}
-              <Collapsible open={expandedSections.events} onOpenChange={() => toggleSection('events')}>
-                <CollapsibleTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-between h-10 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
-                  >
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Events Filter</span>
-                    <div className="flex items-center gap-2">
-                      {advancedFilters.events.length > 0 && (
-                        <Badge variant="secondary" className="bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300">
-                          {advancedFilters.events.length}
-                        </Badge>
-                      )}
-                      {expandedSections.events ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-                    </div>
-                  </Button>
-                </CollapsibleTrigger>
-                <CollapsibleContent className="pt-3">
-                  <div className="flex flex-wrap gap-2">
-                    {getAllEvents().map((eventType) => (
-                      <button
-                        key={eventType}
-                        onClick={() => {
-                          if (advancedFilters.events.includes(eventType)) {
-                            setAdvancedFilters(prev => ({ ...prev, events: prev.events.filter(e => e !== eventType) }));
-                          } else {
-                            setAdvancedFilters(prev => ({ ...prev, events: [...prev.events, eventType] }));
-                          }
-                        }}
-                        className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
-                          advancedFilters.events.includes(eventType)
-                            ? 'bg-orange-500 text-white'
-                            : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                        }`}
-                      >
-                        {eventType}
-                      </button>
-                    ))}
-                  </div>
-                </CollapsibleContent>
-              </Collapsible>
-
-              {/* Military Status Filter Section */}
-              <Collapsible open={expandedSections.militaryStatus} onOpenChange={() => toggleSection('militaryStatus')}>
-                <CollapsibleTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-between h-10 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
-                  >
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Military Status Filter</span>
-                    <div className="flex items-center gap-2">
-                      {advancedFilters.militaryStatus.length > 0 && (
-                        <Badge variant="secondary" className="bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300">
-                          {advancedFilters.militaryStatus.length}
-                        </Badge>
-                      )}
-                      {expandedSections.militaryStatus ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-                    </div>
-                  </Button>
-                </CollapsibleTrigger>
-                <CollapsibleContent className="pt-3">
-                  <div className="flex flex-wrap gap-2">
-                    {[
-                      { value: "veteran", label: "Veteran", color: "red" },
-                      { value: "active_duty", label: "Active Duty", color: "blue" }
-                    ].map((status) => (
-                      <button
-                        key={status.value}
-                        onClick={() => {
-                          if (advancedFilters.militaryStatus.includes(status.value)) {
-                            setAdvancedFilters(prev => ({ ...prev, militaryStatus: prev.militaryStatus.filter(s => s !== status.value) }));
-                          } else {
-                            setAdvancedFilters(prev => ({ ...prev, militaryStatus: [...prev.militaryStatus, status.value] }));
-                          }
-                        }}
-                        className={`px-2 sm:px-4 py-1 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-colors ${
-                          advancedFilters.militaryStatus.includes(status.value)
-                            ? (status.color === 'red' ? 'bg-red-500 text-white' : 'bg-blue-500 text-white')
-                            : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                        }`}
-                      >
-                        {status.label}
-                      </button>
-                    ))}
-                  </div>
-                </CollapsibleContent>
-              </Collapsible>
-
-              {/* Action Buttons */}
-              <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center items-center">
-                <Button
-                  variant="outline"
-                  onClick={clearAdvancedFilters}
-                  className="text-red-600 hover:text-red-700 border-red-300 hover:border-red-400 w-full sm:w-auto"
-                >
-                  <X className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                  Clear All Filters
-                </Button>
                 
                 <Button
-                  className="bg-gradient-to-r from-blue-500 to-orange-500 text-white hover:from-blue-600 hover:to-orange-600 w-full sm:w-auto text-xs sm:text-sm"
-                  onClick={handleAdvancedSearch}
-                  disabled={isAdvancedSearching}
+                  onClick={() => setShowAdvancedSearch(true)}
+                  className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-semibold px-8 py-3 text-lg shadow-lg hover:shadow-xl transition-all duration-300"
                 >
-                  <Search className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                  {isAdvancedSearching ? "Searching..." : "Search Now"}
+                  <Search className="w-5 h-5 mr-2" />
+                  Open Advanced Search
                 </Button>
-              </div>
+                
+                <div className="text-sm text-gray-500 dark:text-gray-400">
+                  Filter by gender, age, interests, travel plans, location, and much more
+                </div>
+              </CardContent>
             </Card>
-
-            {/* Search Results */}
-            {hasAdvancedSearched && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Users className="w-5 h-5 text-blue-600" />
-                    Search Results ({advancedSearchResults.length})
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {isAdvancedSearching ? (
-                    <div className="space-y-4">
-                      {Array.from({ length: 3 }).map((_, i) => (
-                        <div key={i} className="flex items-center space-x-4">
-                          <Skeleton className="h-12 w-12 rounded-full" />
-                          <div className="space-y-2">
-                            <Skeleton className="h-4 w-[200px]" />
-                            <Skeleton className="h-4 w-[150px]" />
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : advancedSearchResults.length > 0 ? (
-                    <ResponsiveUserGrid 
-                      users={advancedSearchResults}
-                      title={`Found ${advancedSearchResults.length} ${advancedSearchResults.length === 1 ? 'person' : 'people'} matching your filters`}
-                    />
-                  ) : (
-                    <div className="text-center py-8">
-                      <Users className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                      <h3 className="text-lg font-medium mb-2 text-black dark:text-white">No users found</h3>
-                      <p className="text-gray-600 dark:text-white mb-4">
-                        Try adjusting your search criteria or clearing some filters.
-                      </p>
-                      <Button variant="outline" onClick={clearAdvancedFilters}>
-                        Clear All Filters
-                      </Button>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            )}
           </TabsContent>
         </Tabs>
       </main>
+
+      {/* Advanced Search Modal */}
+      <AdvancedSearchWidget 
+        open={showAdvancedSearch}
+        onOpenChange={setShowAdvancedSearch}
+      />
 
       {/* Connect Modal Widget */}
       <ConnectModal 
