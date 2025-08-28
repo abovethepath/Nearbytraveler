@@ -840,7 +840,7 @@ export default function PlanTrip() {
                           }}
                           className={`px-2 sm:px-3 py-2 sm:py-3 rounded-md text-xs sm:text-sm font-medium transition-all break-words overflow-hidden text-center leading-tight ${
                             tripPlan.interests.includes(interest)
-                              ? 'bg-white text-blue-600 font-bold transform scale-105'
+                              ? 'bg-blue-600 text-white font-bold transform scale-105 shadow-lg'
                               : 'bg-white/20 text-white hover:bg-white/30'
                           }`}
                         >
