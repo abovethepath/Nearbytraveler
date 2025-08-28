@@ -373,6 +373,11 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
       }
     }
 
+    // Add mutual connections to other commonalities
+    if (mutualConnections && mutualConnections.length > 0) {
+      commonalities.otherCommonalities.push(`${mutualConnections.length} mutual connection${mutualConnections.length > 1 ? 's' : ''}`);
+    }
+
     // Calculate total count
     commonalities.totalCount = 
       commonalities.sharedInterests.length +
@@ -416,6 +421,12 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
 
   const { data: otherUserPlans = [] } = useQuery<TravelPlan[]>({
     queryKey: [`/api/travel-plans/${otherUserId}`]
+  });
+
+  // Fetch mutual connections between the two users
+  const { data: mutualConnections = [] } = useQuery<any[]>({
+    queryKey: [`/api/mutual-connections/${currentUserId}/${otherUserId}`],
+    enabled: !!(currentUserId && otherUserId && currentUserId !== otherUserId)
   });
 
   // Calculate shared trips based on overlapping destinations and dates
@@ -726,6 +737,44 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
         )}
 
 
+
+        {/* Mutual Connections */}
+        {mutualConnections && mutualConnections.length > 0 && (
+          <div className="bg-gradient-to-r from-pink-50 to-rose-50 dark:bg-gradient-to-r dark:from-pink-900/30 dark:to-rose-900/30 rounded-lg p-3 border border-pink-200 dark:border-pink-600">
+            <h5 className="font-bold text-black dark:text-white mb-3 flex items-center gap-1 text-base">
+              <Users className="w-5 h-5 text-pink-500" />
+              Mutual Connections ({mutualConnections.length})
+            </h5>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              {mutualConnections.map((connection: any, index: number) => (
+                <div key={`mutual-${connection.id}-${index}`} className="flex flex-col items-center text-center p-2 bg-white dark:bg-gray-800 rounded-lg border border-pink-200 dark:border-pink-700">
+                  {connection.profileImage ? (
+                    <img
+                      src={connection.profileImage}
+                      alt={connection.name || connection.username}
+                      className="w-10 h-10 rounded-full object-cover mb-2"
+                    />
+                  ) : (
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-r from-pink-400 to-rose-400 flex items-center justify-center text-white text-xs font-bold mb-2">
+                      {(connection.name || connection.username).charAt(0).toUpperCase()}
+                    </div>
+                  )}
+                  <div className="text-xs font-medium text-gray-900 dark:text-white truncate max-w-full">
+                    {connection.name || connection.username}
+                  </div>
+                  {connection.hometownCity && connection.hometownCountry && (
+                    <div className="text-xs text-gray-500 dark:text-gray-400 truncate max-w-full">
+                      {connection.hometownCity}, {connection.hometownCountry.replace('United States', 'USA')}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+            <div className="mt-2 text-xs text-pink-600 dark:text-pink-400 text-center font-medium">
+              👥 Great icebreaker - you both know these people!
+            </div>
+          </div>
+        )}
 
         {/* Shared Trips */}
         {sharedTrips.length > 0 && (

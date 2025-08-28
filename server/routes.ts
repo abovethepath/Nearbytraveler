@@ -4021,6 +4021,87 @@ Questions? Just reply to this message. Welcome aboard!
   });
 
   // CRITICAL: Get connection requests for user
+  // Get mutual connections between two users
+  app.get("/api/mutual-connections/:userId1/:userId2", async (req, res) => {
+    try {
+      const userId1 = req.params.userId1;
+      const userId2 = req.params.userId2;
+
+      if (!userId1 || !userId2 || userId1 === userId2) {
+        return res.json([]);
+      }
+
+      // Get connections for user 1
+      const user1Connections = await db
+        .select({
+          connectedUserId: sql`
+            CASE 
+              WHEN ${connections.requesterId} = ${userId1} THEN ${connections.receiverId}
+              ELSE ${connections.requesterId}
+            END
+          `
+        })
+        .from(connections)
+        .where(
+          and(
+            eq(connections.status, 'accepted'),
+            or(
+              eq(connections.requesterId, userId1),
+              eq(connections.receiverId, userId1)
+            )
+          )
+        );
+
+      // Get connections for user 2
+      const user2Connections = await db
+        .select({
+          connectedUserId: sql`
+            CASE 
+              WHEN ${connections.requesterId} = ${userId2} THEN ${connections.receiverId}
+              ELSE ${connections.requesterId}
+            END
+          `
+        })
+        .from(connections)
+        .where(
+          and(
+            eq(connections.status, 'accepted'),
+            or(
+              eq(connections.requesterId, userId2),
+              eq(connections.receiverId, userId2)
+            )
+          )
+        );
+
+      // Find mutual connections
+      const user1ConnectedIds = user1Connections.map(c => String(c.connectedUserId));
+      const user2ConnectedIds = user2Connections.map(c => String(c.connectedUserId));
+      const mutualUserIds = user1ConnectedIds.filter(id => user2ConnectedIds.includes(id));
+
+      if (mutualUserIds.length === 0) {
+        return res.json([]);
+      }
+
+      // Get user details for mutual connections
+      const mutualUsers = await db
+        .select({
+          id: users.id,
+          username: users.username,
+          name: users.name,
+          profileImage: users.profileImage,
+          hometownCity: users.hometownCity,
+          hometownCountry: users.hometownCountry
+        })
+        .from(users)
+        .where(inArray(users.id, mutualUserIds.map(id => parseInt(id))));
+
+      res.json(mutualUsers);
+    } catch (error) {
+      console.error('Error fetching mutual connections:', error);
+      res.status(500).json({ error: 'Failed to fetch mutual connections' });
+    }
+  });
+
   app.get("/api/connections/:userId/requests", async (req, res) => {
     try {
       const userId = parseInt(req.params.userId || '0');
