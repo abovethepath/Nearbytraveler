@@ -2787,23 +2787,24 @@ export default function Home() {
             </div>
 
 
-            {/* Local Businesses Section */}
-            <div>
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white">Local Businesses</h2>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setLocation('/discover')}
-                  className="text-gray-600 dark:text-gray-400"
-                >
-                  <Store className="w-4 h-4 mr-1" />
-                  View All
-                </Button>
-              </div>
-              
-              {/* Business Deals Display */}
-              {businessDeals && businessDeals.length > 0 ? (
+            {/* Local Businesses Section - Only show if user is business type OR there are actual deals */}
+            {(effectiveUser?.userType === 'business' || (businessDeals && businessDeals.length > 0)) && (
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-xl font-bold text-gray-900 dark:text-white">Local Businesses</h2>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setLocation('/discover')}
+                    className="text-gray-600 dark:text-gray-400"
+                  >
+                    <Store className="w-4 h-4 mr-1" />
+                    View All
+                  </Button>
+                </div>
+                
+                {/* Business Deals Display */}
+                {businessDeals && businessDeals.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {businessDeals.slice(0, businessesDisplayCount).map((deal: any) => (
                     <Card 
@@ -2939,30 +2940,11 @@ export default function Home() {
                   )}
                 </div>
               )}
-            </div>
+              </div>
+            )}
 
             {/* Quick Actions Section - Consolidated */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {/* Quick Deals - Only show if there are actual local deals available */}
-              {businessDeals && businessDeals.length > 0 && (
-                <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border shadow-sm">
-                  <div className="flex items-center justify-between mb-2">
-                    <h3 className="font-semibold text-sm text-gray-900 dark:text-white">Flash Deals</h3>
-                    <Button size="sm" variant="ghost" onClick={() => setLocation('/deals')}>
-                      <Store className="w-4 h-4 mr-1" />
-                      View All
-                    </Button>
-                  </div>
-                  <p className="text-xs text-gray-600 dark:text-gray-400 mb-3">Limited-time local offers</p>
-                  <Button 
-                    className="w-full text-sm bg-gradient-to-r from-green-500 to-orange-500 text-white hover:from-green-600 hover:to-orange-600"
-                    onClick={() => setLocation('/deals')}
-                  >
-                    Browse Deals
-                  </Button>
-                </div>
-              )}
-
               {/* Quick Meetups - Only for non-business users */}
               {user?.userType !== 'business' && effectiveUser?.userType !== 'business' && (
                 <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border shadow-sm">

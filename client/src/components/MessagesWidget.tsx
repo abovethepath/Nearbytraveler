@@ -28,8 +28,7 @@ function MessagesWidget({ userId }: MessagesWidgetProps) {
 
   return (
     <Card 
-      className="bg-gradient-to-br from-blue-50 via-white to-orange-50 dark:from-blue-900/20 dark:via-gray-800 dark:to-orange-900/20 cursor-pointer hover:shadow-2xl transition-all duration-300 border-2 border-blue-200 dark:border-blue-600/30 hover:border-orange-300 dark:hover:border-orange-500/40"
-      onClick={() => setLocation("/messages")}
+      className="bg-gradient-to-br from-blue-50 via-white to-orange-50 dark:from-blue-900/20 dark:via-gray-800 dark:to-orange-900/20 hover:shadow-2xl transition-all duration-300 border-2 border-blue-200 dark:border-blue-600/30 hover:border-orange-300 dark:hover:border-orange-500/40"
     >
       <CardContent className="p-6">
         <div className="mb-4">
