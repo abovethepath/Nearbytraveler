@@ -5487,7 +5487,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             }, 100);
                           }}
                         >
-                          <div className="flex items-start justify-between mb-2">
+                          <div className="flex items-start justify-between mb-2 sm:flex-row flex-col gap-2 sm:gap-0">
                             <div className="flex-1">
                               <div className="flex items-center gap-2 mb-1">
                                 <h4 className="font-medium text-sm">{plan.destination}</h4>
@@ -5508,7 +5508,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             </div>
                             <div className="flex items-center gap-1">
                               {isOwnProfile && (
-                                <div className="flex gap-1">
+                                <div className="flex gap-1 sm:flex-row flex-col sm:items-center">
                                   <Button
                                     size="sm"
                                     variant="outline"
@@ -5516,9 +5516,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                       e.stopPropagation();
                                       setLocation(`/plan-trip?edit=${plan.id}`);
                                     }}
-                                    className="bg-gradient-to-r from-blue-500 to-orange-500 text-white border-0 hover:from-blue-600 hover:to-orange-600 h-6 w-6 p-0"
+                                    className="bg-gradient-to-r from-blue-500 to-orange-500 text-white border-0 hover:from-blue-600 hover:to-orange-600 h-6 w-6 p-0 sm:w-6 w-full sm:mb-0 mb-1"
                                   >
                                     <Edit className="w-3 h-3" />
+                                    <span className="ml-1 text-xs sm:hidden">Edit</span>
                                   </Button>
                                   <Button
                                     size="sm"
@@ -5526,7 +5527,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                       e.stopPropagation();
                                       setLocation(`/itinerary/${plan.id}`);
                                     }}
-                                    className="bg-gradient-to-r from-blue-600 to-orange-600 text-white hover:opacity-90 h-6 text-xs px-2"
+                                    className="bg-gradient-to-r from-blue-600 to-orange-600 text-white hover:opacity-90 h-6 text-xs px-2 sm:mb-0 mb-1 whitespace-nowrap"
                                   >
                                     <Calendar className="w-3 h-3 mr-1" />
                                     Itinerary
@@ -5538,9 +5539,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                       e.stopPropagation();
                                       handleDeleteTravelPlan(plan);
                                     }}
-                                    className="text-red-600 hover:text-red-700 hover:bg-red-50 h-6 w-6 p-0"
+                                    className="text-red-600 hover:text-red-700 hover:bg-red-50 h-6 w-6 p-0 sm:w-6 w-full"
                                   >
                                     <Trash2 className="w-3 h-3" />
+                                    <span className="ml-1 text-xs sm:hidden">Delete</span>
                                   </Button>
                                 </div>
                               )}
