@@ -435,7 +435,7 @@ function Router() {
     }
 
     if (!isActuallyAuthenticated) {
-      console.log('🚨 CACHE BUST v2 - User not authenticated, showing landing page for:', location);
+      console.log('🏠 STREAMLINED LANDING - User not authenticated, showing streamlined landing page for:', location);
 
       // Allow access to events landing page without authentication for marketing
       if (location === '/events-landing') {
@@ -482,7 +482,7 @@ function Router() {
 
       // Show landing page
       if (location === '/landing-new') {
-        return <LandingNew />;
+        return <LandingStreamlined />;
       }
 
       // Allow access to business landing page without authentication
@@ -523,7 +523,7 @@ function Router() {
 
       // Show landing page for /landing route too
       if (location === '/landing') {
-        return <LandingNew />;
+        return <LandingStreamlined />;
       }
 
       // CRITICAL FIX: Allow profile routes even when user state is loading
@@ -540,7 +540,7 @@ function Router() {
           console.log('🏠 MOBILE FIX: User has auth data, showing Home page instead of landing');
           return <Home />;
         }
-        return <LandingNew />;
+        return <LandingStreamlined />;
       }
       // QR code signup route
       if (location.startsWith('/signup/qr/')) {
@@ -945,9 +945,9 @@ function Router() {
         return <BusinessCardPage />;
 
       case '/preview-landing':
-        return <LandingNew />;
+        return <LandingStreamlined />;
       case '/preview-first-landing':
-        return <LandingNew />;
+        return <LandingStreamlined />;
 
       case '/donate':
         return <Donate />;
