@@ -10987,6 +10987,82 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // ========================================
+  // ITINERARY CRUD API ROUTES
+  // ========================================
+
+  // Get itineraries for a travel plan
+  app.get("/api/itineraries/travel-plan/:travelPlanId", async (req, res) => {
+    try {
+      const travelPlanId = parseInt(req.params.travelPlanId || '0');
+      const itineraries = await storage.getItinerariesByTravelPlan(travelPlanId);
+      res.json(itineraries || []);
+    } catch (error: any) {
+      console.error("Error fetching itineraries:", error);
+      res.status(500).json({ message: "Failed to fetch itineraries" });
+    }
+  });
+
+  // Get a specific itinerary with items
+  app.get("/api/itineraries/:id", async (req, res) => {
+    try {
+      const itineraryId = parseInt(req.params.id || '0');
+      const itinerary = await storage.getItineraryWithItems(itineraryId);
+      res.json(itinerary);
+    } catch (error: any) {
+      console.error("Error fetching itinerary:", error);
+      res.status(500).json({ message: "Failed to fetch itinerary" });
+    }
+  });
+
+  // Create a new itinerary
+  app.post("/api/itineraries", async (req, res) => {
+    try {
+      console.log("Creating itinerary:", req.body);
+      const itinerary = await storage.createItinerary(req.body);
+      res.json(itinerary);
+    } catch (error: any) {
+      console.error("Error creating itinerary:", error);
+      res.status(500).json({ message: "Failed to create itinerary" });
+    }
+  });
+
+  // Add item to itinerary
+  app.post("/api/itineraries/:id/items", async (req, res) => {
+    try {
+      const itineraryId = parseInt(req.params.id || '0');
+      const item = await storage.createItineraryItem({ ...req.body, itineraryId });
+      res.json(item);
+    } catch (error: any) {
+      console.error("Error creating itinerary item:", error);
+      res.status(500).json({ message: "Failed to create itinerary item" });
+    }
+  });
+
+  // Update itinerary item
+  app.put("/api/itinerary-items/:id", async (req, res) => {
+    try {
+      const itemId = parseInt(req.params.id || '0');
+      const item = await storage.updateItineraryItem(itemId, req.body);
+      res.json(item);
+    } catch (error: any) {
+      console.error("Error updating itinerary item:", error);
+      res.status(500).json({ message: "Failed to update itinerary item" });
+    }
+  });
+
+  // Delete itinerary item
+  app.delete("/api/itinerary-items/:id", async (req, res) => {
+    try {
+      const itemId = parseInt(req.params.id || '0');
+      await storage.deleteItineraryItem(itemId);
+      res.json({ success: true });
+    } catch (error: any) {
+      console.error("Error deleting itinerary item:", error);
+      res.status(500).json({ message: "Failed to delete itinerary item" });
+    }
+  });
+
   // Return the configured HTTP server with WebSocket support  
   return httpServer;
 }

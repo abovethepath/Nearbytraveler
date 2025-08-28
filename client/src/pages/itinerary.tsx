@@ -496,7 +496,7 @@ export default function ItineraryPage({ travelPlanId: propTravelPlanId }: Itiner
                             <Input
                               type="number"
                               value={newItem.cost || ""}
-                              onChange={(e) => setNewItem(prev => ({ ...prev, cost: parseFloat(e.target.value) || undefined }))}
+                              onChange={(e) => setNewItem(prev => ({ ...prev, cost: parseFloat(e.target.value) || 0 }))}
                               placeholder="0.00"
                             />
                           </div>
@@ -505,7 +505,7 @@ export default function ItineraryPage({ travelPlanId: propTravelPlanId }: Itiner
                             <Input
                               type="number"
                               value={newItem.duration || ""}
-                              onChange={(e) => setNewItem(prev => ({ ...prev, duration: parseInt(e.target.value) || undefined }))}
+                              onChange={(e) => setNewItem(prev => ({ ...prev, duration: parseInt(e.target.value) || 0 }))}
                               placeholder="90"
                             />
                           </div>
@@ -717,7 +717,7 @@ export default function ItineraryPage({ travelPlanId: propTravelPlanId }: Itiner
                   <Input
                     type="number"
                     value={editingItem.cost || ""}
-                    onChange={(e) => setEditingItem(prev => prev ? { ...prev, cost: parseFloat(e.target.value) || undefined } : null)}
+                    onChange={(e) => setEditingItem(prev => prev ? { ...prev, cost: parseFloat(e.target.value) || 0 } : null)}
                   />
                 </div>
                 <div>
@@ -725,7 +725,7 @@ export default function ItineraryPage({ travelPlanId: propTravelPlanId }: Itiner
                   <Input
                     type="number"
                     value={editingItem.duration || ""}
-                    onChange={(e) => setEditingItem(prev => prev ? { ...prev, duration: parseInt(e.target.value) || undefined } : null)}
+                    onChange={(e) => setEditingItem(prev => prev ? { ...prev, duration: parseInt(e.target.value) || 0 } : null)}
                   />
                 </div>
                 <div className="md:col-span-2">

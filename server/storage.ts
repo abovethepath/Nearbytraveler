@@ -10210,6 +10210,103 @@ export class DatabaseStorage implements IStorage {
     return this.createVouch(vouchData.voucherUserId, vouchData.vouchedUserId, vouchData.vouchMessage, vouchData.vouchCategory);
   }
 
+  // ========================================
+  // ITINERARY CRUD METHODS
+  // ========================================
+
+  async getItinerariesByTravelPlan(travelPlanId: number): Promise<any[]> {
+    try {
+      const itineraries = await db
+        .select()
+        .from(tripItineraries)
+        .where(eq(tripItineraries.travelPlanId, travelPlanId))
+        .orderBy(desc(tripItineraries.createdAt));
+      return itineraries;
+    } catch (error) {
+      console.error('Error fetching itineraries:', error);
+      return [];
+    }
+  }
+
+  async getItineraryWithItems(itineraryId: number): Promise<any> {
+    try {
+      const [itinerary] = await db
+        .select()
+        .from(tripItineraries)
+        .where(eq(tripItineraries.id, itineraryId));
+
+      if (!itinerary) {
+        return null;
+      }
+
+      const items = await db
+        .select()
+        .from(itineraryItems)
+        .where(eq(itineraryItems.itineraryId, itineraryId))
+        .orderBy(asc(itineraryItems.date), asc(itineraryItems.startTime));
+
+      return { ...itinerary, items };
+    } catch (error) {
+      console.error('Error fetching itinerary with items:', error);
+      return null;
+    }
+  }
+
+  async createItinerary(itineraryData: any): Promise<any> {
+    try {
+      const [itinerary] = await db
+        .insert(tripItineraries)
+        .values({
+          ...itineraryData,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+        .returning();
+      return itinerary;
+    } catch (error) {
+      console.error('Error creating itinerary:', error);
+      throw error;
+    }
+  }
+
+  async createItineraryItem(itemData: any): Promise<any> {
+    try {
+      const [item] = await db
+        .insert(itineraryItems)
+        .values(itemData)
+        .returning();
+      return item;
+    } catch (error) {
+      console.error('Error creating itinerary item:', error);
+      throw error;
+    }
+  }
+
+  async updateItineraryItem(itemId: number, updates: any): Promise<any> {
+    try {
+      const [item] = await db
+        .update(itineraryItems)
+        .set(updates)
+        .where(eq(itineraryItems.id, itemId))
+        .returning();
+      return item;
+    } catch (error) {
+      console.error('Error updating itinerary item:', error);
+      throw error;
+    }
+  }
+
+  async deleteItineraryItem(itemId: number): Promise<void> {
+    try {
+      await db
+        .delete(itineraryItems)
+        .where(eq(itineraryItems.id, itemId));
+    } catch (error) {
+      console.error('Error deleting itinerary item:', error);
+      throw error;
+    }
+  }
+
   // Aura reward system
   async awardAura(userId: number, points: number, reason: string): Promise<void> {
     try {
