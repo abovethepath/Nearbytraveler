@@ -64,11 +64,14 @@ export function SmartLocationInput({
 
   // Sync component state when props change (important for edit mode)
   useEffect(() => {
-    if (city) {
-      setCustomCity(city);
-      setIsCustomMode(!CITIES_BY_COUNTRY[country]?.includes(city));
+    setCountry(propCountry);
+    setCity(propCity);
+    setState(propState);
+    if (propCity) {
+      setCustomCity(propCity);
+      setIsCustomMode(!CITIES_BY_COUNTRY[propCountry]?.includes(propCity));
     }
-  }, [city, country]);
+  }, [propCity, propState, propCountry]);
 
   // Auto-populate state when city and country are selected (only if state is empty)
   useEffect(() => {
