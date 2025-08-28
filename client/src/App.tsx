@@ -126,6 +126,7 @@ import MatchInCity from "@/pages/match-in-city";
 import QRSignup from "@/pages/qr-signup";
 import ShareQR from "@/pages/share-qr";
 import BusinessCardPage from "@/pages/business-card";
+import QRCodePage from "@/pages/qr-code";
 
 
 import Navbar from "@/components/navbar";
@@ -175,7 +176,7 @@ function Router() {
     '/', '/landing', '/landing-new', '/auth', '/join', '/signup', '/signup/local', '/signup/traveler', '/signup/business',
     '/events-landing', '/business-landing', '/locals-landing', '/travelers-landing', '/networking-landing', '/privacy', '/terms', '/cookies', '/about', '/getting-started',
     '/forgot-password', '/reset-password', '/welcome', '/welcome-business', '/welcome-travel-agent', '/quick-login', '/preview-landing', '/preview-first-landing',
-    '/travel-quiz', '/TravelIntentQuiz', '/signup/travel-agent', '/business-card'
+    '/travel-quiz', '/TravelIntentQuiz', '/signup/travel-agent', '/business-card', '/qr-code'
   ];
   const isLandingPage = landingPageRoutes.includes(location);
 
@@ -601,6 +602,10 @@ function Router() {
       if (location === '/business-card') {
         console.log('Returning BusinessCard component for /business-card - PUBLIC ACCESS');
         return <BusinessCardPage />;
+      }
+      if (location === '/qr-code') {
+        console.log('Returning QR Code generator for printing - PUBLIC ACCESS');
+        return <QRCodePage />;
       }
 
       // Enhanced routing for potentially authenticated users accessing main routes
