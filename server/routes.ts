@@ -2881,18 +2881,26 @@ Questions? Just reply to this message. Welcome aboard!
             ilike(users.travelIntent, `%${searchTerm}%`),
             ilike(users.travelerType, `%${searchTerm}%`),
             ilike(users.diversityCategories, `%${searchTerm}%`),
+            // Business profile fields
+            ilike(users.businessName, `%${searchTerm}%`), // Business name
+            ilike(users.businessType, `%${searchTerm}%`), // Business type
+            ilike(users.businessDescription, `%${searchTerm}%`), // Business description
+            ilike(users.websiteUrl, `%${searchTerm}%`), // Website URL
+            ilike(users.phoneNumber, `%${searchTerm}%`), // Phone number
+            ilike(users.streetAddress, `%${searchTerm}%`), // Street address
             // Location-based keyword search
             ilike(users.location, `%${searchTerm}%`), // Current location
             ilike(users.hometownCity, `%${searchTerm}%`), // Hometown city
             ilike(users.hometownState, `%${searchTerm}%`), // Hometown state
             ilike(users.hometownCountry, `%${searchTerm}%`), // Hometown country
             ilike(users.currentCity, `%${searchTerm}%`), // Current city if different
+            ilike(users.zipCode, `%${searchTerm}%`), // ZIP code search
             inArray(users.id, travelPlanSubquery) // Travel plan notes search
           )
         );
         
         if (process.env.NODE_ENV === 'development') {
-          console.log(`🔍 COMPREHENSIVE SEARCH: Searching for "${searchTerm}" across ALL profile fields: name, username, bio, interests, activities, sexual preferences, gender, military status, occupation, languages, travel intent, traveler type, diversity categories, location fields (current location, hometown city/state/country), AND travel plan notes`);
+          console.log(`🔍 ULTIMATE COMPREHENSIVE SEARCH: Searching for "${searchTerm}" across ALL user profile fields: personal info, business details, locations, travel plans, interests, activities, demographics, AND everything else on their profile`);
         }
       } else {
         // If no search term provided, require at least one other filter
