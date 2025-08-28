@@ -4016,7 +4016,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                       setEditFormData({ ...editFormData, interests: newInterests })
                                     );
                                   }}
-                                  className={`inline-flex items-center justify-center h-8 rounded-full px-4 text-xs font-medium whitespace-nowrap leading-none border-0 transition-all ${
+                                  className={`inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none border-0 transition-all ${
                                     isSelected
                                       ? 'bg-green-600 text-white font-bold transform scale-105'
                                       : 'bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-800 dark:text-blue-200 dark:hover:bg-blue-700'
@@ -4319,7 +4319,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                     setTempInterests([...tempInterests, interest]);
                                   }
                                 }}
-                                className={`inline-flex items-center justify-center h-8 rounded-full px-4 text-xs font-medium whitespace-nowrap leading-none border-0 transition-all ${
+                                className={`inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none border-0 transition-all ${
                                   isSelected
                                     ? 'bg-green-600 text-white font-bold transform scale-105'
                                     : 'bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-800 dark:text-blue-200 dark:hover:bg-blue-700'
@@ -5111,7 +5111,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                     : [...editFormData.activities, activity];
                                   setEditFormData({ ...editFormData, activities: newActivities });
                                 }}
-                                className={`inline-flex items-center justify-center h-8 rounded-full px-4 text-xs font-medium whitespace-nowrap leading-none border-0 transition-all ${
+                                className={`inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none border-0 transition-all ${
                                   isSelected
                                     ? 'bg-green-600 text-white font-bold transform scale-105'
                                     : 'bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-800 dark:text-green-200 dark:hover:bg-green-700'
@@ -5210,7 +5210,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                     : [...editFormData.events, event];
                                   setEditFormData({ ...editFormData, events: newEvents });
                                 }}
-                                className={`inline-flex items-center justify-center h-8 rounded-full px-4 text-xs font-medium whitespace-nowrap leading-none border-0 transition-all ${
+                                className={`inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none border-0 transition-all ${
                                   isSelected
                                     ? 'bg-green-600 text-white font-bold transform scale-105'
                                     : 'bg-purple-100 text-purple-800 hover:bg-purple-200 dark:bg-purple-800 dark:text-purple-200 dark:hover:bg-purple-700'
@@ -5465,7 +5465,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                   </div>
                                 )}
                                 {plan.status === 'planned' && (
-                                  <div className="inline-flex items-center justify-center h-8 rounded-full px-4 text-xs font-medium leading-none whitespace-nowrap bg-orange-500 text-white border-0 appearance-none select-none gap-1.5">
+                                  <div className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-orange-500 text-white border-0 appearance-none select-none gap-1">
                                     📅 Upcoming
                                   </div>
                                 )}
