@@ -486,10 +486,10 @@ function Router() {
         return <Auth />;
       }
 
-      // Allow access to join page - use unified signup
+      // Allow access to join page - restore original working route
       if (location === '/join') {
         console.log('Showing Join page');
-        return <UnifiedSignup />;
+        return <Auth />;
       }
 
       // Show landing page
