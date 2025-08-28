@@ -101,8 +101,8 @@
   --chart-4: 43 74% 66%;
   --chart-5: 27 87% 67%;
   
-  /* UNIVERSAL PILL SIZE STANDARDIZATION */
-  --pill-font-size: 12pt;
+  /* UNIVERSAL PILL SIZE STANDARDIZATION - Updated for compact h-6 sizing */
+  --pill-font-size: 0.875rem; /* matches text-sm */
 }
 
 .dark {
