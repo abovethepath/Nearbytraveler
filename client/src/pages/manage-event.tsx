@@ -10,13 +10,49 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { ArrowLeft, Calendar, MapPin, Users, Camera, Upload, X, Save } from "lucide-react";
+import { ArrowLeft, Calendar, MapPin, Users, Camera, Upload, X, Save, MoreHorizontal, Eye, Share2 } from "lucide-react";
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuTrigger,
+  DropdownMenuSeparator 
+} from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import Logo from "@/components/logo";
 import Navbar from "@/components/navbar";
 import type { Event } from "@shared/schema";
 import SmartLocationInput from "@/components/SmartLocationInput";
+
+// Custom hook to update page meta tags for better sharing
+const useEventMeta = (event: any) => {
+  React.useEffect(() => {
+    if (event) {
+      // Update document title
+      document.title = `${event.title} - Nearby Traveler Event`;
+      
+      // Update Open Graph meta tags for rich social sharing
+      const updateMeta = (property: string, content: string) => {
+        let meta = document.querySelector(`meta[property="${property}"]`) as HTMLMetaElement;
+        if (!meta) {
+          meta = document.createElement('meta');
+          meta.setAttribute('property', property);
+          document.head.appendChild(meta);
+        }
+        meta.content = content;
+      };
+      
+      updateMeta('og:title', `${event.title} - Nearby Traveler Event`);
+      updateMeta('og:description', `Join me at "${event.title}" in ${event.city}! ${event.description || 'Exciting event coming up!'}`);
+      updateMeta('og:type', 'event');
+      updateMeta('og:url', `${window.location.origin}/events/${event.id}`);
+      if (event.imageUrl) {
+        updateMeta('og:image', event.imageUrl);
+      }
+    }
+  }, [event]);
+};
 
 interface ManageEventProps {
   eventId: string;
@@ -60,11 +96,15 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
   const [instagramPostStatus, setInstagramPostStatus] = useState<string>("");
   const [facebookPostStatus, setFacebookPostStatus] = useState<string>("");
   const [postToNearbytravelerFacebook, setPostToNearbytravelerFacebook] = useState(true);
+  const [showSocialPreview, setShowSocialPreview] = useState(false);
 
   // Fetch event data
   const { data: event, isLoading } = useQuery<Event>({
     queryKey: [`/api/events/${eventId}`],
   });
+
+  // Update meta tags for better social sharing
+  useEventMeta(event);
 
   // Populate form data when event loads - preserve all existing data
   React.useEffect(() => {
@@ -964,18 +1004,60 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
                   {currentUser?.instagramHandle ? (
                     <div className="space-y-2">
                       <p className="text-xs text-gray-500">@{currentUser.instagramHandle}</p>
-                      <Button
-                        type="button"
-                        onClick={postToInstagram}
-                        disabled={postingToInstagram}
-                        className="w-full bg-gradient-to-r from-pink-500 to-purple-600 text-white hover:from-pink-600 hover:to-purple-700"
-                      >
-                        {postingToInstagram ? "Posting..." : "Post to Instagram"}
-                      </Button>
+                      <div className="flex gap-2">
+                        <Button
+                          type="button"
+                          onClick={() => setShowSocialPreview(!showSocialPreview)}
+                          variant="outline"
+                          className="flex-1"
+                        >
+                          {showSocialPreview ? "Hide Preview" : "Show Preview"}
+                        </Button>
+                        <Button
+                          type="button"
+                          onClick={postToInstagram}
+                          disabled={postingToInstagram}
+                          className="flex-1 bg-gradient-to-r from-pink-500 to-purple-600 text-white hover:from-pink-600 hover:to-purple-700"
+                        >
+                          {postingToInstagram ? "Posting..." : "Post to Instagram"}
+                        </Button>
+                      </div>
                       {instagramPostStatus && (
                         <p className={`text-xs ${instagramPostStatus.includes("success") ? "text-green-600" : instagramPostStatus.includes("Failed") ? "text-red-600" : "text-blue-600"}`}>
                           {instagramPostStatus}
                         </p>
+                      )}
+                      
+                      {/* Social Media Preview */}
+                      {showSocialPreview && (
+                        <div className="mt-4 p-4 bg-white border rounded-lg shadow-sm">
+                          <h5 className="font-medium text-sm mb-2">Instagram Preview:</h5>
+                          <div className="bg-gray-50 border rounded-lg p-3 text-sm">
+                            <div className="flex items-center gap-2 mb-2">
+                              <div className="w-6 h-6 bg-pink-500 rounded-full flex items-center justify-center text-white text-xs">
+                                @
+                              </div>
+                              <span className="font-medium">@{currentUser?.instagramHandle}</span>
+                            </div>
+                            {formData.imageUrl && (
+                              <div className="w-full h-32 bg-gray-200 rounded mb-2 flex items-center justify-center">
+                                <img 
+                                  src={formData.imageUrl} 
+                                  alt="Event preview" 
+                                  className="w-full h-full object-cover rounded"
+                                />
+                              </div>
+                            )}
+                            <p className="text-gray-800">
+                              🎉 Join me at "{formData.title}" in {formData.city}!<br/>
+                              📅 {formData.startDate ? new Date(formData.startDate).toLocaleDateString() : 'TBD'}<br/>
+                              📍 {formData.location}<br/><br/>
+                              {formData.description && `${formData.description.slice(0, 100)}${formData.description.length > 100 ? '...' : ''}`}<br/><br/>
+                              RSVP now! Link in bio 🔗<br/>
+                              #NearbyTraveler #Events #{formData.city?.replace(/\s+/g, '')}
+                            </p>
+                          </div>
+                        </div>
                       )}
                     </div>
                   ) : (
@@ -1033,35 +1115,70 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
             </CardContent>
           </Card>
 
-          {/* Action Buttons */}
-          <div className="flex gap-4 justify-between">
-            <Button
-              type="button"
-              variant="destructive"
-              onClick={() => deleteEventMutation.mutate()}
-              disabled={deleteEventMutation.isPending}
-              className="bg-red-600 text-white hover:bg-red-700"
-            >
-              <X className="w-4 h-4 mr-2" />
-              {deleteEventMutation.isPending ? "Canceling..." : "Cancel Event"}
-            </Button>
-            <div className="flex gap-4">
+          {/* Quick Actions Menu - Mobile Responsive */}
+          <div className="flex flex-col sm:flex-row gap-4 sm:justify-between">
+            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="flex items-center gap-2 w-full sm:w-auto">
+                    <MoreHorizontal className="w-4 h-4" />
+                    Quick Actions
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56">
+                  <DropdownMenuItem onClick={() => window.open(`/events/${eventId}`, '_blank')}>
+                    <Eye className="w-4 h-4 mr-2" />
+                    View as Guest
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setLocation(`/events/${eventId}/participants`)}>
+                    <Users className="w-4 h-4 mr-2" />
+                    View Participants
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => {
+                    const shareData = {
+                      title: `${formData.title} - Nearby Traveler Event`,
+                      text: `Join me at "${formData.title}" in ${formData.city}! 🎉\n\n${formData.description || 'Exciting event coming up!'}\n\nRSVP now:`,
+                      url: `${window.location.origin}/events/${eventId}`
+                    };
+                    if (navigator.share) {
+                      navigator.share(shareData);
+                    } else {
+                      navigator.clipboard.writeText(`${shareData.text} ${shareData.url}`);
+                      toast({ title: "Link copied to clipboard!" });
+                    }
+                  }}>
+                    <Share2 className="w-4 h-4 mr-2" />
+                    Share Event
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem 
+                    onClick={() => deleteEventMutation.mutate()}
+                    className="text-red-600 focus:text-red-600"
+                  >
+                    <X className="w-4 h-4 mr-2" />
+                    Cancel Event
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => window.history.back()}
+                className="w-full sm:w-auto"
               >
                 Back
               </Button>
-              <Button
-                type="submit"
-                disabled={updateEventMutation.isPending}
-                className="bg-gradient-to-r from-blue-500 to-orange-500 text-white hover:from-blue-600 hover:to-orange-600"
-              >
-                <Save className="w-4 h-4 mr-2" />
-                {updateEventMutation.isPending ? "Updating..." : "Update Event"}
-              </Button>
             </div>
+            
+            <Button
+              type="submit"
+              disabled={updateEventMutation.isPending}
+              className="bg-gradient-to-r from-blue-500 to-orange-500 text-white hover:from-blue-600 hover:to-orange-600 w-full sm:w-auto"
+            >
+              <Save className="w-4 h-4 mr-2" />
+              {updateEventMutation.isPending ? "Updating..." : "Update Event"}
+            </Button>
           </div>
         </form>
       </div>
