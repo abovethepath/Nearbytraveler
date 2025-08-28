@@ -615,14 +615,6 @@ export default function FixedChatroom() {
                               {member.username?.[0]?.toUpperCase() || member.name?.[0]?.toUpperCase() || '?'}
                             </AvatarFallback>
                           </Avatar>
-                          {/* Online/Offline indicator */}
-                          <div className={`absolute -bottom-1 -right-1 w-4 h-4 border-2 border-white rounded-full ${
-                            member.user_id === currentUserId 
-                              ? 'bg-green-400 animate-pulse' // Current user is always online
-                              : Math.random() > 0.3 // 70% chance of being "online" for demo
-                                ? 'bg-green-400' 
-                                : 'bg-gray-400'
-                          }`}></div>
                           {/* Hover tooltip */}
                           <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
                             View Profile
@@ -651,8 +643,7 @@ export default function FixedChatroom() {
                                '👤 Member'}
                             </p>
                             <p className="text-xs text-gray-400">
-                              {member.user_id === currentUserId ? 'Online' : 
-                               Math.random() > 0.3 ? 'Online' : 'Offline'}
+                              {member.user_id === currentUserId ? 'You' : 'Member'}
                             </p>
                           </div>
                         </div>
