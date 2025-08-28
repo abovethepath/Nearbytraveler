@@ -642,7 +642,7 @@ function Router() {
 
       // CRITICAL: Root path should always show landing page for unauthenticated users
       if (location === '/' || location === '') {
-        console.log('🏠 STREAMLINED LANDING - Root path for unauthenticated user - showing new streamlined version');
+        console.log('🏠 STREAMLINED LANDING v20250128-2024 - Root path for unauthenticated user - showing new streamlined version');
         return <LandingStreamlined />;
       }
       
