@@ -10445,8 +10445,20 @@ Questions? Just reply to this message. Welcome aboard!
         )
         .orderBy(desc(userCityInterests.createdAt));
       
-      if (process.env.NODE_ENV === 'development') console.log(`✅ USER INTERESTS GET ALL: Found ${interests.length} interests for user ${userId} across all cities`);
-      res.json(interests);
+      // Apply LA Metro consolidation to fix "City" vs "Los Angeles Metro" display issue
+      const consolidatedInterests = interests.map(interest => {
+        const { getMetroArea } = require('@shared/constants');
+        const metroArea = getMetroArea(interest.cityName);
+        
+        return {
+          ...interest,
+          // Use metro area if available, otherwise keep original city name
+          cityName: metroArea || interest.cityName
+        };
+      });
+      
+      if (process.env.NODE_ENV === 'development') console.log(`✅ USER INTERESTS GET ALL: Found ${interests.length} interests for user ${userId} across all cities, consolidated LA Metro cities`);
+      res.json(consolidatedInterests);
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error('Error fetching all user city interests:', error);
       res.status(500).json({ error: 'Failed to fetch all user city interests' });
