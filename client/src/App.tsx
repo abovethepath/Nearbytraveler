@@ -125,6 +125,7 @@ import QuickLogin from "@/pages/quick-login";
 import MatchInCity from "@/pages/match-in-city";
 import QRSignup from "@/pages/qr-signup";
 import ShareQR from "@/pages/share-qr";
+import BusinessCardPage from "@/pages/business-card";
 
 
 import Navbar from "@/components/navbar";
@@ -913,6 +914,9 @@ function Router() {
         return <GettingStarted />;
       case '/quick-login':
         return <QuickLogin />;
+
+      case '/business-card':
+        return <BusinessCardPage />;
 
       case '/preview-landing':
         return <LandingNew />;
