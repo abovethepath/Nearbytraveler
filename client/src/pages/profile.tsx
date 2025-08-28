@@ -1102,6 +1102,33 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     staleTime: 0, // Always refetch when filters change
   });
 
+  // Fetch quick deals to determine if Flash Deals widget should be shown
+  const { data: quickDeals = [] } = useQuery({
+    queryKey: ['/api/quick-deals', user?.hometownCity, user?.id],
+    queryFn: async () => {
+      if (!user?.id || user?.userType !== 'business') return [];
+      
+      let url = '/api/quick-deals';
+      const params = new URLSearchParams();
+      
+      if (user?.hometownCity) params.append('city', user.hometownCity);
+      if (user?.id) params.append('businessId', user.id.toString());
+      
+      if (params.toString()) url += `?${params.toString()}`;
+      
+      const response = await fetch(url, {
+        headers: {
+          ...(user?.id && { 'x-user-id': user.id.toString() })
+        }
+      });
+      if (!response.ok) return [];
+      const data = await response.json();
+      return data;
+    },
+    enabled: !!user?.id && user?.userType === 'business',
+    refetchInterval: 30000 // Refresh every 30 seconds for real-time updates
+  });
+
   // Fetch connection requests (only for own profile)
   const { data: connectionRequests = [] } = useQuery<any[]>({
     queryKey: [`/api/connections/${effectiveUserId}/requests`],
@@ -5841,8 +5868,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               </div>
             )}
 
-            {/* Quick Deals Widget for Business Users */}
-            {isOwnProfile && user?.userType === 'business' && (
+            {/* Quick Deals Widget for Business Users - Only show if deals exist */}
+            {isOwnProfile && user?.userType === 'business' && quickDeals && quickDeals.length > 0 && (
               <div className="mt-6">
                 <QuickDealsWidget 
                   city={user?.hometownCity ?? ''} 
