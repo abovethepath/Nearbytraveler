@@ -43,9 +43,8 @@ function Badge({ className, variant, ...props }: BadgeProps) {
   const content = String(props.children || '').toLowerCase();
   
   // Auto-detect interests, activities, events from common patterns (ONLY for non-pill badges)
-  // DISABLED: Removing auto-color detection to prevent inconsistent tag styling
-  const isInterest = enforcedClassName.includes('blue') || enforcedClassName.includes('interest');
-  const isInterestOLD = content.includes('photography') || content.includes('hiking') || content.includes('nightlife') ||
+  const isInterest = enforcedClassName.includes('blue') || enforcedClassName.includes('interest') || 
+                    content.includes('photography') || content.includes('hiking') || content.includes('nightlife') ||
                     content.includes('shopping') || content.includes('music') || content.includes('festivals') ||
                     content.includes('dolphins') || content.includes('single and looking') || content.includes('rooftop') ||
                     content.includes('happy hour') || content.includes('adventure tours') || content.includes('craft beer') ||

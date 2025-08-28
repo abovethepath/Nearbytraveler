@@ -879,7 +879,7 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
                     <Badge
                       key={tag}
                       variant="secondary"
-                      className="flex items-center gap-1"
+                      className="flex items-center gap-1 bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300"
                     >
                       {tag}
                       <button
