@@ -701,6 +701,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   });
   const [showConnectionFilters, setShowConnectionFilters] = useState(false);
   const [connectionsDisplayCount, setConnectionsDisplayCount] = useState(3);
+  const [editingConnectionNote, setEditingConnectionNote] = useState<number | null>(null);
+  const [connectionNoteText, setConnectionNoteText] = useState('');
   const [eventsDisplayCount, setEventsDisplayCount] = useState(3);
   const [businessesDisplayCount, setBusinessesDisplayCount] = useState(3);
   const [expandedTravelPlan, setExpandedTravelPlan] = useState<number | null>(null);
@@ -6073,13 +6075,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     {userConnections.slice(0, connectionsDisplayCount).map((connection: any) => (
                       <div
                         key={connection.id}
-                        onClick={() => setLocation(`/profile/${connection.connectedUser?.id?.toString() || ''}`)}
-                        className="rounded-xl border p-3 hover:shadow-sm bg-white dark:bg-gray-800 cursor-pointer flex flex-col items-center text-center gap-2"
+                        className="rounded-xl border p-3 hover:shadow-sm bg-white dark:bg-gray-800 flex flex-col items-center text-center gap-2"
                       >
                         <SimpleAvatar
                           user={connection.connectedUser}
                           size="md"
-                          className="w-16 h-16 sm:w-14 sm:h-14 rounded-full border-2 object-cover"
+                          className="w-16 h-16 sm:w-14 sm:h-14 rounded-full border-2 object-cover cursor-pointer"
+                          onClick={() => setLocation(`/profile/${connection.connectedUser?.id?.toString() || ''}`)}
                         />
                         <div className="w-full">
                           <p className="font-medium text-sm truncate text-gray-900 dark:text-white">
@@ -6090,6 +6092,85 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               ? `${connection.connectedUser?.hometownCity}, ${connection.connectedUser?.hometownCountry.replace("United States", "USA")}`
                               : "New member"}
                           </p>
+                          
+                          {/* Connection Note - How We Met */}
+                          {isOwnProfile && (
+                            <div className="mt-2 w-full">
+                              {editingConnectionNote === connection.id ? (
+                                <div className="space-y-2">
+                                  <Input
+                                    value={connectionNoteText}
+                                    onChange={(e) => setConnectionNoteText(e.target.value)}
+                                    placeholder="How did we meet? e.g., met at bonfire BBQ"
+                                    className="text-xs h-7 bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-700"
+                                    onKeyPress={(e) => {
+                                      if (e.key === 'Enter') {
+                                        // Save connection note
+                                        apiRequest('PATCH', `/api/connections/${connection.id}/note`, {
+                                          connectionNote: connectionNoteText
+                                        }).then(() => {
+                                          queryClient.invalidateQueries({ queryKey: [`/api/connections/${effectiveUserId}`] });
+                                          setEditingConnectionNote(null);
+                                          setConnectionNoteText('');
+                                        }).catch(console.error);
+                                      }
+                                    }}
+                                  />
+                                  <div className="flex gap-1">
+                                    <Button
+                                      size="sm"
+                                      onClick={() => {
+                                        apiRequest('PATCH', `/api/connections/${connection.id}/note`, {
+                                          connectionNote: connectionNoteText
+                                        }).then(() => {
+                                          queryClient.invalidateQueries({ queryKey: [`/api/connections/${effectiveUserId}`] });
+                                          setEditingConnectionNote(null);
+                                          setConnectionNoteText('');
+                                        }).catch(console.error);
+                                      }}
+                                      className="h-6 px-2 text-xs bg-green-500 hover:bg-green-600 text-white border-0"
+                                    >
+                                      Save
+                                    </Button>
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() => {
+                                        setEditingConnectionNote(null);
+                                        setConnectionNoteText('');
+                                      }}
+                                      className="h-6 px-2 text-xs"
+                                    >
+                                      Cancel
+                                    </Button>
+                                  </div>
+                                </div>
+                              ) : (
+                                <div 
+                                  className="cursor-pointer text-xs text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-700/50 rounded px-2 py-1 mt-1 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setEditingConnectionNote(connection.id);
+                                    setConnectionNoteText(connection.connectionNote || '');
+                                  }}
+                                  title="Click to edit how you met"
+                                >
+                                  {connection.connectionNote ? (
+                                    <span className="text-blue-600 dark:text-blue-400">📍 {connection.connectionNote}</span>
+                                  ) : (
+                                    <span className="text-gray-400 italic">+ How did we meet?</span>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                          )}
+                          
+                          {/* Show connection note for others viewing */}
+                          {!isOwnProfile && connection.connectionNote && (
+                            <div className="mt-2 text-xs text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 rounded px-2 py-1">
+                              📍 {connection.connectionNote}
+                            </div>
+                          )}
                         </div>
 
                         {/* Show the button on ≥sm only; on mobile the whole tile is tappable */}
@@ -6097,7 +6178,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           size="sm"
                           variant="outline"
                           className="hidden sm:inline-flex h-8 px-3 text-xs bg-blue-500 hover:bg-blue-600 text-white border-0"
-                          onClick={(e) => { e.stopPropagation(); setLocation(`/profile/${connection.connectedUser?.id?.toString() || ''}`); }}
+                          onClick={() => setLocation(`/profile/${connection.connectedUser?.id?.toString() || ''}`)}
                         >
                           View
                         </Button>
