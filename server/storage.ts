@@ -8862,12 +8862,7 @@ export class DatabaseStorage implements IStorage {
     try {
       // Since event chatrooms use the city chatroom infrastructure,
       // we can use the existing city chatroom message methods
-      return await this.createChatroomMessage({
-        chatroomId,
-        senderId,
-        content,
-        messageType: 'text'
-      });
+      return await this.createChatroomMessage(chatroomId, senderId, content);
     } catch (error) {
       console.error('Error creating event chatroom message:', error);
       throw error;
