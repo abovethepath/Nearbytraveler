@@ -249,8 +249,12 @@ export default function FixedChatroom() {
       const isMember = membersData.some((m: ChatMember) => m.user_id === currentUserId);
       (`🔍 User membership status: ${isMember ? 'MEMBER' : 'NOT MEMBER'}`);
       
+      // Always try to load messages if user is member
       if (isMember) {
         await loadMessages();
+      } else {
+        // Clear messages if user is not a member
+        setMessages([]);
       }
       
     } catch (error: any) {
@@ -282,11 +286,11 @@ export default function FixedChatroom() {
       
       ('✅ Join successful! Reloading data...');
       
-      // Just reload data - no verification countdown
+      // Immediately reload data after joining
       setTimeout(async () => {
         await loadAllData();
         setError(null);
-      }, 1000);
+      }, 500);
       
     } catch (error: any) {
       (`❌ Join failed: ${error.message}`);
@@ -545,26 +549,6 @@ export default function FixedChatroom() {
           </div>
         </div>
         
-        {/* Debug Panel - SIMPLIFIED */}
-        <div className="mb-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-sm">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-3">
-            <div>
-              <strong>Status:</strong>
-              <span className={`ml-2 px-3 py-1 rounded-full text-xs font-bold ${
-                userIsMember 
-                  ? 'bg-green-100 text-green-800 ring-2 ring-green-200' 
-                  : 'bg-red-100 text-red-800 ring-2 ring-red-200'
-              }`}>
-                {userIsMember ? '✅ MEMBER' : '❌ NOT MEMBER'}
-              </span>
-            </div>
-            <div><strong>User ID:</strong> {currentUserId}</div>
-            <div><strong>Chatroom ID:</strong> {chatroomId}</div>
-            <div><strong>Members Count:</strong> {members.length}</div>
-          </div>
-          
-          
-        </div>
         
         {/* Error Display */}
         {error && (
@@ -705,33 +689,40 @@ export default function FixedChatroom() {
                         </p>
                       </div>
                     ) : (
-                      messages.map((message, index) => (
-                        <div
-                          key={`${message.id}-${index}`}
-                          className={`flex ${
-                            message.senderId === currentUserId ? 'justify-end' : 'justify-start'
-                          }`}
-                        >
-                          <div className={`max-w-xs lg:max-w-md px-4 py-3 rounded-lg shadow-sm ${
-                            message.senderId === currentUserId
-                              ? 'bg-purple-600 text-white'
-                              : 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white border'
+                      messages.map((message, index) => {
+                        const isOwnMessage = message.senderId === currentUserId;
+                        const senderMember = members.find(m => m.user_id === message.senderId || m.id === message.senderId);
+                        const displayName = isOwnMessage ? 'You' : (senderMember?.username || message.senderUsername || 'Unknown User');
+                        const profileImage = isOwnMessage ? currentUser?.profileImage : (senderMember?.profile_image || message.senderProfileImage);
+                        
+                        return (
+                          <div key={`${message.id}-${index}`} className={`flex items-start space-x-3 mb-4 ${
+                            isOwnMessage ? 'flex-row-reverse space-x-reverse' : ''
                           }`}>
-                            <div className="flex items-center space-x-2 mb-1">
-                              <p className="text-xs font-medium opacity-75">
-                                {message.senderId === currentUserId 
-                                  ? 'You' 
-                                  : message.senderUsername || 'Unknown User'
-                                }
-                              </p>
-                              <p className="text-xs opacity-50">
-                                {new Date(message.timestamp).toLocaleTimeString()}
-                              </p>
+                            <Avatar className="w-8 h-8 flex-shrink-0">
+                              <AvatarImage src={profileImage} />
+                              <AvatarFallback className="bg-gradient-to-br from-purple-400 to-blue-500 text-white text-xs font-bold">
+                                {displayName.slice(0, 2).toUpperCase()}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className={`max-w-xs lg:max-w-md px-4 py-3 rounded-lg shadow-sm ${
+                              isOwnMessage
+                                ? 'bg-purple-600 text-white rounded-br-none' 
+                                : 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white border rounded-bl-none'
+                            }`}>
+                              <div className="flex items-center space-x-2 mb-1">
+                                <p className="text-xs font-medium opacity-75">
+                                  {displayName}
+                                </p>
+                                <p className="text-xs opacity-50">
+                                  {new Date(message.timestamp).toLocaleTimeString()}
+                                </p>
+                              </div>
+                              <p className="text-sm leading-relaxed">{message.content}</p>
                             </div>
-                            <p className="text-sm leading-relaxed">{message.content}</p>
                           </div>
-                        </div>
-                      ))
+                        );
+                      })
                     )}
                     <div ref={messagesEndRef} />
                   </div>
