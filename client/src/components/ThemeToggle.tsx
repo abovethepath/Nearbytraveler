@@ -26,7 +26,7 @@ export default function ThemeToggle({ className = "", position = "fixed" }: Them
   };
 
   const baseClasses = position === "fixed" 
-    ? "fixed top-6 right-6 z-50" 
+    ? "fixed top-6 right-6 z-[100]" 
     : "relative";
 
   return (
@@ -34,7 +34,7 @@ export default function ThemeToggle({ className = "", position = "fixed" }: Them
       onClick={toggleTheme}
       variant="outline"
       size="sm"
-      className={`${baseClasses} ${className} bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200`}
+      className={`${baseClasses} ${className} bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 shadow-lg`}
       data-testid="theme-toggle"
     >
       {theme === "light" ? (

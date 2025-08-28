@@ -5,11 +5,13 @@ import Footer from "@/components/footer";
 import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
 import { Users, Plane, Building2, Handshake } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
+import { useTheme } from "@/components/theme-provider";
 import ThemeToggle from "@/components/ThemeToggle";
 
 export default function LandingStreamlined() {
   const [, setLocation] = useLocation();
   const [isMobile, setIsMobile] = useState(false);
+  const { setTheme } = useTheme();
 
   useEffect(() => {
     const checkMobile = () => {
@@ -20,6 +22,14 @@ export default function LandingStreamlined() {
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
+
+  // Force light mode when component mounts (like yesterday)
+  useEffect(() => {
+    setTheme('light');
+    document.documentElement.classList.remove('dark');
+    document.documentElement.classList.add('light');
+    document.documentElement.style.colorScheme = 'light';
+  }, [setTheme]);
 
   return (
     <div className="bg-gray-50 dark:bg-gray-900 font-sans">
