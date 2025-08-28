@@ -146,12 +146,19 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
   
   // Check for event template in localStorage
   const loadEventTemplate = () => {
+    // Check for template from business dashboard duplication
     const templateData = localStorage.getItem('eventTemplate');
-    if (templateData) {
+    // Check for template from profile page Event Organizer Hub duplication
+    const duplicateData = localStorage.getItem('duplicateEventData');
+    
+    const dataToUse = templateData || duplicateData;
+    
+    if (dataToUse) {
       try {
-        const template = JSON.parse(templateData);
+        const template = JSON.parse(dataToUse);
         // Clear the template from storage after loading
         localStorage.removeItem('eventTemplate');
+        localStorage.removeItem('duplicateEventData');
         return template;
       } catch (error) {
         console.error('Error loading event template:', error);
