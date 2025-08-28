@@ -182,10 +182,10 @@ export default function LandingStreamlined() {
           <div className="max-w-7xl mx-auto px-4">
             <div className="text-center mb-12">
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-gray-900 dark:text-white mb-4 leading-normal px-2">
-                Featured Experiences
+                Real Connections Happen Here
               </h2>
               <p className="text-base sm:text-lg md:text-xl text-gray-600 dark:text-gray-300 px-2">
-                ✨ Just a few ways our community connects:
+                ✨ See how our community turns strangers into lifelong friends:
               </p>
             </div>
             
