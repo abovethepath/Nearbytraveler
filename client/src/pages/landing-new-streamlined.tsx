@@ -32,7 +32,7 @@ export default function LandingStreamlined() {
   }, [setTheme]);
 
   return (
-    <div className="bg-gray-50 dark:bg-gray-900 font-sans">
+    <div className="bg-white dark:bg-gray-900 font-sans">
       {/* Fixed CTA Button */}
       <div className="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 z-50">
         <Button 
@@ -40,7 +40,7 @@ export default function LandingStreamlined() {
             trackEvent('signup_cta_click', 'landing_page', 'floating_join_now');
             setLocation('/join');
           }}
-          className="bg-gradient-to-r from-blue-600 to-orange-600 hover:from-blue-700 hover:to-orange-700 text-white shadow-lg transition-all duration-300 hover:scale-105 px-4 sm:px-6 py-2 sm:py-3 rounded-full text-sm sm:text-base font-bold"
+          className="bg-black dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-600 hover:bg-gray-800 dark:hover:from-blue-700 dark:hover:to-orange-700 text-white shadow-lg transition-all duration-300 hover:scale-105 px-4 sm:px-6 py-2 sm:py-3 rounded-full text-sm sm:text-base font-bold border border-gray-300 dark:border-none"
         >
           Join Now
         </Button>
@@ -53,8 +53,8 @@ export default function LandingStreamlined() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         {/* HERO SECTION - With Original Photo */}
         <div className="relative z-10">
-          <div className="bg-gray-800 dark:bg-gray-900 border-4 border-orange-500 shadow-lg">
-            <div className="relative bg-gray-800 dark:bg-gray-900 pb-32 overflow-hidden min-h-[600px]">
+          <div className="bg-white dark:bg-gray-900 border-2 border-gray-300 dark:border-orange-500 shadow-lg rounded-lg">
+            <div className="relative bg-white dark:bg-gray-900 pb-32 overflow-hidden min-h-[600px]">
               <div className="absolute inset-0 h-full min-h-[600px]">
                 <img
                   src="/travelers together hugging_1754971726997.avif"
@@ -66,8 +66,9 @@ export default function LandingStreamlined() {
                   className="absolute inset-0"
                   style={{
                     background:
-                      "linear-gradient(to bottom, rgba(0,0,0,.55), rgba(0,0,0,.25), rgba(0,0,0,0))"
+                      "linear-gradient(to bottom, rgba(255,255,255,.8), rgba(255,255,255,.5), rgba(255,255,255,0.1))"
                   }}
+                  className="dark:bg-gradient-to-b dark:from-black/55 dark:via-black/25 dark:to-transparent"
                   aria-hidden="true"
                 />
               </div>
@@ -77,13 +78,13 @@ export default function LandingStreamlined() {
                     <div className="text-center">
                       <div className="max-w-4xl mx-auto">
                         <h1 className="px-3 leading-tight sm:leading-snug" style={{ fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
-                          <span className="block font-bold text-[clamp(1.5rem,6vw,2.25rem)] text-white" style={{ fontWeight: '700', textShadow: '1px 1px 3px rgba(0,0,0,0.7)', letterSpacing: '-0.02em' }}>
+                          <span className="block font-bold text-[clamp(1.5rem,6vw,2.25rem)] text-black dark:text-white" style={{ fontWeight: '700', textShadow: 'none', letterSpacing: '-0.02em' }}>
                             Skip the Tourist Traps, Connect Before Your Trip, Keep Connections Forever and Create Lifelong Friends!!!
                           </span>
                           <span className="block font-bold text-[clamp(1.25rem,5.5vw,2rem)] mt-4" style={{ fontWeight: '700', textShadow: '1px 1px 3px rgba(0,0,0,0.7)', letterSpacing: '-0.02em' }}>
-                            <span className="text-amber-300 sm:text-orange-500">Meet Locals and Other </span>
-                            <span className="text-blue-300 sm:text-blue-600">Nearby Travelers </span>
-                            <span className="text-white">Right Now, Today!!!</span>
+                            <span className="text-black dark:text-amber-300 dark:sm:text-orange-500">Meet Locals and Other </span>
+                            <span className="text-black dark:text-blue-300 dark:sm:text-blue-600">Nearby Travelers </span>
+                            <span className="text-black dark:text-white">Right Now, Today!!!</span>
                           </span>
                         </h1>
                         
@@ -95,7 +96,7 @@ export default function LandingStreamlined() {
                               setLocation('/join');
                             }}
                             size="lg"
-                            className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white font-bold px-8 py-3 rounded-xl shadow-lg transition-all duration-200 border-2 border-white max-w-md mx-auto"
+                            className="bg-black dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-500 hover:bg-gray-800 dark:hover:from-blue-700 dark:hover:to-orange-600 text-white font-bold px-8 py-3 rounded-xl shadow-lg transition-all duration-200 border-2 border-gray-300 dark:border-white max-w-md mx-auto"
                             style={{
                               fontSize: '1.1rem',
                               fontWeight: '700',
@@ -116,16 +117,16 @@ export default function LandingStreamlined() {
 
         {/* FOUNDER QUOTE HIGHLIGHT */}
         <div className="relative z-10 py-16 sm:py-20 overflow-hidden mb-8">
-          {/* Blue to orange gradient background */}
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-blue-500 to-orange-500"></div>
+          {/* Clean background for light mode */}
+          <div className="absolute inset-0 bg-gray-50 dark:bg-gradient-to-r dark:from-blue-600 dark:via-blue-500 dark:to-orange-500"></div>
           
           <div className="relative max-w-4xl mx-auto px-4">
-            <div className="bg-gray-100/95 dark:bg-gray-800/95 backdrop-blur-sm rounded-2xl p-6 sm:p-8 shadow-2xl">
-              <blockquote className="text-lg sm:text-xl text-gray-900 dark:text-white leading-relaxed mb-4 text-center font-medium">
+            <div className="bg-white dark:bg-gray-800/95 backdrop-blur-sm rounded-2xl p-6 sm:p-8 shadow-2xl border-2 border-gray-200 dark:border-none">
+              <blockquote className="text-lg sm:text-xl text-black dark:text-white leading-relaxed mb-4 text-center font-medium">
                 "I was tired of touring cities alone while amazing people walked past me every day. Travelers spend billions on flights, hotels, and tours — yet the most valuable part of a trip, the people you meet, is left to chance."
               </blockquote>
               <div className="text-center">
-                <p className="text-gray-700 dark:text-gray-300 font-semibold">
+                <p className="text-black dark:text-gray-300 font-semibold">
                   — Aaron Lefkowitz, Founder Nearby Traveler, Inc.
                 </p>
               </div>
@@ -135,63 +136,63 @@ export default function LandingStreamlined() {
 
         {/* FROM THE FOUNDER SECTION - Original with 3 Icons */}
         <div className="relative z-10 py-16 sm:py-20 overflow-hidden mb-16">
-          {/* Blue to orange gradient background */}
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-blue-500 to-orange-500"></div>
+          {/* Clean background for light mode */}
+          <div className="absolute inset-0 bg-gray-50 dark:bg-gradient-to-r dark:from-blue-600 dark:via-blue-500 dark:to-orange-500"></div>
           
           <div className="relative max-w-4xl mx-auto px-4">
             <div className="text-center mb-12">
-              <h2 className="text-3xl sm:text-4xl font-black text-white mb-4" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', fontWeight: '900', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', letterSpacing: '-0.02em' }}>
+              <h2 className="text-3xl sm:text-4xl font-black text-black dark:text-white mb-4" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', fontWeight: '900', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', letterSpacing: '-0.02em' }}>
                 From the Founder
               </h2>
-              <div className="w-24 h-1 bg-gradient-to-r from-white to-blue-300 mx-auto rounded-full"></div>
+              <div className="w-24 h-1 bg-black dark:bg-gradient-to-r dark:from-white dark:to-blue-300 mx-auto rounded-full"></div>
             </div>
             
             {/* Main content with better readability */}
             <div className="max-w-3xl mx-auto">
               <div className="text-center mb-8">
-                <p className="text-lg sm:text-xl text-white leading-relaxed font-medium mb-6" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', fontWeight: '500', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', letterSpacing: '-0.01em' }}>
+                <p className="text-lg sm:text-xl text-black dark:text-white leading-relaxed font-medium mb-6" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', fontWeight: '500', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', letterSpacing: '-0.01em' }}>
                   "After 15 years of hosting 400+ travelers from 50 countries, I saw first-hand how one single connection can change everything."
                 </p>
-                <p className="text-lg sm:text-xl text-white leading-relaxed font-medium mb-4" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', fontWeight: '500', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', letterSpacing: '-0.01em' }}>
+                <p className="text-lg sm:text-xl text-black dark:text-white leading-relaxed font-medium mb-4" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', fontWeight: '500', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', letterSpacing: '-0.01em' }}>
                   "I built Nearby Traveler to make those connections possible for everyone — travelers and locals alike."
                 </p>
-                <p className="text-2xl sm:text-3xl text-orange-300 font-black leading-tight mb-6" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', fontWeight: '900', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', letterSpacing: '-0.02em', textShadow: '2px 2px 4px rgba(0,0,0,0.8)' }}>
+                <p className="text-2xl sm:text-3xl text-black dark:text-orange-300 font-black leading-tight mb-6" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', fontWeight: '900', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', letterSpacing: '-0.02em', textShadow: 'none' }}>
                   "I BUILT THE SOLUTION I WISHED EXISTED."
                 </p>
               </div>
               
-              <div className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm rounded-3xl p-8 shadow-2xl">
-                <p className="text-lg text-gray-900 dark:text-white leading-relaxed mb-6 text-center font-medium">
+              <div className="bg-white dark:bg-gray-800/95 backdrop-blur-sm rounded-3xl p-8 shadow-2xl border-2 border-gray-200 dark:border-none">
+                <p className="text-lg text-black dark:text-white leading-relaxed mb-6 text-center font-medium">
                   Nearby Traveler connects travelers and locals through shared interests, activities, demographics, and events—transforming random encounters into life-changing connections.
                 </p>
                 
                 {/* Benefits with orange and blue theme */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                  <div className="text-center p-4 bg-white dark:bg-gray-700 rounded-2xl border-2 border-orange-300 shadow-lg">
+                  <div className="text-center p-4 bg-white dark:bg-gray-700 rounded-2xl border-2 border-gray-300 dark:border-orange-300 shadow-lg">
                     <div className="text-3xl mb-3">🤝</div>
-                    <p className="font-bold text-gray-900 dark:text-white text-sm">Connect with like-minded people</p>
+                    <p className="font-bold text-black dark:text-white text-sm">Connect with like-minded people</p>
                   </div>
-                  <div className="text-center p-4 bg-white dark:bg-gray-700 rounded-2xl border-2 border-blue-300 shadow-lg">
+                  <div className="text-center p-4 bg-white dark:bg-gray-700 rounded-2xl border-2 border-gray-300 dark:border-blue-300 shadow-lg">
                     <div className="text-3xl mb-3">💎</div>
-                    <p className="font-bold text-gray-900 dark:text-white text-sm">Discover hidden gems</p>
+                    <p className="font-bold text-black dark:text-white text-sm">Discover hidden gems</p>
                   </div>
-                  <div className="text-center p-4 bg-white dark:bg-gray-700 rounded-2xl border-2 border-orange-300 shadow-lg">
+                  <div className="text-center p-4 bg-white dark:bg-gray-700 rounded-2xl border-2 border-gray-300 dark:border-orange-300 shadow-lg">
                     <div className="text-3xl mb-3">✨</div>
-                    <p className="font-bold text-gray-900 dark:text-white text-sm">Create unforgettable memories</p>
+                    <p className="font-bold text-black dark:text-white text-sm">Create unforgettable memories</p>
                   </div>
                 </div>
                 
-                <p className="text-lg text-gray-900 dark:text-white leading-relaxed text-center mb-6 font-medium">
+                <p className="text-lg text-black dark:text-white leading-relaxed text-center mb-6 font-medium">
                   It's more than just travel—it's about real community, wherever you are.
                 </p>
                 
                 {/* Founder signature with orange and blue accents */}
-                <div className="text-center pt-6 border-t border-blue-200 dark:border-blue-600">
-                  <p className="text-lg text-gray-800 dark:text-gray-200 mb-3 font-medium">Thanks for being part of the journey.</p>
+                <div className="text-center pt-6 border-t border-gray-300 dark:border-blue-600">
+                  <p className="text-lg text-black dark:text-gray-200 mb-3 font-medium">Thanks for being part of the journey.</p>
                   <div className="flex items-center justify-center space-x-4">
                     <div>
-                      <p className="text-xl font-black text-gray-900 dark:text-white">Aaron Lefkowitz</p>
-                      <p className="text-blue-600 font-bold">Founder, Nearby Traveler, Inc.</p>
+                      <p className="text-xl font-black text-black dark:text-white">Aaron Lefkowitz</p>
+                      <p className="text-black dark:text-blue-600 font-bold">Founder, Nearby Traveler, Inc.</p>
                     </div>
                   </div>
                 </div>
