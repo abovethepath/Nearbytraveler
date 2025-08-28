@@ -145,18 +145,24 @@ export default function TravelPlansWidget({ userId }: TravelPlansWidgetProps) {
                       <div>
                         <h5 className="font-medium text-gray-900 dark:text-white mb-2">Interests</h5>
                         <div className="flex flex-wrap gap-1">
-                          {plan.interests.slice(0, 10).map((interest: string, idx: number) => (
+                          {(expandedTravelPlan === plan.id ? plan.interests : plan.interests.slice(0, 10)).map((interest: string, idx: number) => (
                             <div
                               key={`interest-${idx}`}
-                              className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5"
+                              className="inline-flex items-center justify-center h-6 px-3 text-xs font-medium leading-none whitespace-nowrap bg-blue-500 text-white rounded-full border-0 appearance-none select-none gap-1 max-w-[calc(50vw-2rem)] overflow-hidden text-ellipsis"
                             >
                               {interest}
                             </div>
                           ))}
-                          {plan.interests.length > 10 && (
-                            <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 text-xs rounded-full">
+                          {plan.interests.length > 10 && expandedTravelPlan !== plan.id && (
+                            <button 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setExpandedTravelPlan(plan.id);
+                              }}
+                              className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 text-xs rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                            >
                               +{plan.interests.length - 10} more
-                            </span>
+                            </button>
                           )}
                         </div>
                       </div>
@@ -166,18 +172,24 @@ export default function TravelPlansWidget({ userId }: TravelPlansWidgetProps) {
                       <div>
                         <h5 className="font-medium text-gray-900 dark:text-white mb-2">Activities</h5>
                         <div className="flex flex-wrap gap-1">
-                          {plan.activities.slice(0, 8).map((activity: string, idx: number) => (
+                          {(expandedTravelPlan === plan.id ? plan.activities : plan.activities.slice(0, 8)).map((activity: string, idx: number) => (
                             <div
                               key={`activity-${idx}`}
-                              className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-green-500 text-white border-0 appearance-none select-none gap-1.5"
+                              className="inline-flex items-center justify-center h-6 px-3 text-xs font-medium leading-none whitespace-nowrap bg-green-500 text-white rounded-full border-0 appearance-none select-none gap-1 max-w-[calc(50vw-2rem)] overflow-hidden text-ellipsis"
                             >
                               {activity}
                             </div>
                           ))}
-                          {plan.activities.length > 8 && (
-                            <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 text-xs rounded-full">
+                          {plan.activities.length > 8 && expandedTravelPlan !== plan.id && (
+                            <button 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setExpandedTravelPlan(plan.id);
+                              }}
+                              className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 text-xs rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                            >
                               +{plan.activities.length - 8} more
-                            </span>
+                            </button>
                           )}
                         </div>
                       </div>
@@ -187,18 +199,24 @@ export default function TravelPlansWidget({ userId }: TravelPlansWidgetProps) {
                       <div>
                         <h5 className="font-medium text-gray-900 dark:text-white mb-2">Events</h5>
                         <div className="flex flex-wrap gap-1">
-                          {plan.events.slice(0, 6).map((event: string, idx: number) => (
+                          {(expandedTravelPlan === plan.id ? plan.events : plan.events.slice(0, 6)).map((event: string, idx: number) => (
                             <div
                               key={`event-${idx}`}
-                              className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-purple-500 text-white border-0 appearance-none select-none gap-1.5"
+                              className="inline-flex items-center justify-center h-6 px-3 text-xs font-medium leading-none whitespace-nowrap bg-purple-500 text-white rounded-full border-0 appearance-none select-none gap-1 max-w-[calc(50vw-2rem)] overflow-hidden text-ellipsis"
                             >
                               {event}
                             </div>
                           ))}
-                          {plan.events.length > 6 && (
-                            <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 text-xs rounded-full">
+                          {plan.events.length > 6 && expandedTravelPlan !== plan.id && (
+                            <button 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setExpandedTravelPlan(plan.id);
+                              }}
+                              className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 text-xs rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                            >
                               +{plan.events.length - 6} more
-                            </span>
+                            </button>
                           )}
                         </div>
                       </div>
@@ -211,7 +229,7 @@ export default function TravelPlansWidget({ userId }: TravelPlansWidgetProps) {
                           {plan.tags.slice(0, 8).map((tag: string, idx: number) => (
                             <span
                               key={`tag-${idx}`}
-                              className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-green-500 text-white border-0 appearance-none select-none gap-1.5"
+                              className="inline-flex items-center justify-center h-6 px-3 text-xs font-medium leading-none whitespace-nowrap bg-green-500 text-white rounded-full border-0 appearance-none select-none gap-1 max-w-[calc(50vw-2rem)] overflow-hidden text-ellipsis"
                             >
                               {tag}
                             </span>
