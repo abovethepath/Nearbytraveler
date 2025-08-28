@@ -412,75 +412,111 @@ export default function LandingStreamlined() {
           </div>
         </div>
 
-        {/* Who It's For */}
-        <section className="py-16 mb-16">
-          <div className="max-w-5xl mx-auto">
-            <h2 className="text-3xl font-bold text-center text-gray-900 dark:text-white mb-12">Who It's For</h2>
-            
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-              {/* Locals */}
-              <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm text-center">
-                <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center">
-                  <Users className="w-8 h-8 text-blue-600" />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">Locals</h3>
-                <p className="text-gray-600 dark:text-gray-400 mb-4">Turn your city into lasting friendships. Share your favorite spots, create events, and connect with travelers and fellow locals.</p>
-                <Button 
-                  onClick={() => setLocation('/locals-landing')}
-                  variant="outline" 
-                  className="w-full text-teal-600 border-teal-600 hover:bg-teal-50 dark:text-teal-400 dark:border-teal-400 dark:hover:bg-teal-950"
-                >
-                  Explore for Locals
-                </Button>
-              </div>
+        {/* Everyone Welcome Section */}
+        <section className="py-20 mb-16 bg-gradient-to-br from-blue-50 via-orange-50 to-purple-50 dark:from-gray-800 dark:via-gray-900 dark:to-gray-800 rounded-3xl">
+          <div className="max-w-6xl mx-auto px-6">
+            <div className="text-center mb-16">
+              <h2 className="text-5xl font-black text-gray-900 dark:text-white mb-6">
+                Everyone's <span className="bg-gradient-to-r from-blue-600 to-orange-600 bg-clip-text text-transparent">Welcome Here</span>
+              </h2>
+              <p className="text-2xl text-gray-600 dark:text-gray-300 max-w-4xl mx-auto leading-relaxed">
+                No matter who you are or why you're traveling - this is your community for making real connections
+              </p>
+            </div>
 
-              {/* Travelers */}
-              <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm text-center">
-                <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-green-100 to-green-200 rounded-2xl flex items-center justify-center">
-                  <Plane className="w-8 h-8 text-green-600" />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">Travelers</h3>
-                <p className="text-gray-600 dark:text-gray-400 mb-4">Skip the tourist traps. Meet locals who know the real city, join authentic events, and find travel buddies who share your interests.</p>
+            {/* Dynamic Story Grid */}
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+              {/* Solo Traveler */}
+              <div className="group relative bg-gradient-to-br from-blue-500 to-blue-600 p-8 rounded-2xl text-white transform hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-2xl">
+                <div className="absolute top-4 right-4 text-3xl opacity-80">✈️</div>
+                <h3 className="text-2xl font-bold mb-4">Solo Traveler?</h3>
+                <p className="text-blue-100 leading-relaxed mb-6">Turn that lonely hotel room into lifelong friendships. Meet locals who'll show you their secret spots and fellow travelers who get your wanderlust.</p>
                 <Button 
                   onClick={() => setLocation('/travelers-landing')}
-                  variant="outline" 
-                  className="w-full text-teal-600 border-teal-600 hover:bg-teal-50 dark:text-teal-400 dark:border-teal-400 dark:hover:bg-teal-950"
+                  className="bg-white text-blue-600 hover:bg-blue-50 font-bold w-full"
                 >
-                  Explore for Travelers
+                  Find Your Travel Crew
                 </Button>
               </div>
 
-              {/* Businesses */}
-              <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm text-center">
-                <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-purple-100 to-purple-200 rounded-2xl flex items-center justify-center">
-                  <Building2 className="w-8 h-8 text-purple-600" />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">Businesses</h3>
-                <p className="text-gray-600 dark:text-gray-400 mb-4">Whether you run a bar, café, co-working space, or event venue—connect with travelers and locals looking for authentic experiences.</p>
+              {/* Local */}
+              <div className="group relative bg-gradient-to-br from-green-500 to-teal-600 p-8 rounded-2xl text-white transform hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-2xl">
+                <div className="absolute top-4 right-4 text-3xl opacity-80">🏠</div>
+                <h3 className="text-2xl font-bold mb-4">Love Your City?</h3>
+                <p className="text-green-100 leading-relaxed mb-6">Share your favorite coffee shop, that hidden beach, or weekly trivia night. Turn your hometown knowledge into amazing new friendships.</p>
+                <Button 
+                  onClick={() => setLocation('/locals-landing')}
+                  className="bg-white text-green-600 hover:bg-green-50 font-bold w-full"
+                >
+                  Share Your World
+                </Button>
+              </div>
+
+              {/* Business Owner */}
+              <div className="group relative bg-gradient-to-br from-purple-500 to-pink-600 p-8 rounded-2xl text-white transform hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-2xl">
+                <div className="absolute top-4 right-4 text-3xl opacity-80">🎯</div>
+                <h3 className="text-2xl font-bold mb-4">Run a Business?</h3>
+                <p className="text-purple-100 leading-relaxed mb-6">Whether you own a bar, café, or co-working space - connect with travelers and locals looking for authentic experiences at your spot.</p>
                 <Button 
                   onClick={() => setLocation('/business-landing')}
-                  variant="outline" 
-                  className="w-full text-teal-600 border-teal-600 hover:bg-teal-50 dark:text-teal-400 dark:border-teal-400 dark:hover:bg-teal-950"
+                  className="bg-white text-purple-600 hover:bg-purple-50 font-bold w-full"
                 >
-                  Explore for Businesses
+                  Grow Your Community
                 </Button>
               </div>
 
-              {/* Networking */}
-              <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm text-center">
-                <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-orange-100 to-orange-200 rounded-2xl flex items-center justify-center">
-                  <Handshake className="w-8 h-8 text-orange-600" />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">Networking</h3>
-                <p className="text-gray-600 dark:text-gray-400 mb-4">Heading to a conference, festival, or business trip? Connect before you arrive, meet like-minded people, and keep connections alive.</p>
+              {/* Business Traveler */}
+              <div className="group relative bg-gradient-to-br from-orange-500 to-red-600 p-8 rounded-2xl text-white transform hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-2xl">
+                <div className="absolute top-4 right-4 text-3xl opacity-80">💼</div>
+                <h3 className="text-2xl font-bold mb-4">Traveling for Work?</h3>
+                <p className="text-orange-100 leading-relaxed mb-6">Turn boring business trips into networking goldmines. Meet professionals, find conference buddies, or just grab dinner with cool people.</p>
                 <Button 
                   onClick={() => setLocation('/networking-landing')}
-                  variant="outline" 
-                  className="w-full text-teal-600 border-teal-600 hover:bg-teal-50 dark:text-teal-400 dark:border-teal-400 dark:hover:bg-teal-950"
+                  className="bg-white text-orange-600 hover:bg-orange-50 font-bold w-full"
                 >
-                  Explore Networking
+                  Network Like a Pro
                 </Button>
               </div>
+
+              {/* Event Lover */}
+              <div className="group relative bg-gradient-to-br from-indigo-500 to-purple-600 p-8 rounded-2xl text-white transform hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-2xl">
+                <div className="absolute top-4 right-4 text-3xl opacity-80">🎉</div>
+                <h3 className="text-2xl font-bold mb-4">Love Events?</h3>
+                <p className="text-indigo-100 leading-relaxed mb-6">From beach bonfires to art gallery walks - discover events you'd never find on tourist sites and meet people who share your interests.</p>
+                <Button 
+                  onClick={() => setLocation('/events-landing')}
+                  className="bg-white text-indigo-600 hover:bg-indigo-50 font-bold w-full"
+                >
+                  Find Your Scene
+                </Button>
+              </div>
+
+              {/* Anyone Else */}
+              <div className="group relative bg-gradient-to-br from-gray-700 to-gray-800 p-8 rounded-2xl text-white transform hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-2xl">
+                <div className="absolute top-4 right-4 text-3xl opacity-80">🌟</div>
+                <h3 className="text-2xl font-bold mb-4">Just Want Friends?</h3>
+                <p className="text-gray-200 leading-relaxed mb-6">New to town? Feeling lonely? Want to try something new? Everyone needs community - and that's exactly what we're here for.</p>
+                <Button 
+                  onClick={() => setLocation('/auth')}
+                  className="bg-white text-gray-700 hover:bg-gray-50 font-bold w-full"
+                >
+                  Start Connecting
+                </Button>
+              </div>
+            </div>
+
+            {/* Bottom CTA */}
+            <div className="text-center">
+              <p className="text-xl text-gray-600 dark:text-gray-300 mb-6">
+                Whatever brings you here, you belong here. 
+              </p>
+              <Button 
+                onClick={() => setLocation('/auth')}
+                size="lg"
+                className="bg-gradient-to-r from-blue-600 to-orange-600 hover:from-blue-700 hover:to-orange-700 text-white font-black text-xl px-12 py-6 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300"
+              >
+                Join Your People Today
+              </Button>
             </div>
           </div>
         </section>
