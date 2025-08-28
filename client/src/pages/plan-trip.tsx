@@ -1049,8 +1049,9 @@ export default function PlanTrip() {
 
 
               {/* Notes - Mobile Responsive */}
-              <div className="overflow-hidden break-words">
-                <Label className="text-sm sm:text-base font-medium mb-2 block text-black dark:text-white break-words">
+              <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-lg p-4 sm:p-6 overflow-hidden break-words shadow-sm">
+                <Label className="text-sm sm:text-base font-medium mb-2 block text-black dark:text-white break-words flex items-center gap-2">
+                  <span className="text-amber-600 dark:text-amber-400">💡</span>
                   Trip Notes (Optional) - Keyword Searchable
                 </Label>
                 <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-2 break-words">
