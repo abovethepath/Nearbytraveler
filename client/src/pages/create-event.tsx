@@ -157,20 +157,30 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
     mode: "onChange"
   });
 
-  // Tag management functions
+  // Tag management functions with limit
+  const MAX_TAGS = 6;
   const toggleTag = (tag: string) => {
-    setSelectedTags(prev => 
-      prev.includes(tag) 
-        ? prev.filter(t => t !== tag)
-        : [...prev, tag]
-    );
+    setSelectedTags(prev => {
+      if (prev.includes(tag)) {
+        return prev.filter(t => t !== tag);
+      } else if (prev.length < MAX_TAGS) {
+        return [...prev, tag];
+      }
+      return prev; // Don't add if at limit
+    });
   };
 
   const addCustomTag = () => {
     const trimmedTag = customTag.trim();
-    if (trimmedTag && !selectedTags.includes(trimmedTag)) {
+    if (trimmedTag && !selectedTags.includes(trimmedTag) && selectedTags.length < MAX_TAGS) {
       setSelectedTags(prev => [...prev, trimmedTag]);
       setCustomTag("");
+    } else if (selectedTags.length >= MAX_TAGS) {
+      toast({
+        title: "Tag limit reached",
+        description: `You can only add up to ${MAX_TAGS} tags per event.`,
+        variant: "destructive"
+      });
     }
   };
 
@@ -908,7 +918,7 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
             <div className="space-y-2">
               <Label className="flex items-center gap-2">
                 <Tag className="w-4 h-4" />
-                Event Tags
+                Event Tags ({selectedTags.length}/{MAX_TAGS})
               </Label>
               <div className="space-y-3">
                 {/* Predefined Tags */}
@@ -919,10 +929,29 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
                       <Button
                         key={tag}
                         type="button"
-                        variant={selectedTags.includes(tag) ? "default" : "outline"}
+                        variant={selectedTags.includes(tag) ? "secondary" : "outline"}
                         size="sm"
-                        className="justify-start text-xs h-auto py-2 px-3 text-left whitespace-normal leading-tight"
-                        onClick={() => toggleTag(tag)}
+                        className={`justify-start text-xs h-auto py-2 px-3 text-left whitespace-normal leading-tight ${
+                          selectedTags.includes(tag) 
+                            ? "bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-white border-gray-300 dark:border-gray-500" 
+                            : "hover:bg-gray-50 dark:hover:bg-gray-700"
+                        } ${
+                          !selectedTags.includes(tag) && selectedTags.length >= MAX_TAGS 
+                            ? "opacity-50 cursor-not-allowed" 
+                            : ""
+                        }`}
+                        onClick={() => {
+                          if (selectedTags.includes(tag) || selectedTags.length < MAX_TAGS) {
+                            toggleTag(tag);
+                          } else {
+                            toast({
+                              title: "Tag limit reached",
+                              description: `You can only add up to ${MAX_TAGS} tags per event.`,
+                              variant: "destructive"
+                            });
+                          }
+                        }}
+                        disabled={!selectedTags.includes(tag) && selectedTags.length >= MAX_TAGS}
                       >
                         {selectedTags.includes(tag) ? "✓ " : ""}{tag}
                       </Button>
@@ -951,7 +980,7 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
                       variant="outline"
                       size="sm"
                       onClick={addCustomTag}
-                      disabled={!customTag.trim()}
+                      disabled={!customTag.trim() || selectedTags.length >= MAX_TAGS}
                     >
                       Add
                     </Button>
@@ -975,7 +1004,10 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
                         </Badge>
                       ))}
                     </div>
-                    <p className="text-xs text-gray-500 dark:text-gray-300 mt-1">Click on a tag to remove it</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-300 mt-1">
+                      Click on a tag to remove it • {selectedTags.length}/{MAX_TAGS} tags used
+                      {selectedTags.length >= MAX_TAGS && " (limit reached)"}
+                    </p>
                   </div>
                 )}
               </div>
