@@ -326,12 +326,16 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
                   <MapPin className="w-5 h-5 text-travel-blue" />
                   <div>
                     <p className="font-medium">{event.location}</p>
-                    <p className="text-sm text-gray-500">
-                      {event.street && `${event.street}, `}
-                      {event.city}
-                      {event.state && `, ${event.state}`}
-                      {event.zipcode && ` ${event.zipcode}`}
-                    </p>
+                    {/* Only show additional address if it's different from location */}
+                    {(event.street || event.city || event.state || event.zipcode) && 
+                     `${event.street ? event.street + ', ' : ''}${event.city}${event.state ? ', ' + event.state : ''}${event.zipcode ? ' ' + event.zipcode : ''}` !== event.location && (
+                      <p className="text-sm text-gray-500">
+                        {event.street && `${event.street}, `}
+                        {event.city}
+                        {event.state && `, ${event.state}`}
+                        {event.zipcode && ` ${event.zipcode}`}
+                      </p>
+                    )}
                   </div>
                 </div>
 
@@ -388,12 +392,12 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
               {event.tags && event.tags.length > 0 && (
                 <div>
                   <h3 className="font-semibold mb-2 text-gray-900 dark:text-white">Tags</h3>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-2 max-w-full">
                     {event.tags.map((tag, index) => (
                       <Badge 
                         key={`${tag}-${index}`} 
                         variant="secondary" 
-                        className="text-xs px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-0 hover:bg-gray-200 dark:hover:bg-gray-600"
+                        className="text-xs px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-0 hover:bg-gray-200 dark:hover:bg-gray-600 whitespace-nowrap flex-shrink-0"
                       >
                         {tag}
                       </Badge>
