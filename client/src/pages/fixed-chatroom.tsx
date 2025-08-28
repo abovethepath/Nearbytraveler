@@ -452,9 +452,7 @@ export default function FixedChatroom() {
           <Loader2 className="w-8 h-8 animate-spin text-purple-600 mx-auto mb-4" />
           <p className="text-lg font-semibold mb-2">Loading chatroom...</p>
           <div className="text-sm text-gray-600 max-w-md">
-            {debugInfo.slice(-2).map((debug, i) => (
-              <p key={i}>{debug}</p>
-            ))}
+            <p>Please wait while we connect you to the chatroom...</p>
           </div>
         </div>
       </div>
