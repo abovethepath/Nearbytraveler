@@ -665,8 +665,8 @@ function Router() {
         // Let it continue to the specific route handlers below (they're already in the landing page section)
       } else {
         // Force unknown routes to landing page for unauthenticated users
-        console.log('❌ CACHE BUST v2 - Unknown route for unauthenticated user, showing landing page:', location);
-        return <LandingNew />;
+        console.log('❌ STREAMLINED FALLBACK - Unknown route for unauthenticated user, showing streamlined landing page:', location);
+        return <LandingStreamlined />;
       }
     }
 
