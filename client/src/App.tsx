@@ -603,10 +603,6 @@ function Router() {
         console.log('Returning BusinessCard component for /business-card - PUBLIC ACCESS');
         return <BusinessCardPage />;
       }
-      if (location === '/qr-code') {
-        console.log('Returning QR Code generator for printing - PUBLIC ACCESS');
-        return <QRCodePage />;
-      }
 
       // Enhanced routing for potentially authenticated users accessing main routes
       // Check for common app routes that authenticated users might be trying to access
@@ -646,6 +642,12 @@ function Router() {
       if (location === '/' || location === '') {
         console.log('🏠 CACHE BUST v2 - Root path for unauthenticated user - showing landing page');
         return <LandingNew />;
+      }
+      
+      // QR Code page - PUBLIC ACCESS for printing business cards
+      if (location === '/qr-code') {
+        console.log('✅ QR Code generator for printing - PUBLIC ACCESS');
+        return <QRCodePage />;
       }
       
       // Check if this is a valid landing page route (including our public pages)
