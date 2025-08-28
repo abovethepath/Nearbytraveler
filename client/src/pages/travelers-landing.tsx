@@ -1,22 +1,14 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
 import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
-import { useTheme } from "@/components/theme-provider";
+import ThemeToggle from "@/components/ThemeToggle";
 import Footer from "@/components/footer";
 import backgroundImage from "@assets/image_1755178154302.png";
 const travelersHeaderImage = "/attached_assets/travelers together hugging_1754971726997.avif";
 
 export default function TravelersLanding() {
   const [, setLocation] = useLocation();
-  const { setTheme } = useTheme();
-
-  // Force light mode when component mounts
-  useEffect(() => {
-    setTheme('light');
-    document.documentElement.classList.remove('dark');
-    document.documentElement.classList.add('light');
-  }, [setTheme]);
 
   return (
     <div className="bg-gray-50 dark:bg-gray-900 font-sans" key="travelers-landing-v2">
@@ -35,6 +27,7 @@ export default function TravelersLanding() {
         </Button>
       </div>
       
+      <ThemeToggle />
       <LandingHeader />
       <LandingHeaderSpacer />
       

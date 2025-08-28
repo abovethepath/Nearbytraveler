@@ -1,25 +1,18 @@
 
-import React, { useEffect } from "react";
+import React from "react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
-import { useTheme } from "@/components/theme-provider";
+import ThemeToggle from "@/components/ThemeToggle";
 const businessHeaderPhoto = "/businessheader2_1752350709493.png";
 
 export default function BusinessLanding() {
   const [, setLocation] = useLocation();
-  const { setTheme } = useTheme();
-
-  // Force light mode when component mounts
-  useEffect(() => {
-    setTheme('light');
-    document.documentElement.classList.remove('dark');
-    document.documentElement.classList.add('light');
-  }, [setTheme]);
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-blue-50 via-white to-orange-50 dark:from-gray-900 dark:via-gray-800 dark:to-orange-900">
       
+      <ThemeToggle />
       <LandingHeader />
       <LandingHeaderSpacer />
 

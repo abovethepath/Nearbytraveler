@@ -1,26 +1,19 @@
 
-import React, { useEffect } from "react";
+import React from "react";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
 import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
-import { useTheme } from "@/components/theme-provider";
+import ThemeToggle from "@/components/ThemeToggle";
 import Footer from "@/components/footer";
 const eventHeaderImage = "/event page bbq party_1753299541268.png";
 
 export default function EventsLanding() {
   const [, setLocation] = useLocation();
-  const { setTheme } = useTheme();
-
-  // Force light mode when component mounts
-  useEffect(() => {
-    setTheme('light');
-    document.documentElement.classList.remove('dark');
-    document.documentElement.classList.add('light');
-  }, [setTheme]);
 
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900">
       
+      <ThemeToggle />
       <LandingHeader />
       <LandingHeaderSpacer />
       
