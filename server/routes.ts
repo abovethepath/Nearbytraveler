@@ -2844,21 +2844,37 @@ Questions? Just reply to this message. Welcome aboard!
         whereConditions.push(ne(users.id, currentUserId));
       }
 
-      // Text search in name, username, or bio
+      // Text search in name, username, bio, sexual preferences, AND travel plan notes
       if (search && typeof search === 'string' && search.trim()) {
         const searchTerm = search.trim().toLowerCase();
+        
+        // Create a subquery to find users with matching travel plan notes
+        const travelPlanSubquery = db
+          .selectDistinct({ userId: travelPlans.userId })
+          .from(travelPlans)
+          .where(
+            or(
+              ilike(travelPlans.notes, `%${searchTerm}%`),
+              ilike(travelPlans.accommodation, `%${searchTerm}%`),
+              ilike(travelPlans.transportation, `%${searchTerm}%`),
+              ilike(travelPlans.autoTags, `%${searchTerm}%`)
+            )
+          );
+        
         whereConditions.push(
           or(
             ilike(users.name, `%${searchTerm}%`),
             ilike(users.username, `%${searchTerm}%`),
             ilike(users.bio, `%${searchTerm}%`),
             ilike(users.interests, `%${searchTerm}%`),
-            ilike(users.activities, `%${searchTerm}%`)
+            ilike(users.activities, `%${searchTerm}%`),
+            ilike(users.sexualPreference, `%${searchTerm}%`), // Added sexual preferences search
+            inArray(users.id, travelPlanSubquery) // Added travel plan notes search
           )
         );
         
         if (process.env.NODE_ENV === 'development') {
-          console.log(`🔍 SEARCH DEBUG: Searching for "${searchTerm}" in name, username, bio, interests, activities`);
+          console.log(`🔍 SEARCH DEBUG: Searching for "${searchTerm}" in name, username, bio, interests, activities, sexual preferences, AND travel plan notes`);
         }
       } else {
         // If no search term provided, require at least one other filter
