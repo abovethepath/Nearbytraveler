@@ -203,7 +203,7 @@ export default function CityChatroomsPage() {
                 Create New Chatroom
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-md">
+            <DialogContent className="sm:max-w-md bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-lg backdrop-blur-sm">
               <DialogHeader>
                 <DialogTitle>Create New Chatroom</DialogTitle>
               </DialogHeader>
