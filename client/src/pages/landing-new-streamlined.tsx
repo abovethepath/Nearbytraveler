@@ -60,13 +60,13 @@ export default function LandingStreamlined() {
                     <div className="text-center">
                       <div className="max-w-4xl mx-auto">
                         <h1 className="px-3 leading-tight sm:leading-snug">
-                          <span className="block font-black text-[clamp(1.5rem,6vw,2.25rem)] text-white">
-                            Skip the Tourist Traps. Find Real People. Create Lifelong Friends.
+                          <span className="block font-black text-[clamp(1.5rem,6vw,2.25rem)] text-white" style={{ fontWeight: '900', textShadow: '2px 2px 4px rgba(0,0,0,0.8)' }}>
+                            Skip the Tourist Traps, Connect Before Your Trip, Keep Connections Forever Create Lifelong Friends!!!
                           </span>
-                          <span className="block font-black text-[clamp(1.25rem,5.5vw,2rem)] mt-4">
-                            <span className="text-amber-300 sm:text-orange-500">Meet Locals and </span>
-                            <span className="text-blue-300 sm:text-blue-600">Travelers </span>
-                            <span className="text-white">Before Your Trip!</span>
+                          <span className="block font-black text-[clamp(1.25rem,5.5vw,2rem)] mt-4" style={{ fontWeight: '900', textShadow: '2px 2px 4px rgba(0,0,0,0.8)' }}>
+                            <span className="text-amber-300 sm:text-orange-500">Meet Locals and Other </span>
+                            <span className="text-blue-300 sm:text-blue-600">Nearby Travelers </span>
+                            <span className="text-white">Right Now, Today!!!</span>
                           </span>
                         </h1>
                         
@@ -99,7 +99,7 @@ export default function LandingStreamlined() {
           <div className="max-w-4xl mx-auto text-center px-6">
             <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">From the Founder</h2>
             <blockquote className="text-lg md:text-xl text-gray-700 dark:text-gray-300 italic leading-relaxed mb-6">
-              "For over 15 years, I've hosted more than 400 travelers from 50+ countries. I discovered the best part of travel isn't the sights—it's the people you meet. I built Nearby Traveler so everyone can have that same experience: real locals, real adventures, and friendships that last."
+              "For over 15 years, I've hosted more than 400 travelers from 50+ countries. I discovered the best part of travel isn't the sites—it's the people you meet. I built Nearby Traveler so everyone can have that same experience: real locals, real adventures, and friendships that last."
             </blockquote>
             <cite className="text-gray-600 dark:text-gray-400 font-medium">— Aaron Lefkowitz, Founder</cite>
             <div className="flex justify-center items-center gap-8 mt-8 text-teal-600 dark:text-teal-400 font-semibold">
