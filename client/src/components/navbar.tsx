@@ -575,6 +575,62 @@ function Navbar() {
                   <span className="mr-3">{item.icon}</span>{item.label}
                 </Link>
               ))}
+              
+              {/* Additional mobile menu items not in main nav */}
+              {directUser?.userType !== 'business' && (
+                <>
+                  <Link
+                    href="/quick-meetups"
+                    className={`block py-3 px-4 rounded-lg text-lg font-medium transition-colors ${
+                      location === '/quick-meetups'
+                        ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
+                        : "text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800"
+                    }`}
+                    onClick={() => { setIsMobileMenuOpen(false); setLocation('/quick-meetups'); }}
+                  >
+                    <span className="mr-3">⚡</span>Quick Meetups
+                  </Link>
+                  <Link
+                    href="/city-chatrooms"
+                    className={`block py-3 px-4 rounded-lg text-lg font-medium transition-colors ${
+                      location === '/city-chatrooms'
+                        ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
+                        : "text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800"
+                    }`}
+                    onClick={() => { setIsMobileMenuOpen(false); setLocation('/city-chatrooms'); }}
+                  >
+                    <span className="mr-3">💬</span>City Chatrooms
+                  </Link>
+                </>
+              )}
+              
+              {/* Add Deals for business users */}
+              {directUser?.userType === 'business' && (
+                <Link
+                  href="/deals"
+                  className={`block py-3 px-4 rounded-lg text-lg font-medium transition-colors ${
+                    location === '/deals'
+                      ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
+                      : "text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800"
+                  }`}
+                  onClick={() => { setIsMobileMenuOpen(false); setLocation('/deals'); }}
+                >
+                  <span className="mr-3">🏷️</span>Deals
+                </Link>
+              )}
+              
+              {/* Settings for all users */}
+              <Link
+                href="/settings"
+                className={`block py-3 px-4 rounded-lg text-lg font-medium transition-colors ${
+                  location === '/settings'
+                    ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
+                    : "text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800"
+                }`}
+                onClick={() => { setIsMobileMenuOpen(false); setLocation('/settings'); }}
+              >
+                <span className="mr-3">⚙️</span>Settings
+              </Link>
             </div>
           </div>
         </div>,
