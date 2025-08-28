@@ -4371,6 +4371,52 @@ Questions? Just reply to this message. Welcome aboard!
 
   // AI event generator will be imported dynamically when needed
 
+  // EVENTS SEARCH - Search events by keywords including venue names, titles, descriptions
+  app.get("/api/search-events", async (req, res) => {
+    try {
+      const { search, city } = req.query;
+      console.log(`🔍 EVENTS SEARCH: Searching for "${search}" in city "${city}"`);
+      
+      if (!search || typeof search !== 'string' || search.trim() === '') {
+        return res.json([]);
+      }
+      
+      const searchTerm = search.trim();
+      const now = new Date();
+      const sixWeeksFromNow = new Date(now.getTime() + (42 * 24 * 60 * 60 * 1000));
+      
+      let searchConditions = [
+        gte(events.date, now),
+        lte(events.date, sixWeeksFromNow),
+        or(
+          ilike(events.title, `%${searchTerm}%`),
+          ilike(events.description, `%${searchTerm}%`),
+          ilike(events.venueName, `%${searchTerm}%`),
+          ilike(events.street, `%${searchTerm}%`),
+          ilike(events.city, `%${searchTerm}%`),
+          ilike(events.category, `%${searchTerm}%`)
+        )
+      ];
+      
+      // Add city filter if provided
+      if (city && typeof city === 'string' && city.trim() !== '') {
+        searchConditions.push(ilike(events.city, `%${city}%`));
+      }
+      
+      const searchResults = await db.select().from(events)
+        .where(and(...searchConditions))
+        .orderBy(asc(events.date))
+        .limit(50);
+      
+      console.log(`🔍 EVENTS SEARCH: Found ${searchResults.length} events matching "${searchTerm}"`);
+      res.json(searchResults);
+      
+    } catch (error: any) {
+      console.error("🔍 EVENTS SEARCH ERROR:", error);
+      res.status(500).json({ error: "Failed to search events" });
+    }
+  });
+
   // FIXED: Get events filtered by city with proper location filtering - NO CROSS-CITY BLEEDING
   app.get("/api/events", async (req, res) => {
     console.log("🟢 EVENTS ENDPOINT HIT! Query:", req.query, "URL:", req.url);

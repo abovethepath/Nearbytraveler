@@ -11,6 +11,8 @@ import { SmartLocationInput } from "@/components/SmartLocationInput";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import type { User } from "@shared/schema";
+import { EventCard } from "@/components/event-card";
+import { Calendar } from "lucide-react";
 
 interface AdvancedSearchWidgetProps {
   open: boolean;
@@ -67,6 +69,7 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
   };
 
   const [advancedSearchResults, setAdvancedSearchResults] = useState<User[]>([]);
+  const [eventSearchResults, setEventSearchResults] = useState<any[]>([]);
   const [isAdvancedSearching, setIsAdvancedSearching] = useState(false);
 
   // Handle checkbox changes for array fields
@@ -102,24 +105,43 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
       if (advancedFilters.travelerTypes.length > 0) params.append('travelerTypes', advancedFilters.travelerTypes.join(','));
       if (advancedFilters.militaryStatus.length > 0) params.append('militaryStatus', advancedFilters.militaryStatus.join(','));
       
-      const response = await apiRequest("GET", `/api/search-users?${params.toString()}`);
-      
-      const data = await response.json();
-      console.log('🔍 Advanced search results:', data);
+      // Search users
+      const userResponse = await apiRequest("GET", `/api/search-users?${params.toString()}`);
+      const userData = await userResponse.json();
+      console.log('🔍 Advanced user search results:', userData);
       
       // Handle the response format: { users: [], total: number, page: number, hasMore: boolean }
-      const users = data.users || data || [];
+      const users = userData.users || userData || [];
       setAdvancedSearchResults(users);
       
+      // Also search events if there's a keyword search
+      let events: any[] = [];
+      if (advancedFilters.search && advancedFilters.search.trim()) {
+        try {
+          const eventParams = new URLSearchParams();
+          eventParams.append('search', advancedFilters.search);
+          if (advancedFilters.location) eventParams.append('city', advancedFilters.location);
+          
+          const eventResponse = await apiRequest("GET", `/api/search-events?${eventParams.toString()}`);
+          events = await eventResponse.json();
+          console.log('🔍 Advanced event search results:', events);
+        } catch (eventError) {
+          console.error('🔍 Event search error:', eventError);
+          // Don't fail the whole search if events fail
+        }
+      }
+      setEventSearchResults(events);
+      
+      const totalResults = users.length + events.length;
       toast({
         title: "Search Complete",
-        description: `Found ${users?.length || 0} users matching your criteria`,
+        description: `Found ${users.length} users and ${events.length} events matching your criteria`,
       });
     } catch (error) {
       console.error('🔍 Advanced search error:', error);
       toast({
         title: "Search Error",
-        description: "Failed to search users. Please try again.",
+        description: "Failed to search. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -149,6 +171,7 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
       city: ""
     });
     setAdvancedSearchResults([]);
+    setEventSearchResults([]);
   };
 
   // Update location filter when SmartLocationInput changes
@@ -389,7 +412,7 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
               disabled={isAdvancedSearching}
               className="flex-1"
             >
-              {isAdvancedSearching ? "Searching..." : "Search People"}
+              {isAdvancedSearching ? "Searching..." : "Search People & Events"}
               <Search className="ml-2 h-4 w-4" />
             </Button>
             <Button
@@ -447,6 +470,21 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
                       </div>
                     </CardContent>
                   </Card>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Event Search Results */}
+          {eventSearchResults.length > 0 && (
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <Calendar className="h-5 w-5 text-black dark:text-white" />
+                <h3 className="text-lg font-semibold text-black dark:text-white">Events Found ({eventSearchResults.length})</h3>
+              </div>
+              <div className="grid gap-4 max-h-60 overflow-y-auto">
+                {eventSearchResults.map((event) => (
+                  <EventCard key={event.id} event={event} compact={true} />
                 ))}
               </div>
             </div>
