@@ -2437,7 +2437,7 @@ export default function Home() {
                       <ChevronDown className="w-4 h-4 ml-2" />
                     </Button>
                   </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuContent align="end" className="w-56 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-lg backdrop-blur-sm">
                   <DropdownMenuItem onClick={() => setSortBy('closest_nearby')}>
                     <MapPin className="w-4 h-4 mr-2" />
                     Closest Nearby
