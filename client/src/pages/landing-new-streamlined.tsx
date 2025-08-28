@@ -157,15 +157,15 @@ export default function LandingStreamlined() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                   <div className="text-center p-4 bg-white dark:bg-gray-700 rounded-2xl border-2 border-orange-300 shadow-lg">
                     <div className="text-3xl mb-3">🤝</div>
-                    <p className="font-bold text-white dark:text-white" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', fontWeight: '700', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale' }}>Connect with like-minded people</p>
+                    <p className="font-bold text-gray-900 dark:text-white text-sm">Connect with like-minded people</p>
                   </div>
                   <div className="text-center p-4 bg-white dark:bg-gray-700 rounded-2xl border-2 border-blue-300 shadow-lg">
                     <div className="text-3xl mb-3">💎</div>
-                    <p className="font-bold text-white dark:text-white" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', fontWeight: '700', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale' }}>Discover hidden gems</p>
+                    <p className="font-bold text-gray-900 dark:text-white text-sm">Discover hidden gems</p>
                   </div>
                   <div className="text-center p-4 bg-white dark:bg-gray-700 rounded-2xl border-2 border-orange-300 shadow-lg">
                     <div className="text-3xl mb-3">✨</div>
-                    <p className="font-bold text-white dark:text-white" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', fontWeight: '700', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale' }}>Create unforgettable memories</p>
+                    <p className="font-bold text-gray-900 dark:text-white text-sm">Create unforgettable memories</p>
                   </div>
                 </div>
                 
