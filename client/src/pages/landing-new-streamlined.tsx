@@ -452,19 +452,6 @@ export default function LandingStreamlined() {
                 </Button>
               </div>
 
-              {/* Business Owner */}
-              <div className="group relative bg-gradient-to-br from-purple-500 to-pink-600 p-8 rounded-2xl text-white transform hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-2xl">
-                <div className="absolute top-4 right-4 text-3xl opacity-80">🎯</div>
-                <h3 className="text-2xl font-bold mb-4">Run a Business?</h3>
-                <p className="text-purple-100 leading-relaxed mb-6">Whether you own a bar, café, or co-working space - connect with travelers and locals looking for authentic experiences at your spot.</p>
-                <Button 
-                  onClick={() => setLocation('/business-landing')}
-                  className="bg-white text-purple-600 hover:bg-purple-50 font-bold w-full"
-                >
-                  Grow Your Community
-                </Button>
-              </div>
-
               {/* Business Traveler */}
               <div className="group relative bg-gradient-to-br from-orange-500 to-red-600 p-8 rounded-2xl text-white transform hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-2xl">
                 <div className="absolute top-4 right-4 text-3xl opacity-80">💼</div>
@@ -475,6 +462,19 @@ export default function LandingStreamlined() {
                   className="bg-white text-orange-600 hover:bg-orange-50 font-bold w-full"
                 >
                   Network Like a Pro
+                </Button>
+              </div>
+
+              {/* Business Owner */}
+              <div className="group relative bg-gradient-to-br from-purple-500 to-pink-600 p-8 rounded-2xl text-white transform hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-2xl">
+                <div className="absolute top-4 right-4 text-3xl opacity-80">🎯</div>
+                <h3 className="text-2xl font-bold mb-4">Run a Business?</h3>
+                <p className="text-purple-100 leading-relaxed mb-6">Whether you own a bar, café, or co-working space - connect with travelers and locals looking for authentic experiences at your spot.</p>
+                <Button 
+                  onClick={() => setLocation('/business-landing')}
+                  className="bg-white text-purple-600 hover:bg-purple-50 font-bold w-full"
+                >
+                  Grow Your Community
                 </Button>
               </div>
 
