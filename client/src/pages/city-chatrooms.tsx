@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { MessageCircle, Users, MapPin, UserPlus, Loader2, Plus } from "lucide-react";
+import { MessageCircle, Users, MapPin, UserPlus, Loader2, Plus, ArrowLeft } from "lucide-react";
 import { useLocation } from "wouter";
 
 interface CityChatroom {
@@ -186,6 +186,17 @@ export default function CityChatroomsPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-orange-50 dark:from-gray-900 dark:to-gray-800 pb-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Mobile Back Button */}
+        <div className="mb-4">
+          <button
+            onClick={() => navigate('/discover')}
+            className="inline-flex items-center gap-2 px-4 py-3 text-base font-medium text-gray-600 bg-white border border-gray-300 rounded-xl shadow-sm hover:text-gray-900 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700 active:scale-95 transition-all duration-200 touch-manipulation min-h-[48px]"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            Back to Cities
+          </button>
+        </div>
+
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
