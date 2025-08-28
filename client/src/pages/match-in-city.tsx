@@ -933,45 +933,36 @@ export default function MatchInCity() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800">
       <div className="container mx-auto px-4 py-8">
-        {/* Header with Back Button */}
-        <div className="flex items-center gap-4 mb-8">
+        {/* Header with Back Button - MOBILE RESPONSIVE */}
+        <div className="mb-6 md:mb-8">
           <Button
             variant="ghost"
             onClick={() => {
               // Navigate back to city match selection page
               setSelectedCity('');
             }}
-            className="text-white hover:bg-white/10"
+            className="text-white hover:bg-white/10 mb-4"
           >
             <ArrowLeft className="w-5 h-5 mr-2" />
             Back to Cities
           </Button>
-          <div className="flex items-center justify-between w-full">
-            <div className="flex items-center gap-3">
-              <div className={`w-12 h-12 rounded-full bg-gradient-to-r from-blue-400 to-purple-500 flex items-center justify-center`}>
-                <MapPin className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-3xl font-bold text-white">{selectedCity}</h1>
-                <p className="text-white/70">Add activities and events. Others click to match!</p>
-              </div>
+          <div className="flex items-start gap-3 md:gap-4">
+            <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-r from-blue-400 to-purple-500 flex items-center justify-center flex-shrink-0`}>
+              <MapPin className="w-5 h-5 md:w-6 md:h-6 text-white" />
             </div>
-
-            {/* Simplified city display - no photo upload */}
-            <div className="flex items-center gap-2">
-              <div className="text-white/60 text-sm">
-                Activity matching for {selectedCity}
-              </div>
+            <div className="flex-1 min-w-0">
+              <h1 className="text-xl md:text-3xl font-bold text-white leading-tight">{selectedCity}</h1>
+              <p className="text-sm md:text-base text-white/70 mt-1">Add activities and events. Others click to match!</p>
             </div>
           </div>
         </div>
 
         {/* Removed problematic photo gallery */}
 
-        {/* HOW MATCHING WORKS - Small compact widget */}
-        <Card className="mb-3 bg-white/5 backdrop-blur-sm border-white/10 max-w-2xl">
+        {/* HOW MATCHING WORKS - MOBILE RESPONSIVE */}
+        <Card className="mb-3 bg-white/5 backdrop-blur-sm border-white/10">
           <CardContent className="p-3">
-            <div className="text-white/80 text-xs">
+            <div className="text-white/80 text-xs md:text-sm">
               <strong className="text-blue-400">Quick Start:</strong> Click blue activities below to add them to your profile, then see who else wants to do the same things in {selectedCity}!
             </div>
           </CardContent>
@@ -980,28 +971,31 @@ export default function MatchInCity() {
 
 
 
-        {/* Global Activities Section */}
-        <div className="mb-6 flex items-center justify-between">
-          <h2 className="text-2xl font-bold text-white mb-2">🌍 All {selectedCity} Activities ({cityActivities.length})</h2>
-          <Button
-            onClick={() => enhanceCityWithMoreActivities()}
-            className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold px-4 py-2 rounded-lg shadow-lg transform hover:scale-105 transition-all duration-200"
-            disabled={isLoading}
-          >
-            🤖 Get More AI Activities
-          </Button>
+        {/* Global Activities Section - MOBILE RESPONSIVE */}
+        <div className="mb-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+            <h2 className="text-lg md:text-2xl font-bold text-white">🌍 All {selectedCity} Activities ({cityActivities.length})</h2>
+            <Button
+              onClick={() => enhanceCityWithMoreActivities()}
+              className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold px-3 py-2 md:px-4 rounded-lg shadow-lg text-sm md:text-base w-full sm:w-auto"
+              disabled={isLoading}
+            >
+              🤖 Get More AI Activities
+            </Button>
+          </div>
         </div>
 
-        {/* Global Activities Section */}
-        <div className="bg-gray-800/60 rounded-lg p-4 mb-6">
-          <h3 className="text-blue-400 font-semibold text-lg mb-3">
+        {/* Global Activities Section - MOBILE RESPONSIVE */}
+        <div className="bg-gray-800/60 rounded-lg p-3 md:p-4 mb-6">
+          <h3 className="text-blue-400 font-semibold text-base md:text-lg mb-2 md:mb-3">
             Everyone can add/edit activities for {selectedCity}
           </h3>
-          <div className="text-gray-300 text-sm mb-3">
-            🔵 Click blue activities to add them to your personal list below • ✏️ Edit/delete to change for EVERYONE
+          <div className="text-gray-300 text-xs md:text-sm mb-3">
+            🔵 Click blue activities to add them to your personal list below<br className="sm:hidden" />
+            <span className="hidden sm:inline"> • </span>✏️ Edit/delete to change for EVERYONE
           </div>
 
-          {/* Add Activity Section - Moved above activities */}
+          {/* Add Activity Section - MOBILE RESPONSIVE */}
           <div className="mb-4" data-add-activity-section>
             <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg p-3">
               <h3 className="text-white text-sm font-medium mb-2">+ Add Activity</h3>
@@ -1010,24 +1004,24 @@ export default function MatchInCity() {
                   placeholder="Add activity or event"
                   value={newActivityName}
                   onChange={(e) => setNewActivityName(e.target.value)}
-                  className="w-full bg-white/10 border-white/20 text-white placeholder-white/40 text-sm h-8"
+                  className="w-full bg-white/10 border-white/20 text-white placeholder-white/40 text-sm h-9 md:h-8"
                   onKeyPress={(e) => {
                     if (e.key === 'Enter' && newActivityName.trim()) {
                       addActivity();
                     }
                   }}
                 />
-                <div className="flex gap-2">
+                <div className="flex flex-col sm:flex-row gap-2">
                   <Input
                     placeholder="Optional description"
                     value={newActivityDescription}
                     onChange={(e) => setNewActivityDescription(e.target.value)}
-                    className="flex-1 bg-white/10 border-white/20 text-white placeholder-white/40 text-sm h-8"
+                    className="flex-1 bg-white/10 border-white/20 text-white placeholder-white/40 text-sm h-9 md:h-8"
                   />
                   <Button
                     onClick={addActivity}
                     disabled={!newActivityName.trim() || isLoading}
-                    className="bg-green-600 hover:bg-green-700 text-white px-3 h-8 text-sm"
+                    className="bg-green-600 hover:bg-green-700 text-white px-4 h-9 md:h-8 text-sm w-full sm:w-auto"
                   >
                     Add
                   </Button>
