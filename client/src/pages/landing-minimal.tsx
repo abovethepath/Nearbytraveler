@@ -31,40 +31,7 @@ export default function LandingMinimal() {
   }, [setTheme]);
 
   return (
-    <div className="bg-white min-h-screen font-sans light-mode-forced" style={{
-      backgroundColor: 'white',
-      color: 'black'
-    }}>
-      {/* Force light mode completely */}
-      <style jsx>{`
-        .light-mode-forced,
-        .light-mode-forced *,
-        .light-mode-forced .dark\\:bg-gray-900,
-        .light-mode-forced .dark\\:bg-gray-800,
-        .light-mode-forced .dark\\:text-white,
-        .light-mode-forced .dark\\:text-gray-300 {
-          background-color: white !important;
-          color: black !important;
-        }
-        .light-mode-forced .bg-gray-50 {
-          background-color: #f9fafb !important;
-        }
-        .light-mode-forced .text-gray-900 {
-          color: #111827 !important;
-        }
-        .light-mode-forced .text-gray-700 {
-          color: #374151 !important;
-        }
-        .light-mode-forced .text-gray-600 {
-          color: #4b5563 !important;
-        }
-        .light-mode-forced .border-gray-200 {
-          border-color: #e5e7eb !important;
-        }
-        .light-mode-forced .bg-gray-100 {
-          background-color: #f3f4f6 !important;
-        }
-      `}</style>
+    <div className="bg-white min-h-screen font-sans">
       
       {/* Fixed CTA Button - Single color */}
       <div className="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 z-50">
@@ -83,7 +50,7 @@ export default function LandingMinimal() {
       <LandingHeaderSpacer />
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        {/* HERO SECTION - Clean white background */}
+        {/* HERO SECTION - Clean with proper photo */}
         <div className="relative z-10">
           <div className="bg-white border border-gray-200 shadow-sm">
             <div className="relative bg-white pb-32 overflow-hidden min-h-[600px]">
@@ -91,11 +58,11 @@ export default function LandingMinimal() {
                 <img
                   src="/travelers together hugging_1754971726997.avif"
                   alt="Travel experience"
-                  className="w-full h-full object-cover opacity-30"
+                  className="w-full h-full object-cover"
                   style={{ objectPosition: 'center 70%' }}
                 />
                 <div
-                  className="absolute inset-0 bg-white/60"
+                  className="absolute inset-0 bg-black/30"
                   aria-hidden="true"
                 />
               </div>
@@ -105,10 +72,10 @@ export default function LandingMinimal() {
                     <div className="text-center">
                       <div className="max-w-4xl mx-auto">
                         <h1 className="px-3 leading-tight sm:leading-snug" style={{ fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
-                          <span className="block font-bold text-[clamp(1.5rem,6vw,2.25rem)] text-gray-900" style={{ fontWeight: '700', letterSpacing: '-0.02em' }}>
+                          <span className="block font-bold text-[clamp(1.5rem,6vw,2.25rem)] text-white" style={{ fontWeight: '700', letterSpacing: '-0.02em', textShadow: '2px 2px 4px rgba(0,0,0,0.8)' }}>
                             Skip the Tourist Traps, Connect Before Your Trip, Keep Connections Forever and Create Lifelong Friends
                           </span>
-                          <span className="block font-bold text-[clamp(1.25rem,5.5vw,2rem)] mt-4 text-gray-800" style={{ fontWeight: '700', letterSpacing: '-0.02em' }}>
+                          <span className="block font-bold text-[clamp(1.25rem,5.5vw,2rem)] mt-4 text-white" style={{ fontWeight: '700', letterSpacing: '-0.02em', textShadow: '2px 2px 4px rgba(0,0,0,0.8)' }}>
                             Meet Locals and Other Nearby Travelers Right Now, Today
                           </span>
                         </h1>
