@@ -161,7 +161,7 @@ export default function EventsLanding() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
             
             {/* Venice Beach Dance Party */}
-            <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transform transition-all duration-300 flex flex-col">
+            <div className="bg-gray-100 dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transform transition-all duration-300 flex flex-col">
               <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-blue-400 to-purple-500">
                 <img 
                   src="/venice-beach-dance-party.png" 
@@ -192,7 +192,7 @@ export default function EventsLanding() {
             </div>
 
             {/* Food Adventure */}
-            <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transform transition-all duration-300 flex flex-col">
+            <div className="bg-gray-100 dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transform transition-all duration-300 flex flex-col">
               <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-orange-400 to-red-500">
                 <img 
                   src="/authentic-food-adventure.png" 
@@ -222,153 +222,153 @@ export default function EventsLanding() {
               </div>
             </div>
 
-            {/* BBQ Event */}
-            <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transform transition-all duration-300 flex flex-col">
-              <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-green-400 to-teal-500">
+            {/* Coffee Shop Networking */}
+            <div className="bg-gray-100 dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transform transition-all duration-300 flex flex-col">
+              <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-amber-400 to-orange-500">
                 <img 
-                  src="/event page bbq party_1753299541268.png" 
-                  alt="Beach BBQ event" 
+                  src="/coffee-shop-networking.png" 
+                  alt="Coffee shop networking event" 
                   className="w-full h-48 object-cover"
                 />
               </div>
               <div className="p-6 flex flex-col flex-grow">
                 <div className="mb-3">
-                  <h3 className="text-sm sm:text-base font-bold text-gray-900 mb-1 leading-tight">Beach BBQ & Bonfire</h3>
-                  <p className="text-sm text-gray-600">Sunset BBQ with new friends</p>
+                  <h3 className="text-sm sm:text-base font-bold text-gray-900 dark:text-white mb-1 leading-tight">Coffee Shop Networking</h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Weekly freelancer meetup</p>
                 </div>
                 
                 <div className="flex flex-wrap gap-2 mb-3">
-                  <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs font-medium">Beach</span>
-                  <span className="bg-orange-100 text-orange-700 px-2 py-1 rounded-full text-xs font-medium">BBQ</span>
-                  <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-medium">Social</span>
+                  <span className="bg-amber-100 text-amber-700 px-2 py-1 rounded-full text-xs font-medium">Free</span>
+                  <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs font-medium">Networking</span>
+                  <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-medium">Coffee</span>
                 </div>
                 
-                <p className="text-gray-700 text-xs sm:text-sm mb-4 flex-grow leading-relaxed">Join our monthly beach BBQ where we pass a guitar, sing songs, bring pot luck food and meet new friends. Sometimes we even jump in the ocean</p>
+                <p className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm mb-4 flex-grow leading-relaxed">Weekly coffee meetup for freelancers, remote workers, and entrepreneurs. Great conversations, potential collaborations, and strong coffee.</p>
                 <a
                   href="/join"
-                  className="w-full bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white font-bold py-2 px-4 rounded text-center transition duration-200"
+                  className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold py-2 px-4 rounded text-center transition duration-200"
                 >
-                  JOIN BBQ
+                  JOIN NETWORKING
                 </a>
               </div>
             </div>
 
-            {/* Taco Tuesday Event */}
-            <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transform transition-all duration-300 flex flex-col">
-              <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-yellow-400 to-orange-500">
+            {/* Art Gallery Walk */}
+            <div className="bg-gray-100 dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transform transition-all duration-300 flex flex-col">
+              <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-purple-400 to-pink-500">
                 <img 
-                  src="/image_1754973365104.png" 
-                  alt="Authentic taco stand with vintage neon sign" 
+                  src="/art-gallery-walk.png" 
+                  alt="Art gallery opening with people viewing paintings" 
                   className="w-full h-48 object-cover"
                 />
               </div>
               <div className="p-6 flex flex-col flex-grow">
                 <div className="mb-3">
-                  <h3 className="text-sm sm:text-base font-bold text-gray-900 mb-1 leading-tight">Taco Tuesday</h3>
-                  <p className="text-sm text-gray-600">Every Tuesday • $1.50 tacos</p>
+                  <h3 className="text-sm sm:text-base font-bold text-gray-900 dark:text-white mb-1 leading-tight">Art Gallery Walk</h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">First Friday • Arts District</p>
                 </div>
                 
                 <div className="flex flex-wrap gap-2 mb-3">
-                  <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-medium">$1.50</span>
-                  <span className="bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full text-xs font-medium">Food</span>
+                  <span className="bg-purple-100 text-purple-700 px-2 py-1 rounded-full text-xs font-medium">Free</span>
+                  <span className="bg-pink-100 text-pink-700 px-2 py-1 rounded-full text-xs font-medium">Culture</span>
                 </div>
                 
-                <p className="text-gray-700 text-xs sm:text-sm mb-4 flex-grow leading-relaxed">Join locals every Tuesday for authentic street tacos at unbeatable prices. Meet fellow taco lovers and discover the best Mexican spots in the city.</p>
+                <p className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm mb-4 flex-grow leading-relaxed">Monthly gallery walk through the Arts District. Meet artists, see local work, and discuss creativity with fellow art lovers and travelers.</p>
                 <a
                   href="/join"
-                  className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-bold py-2 px-4 rounded text-center transition duration-200"
+                  className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-2 px-4 rounded text-center transition duration-200"
                 >
-                  JOIN TACO TUESDAY
+                  JOIN ART WALK
                 </a>
               </div>
             </div>
 
-            {/* Hollywood Sign Hike */}
-            <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transform transition-all duration-300 flex flex-col">
-              <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-blue-500 to-indigo-600">
+            {/* Karaoke Night */}
+            <div className="bg-gray-100 dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transform transition-all duration-300 flex flex-col">
+              <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-red-500 to-pink-600">
                 <img 
-                  src="/image_1754974796221.png" 
-                  alt="Hollywood Sign at sunrise with mountain views" 
+                  src="/karaoke-night.png" 
+                  alt="People singing karaoke in a fun bar atmosphere" 
                   className="w-full h-48 object-cover"
                 />
               </div>
               <div className="p-6 flex flex-col flex-grow">
                 <div className="mb-3">
-                  <h3 className="text-sm sm:text-base font-bold text-gray-900 mb-1 leading-tight">Hollywood Sign Hike</h3>
-                  <p className="text-sm text-gray-600">Every Saturday • 9:00 AM</p>
+                  <h3 className="text-sm sm:text-base font-bold text-gray-900 dark:text-white mb-1 leading-tight">Karaoke Night</h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Wednesday • 8:00 PM</p>
                 </div>
                 
                 <div className="flex flex-wrap gap-2 mb-3">
-                  <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs font-medium">Free</span>
-                  <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-medium">Hiking</span>
+                  <span className="bg-red-100 text-red-700 px-2 py-1 rounded-full text-xs font-medium">Fun</span>
+                  <span className="bg-pink-100 text-pink-700 px-2 py-1 rounded-full text-xs font-medium">Music</span>
                 </div>
                 
-                <p className="text-gray-700 text-xs sm:text-sm mb-4 flex-grow leading-relaxed">Weekly hike to the iconic Hollywood Sign with locals and travelers. Amazing city views, great photos, and authentic LA hiking culture.</p>
+                <p className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm mb-4 flex-grow leading-relaxed">Weekly karaoke night where locals and travelers sing, laugh, and bond over terrible singing voices. No talent required - just bring the energy!</p>
                 <a
                   href="/join"
-                  className="w-full bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white font-bold py-2 px-4 rounded text-center transition duration-200"
+                  className="w-full bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white font-bold py-2 px-4 rounded text-center transition duration-200"
                 >
-                  JOIN HIKE
+                  JOIN KARAOKE
                 </a>
               </div>
             </div>
 
-            {/* Happy Hour Thursday */}
-            <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transform transition-all duration-300 flex flex-col">
-              <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-amber-500 to-orange-600">
+            {/* Bike Tour */}
+            <div className="bg-gray-100 dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transform transition-all duration-300 flex flex-col">
+              <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-teal-500 to-green-600">
                 <img 
-                  src="/image_1754975666980.png" 
-                  alt="Jameson's Pub exterior with green storefront and traditional Irish pub atmosphere" 
+                  src="/bike-tour-city.png" 
+                  alt="Group bike tour through city streets" 
                   className="w-full h-48 object-cover"
                 />
               </div>
               <div className="p-6 flex flex-col flex-grow">
                 <div className="mb-3">
-                  <h3 className="text-sm sm:text-base font-bold text-gray-900 mb-1 leading-tight">Happy Hour Thursday</h3>
-                  <p className="text-sm text-gray-600">Jameson Pub • Live Music</p>
+                  <h3 className="text-sm sm:text-base font-bold text-gray-900 dark:text-white mb-1 leading-tight">City Bike Tour</h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Saturday • 10:00 AM</p>
                 </div>
                 
                 <div className="flex flex-wrap gap-2 mb-3">
-                  <span className="bg-amber-100 text-amber-700 px-2 py-1 rounded-full text-xs font-medium">Drinks</span>
-                  <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs font-medium">21+</span>
+                  <span className="bg-teal-100 text-teal-700 px-2 py-1 rounded-full text-xs font-medium">Active</span>
+                  <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-medium">Sightseeing</span>
                 </div>
                 
-                <p className="text-gray-700 text-xs sm:text-sm mb-4 flex-grow leading-relaxed">Join locals and travelers for Thursday happy hour with live music at Jameson Pub. Great drinks, live bands, and authentic LA nightlife.</p>
+                <p className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm mb-4 flex-grow leading-relaxed">Explore the city's best neighborhoods on two wheels. Local guides show hidden spots, street art, and authentic culture you'd never find on your own.</p>
                 <a
                   href="/join"
-                  className="w-full bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-bold py-2 px-4 rounded text-center transition duration-200"
+                  className="w-full bg-gradient-to-r from-teal-500 to-green-600 hover:from-teal-600 hover:to-green-700 text-white font-bold py-2 px-4 rounded text-center transition duration-200"
                 >
-                  JOIN HAPPY HOUR
+                  JOIN BIKE TOUR
                 </a>
               </div>
             </div>
 
-            {/* Sunset Yoga */}
-            <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transform transition-all duration-300 flex flex-col">
-              <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-pink-400 to-orange-500">
+            {/* Game Night */}
+            <div className="bg-gray-100 dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transform transition-all duration-300 flex flex-col">
+              <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-indigo-400 to-purple-500">
                 <img 
-                  src="/venice-beach-yoga.png" 
-                  alt="Sunset yoga on Venice Beach with people in poses" 
+                  src="/board-game-night.png" 
+                  alt="Friends playing board games at cozy café" 
                   className="w-full h-48 object-cover"
                 />
               </div>
               <div className="p-6 flex flex-col flex-grow">
                 <div className="mb-3">
-                  <h3 className="text-sm sm:text-base font-bold text-gray-900 mb-1 leading-tight">Sunset Yoga</h3>
-                  <p className="text-sm text-gray-600">Venice Beach • Every Sunday</p>
+                  <h3 className="text-sm sm:text-base font-bold text-gray-900 dark:text-white mb-1 leading-tight">Board Game Night</h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Monday • 7:00 PM</p>
                 </div>
                 
                 <div className="flex flex-wrap gap-2 mb-3">
-                  <span className="bg-pink-100 text-pink-700 px-2 py-1 rounded-full text-xs font-medium">Free</span>
-                  <span className="bg-orange-100 text-orange-700 px-2 py-1 rounded-full text-xs font-medium">Wellness</span>
+                  <span className="bg-indigo-100 text-indigo-700 px-2 py-1 rounded-full text-xs font-medium">Free</span>
+                  <span className="bg-purple-100 text-purple-700 px-2 py-1 rounded-full text-xs font-medium">Games</span>
                 </div>
                 
-                <p className="text-gray-700 text-xs sm:text-sm mb-4 flex-grow leading-relaxed">Weekly sunset yoga sessions on Venice Beach with locals and travelers. All levels welcome - experience authentic LA beach wellness culture.</p>
+                <p className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm mb-4 flex-grow leading-relaxed">Weekly board game night at cozy local café. From strategy games to party games - perfect for meeting people in a relaxed, fun environment.</p>
                 <a
                   href="/join"
-                  className="w-full bg-gradient-to-r from-pink-500 to-orange-500 hover:from-pink-600 hover:to-orange-600 text-white font-bold py-2 px-4 rounded text-center transition duration-200"
+                  className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white font-bold py-2 px-4 rounded text-center transition duration-200"
                 >
-                  JOIN YOGA
+                  JOIN GAME NIGHT
                 </a>
               </div>
             </div>
