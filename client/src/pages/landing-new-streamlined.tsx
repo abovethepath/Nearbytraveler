@@ -70,16 +70,16 @@ export default function LandingStreamlined() {
                           </span>
                         </h1>
                         
-                        {/* Primary signup CTA */}
-                        <div className="mt-12 mb-8 px-4">
+                        {/* Primary signup CTA - Lowered and reasonably sized */}
+                        <div className="mt-20 mb-8 px-4">
                           <Button
                             onClick={() => setLocation('/auth')}
                             size="lg"
-                            className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white font-black text-lg sm:text-xl md:text-2xl px-6 sm:px-12 md:px-16 py-4 sm:py-5 md:py-6 rounded-2xl shadow-xl transition-all duration-200 border-2 sm:border-4 border-white w-full max-w-lg mx-auto"
+                            className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white font-bold px-8 py-3 rounded-xl shadow-lg transition-all duration-200 border-2 border-white max-w-md mx-auto"
                             style={{
-                              fontSize: 'clamp(1.1rem, 3.5vw, 1.8rem)',
-                              minHeight: 'clamp(60px, 12vw, 80px)',
-                              boxShadow: '0 8px 30px rgba(0,0,0,0.3), 0 0 0 2px rgba(255,255,255,0.9)',
+                              fontSize: '1.1rem',
+                              fontWeight: '700',
+                              boxShadow: '0 4px 15px rgba(0,0,0,0.3)',
                             }}
                           >
                             JOIN NEARBY TRAVELER NOW
@@ -94,23 +94,69 @@ export default function LandingStreamlined() {
           </div>
         </div>
 
-        {/* From the Founder */}
-        <section className="py-16 bg-white dark:bg-gray-800 rounded-2xl mb-16 shadow-sm">
-          <div className="max-w-4xl mx-auto text-center px-6">
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">From the Founder</h2>
-            <blockquote className="text-lg md:text-xl text-gray-700 dark:text-gray-300 italic leading-relaxed mb-6">
-              "For over 15 years, I've hosted more than 400 travelers from 50+ countries. I discovered the best part of travel isn't the sites—it's the people you meet. I built Nearby Traveler so everyone can have that same experience: real locals, real adventures, and friendships that last."
-            </blockquote>
-            <cite className="text-gray-600 dark:text-gray-400 font-medium">— Aaron Lefkowitz, Founder</cite>
-            <div className="flex justify-center items-center gap-8 mt-8 text-teal-600 dark:text-teal-400 font-semibold">
-              <span>400+ Travelers</span>
-              <span>•</span>
-              <span>50+ Countries</span>
-              <span>•</span>
-              <span>15+ Years</span>
+        {/* FROM THE FOUNDER SECTION - Original with 3 Icons */}
+        <div className="relative z-10 py-16 sm:py-20 overflow-hidden mb-16">
+          {/* Blue to orange gradient background */}
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-blue-500 to-orange-500"></div>
+          
+          <div className="relative max-w-4xl mx-auto px-4">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl sm:text-4xl font-black text-white mb-4">
+                From the Founder
+              </h2>
+              <div className="w-24 h-1 bg-gradient-to-r from-white to-blue-300 mx-auto rounded-full"></div>
+            </div>
+            
+            {/* Main content with better readability */}
+            <div className="max-w-3xl mx-auto">
+              <div className="text-center mb-8">
+                <p className="text-xl sm:text-2xl text-white leading-relaxed font-medium mb-6">
+                  "As a traveler and local, I always loved meeting new people—but finding those who truly shared my interests wasn't easy."
+                </p>
+                <p className="text-2xl sm:text-3xl text-white font-bold leading-relaxed mb-6">
+                  That's why I created Nearby Traveler.
+                </p>
+              </div>
+              
+              <div className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm rounded-3xl p-8 shadow-2xl">
+                <p className="text-lg text-gray-900 dark:text-white leading-relaxed mb-6 text-center font-medium">
+                  Nearby Traveler connects travelers and locals through shared interests, activities, demographics, and events—transforming random encounters into life-changing connections.
+                </p>
+                
+                {/* Benefits with orange and blue theme */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                  <div className="text-center p-4 bg-white dark:bg-gray-700 rounded-2xl border-2 border-orange-300 shadow-lg">
+                    <div className="text-3xl mb-3">🤝</div>
+                    <p className="font-bold text-black dark:text-white">Connect with like-minded people</p>
+                  </div>
+                  <div className="text-center p-4 bg-white dark:bg-gray-700 rounded-2xl border-2 border-blue-300 shadow-lg">
+                    <div className="text-3xl mb-3">💎</div>
+                    <p className="font-bold text-gray-900 dark:text-white">Discover hidden gems</p>
+                  </div>
+                  <div className="text-center p-4 bg-white dark:bg-gray-700 rounded-2xl border-2 border-orange-300 shadow-lg">
+                    <div className="text-3xl mb-3">✨</div>
+                    <p className="font-bold text-black dark:text-white">Create unforgettable memories</p>
+                  </div>
+                </div>
+                
+                <p className="text-lg text-gray-900 dark:text-white leading-relaxed text-center mb-6 font-medium">
+                  It's more than just travel—it's about real community, wherever you are.
+                </p>
+                
+                {/* Founder signature with orange and blue accents */}
+                <div className="text-center pt-6 border-t border-blue-200 dark:border-blue-600">
+                  <p className="text-lg text-gray-800 dark:text-gray-200 mb-3 font-medium">Thanks for being part of the journey.</p>
+                  <div className="flex items-center justify-center space-x-4">
+                    <div>
+                      <p className="text-xl font-black text-gray-900 dark:text-white">Aaron Lefkowitz</p>
+                      <p className="text-blue-600 font-bold">Founder, Nearby Traveler</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-        </section>
+        </div>
 
         {/* Featured Experiences - With Original Photos */}
         <div className="relative z-10 py-16 bg-white dark:bg-gray-900">
