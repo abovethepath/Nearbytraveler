@@ -269,7 +269,7 @@ export default function LandingStreamlined() {
               <Button 
                 onClick={() => setLocation('/events')}
                 variant="outline"
-                className="text-teal-600 border-teal-600 hover:bg-teal-50 dark:text-teal-400 dark:border-teal-400 dark:hover:bg-teal-950"
+                className="text-blue-600 border-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:border-blue-400 dark:hover:bg-blue-950"
               >
                 See All Events
               </Button>
@@ -277,31 +277,119 @@ export default function LandingStreamlined() {
           </div>
         </div>
 
-        {/* How It Works */}
-        <section className="py-16 bg-gradient-to-r from-blue-50 to-teal-50 dark:from-blue-950 dark:to-teal-950 rounded-2xl mb-16">
-          <div className="max-w-4xl mx-auto px-6">
-            <h2 className="text-3xl font-bold text-center text-gray-900 dark:text-white mb-12">How It Works</h2>
-            <p className="text-center text-xl text-gray-600 dark:text-gray-400 mb-12">Three simple steps to turn travel into connection:</p>
+        {/* HOW IT WORKS SECTION - Original Blue/Orange Design */}
+        <div className="relative z-10 py-20 bg-gradient-to-br from-gray-50 via-blue-50 to-orange-50 dark:from-gray-900 dark:via-blue-900/20 dark:to-orange-900/20">
+          <div className="max-w-7xl mx-auto px-4">
+            <div className="text-center mb-16">
+              <span className="inline-block px-6 py-2 bg-gradient-to-r from-blue-100 to-orange-100 text-blue-800 text-sm font-bold rounded-full mb-4">
+                HOW IT WORKS
+              </span>
+              <h2 className="text-4xl sm:text-5xl font-black text-gray-900 dark:text-white mb-6">
+                Turn Connections into <span className="bg-gradient-to-r from-blue-600 to-orange-600 bg-clip-text text-transparent">Travel Adventures</span>
+              </h2>
+              <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
+                Three simple steps that transform your travel experience from ordinary to extraordinary
+              </p>
+            </div>
             
-            <div className="grid md:grid-cols-3 gap-8">
-              <div className="text-center">
-                <div className="w-16 h-16 bg-teal-600 text-white rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">1</div>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">Join the Movement</h3>
-                <p className="text-gray-600 dark:text-gray-400">Share your interests and destinations. Our matching connects you with like-minded locals and travelers.</p>
+            <div className="relative">
+              {/* Connection line */}
+              <div className="hidden md:block absolute top-24 left-1/2 transform -translate-x-1/2 w-full max-w-4xl">
+                <div className="h-1 bg-gradient-to-r from-blue-300 via-purple-300 to-orange-300 rounded-full opacity-30"></div>
               </div>
-              <div className="text-center">
-                <div className="w-16 h-16 bg-teal-600 text-white rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">2</div>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">Make Real Connections</h3>
-                <p className="text-gray-600 dark:text-gray-400">Chat and meet people who share your vibe. No awkward small talk—just shared adventures.</p>
-              </div>
-              <div className="text-center">
-                <div className="w-16 h-16 bg-teal-600 text-white rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">3</div>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">Create Epic Memories</h3>
-                <p className="text-gray-600 dark:text-gray-400">Join authentic experiences, discover hidden gems, and turn strangers into friends.</p>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
+                {/* Step 1: Join */}
+                <div className="group">
+                  <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-shadow duration-300 border border-blue-100 dark:border-blue-800">
+                    <div className="relative mb-8">
+                      <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg group-hover:shadow-xl transition-all duration-300">
+                        <span className="text-white text-2xl font-black">1</span>
+                      </div>
+                      <div className="absolute -top-2 -right-2 w-6 h-6 bg-blue-400 rounded-full animate-bounce"></div>
+                    </div>
+                    <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-4 text-center">
+                      Join the Movement
+                    </h3>
+                    <p className="text-gray-600 dark:text-gray-300 text-center leading-relaxed">
+                      Share your travel style, interests, and dream destinations. Our matching algorithm connects you with like-minded travelers and locals.
+                    </p>
+                    <div className="mt-6 flex justify-center">
+                      <div className="flex space-x-1">
+                        <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+                        <div className="w-2 h-2 bg-blue-300 rounded-full animate-pulse" style={{animationDelay: '0.2s'}}></div>
+                        <div className="w-2 h-2 bg-blue-200 rounded-full animate-pulse" style={{animationDelay: '0.4s'}}></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Step 2: Connect */}
+                <div className="group">
+                  <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-shadow duration-300 border border-purple-100 dark:border-purple-800">
+                    <div className="relative mb-8">
+                      <div className="w-20 h-20 bg-gradient-to-r from-purple-500 to-orange-500 rounded-2xl flex items-center justify-center mx-auto shadow-lg group-hover:shadow-xl transition-all duration-300">
+                        <span className="text-white text-2xl font-black">2</span>
+                      </div>
+                      <div className="absolute -top-2 -right-2 w-6 h-6 bg-purple-400 rounded-full animate-bounce" style={{animationDelay: '0.5s'}}></div>
+                    </div>
+                    <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-4 text-center">
+                      Make Real Connections
+                    </h3>
+                    <p className="text-gray-600 dark:text-gray-300 text-center leading-relaxed">
+                      Chat with locals who know secret spots and fellow travelers heading to your destination. No awkward small talk - just shared adventures.
+                    </p>
+                    <div className="mt-6 flex justify-center">
+                      <div className="flex space-x-1">
+                        <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse"></div>
+                        <div className="w-2 h-2 bg-purple-300 rounded-full animate-pulse" style={{animationDelay: '0.2s'}}></div>
+                        <div className="w-2 h-2 bg-orange-300 rounded-full animate-pulse" style={{animationDelay: '0.4s'}}></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Step 3: Explore */}
+                <div className="group">
+                  <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-shadow duration-300 border border-orange-100 dark:border-orange-800">
+                    <div className="relative mb-8">
+                      <div className="w-20 h-20 bg-gradient-to-r from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg group-hover:shadow-xl transition-all duration-300">
+                        <span className="text-white text-2xl font-black">3</span>
+                      </div>
+                    </div>
+                    <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-4 text-center">
+                      Create Epic Memories
+                    </h3>
+                    <p className="text-gray-600 dark:text-gray-300 text-center leading-relaxed">
+                      Join authentic experiences, discover hidden gems, and turn strangers into lifelong friends. This is travel the way it's meant to be.
+                    </p>
+                    <div className="mt-6 flex justify-center">
+                      <div className="flex space-x-1">
+                        <div className="w-2 h-2 bg-orange-400 rounded-full animate-pulse"></div>
+                        <div className="w-2 h-2 bg-orange-300 rounded-full animate-pulse" style={{animationDelay: '0.2s'}}></div>
+                        <div className="w-2 h-2 bg-orange-200 rounded-full animate-pulse" style={{animationDelay: '0.4s'}}></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
+
+            {/* Call to Action */}
+            <div className="text-center mt-16">
+              <Button 
+                onClick={() => setLocation('/auth')}
+                size="lg"
+                className="bg-gradient-to-r from-blue-600 to-orange-600 hover:from-blue-700 hover:to-orange-700 text-white font-black text-xl px-12 py-6 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300"
+              >
+                Start Your Adventure Now
+              </Button>
+              <p className="text-gray-500 dark:text-gray-400 mt-4 text-sm">
+                Join thousands of travelers already making connections
+              </p>
+            </div>
           </div>
-        </section>
+        </div>
 
         {/* Who It's For */}
         <section className="py-16 mb-16">
