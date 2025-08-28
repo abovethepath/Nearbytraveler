@@ -143,8 +143,8 @@ export default function LandingStreamlined() {
                 <p className="text-lg sm:text-xl text-white leading-relaxed font-medium mb-4" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', fontWeight: '500', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', letterSpacing: '-0.01em' }}>
                   "I built Nearby Traveler to make those connections possible for everyone — travelers and locals alike."
                 </p>
-                <p className="text-xl sm:text-2xl text-white font-bold leading-relaxed mb-6" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', fontWeight: '700', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', letterSpacing: '-0.02em' }}>
-                  "So I built the solution I wished existed."
+                <p className="text-2xl sm:text-3xl text-orange-300 font-black leading-tight mb-6" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', fontWeight: '900', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', letterSpacing: '-0.02em', textShadow: '2px 2px 4px rgba(0,0,0,0.8)' }}>
+                  "I BUILT THE SOLUTION I WISHED EXISTED."
                 </p>
               </div>
               
