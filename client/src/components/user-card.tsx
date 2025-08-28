@@ -475,18 +475,18 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
                 {user.travelInterests?.slice(0, 2).map((interest) => (
                   <div 
                     key={interest} 
-                    className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5"
+                    className="inline-flex items-center justify-center h-6 min-w-[6rem] rounded-full px-3 text-sm font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1"
                   >
                     {interest}
                   </div>
                 ))}
                 {user.preferredActivities?.slice(0, 2).map((activity) => (
-                  <div key={activity} className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-green-500 text-white border-0 appearance-none select-none gap-1.5">
+                  <div key={activity} className="inline-flex items-center justify-center h-6 min-w-[6rem] rounded-full px-3 text-sm font-medium leading-none whitespace-nowrap bg-green-500 text-white border-0 appearance-none select-none gap-1">
                     {activity}
                   </div>
                 ))}
                 {user.plannedEvents?.slice(0, 1).map((event) => (
-                  <div key={event} className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-purple-500 text-white border-0 appearance-none select-none gap-1.5">
+                  <div key={event} className="inline-flex items-center justify-center h-6 min-w-[6rem] rounded-full px-3 text-sm font-medium leading-none whitespace-nowrap bg-purple-500 text-white border-0 appearance-none select-none gap-1">
                     {event}
                   </div>
                 ))}
@@ -502,7 +502,7 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
               {locationContext.type === 'traveling' ? (
                 // Show travel status for visiting cities
                 <div className="flex flex-col gap-1">
-                  <div className="pill inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-green-500 text-white border-0 appearance-none select-none gap-1.5" style={{height: '2.5rem', minWidth: '8rem', padding: '0 1rem', fontSize: '1rem'}}>
+                  <div className="pill inline-flex items-center justify-center h-6 min-w-[6rem] rounded-full px-3 text-sm font-medium leading-none whitespace-nowrap bg-green-500 text-white border-0 appearance-none select-none gap-1" style={{height: '1.5rem', minWidth: '6rem', padding: '0 0.75rem', fontSize: '0.875rem'}}>
                     <Clock className="w-3 h-3 mr-1" />
                     Travel Plan
                   </div>
@@ -516,12 +516,12 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
                 <div className="flex flex-col gap-1">
                   <div className="flex flex-wrap gap-1">
                     {user.localExpertise?.slice(0, 2).map((expertise) => (
-                      <div key={expertise} className="pill inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-orange-500 text-white border-0 appearance-none select-none gap-1.5" style={{height: '2.5rem', minWidth: '8rem', padding: '0 1rem', fontSize: '1rem'}}>
+                      <div key={expertise} className="pill inline-flex items-center justify-center h-6 min-w-[6rem] rounded-full px-3 text-sm font-medium leading-none whitespace-nowrap bg-orange-500 text-white border-0 appearance-none select-none gap-1" style={{height: '1.5rem', minWidth: '6rem', padding: '0 0.75rem', fontSize: '0.875rem'}}>
                         {expertise}
                       </div>
                     ))}
                     {user.localActivities?.slice(0, 2).map((activity) => (
-                      <div key={activity} className="pill inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-yellow-500 text-white border-0 appearance-none select-none gap-1.5" style={{height: '2.5rem', minWidth: '8rem', padding: '0 1rem', fontSize: '1rem'}}>
+                      <div key={activity} className="pill inline-flex items-center justify-center h-6 min-w-[6rem] rounded-full px-3 text-sm font-medium leading-none whitespace-nowrap bg-yellow-500 text-white border-0 appearance-none select-none gap-1" style={{height: '1.5rem', minWidth: '6rem', padding: '0 0.75rem', fontSize: '0.875rem'}}>
                         {activity}
                       </div>
                     ))}
@@ -541,7 +541,7 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
               {getFilteredInterests(user)?.slice(0, 3).map((interest) => (
                 <div
                   key={interest}
-                  className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5"
+                  className="inline-flex items-center justify-center h-6 min-w-[6rem] rounded-full px-3 text-sm font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1"
                 >
                   {interest}
                 </div>
@@ -551,7 +551,7 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
                 const totalOverflow = Math.max(0, (filteredInterests?.length || 0) - 3);
                 
                 return totalOverflow > 0 ? (
-                  <div className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
+                  <div className="inline-flex items-center justify-center h-6 min-w-[6rem] rounded-full px-3 text-sm font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1">
                     +{totalOverflow} more
                   </div>
                 ) : null;
