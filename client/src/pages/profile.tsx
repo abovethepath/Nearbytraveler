@@ -9192,7 +9192,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       
       {/* Chatroom List Modal */}
       <Dialog open={showChatroomList} onOpenChange={setShowChatroomList}>
-        <DialogContent className="max-w-lg z-50 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 shadow-2xl">
+        <DialogContent className="max-w-lg z-50 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-500 shadow-2xl">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Users className="w-5 h-5" />
@@ -9212,7 +9212,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               userChatrooms.map((chatroom: any) => (
                 <div 
                   key={chatroom.id}
-                  className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+                  className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-500 transition-colors cursor-pointer"
                   onClick={() => {
                     setShowChatroomList(false);
                     setLocation(`/chatroom/${chatroom.id}`);
