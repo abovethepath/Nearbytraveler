@@ -491,12 +491,12 @@ function MultiSelect({ options, selected, onChange, placeholder, maxDisplay = 3,
             ) : (
               <>
                 {selected.slice(0, maxDisplay).map((item) => (
-                  <div key={item} className={pillType === 'pill-interests' ? 'inline-flex items-center justify-center h-8 rounded-full px-4 text-xs font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0' : pillType === 'pill-activities' ? 'inline-flex items-center justify-center h-8 rounded-full px-4 text-xs font-medium whitespace-nowrap leading-none bg-green-500 text-white border-0' : 'inline-flex items-center justify-center h-8 rounded-full px-4 text-xs font-medium whitespace-nowrap leading-none bg-purple-500 text-white border-0'}>
+                  <div key={item} className={pillType === 'pill-interests' ? 'inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0' : pillType === 'pill-activities' ? 'inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none bg-green-500 text-white border-0' : 'inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none bg-purple-500 text-white border-0'}>
                     {item}
                   </div>
                 ))}
                 {selected.length > maxDisplay && (
-                  <div className="inline-flex items-center justify-center h-8 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 bg-transparent">
+                  <div className="inline-flex items-center justify-center h-6 rounded-full px-2 text-xs font-medium whitespace-nowrap leading-none border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 bg-transparent">
                     +{selected.length - maxDisplay} more
                   </div>
                 )}
@@ -3873,7 +3873,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         <div key={deal.id} className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 hover:shadow-md dark:hover:shadow-gray-800/50 transition-shadow bg-white dark:bg-gray-800">
                           <div className="flex items-start justify-between mb-2">
                             <h4 className="font-semibold text-gray-900 dark:text-white">{deal.title}</h4>
-                            <div className="inline-flex items-center justify-center h-8 rounded-full px-4 text-xs font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0">
+                            <div className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0">
                               {deal.discountValue}
                             </div>
                           </div>
@@ -4370,7 +4370,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           <p className="text-sm font-medium text-gray-700 mb-2">Selected Additional Interests:</p>
                           <div className="flex flex-wrap gap-2">
                             {tempInterests.filter(interest => !MOST_POPULAR_INTERESTS.includes(interest)).map((interest) => (
-                              <div key={interest} className="inline-flex items-center justify-center h-8 rounded-full px-4 text-xs font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0">
+                              <div key={interest} className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0">
                                 {interest}
                                 <button
                                   onClick={() => setTempInterests(tempInterests.filter(i => i !== interest))}
@@ -4413,12 +4413,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               return (
                                 <>
                                   {topInterests.map((interest, index) => (
-                                    <div key={`interest-${index}`} className="inline-flex items-center justify-center h-8 rounded-full px-4 text-xs font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0">
+                                    <div key={`interest-${index}`} className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0">
                                       {interest}
                                     </div>
                                   ))}
                                   {remaining > 0 && (
-                                    <div className="inline-flex items-center justify-center h-8 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 bg-transparent">
+                                    <div className="inline-flex items-center justify-center h-6 rounded-full px-2 text-xs font-medium whitespace-nowrap leading-none border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 bg-transparent">
                                       +{remaining} more
                                     </div>
                                   )}
@@ -4508,7 +4508,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           <p className="text-sm font-medium text-gray-700 mb-2">Current Activities:</p>
                           <div className="flex flex-wrap gap-2">
                             {tempActivities.map((activity, index) => (
-                              <span key={`activity-${activity}-${index}`} className="inline-flex items-center justify-center h-8 rounded-full px-4 text-xs font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0">
+                              <span key={`activity-${activity}-${index}`} className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0">
                                 {activity}
                                 <button
                                   onClick={() => setTempActivities(tempActivities.filter(a => a !== activity))}
@@ -4643,7 +4643,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           <p className="text-sm font-medium text-gray-700 mb-2">Current Events:</p>
                           <div className="flex flex-wrap gap-2">
                             {tempEvents.map((event, index) => (
-                              <span key={`event-${event}-${index}`} className="inline-flex items-center justify-center h-8 rounded-full px-4 text-xs font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0">
+                              <span key={`event-${event}-${index}`} className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0">
                                 {event}
                                 <button
                                   onClick={() => setTempEvents(tempEvents.filter(e => e !== event))}
@@ -6347,7 +6347,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     {tempLanguages.length > 0 && (
                       <div className="flex flex-wrap gap-2 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
                         {tempLanguages.map((language) => (
-                          <div key={language} className="inline-flex items-center justify-center h-8 rounded-full px-4 text-xs font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0">
+                          <div key={language} className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0">
                             {language}
                             <button
                               onClick={() => setTempLanguages(tempLanguages.filter(l => l !== language))}
@@ -6742,7 +6742,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       {tempCountries.length > 0 && (
                         <div className="flex flex-wrap gap-2 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
                           {tempCountries.map((country) => (
-                            <div key={country} className="inline-flex items-center justify-center h-8 rounded-full px-4 text-xs font-medium whitespace-nowrap leading-none bg-green-500 text-white border-0">
+                            <div key={country} className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none bg-green-500 text-white border-0">
                               {country}
                               <button
                                 onClick={() => setTempCountries(tempCountries.filter(c => c !== country))}
@@ -9228,7 +9228,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     <div className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-2">
                       📍 {chatroom.city}
                       {chatroom.role === 'admin' && (
-                        <span className="inline-flex items-center justify-center h-8 rounded-full px-4 text-xs font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0">
+                        <span className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0">
                           Admin
                         </span>
                       )}
