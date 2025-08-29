@@ -346,10 +346,9 @@ export default function LandingStreamlined() {
                 <div className="group">
                   <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-shadow duration-300 border border-blue-100 dark:border-blue-800">
                     <div className="relative mb-8">
-                      <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg group-hover:shadow-xl transition-all duration-300">
-                        <span className="text-white text-2xl font-black">1</span>
+                      <div className="w-20 h-20 bg-white dark:bg-gradient-to-r dark:from-blue-500 dark:to-blue-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg border-2 border-gray-300 dark:border-none">
+                        <span className="text-black dark:text-white text-2xl font-black">1</span>
                       </div>
-                      <div className="absolute -top-2 -right-2 w-6 h-6 bg-blue-400 rounded-full animate-bounce"></div>
                     </div>
                     <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-4 text-center">
                       Start Your Journey
@@ -357,13 +356,6 @@ export default function LandingStreamlined() {
                     <p className="text-gray-600 dark:text-gray-300 text-center leading-relaxed">
                       Share your interests and where you're traveling. We connect you with locals and travelers who share your vibe—whether for business or pleasure.
                     </p>
-                    <div className="mt-6 flex justify-center">
-                      <div className="flex space-x-1">
-                        <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
-                        <div className="w-2 h-2 bg-blue-300 rounded-full animate-pulse" style={{animationDelay: '0.2s'}}></div>
-                        <div className="w-2 h-2 bg-blue-200 rounded-full animate-pulse" style={{animationDelay: '0.4s'}}></div>
-                      </div>
-                    </div>
                   </div>
                 </div>
 
@@ -371,10 +363,9 @@ export default function LandingStreamlined() {
                 <div className="group">
                   <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-shadow duration-300 border border-purple-100 dark:border-purple-800">
                     <div className="relative mb-8">
-                      <div className="w-20 h-20 bg-gradient-to-r from-purple-500 to-orange-500 rounded-2xl flex items-center justify-center mx-auto shadow-lg group-hover:shadow-xl transition-all duration-300">
-                        <span className="text-white text-2xl font-black">2</span>
+                      <div className="w-20 h-20 bg-white dark:bg-gradient-to-r dark:from-purple-500 dark:to-orange-500 rounded-2xl flex items-center justify-center mx-auto shadow-lg border-2 border-gray-300 dark:border-none">
+                        <span className="text-black dark:text-white text-2xl font-black">2</span>
                       </div>
-                      <div className="absolute -top-2 -right-2 w-6 h-6 bg-purple-400 rounded-full animate-bounce" style={{animationDelay: '0.5s'}}></div>
                     </div>
                     <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-4 text-center">
                       Make Real Connections
@@ -382,13 +373,6 @@ export default function LandingStreamlined() {
                     <p className="text-gray-600 dark:text-gray-300 text-center leading-relaxed">
                       Chat with locals who know secret spots and fellow travelers heading to your destination. No awkward small talk - just shared adventures.
                     </p>
-                    <div className="mt-6 flex justify-center">
-                      <div className="flex space-x-1">
-                        <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse"></div>
-                        <div className="w-2 h-2 bg-purple-300 rounded-full animate-pulse" style={{animationDelay: '0.2s'}}></div>
-                        <div className="w-2 h-2 bg-orange-300 rounded-full animate-pulse" style={{animationDelay: '0.4s'}}></div>
-                      </div>
-                    </div>
                   </div>
                 </div>
 
@@ -396,10 +380,9 @@ export default function LandingStreamlined() {
                 <div className="group">
                   <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-shadow duration-300 border border-orange-100 dark:border-orange-800">
                     <div className="relative mb-8">
-                      <div className="w-20 h-20 bg-gradient-to-r from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg group-hover:shadow-xl transition-all duration-300">
-                        <span className="text-white text-2xl font-black">3</span>
+                      <div className="w-20 h-20 bg-white dark:bg-gradient-to-r dark:from-orange-500 dark:to-orange-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg border-2 border-gray-300 dark:border-none">
+                        <span className="text-black dark:text-white text-2xl font-black">3</span>
                       </div>
-                      <div className="absolute -top-2 -right-2 w-6 h-6 bg-orange-400 rounded-full animate-bounce" style={{animationDelay: '1s'}}></div>
                     </div>
                     <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-4 text-center">
                       Create Epic Memories
@@ -407,13 +390,6 @@ export default function LandingStreamlined() {
                     <p className="text-gray-600 dark:text-gray-300 text-center leading-relaxed">
                       Join authentic experiences, discover hidden gems, and turn strangers into lifelong friends. This is travel the way it's meant to be.
                     </p>
-                    <div className="mt-6 flex justify-center">
-                      <div className="flex space-x-1">
-                        <div className="w-2 h-2 bg-orange-400 rounded-full animate-pulse"></div>
-                        <div className="w-2 h-2 bg-orange-300 rounded-full animate-pulse" style={{animationDelay: '0.2s'}}></div>
-                        <div className="w-2 h-2 bg-orange-200 rounded-full animate-pulse" style={{animationDelay: '0.4s'}}></div>
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>
