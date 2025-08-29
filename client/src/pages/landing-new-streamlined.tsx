@@ -101,7 +101,7 @@ export default function LandingStreamlined() {
                 <div className="text-4xl md:text-5xl font-semibold tracking-tight text-zinc-900 dark:text-white overflow-hidden relative h-[140px] md:h-[160px]">
                   <h1 
                     key={currentHeadline}
-                    className="absolute top-0 left-0 w-full animate-in slide-in-from-left-8 fade-in duration-700"
+                    className="absolute top-0 left-0 w-full animate-in slide-in-from-left-full fade-in duration-700"
                   >
                     {headlines[currentHeadline]} <br /> {subtexts[currentSubtext]}
                   </h1>
@@ -109,7 +109,7 @@ export default function LandingStreamlined() {
                 <div className="mt-4 max-w-xl text-lg text-zinc-600 dark:text-zinc-300 overflow-hidden relative h-[80px]">
                   <p 
                     key={currentSubtext}
-                    className="absolute top-0 left-0 w-full animate-in slide-in-from-left-8 fade-in duration-700"
+                    className="absolute top-0 left-0 w-full animate-in slide-in-from-left-full fade-in duration-700"
                   >
                     {descriptions[currentSubtext]}
                   </p>
