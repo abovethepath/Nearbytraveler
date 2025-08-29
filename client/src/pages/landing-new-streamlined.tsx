@@ -43,9 +43,9 @@ export default function LandingStreamlined() {
   const heroImages = [
     "/travelers together hugging_1754971726997.avif", // General travelers - current default
     "/Image-Social-Travel-with-Contiki-photo-courtesy-Co_1756483970192.webp", // Locals sharing experiences - group adventure
-    "@assets/image_1756483833676.png", // Families - family at airport watching plane
-    "@assets/image_1756483700289.png", // Networking/professional exchange
-    "@assets/image_1756483716831.png"  // Business - local cafe/business atmosphere
+    "/image_1756483833676.png", // Families - family at airport watching plane
+    "/image_1756483700289.png", // Networking/professional exchange
+    "/image_1756483716831.png"  // Business - local cafe/business atmosphere
   ];
 
   const heroImageAlts = [
