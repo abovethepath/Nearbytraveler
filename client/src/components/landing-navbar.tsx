@@ -88,12 +88,6 @@ export default function LandingNavbar() {
             >
               🏠 Home
             </Link>
-            <Link href="/business-landing" 
-              className="border-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 block pl-4 pr-4 py-4 border-l-4 text-lg font-medium rounded-r-lg transition-all duration-200 touch-manipulation"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              💼 For Businesses
-            </Link>
             <Link href="/locals-landing" 
               className="border-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 block pl-4 pr-4 py-4 border-l-4 text-lg font-medium rounded-r-lg transition-all duration-200 touch-manipulation"
               onClick={() => setMobileMenuOpen(false)}
@@ -117,6 +111,12 @@ export default function LandingNavbar() {
               onClick={() => setMobileMenuOpen(false)}
             >
               🤝 Networking
+            </Link>
+            <Link href="/business-landing" 
+              className="border-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 block pl-4 pr-4 py-4 border-l-4 text-lg font-medium rounded-r-lg transition-all duration-200 touch-manipulation"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              💼 For Businesses
             </Link>
           </div>
           <div className="pt-4 pb-6 border-t border-gray-200 dark:border-gray-700 px-4">

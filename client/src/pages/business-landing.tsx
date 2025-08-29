@@ -125,13 +125,13 @@ export default function BusinessLanding() {
               </Button>
               <Button
                 onClick={() => setLocation('/join')}
-                className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-6 px-8 rounded-2xl text-lg shadow-lg transform hover:scale-105 transition-all duration-200"
+                className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-6 px-8 rounded-2xl text-lg shadow-lg transform hover:scale-105 transition-all duration-200"
               >
                 📈 CREATE OFFERS
               </Button>
               <Button
                 onClick={() => setLocation('/join')}
-                className="bg-green-500 hover:bg-green-600 text-white font-bold py-6 px-8 rounded-2xl text-lg shadow-lg transform hover:scale-105 transition-all duration-200"
+                className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-6 px-8 rounded-2xl text-lg shadow-lg transform hover:scale-105 transition-all duration-200"
               >
                 🎉 HOST EVENTS
               </Button>
@@ -141,25 +141,25 @@ export default function BusinessLanding() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <Button
                 onClick={() => setLocation('/join')}
-                className="bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-4 rounded-2xl text-sm"
+                className="bg-gray-400 hover:bg-gray-500 text-white font-bold py-3 px-4 rounded-2xl text-sm"
               >
                 🍽️ Restaurants
               </Button>
               <Button
                 onClick={() => setLocation('/join')}
-                className="bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 px-4 rounded-2xl text-sm"
+                className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-4 rounded-2xl text-sm"
               >
                 🏨 Hotels
               </Button>
               <Button
                 onClick={() => setLocation('/join')}
-                className="bg-teal-500 hover:bg-teal-600 text-white font-bold py-3 px-4 rounded-2xl text-sm"
+                className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-4 rounded-2xl text-sm"
               >
                 🎨 Tours
               </Button>
               <Button
                 onClick={() => setLocation('/join')}
-                className="bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-4 rounded-2xl text-sm"
+                className="bg-gray-700 hover:bg-gray-800 text-white font-bold py-3 px-4 rounded-2xl text-sm"
               >
                 🛍️ Retail
               </Button>
@@ -213,28 +213,28 @@ export default function BusinessLanding() {
             What Makes Nearby Traveler Special for Business
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-            <div className="bg-orange-600 p-6 rounded-2xl shadow-lg text-white">
+            <div className="bg-gray-100 dark:bg-gray-700 p-6 rounded-2xl shadow-lg text-black dark:text-white">
               <div className="text-4xl mb-4">🎯</div>
-              <h3 className="text-xl font-bold mb-3 text-white">Target Real Customers</h3>
-              <p className="text-white">Reach travelers and locals actively seeking authentic experiences in your area. No fake engagement - real people, real connections.</p>
+              <h3 className="text-xl font-bold mb-3 text-black dark:text-white">Target Real Customers</h3>
+              <p className="text-gray-700 dark:text-gray-300">Reach travelers and locals actively seeking authentic experiences in your area. No fake engagement - real people, real connections.</p>
             </div>
-            <div className="bg-teal-600 p-6 rounded-2xl shadow-lg text-white">
+            <div className="bg-gray-200 dark:bg-gray-600 p-6 rounded-2xl shadow-lg text-black dark:text-white">
               <div className="text-4xl mb-4">🚀</div>
-              <h3 className="text-xl font-bold mb-3 text-white">Instant Growth</h3>
-              <p className="text-white">Create time-limited offers and events that attract both tourists and locals. See immediate results from your marketing efforts.</p>
+              <h3 className="text-xl font-bold mb-3 text-black dark:text-white">Instant Growth</h3>
+              <p className="text-gray-700 dark:text-gray-300">Create time-limited offers and events that attract both tourists and locals. See immediate results from your marketing efforts.</p>
             </div>
-            <div className="bg-orange-700 p-6 rounded-2xl shadow-lg text-white">
+            <div className="bg-gray-300 dark:bg-gray-500 p-6 rounded-2xl shadow-lg text-black dark:text-white">
               <div className="text-4xl mb-4">📊</div>
-              <h3 className="text-xl font-bold mb-3 text-white">Smart Analytics</h3>
-              <p className="text-white">Access detailed insights about customer engagement and offer performance. Make data-driven decisions to grow your business.</p>
+              <h3 className="text-xl font-bold mb-3 text-black dark:text-white">Smart Analytics</h3>
+              <p className="text-gray-700 dark:text-gray-300">Access detailed insights about customer engagement and offer performance. Make data-driven decisions to grow your business.</p>
             </div>
           </div>
 
           {/* Get Started Section - Consolidated */}
-          <div className="bg-gradient-to-r from-orange-600 to-blue-600 text-white py-16 rounded-2xl shadow-lg border border-gray-200 dark:border-0">
+          <div className="bg-white dark:bg-gray-800 text-black dark:text-white py-16 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700">
             <div className="max-w-4xl mx-auto text-center px-6">
-              <h2 className="text-4xl font-bold mb-4 text-white">Ready to Grow Your Business?</h2>
-              <p className="text-xl mb-8 text-white">Join thousands of businesses already connecting with travelers and locals.</p>
+              <h2 className="text-4xl font-bold mb-4 text-black dark:text-white">Ready to Grow Your Business?</h2>
+              <p className="text-xl mb-8 text-gray-600 dark:text-gray-300">Join thousands of businesses already connecting with travelers and locals.</p>
               
               {/* Primary CTA Row */}
               <div className="mb-12 flex justify-center">
@@ -248,24 +248,24 @@ export default function BusinessLanding() {
               </div>
               
               {/* Business Types */}
-              <div className="bg-white/10 backdrop-blur-sm p-6 rounded-2xl">
-                <h3 className="text-xl font-bold mb-4 text-white">Perfect for All Business Types</h3>
+              <div className="bg-gray-50 dark:bg-gray-700 p-6 rounded-2xl">
+                <h3 className="text-xl font-bold mb-4 text-black dark:text-white">Perfect for All Business Types</h3>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div className="flex flex-col items-center">
                     <div className="text-3xl mb-2">🍽️</div>
-                    <p className="text-white font-medium">Restaurants</p>
+                    <p className="text-gray-600 dark:text-gray-300 font-medium">Restaurants</p>
                   </div>
                   <div className="flex flex-col items-center">
                     <div className="text-3xl mb-2">🏨</div>
-                    <p className="text-white font-medium">Hotels</p>
+                    <p className="text-gray-600 dark:text-gray-300 font-medium">Hotels</p>
                   </div>
                   <div className="flex flex-col items-center">
                     <div className="text-3xl mb-2">🎨</div>
-                    <p className="text-white font-medium">Tours</p>
+                    <p className="text-gray-600 dark:text-gray-300 font-medium">Tours</p>
                   </div>
                   <div className="flex flex-col items-center">
                     <div className="text-3xl mb-2">🛍️</div>
-                    <p className="text-white font-medium">Retail</p>
+                    <p className="text-gray-600 dark:text-gray-300 font-medium">Retail</p>
                   </div>
                 </div>
               </div>
@@ -275,17 +275,17 @@ export default function BusinessLanding() {
         
         {/* Pricing Widget */}
         <div className="mt-16 mb-8 max-w-4xl mx-auto">
-          <div className="bg-gradient-to-r from-orange-500 to-blue-600 text-white p-8 rounded-2xl shadow-lg border border-gray-200 dark:border-0">
+          <div className="bg-white dark:bg-gray-800 text-black dark:text-white p-8 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700">
             <div className="text-center">
-              <h2 className="text-3xl font-bold mb-4">Simple Business Pricing</h2>
-              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 mb-6">
-                <div className="text-5xl font-black text-white mb-2">$50</div>
-                <div className="text-xl text-white mb-2">per month</div>
-                <div className="text-2xl font-bold text-yellow-200 mb-4">+ $100 Sign Up Fee</div>
-                <div className="bg-green-500 text-white font-bold py-2 px-6 rounded-full text-lg mb-4 inline-block">
+              <h2 className="text-3xl font-bold mb-4 text-black dark:text-white">Simple Business Pricing</h2>
+              <div className="bg-gray-50 dark:bg-gray-700 rounded-2xl p-6 mb-6">
+                <div className="text-5xl font-black text-black dark:text-white mb-2">$50</div>
+                <div className="text-xl text-gray-600 dark:text-gray-300 mb-2">per month</div>
+                <div className="text-2xl font-bold text-gray-500 dark:text-gray-400 mb-4">+ $100 Sign Up Fee</div>
+                <div className="bg-gray-600 dark:bg-gray-500 text-white font-bold py-2 px-6 rounded-full text-lg mb-4 inline-block">
                   🎉 FREE DURING BETA
                 </div>
-                <div className="text-white mb-6">
+                <div className="text-gray-700 dark:text-gray-300 mb-6">
                   <p>✅ Business offers and promotions</p>
                   <p>✅ Event hosting capabilities</p>
                   <p>✅ Direct messaging with customers</p>
@@ -295,7 +295,7 @@ export default function BusinessLanding() {
               </div>
               <Button
                 onClick={() => setLocation('/join')}
-                className="bg-white text-blue-600 hover:bg-gray-100 font-bold text-xl px-12 py-4 rounded-2xl shadow-lg transition-all duration-200 transform hover:scale-105"
+                className="bg-black hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-100 text-white dark:text-black font-bold text-xl px-12 py-4 rounded-2xl shadow-lg transition-all duration-200 transform hover:scale-105"
               >
                 🚀 Start FREE Beta Now
               </Button>
