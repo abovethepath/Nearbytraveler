@@ -10,7 +10,15 @@ import { useTheme } from "@/components/theme-provider";
 export default function CouchsurfingLanding() {
   const [, setLocation] = useLocation();
   const [isMobile, setIsMobile] = useState(false);
+  const [currentHeadline, setCurrentHeadline] = useState(0);
   const { setTheme } = useTheme();
+
+  const headlines = [
+    "Love Meeting Tourists But Not on a Couch?",
+    "Tired of Staying on a Couch?",
+    "Want Cultural Exchange Without the Hosting?",
+    "Meet Travelers at Coffee Shops Instead?"
+  ];
 
   useEffect(() => {
     const checkMobile = () => {
@@ -21,6 +29,14 @@ export default function CouchsurfingLanding() {
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentHeadline((prev) => (prev + 1) % headlines.length);
+    }, 10000); // 10 seconds
+
+    return () => clearInterval(interval);
+  }, [headlines.length]);
 
   return (
     <div className="bg-white dark:bg-gray-900 font-sans">
@@ -52,7 +68,9 @@ export default function CouchsurfingLanding() {
                 For the Couchsurfing Community
               </div>
               <h1 className="text-4xl md:text-5xl font-semibold tracking-tight text-zinc-900 dark:text-white">
-                Love Meeting Tourists <br /> But Not on a Couch?
+                <span className="transition-opacity duration-500">
+                  {headlines[currentHeadline]}
+                </span>
               </h1>
               <p className="mt-2 text-lg italic text-green-600">
                 Share Your City Without Sharing Your Space
