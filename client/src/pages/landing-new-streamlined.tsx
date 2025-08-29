@@ -67,13 +67,14 @@ export default function LandingStreamlined() {
                 <p className="mt-4 max-w-xl text-lg text-zinc-600 dark:text-zinc-300">
                   Meet locals and travelers before your trip begins — and turn chance encounters into lifelong friendships.
                 </p>
-                <div className="mt-6 flex gap-4">
+                <div className="mt-6 flex flex-col sm:flex-row gap-4">
                   <button 
                     onClick={() => {
                       trackEvent('signup_cta_click', 'landing_page', 'main_hero_button');
                       setLocation('/join');
                     }}
-                    className="rounded-xl bg-black px-6 py-3 text-white font-medium shadow hover:bg-zinc-800"
+                    className="rounded-xl bg-black px-6 py-3 text-white font-medium shadow hover:bg-zinc-800 w-full sm:w-auto"
+                    data-testid="button-join-journey"
                   >
                     Join the Journey
                   </button>
@@ -82,7 +83,8 @@ export default function LandingStreamlined() {
                       trackEvent('learn_more_click', 'landing_page', 'see_how_it_works');
                       document.querySelector('#community-section')?.scrollIntoView({ behavior: 'smooth' });
                     }}
-                    className="rounded-xl border border-zinc-300 px-6 py-3 font-medium hover:bg-zinc-50 dark:border-zinc-600 dark:hover:bg-zinc-800"
+                    className="rounded-xl border border-zinc-300 px-6 py-3 font-medium hover:bg-zinc-50 dark:border-zinc-600 dark:hover:bg-zinc-800 w-full sm:w-auto"
+                    data-testid="button-see-how-it-works"
                   >
                     See How It Works
                   </button>
