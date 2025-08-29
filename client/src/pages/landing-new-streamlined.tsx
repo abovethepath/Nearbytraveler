@@ -189,7 +189,7 @@ export default function LandingStreamlined() {
                   <Building2 className="w-8 h-8 text-purple-600 dark:text-purple-400" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                  Rediscover Friends Everywhere
+                  Rediscover Friends
                 </h3>
                 <p className="text-gray-600 dark:text-gray-300 text-sm">
                   Know when a friend you met in New York is also in Germany with you
