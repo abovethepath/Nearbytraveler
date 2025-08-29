@@ -306,6 +306,56 @@ export default function CouchsurfingLanding() {
           </div>
         </section>
 
+        {/* HOSTING DOESN'T END - ENHANCEMENT SECTION */}
+        <section className="mx-auto max-w-6xl px-6 py-20 bg-gradient-to-br from-green-50 via-blue-50 to-purple-50 dark:from-green-900/20 dark:via-blue-900/20 dark:to-purple-900/20 rounded-2xl mb-16">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900 dark:text-white mb-6">
+              Keep Hosting, Expand Your Impact
+            </h2>
+            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-4xl mx-auto leading-relaxed">
+              Nearby Traveler doesn't replace couchsurfing — it enhances it. You can still host when you want, but now you can also connect with travelers when you can't.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Still Host */}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg">
+              <div className="w-16 h-16 bg-green-100 dark:bg-green-800 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Home className="w-8 h-8 text-green-600 dark:text-green-400" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 text-center">
+                Keep Hosting When You Can
+              </h3>
+              <p className="text-gray-600 dark:text-gray-300 text-center leading-relaxed">
+                Have space this weekend? Still host travelers on your couch. Nearby Traveler connects you with quality travelers who share your interests, making hosting even better.
+              </p>
+            </div>
+
+            {/* Meet When You Can't Host */}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg">
+              <div className="w-16 h-16 bg-blue-100 dark:bg-blue-800 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Users className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 text-center">
+                Connect When You Can't Host
+              </h3>
+              <p className="text-gray-600 dark:text-gray-300 text-center leading-relaxed">
+                No space but still want to meet travelers? Join them for coffee, show them your favorite spots, or attend events together. Share your city without opening your home.
+              </p>
+            </div>
+          </div>
+
+          <div className="bg-gradient-to-r from-green-500 to-blue-600 rounded-2xl p-8 text-white text-center mt-12">
+            <h3 className="text-2xl sm:text-3xl font-bold mb-4">
+              The Best of Both Worlds
+            </h3>
+            <p className="text-lg sm:text-xl opacity-90 max-w-4xl mx-auto leading-relaxed">
+              Host when your schedule allows. Meet travelers when hosting isn't possible. 
+              <strong className="block mt-2">Your generosity and love for cultural exchange never has to stop.</strong>
+            </p>
+          </div>
+        </section>
+
         {/* HOW IT WORKS - Couchsurfing Style */}
         <div className="relative z-10 py-20 bg-gradient-to-br from-gray-50 via-green-50 to-blue-50 dark:from-gray-900 dark:via-green-900/20 dark:to-blue-900/20">
           <div className="max-w-7xl mx-auto px-4">
