@@ -267,8 +267,8 @@ export default function EventsLanding() {
             <div className="bg-gray-100 dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transform transition-all duration-300 flex flex-col">
               <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-teal-500 to-green-600">
                 <img 
-                  src="/bike-tour-city.png" 
-                  alt="Group bike tour through city streets" 
+                  src="@assets/image_1756447442403.png" 
+                  alt="Group of cyclists with bikes under palm trees in beach setting" 
                   className="w-full h-48 object-cover"
                 />
               </div>
