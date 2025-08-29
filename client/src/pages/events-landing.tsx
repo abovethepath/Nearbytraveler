@@ -31,16 +31,7 @@ export default function EventsLanding() {
           {isAirbnbStyle ? (
             // Airbnb-style split layout (for professor)
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-              {/* Left side - Hero Image */}
-              <div className="relative h-96 lg:h-[500px] rounded-2xl overflow-hidden">
-                <img
-                  src={eventHeaderImage}
-                  alt="People enjoying events and activities together"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              
-              {/* Right side - Content */}
+              {/* Left side - Content */}
               <div className="space-y-8">
                 <div>
                   <h1 className="text-4xl md:text-5xl font-light text-gray-900 dark:text-white mb-6 leading-tight">
@@ -58,6 +49,15 @@ export default function EventsLanding() {
                 >
                   Join Nearby Traveler
                 </Button>
+              </div>
+              
+              {/* Right side - Hero Image */}
+              <div className="relative h-96 lg:h-[500px] rounded-2xl overflow-hidden">
+                <img
+                  src={eventHeaderImage}
+                  alt="People enjoying events and activities together"
+                  className="w-full h-full object-cover"
+                />
               </div>
             </div>
           ) : (

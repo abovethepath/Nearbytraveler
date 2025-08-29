@@ -38,16 +38,7 @@ export default function NetworkingHero({ isAirbnbStyle = true }: NetworkingHeroP
     <div className="pt-20 pb-24 bg-white dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-4">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          {/* Left side - Hero Image */}
-          <div className="relative h-96 lg:h-[500px] rounded-2xl overflow-hidden">
-            <img
-              src={networkingHeroImage}
-              alt="Professional networking event with people connecting"
-              className="w-full h-full object-cover"
-            />
-          </div>
-          
-          {/* Right side - Content */}
+          {/* Left side - Content */}
           <div className="space-y-8">
             <div>
               <h1 className="text-4xl md:text-5xl font-light text-gray-900 dark:text-white mb-6 leading-tight">
@@ -65,6 +56,15 @@ export default function NetworkingHero({ isAirbnbStyle = true }: NetworkingHeroP
             >
               Join Nearby Traveler
             </Button>
+          </div>
+          
+          {/* Right side - Hero Image */}
+          <div className="relative h-96 lg:h-[500px] rounded-2xl overflow-hidden">
+            <img
+              src={networkingHeroImage}
+              alt="Professional networking event with people connecting"
+              className="w-full h-full object-cover"
+            />
           </div>
         </div>
       </div>
