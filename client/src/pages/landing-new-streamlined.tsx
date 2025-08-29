@@ -66,10 +66,10 @@ export default function LandingStreamlined() {
                     <div className="text-center">
                       <div className="max-w-4xl mx-auto">
                         <h1 className="px-3 leading-tight sm:leading-snug" style={{ fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
-                          <span className="block font-bold text-[clamp(1.5rem,6vw,2.25rem)] text-black dark:text-white" style={{ fontWeight: '700', textShadow: '2px 2px 4px rgba(0,0,0,0.8)', letterSpacing: '-0.02em' }}>
+                          <span className="block font-bold text-[clamp(1.5rem,6vw,2.25rem)] text-black dark:text-white" style={{ fontWeight: '700', textShadow: 'none', letterSpacing: '-0.02em' }}>
                             Skip the Tourist Traps, Connect Before Your Trip, Keep Connections Forever and Create Lifelong Friends!!!
                           </span>
-                          <span className="block font-bold text-[clamp(1.25rem,5.5vw,2rem)] mt-4" style={{ fontWeight: '700', textShadow: '2px 2px 4px rgba(0,0,0,0.8)', letterSpacing: '-0.02em' }}>
+                          <span className="block font-bold text-[clamp(1.25rem,5.5vw,2rem)] mt-4" style={{ fontWeight: '700', textShadow: 'none', letterSpacing: '-0.02em' }}>
                             <span className="text-black dark:text-white">Meet Locals and Other </span>
                             <span className="text-black dark:text-white">Nearby Travelers </span>
                             <span className="text-black dark:text-white">Right Now, Today!!!</span>
