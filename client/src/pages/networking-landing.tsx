@@ -246,7 +246,7 @@ export default function NetworkingLanding() {
             <Button
               onClick={() => setLocation('/join')}
               size="lg"
-              className="bg-white hover:bg-gray-100 text-black dark:text-purple-600 font-bold text-xl px-12 py-4 rounded-2xl shadow-lg transition-all duration-200 transform hover:scale-105"
+              className="bg-white hover:bg-gray-100 text-purple-600 dark:text-purple-700 font-bold text-xl px-12 py-4 rounded-2xl shadow-lg transition-all duration-200 transform hover:scale-105"
             >
               👉 Join the Network
             </Button>
