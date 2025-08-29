@@ -15,8 +15,8 @@ export default function LandingStreamlined() {
   // Rotating headlines for different audience pain points
   const [currentHeadline, setCurrentHeadline] = useState(0);
   const headlines = [
-    "Planning a Trip Soon? Skip Tourist...", // General travelers
-    "Love meeting travelers and showing Your City?", // Couchsurfers as hosts
+    "Planning a Trip Soon? Skip Tourist Traps.", // General travelers
+    "Love Meeting Travelers? Show Your City!", // Couchsurfers as hosts
     "Want Your Kids to Meet the World?", // Families
     "Hate Forced Networking?", // Professional networking
     "Run a Business?" // Business owners
@@ -35,7 +35,7 @@ export default function LandingStreamlined() {
     "Connect with locals and travelers before your trip begins— and create friendships that last a lifetime.", // General
     "Connect with travelers at coffee shops, events, and experiences. All the cultural exchange, none of the hosting concerns.", // Couchsurfers hosts
     "Help your family build global friendships through safe, public meetups and cultural exchanges.", // Families
-    "Tired of forced networking? Build authentic professional connections. Connect in advance through shared interests — no small talk required.", // Networking
+    "Tired of Forced Networking? Build Real Connections.", // Networking
     "Showcase your business to travelers through events, experiences, and curated local discounts only for Nearby Travelers." // Business
   ];
 
@@ -112,7 +112,7 @@ export default function LandingStreamlined() {
                 <div className="mb-4 inline-block rounded-full bg-orange-50 dark:bg-orange-900/30 px-4 py-1 text-sm font-medium text-orange-700 dark:text-orange-400">
                   Now Launching Beta: Be Among the First to Connect Globally
                 </div>
-                <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight text-zinc-900 dark:text-white overflow-hidden relative h-[160px] sm:h-[180px] md:h-[220px]">
+                <div className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-semibold tracking-tight text-zinc-900 dark:text-white overflow-hidden relative h-[140px] sm:h-[160px] md:h-[180px] lg:h-[220px]">
                   <h1 
                     key={currentHeadline}
                     className="absolute top-0 left-0 w-full animate-in slide-in-from-left-full fade-in duration-700"
