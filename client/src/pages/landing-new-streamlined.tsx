@@ -92,7 +92,7 @@ export default function LandingStreamlined() {
             trackEvent('signup_cta_click', 'landing_page', 'floating_join_now');
             setLocation('/join');
           }}
-          className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-600 text-white dark:text-white shadow-sm transition-all duration-200 px-4 py-2 rounded-lg text-sm font-medium"
+          className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
         >
           Join Now
         </Button>
@@ -112,7 +112,7 @@ export default function LandingStreamlined() {
                 <div className="mb-4 inline-block rounded-full bg-orange-50 dark:bg-orange-900/30 px-4 py-1 text-sm font-medium text-orange-700 dark:text-orange-400">
                   Now Launching Beta: Be Among the First to Connect Globally
                 </div>
-                <div className="text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight text-zinc-900 dark:text-white overflow-hidden relative h-[200px] md:h-[220px]">
+                <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight text-zinc-900 dark:text-white overflow-hidden relative h-[160px] sm:h-[180px] md:h-[220px]">
                   <h1 
                     key={currentHeadline}
                     className="absolute top-0 left-0 w-full animate-in slide-in-from-left-full fade-in duration-700"
@@ -134,7 +134,7 @@ export default function LandingStreamlined() {
                       trackEvent('signup_cta_click', 'landing_page', 'main_hero_button');
                       setLocation('/join');
                     }}
-                    className="rounded-xl bg-black px-6 py-3 text-white font-medium shadow hover:bg-zinc-800 w-full sm:w-auto"
+                    className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200 w-full sm:w-auto"
                     data-testid="button-join-journey"
                   >
                     Join Now
@@ -184,7 +184,7 @@ export default function LandingStreamlined() {
                     setLocation('/join');
                   }}
                   size="lg"
-                  className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-500 text-white dark:text-white font-medium px-8 py-3 rounded-lg transition-all duration-200"
+                  className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
                 >
                   Join Now
                 </Button>
@@ -578,7 +578,7 @@ export default function LandingStreamlined() {
               <Button 
                 onClick={() => setLocation('/auth')}
                 size="lg"
-                className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-600 dark:hover:from-blue-700 dark:hover:to-orange-700 text-white font-black text-xl px-12 py-6 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300"
+                className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
               >
                 Join Now
               </Button>
@@ -699,7 +699,7 @@ export default function LandingStreamlined() {
             <p className="text-lg sm:text-xl mb-6 sm:mb-8 px-4 leading-relaxed">Join travelers, locals, and businesses already building real connections worldwide.</p>
             <Button 
               onClick={() => setLocation('/join')}
-              className="bg-white dark:bg-white text-black dark:text-blue-600 hover:bg-gray-100 dark:hover:bg-gray-200 px-6 sm:px-8 py-3 sm:py-4 text-lg sm:text-xl rounded-full shadow-lg transition-all duration-300 hover:scale-105 border-2 border-black dark:border-none font-bold"
+              className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
             >
               Join Now
             </Button>
