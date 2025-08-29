@@ -23,16 +23,12 @@ export default function LandingStreamlined() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Force light mode when component mounts (like yesterday)
-  useEffect(() => {
-    setTheme('light');
-    document.documentElement.classList.remove('dark');
-    document.documentElement.classList.add('light');
-    document.documentElement.style.colorScheme = 'light';
-  }, [setTheme]);
+  // Allow user to choose theme - don't force it
 
   return (
     <div className="bg-white dark:bg-gray-900 font-sans">
+      <ThemeToggle />
+      
       {/* Fixed CTA Button */}
       <div className="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 z-50">
         <Button 
@@ -202,7 +198,7 @@ export default function LandingStreamlined() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-start mb-12">
 
               {/* Beach Bonfire Event Card */}
-              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col min-h-[400px]">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col h-[480px]">
                 <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-orange-400 to-red-500">
                   <img 
                     src="/attached_assets/event page bbq party_1753299541268.png" 
@@ -232,7 +228,7 @@ export default function LandingStreamlined() {
               </div>
               
               {/* Taco Tuesday Event Card */}
-              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col min-h-[400px]">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col h-[480px]">
                 <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-yellow-400 to-orange-500">
                   <img 
                     src="/attached_assets/image_1754973365104.png" 
@@ -262,7 +258,7 @@ export default function LandingStreamlined() {
               </div>
               
               {/* Hollywood Sign Hike Event Card */}
-              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col min-h-[400px]">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col h-[480px]">
                 <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-blue-500 to-indigo-600">
                   <img 
                     src="/attached_assets/image_1754974796221.png" 
