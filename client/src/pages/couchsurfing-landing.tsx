@@ -14,10 +14,10 @@ export default function CouchsurfingLanding() {
   const { setTheme } = useTheme();
 
   const headlines = [
-    "Love Meeting Tourists But Not on a Couch?",
-    "Tired of Staying on a Couch?",
-    "Want Cultural Exchange Without the Hosting?",
-    "Meet Travelers at Coffee Shops Instead?"
+    "Love Meeting Tourists?",
+    "Tired of Couch Roulette?",
+    "Want Cultural Exchange?",
+    "Meet Travelers Your Way?"
   ];
 
   useEffect(() => {
