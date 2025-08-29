@@ -540,7 +540,7 @@ export default function LandingStreamlined() {
                 <p className="text-black dark:text-indigo-100 leading-relaxed mb-4 sm:mb-6 text-sm sm:text-base">Discover unique events and your community.</p>
                 <Button 
                   onClick={() => setLocation('/events-landing')}
-                  className="bg-white dark:bg-white text-black dark:text-indigo-600 hover:bg-gray-100 dark:hover:bg-indigo-50 font-bold w-full border-2 border-black dark:border-gray-300"
+                  className="bg-black dark:bg-white text-white dark:text-indigo-600 hover:bg-gray-800 dark:hover:bg-indigo-50 font-bold w-full border border-gray-300"
                 >
                   Join Now
                 </Button>
@@ -553,7 +553,7 @@ export default function LandingStreamlined() {
                 <p className="text-black dark:text-gray-200 leading-relaxed mb-4 sm:mb-6 text-sm sm:text-base">Make friends fast and feel at home.</p>
                 <Button 
                   onClick={() => setLocation('/join')}
-                  className="bg-white dark:bg-white text-black dark:text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-50 font-bold w-full border-2 border-black dark:border-gray-300"
+                  className="bg-black dark:bg-white text-white dark:text-gray-700 hover:bg-gray-800 dark:hover:bg-gray-50 font-bold w-full border border-gray-300"
                 >
                   Join Now
                 </Button>
