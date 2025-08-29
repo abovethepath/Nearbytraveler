@@ -230,7 +230,7 @@ export default function LandingStreamlined() {
                     </h3>
 
                     <blockquote className="text-balance text-lg leading-relaxed text-zinc-800 dark:text-zinc-200 md:text-xl">
-                      "For 15 years I opened my home to travelers from all over the world. I learned that what makes travel unforgettable isn't the sights — it's the people you share them with. Too often, we leave those connections up to luck. I created Nearby Traveler so no one has to explore — or live in their own city — feeling disconnected."
+                      "For 15 years I opened my home to travelers from all over the world. I learned that what makes travel unforgettable isn't the sites — it's the people you share them with. Too often, we leave those connections up to luck. I created Nearby Traveler so no one has to explore — or live in their own city — feeling disconnected."
                     </blockquote>
 
                     <div className="flex items-center gap-3 pt-2">
