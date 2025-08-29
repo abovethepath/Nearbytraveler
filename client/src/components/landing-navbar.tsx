@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "wouter";
 import Logo from "@/components/logo";
+import ThemeToggle from "@/components/ThemeToggle";
 
 export default function LandingNavbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -45,6 +46,7 @@ export default function LandingNavbar() {
 
           {/* CTA Buttons - Fixed Width, Always Right */}
           <div className="hidden lg:flex items-center space-x-3 flex-shrink-0">
+            <ThemeToggle position="relative" className="mr-2" />
             <Link href="/auth" className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out whitespace-nowrap">
               Sign In
             </Link>
@@ -119,6 +121,9 @@ export default function LandingNavbar() {
           </div>
           <div className="pt-4 pb-6 border-t border-gray-200 dark:border-gray-700 px-4">
             <div className="flex flex-col space-y-3">
+              <div className="flex justify-center mb-2">
+                <ThemeToggle position="relative" />
+              </div>
               <Link href="/auth" 
                 className="bg-blue-600 hover:bg-blue-700 text-white text-center px-6 py-4 rounded-xl text-lg font-medium transition-all duration-200 active:scale-95 shadow-lg touch-manipulation"
                 onClick={() => setMobileMenuOpen(false)}

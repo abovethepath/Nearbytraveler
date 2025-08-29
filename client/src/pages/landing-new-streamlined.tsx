@@ -6,7 +6,6 @@ import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
 import { Users, Plane, Building2, Handshake } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
 import { useTheme } from "@/components/theme-provider";
-import ThemeToggle from "@/components/ThemeToggle";
 
 export default function LandingStreamlined() {
   const [, setLocation] = useLocation();
@@ -27,7 +26,6 @@ export default function LandingStreamlined() {
 
   return (
     <div className="bg-white dark:bg-gray-900 font-sans">
-      <ThemeToggle />
       
       {/* Fixed CTA Button */}
       <div className="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 z-50">
