@@ -35,6 +35,14 @@ export default function LocalsLanding() {
                 }}
                 aria-hidden="true"
               />
+              <div
+                className="absolute inset-0 dark:block hidden"
+                style={{
+                  background:
+                    "linear-gradient(to bottom, rgba(0,0,0,.6), rgba(0,0,0,.4), rgba(0,0,0,0.2))"
+                }}
+                aria-hidden="true"
+              />
             </div>
             <div className="relative">
               <div className="sm:pb-16 md:pb-20 lg:pb-28 xl:pb-32">
