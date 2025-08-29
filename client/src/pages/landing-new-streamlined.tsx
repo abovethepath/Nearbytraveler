@@ -35,7 +35,7 @@ export default function LandingStreamlined() {
     "Connect with locals and travelers before your trip begins— and create friendships that last a lifetime.", // General
     "Connect with travelers at coffee shops, events, and experiences. All the cultural exchange, none of the hosting concerns.", // Couchsurfers hosts
     "Help your family build global friendships through safe, public meetups and cultural exchanges.", // Families
-    "Skip the small talk. Connect with professionals through shared interests and authentic experiences.", // Networking
+    "Hate the the small talk and blind introductions? Connect with professionals in advance through shared interests and commonalities.", // Networking
     "Showcase your business to travelers through events, experiences, and curated local discounts only for Nearby Travelers." // Business
   ];
   
