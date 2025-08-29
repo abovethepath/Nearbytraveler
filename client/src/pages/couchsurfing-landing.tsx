@@ -356,6 +356,75 @@ export default function CouchsurfingLanding() {
           </div>
         </section>
 
+        {/* OPENING UP THE COMMUNITY - EXPANSION SECTION */}
+        <section className="mx-auto max-w-6xl px-6 py-20 bg-white dark:bg-gray-900">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900 dark:text-white mb-6">
+              Opening Our Community to <span className="text-orange-600 dark:text-orange-400">All Travelers</span>
+            </h2>
+            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-4xl mx-auto leading-relaxed">
+              For years, amazing travelers have been locked out of our community simply because they couldn't host or find a couch. Now, everyone can join the cultural exchange.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+            {/* Can't Host */}
+            <div className="bg-gradient-to-br from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20 rounded-2xl p-8 text-center">
+              <div className="w-16 h-16 bg-red-100 dark:bg-red-800 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Home className="w-8 h-8 text-red-600 dark:text-red-400" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+                "I Can't Host"
+              </h3>
+              <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+                Students in dorms, people with roommates, those in small spaces, strict landlords — there are countless reasons amazing people couldn't join couchsurfing. Now they can connect with travelers anyway.
+              </p>
+            </div>
+
+            {/* Can't Surf */}
+            <div className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-2xl p-8 text-center">
+              <div className="w-16 h-16 bg-blue-100 dark:bg-blue-800 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Users className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+                "I Can't Surf"
+              </h3>
+              <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+                Business travelers with company policies, families with children, people uncomfortable with stranger's homes — they still want authentic local connections and cultural exchange.
+              </p>
+            </div>
+
+            {/* Never Heard of CS */}
+            <div className="bg-gradient-to-br from-green-50 to-teal-50 dark:from-green-900/20 dark:to-teal-900/20 rounded-2xl p-8 text-center">
+              <div className="w-16 h-16 bg-green-100 dark:bg-green-800 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Globe className="w-8 h-8 text-green-600 dark:text-green-400" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+                "What's Couchsurfing?"
+              </h3>
+              <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+                Millions of travelers have never heard of couchsurfing but would love to meet locals and other travelers. They've been missing out on our amazing community all along.
+              </p>
+            </div>
+          </div>
+
+          {/* The Big Reveal */}
+          <div className="bg-gradient-to-r from-orange-500 to-pink-600 rounded-2xl p-8 text-white text-center">
+            <h3 className="text-2xl sm:text-3xl font-bold mb-4">
+              Now We Can All Connect
+            </h3>
+            <p className="text-lg sm:text-xl mb-6 opacity-90 max-w-4xl mx-auto leading-relaxed">
+              Imagine our couchsurfing community expanded to include every traveler who shares our values — not just those who can host or surf. 
+              <strong className="block mt-2">That's millions more cultural exchanges, friendships, and adventures waiting to happen.</strong>
+            </p>
+            <div className="bg-white/10 rounded-xl p-6 max-w-3xl mx-auto">
+              <p className="text-lg font-medium italic">
+                "The couchsurfing spirit was never really about the couch — it was about the connection. Now everyone can experience that magic."
+              </p>
+            </div>
+          </div>
+        </section>
+
         {/* HOW IT WORKS - Couchsurfing Style */}
         <div className="relative z-10 py-20 bg-gradient-to-br from-gray-50 via-green-50 to-blue-50 dark:from-gray-900 dark:via-green-900/20 dark:to-blue-900/20">
           <div className="max-w-7xl mx-auto px-4">
