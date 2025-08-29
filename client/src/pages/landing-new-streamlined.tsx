@@ -45,7 +45,7 @@ export default function LandingStreamlined() {
     "/travelers together hugging_1754971726997.avif", // Couchsurfers/locals - keep current for now, you'll update
     "/travelers together hugging_1754971726997.avif", // Families - you'll find family image
     "@assets/image_1756483700289.png", // Networking/professional exchange
-    "/travelers together hugging_1754971726997.avif"  // Business - keep current for now, you'll update
+    "@assets/image_1756483716831.png"  // Business - local cafe/business atmosphere
   ];
 
   const heroImageAlts = [
