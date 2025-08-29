@@ -5,6 +5,10 @@ import { useLocation } from "wouter";
 import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
 import ThemeToggle from "@/components/ThemeToggle";
 import Footer from "@/components/footer";
+import karaokeImage from "@assets/image_1756447354157.png";
+import bikeImage from "@assets/image_1756447442403.png";
+import artWalkImage from "@assets/image_1756447587360.png";
+import movieImage from "@assets/image_1756447721644.png";
 const eventHeaderImage = "/event page bbq party_1753299541268.png";
 
 export default function EventsLanding() {
@@ -176,7 +180,7 @@ export default function EventsLanding() {
             <div className="bg-gray-100 dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transform transition-all duration-300 flex flex-col">
               <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-blue-500 to-purple-600">
                 <img 
-                  src="@assets/image_1756447721644.png" 
+                  src={movieImage} 
                   alt="Marina del Rey outdoor movie night at Burton Chace Park" 
                   className="w-full h-48 object-cover"
                 />
@@ -207,7 +211,7 @@ export default function EventsLanding() {
             <div className="bg-gray-100 dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transform transition-all duration-300 flex flex-col">
               <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-purple-400 to-pink-500">
                 <img 
-                  src="@assets/image_1756447587360.png" 
+                  src={artWalkImage} 
                   alt="First Friday Art Walk in colorful arts district with people walking" 
                   className="w-full h-48 object-cover"
                 />
@@ -237,7 +241,7 @@ export default function EventsLanding() {
             <div className="bg-gray-100 dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transform transition-all duration-300 flex flex-col">
               <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-red-500 to-pink-600">
                 <img 
-                  src="@assets/image_1756447354157.png" 
+                  src={karaokeImage} 
                   alt="Person singing karaoke with silhouette against stage lights" 
                   className="w-full h-48 object-cover"
                 />
@@ -267,7 +271,7 @@ export default function EventsLanding() {
             <div className="bg-gray-100 dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transform transition-all duration-300 flex flex-col">
               <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-teal-500 to-green-600">
                 <img 
-                  src="@assets/image_1756447442403.png" 
+                  src={bikeImage} 
                   alt="Group of cyclists with bikes under palm trees in beach setting" 
                   className="w-full h-48 object-cover"
                 />
