@@ -334,7 +334,7 @@ export default function LandingStreamlined() {
                       Start Your Journey
                     </h3>
                     <p className="text-gray-600 dark:text-gray-300 text-center leading-relaxed flex-grow">
-                      Share your interests and where you're traveling. We connect you with locals and travelers who share your vibe—whether for business or pleasure.
+                      Share your interests and destination. We connect you with locals and travelers who share your vibe for authentic experiences.
                     </p>
                   </div>
                 </div>
