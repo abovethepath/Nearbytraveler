@@ -34,7 +34,7 @@ export default function LandingStreamlined() {
             trackEvent('signup_cta_click', 'landing_page', 'floating_join_now');
             setLocation('/join');
           }}
-          className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-600 dark:hover:from-blue-700 dark:hover:to-orange-700 text-white shadow-lg transition-all duration-300 hover:scale-105 px-4 sm:px-6 py-2 sm:py-3 rounded-full text-sm sm:text-base font-bold border border-gray-300 dark:border-none"
+          className="bg-white dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-600 hover:bg-gray-100 dark:hover:from-blue-700 dark:hover:to-orange-700 text-black dark:text-white shadow-lg transition-all duration-300 hover:scale-105 px-4 sm:px-6 py-2 sm:py-3 rounded-full text-sm sm:text-base font-bold border-2 border-black dark:border-none"
         >
           Join Now
         </Button>
@@ -457,7 +457,7 @@ export default function LandingStreamlined() {
                 <p className="text-black dark:text-indigo-100 leading-relaxed mb-4 sm:mb-6 text-sm sm:text-base">From beach bonfires to art gallery walks - discover events you'd never find on tourist sites and meet people who share your interests.</p>
                 <Button 
                   onClick={() => setLocation('/events-landing')}
-                  className="bg-black dark:bg-white text-white dark:text-indigo-600 hover:bg-gray-800 dark:hover:bg-indigo-50 font-bold w-full border border-gray-300"
+                  className="bg-white dark:bg-white text-black dark:text-indigo-600 hover:bg-gray-100 dark:hover:bg-indigo-50 font-bold w-full border-2 border-black dark:border-gray-300"
                 >
                   Find Your Scene
                 </Button>
@@ -470,7 +470,7 @@ export default function LandingStreamlined() {
                 <p className="text-black dark:text-gray-200 leading-relaxed mb-4 sm:mb-6 text-sm sm:text-base">New to town? Feeling lonely? Want to try something new? Everyone needs community - and that's exactly what we're here for.</p>
                 <Button 
                   onClick={() => setLocation('/join')}
-                  className="bg-black dark:bg-white text-white dark:text-gray-700 hover:bg-gray-800 dark:hover:bg-gray-50 font-bold w-full border border-gray-300"
+                  className="bg-white dark:bg-white text-black dark:text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-50 font-bold w-full border-2 border-black dark:border-gray-300"
                 >
                   Start Connecting
                 </Button>
@@ -485,7 +485,7 @@ export default function LandingStreamlined() {
               <Button 
                 onClick={() => setLocation('/join')}
                 size="lg"
-                className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-600 dark:hover:from-blue-700 dark:hover:to-orange-700 text-white font-black text-lg sm:text-xl px-8 sm:px-12 py-4 sm:py-6 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300"
+                className="bg-white dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-600 hover:bg-gray-100 dark:hover:from-blue-700 dark:hover:to-orange-700 text-black dark:text-white font-black text-lg sm:text-xl px-8 sm:px-12 py-4 sm:py-6 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 border-2 border-black dark:border-none"
               >
                 Join Now
               </Button>
@@ -500,7 +500,7 @@ export default function LandingStreamlined() {
             <p className="text-lg sm:text-xl mb-6 sm:mb-8 px-4 leading-relaxed">Join thousands of locals, travelers, and businesses already making real connections worldwide.</p>
             <Button 
               onClick={() => setLocation('/join')}
-              className="bg-black dark:bg-white text-white dark:text-blue-600 hover:bg-gray-800 dark:hover:bg-gray-200 px-6 sm:px-8 py-3 sm:py-4 text-lg sm:text-xl rounded-full shadow-lg transition-all duration-300 hover:scale-105 border border-gray-300 dark:border-none font-bold"
+              className="bg-white dark:bg-white text-black dark:text-blue-600 hover:bg-gray-100 dark:hover:bg-gray-200 px-6 sm:px-8 py-3 sm:py-4 text-lg sm:text-xl rounded-full shadow-lg transition-all duration-300 hover:scale-105 border-2 border-black dark:border-none font-bold"
             >
               Join Nearby Traveler Now
             </Button>
