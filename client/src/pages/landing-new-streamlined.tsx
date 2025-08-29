@@ -76,7 +76,7 @@ export default function LandingStreamlined() {
                     className="rounded-xl bg-black px-6 py-3 text-white font-medium shadow hover:bg-zinc-800 w-full sm:w-auto"
                     data-testid="button-join-journey"
                   >
-                    Join the Journey
+                    Join Now
                   </button>
                   <button 
                     onClick={() => {
@@ -119,7 +119,7 @@ export default function LandingStreamlined() {
                   size="lg"
                   className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-500 text-white dark:text-white font-medium px-8 py-3 rounded-lg transition-all duration-200"
                 >
-                  Join the Journey
+                  Join Now
                 </Button>
                 <Button
                   onClick={() => {
@@ -211,8 +211,8 @@ export default function LandingStreamlined() {
           </div>
         </section>
 
-        {/* FOUNDER STORY SECTION - Compact & Centered */}
-        <div className="relative z-10 py-6 sm:py-8 overflow-hidden mb-8">
+        {/* FOUNDER STORY SECTION - Refined */}
+        <div className="relative z-10 py-12 overflow-hidden mb-8">
           {/* Clean background for light mode */}
           <div className="absolute inset-0 bg-gray-50 dark:bg-gradient-to-r dark:from-blue-600 dark:via-blue-500 dark:to-orange-500"></div>
           
@@ -297,7 +297,7 @@ export default function LandingStreamlined() {
                     onClick={() => setLocation('/auth')}
                     className="w-full bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-500 dark:to-orange-500 dark:hover:from-blue-600 dark:hover:to-orange-600 text-white font-bold mt-auto"
                   >
-                    JOIN TO CONNECT
+                    Join Now
                   </Button>
                 </div>
               </div>
@@ -327,7 +327,7 @@ export default function LandingStreamlined() {
                     onClick={() => setLocation('/auth')}
                     className="w-full bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-500 dark:to-orange-500 dark:hover:from-blue-600 dark:hover:to-orange-600 text-white font-bold mt-auto"
                   >
-                    JOIN TO CONNECT
+                    Join Now
                   </Button>
                 </div>
               </div>
@@ -357,7 +357,7 @@ export default function LandingStreamlined() {
                     onClick={() => setLocation('/auth')}
                     className="w-full bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-500 dark:to-orange-500 dark:hover:from-blue-600 dark:hover:to-orange-600 text-white font-bold mt-auto"
                   >
-                    JOIN TO CONNECT
+                    Join Now
                   </Button>
                 </div>
               </div>
@@ -387,7 +387,7 @@ export default function LandingStreamlined() {
                 Turn Travel into <span className="text-black dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-600 dark:bg-clip-text dark:text-transparent">Real Connections</span>
               </h2>
               <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
-                Three simple steps that transform your travel experience from ordinary to extraordinary
+                Simple steps to connect and create epic memories
               </p>
             </div>
             
@@ -410,7 +410,7 @@ export default function LandingStreamlined() {
                       Start Your Journey
                     </h3>
                     <p className="text-gray-600 dark:text-gray-300 text-center leading-relaxed flex-grow">
-                      Share your interests and destination. We connect you with locals and travelers who share your vibe for authentic experiences.
+                      Share your interests & destination.
                     </p>
                   </div>
                 </div>
@@ -427,7 +427,7 @@ export default function LandingStreamlined() {
                       Make Real Connections
                     </h3>
                     <p className="text-gray-600 dark:text-gray-300 text-center leading-relaxed flex-grow">
-                      Chat with locals who know secret spots and fellow travelers heading to your destination. No awkward small talk - just shared adventures.
+                      Meet locals & travelers who share your vibe.
                     </p>
                   </div>
                 </div>
@@ -444,7 +444,7 @@ export default function LandingStreamlined() {
                       Create Epic Memories
                     </h3>
                     <p className="text-gray-600 dark:text-gray-300 text-center leading-relaxed flex-grow">
-                      Join authentic experiences, discover hidden gems, and turn strangers into lifelong friends. This is travel the way it's meant to be.
+                      Join experiences, build friendships.
                     </p>
                   </div>
                 </div>
@@ -458,7 +458,7 @@ export default function LandingStreamlined() {
                 size="lg"
                 className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-600 dark:hover:from-blue-700 dark:hover:to-orange-700 text-white font-black text-xl px-12 py-6 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300"
               >
-                Start Your Adventure Now
+                Join Now
               </Button>
               <p className="text-gray-500 dark:text-gray-400 mt-4 text-sm">
                 Join thousands of travelers already making connections
@@ -490,7 +490,7 @@ export default function LandingStreamlined() {
                   onClick={() => setLocation('/travelers-landing')}
                   className="bg-black dark:bg-white text-white dark:text-blue-600 hover:bg-gray-800 dark:hover:bg-blue-50 font-bold w-full border border-gray-300"
                 >
-                  Find Your Travel Crew
+                  Join Now
                 </Button>
               </div>
 
@@ -503,7 +503,7 @@ export default function LandingStreamlined() {
                   onClick={() => setLocation('/locals-landing')}
                   className="bg-black dark:bg-white text-white dark:text-green-600 hover:bg-gray-800 dark:hover:bg-green-50 font-bold w-full border border-gray-300"
                 >
-                  Share Your World
+                  Join Now
                 </Button>
               </div>
 
@@ -516,7 +516,7 @@ export default function LandingStreamlined() {
                   onClick={() => setLocation('/networking-landing')}
                   className="bg-black dark:bg-white text-white dark:text-orange-600 hover:bg-gray-800 dark:hover:bg-orange-50 font-bold w-full border border-gray-300"
                 >
-                  Network Like a Pro
+                  Join Now
                 </Button>
               </div>
 
@@ -529,7 +529,7 @@ export default function LandingStreamlined() {
                   onClick={() => setLocation('/business-landing')}
                   className="bg-black dark:bg-white text-white dark:text-purple-600 hover:bg-gray-800 dark:hover:bg-purple-50 font-bold w-full border border-gray-300"
                 >
-                  Grow Your Community
+                  Join Now
                 </Button>
               </div>
 
@@ -537,12 +537,12 @@ export default function LandingStreamlined() {
               <div className="group relative bg-white dark:bg-gradient-to-br dark:from-indigo-500 dark:to-purple-600 p-6 sm:p-8 rounded-2xl text-black dark:text-white transform hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-2xl border-2 border-gray-300 dark:border-none">
                 <div className="absolute top-3 sm:top-4 right-3 sm:right-4 text-2xl sm:text-3xl opacity-80">🎉</div>
                 <h3 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 pr-8">Love Events?</h3>
-                <p className="text-black dark:text-indigo-100 leading-relaxed mb-4 sm:mb-6 text-sm sm:text-base">From beach bonfires to art gallery walks - discover events you'd never find on tourist sites and meet people who share your interests.</p>
+                <p className="text-black dark:text-indigo-100 leading-relaxed mb-4 sm:mb-6 text-sm sm:text-base">Discover unique events and your community.</p>
                 <Button 
                   onClick={() => setLocation('/events-landing')}
                   className="bg-white dark:bg-white text-black dark:text-indigo-600 hover:bg-gray-100 dark:hover:bg-indigo-50 font-bold w-full border-2 border-black dark:border-gray-300"
                 >
-                  Find Your Scene
+                  Join Now
                 </Button>
               </div>
 
@@ -550,12 +550,12 @@ export default function LandingStreamlined() {
               <div className="group relative bg-white dark:bg-gradient-to-br dark:from-gray-700 dark:to-gray-800 p-6 sm:p-8 rounded-2xl text-black dark:text-white transform hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-2xl border-2 border-gray-300 dark:border-none">
                 <div className="absolute top-3 sm:top-4 right-3 sm:right-4 text-2xl sm:text-3xl opacity-80">🌟</div>
                 <h3 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 pr-8">Just Want Friends?</h3>
-                <p className="text-black dark:text-gray-200 leading-relaxed mb-4 sm:mb-6 text-sm sm:text-base">New to town? Feeling lonely? Want to try something new? Everyone needs community - and that's exactly what we're here for.</p>
+                <p className="text-black dark:text-gray-200 leading-relaxed mb-4 sm:mb-6 text-sm sm:text-base">Make friends fast and feel at home.</p>
                 <Button 
                   onClick={() => setLocation('/join')}
                   className="bg-white dark:bg-white text-black dark:text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-50 font-bold w-full border-2 border-black dark:border-gray-300"
                 >
-                  Start Connecting
+                  Join Now
                 </Button>
               </div>
             </div>
@@ -579,13 +579,13 @@ export default function LandingStreamlined() {
         {/* Final CTA */}
         <section className="text-center py-12 sm:py-16 bg-white dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-600 text-black dark:text-white rounded-2xl mb-8 sm:mb-16 border-2 border-gray-300 dark:border-none">
           <div className="max-w-4xl mx-auto px-4 sm:px-6">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4">Start Your Adventure</h2>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4">Whatever brings you here, you belong here.</h2>
             <p className="text-lg sm:text-xl mb-6 sm:mb-8 px-4 leading-relaxed">Join thousands of locals, travelers, and businesses already making real connections worldwide.</p>
             <Button 
               onClick={() => setLocation('/join')}
               className="bg-white dark:bg-white text-black dark:text-blue-600 hover:bg-gray-100 dark:hover:bg-gray-200 px-6 sm:px-8 py-3 sm:py-4 text-lg sm:text-xl rounded-full shadow-lg transition-all duration-300 hover:scale-105 border-2 border-black dark:border-none font-bold"
             >
-              Join Nearby Traveler Now
+              Join Now
             </Button>
           </div>
         </section>
