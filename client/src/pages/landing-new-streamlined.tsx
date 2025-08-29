@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import Footer from "@/components/footer";
 import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
-import { Users, Plane, Building2, Handshake } from "lucide-react";
+import { Users, MapPin, Globe, RefreshCw, Home, ShieldCheck, Plane, Building2, Handshake } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
 import { useTheme } from "@/components/theme-provider";
 
@@ -148,12 +148,9 @@ export default function LandingStreamlined() {
             Whether you're traveling or at home, Nearby Traveler helps you create real connections that last.
           </p>
 
-          <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            {/* Value 1 */}
-            <div className="flex flex-col items-center text-center">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-orange-100 text-orange-600">
-                🍽️
-              </div>
+          <div className="mt-12 grid gap-12 sm:grid-cols-2 lg:grid-cols-3 text-center">
+            <div>
+              <Users className="mx-auto h-8 w-8 text-orange-600" />
               <h3 className="mt-4 text-lg font-semibold text-zinc-900 dark:text-white">
                 Never Eat Alone Again
               </h3>
@@ -162,11 +159,8 @@ export default function LandingStreamlined() {
               </p>
             </div>
 
-            {/* Value 2 */}
-            <div className="flex flex-col items-center text-center">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-100 text-blue-600">
-                🗺️
-              </div>
+            <div>
+              <MapPin className="mx-auto h-8 w-8 text-blue-600" />
               <h3 className="mt-4 text-lg font-semibold text-zinc-900 dark:text-white">
                 Discover Local Secrets
               </h3>
@@ -175,11 +169,8 @@ export default function LandingStreamlined() {
               </p>
             </div>
 
-            {/* Value 3 */}
-            <div className="flex flex-col items-center text-center">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-green-100 text-green-600">
-                🌍
-              </div>
+            <div>
+              <Globe className="mx-auto h-8 w-8 text-green-600" />
               <h3 className="mt-4 text-lg font-semibold text-zinc-900 dark:text-white">
                 Friends in Every City
               </h3>
@@ -188,11 +179,8 @@ export default function LandingStreamlined() {
               </p>
             </div>
 
-            {/* Value 4 */}
-            <div className="flex flex-col items-center text-center">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-purple-100 text-purple-600">
-                🔄
-              </div>
+            <div>
+              <RefreshCw className="mx-auto h-8 w-8 text-purple-600" />
               <h3 className="mt-4 text-lg font-semibold text-zinc-900 dark:text-white">
                 Stay Connected Across Trips
               </h3>
@@ -201,16 +189,23 @@ export default function LandingStreamlined() {
               </p>
             </div>
 
-            {/* Value 5 */}
-            <div className="flex flex-col items-center text-center">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-pink-100 text-pink-600">
-                🏠
-              </div>
+            <div>
+              <Home className="mx-auto h-8 w-8 text-pink-600" />
               <h3 className="mt-4 text-lg font-semibold text-zinc-900 dark:text-white">
                 Share Your City
               </h3>
               <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
                 Welcome travelers, create events, and meet the world without leaving home.
+              </p>
+            </div>
+
+            <div>
+              <ShieldCheck className="mx-auto h-8 w-8 text-indigo-600" />
+              <h3 className="mt-4 text-lg font-semibold text-zinc-900 dark:text-white">
+                Safe & Verified
+              </h3>
+              <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+                A trusted community built on real people, not random strangers.
               </p>
             </div>
           </div>
