@@ -57,54 +57,89 @@ export default function LandingStreamlined() {
             <div className="space-y-8">
               <div>
                 <h1 className="text-4xl md:text-5xl font-light text-gray-900 dark:text-white mb-6 leading-tight">
-                  "I built Nearby Traveler so no one has to leave connections to chance."
+                  <span className="block">"I built Nearby Traveler</span>
+                  <span className="block">so no one has to leave connections to chance."</span>
                 </h1>
                 <p className="text-xl font-light text-gray-600 dark:text-gray-300 leading-relaxed">
-                  After hosting 400+ travelers from 50 countries, I saw firsthand that the best part of travel isn't the tours or hotels—it's the people. That's why I created a community where travelers and locals can connect before the trip begins.
+                  After hosting 400+ travelers from 50 countries, I learned the best part of travel isn't the tours or hotels—it's the people. That's why I created Nearby Traveler: a community where connections start before the trip.
                 </p>
               </div>
               
-              <Button
-                onClick={() => {
-                  trackEvent('signup_cta_click', 'landing_page', 'main_hero_button');
-                  setLocation('/join');
-                }}
-                size="lg"
-                className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-500 text-white dark:text-white font-medium px-8 py-3 rounded-lg transition-all duration-200"
-              >
-                Join the Journey
-              </Button>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Button
+                  onClick={() => {
+                    trackEvent('signup_cta_click', 'landing_page', 'main_hero_button');
+                    setLocation('/join');
+                  }}
+                  size="lg"
+                  className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-500 text-white dark:text-white font-medium px-8 py-3 rounded-lg transition-all duration-200"
+                >
+                  Join the Journey
+                </Button>
+                <Button
+                  onClick={() => {
+                    trackEvent('learn_more_click', 'landing_page', 'see_how_it_works');
+                    // Scroll to community section or features
+                    document.querySelector('#community-section')?.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                  variant="outline"
+                  size="lg"
+                  className="border-2 border-black dark:border-white text-black dark:text-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black font-medium px-8 py-3 rounded-lg transition-all duration-200"
+                >
+                  See How It Works
+                </Button>
+              </div>
             </div>
             
             {/* Right side - Hero Image */}
             <div className="relative h-96 lg:h-[500px] rounded-2xl overflow-hidden">
-              <img
-                src="/travelers together hugging_1754971726997.avif"
-                alt="Travelers connecting and creating lifelong friendships"
-                className="w-full h-full object-cover"
-              />
+              {/* Placeholder for founder photo - you can replace this with your actual travel photo */}
+              <div className="w-full h-full bg-gradient-to-br from-blue-500 via-blue-400 to-orange-400 flex items-center justify-center">
+                <div className="text-center text-white">
+                  <div className="w-32 h-32 rounded-full bg-white/20 backdrop-blur-sm mx-auto mb-4 flex items-center justify-center border-4 border-white/30">
+                    <span className="text-4xl font-bold">AL</span>
+                  </div>
+                  <p className="text-lg font-medium opacity-90">Replace with your travel photo</p>
+                  <p className="text-sm opacity-75">Scenic background recommended</p>
+                </div>
+              </div>
             </div>
           </div>
           ) : (
             // Original centered layout (for investors)
             <div className="text-center">
               <h1 className="text-4xl md:text-5xl font-light text-gray-900 dark:text-white mb-8 leading-tight">
-                "I built Nearby Traveler so no one has to leave connections to chance."
+                <span className="block">"I built Nearby Traveler</span>
+                <span className="block">so no one has to leave connections to chance."</span>
               </h1>
               <p className="text-xl font-light text-gray-600 dark:text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed">
-                After hosting 400+ travelers from 50 countries, I saw firsthand that the best part of travel isn't the tours or hotels—it's the people. That's why I created a community where travelers and locals can connect before the trip begins.
+                After hosting 400+ travelers from 50 countries, I learned the best part of travel isn't the tours or hotels—it's the people. That's why I created Nearby Traveler: a community where connections start before the trip.
               </p>
               
-              <Button
-                onClick={() => {
-                  trackEvent('signup_cta_click', 'landing_page', 'main_hero_button');
-                  setLocation('/join');
-                }}
-                size="lg"
-                className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-500 text-white dark:text-white font-medium px-8 py-3 rounded-lg transition-all duration-200"
-              >
-                Join the Journey
-              </Button>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button
+                  onClick={() => {
+                    trackEvent('signup_cta_click', 'landing_page', 'main_hero_button');
+                    setLocation('/join');
+                  }}
+                  size="lg"
+                  className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-500 text-white dark:text-white font-medium px-8 py-3 rounded-lg transition-all duration-200"
+                >
+                  Join the Journey
+                </Button>
+                <Button
+                  onClick={() => {
+                    trackEvent('learn_more_click', 'landing_page', 'see_how_it_works');
+                    // Scroll to community section or features
+                    document.querySelector('#community-section')?.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                  variant="outline"
+                  size="lg"
+                  className="border-2 border-black dark:border-white text-black dark:text-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black font-medium px-8 py-3 rounded-lg transition-all duration-200"
+                >
+                  See How It Works
+                </Button>
+              </div>
             </div>
           )}
         </div>
@@ -200,7 +235,7 @@ export default function LandingStreamlined() {
         </div>
 
         {/* Featured Experiences - With Original Photos */}
-        <div className="relative z-10 py-16 bg-white dark:bg-gray-900">
+        <div id="community-section" className="relative z-10 py-16 bg-white dark:bg-gray-900">
           <div className="max-w-7xl mx-auto px-4">
             <div className="text-center mb-12">
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-gray-900 dark:text-white mb-4 leading-normal px-2">
