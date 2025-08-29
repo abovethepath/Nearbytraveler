@@ -102,78 +102,31 @@ export default function EventsLanding() {
         </div>
       </div>
 
-      {/* Sticky CTA Button - Fixed Bottom Right */}
-      <div className="fixed bottom-6 right-6 z-50">
-        <Button
-          onClick={() => setLocation('/join')}
-          className="bg-orange-500 hover:bg-orange-600 text-white font-bold px-6 py-4 rounded-full shadow-2xl transition-all duration-300 transform hover:scale-110 animate-pulse border-4 border-white"
-        >
-          🎪 JOIN EVENTS
-        </Button>
-      </div>
 
       <main className="flex-1 px-4 py-16">
         
-        {/* Multiple CTA Section */}
-        <div className="max-w-6xl mx-auto mb-16">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold mb-6 text-gray-900 dark:text-white">Ready to Join the Fun?</h2>
-            <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">Choose your adventure and start making connections today!</p>
+        {/* Final CTA Section */}
+        <div className="py-20 bg-gray-100 dark:bg-gradient-to-r dark:from-blue-600 dark:via-purple-600 dark:to-orange-600 rounded-2xl shadow-lg dark:shadow-2xl mb-16">
+          <div className="max-w-4xl mx-auto text-center px-6">
+            <h2 className="text-4xl font-bold mb-4 text-gray-900 dark:text-white">Ready to Join the Fun?</h2>
+            <p className="text-xl mb-8 text-gray-700 dark:text-white dark:opacity-90">Start connecting through amazing events and experiences.</p>
             
-            {/* Primary CTA Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            {/* Single CTA Button */}
+            <div className="flex justify-center">
               <Button
                 onClick={() => setLocation('/join')}
-                className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-6 px-8 rounded-xl text-lg shadow-lg transform hover:scale-105 transition-all duration-200"
+                size="lg"
+                className="bg-white dark:bg-white text-black dark:text-blue-600 hover:bg-gray-100 dark:hover:bg-gray-100 font-bold text-xl px-12 py-6 rounded-xl shadow-lg transition-all duration-200 border-2 border-black dark:border-white"
               >
-                🌍 JOIN AS TRAVELER
-              </Button>
-              <Button
-                onClick={() => setLocation('/join')}
-                className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-6 px-8 rounded-xl text-lg shadow-lg transform hover:scale-105 transition-all duration-200"
-              >
-                🏠 JOIN AS LOCAL
-              </Button>
-              <Button
-                onClick={() => setLocation('/join')}
-                className="bg-green-500 hover:bg-green-600 text-white font-bold py-6 px-8 rounded-xl text-lg shadow-lg transform hover:scale-105 transition-all duration-200"
-              >
-                🎉 CREATE EVENT
-              </Button>
-            </div>
-            
-            {/* Secondary Action Buttons */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <Button
-                onClick={() => setLocation('/join')}
-                className="bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-4 rounded-lg text-sm"
-              >
-                🎪 Tonight's Events
-              </Button>
-              <Button
-                onClick={() => setLocation('/join')}
-                className="bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 px-4 rounded-lg text-sm"
-              >
-                🍕 Food Events
-              </Button>
-              <Button
-                onClick={() => setLocation('/join')}
-                className="bg-teal-500 hover:bg-teal-600 text-white font-bold py-3 px-4 rounded-lg text-sm"
-              >
-                🏖️ Beach Events
-              </Button>
-              <Button
-                onClick={() => setLocation('/join')}
-                className="bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-4 rounded-lg text-sm"
-              >
-                🎵 Music Events
+                🎪 Join Nearby Traveler
               </Button>
             </div>
           </div>
         </div>
-
-        
-        {/* Sample Events Section */}
+      </main>
+      
+      {/* Sample Events Section */}
+      <div className="px-4 py-16">
         <div className="max-w-6xl mx-auto mb-16">
           <h2 className="text-3xl sm:text-4xl font-bold mb-8 text-center text-gray-900 dark:text-white" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700'}}>
             Upcoming Local Events & Experiences
@@ -465,7 +418,7 @@ export default function EventsLanding() {
             </div>
           </div>
         </div>
-      </main>
+      </div>
       <Footer />
     </div>
   );
