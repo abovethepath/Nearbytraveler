@@ -42,7 +42,6 @@ export default function LandingStreamlined() {
         </Button>
       </div>
 
-      <ThemeToggle />
       <LandingHeader />
       <LandingHeaderSpacer />
 
@@ -201,7 +200,7 @@ export default function LandingStreamlined() {
               <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col h-[480px]">
                 <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-orange-400 to-red-500">
                   <img 
-                    src="/attached_assets/event page bbq party_1753299541268.png" 
+                    src="/event page bbq party_1753299541268.png" 
                     alt="Beach bonfire event" 
                     className="w-full h-48 object-cover"
                   />
