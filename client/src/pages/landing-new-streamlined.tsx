@@ -278,77 +278,6 @@ export default function LandingStreamlined() {
           </div>
         </section>
 
-        {/* COUCHSURFING FOCUSED SECTION */}
-        <section className="mx-auto max-w-6xl px-6 py-20 bg-gray-50 dark:bg-gray-800">
-          <h2 className="text-center text-3xl font-bold tracking-tight text-zinc-900 dark:text-white">
-            Why Couchsurfers Love Nearby Traveler
-          </h2>
-          <p className="mt-2 text-center text-lg text-zinc-600 dark:text-zinc-400">
-            All the cultural exchange you love, with the flexibility you need.
-          </p>
-
-          <div className="mt-12 grid gap-12 sm:grid-cols-2 lg:grid-cols-3 text-center">
-            <div>
-              <Coffee className="mx-auto h-8 w-8 text-green-600" />
-              <h3 className="mt-4 text-lg font-semibold text-zinc-900 dark:text-white">
-                Meet at Cafes & Events
-              </h3>
-              <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-                Share your city over coffee, at events, or exploring together - no couch required.
-              </p>
-            </div>
-
-            <div>
-              <MapPin className="mx-auto h-8 w-8 text-blue-600" />
-              <h3 className="mt-4 text-lg font-semibold text-zinc-900 dark:text-white">
-                Share Local Secrets
-              </h3>
-              <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-                Show travelers your favorite hidden spots and authentic local experiences.
-              </p>
-            </div>
-
-            <div>
-              <Globe className="mx-auto h-8 w-8 text-purple-600" />
-              <h3 className="mt-4 text-lg font-semibold text-zinc-900 dark:text-white">
-                Cultural Exchange
-              </h3>
-              <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-                Experience the world through travelers' stories and share your own culture.
-              </p>
-            </div>
-
-            <div>
-              <Users className="mx-auto h-8 w-8 text-orange-600" />
-              <h3 className="mt-4 text-lg font-semibold text-zinc-900 dark:text-white">
-                Flexible Connections
-              </h3>
-              <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-                Connect when you want, how you want - no hosting obligations.
-              </p>
-            </div>
-
-            <div>
-              <RefreshCw className="mx-auto h-8 w-8 text-pink-600" />
-              <h3 className="mt-4 text-lg font-semibold text-zinc-900 dark:text-white">
-                Stay Connected
-              </h3>
-              <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-                Keep friendships alive when your new friends travel to other cities.
-              </p>
-            </div>
-
-            <div>
-              <ShieldCheck className="mx-auto h-8 w-8 text-indigo-600" />
-              <h3 className="mt-4 text-lg font-semibold text-zinc-900 dark:text-white">
-                Safe & Verified
-              </h3>
-              <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-                Meet in public spaces with community verification and references.
-              </p>
-            </div>
-          </div>
-        </section>
 
         {/* FOUNDER STORY SECTION - Refined */}
         <div className="relative z-10 py-12 overflow-hidden mb-8">
@@ -514,6 +443,78 @@ export default function LandingStreamlined() {
             </div>
           </div>
         </div>
+
+        {/* COUCHSURFING FOCUSED SECTION */}
+        <section className="mx-auto max-w-6xl px-6 py-20 bg-gray-50 dark:bg-gray-800">
+          <h2 className="text-center text-3xl font-bold tracking-tight text-zinc-900 dark:text-white">
+            Why Couchsurfers Love Nearby Traveler
+          </h2>
+          <p className="mt-2 text-center text-lg text-zinc-600 dark:text-zinc-400">
+            All the cultural exchange you love, with the flexibility you need.
+          </p>
+
+          <div className="mt-12 grid gap-12 sm:grid-cols-2 lg:grid-cols-3 text-center">
+            <div>
+              <Coffee className="mx-auto h-8 w-8 text-green-600" />
+              <h3 className="mt-4 text-lg font-semibold text-zinc-900 dark:text-white">
+                Meet at Cafes & Events
+              </h3>
+              <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+                Share your city over coffee, at events, or exploring together - no couch required.
+              </p>
+            </div>
+
+            <div>
+              <MapPin className="mx-auto h-8 w-8 text-blue-600" />
+              <h3 className="mt-4 text-lg font-semibold text-zinc-900 dark:text-white">
+                Share Local Secrets
+              </h3>
+              <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+                Show travelers your favorite hidden spots and authentic local experiences.
+              </p>
+            </div>
+
+            <div>
+              <Globe className="mx-auto h-8 w-8 text-purple-600" />
+              <h3 className="mt-4 text-lg font-semibold text-zinc-900 dark:text-white">
+                Cultural Exchange
+              </h3>
+              <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+                Experience the world through travelers' stories and share your own culture.
+              </p>
+            </div>
+
+            <div>
+              <Users className="mx-auto h-8 w-8 text-orange-600" />
+              <h3 className="mt-4 text-lg font-semibold text-zinc-900 dark:text-white">
+                Flexible Connections
+              </h3>
+              <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+                Connect when you want, how you want - no hosting obligations.
+              </p>
+            </div>
+
+            <div>
+              <RefreshCw className="mx-auto h-8 w-8 text-pink-600" />
+              <h3 className="mt-4 text-lg font-semibold text-zinc-900 dark:text-white">
+                Stay Connected
+              </h3>
+              <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+                Keep friendships alive when your new friends travel to other cities.
+              </p>
+            </div>
+
+            <div>
+              <ShieldCheck className="mx-auto h-8 w-8 text-indigo-600" />
+              <h3 className="mt-4 text-lg font-semibold text-zinc-900 dark:text-white">
+                Safe & Verified
+              </h3>
+              <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+                Meet in public spaces with community verification and references.
+              </p>
+            </div>
+          </div>
+        </section>
 
         {/* HOW IT WORKS SECTION - Original Blue/Orange Design */}
         <div className="relative z-10 py-20 bg-gradient-to-br from-gray-50 via-blue-50 to-orange-50 dark:from-gray-900 dark:via-blue-900/20 dark:to-orange-900/20">
