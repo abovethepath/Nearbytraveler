@@ -127,7 +127,7 @@ export default function CouchsurfingLanding() {
             <ul className="space-y-6 text-lg text-zinc-700 dark:text-zinc-300">
               <li className="flex items-start">
                 <Coffee className="w-6 h-6 text-green-600 mr-4 mt-1 flex-shrink-0" />
-                <span>Meet through interests and activities, not just accommodation</span>
+                <span>Match with people who share your hobbies and travel style</span>
               </li>
               <li className="flex items-start">
                 <MapPin className="w-6 h-6 text-blue-600 mr-4 mt-1 flex-shrink-0" />
