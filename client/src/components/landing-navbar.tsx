@@ -17,9 +17,6 @@ export default function LandingNavbar() {
               <div className="transform scale-150 sm:scale-[1.75] pt-2">
                 <Logo variant="navbar" />
               </div>
-              <div className="text-xs text-gray-600 dark:text-gray-400 italic mt-1 ml-2 hidden sm:block">
-                Where Local Experiences Meet Worldwide Connections
-              </div>
             </Link>
           </div>
 
