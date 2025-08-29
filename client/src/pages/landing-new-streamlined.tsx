@@ -70,8 +70,8 @@ export default function LandingStreamlined() {
                             Skip the Tourist Traps, Connect Before Your Trip, Keep Connections Forever and Create Lifelong Friends!!!
                           </span>
                           <span className="block font-bold text-[clamp(1.25rem,5.5vw,2rem)] mt-4" style={{ fontWeight: '700', textShadow: '2px 2px 4px rgba(0,0,0,0.8)', letterSpacing: '-0.02em' }}>
-                            <span className="text-black dark:text-amber-300 dark:sm:text-orange-500">Meet Locals and Other </span>
-                            <span className="text-black dark:text-blue-300 dark:sm:text-blue-600">Nearby Travelers </span>
+                            <span className="text-black dark:text-white">Meet Locals and Other </span>
+                            <span className="text-black dark:text-white">Nearby Travelers </span>
                             <span className="text-black dark:text-white">Right Now, Today!!!</span>
                           </span>
                         </h1>
