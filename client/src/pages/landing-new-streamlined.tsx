@@ -92,16 +92,11 @@ export default function LandingStreamlined() {
             
             {/* Right side - Hero Image */}
             <div className="relative h-96 lg:h-[500px] rounded-2xl overflow-hidden">
-              {/* Placeholder for founder photo - you can replace this with your actual travel photo */}
-              <div className="w-full h-full bg-gradient-to-br from-blue-500 via-blue-400 to-orange-400 flex items-center justify-center">
-                <div className="text-center text-white">
-                  <div className="w-32 h-32 rounded-full bg-white/20 backdrop-blur-sm mx-auto mb-4 flex items-center justify-center border-4 border-white/30">
-                    <span className="text-4xl font-bold">AL</span>
-                  </div>
-                  <p className="text-lg font-medium opacity-90">Replace with your travel photo</p>
-                  <p className="text-sm opacity-75">Scenic background recommended</p>
-                </div>
-              </div>
+              <img
+                src="/travelers together hugging_1754971726997.avif"
+                alt="Travelers connecting and creating lifelong friendships"
+                className="w-full h-full object-cover"
+              />
             </div>
           </div>
           ) : (
