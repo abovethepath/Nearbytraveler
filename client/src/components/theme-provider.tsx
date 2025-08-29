@@ -22,15 +22,15 @@ const ThemeProviderContext = createContext<ThemeProviderState>(initialState)
 
 export function ThemeProvider({
   children,
-  defaultTheme = "dark",
+  defaultTheme = "light",
   storageKey = "vite-ui-theme",
   ...props
 }: ThemeProviderProps) {
   const [theme, setThemeState] = useState<Theme>(
     () => {
-      // Force dark mode for landing page - ignore system preferences
+      // Default to light mode for clean, crisp appearance
       const saved = localStorage.getItem(storageKey) as Theme;
-      return saved || "dark"; // Always default to dark, never system
+      return saved || "light"; // Always default to light for clean appearance
     }
   )
 
