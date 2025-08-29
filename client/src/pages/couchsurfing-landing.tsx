@@ -58,28 +58,26 @@ export default function CouchsurfingLanding() {
       <LandingHeaderSpacer />
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        {/* HERO SECTION */}
+        {/* FOUNDER STORY HERO */}
         <div className="pt-8 pb-12 bg-white dark:bg-gray-900">
           <div className="mx-auto max-w-6xl px-6 py-8 grid gap-8 md:grid-cols-2 items-center">
             {/* Left text side */}
             <div>
               <div className="mb-4 inline-block rounded-full bg-green-50 dark:bg-green-900/30 px-4 py-1 text-sm font-medium text-green-700 dark:text-green-400">
                 <Heart className="inline w-4 h-4 mr-2" />
-                For the Couchsurfing Community
+                From a Fellow Couchsurfer
               </div>
-              <div className="text-4xl md:text-5xl font-semibold tracking-tight text-zinc-900 dark:text-white overflow-hidden relative h-[120px] md:h-[140px]">
-                <h1 
-                  key={currentHeadline}
-                  className="absolute top-0 left-0 w-full animate-in slide-in-from-left-8 fade-in duration-700"
-                >
-                  {headlines[currentHeadline]}
-                </h1>
-              </div>
-              <p className="mt-2 text-lg italic text-green-600">
-                Host Smarter, Not Harder
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-zinc-900 dark:text-white mb-6">
+                A Letter to the Couchsurfing Community
+              </h1>
+              <blockquote className="text-lg md:text-xl text-zinc-600 dark:text-zinc-300 leading-relaxed border-l-4 border-green-500 pl-6 mb-6">
+                "As a 15-year Couchsurfing host and traveler, I love the site. But I can't always host, I can't always find a couch, but I always want to meet travelers... so I created Nearby Traveler."
+              </blockquote>
+              <p className="text-base text-zinc-500 dark:text-zinc-400 mb-6">
+                — Aaron Lefkowitz, Founder & Fellow Couchsurfer
               </p>
               <p className="mt-4 max-w-xl text-lg text-zinc-600 dark:text-zinc-300">
-                Still want to host? Great! Your guests can connect with other travelers and locals too. Or skip hosting entirely and meet travelers based on shared interests, not just needing a couch.
+                Connect with travelers based on shared interests, not just accommodation needs. Host when you want. Travel when you can. Meet travelers always.
               </p>
               <div className="mt-6 flex flex-col sm:flex-row gap-4">
                 <button 
