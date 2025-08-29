@@ -49,10 +49,10 @@ export default function LandingStreamlined() {
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         {/* HERO SECTION */}
-        <div className="pt-20 pb-24 bg-white dark:bg-gray-900">
+        <div className="pt-8 pb-12 bg-white dark:bg-gray-900">
           {isAirbnbStyle ? (
             // Clean, professional hero section
-            <div className="mx-auto max-w-6xl px-6 py-20 grid gap-8 md:grid-cols-2 items-center">
+            <div className="mx-auto max-w-6xl px-6 py-8 grid gap-8 md:grid-cols-2 items-center">
               {/* Left text side */}
               <div>
                 <div className="mb-4 inline-block rounded-full bg-orange-50 dark:bg-orange-900/30 px-4 py-1 text-sm font-medium text-orange-700 dark:text-orange-400">
