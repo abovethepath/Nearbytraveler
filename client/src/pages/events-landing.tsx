@@ -207,8 +207,8 @@ export default function EventsLanding() {
             <div className="bg-gray-100 dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transform transition-all duration-300 flex flex-col">
               <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-purple-400 to-pink-500">
                 <img 
-                  src="/art-gallery-walk.png" 
-                  alt="Art gallery opening with people viewing paintings" 
+                  src="@assets/image_1756447587360.png" 
+                  alt="First Friday Art Walk in colorful arts district with people walking" 
                   className="w-full h-48 object-cover"
                 />
               </div>
