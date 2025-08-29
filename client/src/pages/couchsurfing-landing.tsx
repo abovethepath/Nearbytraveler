@@ -188,6 +188,101 @@ export default function CouchsurfingLanding() {
           </div>
         </section>
 
+        {/* THE HOSTING JOURNEY - Honest Perspective */}
+        <section id="hosting-journey" className="mx-auto max-w-6xl px-6 py-20 bg-gradient-to-br from-green-50 via-blue-50 to-purple-50 dark:from-green-900/20 dark:via-blue-900/20 dark:to-purple-900/20 rounded-2xl mb-16">
+          <div className="text-center mb-16">
+            <span className="inline-block px-6 py-2 bg-gradient-to-r from-green-100 to-blue-100 dark:from-green-800 to-blue-800 text-green-800 dark:text-green-200 text-sm font-bold rounded-full mb-4">
+              FOR EXPERIENCED HOSTS
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900 dark:text-white mb-6">
+              We Know You've <span className="text-green-600 dark:text-green-400">Loved Hosting</span>
+            </h2>
+            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-4xl mx-auto leading-relaxed">
+              Couchsurfing has given you incredible memories. But maybe you're ready for something different.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
+            {/* What You Loved */}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border-l-4 border-green-500">
+              <h3 className="text-2xl font-bold text-green-700 dark:text-green-400 mb-6 flex items-center">
+                <Heart className="w-6 h-6 mr-3" />
+                What You've Loved About Hosting
+              </h3>
+              <ul className="space-y-4 text-gray-700 dark:text-gray-300">
+                <li className="flex items-start">
+                  <Globe className="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" />
+                  <span>Meeting fascinating people from every corner of the world</span>
+                </li>
+                <li className="flex items-start">
+                  <Users className="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" />
+                  <span>Creating deep connections and lifelong friendships</span>
+                </li>
+                <li className="flex items-start">
+                  <Coffee className="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" />
+                  <span>Sharing your city's hidden gems and local culture</span>
+                </li>
+                <li className="flex items-start">
+                  <RefreshCw className="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" />
+                  <span>Learning about other cultures without traveling</span>
+                </li>
+                <li className="flex items-start">
+                  <Handshake className="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" />
+                  <span>The satisfaction of helping fellow travelers</span>
+                </li>
+              </ul>
+            </div>
+
+            {/* The Challenges */}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border-l-4 border-orange-500">
+              <h3 className="text-2xl font-bold text-orange-700 dark:text-orange-400 mb-6 flex items-center">
+                <Home className="w-6 h-6 mr-3" />
+                But Hosting Can Be...
+              </h3>
+              <ul className="space-y-4 text-gray-700 dark:text-gray-300">
+                <li className="flex items-start">
+                  <span className="w-5 h-5 bg-orange-500 rounded-full mr-3 mt-2 flex-shrink-0"></span>
+                  <span>Exhausting when you need your personal space</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="w-5 h-5 bg-orange-500 rounded-full mr-3 mt-2 flex-shrink-0"></span>
+                  <span>Stressful with work, family, or relationship commitments</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="w-5 h-5 bg-orange-500 rounded-full mr-3 mt-2 flex-shrink-0"></span>
+                  <span>Unpredictable with last-minute cancellations or no-shows</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="w-5 h-5 bg-orange-500 rounded-full mr-3 mt-2 flex-shrink-0"></span>
+                  <span>Limiting when your living situation changes</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="w-5 h-5 bg-orange-500 rounded-full mr-3 mt-2 flex-shrink-0"></span>
+                  <span>Overwhelming when you just want a quiet weekend</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* The Evolution */}
+          <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl p-8 text-white text-center">
+            <h3 className="text-2xl sm:text-3xl font-bold mb-4">
+              Sometimes We Just Grow Out of It
+            </h3>
+            <p className="text-lg sm:text-xl mb-6 opacity-90 max-w-4xl mx-auto leading-relaxed">
+              You're not less generous. You're not less welcoming. Life evolves, priorities shift, and that's completely normal. 
+              <strong className="block mt-2">You can still share your love for your city—just differently.</strong>
+            </p>
+            <div className="bg-white/10 rounded-xl p-6 max-w-3xl mx-auto">
+              <p className="text-lg font-medium">
+                "I hosted for 8 years and loved it. But with kids now, I can't have strangers sleeping over. 
+                Nearby Traveler lets me still meet travelers at cafes and share my city. It's perfect for this stage of my life."
+              </p>
+              <p className="text-sm mt-2 opacity-80">— Sarah, Former Couchsurfing Host, Berlin</p>
+            </div>
+          </div>
+        </section>
+
         {/* HOW IT WORKS - Couchsurfing Style */}
         <div className="relative z-10 py-20 bg-gradient-to-br from-gray-50 via-green-50 to-blue-50 dark:from-gray-900 dark:via-green-900/20 dark:to-blue-900/20">
           <div className="max-w-7xl mx-auto px-4">
