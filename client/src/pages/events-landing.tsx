@@ -19,9 +19,9 @@ export default function EventsLanding() {
       
       {/* HERO SECTION */}
       <div className="relative z-0">
-        <div className="bg-gray-800 dark:bg-gray-900 border-4 border-orange-500 shadow-lg">
-          <div className="relative bg-gray-800 dark:bg-gray-900 pb-32 overflow-hidden min-h-[600px]">
-            <div className="absolute inset-0 h-full min-h-[600px]">
+        <div className="bg-white dark:bg-gray-900 border-2 border-gray-300 dark:border-orange-500 shadow-lg">
+          <div className="relative bg-white dark:bg-gray-900 pb-32 overflow-hidden min-h-[400px]">
+            <div className="absolute inset-0 h-full min-h-[400px]">
               <img
                 src={eventHeaderImage}
                 alt="Beach BBQ Party with Friends"
@@ -32,7 +32,7 @@ export default function EventsLanding() {
                 className="absolute inset-0"
                 style={{
                   background:
-                    "linear-gradient(to bottom, rgba(0,0,0,.55), rgba(0,0,0,.25), rgba(0,0,0,0))"
+                    "linear-gradient(to bottom, rgba(255,255,255,.8), rgba(255,255,255,.5), rgba(255,255,255,0.1))"
                 }}
                 aria-hidden="true"
               />
@@ -43,13 +43,13 @@ export default function EventsLanding() {
                   <div className="text-center">
                     <div className="max-w-4xl mx-auto">
                       <h1 className="px-3 leading-tight sm:leading-snug">
-                        <span className="block font-black text-[clamp(1.5rem,6vw,2.25rem)] text-white">
+                        <span className="block font-black text-[clamp(1.5rem,6vw,2.25rem)] text-black dark:text-white">
                           Join User Created Events
                         </span>
                         <span className="block font-black text-[clamp(1.25rem,5.5vw,2rem)]">
-                          <span className="text-amber-300 sm:text-orange-500">and Make Real Connections </span>
-                          <span className="text-blue-300 sm:text-blue-600">with Nearby Travelers, </span>
-                          <span className="text-white">While Connecting with Other Locals.</span>
+                          <span className="text-black dark:text-amber-300 dark:sm:text-orange-500">and Make Real Connections </span>
+                          <span className="text-black dark:text-blue-300 dark:sm:text-blue-600">with Nearby Travelers, </span>
+                          <span className="text-black dark:text-white">While Connecting with Other Locals.</span>
                         </span>
                       </h1>
                       
