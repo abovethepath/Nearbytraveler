@@ -57,10 +57,10 @@ export default function LandingStreamlined() {
             <div className="space-y-8">
               <div>
                 <h1 className="text-4xl md:text-5xl font-light text-gray-900 dark:text-white mb-6 leading-tight">
-                  Skip the Tourist Traps
+                  "I built Nearby Traveler so no one has to leave connections to chance."
                 </h1>
                 <p className="text-xl font-light text-gray-600 dark:text-gray-300 leading-relaxed">
-                  Connect before your trip, keep connections forever, and create lifelong friends
+                  After hosting 400+ travelers from 50 countries, I saw firsthand that the best part of travel isn't the tours or hotels—it's the people. That's why I created a community where travelers and locals can connect before the trip begins.
                 </p>
               </div>
               
@@ -72,7 +72,7 @@ export default function LandingStreamlined() {
                 size="lg"
                 className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-500 text-white dark:text-white font-medium px-8 py-3 rounded-lg transition-all duration-200"
               >
-                Join Nearby Traveler
+                Join the Journey
               </Button>
             </div>
             
@@ -89,10 +89,10 @@ export default function LandingStreamlined() {
             // Original centered layout (for investors)
             <div className="text-center">
               <h1 className="text-4xl md:text-5xl font-light text-gray-900 dark:text-white mb-8 leading-tight">
-                Skip the Tourist Traps
+                "I built Nearby Traveler so no one has to leave connections to chance."
               </h1>
               <p className="text-xl font-light text-gray-600 dark:text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed">
-                Connect before your trip, keep connections forever, and create lifelong friends
+                After hosting 400+ travelers from 50 countries, I saw firsthand that the best part of travel isn't the tours or hotels—it's the people. That's why I created a community where travelers and locals can connect before the trip begins.
               </p>
               
               <Button
@@ -103,7 +103,7 @@ export default function LandingStreamlined() {
                 size="lg"
                 className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-500 text-white dark:text-white font-medium px-8 py-3 rounded-lg transition-all duration-200"
               >
-                Join Nearby Traveler
+                Join the Journey
               </Button>
             </div>
           )}
