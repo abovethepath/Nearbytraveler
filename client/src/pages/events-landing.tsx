@@ -172,33 +172,33 @@ export default function EventsLanding() {
               </div>
             </div>
 
-            {/* Coffee Shop Networking */}
+            {/* Marina Movie Nights */}
             <div className="bg-gray-100 dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transform transition-all duration-300 flex flex-col">
-              <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-amber-400 to-orange-500">
+              <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-blue-500 to-purple-600">
                 <img 
-                  src="/coffee-shop-networking.png" 
-                  alt="Coffee shop networking event" 
+                  src="@assets/image_1756447721644.png" 
+                  alt="Marina del Rey outdoor movie night at Burton Chace Park" 
                   className="w-full h-48 object-cover"
                 />
               </div>
               <div className="p-6 flex flex-col flex-grow">
                 <div className="mb-3">
-                  <h3 className="text-sm sm:text-base font-bold text-gray-900 dark:text-white mb-1 leading-tight">Coffee Shop Networking</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Weekly freelancer meetup</p>
+                  <h3 className="text-sm sm:text-base font-bold text-gray-900 dark:text-white mb-1 leading-tight">Marina Movie Nights</h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Saturday • 8:00 PM • Burton Chace Park</p>
                 </div>
                 
                 <div className="flex flex-wrap gap-2 mb-3">
-                  <span className="bg-amber-100 text-amber-700 px-2 py-1 rounded-full text-xs font-medium">Free</span>
-                  <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs font-medium">Networking</span>
-                  <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-medium">Coffee</span>
+                  <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs font-medium">Free</span>
+                  <span className="bg-purple-100 text-purple-700 px-2 py-1 rounded-full text-xs font-medium">Movies</span>
+                  <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-medium">Outdoor</span>
                 </div>
                 
-                <p className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm mb-4 flex-grow leading-relaxed">Weekly coffee meetup for freelancers, remote workers, and entrepreneurs. Great conversations, potential collaborations, and strong coffee.</p>
+                <p className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm mb-4 flex-grow leading-relaxed">Free outdoor movie screenings at Burton Chace Park in Marina del Rey. Bring a blanket, pack a picnic, and enjoy movies under the stars with locals and travelers.</p>
                 <a
                   href="/join"
-                  className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold py-2 px-4 rounded text-center transition duration-200"
+                  className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold py-2 px-4 rounded text-center transition duration-200"
                 >
-                  JOIN NETWORKING
+                  JOIN MOVIE NIGHT
                 </a>
               </div>
             </div>
