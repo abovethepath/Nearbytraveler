@@ -178,9 +178,9 @@ export default function LocalsLanding() {
             <Button
               onClick={() => setLocation('/join')}
               size="lg"
-              className="bg-blue-500 hover:bg-blue-600 text-white font-black text-xl px-12 py-4 rounded-2xl shadow-xl transition-all duration-200"
+              className="bg-white dark:bg-blue-500 hover:bg-gray-100 dark:hover:bg-blue-600 text-black dark:text-white border-2 border-black dark:border-transparent font-black text-xl px-12 py-4 rounded-2xl shadow-xl transition-all duration-200"
               style={{
-                boxShadow: '0 8px 30px rgba(59, 130, 246, 0.4)',
+                boxShadow: '0 8px 30px rgba(0, 0, 0, 0.2)',
                 animation: 'gentle-pulse 3s ease-in-out infinite',
               }}
             >
@@ -266,7 +266,7 @@ JOIN THE COMMUNITY TODAY
             <Button
               onClick={() => setLocation('/join')}
               size="lg"
-              className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-500 dark:to-orange-500 dark:hover:from-blue-600 dark:hover:to-orange-600 text-white font-black text-xl px-16 py-5 rounded-2xl shadow-2xl transition-all duration-200"
+              className="bg-white dark:bg-gradient-to-r dark:from-blue-500 dark:to-orange-500 hover:bg-gray-100 dark:hover:from-blue-600 dark:hover:to-orange-600 text-black dark:text-white border-2 border-black dark:border-transparent font-black text-xl px-16 py-5 rounded-2xl shadow-2xl transition-all duration-200"
               style={{
                 boxShadow: '0 12px 40px rgba(0,0,0,0.2)',
                 animation: 'gentle-pulse 2.5s ease-in-out infinite',
@@ -293,7 +293,7 @@ BECOME A NEARBY LOCAL NOW
             <Button
               onClick={() => setLocation('/join')}
               size="lg"
-              className="bg-white text-blue-600 font-black text-2xl px-12 py-6 rounded-2xl shadow-2xl hover:scale-105 transition-all duration-200"
+              className="bg-white dark:bg-white text-black dark:text-blue-600 border-2 border-black dark:border-gray-300 hover:bg-gray-100 dark:hover:bg-gray-200 font-black text-2xl px-12 py-6 rounded-2xl shadow-2xl hover:scale-105 transition-all duration-200"
               style={{
                 boxShadow: '0 15px 50px rgba(0,0,0,0.3)',
               }}
