@@ -67,11 +67,14 @@ export default function CouchsurfingLanding() {
                 <Heart className="inline w-4 h-4 mr-2" />
                 For the Couchsurfing Community
               </div>
-              <h1 className="text-4xl md:text-5xl font-semibold tracking-tight text-zinc-900 dark:text-white">
-                <span className="transition-opacity duration-500">
+              <div className="text-4xl md:text-5xl font-semibold tracking-tight text-zinc-900 dark:text-white overflow-hidden relative h-[120px] md:h-[140px]">
+                <h1 
+                  key={currentHeadline}
+                  className="absolute top-0 left-0 w-full animate-in slide-in-from-left-8 fade-in duration-700"
+                >
                   {headlines[currentHeadline]}
-                </span>
-              </h1>
+                </h1>
+              </div>
               <p className="mt-2 text-lg italic text-green-600">
                 Share Your City Without Sharing Your Space
               </p>
