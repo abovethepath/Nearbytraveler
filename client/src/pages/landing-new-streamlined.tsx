@@ -34,7 +34,7 @@ export default function LandingStreamlined() {
             trackEvent('signup_cta_click', 'landing_page', 'floating_join_now');
             setLocation('/join');
           }}
-          className="bg-white dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-600 hover:bg-gray-100 dark:hover:from-blue-700 dark:hover:to-orange-700 text-black dark:text-white shadow-lg transition-all duration-300 hover:scale-105 px-4 sm:px-6 py-2 sm:py-3 rounded-full text-sm sm:text-base font-bold border-2 border-black dark:border-none"
+          className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-600 text-white dark:text-white shadow-sm transition-all duration-200 px-4 py-2 rounded-lg text-sm font-medium"
         >
           Join Now
         </Button>
@@ -44,61 +44,26 @@ export default function LandingStreamlined() {
       <LandingHeaderSpacer />
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        {/* HERO SECTION - With Original Photo */}
-        <div className="relative z-10">
-          <div className="bg-white dark:bg-gray-900 border-2 border-gray-300 dark:border-orange-500 shadow-lg rounded-lg">
-            <div className="relative bg-white dark:bg-gray-900 pb-32 overflow-hidden min-h-[400px]">
-              <div className="absolute inset-0 h-full min-h-[400px]">
-                <img
-                  src="/travelers together hugging_1754971726997.avif"
-                  alt="Travel experience"
-                  className="w-full h-full object-cover"
-                  style={{ objectPosition: 'center 70%' }}
-                />
-                <div
-                  className="absolute inset-0 bg-gradient-to-b from-white/80 via-white/50 to-white/10 dark:from-black/70 dark:via-black/40 dark:to-black/10"
-                  aria-hidden="true"
-                />
-              </div>
-              <div className="relative">
-                <div className="sm:pb-16 md:pb-20 lg:pb-28 xl:pb-32">
-                  <main className="mt-8 sm:mt-16 md:mt-20 lg:mt-24 xl:mt-32 mx-auto max-w-full px-4">
-                    <div className="text-center">
-                      <div className="max-w-4xl mx-auto">
-                        <h1 className="px-3 leading-tight sm:leading-snug" style={{ fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
-                          <span className="block font-bold text-[clamp(1.5rem,6vw,2.25rem)] text-black dark:text-white" style={{ fontWeight: '700', textShadow: 'none', letterSpacing: '-0.02em' }}>
-                            <span className="animate-slide-in-1">Skip the Tourist Traps, Connect Before Your Trip,</span>
-                            <span className="animate-slide-in-2"> Keep Connections Forever and Create Lifelong Friends!!!</span>
-                          </span>
-                          <span className="block font-bold text-[clamp(1.25rem,5.5vw,2rem)] mt-4 animate-slide-in-3 text-black dark:text-white" style={{ fontWeight: '700', textShadow: 'none', letterSpacing: '-0.02em' }}>
-                            Meet Locals and Other Nearby Travelers Right Now, Today!!!
-                          </span>
-                        </h1>
-                        
-                        {/* Primary signup CTA - Lowered and reasonably sized */}
-                        <div className="mt-32 mb-8 px-4">
-                          <Button
-                            onClick={() => {
-                              trackEvent('signup_cta_click', 'landing_page', 'main_hero_button');
-                              setLocation('/join');
-                            }}
-                            size="lg"
-                            className="bg-white dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-500 hover:bg-gray-100 dark:hover:from-blue-700 dark:hover:to-orange-600 text-black dark:text-white font-bold px-8 py-3 rounded-xl shadow-lg transition-all duration-200 border-2 border-black dark:border-white max-w-md mx-auto"
-                            style={{
-                              fontSize: '1.1rem',
-                              fontWeight: '700',
-                              boxShadow: '0 4px 15px rgba(0,0,0,0.3)',
-                            }}
-                          >
-                            JOIN NEARBY TRAVELER NOW
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  </main>
-                </div>
-              </div>
-            </div>
+        {/* HERO SECTION */}
+        <div className="pt-20 pb-24 bg-white dark:bg-gray-900">
+          <div className="text-center">
+            <h1 className="text-4xl md:text-5xl font-light text-gray-900 dark:text-white mb-8 leading-tight">
+              Skip the Tourist Traps
+            </h1>
+            <p className="text-xl font-light text-gray-600 dark:text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed">
+              Connect before your trip, keep connections forever, and create lifelong friends
+            </p>
+            
+            <Button
+              onClick={() => {
+                trackEvent('signup_cta_click', 'landing_page', 'main_hero_button');
+                setLocation('/join');
+              }}
+              size="lg"
+              className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-500 text-white dark:text-white font-medium px-8 py-3 rounded-lg transition-all duration-200"
+            >
+              Join Nearby Traveler
+            </Button>
           </div>
         </div>
 

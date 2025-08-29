@@ -22,86 +22,33 @@ export default function EventsLanding() {
       <LandingHeaderSpacer />
       
       {/* HERO SECTION */}
-      <div className="relative z-0">
-        <div className="bg-white dark:bg-gray-900 border-2 border-gray-300 dark:border-orange-500 shadow-lg">
-          <div className="relative bg-white dark:bg-gray-900 pb-32 overflow-hidden min-h-[400px]">
-            <div className="absolute inset-0 h-full min-h-[400px]">
-              <img
-                src={eventHeaderImage}
-                alt="Beach BBQ Party with Friends"
-                className="w-full h-full object-cover"
-                style={{ objectPosition: 'center 70%' }}
-              />
-              <div
-                className="absolute inset-0"
-                style={{
-                  background:
-                    "linear-gradient(to bottom, rgba(255,255,255,.3), rgba(255,255,255,.2), rgba(255,255,255,0))"
-                }}
-                aria-hidden="true"
-              />
-              <div
-                className="absolute inset-0 dark:block hidden"
-                style={{
-                  background:
-                    "linear-gradient(to bottom, rgba(0,0,0,.6), rgba(0,0,0,.4), rgba(0,0,0,0.2))"
-                }}
-                aria-hidden="true"
-              />
-            </div>
-            <div className="relative">
-              <div className="sm:pb-16 md:pb-20 lg:pb-28 xl:pb-32">
-                <main className="mt-16 mx-auto max-w-full sm:mt-20 md:mt-24 lg:mt-28 xl:mt-32">
-                  <div className="text-center">
-                    <div className="max-w-4xl mx-auto">
-                      <h1 className="px-3 leading-tight sm:leading-snug">
-                        <span className="block font-black text-[clamp(1.5rem,6vw,2.25rem)] text-black dark:text-white animate-slide-in-1">
-                          Join User Created Events
-                        </span>
-                        <span className="block font-black text-[clamp(1.25rem,5.5vw,2rem)] animate-slide-in-2">
-                          <span className="text-black dark:text-white">and Make Real Connections </span>
-                          <span className="text-black dark:text-white">with Nearby Travelers, </span>
-                          <span className="text-black dark:text-white">While Connecting with Other Locals.</span>
-                        </span>
-                      </h1>
-                      
-                      
-                      {/* Primary signup CTA */}
-                      <div className="mt-32 mb-8 px-4">
-                        <Button
-                          onClick={() => setLocation('/join')}
-                          size="lg"
-                          className="bg-white dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-500 hover:bg-gray-100 dark:hover:from-blue-700 dark:hover:to-orange-600 text-black dark:text-white font-bold px-8 py-3 rounded-xl shadow-lg transition-all duration-200 border-2 border-black dark:border-white max-w-md mx-auto"
-                          style={{
-                            fontSize: '1.1rem',
-                            fontWeight: '700',
-                            boxShadow: '0 4px 15px rgba(0,0,0,0.3)',
-                          }}
-                        >
-                          JOIN NEARBY TRAVELER NOW
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                </main>
-              </div>
-            </div>
-          </div>
+      <div className="pt-20 pb-24 bg-white dark:bg-gray-900">
+        <div className="max-w-6xl mx-auto px-4 text-center">
+          <h1 className="text-4xl md:text-5xl font-light text-gray-900 dark:text-white mb-8 leading-tight">
+            Join User Created Events
+          </h1>
+          <p className="text-xl font-light text-gray-600 dark:text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed">
+            Make real connections with nearby travelers and locals through authentic experiences
+          </p>
+          
+          <Button
+            onClick={() => setLocation('/join')}
+            size="lg"
+            className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-500 text-white dark:text-white font-medium px-8 py-3 rounded-lg transition-all duration-200"
+          >
+            Join Nearby Traveler
+          </Button>
         </div>
       </div>
 
       {/* Quote Section */}
-      <div className="py-12 bg-gray-50 dark:bg-gray-800">
+      <div className="py-20 bg-white dark:bg-gray-800">
         <div className="max-w-4xl mx-auto px-4 text-center">
-          <div className="p-8 bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700">
-            <p className="text-lg text-black dark:text-gray-300 leading-relaxed">
-              <span className="text-black dark:text-orange-500 font-bold">"Thanks to Nearby Traveler, You can meet half your conference before even landing.</span>
-              <span className="text-black dark:text-gray-300"> An event can feel like a reunion, not a room full of strangers."</span>
-            </p>
-            <div className="mt-4 text-center">
-              <p className="text-black dark:text-white font-bold text-lg">— Real connections before you arrive</p>
-              <p className="text-black dark:text-orange-400 text-sm">Transform events from networking to reunions</p>
-            </div>
+          <p className="text-xl text-gray-800 dark:text-gray-300 leading-relaxed font-light">
+            "Thanks to Nearby Traveler, You can meet half your conference before even landing. An event can feel like a reunion, not a room full of strangers."
+          </p>
+          <div className="mt-6 text-center">
+            <p className="text-gray-600 dark:text-white text-base">— Real connections before you arrive</p>
           </div>
         </div>
       </div>
@@ -109,10 +56,10 @@ export default function EventsLanding() {
       {/* Sample Events Section */}
       <div className="px-4 py-16">
         <div className="max-w-6xl mx-auto mb-16">
-          <h2 className="text-3xl sm:text-4xl font-bold mb-8 text-center text-gray-900 dark:text-white" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700'}}>
+          <h2 className="text-2xl font-light mb-16 text-center text-gray-900 dark:text-white">
             Upcoming Local Events & Experiences
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
             
             {/* Venice Beach Dance Party */}
             <div className="bg-gray-100 dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transform transition-all duration-300 flex flex-col">
@@ -301,45 +248,39 @@ export default function EventsLanding() {
         </div>
 
         {/* What Makes Events Special Section */}
-        <div className="mt-16 max-w-6xl mx-auto">
-          <h2 className="text-3xl sm:text-4xl font-bold mb-8 text-center text-gray-900 dark:text-white" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700'}}>
+        <div className="mt-20 max-w-6xl mx-auto">
+          <h2 className="text-2xl font-light mb-16 text-center text-gray-900 dark:text-white">
             What Makes Our Events Special
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-            <div className="bg-orange-200 dark:bg-orange-600 p-6 rounded-xl shadow-lg">
-              <div className="text-4xl mb-4">🎪</div>
-              <h3 className="text-xl font-bold mb-3 text-black dark:text-white">Epic Experiences</h3>
-              <p className="text-black dark:text-white">From beach bonfires to rooftop parties - join unforgettable events created by passionate locals who know the best spots.</p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-16 mb-20">
+            <div className="text-center">
+              <h3 className="text-lg font-medium mb-4 text-gray-900 dark:text-white">Epic Experiences</h3>
+              <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">From beach bonfires to rooftop parties - join unforgettable events created by passionate locals who know the best spots.</p>
             </div>
-            <div className="bg-teal-200 dark:bg-teal-600 p-6 rounded-xl shadow-lg">
-              <div className="text-4xl mb-4">🌟</div>
-              <h3 className="text-xl font-bold mb-3 text-black dark:text-white">Instant Connections</h3>
-              <p className="text-black dark:text-white">Meet amazing travelers and locals who share your interests. Every event is a chance to make lifelong friendships.</p>
+            <div className="text-center">
+              <h3 className="text-lg font-medium mb-4 text-gray-900 dark:text-white">Instant Connections</h3>
+              <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Meet amazing travelers and locals who share your interests. Every event is a chance to make lifelong friendships.</p>
             </div>
-            <div className="bg-orange-200 dark:bg-orange-700 p-6 rounded-xl shadow-lg">
-              <div className="text-4xl mb-4">📍</div>
-              <h3 className="text-xl font-bold mb-3 text-black dark:text-white">Local Secrets</h3>
-              <p className="text-black dark:text-white">Discover hidden gems and authentic experiences that tourists never find. Access the real side of every city.</p>
+            <div className="text-center">
+              <h3 className="text-lg font-medium mb-4 text-gray-900 dark:text-white">Local Secrets</h3>
+              <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Discover hidden gems and authentic experiences that tourists never find. Access the real side of every city.</p>
             </div>
           </div>
         </div>
 
-        {/* Get Started Section - Professional Light Mode */}
-        <div className="bg-gray-100 dark:bg-gradient-to-r dark:from-orange-600 dark:to-blue-600 py-16 rounded-2xl shadow-lg dark:shadow-2xl mb-16">
+        {/* Get Started Section - Clean Airbnb Style */}
+        <div className="bg-white dark:bg-gradient-to-r dark:from-orange-600 dark:to-blue-600 py-20 border-t border-gray-200 dark:border-0 mb-16">
           <div className="max-w-4xl mx-auto text-center px-6">
-            <h2 className="text-4xl font-bold mb-4 text-gray-900 dark:text-white">Ready to Join Events Only The Nearby Traveler Community Knows About?</h2>
-            <p className="text-xl mb-8 text-gray-700 dark:text-white dark:opacity-90">Join others already creating unforgettable experiences together.</p>
+            <h2 className="text-3xl font-light mb-6 text-gray-900 dark:text-white">Ready to Join Events Only The Nearby Traveler Community Knows About?</h2>
+            <p className="text-lg mb-10 text-gray-600 dark:text-white dark:opacity-90 font-light">Join others already creating unforgettable experiences together.</p>
             
-            {/* Single Professional CTA */}
-            <div className="flex justify-center">
-              <Button
-                onClick={() => setLocation('/join')}
-                size="lg"
-                className="bg-white dark:bg-gradient-to-r dark:from-blue-500 dark:to-orange-500 hover:bg-gray-100 dark:hover:from-blue-600 dark:hover:to-orange-600 text-black dark:text-white font-bold text-xl px-12 py-6 rounded-xl shadow-lg transition-all duration-200 border-2 border-black dark:border-white"
-              >
-                🎯 Join Nearby Traveler
-              </Button>
-            </div>
+            <Button
+              onClick={() => setLocation('/join')}
+              size="lg"
+              className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-500 dark:to-orange-500 text-white dark:text-white font-medium text-lg px-10 py-3 rounded-lg transition-all duration-200"
+            >
+              Join Nearby Traveler
+            </Button>
           </div>
         </div>
 

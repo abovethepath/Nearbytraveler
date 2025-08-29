@@ -11,19 +11,15 @@ export default function TravelersLanding() {
   const [, setLocation] = useLocation();
 
   return (
-    <div className="bg-gray-50 dark:bg-gray-900 font-sans" key="travelers-landing-v2">
-      {/* Sticky CTA - Always Visible on All Devices */}
+    <div className="bg-white dark:bg-gray-900 font-sans" key="travelers-landing-v2">
+      {/* Sticky CTA - Clean Style */}
       <div className="fixed bottom-6 right-6 z-50">
         <Button
           onClick={() => setLocation('/join')}
-          size="lg"
-          className="bg-black hover:bg-gray-800 text-white dark:bg-orange-500 dark:hover:bg-orange-600 dark:text-black font-black px-8 py-4 rounded-2xl shadow-2xl transition-colors duration-200 border-3 border-white"
-          style={{
-            boxShadow: '0 12px 35px rgba(0,0,0,0.4), 0 0 0 3px rgba(255,255,255,0.9)',
-            animation: 'gentle-pulse 2.5s ease-in-out infinite',
-          }}
+          size="sm"
+          className="bg-black hover:bg-gray-800 text-white dark:bg-orange-500 dark:hover:bg-orange-600 dark:text-white font-medium px-4 py-2 rounded-lg shadow-sm transition-colors duration-200"
         >
-          JOIN NOW
+          Join Now
         </Button>
       </div>
       
@@ -32,85 +28,33 @@ export default function TravelersLanding() {
       <LandingHeaderSpacer />
       
       {/* HERO SECTION */}
-      <div className="relative z-0">
-        <div className="bg-white dark:bg-gray-900 border-2 border-gray-300 dark:border-orange-500 shadow-lg">
-          <div className="relative bg-white dark:bg-gray-900 pb-32 overflow-hidden min-h-[400px]">
-            <div className="absolute inset-0 h-full min-h-[400px]">
-              <img
-                src={backgroundImage}
-                alt="People connecting and celebrating together on a beach at sunset"
-                className="w-full h-full object-cover"
-                style={{ objectPosition: 'center 70%' }}
-              />
-              <div
-                className="absolute inset-0"
-                style={{
-                  background:
-                    "linear-gradient(to bottom, rgba(255,255,255,.3), rgba(255,255,255,.2), rgba(255,255,255,0))"
-                }}
-                aria-hidden="true"
-              />
-              <div
-                className="absolute inset-0 dark:block hidden"
-                style={{
-                  background:
-                    "linear-gradient(to bottom, rgba(0,0,0,.6), rgba(0,0,0,.4), rgba(0,0,0,0.2))"
-                }}
-                aria-hidden="true"
-              />
-            </div>
-            <div className="relative">
-              <div className="sm:pb-16 md:pb-20 lg:pb-28 xl:pb-32">
-                <main className="mt-16 mx-auto max-w-full sm:mt-20 md:mt-24 lg:mt-28 xl:mt-32">
-                  <div className="text-center">
-                    <div className="max-w-4xl mx-auto">
-                      <h1 className="px-3 leading-tight sm:leading-snug">
-                        <span className="block font-black text-[clamp(1.5rem,6vw,2.25rem)] text-black dark:text-white animate-slide-in-1">
-                          Travel Like a Local.
-                        </span>
-                        <span className="block font-black text-[clamp(1.25rem,5.5vw,2rem)] animate-slide-in-2">
-                          <span className="text-black dark:text-white">Skip the Tourist Traps </span>
-                          <span className="text-black dark:text-white">with Nearby Travelers</span>
-                          <span className="text-black dark:text-white"> While Connecting with Other Locals.</span>
-                        </span>
-                      </h1>
-                      
-                    </div>
-                    
-                    {/* Primary signup CTA */}
-                    <div className="mt-32 mb-8 px-4">
-                      <Button
-                        onClick={() => setLocation('/join')}
-                        size="lg"
-                        className="bg-white dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-500 hover:bg-gray-100 dark:hover:from-blue-700 dark:hover:to-orange-600 text-black dark:text-white font-bold px-8 py-3 rounded-xl shadow-lg transition-all duration-200 border-2 border-black dark:border-white max-w-md mx-auto"
-                        style={{
-                          fontSize: '1.1rem',
-                          fontWeight: '700',
-                          boxShadow: '0 4px 15px rgba(0,0,0,0.3)',
-                        }}
-                      >
-                        JOIN NEARBY TRAVELER NOW
-                      </Button>
-                    </div>
-
-                  </div>
-                </main>
-              </div>
-            </div>
-          </div>
+      <div className="pt-20 pb-24 bg-white dark:bg-gray-900">
+        <div className="max-w-6xl mx-auto px-4 text-center">
+          <h1 className="text-4xl md:text-5xl font-light text-gray-900 dark:text-white mb-8 leading-tight">
+            Travel Like a Local
+          </h1>
+          <p className="text-xl font-light text-gray-600 dark:text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed">
+            Skip the tourist traps and connect with nearby travelers and locals for authentic experiences
+          </p>
+          
+          <Button
+            onClick={() => setLocation('/join')}
+            size="lg"
+            className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-500 text-white dark:text-white font-medium px-8 py-3 rounded-lg transition-all duration-200"
+          >
+            Join Nearby Traveler
+          </Button>
         </div>
       </div>
 
       {/* Quote Section */}
-      <div className="py-12 bg-gray-50 dark:bg-gray-800">
+      <div className="py-20 bg-white dark:bg-gray-800">
         <div className="max-w-4xl mx-auto px-4 text-center">
-          <div className="p-8 bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700">
-            <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
-              <span className="text-gray-700 dark:text-gray-300">"Connect with real locals who'll show you the hidden gems, secret bars, and authentic experiences that make travel unforgettable."</span>
-            </p>
-            <div className="mt-4 text-center">
-              <p className="text-gray-900 dark:text-white font-bold text-lg">— Real Travelers, Real Experiences</p>
-            </div>
+          <p className="text-xl text-gray-800 dark:text-gray-300 leading-relaxed font-light">
+            "Connect with real locals who'll show you the hidden gems, secret bars, and authentic experiences that make travel unforgettable."
+          </p>
+          <div className="mt-6 text-center">
+            <p className="text-gray-600 dark:text-white text-base">— Real Travelers, Real Experiences</p>
           </div>
         </div>
       </div>
@@ -118,25 +62,22 @@ export default function TravelersLanding() {
 
       <main className="flex-1 px-4 py-16">
         {/* Why Travelers Love Nearby Traveler */}
-        <div className="max-w-6xl mx-auto text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl font-bold mb-8 text-gray-900 dark:text-white" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700'}}>
+        <div className="max-w-6xl mx-auto text-center mb-20">
+          <h2 className="text-2xl font-light mb-16 text-gray-900 dark:text-white">
             Why Travelers Choose Nearby Traveler
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div className="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/30 dark:to-orange-800/30 p-6 rounded-xl shadow-lg border dark:border-orange-700/50">
-              <div className="text-4xl mb-4">🗺️</div>
-              <h3 className="text-xl font-bold mb-3 text-black dark:text-white">Hidden Gems</h3>
-              <p className="text-black dark:text-white">Discover secret spots, local hangouts, and authentic experiences that guidebooks never mention.</p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-16">
+            <div className="text-center">
+              <h3 className="text-lg font-medium mb-4 text-gray-900 dark:text-white">Hidden Gems</h3>
+              <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Discover secret spots, local hangouts, and authentic experiences that guidebooks never mention.</p>
             </div>
-            <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 p-6 rounded-xl shadow-lg border dark:border-blue-700/50">
-              <div className="text-4xl mb-4">🤝</div>
-              <h3 className="text-xl font-bold mb-3 text-black dark:text-white">Local Connections</h3>
-              <p className="text-black dark:text-white">Connect with locals who share your interests and get insider tips from people who actually live there.</p>
+            <div className="text-center">
+              <h3 className="text-lg font-medium mb-4 text-gray-900 dark:text-white">Local Connections</h3>
+              <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Connect with locals who share your interests and get insider tips from people who actually live there.</p>
             </div>
-            <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/30 dark:to-green-800/30 p-6 rounded-xl shadow-lg border dark:border-green-700/50">
-              <div className="text-4xl mb-4">🎯</div>
-              <h3 className="text-xl font-bold mb-3 text-black dark:text-white">Smart Matching</h3>
-              <p className="text-black dark:text-white">Our AI matches you with locals and travelers based on shared interests, travel dates, and compatibility.</p>
+            <div className="text-center">
+              <h3 className="text-lg font-medium mb-4 text-gray-900 dark:text-white">Smart Matching</h3>
+              <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Our AI matches you with locals and travelers based on shared interests, travel dates, and compatibility.</p>
             </div>
             <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/30 dark:to-purple-800/30 p-6 rounded-xl shadow-lg border dark:border-purple-700/50">
               <div className="text-4xl mb-4">⚡</div>

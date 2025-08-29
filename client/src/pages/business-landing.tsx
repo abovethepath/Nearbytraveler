@@ -10,73 +10,29 @@ export default function BusinessLanding() {
   const [, setLocation] = useLocation();
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-blue-50 via-white to-orange-50 dark:from-gray-900 dark:via-gray-800 dark:to-orange-900">
+    <div className="min-h-screen flex flex-col bg-white dark:from-gray-900 dark:via-gray-800 dark:to-orange-900">
       
       <ThemeToggle />
       <LandingHeader />
       <LandingHeaderSpacer />
 
       {/* HERO SECTION */}
-      <div className="relative z-0">
-        <div className="bg-white dark:bg-gray-900 border-2 border-gray-300 dark:border-orange-500 shadow-lg">
-          <div className="relative bg-white dark:bg-gray-900 pb-32 overflow-hidden min-h-[400px]">
-            <div className="absolute inset-0 h-full min-h-[400px]">
-              <img
-                src={businessHeaderPhoto}
-                alt="Business connections and partnerships"
-                className="w-full h-full object-cover"
-                style={{ objectPosition: 'center 70%' }}
-              />
-              <div
-                className="absolute inset-0"
-                style={{
-                  background:
-                    "linear-gradient(to bottom, rgba(255,255,255,.8), rgba(255,255,255,.5), rgba(255,255,255,0.1))"
-                }}
-                aria-hidden="true"
-              />
-              <div
-                className="absolute inset-0 dark:block hidden"
-                style={{
-                  background:
-                    "linear-gradient(to bottom, rgba(0,0,0,.6), rgba(0,0,0,.4), rgba(0,0,0,0.2))"
-                }}
-                aria-hidden="true"
-              />
-            </div>
-            <div className="relative">
-              <div className="sm:pb-16 md:pb-20 lg:pb-28 xl:pb-32">
-                <main className="mt-16 mx-auto max-w-full sm:mt-20 md:mt-24 lg:mt-28 xl:mt-32">
-                  <div className="text-center">
-                    <div className="max-w-4xl mx-auto">
-                      <h1 className="px-3 leading-tight sm:leading-snug">
-                        <span className="block font-black text-[clamp(1.5rem,6vw,2.25rem)] text-black dark:text-white animate-slide-in-1">
-                          Grow Your Business. Meet <span className="text-black dark:text-white">Locals</span> and <span className="text-black dark:text-white">Nearby Travelers</span> Who Are Already Looking for Your Products or Services.
-                        </span>
-                      </h1>
-                      
-                      
-                      {/* Primary signup CTA */}
-                      <div className="mt-32 mb-8 px-4">
-                        <Button
-                          onClick={() => setLocation('/join')}
-                          size="lg"
-                          className="bg-white dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-500 hover:bg-gray-100 dark:hover:from-blue-700 dark:hover:to-orange-600 text-black dark:text-white font-bold px-8 py-3 rounded-xl shadow-lg transition-all duration-200 border-2 border-black dark:border-white max-w-md mx-auto"
-                          style={{
-                            fontSize: '1.1rem',
-                            fontWeight: '700',
-                            boxShadow: '0 4px 15px rgba(0,0,0,0.3)',
-                          }}
-                        >
-                          JOIN NEARBY TRAVELER NOW
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                </main>
-              </div>
-            </div>
-          </div>
+      <div className="pt-20 pb-24 bg-white dark:bg-gray-900">
+        <div className="max-w-6xl mx-auto px-4 text-center">
+          <h1 className="text-4xl md:text-5xl font-light text-gray-900 dark:text-white mb-8 leading-tight">
+            Grow Your Business
+          </h1>
+          <p className="text-xl font-light text-gray-600 dark:text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed">
+            Connect with locals and nearby travelers who are already looking for your products and services
+          </p>
+          
+          <Button
+            onClick={() => setLocation('/join')}
+            size="lg"
+            className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-500 text-white dark:text-white font-medium px-8 py-3 rounded-lg transition-all duration-200"
+          >
+            Join Nearby Traveler
+          </Button>
         </div>
       </div>
 
