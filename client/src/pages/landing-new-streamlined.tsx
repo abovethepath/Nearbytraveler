@@ -163,10 +163,10 @@ export default function LandingStreamlined() {
                   <Plane className="w-8 h-8 text-blue-600 dark:text-blue-400" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                  Skip the Tourist Traps
+                  Discover Hidden Gems
                 </h3>
                 <p className="text-gray-600 dark:text-gray-300 text-sm">
-                  Discover authentic spots only locals know about
+                  Find unique experiences beyond guidebooks
                 </p>
               </div>
               
@@ -189,10 +189,10 @@ export default function LandingStreamlined() {
                   <Building2 className="w-8 h-8 text-purple-600 dark:text-purple-400" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                  Earn Money as a Local
+                  Share Your City
                 </h3>
                 <p className="text-gray-600 dark:text-gray-300 text-sm">
-                  Share your city and earn extra income from visitors
+                  Help visitors discover the real side of your hometown
                 </p>
               </div>
               
