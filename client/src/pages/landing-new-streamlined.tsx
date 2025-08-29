@@ -166,21 +166,6 @@ export default function LandingStreamlined() {
                   Nearby Traveler connects travelers and locals through shared interests, activities, demographics, and events—transforming random encounters into life-changing connections.
                 </p>
                 
-                {/* Benefits with orange and blue theme */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                  <div className="text-center p-4 bg-white dark:bg-gray-700 rounded-2xl border-2 border-gray-300 dark:border-orange-300 shadow-lg">
-                    <div className="text-3xl mb-3">🤝</div>
-                    <p className="font-bold text-black dark:text-white text-sm">Connect with like-minded people</p>
-                  </div>
-                  <div className="text-center p-4 bg-white dark:bg-gray-700 rounded-2xl border-2 border-gray-300 dark:border-blue-300 shadow-lg">
-                    <div className="text-3xl mb-3">💎</div>
-                    <p className="font-bold text-black dark:text-white text-sm">Discover hidden gems</p>
-                  </div>
-                  <div className="text-center p-4 bg-white dark:bg-gray-700 rounded-2xl border-2 border-gray-300 dark:border-orange-300 shadow-lg">
-                    <div className="text-3xl mb-3">✨</div>
-                    <p className="font-bold text-black dark:text-white text-sm">Create unforgettable memories</p>
-                  </div>
-                </div>
                 
                 <p className="text-lg text-black dark:text-white leading-relaxed text-center mb-6 font-medium">
                   It's more than just travel—it's about real community, wherever you are.
