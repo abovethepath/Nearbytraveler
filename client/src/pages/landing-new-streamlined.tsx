@@ -98,7 +98,7 @@ export default function LandingStreamlined() {
                 <div className="mb-4 inline-block rounded-full bg-orange-50 dark:bg-orange-900/30 px-4 py-1 text-sm font-medium text-orange-700 dark:text-orange-400">
                   Now Launching Beta: Be Among the First to Connect Globally
                 </div>
-                <div className="text-4xl md:text-5xl font-semibold tracking-tight text-zinc-900 dark:text-white overflow-hidden relative h-[120px] md:h-[140px]">
+                <div className="text-4xl md:text-5xl font-semibold tracking-tight text-zinc-900 dark:text-white overflow-hidden relative h-[140px] md:h-[160px]">
                   <h1 
                     key={currentHeadline}
                     className="absolute top-0 left-0 w-full animate-in slide-in-from-left-8 fade-in duration-700"
