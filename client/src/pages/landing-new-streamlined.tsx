@@ -15,7 +15,7 @@ export default function LandingStreamlined() {
   // Rotating headlines for different audience pain points
   const [currentHeadline, setCurrentHeadline] = useState(0);
   const headlines = [
-    "Skip the Tourist Traps.", // General travelers
+    "Planning a Trip Soon? Skip Tourist...", // General travelers
     "Love meeting travelers and showing Your City?", // Couchsurfers as hosts
     "Want Your Kids to Meet the World?", // Families
     "Hate Forced Networking?", // Professional networking
