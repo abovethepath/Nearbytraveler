@@ -12,6 +12,36 @@ export default function LandingStreamlined() {
   const [isMobile, setIsMobile] = useState(false);
   const { setTheme } = useTheme();
   
+  // Rotating headlines for different audience pain points
+  const [currentHeadline, setCurrentHeadline] = useState(0);
+  const headlines = [
+    "Skip the Tourist Traps.", // General travelers
+    "Love Meeting Tourists But Not on a Couch?", // Couchsurfers as hosts
+    "Tired of Staying on Strangers' Couches?", // Couchsurfers as guests
+    "Want Your Kids to Meet the World?", // Families
+    "Networking Events Feel Forced?", // Professional networking
+    "Trouble Meeting Tourists as a Business?" // Business owners
+  ];
+  
+  const [currentSubtext, setCurrentSubtext] = useState(0);
+  const subtexts = [
+    "Find Real Connections That Last.", // General travelers
+    "Share Your City Without Sharing Your Space", // Couchsurfers as hosts
+    "Connect at Coffee Shops, Not Couches", // Couchsurfers as guests
+    "Give Them Global Friends Instead", // Families
+    "Build Authentic Professional Connections", // Professional networking
+    "Connect with Travelers Through Events" // Business owners
+  ];
+  
+  const descriptions = [
+    "Connect with locals and travelers before your trip begins— and create friendships that last a lifetime.", // General
+    "Connect with travelers at coffee shops, events, and experiences. All the cultural exchange, none of the hosting concerns.", // Couchsurfers hosts
+    "Meet travelers and locals at public events and experiences. All the connections, none of the awkwardness.", // Couchsurfers guests
+    "Help your family build global friendships through safe, public meetups and cultural exchanges.", // Families
+    "Skip the small talk. Connect with professionals through shared interests and authentic experiences.", // Networking
+    "Showcase your business to travelers through events, experiences, and authentic local connections." // Business
+  ];
+  
   // Check URL for layout parameter - default to Airbnb style
   const urlParams = new URLSearchParams(window.location.search);
   const isAirbnbStyle = urlParams.get('layout') !== 'centered';
@@ -25,6 +55,16 @@ export default function LandingStreamlined() {
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
+  
+  // Rotating headlines effect
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentHeadline((prev) => (prev + 1) % headlines.length);
+      setCurrentSubtext((prev) => (prev + 1) % subtexts.length);
+    }, 10000); // 10 seconds
+
+    return () => clearInterval(interval);
+  }, [headlines.length, subtexts.length]);
 
   // Allow user to choose theme - don't force it
 
@@ -58,15 +98,25 @@ export default function LandingStreamlined() {
                 <div className="mb-4 inline-block rounded-full bg-orange-50 dark:bg-orange-900/30 px-4 py-1 text-sm font-medium text-orange-700 dark:text-orange-400">
                   Now Launching Beta: Be Among the First to Connect Globally
                 </div>
-                <h1 className="text-4xl md:text-5xl font-semibold tracking-tight text-zinc-900 dark:text-white">
-                  Skip the Tourist Traps. <br /> Find Real Connections That Last.
-                </h1>
+                <div className="text-4xl md:text-5xl font-semibold tracking-tight text-zinc-900 dark:text-white overflow-hidden relative h-[120px] md:h-[140px]">
+                  <h1 
+                    key={currentHeadline}
+                    className="absolute top-0 left-0 w-full animate-in slide-in-from-left-8 fade-in duration-700"
+                  >
+                    {headlines[currentHeadline]} <br /> {subtexts[currentSubtext]}
+                  </h1>
+                </div>
                 <p className="mt-2 text-lg italic text-orange-600">
                   Where Local Experiences Meet Worldwide Connections
                 </p>
-                <p className="mt-4 max-w-xl text-lg text-zinc-600 dark:text-zinc-300">
-                  Connect with locals and travelers before your trip begins— and create friendships that last a lifetime.
-                </p>
+                <div className="mt-4 max-w-xl text-lg text-zinc-600 dark:text-zinc-300 overflow-hidden relative h-[60px]">
+                  <p 
+                    key={currentSubtext}
+                    className="absolute top-0 left-0 w-full animate-in slide-in-from-left-8 fade-in duration-700"
+                  >
+                    {descriptions[currentSubtext]}
+                  </p>
+                </div>
                 <div className="mt-6 flex flex-col sm:flex-row gap-4">
                   <button 
                     onClick={() => {
