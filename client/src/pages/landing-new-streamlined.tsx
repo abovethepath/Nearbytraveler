@@ -152,7 +152,7 @@ export default function LandingStreamlined() {
             <div>
               <Users className="mx-auto h-8 w-8 text-orange-600" />
               <h3 className="mt-4 text-lg font-semibold text-zinc-900 dark:text-white">
-                Never Eat Alone Again
+                Never Eat Alone
               </h3>
               <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
                 Connect with travelers & locals before your trip starts.
