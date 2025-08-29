@@ -66,13 +66,12 @@ export default function LandingStreamlined() {
                     <div className="text-center">
                       <div className="max-w-4xl mx-auto">
                         <h1 className="px-3 leading-tight sm:leading-snug" style={{ fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
-                          <span className="block font-bold text-[clamp(1.5rem,6vw,2.25rem)] text-black dark:text-white animate-slide-in-1" style={{ fontWeight: '700', textShadow: 'none', letterSpacing: '-0.02em' }}>
-                            Skip the Tourist Traps, Connect Before Your Trip, Keep Connections Forever and Create Lifelong Friends!!!
+                          <span className="block font-bold text-[clamp(1.5rem,6vw,2.25rem)] text-black dark:text-white" style={{ fontWeight: '700', textShadow: 'none', letterSpacing: '-0.02em' }}>
+                            <span className="animate-slide-in-1">Skip the Tourist Traps, Connect Before Your Trip,</span>
+                            <span className="animate-slide-in-2"> Keep Connections Forever and Create Lifelong Friends!!!</span>
                           </span>
-                          <span className="block font-bold text-[clamp(1.25rem,5.5vw,2rem)] mt-4 animate-slide-in-2" style={{ fontWeight: '700', textShadow: 'none', letterSpacing: '-0.02em' }}>
-                            <span className="text-black dark:text-white">Meet Locals and Other </span>
-                            <span className="text-black dark:text-white">Nearby Travelers </span>
-                            <span className="text-black dark:text-white">Right Now, Today!!!</span>
+                          <span className="block font-bold text-[clamp(1.25rem,5.5vw,2rem)] mt-4 animate-slide-in-3 text-black dark:text-white" style={{ fontWeight: '700', textShadow: 'none', letterSpacing: '-0.02em' }}>
+                            Meet Locals and Other Nearby Travelers Right Now, Today!!!
                           </span>
                         </h1>
                         
