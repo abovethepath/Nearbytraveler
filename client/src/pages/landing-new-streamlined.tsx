@@ -494,7 +494,7 @@ export default function LandingStreamlined() {
                 size="lg"
                 className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-600 dark:hover:from-blue-700 dark:hover:to-orange-700 text-white font-black text-lg sm:text-xl px-8 sm:px-12 py-4 sm:py-6 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300"
               >
-                Join Your People Today
+                Join Now
               </Button>
             </div>
           </div>
