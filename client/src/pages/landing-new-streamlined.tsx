@@ -139,9 +139,9 @@ export default function LandingStreamlined() {
 
 
         {/* VALUE SECTION - What It Does */}
-        <div className="relative z-10 py-16 sm:py-20 bg-white dark:bg-gray-900">
+        <div className="relative z-10 py-8 sm:py-12 bg-white dark:bg-gray-900">
           <div className="max-w-6xl mx-auto px-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               
               {/* Value Point 1 */}
               <div className="text-center">
