@@ -63,10 +63,10 @@ export default function LandingStreamlined() {
               </div>
 
               <div>
-                <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
+                <h1 className="text-3xl md:text-4xl font-light text-gray-900 dark:text-white mb-6 leading-relaxed">
                   Traveling Soon? Skip the Tourist Traps, Connect Before Your Trip, Keep Connections Forever and Create Lifelong Friends!!!
                 </h1>
-                <p className="text-xl font-semibold text-gray-600 dark:text-gray-300 leading-relaxed">
+                <p className="text-lg font-normal text-gray-600 dark:text-gray-300 leading-relaxed">
                   Meet Locals and Other Nearby Travelers Right Now, Today!!!
                 </p>
               </div>
