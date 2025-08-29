@@ -488,7 +488,7 @@ export default function LandingStreamlined() {
                 <p className="text-black dark:text-blue-100 leading-relaxed mb-4 sm:mb-6 text-sm sm:text-base">Turn that lonely hotel room into lifelong friendships. Meet locals who'll show you their secret spots and fellow travelers who get your wanderlust.</p>
                 <Button 
                   onClick={() => setLocation('/travelers-landing')}
-                  className="bg-black dark:bg-white text-white dark:text-blue-600 hover:bg-gray-800 dark:hover:bg-blue-50 font-bold w-full border border-gray-300"
+                  className="bg-black hover:bg-gray-800 text-white font-bold w-full border border-gray-300"
                 >
                   Join Now
                 </Button>
@@ -501,7 +501,7 @@ export default function LandingStreamlined() {
                 <p className="text-black dark:text-green-100 leading-relaxed mb-4 sm:mb-6 text-sm sm:text-base">Share your favorite coffee shop, that hidden beach, or weekly trivia night. Turn your hometown knowledge into amazing new friendships.</p>
                 <Button 
                   onClick={() => setLocation('/locals-landing')}
-                  className="bg-black dark:bg-white text-white dark:text-green-600 hover:bg-gray-800 dark:hover:bg-green-50 font-bold w-full border border-gray-300"
+                  className="bg-black hover:bg-gray-800 text-white font-bold w-full border border-gray-300"
                 >
                   Join Now
                 </Button>
@@ -514,7 +514,7 @@ export default function LandingStreamlined() {
                 <p className="text-black dark:text-orange-100 leading-relaxed mb-4 sm:mb-6 text-sm sm:text-base">Turn boring business trips into networking goldmines. Meet professionals, find conference buddies, or just grab dinner with cool people.</p>
                 <Button 
                   onClick={() => setLocation('/networking-landing')}
-                  className="bg-black dark:bg-white text-white dark:text-orange-600 hover:bg-gray-800 dark:hover:bg-orange-50 font-bold w-full border border-gray-300"
+                  className="bg-black hover:bg-gray-800 text-white font-bold w-full border border-gray-300"
                 >
                   Join Now
                 </Button>
@@ -527,7 +527,7 @@ export default function LandingStreamlined() {
                 <p className="text-black dark:text-purple-100 leading-relaxed mb-4 sm:mb-6 text-sm sm:text-base">Whether you own a bar, café, or co-working space - connect with travelers and locals looking for authentic experiences at your spot.</p>
                 <Button 
                   onClick={() => setLocation('/business-landing')}
-                  className="bg-black dark:bg-white text-white dark:text-purple-600 hover:bg-gray-800 dark:hover:bg-purple-50 font-bold w-full border border-gray-300"
+                  className="bg-black hover:bg-gray-800 text-white font-bold w-full border border-gray-300"
                 >
                   Join Now
                 </Button>
@@ -540,7 +540,7 @@ export default function LandingStreamlined() {
                 <p className="text-black dark:text-indigo-100 leading-relaxed mb-4 sm:mb-6 text-sm sm:text-base">Discover unique events and your community.</p>
                 <Button 
                   onClick={() => setLocation('/events-landing')}
-                  className="bg-black dark:bg-white text-white dark:text-indigo-600 hover:bg-gray-800 dark:hover:bg-indigo-50 font-bold w-full border border-gray-300"
+                  className="bg-black hover:bg-gray-800 text-white font-bold w-full border border-gray-300"
                 >
                   Join Now
                 </Button>
@@ -553,7 +553,7 @@ export default function LandingStreamlined() {
                 <p className="text-black dark:text-gray-200 leading-relaxed mb-4 sm:mb-6 text-sm sm:text-base">Make friends fast and feel at home.</p>
                 <Button 
                   onClick={() => setLocation('/join')}
-                  className="bg-black dark:bg-white text-white dark:text-gray-700 hover:bg-gray-800 dark:hover:bg-gray-50 font-bold w-full border border-gray-300"
+                  className="bg-black hover:bg-gray-800 text-white font-bold w-full border border-gray-300"
                 >
                   Join Now
                 </Button>
