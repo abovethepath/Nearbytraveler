@@ -140,65 +140,81 @@ export default function LandingStreamlined() {
 
 
         {/* VALUE SECTION - What It Does */}
-        <div className="relative z-10 py-12 sm:py-16 bg-gray-50 dark:bg-gray-800">
-          <div className="max-w-6xl mx-auto px-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              
-              {/* Value Point 1 */}
-              <div className="text-center">
-                <div className="w-16 h-16 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Users className="w-8 h-8 text-orange-600 dark:text-orange-400" />
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                  Never Eat Alone Again
-                </h3>
-                <p className="text-gray-600 dark:text-gray-300 text-sm">
-                  Connect with travelers & locals before your trip starts
-                </p>
+        <section className="mx-auto max-w-6xl px-6 py-20">
+          <h2 className="text-center text-3xl font-bold tracking-tight text-zinc-900 dark:text-white">
+            Why Nearby Traveler
+          </h2>
+          <p className="mt-2 text-center text-lg text-zinc-600 dark:text-zinc-400">
+            Whether you're traveling or at home, Nearby Traveler helps you create real connections that last.
+          </p>
+
+          <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            {/* Value 1 */}
+            <div className="flex flex-col items-center text-center">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-orange-100 text-orange-600">
+                🍽️
               </div>
-              
-              {/* Value Point 2 */}
-              <div className="text-center">
-                <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Plane className="w-8 h-8 text-blue-600 dark:text-blue-400" />
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                  Discover Hidden Gems
-                </h3>
-                <p className="text-gray-600 dark:text-gray-300 text-sm">
-                  Find unique experiences beyond guidebooks
-                </p>
+              <h3 className="mt-4 text-lg font-semibold text-zinc-900 dark:text-white">
+                Never Eat Alone Again
+              </h3>
+              <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+                Connect with travelers & locals before your trip starts.
+              </p>
+            </div>
+
+            {/* Value 2 */}
+            <div className="flex flex-col items-center text-center">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-100 text-blue-600">
+                🗺️
               </div>
-              
-              {/* Value Point 3 */}
-              <div className="text-center">
-                <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Handshake className="w-8 h-8 text-green-600 dark:text-green-400" />
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                  Friends in Every City
-                </h3>
-                <p className="text-gray-600 dark:text-gray-300 text-sm">
-                  Build a global network of real connections
-                </p>
+              <h3 className="mt-4 text-lg font-semibold text-zinc-900 dark:text-white">
+                Discover Local Secrets
+              </h3>
+              <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+                Explore authentic spots shared by locals, not tourist traps.
+              </p>
+            </div>
+
+            {/* Value 3 */}
+            <div className="flex flex-col items-center text-center">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-green-100 text-green-600">
+                🌍
               </div>
-              
-              {/* Value Point 4 */}
-              <div className="text-center">
-                <div className="w-16 h-16 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Building2 className="w-8 h-8 text-purple-600 dark:text-purple-400" />
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                  Rediscover Friends
-                </h3>
-                <p className="text-gray-600 dark:text-gray-300 text-sm">
-                  Know when a friend you met in New York is also in Germany with you
-                </p>
+              <h3 className="mt-4 text-lg font-semibold text-zinc-900 dark:text-white">
+                Friends in Every City
+              </h3>
+              <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+                Build a global network of real connections around the world.
+              </p>
+            </div>
+
+            {/* Value 4 */}
+            <div className="flex flex-col items-center text-center">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-purple-100 text-purple-600">
+                🔄
               </div>
-              
+              <h3 className="mt-4 text-lg font-semibold text-zinc-900 dark:text-white">
+                Stay Connected Across Trips
+              </h3>
+              <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+                Know when a friend you met in one city shows up in your next destination.
+              </p>
+            </div>
+
+            {/* Value 5 */}
+            <div className="flex flex-col items-center text-center">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-pink-100 text-pink-600">
+                🏠
+              </div>
+              <h3 className="mt-4 text-lg font-semibold text-zinc-900 dark:text-white">
+                Share Your City
+              </h3>
+              <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+                Welcome travelers, create events, and meet the world without leaving home.
+              </p>
             </div>
           </div>
-        </div>
+        </section>
 
         {/* FOUNDER STORY SECTION - Compact & Centered */}
         <div className="relative z-10 py-6 sm:py-8 overflow-hidden mb-8">
