@@ -501,7 +501,7 @@ export default function LandingStreamlined() {
             <p className="text-lg sm:text-xl mb-6 sm:mb-8 px-4 leading-relaxed">Join thousands of locals, travelers, and businesses already making real connections worldwide.</p>
             <Button 
               onClick={() => setLocation('/join')}
-              className="bg-black dark:bg-white text-white dark:text-blue-600 hover:bg-gray-800 dark:hover:bg-gray-100 px-6 sm:px-8 py-3 sm:py-4 text-lg sm:text-xl rounded-full shadow-lg transition-all duration-300 hover:scale-105 border border-gray-300"
+              className="bg-black dark:bg-white text-white dark:text-blue-600 hover:bg-gray-800 dark:hover:bg-gray-200 px-6 sm:px-8 py-3 sm:py-4 text-lg sm:text-xl rounded-full shadow-lg transition-all duration-300 hover:scale-105 border border-gray-300 dark:border-none font-bold"
             >
               Join Nearby Traveler Now
             </Button>
