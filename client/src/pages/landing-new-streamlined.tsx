@@ -43,7 +43,7 @@ export default function LandingStreamlined() {
   const heroImages = [
     "/travelers together hugging_1754971726997.avif", // General travelers - current default
     "/travelers together hugging_1754971726997.avif", // Couchsurfers/locals - keep current for now, you'll update
-    "/travelers together hugging_1754971726997.avif", // Families - you'll find family image
+    "@assets/image_1756483833676.png", // Families - family at airport watching plane
     "@assets/image_1756483700289.png", // Networking/professional exchange
     "@assets/image_1756483716831.png"  // Business - local cafe/business atmosphere
   ];
