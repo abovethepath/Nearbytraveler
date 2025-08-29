@@ -54,8 +54,15 @@ export default function Footer() {
           </div>
         </div>
 
+        {/* Brand Tagline - Above the border */}
+        <div className="text-center mt-6 mb-4">
+          <p className="text-sm italic text-gray-600 dark:text-gray-400">
+            Where Local Experiences Meet Worldwide Connections
+          </p>
+        </div>
+
         {/* Bottom Border */}
-        <div className="border-t border-gray-300 dark:border-gray-800 mt-4 sm:mt-6 pt-3 sm:pt-4 flex flex-col sm:flex-row justify-between items-center gap-2 sm:gap-0">
+        <div className="border-t border-gray-300 dark:border-gray-800 pt-3 sm:pt-4 flex flex-col sm:flex-row justify-between items-center gap-2 sm:gap-0">
           <p className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm text-center sm:text-left">
             © 2025 Nearby Traveler, Inc. All rights reserved.
           </p>

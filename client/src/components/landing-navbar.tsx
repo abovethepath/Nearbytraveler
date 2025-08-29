@@ -13,9 +13,12 @@ export default function LandingNavbar() {
           
           {/* Logo Section - Fixed Width */}
           <div className="flex-shrink-0 flex items-center justify-start" style={{display: 'flex', alignItems: 'center'}}>
-            <Link href="/" className="flex items-center text-left">
+            <Link href="/" className="flex flex-col items-start text-left">
               <div className="transform scale-125 sm:scale-150">
                 <Logo variant="navbar" />
+              </div>
+              <div className="text-xs text-gray-600 dark:text-gray-400 italic mt-0.5 ml-1 hidden sm:block">
+                Where Local Experiences Meet Worldwide Connections
               </div>
             </Link>
           </div>
