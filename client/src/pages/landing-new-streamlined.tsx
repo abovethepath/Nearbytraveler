@@ -55,10 +55,10 @@ export default function LandingStreamlined() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             {/* Left side - Content */}
             <div className="space-y-8">
-              {/* Eye-catching social proof banner */}
+              {/* Eye-catching pre-launch banner */}
               <div className="inline-flex items-center bg-gradient-to-r from-orange-100 to-blue-100 dark:from-orange-900/30 dark:to-blue-900/30 rounded-full px-4 py-2">
                 <span className="text-orange-600 dark:text-orange-400 text-sm font-medium">
-                  🔥 400+ travelers from 50+ countries already connected
+                  🚀 Now launching - be among the first to connect globally
                 </span>
               </div>
 
