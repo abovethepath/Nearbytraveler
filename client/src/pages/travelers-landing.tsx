@@ -78,21 +78,19 @@ export default function TravelersLanding() {
                     </div>
                     
                     {/* Primary signup CTA */}
-                    <div className="mt-12 mb-8 px-4">
+                    <div className="mt-32 mb-8 px-4">
                       <Button
                         onClick={() => setLocation('/join')}
                         size="lg"
-                        className="bg-orange-500 hover:bg-orange-600 text-black font-black text-lg sm:text-xl md:text-2xl px-6 sm:px-12 md:px-16 py-4 sm:py-5 md:py-6 rounded-2xl shadow-xl transition-colors duration-200 border-2 sm:border-4 border-white w-full max-w-lg mx-auto"
+                        className="bg-black dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-500 hover:bg-gray-800 dark:hover:from-blue-700 dark:hover:to-orange-600 text-white font-bold px-8 py-3 rounded-xl shadow-lg transition-all duration-200 border-2 border-gray-300 dark:border-white max-w-md mx-auto"
                         style={{
-                          fontSize: 'clamp(1.1rem, 3.5vw, 1.8rem)',
-                          minHeight: 'clamp(60px, 12vw, 80px)',
-                          boxShadow: '0 8px 30px rgba(0,0,0,0.3), 0 0 0 2px rgba(255,255,255,0.9)',
-                          animation: 'gentle-pulse 2.5s ease-in-out infinite',
+                          fontSize: '1.1rem',
+                          fontWeight: '700',
+                          boxShadow: '0 4px 15px rgba(0,0,0,0.3)',
                         }}
                       >
-                        JOIN NEARBY TRAVELER NOW!!!
+                        JOIN NEARBY TRAVELER NOW
                       </Button>
-                      <p className="text-white mt-3 text-base sm:text-lg font-semibold px-2">Join the travel community • Connect today</p>
                     </div>
 
                   </div>
