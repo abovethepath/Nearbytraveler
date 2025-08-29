@@ -42,7 +42,7 @@ export default function LandingStreamlined() {
   // Images that match each rotating headline
   const heroImages = [
     "/travelers together hugging_1754971726997.avif", // General travelers - current default
-    "/travelers together hugging_1754971726997.avif", // Couchsurfers/locals - keep current for now, you'll update
+    "@assets/Image-Social-Travel-with-Contiki-photo-courtesy-Co_1756483970192.webp", // Locals sharing experiences - group adventure
     "@assets/image_1756483833676.png", // Families - family at airport watching plane
     "@assets/image_1756483700289.png", // Networking/professional exchange
     "@assets/image_1756483716831.png"  // Business - local cafe/business atmosphere
