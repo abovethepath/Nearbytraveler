@@ -206,14 +206,14 @@ export default function LandingStreamlined() {
                 <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-orange-400 to-red-500">
                   <img 
                     src="@assets/image_1756427188598.png" 
-                    alt="Art gallery opening with people viewing paintings" 
-                    className="w-full h-36 object-cover"
+                    alt="Beach bonfire event" 
+                    className="w-full h-48 object-cover"
                   />
                 </div>
                 <div className="p-6 flex flex-col flex-grow">
                   <div className="mb-3">
-                    <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white mb-1">Art Gallery Walk</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-300">Explore local art with fellow creatives</p>
+                    <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white mb-1">Beach Bonfire & BBQ</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">Sunset gathering on the beach</p>
                   </div>
                   
                   <div className="flex gap-1 mb-6">
@@ -236,22 +236,22 @@ export default function LandingStreamlined() {
                 <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-yellow-400 to-orange-500">
                   <img 
                     src="@assets/image_1756427188598.png" 
-                    alt="People singing karaoke in a fun bar atmosphere" 
-                    className="w-full h-36 object-cover"
+                    alt="Authentic taco stand with vintage neon sign" 
+                    className="w-full h-48 object-cover"
                   />
                 </div>
                 <div className="p-6 flex flex-col flex-grow">
                   <div className="mb-3">
-                    <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white mb-1">Karaoke Night</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-300">Wednesday nights • Fun bar atmosphere</p>
+                    <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white mb-1">Taco Tuesday</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">Every Tuesday • $1.50 tacos</p>
                   </div>
                   
                   <div className="flex gap-1 mb-6">
-                    <span className="bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded-full text-xs">Free</span>
-                    <span className="bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded-full text-xs">Music</span>
+                    <span className="bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full text-xs">$1.50</span>
+                    <span className="bg-yellow-100 text-yellow-700 px-1.5 py-0.5 rounded-full text-xs">Food</span>
                   </div>
                   
-                  <p className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm mb-8 flex-grow leading-relaxed">Sing your heart out with locals and travelers. No judgment, just fun! Perfect for breaking the ice and making new friends in a relaxed atmosphere.</p>
+                  <p className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm mb-8 flex-grow leading-relaxed">Join locals every Tuesday for authentic street tacos at unbeatable prices. Meet fellow taco lovers and discover the best Mexican spots in the city.</p>
                   <Button 
                     onClick={() => setLocation('/auth')}
                     className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold mt-auto"
@@ -266,22 +266,22 @@ export default function LandingStreamlined() {
                 <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-blue-500 to-indigo-600">
                   <img 
                     src="@assets/image_1756427188598.png" 
-                    alt="Group bike tour through city streets" 
-                    className="w-full h-36 object-cover"
+                    alt="Hollywood Sign at sunrise with mountain views" 
+                    className="w-full h-48 object-cover"
                   />
                 </div>
                 <div className="p-6 flex flex-col flex-grow">
                   <div className="mb-3">
-                    <h3 className="font-bold text-gray-900 dark:text-white mb-1">City Bike Tour</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-300">Saturday mornings • 10:00 AM</p>
+                    <h3 className="font-bold text-gray-900 dark:text-white mb-1">Hollywood Sign Hike</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">Every Saturday • 9:00 AM</p>
                   </div>
                   
                   <div className="flex gap-1 mb-6">
-                    <span className="bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full text-xs">$15</span>
-                    <span className="bg-orange-100 text-orange-700 px-1.5 py-0.5 rounded-full text-xs">Biking</span>
+                    <span className="bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded-full text-xs">Free</span>
+                    <span className="bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full text-xs">Hiking</span>
                   </div>
                   
-                  <p className="text-gray-700 dark:text-gray-300 text-sm mb-8 flex-grow">Explore the city's hidden gems on two wheels with friendly locals. Bike provided, great exercise, and discover neighborhoods tourists never see.</p>
+                  <p className="text-gray-700 dark:text-gray-300 text-sm mb-8 flex-grow">Weekly hike to the iconic Hollywood Sign with locals and travelers. Amazing city views, great photos, and authentic LA hiking culture.</p>
                   <Button 
                     onClick={() => setLocation('/auth')}
                     className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold mt-auto"

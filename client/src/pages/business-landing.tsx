@@ -19,8 +19,8 @@ export default function BusinessLanding() {
       {/* HERO SECTION */}
       <div className="relative z-0">
         <div className="bg-white dark:bg-gray-900 border-2 border-gray-300 dark:border-orange-500 shadow-lg">
-          <div className="relative bg-white dark:bg-gray-900 pb-32 overflow-hidden min-h-[400px]">
-            <div className="absolute inset-0 h-full min-h-[400px]">
+          <div className="relative bg-white dark:bg-gray-900 pb-32 overflow-hidden min-h-[500px]">
+            <div className="absolute inset-0 h-full min-h-[500px]">
               <img
                 src={businessHeaderPhoto}
                 alt="Business connections and partnerships"
