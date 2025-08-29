@@ -18,7 +18,7 @@ export default function LandingStreamlined() {
     "Skip the Tourist Traps.", // General travelers
     "Love meeting travelers and showing Your City?", // Couchsurfers as hosts
     "Want Your Kids to Meet the World?", // Families
-    "Tired of Forced Networking?", // Professional networking
+    "Hate Forced Networking?", // Professional networking
     "Run a Business?" // Business owners
   ];
   
