@@ -65,31 +65,31 @@ export default function NetworkingLanding() {
             {/* Before Events */}
             <div className="text-center">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Before Events</h3>
-              <div className="space-y-3 text-left">
-                <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Browse profiles of fellow attendees heading to the same city/event</p>
-                <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Break the ice with quick intros or group plans</p>
-                <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Arrive already connected and confident</p>
-              </div>
+              <ul className="space-y-3 text-left list-disc list-inside">
+                <li className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Browse profiles of fellow attendees heading to the same city/event</li>
+                <li className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Break the ice with quick intros or group plans</li>
+                <li className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Arrive already connected and confident</li>
+              </ul>
             </div>
             
             {/* During Events */}
             <div className="text-center">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">During Events</h3>
-              <div className="space-y-3 text-left">
-                <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Spot familiar faces instantly</p>
-                <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Skip awkward small talk</p>
-                <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Share updates, live moments, and create memories together</p>
-              </div>
+              <ul className="space-y-3 text-left list-disc list-inside">
+                <li className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Spot familiar faces instantly</li>
+                <li className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Skip awkward small talk</li>
+                <li className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Share updates, live moments, and create memories together</li>
+              </ul>
             </div>
             
             {/* After Events */}
             <div className="text-center">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">After Events</h3>
-              <div className="space-y-3 text-left">
-                <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Keep your new contacts alive</p>
-                <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Plan future meetups or trips</p>
-                <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Instantly recognize connections at future events</p>
-              </div>
+              <ul className="space-y-3 text-left list-disc list-inside">
+                <li className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Keep your new contacts alive</li>
+                <li className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Plan future meetups or trips</li>
+                <li className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Instantly recognize connections at future events</li>
+              </ul>
             </div>
           </div>
         </div>
@@ -105,21 +105,21 @@ export default function NetworkingLanding() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
             <div>
               <h3 className="text-lg font-semibold mb-6 text-gray-900 dark:text-white">Traditional Approach</h3>
-              <div className="space-y-4">
-                <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Cold introductions & random encounters</p>
-                <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Awkward small talk</p>
-                <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Business cards that get lost</p>
-                <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">No way to keep in touch after</p>
-              </div>
+              <ul className="space-y-4 list-disc list-inside">
+                <li className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Cold introductions & random encounters</li>
+                <li className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Awkward small talk</li>
+                <li className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Business cards that get lost</li>
+                <li className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">No way to keep in touch after</li>
+              </ul>
             </div>
             <div>
               <h3 className="text-lg font-semibold mb-6 text-gray-900 dark:text-white">Our Approach</h3>
-              <div className="space-y-4">
-                <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Warm connections before the event</p>
-                <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Shared context, stories & interests</p>
-                <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Real friendships and professional contacts</p>
-                <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Easy reconnection anytime, anywhere</p>
-              </div>
+              <ul className="space-y-4 list-disc list-inside">
+                <li className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Warm connections before the event</li>
+                <li className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Shared context, stories & interests</li>
+                <li className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Real friendships and professional contacts</li>
+                <li className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Easy reconnection anytime, anywhere</li>
+              </ul>
             </div>
           </div>
         </div>
