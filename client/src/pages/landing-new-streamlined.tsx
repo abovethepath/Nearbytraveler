@@ -46,24 +46,38 @@ export default function LandingStreamlined() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         {/* HERO SECTION */}
         <div className="pt-20 pb-24 bg-white dark:bg-gray-900">
-          <div className="text-center">
-            <h1 className="text-4xl md:text-5xl font-light text-gray-900 dark:text-white mb-8 leading-tight">
-              Skip the Tourist Traps
-            </h1>
-            <p className="text-xl font-light text-gray-600 dark:text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed">
-              Connect before your trip, keep connections forever, and create lifelong friends
-            </p>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            {/* Left side - Hero Image */}
+            <div className="relative h-96 lg:h-[500px] rounded-2xl overflow-hidden">
+              <img
+                src="/travelers together hugging_1754971726997.avif"
+                alt="Travelers connecting and creating lifelong friendships"
+                className="w-full h-full object-cover"
+              />
+            </div>
             
-            <Button
-              onClick={() => {
-                trackEvent('signup_cta_click', 'landing_page', 'main_hero_button');
-                setLocation('/join');
-              }}
-              size="lg"
-              className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-500 text-white dark:text-white font-medium px-8 py-3 rounded-lg transition-all duration-200"
-            >
-              Join Nearby Traveler
-            </Button>
+            {/* Right side - Content */}
+            <div className="space-y-8">
+              <div>
+                <h1 className="text-4xl md:text-5xl font-light text-gray-900 dark:text-white mb-6 leading-tight">
+                  Skip the Tourist Traps
+                </h1>
+                <p className="text-xl font-light text-gray-600 dark:text-gray-300 leading-relaxed">
+                  Connect before your trip, keep connections forever, and create lifelong friends
+                </p>
+              </div>
+              
+              <Button
+                onClick={() => {
+                  trackEvent('signup_cta_click', 'landing_page', 'main_hero_button');
+                  setLocation('/join');
+                }}
+                size="lg"
+                className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-500 text-white dark:text-white font-medium px-8 py-3 rounded-lg transition-all duration-200"
+              >
+                Join Nearby Traveler
+              </Button>
+            </div>
           </div>
         </div>
 
