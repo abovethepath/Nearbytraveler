@@ -261,24 +261,24 @@ export default function TravelersLanding() {
         </div>
         
         {/* Get Started Section - Enhanced with Multiple CTAs */}
-        <div className="bg-gradient-to-r from-orange-600 to-blue-600 text-white py-16 rounded-2xl shadow-2xl mb-16">
+        <div className="bg-gray-100 dark:bg-gradient-to-r dark:from-orange-600 dark:to-blue-600 text-gray-900 dark:text-white py-16 rounded-2xl shadow-lg dark:shadow-2xl mb-16">
           <div className="max-w-4xl mx-auto text-center px-6">
-            <h2 className="text-4xl font-bold mb-4">Ready to Explore Like a Local?</h2>
-            <p className="text-xl mb-8 opacity-90">Join thousands of travelers already making authentic connections worldwide.</p>
+            <h2 className="text-4xl font-bold mb-4 text-gray-900 dark:text-white">Ready to Explore Like a Local?</h2>
+            <p className="text-xl mb-8 text-gray-700 dark:text-white dark:opacity-90">Join thousands of travelers already making authentic connections worldwide.</p>
             
             {/* Primary CTA Row */}
             <div className="space-y-4 sm:space-y-0 sm:flex sm:gap-4 sm:justify-center mb-8">
               <Button
                 onClick={() => setLocation('/join')}
                 size="lg"
-                className="bg-white text-blue-600 hover:bg-gray-100 font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition-all duration-200 transform hover:scale-105 w-full sm:w-auto"
+                className="bg-white dark:bg-white text-black dark:text-blue-600 hover:bg-gray-100 dark:hover:bg-gray-100 font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition-all duration-200 border-2 border-black dark:border-white w-full sm:w-auto"
               >
                 🚀 Join Nearby Traveler
               </Button>
               <Button
                 onClick={() => setLocation('/join')}
                 size="lg"
-                className="border-2 border-white text-white hover:bg-white hover:text-blue-600 font-bold text-lg px-8 py-4 rounded-xl transition-all duration-200 transform hover:scale-105 w-full sm:w-auto"
+                className="border-2 border-black dark:border-white text-black dark:text-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-blue-600 font-bold text-lg px-8 py-4 rounded-xl transition-all duration-200 w-full sm:w-auto"
               >
                 🗺️ Start Exploring Now
               </Button>
