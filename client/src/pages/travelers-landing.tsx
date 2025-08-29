@@ -163,11 +163,6 @@ export default function TravelersLanding() {
               <h3 className="text-xl font-bold mb-3 text-black dark:text-white">Travel Date Matching</h3>
               <p className="text-black dark:text-white">Find travelers with overlapping dates in the same destination for coordinated adventures.</p>
             </div>
-            <div className="bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/30 dark:to-red-800/30 p-6 rounded-xl shadow-lg border dark:border-red-700/50">
-              <div className="text-4xl mb-4">🎨</div>
-              <h3 className="text-xl font-bold mb-3 text-black dark:text-white">AI Trip Planning</h3>
-              <p className="text-black dark:text-white">Claude AI companion creates personalized itineraries based on your interests and travel style.</p>
-            </div>
             <div className="bg-gradient-to-br from-cyan-50 to-cyan-100 dark:from-cyan-900/30 dark:to-cyan-800/30 p-6 rounded-xl shadow-lg border dark:border-cyan-700/50">
               <div className="text-4xl mb-4">📸</div>
               <h3 className="text-xl font-bold mb-3 text-black dark:text-white">Travel Memories</h3>
