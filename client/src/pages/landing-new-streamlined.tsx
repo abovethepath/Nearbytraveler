@@ -329,7 +329,7 @@ export default function LandingStreamlined() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
                 {/* Step 1: Join */}
                 <div className="group">
-                  <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-shadow duration-300 border border-blue-100 dark:border-blue-800">
+                  <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-shadow duration-300 border border-blue-100 dark:border-blue-800 h-80 flex flex-col">
                     <div className="relative mb-8">
                       <div className="w-20 h-20 bg-white dark:bg-gradient-to-r dark:from-blue-500 dark:to-blue-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg border-2 border-gray-300 dark:border-none">
                         <span className="text-black dark:text-white text-2xl font-black">1</span>
@@ -338,7 +338,7 @@ export default function LandingStreamlined() {
                     <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-4 text-center">
                       Start Your Journey
                     </h3>
-                    <p className="text-gray-600 dark:text-gray-300 text-center leading-relaxed">
+                    <p className="text-gray-600 dark:text-gray-300 text-center leading-relaxed flex-grow">
                       Share your interests and where you're traveling. We connect you with locals and travelers who share your vibe—whether for business or pleasure.
                     </p>
                   </div>
@@ -346,7 +346,7 @@ export default function LandingStreamlined() {
 
                 {/* Step 2: Connect */}
                 <div className="group">
-                  <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-shadow duration-300 border border-purple-100 dark:border-purple-800">
+                  <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-shadow duration-300 border border-purple-100 dark:border-purple-800 h-80 flex flex-col">
                     <div className="relative mb-8">
                       <div className="w-20 h-20 bg-white dark:bg-gradient-to-r dark:from-purple-500 dark:to-orange-500 rounded-2xl flex items-center justify-center mx-auto shadow-lg border-2 border-gray-300 dark:border-none">
                         <span className="text-black dark:text-white text-2xl font-black">2</span>
@@ -355,7 +355,7 @@ export default function LandingStreamlined() {
                     <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-4 text-center">
                       Make Real Connections
                     </h3>
-                    <p className="text-gray-600 dark:text-gray-300 text-center leading-relaxed">
+                    <p className="text-gray-600 dark:text-gray-300 text-center leading-relaxed flex-grow">
                       Chat with locals who know secret spots and fellow travelers heading to your destination. No awkward small talk - just shared adventures.
                     </p>
                   </div>
@@ -363,7 +363,7 @@ export default function LandingStreamlined() {
 
                 {/* Step 3: Explore */}
                 <div className="group">
-                  <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-shadow duration-300 border border-orange-100 dark:border-orange-800">
+                  <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-shadow duration-300 border border-orange-100 dark:border-orange-800 h-80 flex flex-col">
                     <div className="relative mb-8">
                       <div className="w-20 h-20 bg-white dark:bg-gradient-to-r dark:from-orange-500 dark:to-orange-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg border-2 border-gray-300 dark:border-none">
                         <span className="text-black dark:text-white text-2xl font-black">3</span>
@@ -372,7 +372,7 @@ export default function LandingStreamlined() {
                     <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-4 text-center">
                       Create Epic Memories
                     </h3>
-                    <p className="text-gray-600 dark:text-gray-300 text-center leading-relaxed">
+                    <p className="text-gray-600 dark:text-gray-300 text-center leading-relaxed flex-grow">
                       Join authentic experiences, discover hidden gems, and turn strangers into lifelong friends. This is travel the way it's meant to be.
                     </p>
                   </div>
