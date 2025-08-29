@@ -194,10 +194,10 @@ JOIN THE COMMUNITY TODAY
 
 
       {/* Why Locals Love It - Modern Cards */}
-      <div className="py-16 bg-gray-50 dark:bg-gray-800">
+      <div className="py-8 bg-gray-50 dark:bg-gray-800">
         <div className="max-w-6xl mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-black text-gray-900 dark:text-white mb-4">
+          <div className="text-center mb-8">
+            <h2 className="text-4xl font-black text-gray-900 dark:text-white mb-2">
               Why Locals Are Obsessed with Nearby Traveler
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-300">Turn your city knowledge into amazing friendships</p>
