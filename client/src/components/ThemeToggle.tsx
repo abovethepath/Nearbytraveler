@@ -26,7 +26,7 @@ export default function ThemeToggle({ className = "", position = "fixed" }: Them
   };
 
   const baseClasses = position === "fixed" 
-    ? "fixed top-6 right-6 z-[100]" 
+    ? "fixed top-6 right-6 z-[9999]" 
     : "relative";
 
   return (
