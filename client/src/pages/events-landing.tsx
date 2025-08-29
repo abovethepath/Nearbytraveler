@@ -90,13 +90,13 @@ export default function EventsLanding() {
       <div className="py-12 bg-gray-50 dark:bg-gray-800">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <div className="p-8 bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700">
-            <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
-              <span className="text-orange-500 font-bold">"Join beach bonfires, rooftop parties, food tours, and adventures.</span>
-              <span className="text-gray-700 dark:text-gray-300"> Every event is a chance to meet amazing locals and travelers who become lifelong friends."</span>
+            <p className="text-lg text-black dark:text-gray-300 leading-relaxed">
+              <span className="text-black dark:text-orange-500 font-bold">"Join beach bonfires, rooftop parties, food tours, and adventures.</span>
+              <span className="text-black dark:text-gray-300"> Every event is a chance to meet amazing locals and travelers who become lifelong friends."</span>
             </p>
             <div className="mt-4 text-center">
-              <p className="text-gray-900 dark:text-white font-bold text-lg">— Your Community Awaits</p>
-              <p className="text-orange-400 text-sm">From beach BBQs to secret speakeasies - join the fun today</p>
+              <p className="text-black dark:text-white font-bold text-lg">— Your Community Awaits</p>
+              <p className="text-black dark:text-orange-400 text-sm">From beach BBQs to secret speakeasies - join the fun today</p>
             </div>
           </div>
         </div>
