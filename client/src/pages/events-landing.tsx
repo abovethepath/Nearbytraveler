@@ -95,12 +95,12 @@ export default function EventsLanding() {
         <div className="max-w-4xl mx-auto px-4 text-center">
           <div className="p-8 bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700">
             <p className="text-lg text-black dark:text-gray-300 leading-relaxed">
-              <span className="text-black dark:text-orange-500 font-bold">"Join beach bonfires, rooftop parties, food tours, and adventures.</span>
-              <span className="text-black dark:text-gray-300"> Every event is a chance to meet amazing locals and travelers who become lifelong friends."</span>
+              <span className="text-black dark:text-orange-500 font-bold">"Thanks to Nearby Traveler, You can meet half your conference before even landing.</span>
+              <span className="text-black dark:text-gray-300"> An event can feel like a reunion, not a room full of strangers."</span>
             </p>
             <div className="mt-4 text-center">
-              <p className="text-black dark:text-white font-bold text-lg">— Your Community Awaits</p>
-              <p className="text-black dark:text-orange-400 text-sm">From beach BBQs to secret speakeasies - join the fun today</p>
+              <p className="text-black dark:text-white font-bold text-lg">— Real connections before you arrive</p>
+              <p className="text-black dark:text-orange-400 text-sm">Transform events from networking to reunions</p>
             </div>
           </div>
         </div>
