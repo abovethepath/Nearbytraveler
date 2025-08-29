@@ -1,0 +1,96 @@
+<section className="mx-auto max-w-6xl px-6 py-20">
+  <h2 className="text-center text-3xl font-bold tracking-tight text-zinc-900 dark:text-white">
+    Everyone’s Welcome Here
+  </h2>
+  <p className="mt-2 text-center text-lg text-zinc-600 dark:text-zinc-400">
+    Nearby Traveler is for anyone who wants to expand their social circle — whether you’re exploring a new city or sharing your own.
+  </p>
+
+  <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+    {/* Solo Travelers */}
+    <div className="rounded-2xl border border-zinc-200 p-5 shadow-sm dark:border-zinc-800">
+      <h3 className="text-base font-semibold text-zinc-900 dark:text-white">
+        Solo Travelers
+      </h3>
+      <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+        Turn exploring alone into shared adventures.
+      </p>
+    </div>
+
+    {/* Friends Traveling Together */}
+    <div className="rounded-2xl border border-zinc-200 p-5 shadow-sm dark:border-zinc-800">
+      <h3 className="text-base font-semibold text-zinc-900 dark:text-white">
+        Friends Traveling Together
+      </h3>
+      <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+        Meet new people and follow different interests.
+      </p>
+    </div>
+
+    {/* Families */}
+    <div className="rounded-2xl border border-zinc-200 p-5 shadow-sm dark:border-zinc-800">
+      <h3 className="text-base font-semibold text-zinc-900 dark:text-white">
+        Families
+      </h3>
+      <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+        Connect with local families or fellow traveling families.
+      </p>
+    </div>
+
+    {/* Locals */}
+    <div className="rounded-2xl border border-zinc-200 p-5 shadow-sm dark:border-zinc-800">
+      <h3 className="text-base font-semibold text-zinc-900 dark:text-white">
+        Locals
+      </h3>
+      <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+        Share your city and meet the world.
+      </p>
+    </div>
+
+    {/* Business Travelers */}
+    <div className="rounded-2xl border border-zinc-200 p-5 shadow-sm dark:border-zinc-800">
+      <h3 className="text-base font-semibold text-zinc-900 dark:text-white">
+        Business Travelers
+      </h3>
+      <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+        Make trips more than meetings.
+      </p>
+    </div>
+
+    {/* Event-Goers */}
+    <div className="rounded-2xl border border-zinc-200 p-5 shadow-sm dark:border-zinc-800">
+      <h3 className="text-base font-semibold text-zinc-900 dark:text-white">
+        Event-Goers
+      </h3>
+      <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+        Connect with others before and after events.
+      </p>
+    </div>
+
+    {/* New in Town */}
+    <div className="rounded-2xl border border-zinc-200 p-5 shadow-sm dark:border-zinc-800">
+      <h3 className="text-base font-semibold text-zinc-900 dark:text-white">
+        New in Town
+      </h3>
+      <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+        Find friends fast and feel at home.
+      </p>
+    </div>
+
+    {/* Businesses */}
+    <div className="rounded-2xl border border-zinc-200 p-5 shadow-sm dark:border-zinc-800">
+      <h3 className="text-base font-semibold text-zinc-900 dark:text-white">
+        Businesses
+      </h3>
+      <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+        Grow your community by welcoming travelers.
+      </p>
+    </div>
+  </div>
+
+  <div className="mt-10 text-center">
+    <button className="rounded-xl bg-black px-6 py-3 text-white font-medium shadow hover:bg-zinc-800">
+      Find Your People
+    </button>
+  </div>
+</section>
