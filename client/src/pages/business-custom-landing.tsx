@@ -32,7 +32,7 @@ export default function BusinessCustomLanding() {
             trackEvent('signup_cta_click', 'business_custom_landing', 'floating_join_now');
             setLocation('/join');
           }}
-          className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-600 text-white dark:text-white shadow-sm transition-all duration-200 px-4 py-2 rounded-lg text-sm font-medium"
+          className="bg-black hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-100 text-white dark:text-black font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
         >
           Join Now
         </Button>
@@ -66,7 +66,7 @@ export default function BusinessCustomLanding() {
                     trackEvent('signup_cta_click', 'business_custom_landing', 'main_hero_button');
                     setLocation('/join');
                   }}
-                  className="rounded-xl bg-black px-6 py-3 text-white font-medium shadow hover:bg-zinc-800 w-full sm:w-auto"
+                  className="bg-black hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-100 text-white dark:text-black font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200 w-full sm:w-auto"
                   data-testid="button-join-business"
                 >
                   Join Now
@@ -240,7 +240,7 @@ export default function BusinessCustomLanding() {
               <Button 
                 onClick={() => setLocation('/join')}
                 size="lg"
-                className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-600 dark:to-purple-600 dark:hover:from-blue-700 dark:hover:to-purple-700 text-white font-black text-xl px-12 py-6 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300"
+                className="bg-black hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-100 text-white dark:text-black font-medium text-xl px-12 py-6 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300"
               >
                 Join Now
               </Button>

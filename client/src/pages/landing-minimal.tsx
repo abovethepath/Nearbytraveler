@@ -36,7 +36,7 @@ export default function LandingMinimal() {
             trackEvent('signup_cta_click', 'landing_page', 'floating_join_now');
             setLocation('/join');
           }}
-          className="bg-gradient-to-r from-blue-600 to-orange-600 hover:from-blue-700 hover:to-orange-700 text-white shadow-lg transition-all duration-300 hover:scale-105 px-4 sm:px-6 py-2 sm:py-3 rounded-full text-sm sm:text-base font-bold"
+          className="bg-black hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-100 text-white dark:text-black font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
         >
           Join Now
         </Button>

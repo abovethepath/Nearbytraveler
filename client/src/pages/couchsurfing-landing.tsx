@@ -85,7 +85,7 @@ export default function CouchsurfingLanding() {
                     trackEvent('signup_cta_click', 'couchsurfing_landing', 'main_hero_button');
                     setLocation('/join');
                   }}
-                  className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200 w-full sm:w-auto"
+                  className="bg-black hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-100 text-white dark:text-black font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200 w-full sm:w-auto"
                   data-testid="button-join-couchsurfing"
                 >
                   Join Now
