@@ -56,11 +56,7 @@ export default function LandingStreamlined() {
                   style={{ objectPosition: 'center 70%' }}
                 />
                 <div
-                  className="absolute inset-0 dark:bg-gradient-to-b dark:from-black/55 dark:via-black/25 dark:to-transparent"
-                  style={{
-                    background:
-                      "linear-gradient(to bottom, rgba(255,255,255,.8), rgba(255,255,255,.5), rgba(255,255,255,0.1))"
-                  }}
+                  className="absolute inset-0 bg-gradient-to-b from-white/80 via-white/50 to-white/10 dark:from-black/70 dark:via-black/40 dark:to-black/10"
                   aria-hidden="true"
                 />
               </div>
@@ -70,10 +66,10 @@ export default function LandingStreamlined() {
                     <div className="text-center">
                       <div className="max-w-4xl mx-auto">
                         <h1 className="px-3 leading-tight sm:leading-snug" style={{ fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
-                          <span className="block font-bold text-[clamp(1.5rem,6vw,2.25rem)] text-black dark:text-white" style={{ fontWeight: '700', textShadow: 'none', letterSpacing: '-0.02em' }}>
+                          <span className="block font-bold text-[clamp(1.5rem,6vw,2.25rem)] text-black dark:text-white" style={{ fontWeight: '700', textShadow: '2px 2px 4px rgba(0,0,0,0.8)', letterSpacing: '-0.02em' }}>
                             Skip the Tourist Traps, Connect Before Your Trip, Keep Connections Forever and Create Lifelong Friends!!!
                           </span>
-                          <span className="block font-bold text-[clamp(1.25rem,5.5vw,2rem)] mt-4" style={{ fontWeight: '700', textShadow: '1px 1px 3px rgba(0,0,0,0.7)', letterSpacing: '-0.02em' }}>
+                          <span className="block font-bold text-[clamp(1.25rem,5.5vw,2rem)] mt-4" style={{ fontWeight: '700', textShadow: '2px 2px 4px rgba(0,0,0,0.8)', letterSpacing: '-0.02em' }}>
                             <span className="text-black dark:text-amber-300 dark:sm:text-orange-500">Meet Locals and Other </span>
                             <span className="text-black dark:text-blue-300 dark:sm:text-blue-600">Nearby Travelers </span>
                             <span className="text-black dark:text-white">Right Now, Today!!!</span>
@@ -502,7 +498,7 @@ export default function LandingStreamlined() {
         <section className="text-center py-12 sm:py-16 bg-white dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-600 text-black dark:text-white rounded-2xl mb-8 sm:mb-16 border-2 border-gray-300 dark:border-none">
           <div className="max-w-4xl mx-auto px-4 sm:px-6">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4">Start Your Adventure</h2>
-            <p className="text-lg sm:text-xl mb-6 sm:mb-8 px-4">Join thousands of locals, travelers, and businesses already making real connections.</p>
+            <p className="text-lg sm:text-xl mb-6 sm:mb-8 px-4 leading-relaxed">Join thousands of locals, travelers, and businesses already making real connections worldwide.</p>
             <Button 
               onClick={() => setLocation('/join')}
               className="bg-black dark:bg-white text-white dark:text-blue-600 hover:bg-gray-800 dark:hover:bg-gray-100 px-6 sm:px-8 py-3 sm:py-4 text-lg sm:text-xl rounded-full shadow-lg transition-all duration-300 hover:scale-105 border border-gray-300"
