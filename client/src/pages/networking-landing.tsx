@@ -8,6 +8,10 @@ import NetworkingHero from "@/components/NetworkingHero";
 
 export default function NetworkingLanding() {
   const [, setLocation] = useLocation();
+  
+  // Check URL for layout parameter - default to Airbnb style
+  const urlParams = new URLSearchParams(window.location.search);
+  const isAirbnbStyle = urlParams.get('layout') !== 'centered';
 
   return (
     <div className="bg-white dark:bg-gray-900 font-sans">
@@ -27,7 +31,7 @@ export default function NetworkingLanding() {
       <LandingHeaderSpacer />
       
       {/* HERO SECTION */}
-      <NetworkingHero />
+      <NetworkingHero isAirbnbStyle={isAirbnbStyle} />
 
       {/* Quote Section */}
       <div className="py-16 bg-white dark:bg-gray-800">

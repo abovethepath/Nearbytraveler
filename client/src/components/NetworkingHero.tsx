@@ -2,8 +2,76 @@ import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import networkingHeroImage from "@assets/image_1756131077690.png";
 
-export default function NetworkingHero() {
+interface NetworkingHeroProps {
+  isAirbnbStyle?: boolean;
+}
+
+export default function NetworkingHero({ isAirbnbStyle = true }: NetworkingHeroProps) {
   const [, setLocation] = useLocation();
+  
+  if (!isAirbnbStyle) {
+    // Original centered layout (for investors)
+    return (
+      <div className="pt-20 pb-24 bg-white dark:bg-gray-900">
+        <div className="max-w-6xl mx-auto px-4 text-center">
+          <h1 className="text-4xl md:text-5xl font-light text-gray-900 dark:text-white mb-8 leading-tight">
+            Networking, Reinvented
+          </h1>
+          <p className="text-xl font-light text-gray-600 dark:text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed">
+            Connect before, during, and after every event — no business cards needed
+          </p>
+          
+          <Button
+            onClick={() => setLocation('/join')}
+            size="lg"
+            className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-500 text-white dark:text-white font-medium px-8 py-3 rounded-lg transition-all duration-200"
+          >
+            Join Nearby Traveler
+          </Button>
+        </div>
+      </div>
+    );
+  }
+  
+  // Airbnb-style split layout (for professor)
+  return (
+    <div className="pt-20 pb-24 bg-white dark:bg-gray-900">
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          {/* Left side - Hero Image */}
+          <div className="relative h-96 lg:h-[500px] rounded-2xl overflow-hidden">
+            <img
+              src={networkingHeroImage}
+              alt="Professional networking event with people connecting"
+              className="w-full h-full object-cover"
+            />
+          </div>
+          
+          {/* Right side - Content */}
+          <div className="space-y-8">
+            <div>
+              <h1 className="text-4xl md:text-5xl font-light text-gray-900 dark:text-white mb-6 leading-tight">
+                Networking, Reinvented
+              </h1>
+              <p className="text-xl font-light text-gray-600 dark:text-gray-300 leading-relaxed">
+                Connect before, during, and after every event — no business cards needed
+              </p>
+            </div>
+            
+            <Button
+              onClick={() => setLocation('/join')}
+              size="lg"
+              className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-500 text-white dark:text-white font-medium px-8 py-3 rounded-lg transition-all duration-200"
+            >
+              Join Nearby Traveler
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+  
+  // Note: Original full-screen layout preserved below but not used in current toggle system
   return (
     <div className="relative z-0">
       <div className="bg-gray-800 dark:bg-gray-900 border-4 border-purple-500 shadow-lg">
