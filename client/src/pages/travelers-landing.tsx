@@ -75,16 +75,6 @@ export default function TravelersLanding() {
                         </span>
                       </h1>
                       
-                      {/* Traveler value proposition (hide on phones so the hero photo is visible) */}
-                      <div className="hidden sm:block mt-8 p-6 bg-black/40 backdrop-blur-sm rounded-2xl border border-white/20">
-                        <p className="text-sm sm:text-base md:text-lg lg:text-xl text-white leading-relaxed px-2">
-                          <span className="text-white">"Connect with real locals who'll show you the hidden gems, secret bars, and authentic experiences that make travel unforgettable."</span>
-                        </p>
-                        <div className="mt-4 text-center">
-                          <p className="text-white font-bold text-lg">— Real Travelers, Real Experiences</p>
-                          <p className="text-orange-200 text-sm">Join others already exploring like locals worldwide</p>
-                        </div>
-                      </div>
                     </div>
                     
                     {/* Primary signup CTA */}
@@ -108,6 +98,21 @@ export default function TravelersLanding() {
                   </div>
                 </main>
               </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Quote Section */}
+      <div className="py-12 bg-gray-50 dark:bg-gray-800">
+        <div className="max-w-4xl mx-auto px-4 text-center">
+          <div className="p-8 bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700">
+            <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
+              <span className="text-gray-700 dark:text-gray-300">"Connect with real locals who'll show you the hidden gems, secret bars, and authentic experiences that make travel unforgettable."</span>
+            </p>
+            <div className="mt-4 text-center">
+              <p className="text-gray-900 dark:text-white font-bold text-lg">— Real Travelers, Real Experiences</p>
+              <p className="text-orange-400 text-sm">Join others already exploring like locals worldwide</p>
             </div>
           </div>
         </div>

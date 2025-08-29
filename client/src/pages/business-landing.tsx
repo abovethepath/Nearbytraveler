@@ -55,12 +55,6 @@ export default function BusinessLanding() {
                         </span>
                       </h1>
                       
-                      {/* Business value proposition (hide on phones so the hero photo is visible) */}
-                      <div className="hidden sm:block mt-8 p-6 bg-black/40 backdrop-blur-sm rounded-2xl border border-white/20">
-                        <p className="text-sm sm:text-base md:text-lg lg:text-xl text-white leading-relaxed px-2">
-                          Travelers and locals are searching for real local experiences, products, and services. With Nearby Traveler, your business gets discovered the moment interest strikes.
-                        </p>
-                      </div>
                       
                       {/* Hero CTA */}
                       <div className="mt-8">
@@ -76,6 +70,21 @@ export default function BusinessLanding() {
                   </div>
                 </main>
               </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Quote Section */}
+      <div className="py-12 bg-gray-50 dark:bg-gray-800">
+        <div className="max-w-4xl mx-auto px-4 text-center">
+          <div className="p-8 bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700">
+            <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
+              Travelers and locals are searching for real local experiences, products, and services. With Nearby Traveler, your business gets discovered the moment interest strikes.
+            </p>
+            <div className="mt-4 text-center">
+              <p className="text-gray-900 dark:text-white font-bold text-lg">— Smart Business, Real Impact</p>
+              <p className="text-orange-400 text-sm">Join forward-thinking businesses growing through authentic connections</p>
             </div>
           </div>
         </div>
