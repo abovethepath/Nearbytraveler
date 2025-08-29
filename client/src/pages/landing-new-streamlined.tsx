@@ -416,7 +416,7 @@ export default function LandingStreamlined() {
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-8 sm:mb-12 lg:mb-16">
               <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-gray-900 dark:text-white mb-4 sm:mb-6 leading-tight">
-                Everyone's <span className="bg-gradient-to-r from-blue-600 to-orange-600 bg-clip-text text-transparent">Welcome Here</span>
+                Everyone's <span className="text-black dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-600 dark:bg-clip-text dark:text-transparent">Welcome Here</span>
               </h2>
               <p className="text-lg sm:text-xl lg:text-2xl text-gray-600 dark:text-gray-300 max-w-4xl mx-auto leading-relaxed px-4">
                 No matter who you are or why you're traveling - this is your community for making real connections
