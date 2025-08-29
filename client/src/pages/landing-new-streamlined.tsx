@@ -44,7 +44,7 @@ export default function LandingStreamlined() {
     "/travelers together hugging_1754971726997.avif", // General travelers - current default
     "/travelers together hugging_1754971726997.avif", // Couchsurfers/locals - keep current for now, you'll update
     "/travelers together hugging_1754971726997.avif", // Families - you'll find family image
-    "/biz cards_1754971801037.avif", // Networking/business cards
+    "@assets/image_1756483700289.png", // Networking/professional exchange
     "/travelers together hugging_1754971726997.avif"  // Business - keep current for now, you'll update
   ];
 
