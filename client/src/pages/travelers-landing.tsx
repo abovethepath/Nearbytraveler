@@ -264,7 +264,7 @@ export default function TravelersLanding() {
         <div className="bg-gray-100 dark:bg-gradient-to-r dark:from-orange-600 dark:to-blue-600 text-gray-900 dark:text-white py-16 rounded-2xl shadow-lg dark:shadow-2xl mb-16">
           <div className="max-w-4xl mx-auto text-center px-6">
             <h2 className="text-4xl font-bold mb-4 text-gray-900 dark:text-white">Ready to Explore Like a Local?</h2>
-            <p className="text-xl mb-8 text-gray-700 dark:text-white dark:opacity-90">Join thousands of travelers already making authentic connections worldwide.</p>
+            <p className="text-xl mb-8 text-gray-700 dark:text-white dark:opacity-90">Start your journey of authentic local connections and experiences.</p>
             
             {/* Primary CTA Row */}
             <div className="space-y-4 sm:space-y-0 sm:flex sm:gap-4 sm:justify-center mb-8">
