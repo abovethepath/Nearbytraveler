@@ -33,6 +33,23 @@ export default function NetworkingLanding() {
       {/* HERO SECTION */}
       <NetworkingHero />
 
+      {/* Quote Section */}
+      <div className="py-12 bg-gray-50 dark:bg-gray-800">
+        <div className="max-w-4xl mx-auto px-4 text-center">
+          <div className="p-8 bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700">
+            <div className="text-center mb-4">
+              <h3 className="text-gray-900 dark:text-white font-bold text-lg mb-4">What Our Network Says</h3>
+            </div>
+            <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed text-center">
+              <span className="text-orange-500 font-bold">"Thanks to Nearby Traveler, You can meet half your conference before even landing. An event can feel like a reunion, not a room full of strangers."</span>
+            </p>
+            <div className="mt-4 text-center">
+              <p className="text-gray-900 dark:text-white font-bold text-lg">— Aaron, Founder</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <main className="flex-1 px-4 py-16">
         
         {/* HOW IT WORKS - TIMELINE */}

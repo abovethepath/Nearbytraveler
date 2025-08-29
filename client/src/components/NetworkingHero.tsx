@@ -40,18 +40,6 @@ export default function NetworkingHero() {
                       </span>
                     </h1>
                     
-                    {/* What Our Network Says (hide on phones so the hero photo is visible) */}
-                    <div className="hidden sm:block mt-8 p-6 bg-black/40 backdrop-blur-sm rounded-2xl border border-white/20">
-                      <div className="text-center mb-4">
-                        <h3 className="text-white font-bold text-lg mb-4">What Our Network Says</h3>
-                      </div>
-                      <p className="text-xl text-white leading-relaxed text-center">
-                        <span className="text-orange-300 font-bold">"Thanks to Nearby Traveler, You can meet half your conference before even landing. An event can feel like a reunion, not a room full of strangers."</span>
-                      </p>
-                      <div className="mt-4 text-center">
-                        <p className="text-white font-bold text-lg">— Aaron, Founder</p>
-                      </div>
-                    </div>
                   </div>
                   
                   {/* Primary networking CTA */}
