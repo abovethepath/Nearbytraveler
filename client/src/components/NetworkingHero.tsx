@@ -35,7 +35,7 @@ export default function NetworkingHero() {
                         Networking, Reinvented.
                       </span>
                       <span className="block font-black text-[clamp(1.25rem,5.5vw,2rem)]">
-                        <span className="text-amber-300 sm:text-orange-500">Connect before, during, and after every event </span>
+                        <span className="text-white">Connect before, during, and after every event </span>
                         <span className="text-white">— no business cards needed.</span>
                       </span>
                     </h1>
