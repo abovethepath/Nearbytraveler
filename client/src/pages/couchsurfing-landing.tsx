@@ -76,7 +76,7 @@ export default function CouchsurfingLanding() {
                 Share Your City Without Sharing Your Space
               </p>
               <p className="mt-4 max-w-xl text-lg text-zinc-600 dark:text-zinc-300">
-                Connect with travelers at coffee shops, events, and experiences. All the cultural exchange, none of the hosting hassles.
+                Connect with travelers at coffee shops, events, and experiences. All the cultural exchange, none of the hosting concerns.
               </p>
               <div className="mt-6 flex flex-col sm:flex-row gap-4">
                 <button 
