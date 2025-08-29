@@ -16,27 +16,24 @@ export default function LandingStreamlined() {
   const [currentHeadline, setCurrentHeadline] = useState(0);
   const headlines = [
     "Skip the Tourist Traps.", // General travelers
-    "Love Meeting Tourists But Not on a Couch?", // Couchsurfers as hosts
-    "Tired of Staying on Strangers' Couches?", // Couchsurfers as guests
+    "Love Meeting Travelers, But Not on a Couch?", // Couchsurfers as hosts
     "Want Your Kids to Meet the World?", // Families
-    "Networking Events Feel Forced?", // Professional networking
-    "Trouble Meeting Tourists as a Business?" // Business owners
+    "Tired of Forced Networking?", // Professional networking
+    "Run a Business?" // Business owners
   ];
   
   const [currentSubtext, setCurrentSubtext] = useState(0);
   const subtexts = [
-    "Find Real Connections That Last.", // General travelers
-    "Share Your City Without Sharing Your Space", // Couchsurfers as hosts
-    "Connect at Coffee Shops, Not Couches", // Couchsurfers as guests
-    "Give Them Global Friends Instead", // Families
-    "Build Authentic Professional Connections", // Professional networking
-    "Connect with Travelers Through Events" // Business owners
+    "Find real connections that last.", // General travelers
+    "Share your city, not your sofa.", // Couchsurfers as hosts
+    "Connect with local and traveling families.", // Families
+    "Build authentic professional connections.", // Professional networking
+    "Attract travelers through events and experiences." // Business owners
   ];
   
   const descriptions = [
     "Connect with locals and travelers before your trip begins— and create friendships that last a lifetime.", // General
     "Connect with travelers at coffee shops, events, and experiences. All the cultural exchange, none of the hosting concerns.", // Couchsurfers hosts
-    "Meet travelers and locals at public events and experiences. All the connections, none of the awkwardness.", // Couchsurfers guests
     "Help your family build global friendships through safe, public meetups and cultural exchanges.", // Families
     "Skip the small talk. Connect with professionals through shared interests and authentic experiences.", // Networking
     "Showcase your business to travelers through events, experiences, and authentic local connections." // Business
