@@ -63,12 +63,11 @@ export default function LandingStreamlined() {
                   style={{ objectPosition: 'center 70%' }}
                 />
                 <div
-                  className="absolute inset-0"
+                  className="absolute inset-0 dark:bg-gradient-to-b dark:from-black/55 dark:via-black/25 dark:to-transparent"
                   style={{
                     background:
                       "linear-gradient(to bottom, rgba(255,255,255,.8), rgba(255,255,255,.5), rgba(255,255,255,0.1))"
                   }}
-                  className="dark:bg-gradient-to-b dark:from-black/55 dark:via-black/25 dark:to-transparent"
                   aria-hidden="true"
                 />
               </div>
@@ -109,6 +108,127 @@ export default function LandingStreamlined() {
                       </div>
                     </div>
                   </main>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* FEATURE CARDS SECTION - Colorful Cards with Black Text */}
+        <div className="relative z-10 py-16 mb-16">
+          <div className="max-w-7xl mx-auto px-4">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl sm:text-4xl font-bold text-black dark:text-white mb-4">
+                Join Your Community
+              </h2>
+              <p className="text-xl text-black dark:text-gray-300 max-w-3xl mx-auto">
+                Whether you're traveling solo, loving your city, or running a business - there's a place for you here.
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+              {/* Solo Traveler Card */}
+              <div className="bg-blue-500 dark:bg-blue-600 rounded-2xl p-6 shadow-xl border-4 border-blue-600 dark:border-blue-400 transform hover:scale-105 transition-all duration-200">
+                <div className="text-center">
+                  <div className="text-4xl mb-4">✈️</div>
+                  <h3 className="text-2xl font-bold text-black dark:text-white mb-4">Solo Traveler?</h3>
+                  <p className="text-black dark:text-white mb-6 text-base leading-relaxed">
+                    Turn that lonely hotel room into lifelong friendships. Meet locals who'll show you their secret spots and fellow travelers who get your wanderlust.
+                  </p>
+                  <Button 
+                    onClick={() => setLocation('/join?type=traveling')}
+                    className="bg-white hover:bg-gray-100 text-black font-bold py-3 px-6 rounded-xl border-2 border-black w-full shadow-lg transition-all duration-200"
+                  >
+                    Find Your Travel Crew
+                  </Button>
+                </div>
+              </div>
+
+              {/* Love Your City Card */}
+              <div className="bg-green-500 dark:bg-green-600 rounded-2xl p-6 shadow-xl border-4 border-green-600 dark:border-green-400 transform hover:scale-105 transition-all duration-200">
+                <div className="text-center">
+                  <div className="text-4xl mb-4">🏠</div>
+                  <h3 className="text-2xl font-bold text-black dark:text-white mb-4">Love Your City?</h3>
+                  <p className="text-black dark:text-white mb-6 text-base leading-relaxed">
+                    Share your favorite coffee shop, that hidden beach, or weekly trivia night. Turn your hometown knowledge into amazing new friendships.
+                  </p>
+                  <Button 
+                    onClick={() => setLocation('/join?type=local')}
+                    className="bg-white hover:bg-gray-100 text-black font-bold py-3 px-6 rounded-xl border-2 border-black w-full shadow-lg transition-all duration-200"
+                  >
+                    Share Your World
+                  </Button>
+                </div>
+              </div>
+
+              {/* Business Owner Card */}
+              <div className="bg-orange-500 dark:bg-orange-600 rounded-2xl p-6 shadow-xl border-4 border-orange-600 dark:border-orange-400 transform hover:scale-105 transition-all duration-200">
+                <div className="text-center">
+                  <div className="text-4xl mb-4">🏢</div>
+                  <h3 className="text-2xl font-bold text-black dark:text-white mb-4">Traveling for Work?</h3>
+                  <p className="text-black dark:text-white mb-6 text-base leading-relaxed">
+                    Turn boring business trips into networking goldmines. Meet professionals, find conference buddies, or just grab dinner with cool people.
+                  </p>
+                  <Button 
+                    onClick={() => setLocation('/join?type=business')}
+                    className="bg-white hover:bg-gray-100 text-black font-bold py-3 px-6 rounded-xl border-2 border-black w-full shadow-lg transition-all duration-200"
+                  >
+                    Network Like a Pro
+                  </Button>
+                </div>
+              </div>
+            </div>
+
+            {/* Second Row */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {/* Run a Business Card */}
+              <div className="bg-purple-500 dark:bg-purple-600 rounded-2xl p-6 shadow-xl border-4 border-purple-600 dark:border-purple-400 transform hover:scale-105 transition-all duration-200">
+                <div className="text-center">
+                  <div className="text-4xl mb-4">💼</div>
+                  <h3 className="text-2xl font-bold text-black dark:text-white mb-4">Run a Business?</h3>
+                  <p className="text-black dark:text-white mb-6 text-base leading-relaxed">
+                    Whether you own a bar, café, or co-working space - connect with travelers and locals looking for authentic experiences at your spot.
+                  </p>
+                  <Button 
+                    onClick={() => setLocation('/join?type=business')}
+                    className="bg-white hover:bg-gray-100 text-black font-bold py-3 px-6 rounded-xl border-2 border-black w-full shadow-lg transition-all duration-200"
+                  >
+                    Grow Your Community
+                  </Button>
+                </div>
+              </div>
+
+              {/* Love Events Card */}
+              <div className="bg-indigo-500 dark:bg-indigo-600 rounded-2xl p-6 shadow-xl border-4 border-indigo-600 dark:border-indigo-400 transform hover:scale-105 transition-all duration-200">
+                <div className="text-center">
+                  <div className="text-4xl mb-4">🎉</div>
+                  <h3 className="text-2xl font-bold text-black dark:text-white mb-4">Love Events?</h3>
+                  <p className="text-black dark:text-white mb-6 text-base leading-relaxed">
+                    From beach bonfires to art gallery walks - discover events you'd never find on tourist sites and meet people who share your interests.
+                  </p>
+                  <Button 
+                    onClick={() => setLocation('/join')}
+                    className="bg-white hover:bg-gray-100 text-black font-bold py-3 px-6 rounded-xl border-2 border-black w-full shadow-lg transition-all duration-200"
+                  >
+                    Find Your Scene
+                  </Button>
+                </div>
+              </div>
+
+              {/* Just Want Friends Card */}
+              <div className="bg-gray-700 dark:bg-gray-800 rounded-2xl p-6 shadow-xl border-4 border-gray-800 dark:border-gray-600 transform hover:scale-105 transition-all duration-200">
+                <div className="text-center">
+                  <div className="text-4xl mb-4">☀️</div>
+                  <h3 className="text-2xl font-bold text-white dark:text-white mb-4">Just Want Friends?</h3>
+                  <p className="text-white dark:text-white mb-6 text-base leading-relaxed">
+                    New to town? Feeling lonely? Want to try something new? Everyone needs community - and that's exactly what we're here for.
+                  </p>
+                  <Button 
+                    onClick={() => setLocation('/join')}
+                    className="bg-white hover:bg-gray-100 text-black font-bold py-3 px-6 rounded-xl border-2 border-black w-full shadow-lg transition-all duration-200"
+                  >
+                    Start Connecting
+                  </Button>
                 </div>
               </div>
             </div>
