@@ -38,6 +38,23 @@ export default function LandingStreamlined() {
     "Hate the the small talk and blind introductions? Connect with professionals in advance through shared interests and commonalities.", // Networking
     "Showcase your business to travelers through events, experiences, and curated local discounts only for Nearby Travelers." // Business
   ];
+
+  // Images that match each rotating headline
+  const heroImages = [
+    "/travelers together hugging_1754971726997.avif", // General travelers - current default
+    "/travelers together hugging_1754971726997.avif", // Couchsurfers/locals - keep current for now, you'll update
+    "/travelers together hugging_1754971726997.avif", // Families - you'll find family image
+    "/biz cards_1754971801037.avif", // Networking/business cards
+    "/travelers together hugging_1754971726997.avif"  // Business - keep current for now, you'll update
+  ];
+
+  const heroImageAlts = [
+    "Travelers connecting", // General
+    "Locals showing their city", // Couchsurfers
+    "Families traveling together", // Families
+    "Professional networking", // Networking
+    "Business welcoming travelers" // Business
+  ];
   
   // Check URL for layout parameter - default to Airbnb style
   const urlParams = new URLSearchParams(window.location.search);
@@ -137,11 +154,14 @@ export default function LandingStreamlined() {
 
               {/* Right image side */}
               <div className="md:col-span-2 flex flex-col items-center">
-                <img
-                  src="/travelers together hugging_1754971726997.avif"
-                  alt="Travelers connecting"
-                  className="rounded-2xl shadow-lg object-cover"
-                />
+                <div className="overflow-hidden relative w-full h-[400px] rounded-2xl">
+                  <img
+                    key={currentHeadline}
+                    src={heroImages[currentHeadline]}
+                    alt={heroImageAlts[currentHeadline]}
+                    className="absolute top-0 left-0 w-full h-full object-cover rounded-2xl shadow-lg animate-in slide-in-from-right-full fade-in duration-700"
+                  />
+                </div>
                 <p className="mt-4 text-lg italic text-orange-600 text-center">
                   Where Local Experiences Meet Worldwide Connections
                 </p>
