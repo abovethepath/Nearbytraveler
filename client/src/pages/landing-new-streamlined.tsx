@@ -106,9 +106,6 @@ export default function LandingStreamlined() {
                     {headlines[currentHeadline]} <br /> {subtexts[currentSubtext]}
                   </h1>
                 </div>
-                <p className="mt-2 text-lg italic text-orange-600">
-                  Where Local Experiences Meet Worldwide Connections
-                </p>
                 <div className="mt-4 max-w-xl text-lg text-zinc-600 dark:text-zinc-300 overflow-hidden relative h-[60px]">
                   <p 
                     key={currentSubtext}
@@ -142,12 +139,15 @@ export default function LandingStreamlined() {
               </div>
 
               {/* Right image side */}
-              <div className="flex justify-center">
+              <div className="flex flex-col items-center">
                 <img
                   src="/travelers together hugging_1754971726997.avif"
                   alt="Travelers connecting"
                   className="rounded-2xl shadow-lg object-cover"
                 />
+                <p className="mt-4 text-lg italic text-orange-600 text-center">
+                  Where Local Experiences Meet Worldwide Connections
+                </p>
               </div>
             </div>
           ) : (
