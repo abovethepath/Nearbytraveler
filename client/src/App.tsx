@@ -530,6 +530,12 @@ function Router() {
         return <NetworkingLanding />;
       }
 
+      // Allow access to couchsurfing landing page without authentication
+      if (location === '/couchsurfing') {
+        console.log('Showing CouchsurfingLanding for unauthenticated user');
+        return <CouchsurfingLanding />;
+      }
+
       // Travel Intent Quiz - accessible without authentication
       if (location === '/travel-quiz' || location === '/TravelIntentQuiz') {
         console.log('Showing TravelIntentQuiz for onboarding');
