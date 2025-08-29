@@ -36,7 +36,7 @@ export default function LandingStreamlined() {
     "Connect with travelers at coffee shops, events, and experiences. All the cultural exchange, none of the hosting concerns.", // Couchsurfers hosts
     "Help your family build global friendships through safe, public meetups and cultural exchanges.", // Families
     "Skip the small talk. Connect with professionals through shared interests and authentic experiences.", // Networking
-    "Showcase your business to travelers through events, experiences, and authentic local connections." // Business
+    "Showcase your business to travelers through events, experiences, and curated local discounts only for Nearby Travelers." // Business
   ];
   
   // Check URL for layout parameter - default to Airbnb style
