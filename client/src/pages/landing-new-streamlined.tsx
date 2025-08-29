@@ -6,6 +6,7 @@ import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
 import { Users, Plane, Building2, Handshake } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
 import { useTheme } from "@/components/theme-provider";
+import FounderBlock from "@/components/FounderBlock";
 
 export default function LandingStreamlined() {
   const [, setLocation] = useLocation();
@@ -199,79 +200,19 @@ export default function LandingStreamlined() {
           </div>
         </div>
 
-        {/* FOUNDER STORY SECTION - Three Versions to Choose From */}
-        <div className="relative z-10 py-16 sm:py-20 overflow-hidden mb-16">
+        {/* FOUNDER STORY SECTION - Clean & Professional */}
+        <div className="relative z-10 py-12 sm:py-16 overflow-hidden mb-16">
           {/* Clean background for light mode */}
           <div className="absolute inset-0 bg-gray-50 dark:bg-gradient-to-r dark:from-blue-600 dark:via-blue-500 dark:to-orange-500"></div>
           
-          <div className="relative max-w-4xl mx-auto px-4">
-            {/* Section Title */}
-            <div className="text-center mb-8">
-              <h2 className="text-2xl sm:text-3xl font-bold text-black dark:text-white mb-2">
-                Why I Built This
-              </h2>
-              <div className="w-16 h-1 bg-black dark:bg-white mx-auto rounded-full"></div>
-            </div>
-            
-            {/* Version 1: Professional & Clear */}
-            <div className="bg-white dark:bg-gray-800/95 backdrop-blur-sm rounded-2xl p-8 sm:p-12 shadow-xl border border-gray-200 dark:border-gray-700 mb-6">
-              <div className="text-center mb-2">
-                <span className="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-3 py-1 rounded-full text-sm font-medium">
-                  Option 1: Professional
-                </span>
-              </div>
-              <blockquote className="text-xl sm:text-2xl text-black dark:text-white leading-relaxed text-center mb-8 font-medium" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
-                "After hosting over 400 travelers from 50 countries, I discovered that the best part of travel isn't the tours or the hotels — it's the people. Too often, those connections are left to chance. I built Nearby Traveler so travelers and locals alike can create meaningful connections before the trip begins."
-              </blockquote>
-              <div className="text-center">
-                <p className="text-lg font-bold text-black dark:text-white mb-1">
-                  — Aaron Lefkowitz
-                </p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Founder, Nearby Traveler
-                </p>
-              </div>
-            </div>
-            
-            {/* Version 2: Emotional & Relatable */}
-            <div className="bg-white dark:bg-gray-800/95 backdrop-blur-sm rounded-2xl p-8 sm:p-12 shadow-xl border border-gray-200 dark:border-gray-700 mb-6">
-              <div className="text-center mb-2">
-                <span className="bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 px-3 py-1 rounded-full text-sm font-medium">
-                  Option 2: Emotional
-                </span>
-              </div>
-              <blockquote className="text-xl sm:text-2xl text-black dark:text-white leading-relaxed text-center mb-8 font-medium" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
-                "For 15 years I opened my home to travelers from all over the world. I learned that what makes travel unforgettable isn't the sights — it's the people you share them with. Too often, we leave those connections up to luck. I created Nearby Traveler so no one has to explore — or live in their own city — feeling disconnected."
-              </blockquote>
-              <div className="text-center">
-                <p className="text-lg font-bold text-black dark:text-white mb-1">
-                  — Aaron Lefkowitz
-                </p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Founder, Nearby Traveler
-                </p>
-              </div>
-            </div>
-            
-            {/* Version 3: Bold & Mission-Driven */}
-            <div className="bg-white dark:bg-gray-800/95 backdrop-blur-sm rounded-2xl p-8 sm:p-12 shadow-xl border border-gray-200 dark:border-gray-700">
-              <div className="text-center mb-2">
-                <span className="bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 px-3 py-1 rounded-full text-sm font-medium">
-                  Option 3: Bold & Mission-Driven
-                </span>
-              </div>
-              <blockquote className="text-xl sm:text-2xl text-black dark:text-white leading-relaxed text-center mb-8 font-medium" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
-                "Travel has always been about people, yet it's the one part of the journey left to chance. After hosting 400+ travelers from 50 countries, I built Nearby Traveler to change that. This is the community I always wished existed — where locals and travelers connect before the trip even begins."
-              </blockquote>
-              <div className="text-center">
-                <p className="text-lg font-bold text-black dark:text-white mb-1">
-                  — Aaron Lefkowitz
-                </p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Founder, Nearby Traveler
-                </p>
-              </div>
-            </div>
+          <div className="relative">
+            <FounderBlock 
+              tone="emotional"
+              styleVariant="photo"
+              name="Aaron Lefkowitz"
+              title="Founder, Nearby Traveler"
+              className="py-8"
+            />
           </div>
         </div>
 
