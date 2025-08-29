@@ -10,15 +10,15 @@ export default function NetworkingLanding() {
   const [, setLocation] = useLocation();
 
   return (
-    <div className="bg-gray-50 dark:bg-gray-900 font-sans">
+    <div className="bg-white dark:bg-gray-900 font-sans">
       {/* Sticky CTA - Always Visible */}
       <div className="fixed bottom-6 right-6 z-50">
         <Button
           onClick={() => setLocation('/join')}
-          size="lg"
-          className="bg-white hover:bg-gray-100 dark:bg-purple-500 dark:hover:bg-purple-600 text-black dark:text-white font-bold px-6 py-3 rounded-xl shadow-lg transition-colors duration-200 border-2 border-black dark:border-white"
+          size="sm"
+          className="bg-black hover:bg-gray-800 dark:bg-purple-500 dark:hover:bg-purple-600 text-white dark:text-white font-medium px-4 py-2 rounded-lg shadow-sm transition-colors duration-200"
         >
-          JOIN NETWORK
+          Join Network
         </Button>
       </div>
       
@@ -30,17 +30,14 @@ export default function NetworkingLanding() {
       <NetworkingHero />
 
       {/* Quote Section */}
-      <div className="py-12 bg-gray-50 dark:bg-gray-800">
+      <div className="py-16 bg-white dark:bg-gray-800">
         <div className="max-w-4xl mx-auto px-4 text-center">
-          <div className="p-8 bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700">
-            <div className="text-center mb-4">
-              <h3 className="text-gray-900 dark:text-white font-bold text-lg mb-4">What Our Network Says</h3>
-            </div>
-            <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed text-center">
-              <span className="text-orange-500 font-bold">"Thanks to Nearby Traveler, You can meet half your conference before even landing. An event can feel like a reunion, not a room full of strangers."</span>
+          <div className="p-8">
+            <p className="text-xl text-gray-800 dark:text-gray-300 leading-relaxed text-center font-light">
+              "Thanks to Nearby Traveler, You can meet half your conference before even landing. An event can feel like a reunion, not a room full of strangers."
             </p>
-            <div className="mt-4 text-center">
-              <p className="text-gray-900 dark:text-white font-bold text-lg">— Aaron, Founder</p>
+            <div className="mt-6 text-center">
+              <p className="text-gray-600 dark:text-white text-base">— Aaron, Founder</p>
             </div>
           </div>
         </div>
@@ -59,138 +56,79 @@ export default function NetworkingLanding() {
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
             
             {/* Before Events */}
-            <div className="bg-blue-200 dark:bg-gradient-to-br dark:from-blue-400 dark:to-blue-500 rounded-2xl p-8 shadow-lg text-center">
-              <div className="text-4xl mb-4">🎉</div>
-              <h3 className="text-xl font-bold text-black dark:text-black mb-6">Before Events</h3>
-              <div className="grid grid-cols-1 gap-3 text-left">
-                <div className="flex items-center space-x-2">
-                  <span className="text-black font-bold">•</span>
-                  <span className="text-black dark:text-black text-base">Browse profiles of fellow attendees heading to the same city/event</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <span className="text-black font-bold">•</span>
-                  <span className="text-black dark:text-black text-base">Break the ice with quick intros or group plans</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <span className="text-black font-bold">•</span>
-                  <span className="text-black dark:text-black text-base">Arrive already connected and confident</span>
-                </div>
+            <div className="text-center">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Before Events</h3>
+              <div className="space-y-3 text-left">
+                <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Browse profiles of fellow attendees heading to the same city/event</p>
+                <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Break the ice with quick intros or group plans</p>
+                <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Arrive already connected and confident</p>
               </div>
             </div>
             
             {/* During Events */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border-2 border-purple-200 dark:border-purple-600 text-center">
-              <div className="text-4xl mb-4">💫</div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">During Events</h3>
-              <div className="grid grid-cols-1 gap-3 text-left">
-                <div className="flex items-center space-x-2">
-                  <span className="text-purple-500 font-bold">•</span>
-                  <span className="text-black dark:text-gray-300 text-base">Spot familiar faces instantly</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <span className="text-purple-500 font-bold">•</span>
-                  <span className="text-black dark:text-gray-300 text-base">Skip awkward small talk</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <span className="text-purple-500 font-bold">•</span>
-                  <span className="text-black dark:text-gray-300 text-base">Share updates, live moments, and create memories together</span>
-                </div>
+            <div className="text-center">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">During Events</h3>
+              <div className="space-y-3 text-left">
+                <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Spot familiar faces instantly</p>
+                <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Skip awkward small talk</p>
+                <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Share updates, live moments, and create memories together</p>
               </div>
             </div>
             
             {/* After Events */}
-            <div className="bg-purple-200 dark:bg-gradient-to-br dark:from-purple-400 dark:to-purple-500 rounded-2xl p-8 shadow-lg text-center">
-              <div className="text-4xl mb-4">🌍</div>
-              <h3 className="text-xl font-bold text-black dark:text-black mb-6">After Events</h3>
-              <div className="grid grid-cols-1 gap-3 text-left">
-                <div className="flex items-center space-x-2">
-                  <span className="text-black font-bold">•</span>
-                  <span className="text-black dark:text-black text-base">Keep your new contacts alive</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <span className="text-black font-bold">•</span>
-                  <span className="text-black dark:text-black text-base">Plan future meetups or trips</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <span className="text-black font-bold">•</span>
-                  <span className="text-black dark:text-black text-base">Instantly recognize connections at future events</span>
-                </div>
+            <div className="text-center">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">After Events</h3>
+              <div className="space-y-3 text-left">
+                <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Keep your new contacts alive</p>
+                <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Plan future meetups or trips</p>
+                <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Instantly recognize connections at future events</p>
               </div>
             </div>
           </div>
         </div>
 
         {/* WHY NETWORKING IS BROKEN */}
-        <div className="max-w-6xl mx-auto mb-16">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-              Why Networking is Broken
+        <div className="max-w-6xl mx-auto mb-20">
+          <div className="text-center mb-16">
+            <h2 className="text-2xl font-light text-gray-900 dark:text-white mb-12">
+              Why Traditional Networking Falls Short
             </h2>
           </div>
           
-          <div className="bg-gray-200 dark:bg-gradient-to-r dark:from-purple-600 dark:to-indigo-600 rounded-2xl p-8 text-black dark:text-white">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div>
-                <h3 className="text-2xl font-bold mb-4">❌ Old Way</h3>
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-2">
-                    <span>•</span>
-                    <span>Cold introductions & random encounters</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <span>•</span>
-                    <span>Awkward small talk</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <span>•</span>
-                    <span>Business cards that get lost</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <span>•</span>
-                    <span>No way to keep in touch after</span>
-                  </div>
-                </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
+            <div>
+              <h3 className="text-lg font-semibold mb-6 text-gray-900 dark:text-white">Traditional Approach</h3>
+              <div className="space-y-4">
+                <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Cold introductions & random encounters</p>
+                <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Awkward small talk</p>
+                <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Business cards that get lost</p>
+                <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">No way to keep in touch after</p>
               </div>
-              <div>
-                <h3 className="text-2xl font-bold mb-4">✅ Nearby Traveler Way</h3>
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-2">
-                    <span>•</span>
-                    <span>Warm connections before the event</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <span>•</span>
-                    <span>Shared context, stories & interests</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <span>•</span>
-                    <span>Real friendships and professional contacts</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <span>•</span>
-                    <span>Easy reconnection anytime, anywhere</span>
-                  </div>
-                </div>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold mb-6 text-gray-900 dark:text-white">Our Approach</h3>
+              <div className="space-y-4">
+                <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Warm connections before the event</p>
+                <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Shared context, stories & interests</p>
+                <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Real friendships and professional contacts</p>
+                <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Easy reconnection anytime, anywhere</p>
               </div>
             </div>
           </div>
         </div>
 
         {/* REAL-LIFE EXAMPLE STORY */}
-        <div className="max-w-4xl mx-auto mb-16">
-          <div className="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/30 dark:to-purple-900/30 rounded-2xl p-8 shadow-lg border border-indigo-200 dark:border-indigo-700">
-            <div className="text-center">
-              <div className="text-5xl mb-6">🌟</div>
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-                Connections That Cross Continents
-              </h3>
-              <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed italic">
-                "Imagine meeting someone at a startup mixer in New York… and then bumping into them at a food festival in Barcelona months later. With Nearby Traveler, you'll instantly recognize each other and pick up right where you left off. That's the power of lasting connections."
-              </p>
-            </div>
+        <div className="max-w-4xl mx-auto mb-20">
+          <div className="text-center py-12">
+            <h3 className="text-2xl font-light text-gray-900 dark:text-white mb-6">
+              Connections That Cross Continents
+            </h3>
+            <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed font-light max-w-3xl mx-auto">
+              Imagine meeting someone at a startup mixer in New York… and then bumping into them at a food festival in Barcelona months later. With Nearby Traveler, you'll instantly recognize each other and pick up right where you left off.
+            </p>
           </div>
         </div>
 
@@ -202,48 +140,45 @@ export default function NetworkingLanding() {
             </h2>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-gray-100 dark:bg-gradient-to-br dark:from-purple-50 dark:to-purple-100 p-6 rounded-xl shadow-lg border border-gray-300 dark:border-purple-700/50">
-              <div className="text-4xl mb-4">🎯</div>
-              <h3 className="text-xl font-bold mb-3 text-black dark:text-black">Better than Business Cards</h3>
-              <p className="text-black dark:text-black">Real profiles with photos & stories that create lasting impressions</p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+            <div className="text-center">
+              <h3 className="text-lg font-semibold mb-3 text-gray-900 dark:text-white">Better than Business Cards</h3>
+              <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Real profiles with photos & stories that create lasting impressions</p>
             </div>
-            <div className="bg-gray-100 dark:bg-gradient-to-br dark:from-indigo-50 dark:to-indigo-100 p-6 rounded-xl shadow-lg border border-gray-300 dark:border-indigo-700/50">
-              <div className="text-4xl mb-4">🤝</div>
-              <h3 className="text-xl font-bold mb-3 text-black dark:text-black">Pre-Networking Made Easy</h3>
-              <p className="text-black dark:text-black">Walk in with warm intros instead of cold conversations</p>
+            <div className="text-center">
+              <h3 className="text-lg font-semibold mb-3 text-gray-900 dark:text-white">Pre-Networking Made Easy</h3>
+              <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Walk in with warm intros instead of cold conversations</p>
             </div>
-            <div className="bg-gray-100 dark:bg-gradient-to-br dark:from-purple-50 dark:to-purple-100 p-6 rounded-xl shadow-lg border border-gray-300 dark:border-purple-700/50">
-              <div className="text-4xl mb-4">🌟</div>
-              <h3 className="text-xl font-bold mb-3 text-black dark:text-black">Connections That Last</h3>
-              <p className="text-black dark:text-black">Friendships & business contacts beyond the event</p>
+            <div className="text-center">
+              <h3 className="text-lg font-semibold mb-3 text-gray-900 dark:text-white">Connections That Last</h3>
+              <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Friendships & business contacts beyond the event</p>
             </div>
           </div>
           
-          <div className="text-center mt-8">
+          <div className="text-center mt-12">
             <Button 
               onClick={() => setLocation('/join')}
               size="lg"
-              className="bg-white hover:bg-gray-100 dark:bg-gradient-to-r dark:from-purple-600 dark:to-indigo-600 dark:hover:from-purple-700 dark:hover:to-indigo-700 text-black dark:text-white font-bold px-8 py-4 rounded-xl text-lg border-2 border-black dark:border-white"
+              className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-purple-600 dark:to-indigo-600 dark:hover:from-purple-700 dark:hover:to-indigo-700 text-white dark:text-white font-medium px-8 py-3 rounded-lg text-base"
             >
-              🚀 Start Networking Smarter
+              Start Networking Smarter
             </Button>
           </div>
         </div>
 
 
         {/* CLOSING CTA BANNER */}
-        <div className="bg-gray-100 dark:bg-gradient-to-r dark:from-purple-600 dark:to-indigo-600 text-black dark:text-white py-16 rounded-2xl shadow-lg border-2 border-black dark:border-white">
+        <div className="bg-white dark:bg-gradient-to-r dark:from-purple-600 dark:to-indigo-600 text-black dark:text-white py-20 border-t border-gray-200 dark:border-0">
           <div className="max-w-4xl mx-auto text-center px-6">
-            <h2 className="text-4xl font-bold mb-4">💼 Ready to Make Your Next Event Count?</h2>
-            <p className="text-xl mb-8 text-black dark:opacity-90">Don't just show up. Arrive connected.</p>
+            <h2 className="text-3xl font-light mb-6 text-gray-900 dark:text-white">Ready to Make Your Next Event Count?</h2>
+            <p className="text-lg mb-8 text-gray-600 dark:opacity-90 font-light">Don't just show up. Arrive connected.</p>
             
             <Button
               onClick={() => setLocation('/join')}
               size="lg"
-              className="bg-white hover:bg-gray-100 dark:bg-white dark:hover:bg-gray-100 text-black dark:text-purple-600 font-bold text-xl px-12 py-4 rounded-2xl shadow-lg transition-all duration-200 border-2 border-black dark:border-white"
+              className="bg-black hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-100 text-white dark:text-purple-600 font-medium text-lg px-10 py-3 rounded-lg transition-all duration-200"
             >
-              👉 Join the Network
+              Join the Network
             </Button>
           </div>
         </div>
