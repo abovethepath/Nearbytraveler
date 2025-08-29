@@ -16,7 +16,7 @@ export default function LandingStreamlined() {
   const [currentHeadline, setCurrentHeadline] = useState(0);
   const headlines = [
     "Skip the Tourist Traps.", // General travelers
-    "Love Meeting Travelers, But Not on a Couch?", // Couchsurfers as hosts
+    "Love meeting travelers and showing Your City?", // Couchsurfers as hosts
     "Want Your Kids to Meet the World?", // Families
     "Tired of Forced Networking?", // Professional networking
     "Run a Business?" // Business owners
@@ -25,7 +25,7 @@ export default function LandingStreamlined() {
   const [currentSubtext, setCurrentSubtext] = useState(0);
   const subtexts = [
     "Find real connections that last.", // General travelers
-    "Share your city, not your sofa.", // Couchsurfers as hosts
+    "Share experiences, not your couch.", // Couchsurfers as hosts
     "Connect with local and traveling families.", // Families
     "Build authentic professional connections.", // Professional networking
     "Target travelers directly based on their interests and desires." // Business owners
