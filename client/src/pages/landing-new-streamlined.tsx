@@ -35,7 +35,7 @@ export default function LandingStreamlined() {
     "Connect with locals and travelers before your trip begins— and create friendships that last a lifetime.", // General
     "Connect with travelers at coffee shops, events, and experiences. All the cultural exchange, none of the hosting concerns.", // Couchsurfers hosts
     "Help your family build global friendships through safe, public meetups and cultural exchanges.", // Families
-    "Hate the the small talk and blind introductions? Connect with professionals in advance through shared interests and commonalities.", // Networking
+    "Tired of forced networking? Build authentic professional connections. Connect in advance through shared interests — no small talk required.", // Networking
     "Showcase your business to travelers through events, experiences, and curated local discounts only for Nearby Travelers." // Business
   ];
 
@@ -219,7 +219,7 @@ export default function LandingStreamlined() {
             <div>
               <Users className="mx-auto h-8 w-8 text-orange-600" />
               <h3 className="mt-4 text-lg font-semibold text-zinc-900 dark:text-white">
-                Never Eat Alone
+                Share Meals with Travelers & Locals
               </h3>
               <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
                 Connect with travelers & locals before your trip starts.
@@ -229,7 +229,7 @@ export default function LandingStreamlined() {
             <div>
               <MapPin className="mx-auto h-8 w-8 text-blue-600" />
               <h3 className="mt-4 text-lg font-semibold text-zinc-900 dark:text-white">
-                Discover Local Secrets
+                Explore Authentic Spots Beyond Guidebooks
               </h3>
               <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
                 Explore authentic spots shared by locals, not tourist traps.
@@ -239,7 +239,7 @@ export default function LandingStreamlined() {
             <div>
               <Globe className="mx-auto h-8 w-8 text-green-600" />
               <h3 className="mt-4 text-lg font-semibold text-zinc-900 dark:text-white">
-                Friends in Every City
+                Build a Global Circle of Connections
               </h3>
               <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
                 Build a global network of real connections around the world.
@@ -249,7 +249,7 @@ export default function LandingStreamlined() {
             <div>
               <RefreshCw className="mx-auto h-8 w-8 text-purple-600" />
               <h3 className="mt-4 text-lg font-semibold text-zinc-900 dark:text-white">
-                Stay Connected Across Trips
+                Reconnect When Paths Cross Again
               </h3>
               <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
                 Know when a friend you met in one city shows up in your next destination.
@@ -259,7 +259,7 @@ export default function LandingStreamlined() {
             <div>
               <Home className="mx-auto h-8 w-8 text-pink-600" />
               <h3 className="mt-4 text-lg font-semibold text-zinc-900 dark:text-white">
-                Share Your City
+                Create Events and Welcome the World
               </h3>
               <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
                 Welcome travelers, create events, and meet the world without leaving home.
@@ -269,7 +269,7 @@ export default function LandingStreamlined() {
             <div>
               <ShieldCheck className="mx-auto h-8 w-8 text-indigo-600" />
               <h3 className="mt-4 text-lg font-semibold text-zinc-900 dark:text-white">
-                Vouched & Referenced
+                Build Trust with References & Verification
               </h3>
               <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
                 Build trust through mutual connections and community references.
@@ -298,7 +298,7 @@ export default function LandingStreamlined() {
 
                   {/* Quote */}
                   <blockquote className="text-balance text-lg leading-relaxed text-zinc-800 dark:text-zinc-200 md:text-xl max-w-3xl mx-auto">
-                    "For 15 years I opened my home to over 400 travelers from over 50 countries. I learned that what makes traveling unforgettable isn't the sites — it's the people you share them with. Too often, we leave those connections up to luck. I created Nearby Traveler so no one has to explore — or live in their own city — feeling disconnected."
+                    "For 15 years I opened my home to 400+ travelers from 50 countries. I learned what makes travel unforgettable isn't the sites — it's the people you share them with. Too often, those connections are left to luck. I created Nearby Traveler so no one has to explore — or live in their own city — disconnected."
                   </blockquote>
 
                   {/* Attribution */}
@@ -429,7 +429,7 @@ export default function LandingStreamlined() {
         {/* COUCHSURFING FOCUSED SECTION */}
         <section className="mx-auto max-w-6xl px-6 py-20 bg-gray-50 dark:bg-gray-800">
           <h2 className="text-center text-3xl font-bold tracking-tight text-zinc-900 dark:text-white">
-            Why Couchsurfers Love Nearby Traveler
+            Loved Couchsurfing? You'll Love This Too.
           </h2>
           <p className="mt-2 text-center text-lg text-zinc-600 dark:text-zinc-400">
             Love meeting travelers and showing your city? Share experiences, not just your couch.
@@ -509,7 +509,7 @@ export default function LandingStreamlined() {
                 Turn Travel into <span className="text-black dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-600 dark:bg-clip-text dark:text-transparent">Real Connections</span>
               </h2>
               <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
-                Simple steps to connect and create epic memories
+                Simple steps to connect and build friendships
               </p>
             </div>
             
@@ -695,8 +695,8 @@ export default function LandingStreamlined() {
         {/* Final CTA */}
         <section className="text-center py-12 sm:py-16 bg-white dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-600 text-black dark:text-white rounded-2xl mb-8 sm:mb-16 border-2 border-gray-300 dark:border-none">
           <div className="max-w-4xl mx-auto px-4 sm:px-6">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4">Whatever brings you here, you belong here.</h2>
-            <p className="text-lg sm:text-xl mb-6 sm:mb-8 px-4 leading-relaxed">Join locals, travelers, and businesses already making real connections worldwide.</p>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4">No matter where you are, you belong here.</h2>
+            <p className="text-lg sm:text-xl mb-6 sm:mb-8 px-4 leading-relaxed">Join travelers, locals, and businesses already building real connections worldwide.</p>
             <Button 
               onClick={() => setLocation('/join')}
               className="bg-white dark:bg-white text-black dark:text-blue-600 hover:bg-gray-100 dark:hover:bg-gray-200 px-6 sm:px-8 py-3 sm:py-4 text-lg sm:text-xl rounded-full shadow-lg transition-all duration-300 hover:scale-105 border-2 border-black dark:border-none font-bold"
