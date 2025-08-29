@@ -64,6 +64,8 @@ import BusinessLanding from "@/pages/business-landing";
 import LocalsLanding from "@/pages/locals-landing";
 import TravelersLanding from "@/pages/travelers-landing";
 import NetworkingLanding from "@/pages/networking-landing";
+import CouchsurfingLanding from "@/pages/couchsurfing-landing";
+import BusinessCustomLanding from "@/pages/business-custom-landing";
 import Connect from "@/pages/connect";
 import Requests from "@/pages/requests";
 
@@ -183,7 +185,7 @@ function Router() {
 
   const landingPageRoutes = [
     '/', '/landing', '/landing-new', '/auth', '/join', '/signup', '/signup/local', '/signup/traveler', '/signup/business',
-    '/events-landing', '/business-landing', '/locals-landing', '/travelers-landing', '/networking-landing', '/privacy', '/terms', '/cookies', '/about', '/getting-started',
+    '/events-landing', '/business-landing', '/locals-landing', '/travelers-landing', '/networking-landing', '/cs', '/b', '/privacy', '/terms', '/cookies', '/about', '/getting-started',
     '/forgot-password', '/reset-password', '/welcome', '/welcome-business', '/welcome-travel-agent', '/quick-login', '/preview-landing', '/preview-first-landing',
     '/travel-quiz', '/TravelIntentQuiz', '/signup/travel-agent', '/business-card', '/qr-code'
   ];
@@ -835,6 +837,10 @@ function Router() {
         return <EventsLanding />;
       case '/business-landing':
         return <BusinessLanding />;
+      case '/cs':
+        return <CouchsurfingLanding />;
+      case '/b':
+        return <BusinessCustomLanding />;
       case '/signup/local':
         return <SignupLocalTraveler />;
       case '/signup/traveler':
