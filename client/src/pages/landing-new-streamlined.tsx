@@ -89,9 +89,9 @@ export default function LandingStreamlined() {
         <div className="pt-8 pb-12 bg-white dark:bg-gray-900">
           {isAirbnbStyle ? (
             // Clean, professional hero section
-            <div className="mx-auto max-w-6xl px-6 py-8 grid gap-8 md:grid-cols-2 items-center">
-              {/* Left text side */}
-              <div>
+            <div className="mx-auto max-w-7xl px-6 py-8 grid gap-8 md:grid-cols-5 items-center">
+              {/* Left text side - wider */}
+              <div className="md:col-span-3">
                 <div className="mb-4 inline-block rounded-full bg-orange-50 dark:bg-orange-900/30 px-4 py-1 text-sm font-medium text-orange-700 dark:text-orange-400">
                   Now Launching Beta: Be Among the First to Connect Globally
                 </div>
@@ -136,7 +136,7 @@ export default function LandingStreamlined() {
               </div>
 
               {/* Right image side */}
-              <div className="flex flex-col items-center">
+              <div className="md:col-span-2 flex flex-col items-center">
                 <img
                   src="/travelers together hugging_1754971726997.avif"
                   alt="Travelers connecting"
