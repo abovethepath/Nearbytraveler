@@ -57,11 +57,11 @@ export default function LandingStreamlined() {
             <div className="space-y-8">
               <div>
                 <h1 className="text-4xl md:text-5xl font-light text-gray-900 dark:text-white mb-6 leading-tight">
-                  <span className="block">"I built Nearby Traveler</span>
-                  <span className="block">so no one has to leave connections to chance."</span>
+                  <span className="block">Never Travel Alone</span>
+                  <span className="block">Again</span>
                 </h1>
                 <p className="text-xl font-light text-gray-600 dark:text-gray-300 leading-relaxed">
-                  After hosting 400+ travelers from 50 countries, I learned the best part of travel isn't the tours or hotels—it's the people. That's why I created Nearby Traveler: a community where connections start before the trip.
+                  Connect with locals and travelers before you arrive. Skip tourist traps, make real friends, and experience destinations like you live there.
                 </p>
               </div>
               
@@ -109,11 +109,11 @@ export default function LandingStreamlined() {
             // Original centered layout (for investors)
             <div className="text-center">
               <h1 className="text-4xl md:text-5xl font-light text-gray-900 dark:text-white mb-8 leading-tight">
-                <span className="block">"I built Nearby Traveler</span>
-                <span className="block">so no one has to leave connections to chance."</span>
+                <span className="block">Never Travel Alone</span>
+                <span className="block">Again</span>
               </h1>
               <p className="text-xl font-light text-gray-600 dark:text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed">
-                After hosting 400+ travelers from 50 countries, I learned the best part of travel isn't the tours or hotels—it's the people. That's why I created Nearby Traveler: a community where connections start before the trip.
+                Connect with locals and travelers before you arrive. Skip tourist traps, make real friends, and experience destinations like you live there.
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
