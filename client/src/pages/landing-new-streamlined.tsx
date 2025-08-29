@@ -502,13 +502,13 @@ export default function LandingStreamlined() {
               </div>
 
               {/* Event Lover */}
-              <div className="group relative bg-gradient-to-br from-indigo-500 to-purple-600 p-6 sm:p-8 rounded-2xl text-white transform hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-2xl">
+              <div className="group relative bg-white dark:bg-gradient-to-br dark:from-indigo-500 dark:to-purple-600 p-6 sm:p-8 rounded-2xl text-black dark:text-white transform hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-2xl border-2 border-gray-300 dark:border-none">
                 <div className="absolute top-3 sm:top-4 right-3 sm:right-4 text-2xl sm:text-3xl opacity-80">🎉</div>
                 <h3 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 pr-8">Love Events?</h3>
-                <p className="text-indigo-100 leading-relaxed mb-4 sm:mb-6 text-sm sm:text-base">From beach bonfires to art gallery walks - discover events you'd never find on tourist sites and meet people who share your interests.</p>
+                <p className="text-black dark:text-indigo-100 leading-relaxed mb-4 sm:mb-6 text-sm sm:text-base">From beach bonfires to art gallery walks - discover events you'd never find on tourist sites and meet people who share your interests.</p>
                 <Button 
                   onClick={() => setLocation('/events-landing')}
-                  className="bg-white text-indigo-600 hover:bg-indigo-50 font-bold w-full"
+                  className="bg-black dark:bg-white text-white dark:text-indigo-600 hover:bg-gray-800 dark:hover:bg-indigo-50 font-bold w-full border border-gray-300"
                 >
                   Find Your Scene
                 </Button>
