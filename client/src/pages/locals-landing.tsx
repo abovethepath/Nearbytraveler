@@ -90,19 +90,18 @@ export default function LocalsLanding() {
       <div className="py-12 bg-gray-50 dark:bg-gray-800">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <div className="p-8 bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700">
-            <p className="text-xl text-gray-900 dark:text-white leading-relaxed">
-              <span className="text-orange-500 font-bold">"I have friends spanning across the globe now"</span>
-              <span className="text-gray-900 dark:text-white"> —Aaron, Founder</span>
+            <p className="text-xl text-black dark:text-white leading-relaxed">
+              <span className="text-black dark:text-orange-500 font-bold">"I have friends spanning across the globe now"</span>
+              <span className="text-black dark:text-white"> —Aaron, Founder</span>
             </p>
             <div className="mt-6">
-              <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
-                <span className="text-orange-500 font-bold">"Share your city's best-kept secrets and hidden gems.</span>
-                <span className="text-gray-700 dark:text-gray-300"> Connect with genuine travelers who want authentic local experiences, not tourist traps. Be the local friend you'd want to meet."</span>
+              <p className="text-lg text-black dark:text-gray-300 leading-relaxed">
+                <span className="text-black dark:text-orange-500 font-bold">"Share your city's best-kept secrets and hidden gems.</span>
+                <span className="text-black dark:text-gray-300"> Connect with genuine travelers who want authentic local experiences, not tourist traps. Be the local friend you'd want to meet."</span>
               </p>
             </div>
             <div className="mt-4 text-center">
-              <p className="text-gray-900 dark:text-white font-bold text-lg">— Real Locals, Real Connections</p>
-              <p className="text-orange-400 text-sm">Join others sharing authentic local experiences</p>
+              <p className="text-black dark:text-white font-bold text-lg">— Real Locals, Real Connections</p>
             </div>
           </div>
         </div>
