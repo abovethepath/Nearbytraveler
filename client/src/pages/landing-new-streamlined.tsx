@@ -515,13 +515,13 @@ export default function LandingStreamlined() {
               </div>
 
               {/* Anyone Else */}
-              <div className="group relative bg-gradient-to-br from-gray-700 to-gray-800 p-6 sm:p-8 rounded-2xl text-white transform hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-2xl">
+              <div className="group relative bg-white dark:bg-gradient-to-br dark:from-gray-700 dark:to-gray-800 p-6 sm:p-8 rounded-2xl text-black dark:text-white transform hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-2xl border-2 border-gray-300 dark:border-none">
                 <div className="absolute top-3 sm:top-4 right-3 sm:right-4 text-2xl sm:text-3xl opacity-80">🌟</div>
                 <h3 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 pr-8">Just Want Friends?</h3>
-                <p className="text-gray-200 leading-relaxed mb-4 sm:mb-6 text-sm sm:text-base">New to town? Feeling lonely? Want to try something new? Everyone needs community - and that's exactly what we're here for.</p>
+                <p className="text-black dark:text-gray-200 leading-relaxed mb-4 sm:mb-6 text-sm sm:text-base">New to town? Feeling lonely? Want to try something new? Everyone needs community - and that's exactly what we're here for.</p>
                 <Button 
                   onClick={() => setLocation('/join')}
-                  className="bg-white text-gray-700 hover:bg-gray-50 font-bold w-full"
+                  className="bg-black dark:bg-white text-white dark:text-gray-700 hover:bg-gray-800 dark:hover:bg-gray-50 font-bold w-full border border-gray-300"
                 >
                   Start Connecting
                 </Button>
@@ -545,13 +545,13 @@ export default function LandingStreamlined() {
         </section>
 
         {/* Final CTA */}
-        <section className="text-center py-12 sm:py-16 bg-gradient-to-r from-blue-600 to-orange-600 text-white rounded-2xl mb-8 sm:mb-16">
+        <section className="text-center py-12 sm:py-16 bg-white dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-600 text-black dark:text-white rounded-2xl mb-8 sm:mb-16 border-2 border-gray-300 dark:border-none">
           <div className="max-w-4xl mx-auto px-4 sm:px-6">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4">Start Your Adventure</h2>
             <p className="text-lg sm:text-xl mb-6 sm:mb-8 px-4">Join thousands of locals, travelers, and businesses already making real connections.</p>
             <Button 
               onClick={() => setLocation('/join')}
-              className="bg-white text-blue-600 hover:bg-gray-100 px-6 sm:px-8 py-3 sm:py-4 text-lg sm:text-xl rounded-full shadow-lg transition-all duration-300 hover:scale-105"
+              className="bg-black dark:bg-white text-white dark:text-blue-600 hover:bg-gray-800 dark:hover:bg-gray-100 px-6 sm:px-8 py-3 sm:py-4 text-lg sm:text-xl rounded-full shadow-lg transition-all duration-300 hover:scale-105 border border-gray-300"
             >
               Join Nearby Traveler Now
             </Button>
