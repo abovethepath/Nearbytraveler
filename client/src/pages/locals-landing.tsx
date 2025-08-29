@@ -40,7 +40,7 @@ export default function LocalsLanding() {
               <div className="mt-6 flex flex-col sm:flex-row gap-4">
                 <button 
                   onClick={() => setLocation('/join')}
-                  className="rounded-xl bg-black px-6 py-3 text-white font-medium shadow hover:bg-zinc-800 w-full sm:w-auto"
+                  className="bg-black hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-100 text-white dark:text-black font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200 w-full sm:w-auto"
                   data-testid="button-join-journey"
                 >
                   Join the Journey
@@ -84,7 +84,7 @@ export default function LocalsLanding() {
               <Button
                 onClick={() => setLocation('/join')}
                 size="lg"
-                className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-500 text-white dark:text-white font-medium px-8 py-3 rounded-lg transition-all duration-200"
+                className="bg-black hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-100 text-white dark:text-black font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
               >
                 Join the Journey
               </Button>
@@ -184,7 +184,7 @@ export default function LocalsLanding() {
             <Button
               onClick={() => setLocation('/join')}
               size="lg"
-              className="bg-white dark:bg-blue-500 hover:bg-gray-100 dark:hover:bg-blue-600 text-black dark:text-white border-2 border-black dark:border-transparent font-black text-xl px-12 py-4 rounded-2xl shadow-xl transition-all duration-200"
+              className="bg-black hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-100 text-white dark:text-black font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
               style={{
                 boxShadow: '0 8px 30px rgba(0, 0, 0, 0.2)',
                 animation: 'gentle-pulse 3s ease-in-out infinite',
@@ -272,7 +272,7 @@ JOIN THE COMMUNITY TODAY
             <Button
               onClick={() => setLocation('/join')}
               size="lg"
-              className="bg-white dark:bg-gradient-to-r dark:from-blue-500 dark:to-orange-500 hover:bg-gray-100 dark:hover:from-blue-600 dark:hover:to-orange-600 text-black dark:text-white border-2 border-black dark:border-transparent font-black text-xl px-16 py-5 rounded-2xl shadow-2xl transition-all duration-200"
+              className="bg-black hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-100 text-white dark:text-black font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
               style={{
                 boxShadow: '0 12px 40px rgba(0,0,0,0.2)',
                 animation: 'gentle-pulse 2.5s ease-in-out infinite',
@@ -299,7 +299,7 @@ BECOME A NEARBY LOCAL NOW
             <Button
               onClick={() => setLocation('/join')}
               size="lg"
-              className="bg-white dark:bg-white text-black dark:text-blue-600 border-2 border-black dark:border-gray-300 hover:bg-gray-100 dark:hover:bg-gray-200 font-black text-2xl px-12 py-6 rounded-2xl shadow-2xl hover:scale-105 transition-all duration-200"
+              className="bg-black hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-100 text-white dark:text-black font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
               style={{
                 boxShadow: '0 15px 50px rgba(0,0,0,0.3)',
               }}

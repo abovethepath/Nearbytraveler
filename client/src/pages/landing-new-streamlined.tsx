@@ -92,7 +92,7 @@ export default function LandingStreamlined() {
             trackEvent('signup_cta_click', 'landing_page', 'floating_join_now');
             setLocation('/join');
           }}
-          className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
+          className="bg-black hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-100 text-white dark:text-black font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
         >
           Join Now
         </Button>
@@ -184,7 +184,7 @@ export default function LandingStreamlined() {
                     setLocation('/join');
                   }}
                   size="lg"
-                  className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
+                  className="bg-black hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-100 text-white dark:text-black font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
                 >
                   Join Now
                 </Button>
@@ -578,7 +578,7 @@ export default function LandingStreamlined() {
               <Button 
                 onClick={() => setLocation('/auth')}
                 size="lg"
-                className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
+                className="bg-black hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-100 text-white dark:text-black font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
               >
                 Join Now
               </Button>
@@ -699,7 +699,7 @@ export default function LandingStreamlined() {
             <p className="text-lg sm:text-xl mb-6 sm:mb-8 px-4 leading-relaxed">Join travelers, locals, and businesses already building real connections worldwide.</p>
             <Button 
               onClick={() => setLocation('/join')}
-              className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
+              className="bg-black hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-100 text-white dark:text-black font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
             >
               Join Now
             </Button>

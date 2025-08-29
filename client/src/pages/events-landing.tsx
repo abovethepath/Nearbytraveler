@@ -45,7 +45,7 @@ export default function EventsLanding() {
               <div className="mt-6 flex flex-col sm:flex-row gap-4">
                 <button 
                   onClick={() => setLocation('/join')}
-                  className="rounded-xl bg-black px-6 py-3 text-white font-medium shadow hover:bg-zinc-800 w-full sm:w-auto"
+                  className="bg-black hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-100 text-white dark:text-black font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200 w-full sm:w-auto"
                   data-testid="button-join-journey"
                 >
                   Join the Journey
@@ -84,7 +84,7 @@ export default function EventsLanding() {
               <Button
                 onClick={() => setLocation('/join')}
                 size="lg"
-                className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-500 text-white dark:text-white font-medium px-8 py-3 rounded-lg transition-all duration-200"
+                className="bg-black hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-100 text-white dark:text-black font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
               >
                 Join Nearby Traveler
               </Button>

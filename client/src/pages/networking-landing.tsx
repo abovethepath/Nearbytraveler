@@ -20,7 +20,7 @@ export default function NetworkingLanding() {
         <Button
           onClick={() => setLocation('/join')}
           size="sm"
-          className="bg-black hover:bg-gray-800 dark:bg-purple-500 dark:hover:bg-purple-600 text-white dark:text-white font-medium px-4 py-2 rounded-lg shadow-sm transition-colors duration-200"
+          className="bg-black hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-100 text-white dark:text-black font-medium px-4 py-2 rounded-lg shadow-sm transition-all duration-200"
         >
           Join Network
         </Button>
@@ -163,7 +163,7 @@ export default function NetworkingLanding() {
             <Button 
               onClick={() => setLocation('/join')}
               size="lg"
-              className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-purple-600 dark:to-indigo-600 dark:hover:from-purple-700 dark:hover:to-indigo-700 text-white dark:text-white font-medium px-8 py-3 rounded-lg text-base"
+              className="bg-black hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-100 text-white dark:text-black font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
             >
               Start Networking Smarter
             </Button>
@@ -180,7 +180,7 @@ export default function NetworkingLanding() {
             <Button
               onClick={() => setLocation('/join')}
               size="lg"
-              className="bg-black hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-100 text-white dark:text-purple-600 font-medium text-lg px-10 py-3 rounded-lg transition-all duration-200"
+              className="bg-black hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-100 text-white dark:text-black font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
             >
               Join the Network
             </Button>

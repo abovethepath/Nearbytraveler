@@ -21,7 +21,7 @@ export default function TravelersLanding() {
         <Button
           onClick={() => setLocation('/join')}
           size="sm"
-          className="bg-black hover:bg-gray-800 text-white dark:bg-orange-500 dark:hover:bg-orange-600 dark:text-white font-medium px-4 py-2 rounded-lg shadow-sm transition-colors duration-200"
+          className="bg-black hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-100 text-white dark:text-black font-medium px-4 py-2 rounded-lg shadow-sm transition-all duration-200"
         >
           Join Now
         </Button>
@@ -51,7 +51,7 @@ export default function TravelersLanding() {
               <div className="mt-6 flex flex-col sm:flex-row gap-4">
                 <button 
                   onClick={() => setLocation('/join')}
-                  className="rounded-xl bg-black px-6 py-3 text-white font-medium shadow hover:bg-zinc-800 w-full sm:w-auto"
+                  className="bg-black hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-100 text-white dark:text-black font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200 w-full sm:w-auto"
                   data-testid="button-join-journey"
                 >
                   Join the Journey
@@ -95,7 +95,7 @@ export default function TravelersLanding() {
               <Button
                 onClick={() => setLocation('/join')}
                 size="lg"
-                className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-500 text-white dark:text-white font-medium px-8 py-3 rounded-lg transition-all duration-200"
+                className="bg-black hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-100 text-white dark:text-black font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
               >
                 Join the Journey
               </Button>
@@ -264,7 +264,7 @@ export default function TravelersLanding() {
               <Button
                 onClick={() => setLocation('/join')}
                 size="lg"
-                className="bg-white dark:bg-white text-black dark:text-blue-600 hover:bg-gray-100 dark:hover:bg-gray-100 font-bold text-xl px-12 py-6 rounded-xl shadow-lg transition-all duration-200 border-2 border-black dark:border-white"
+                className="bg-black hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-100 text-white dark:text-black font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
               >
                 🚀 Join Nearby Traveler
               </Button>
