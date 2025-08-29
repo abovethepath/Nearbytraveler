@@ -54,8 +54,8 @@ export default function LandingStreamlined() {
         {/* HERO SECTION - With Original Photo */}
         <div className="relative z-10">
           <div className="bg-white dark:bg-gray-900 border-2 border-gray-300 dark:border-orange-500 shadow-lg rounded-lg">
-            <div className="relative bg-white dark:bg-gray-900 pb-32 overflow-hidden min-h-[600px]">
-              <div className="absolute inset-0 h-full min-h-[600px]">
+            <div className="relative bg-white dark:bg-gray-900 pb-32 overflow-hidden min-h-[400px]">
+              <div className="absolute inset-0 h-full min-h-[400px]">
                 <img
                   src="/travelers together hugging_1754971726997.avif"
                   alt="Travel experience"
@@ -202,12 +202,12 @@ export default function LandingStreamlined() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-start mb-12">
 
               {/* Beach Bonfire Event Card */}
-              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col min-h-[480px]">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col min-h-[400px]">
                 <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-orange-400 to-red-500">
                   <img 
                     src="/event page bbq party_1753299541268.png" 
                     alt="Beach bonfire event" 
-                    className="w-full h-48 object-cover"
+                    className="w-full h-36 object-cover"
                   />
                 </div>
                 <div className="p-6 flex flex-col flex-grow">
@@ -232,12 +232,12 @@ export default function LandingStreamlined() {
               </div>
               
               {/* Taco Tuesday Event Card */}
-              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col min-h-[480px]">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col min-h-[400px]">
                 <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-yellow-400 to-orange-500">
                   <img 
                     src="/image_1754973365104.png" 
                     alt="Authentic taco stand with vintage neon sign" 
-                    className="w-full h-48 object-cover"
+                    className="w-full h-36 object-cover"
                   />
                 </div>
                 <div className="p-6 flex flex-col flex-grow">
@@ -262,12 +262,12 @@ export default function LandingStreamlined() {
               </div>
               
               {/* Hollywood Sign Hike Event Card */}
-              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col min-h-[480px]">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col min-h-[400px]">
                 <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-blue-500 to-indigo-600">
                   <img 
                     src="/image_1754974796221.png" 
                     alt="Hollywood Sign at sunrise with mountain views" 
-                    className="w-full h-48 object-cover"
+                    className="w-full h-36 object-cover"
                   />
                 </div>
                 <div className="p-6 flex flex-col flex-grow">
