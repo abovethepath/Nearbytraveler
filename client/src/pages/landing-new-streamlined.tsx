@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import Footer from "@/components/footer";
 import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
-import { Users, MapPin, Globe, RefreshCw, Home, ShieldCheck, Plane, Building2, Handshake } from "lucide-react";
+import { Users, MapPin, Globe, RefreshCw, Home, ShieldCheck, Plane, Building2, Handshake, Coffee } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
 import { useTheme } from "@/components/theme-provider";
 
@@ -273,6 +273,78 @@ export default function LandingStreamlined() {
               </h3>
               <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
                 Build trust through mutual connections and community references.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* COUCHSURFING FOCUSED SECTION */}
+        <section className="mx-auto max-w-6xl px-6 py-20 bg-gray-50 dark:bg-gray-800">
+          <h2 className="text-center text-3xl font-bold tracking-tight text-zinc-900 dark:text-white">
+            Why Couchsurfers Love Nearby Traveler
+          </h2>
+          <p className="mt-2 text-center text-lg text-zinc-600 dark:text-zinc-400">
+            All the cultural exchange you love, with the flexibility you need.
+          </p>
+
+          <div className="mt-12 grid gap-12 sm:grid-cols-2 lg:grid-cols-3 text-center">
+            <div>
+              <Coffee className="mx-auto h-8 w-8 text-green-600" />
+              <h3 className="mt-4 text-lg font-semibold text-zinc-900 dark:text-white">
+                Meet at Cafes & Events
+              </h3>
+              <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+                Share your city over coffee, at events, or exploring together - no couch required.
+              </p>
+            </div>
+
+            <div>
+              <MapPin className="mx-auto h-8 w-8 text-blue-600" />
+              <h3 className="mt-4 text-lg font-semibold text-zinc-900 dark:text-white">
+                Share Local Secrets
+              </h3>
+              <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+                Show travelers your favorite hidden spots and authentic local experiences.
+              </p>
+            </div>
+
+            <div>
+              <Globe className="mx-auto h-8 w-8 text-purple-600" />
+              <h3 className="mt-4 text-lg font-semibold text-zinc-900 dark:text-white">
+                Cultural Exchange
+              </h3>
+              <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+                Experience the world through travelers' stories and share your own culture.
+              </p>
+            </div>
+
+            <div>
+              <Users className="mx-auto h-8 w-8 text-orange-600" />
+              <h3 className="mt-4 text-lg font-semibold text-zinc-900 dark:text-white">
+                Flexible Connections
+              </h3>
+              <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+                Connect when you want, how you want - no hosting obligations.
+              </p>
+            </div>
+
+            <div>
+              <RefreshCw className="mx-auto h-8 w-8 text-pink-600" />
+              <h3 className="mt-4 text-lg font-semibold text-zinc-900 dark:text-white">
+                Stay Connected
+              </h3>
+              <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+                Keep friendships alive when your new friends travel to other cities.
+              </p>
+            </div>
+
+            <div>
+              <ShieldCheck className="mx-auto h-8 w-8 text-indigo-600" />
+              <h3 className="mt-4 text-lg font-semibold text-zinc-900 dark:text-white">
+                Safe & Verified
+              </h3>
+              <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+                Meet in public spaces with community verification and references.
               </p>
             </div>
           </div>
