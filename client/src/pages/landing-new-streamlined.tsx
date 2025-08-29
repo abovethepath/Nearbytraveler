@@ -65,7 +65,7 @@ export default function LandingStreamlined() {
                   Where Local Experiences Meet Worldwide Connections
                 </p>
                 <p className="mt-4 max-w-xl text-lg text-zinc-600 dark:text-zinc-300">
-                  Meet locals and travelers before your trip begins — and turn chance encounters into lifelong friendships.
+                  Connect with locals and travelers before your trip begins— and create friendships that last a lifetime.
                 </p>
                 <div className="mt-6 flex flex-col sm:flex-row gap-4">
                   <button 
