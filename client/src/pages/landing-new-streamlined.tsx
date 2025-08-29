@@ -88,7 +88,7 @@ export default function LandingStreamlined() {
                         </h1>
                         
                         {/* Primary signup CTA - Lowered and reasonably sized */}
-                        <div className="mt-20 mb-8 px-4">
+                        <div className="mt-32 mb-8 px-4">
                           <Button
                             onClick={() => {
                               trackEvent('signup_cta_click', 'landing_page', 'main_hero_button');
