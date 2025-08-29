@@ -50,10 +50,10 @@ export default function LocalsLanding() {
                   <div className="text-center">
                     <div className="max-w-4xl mx-auto">
                       <h1 className="px-3 leading-tight sm:leading-snug">
-                        <span className="block font-black text-[clamp(1.5rem,6vw,2.25rem)] text-black dark:text-white">
+                        <span className="block font-black text-[clamp(1.5rem,6vw,2.25rem)] text-black dark:text-white animate-slide-in-1">
                           Be the Local You'd Want to Meet.
                         </span>
-                        <span className="block font-black text-[clamp(1.25rem,5.5vw,2rem)]">
+                        <span className="block font-black text-[clamp(1.25rem,5.5vw,2rem)] animate-slide-in-2">
                           <span className="text-black dark:text-white">Share Your City's Hidden Gems </span>
                           <span className="text-black dark:text-white">with Nearby Travelers</span>
                           <span className="text-black dark:text-white"> and Connect with Like-Minded Locals</span>
