@@ -63,11 +63,11 @@ export default function LandingStreamlined() {
               </div>
 
               <div>
-                <h1 className="text-4xl md:text-5xl font-light text-gray-900 dark:text-white mb-6 leading-tight">
-                  The People You Meet Are the Real Destination
+                <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
+                  Traveling Soon? Skip the Tourist Traps, Connect Before Your Trip, Keep Connections Forever and Create Lifelong Friends!!!
                 </h1>
-                <p className="text-xl font-light text-gray-600 dark:text-gray-300 leading-relaxed">
-                  <strong className="text-black dark:text-white">Tired of eating alone while traveling?</strong> Stop wandering solo and start connecting. Meet locals and fellow travelers before you arrive, discover hidden gems, and turn trips into lifelong friendships.
+                <p className="text-xl font-semibold text-gray-600 dark:text-gray-300 leading-relaxed">
+                  Meet Locals and Other Nearby Travelers Right Now, Today!!!
                 </p>
               </div>
 
