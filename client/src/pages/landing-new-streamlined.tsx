@@ -199,46 +199,45 @@ export default function LandingStreamlined() {
           </div>
         </div>
 
-        {/* FOUNDER STORY SECTION - Clean & Professional */}
-        <div className="relative z-10 py-12 sm:py-16 overflow-hidden mb-16">
+        {/* FOUNDER STORY SECTION - Compact & Centered */}
+        <div className="relative z-10 py-6 sm:py-8 overflow-hidden mb-8">
           {/* Clean background for light mode */}
           <div className="absolute inset-0 bg-gray-50 dark:bg-gradient-to-r dark:from-blue-600 dark:via-blue-500 dark:to-orange-500"></div>
           
           <div className="relative">
-            <section className="relative isolate mx-auto w-full max-w-5xl px-4 md:px-6 py-8">
+            <section className="relative isolate mx-auto w-full max-w-4xl px-4 md:px-6 py-4">
               {/* subtle background accent */}
-              <div className="absolute inset-x-6 -inset-y-2 -z-10 rounded-3xl bg-gradient-to-b from-orange-50/70 to-blue-50/70 dark:from-orange-500/5 dark:to-blue-500/5" />
+              <div className="absolute inset-x-4 -inset-y-1 -z-10 rounded-2xl bg-gradient-to-b from-orange-50/70 to-blue-50/70 dark:from-orange-500/5 dark:to-blue-500/5" />
 
-              <div className="overflow-hidden rounded-3xl border border-zinc-200/70 bg-white/80 p-6 shadow-xl ring-1 ring-black/5 backdrop-blur-md dark:border-white/10 dark:bg-zinc-900/70">
-                <div className="grid items-center gap-6 md:grid-cols-[auto,1fr]">
-                  {/* Visual side */}
-                  <div className="mx-auto flex w-full max-w-[140px] flex-col items-center md:mx-0 md:max-w-[180px]">
-                    <div className="flex aspect-square w-full items-center justify-center rounded-full bg-gradient-to-br from-orange-400 to-blue-500 text-3xl font-semibold text-white shadow-lg">
-                      {/* Empty placeholder - no initials until photo/signature provided */}
-                    </div>
+              <div className="overflow-hidden rounded-2xl border border-zinc-200/70 bg-white/80 p-4 sm:p-6 shadow-xl ring-1 ring-black/5 backdrop-blur-md dark:border-white/10 dark:bg-zinc-900/70">
+                <div className="text-center space-y-4">
+                  {/* Title */}
+                  <h3 className="inline-block bg-gradient-to-r from-orange-500 to-blue-600 bg-clip-text text-xl font-bold text-transparent md:text-2xl">
+                    From the Founder
+                  </h3>
 
-                    <div className="mt-4 text-center">
-                      <p className="text-base font-semibold tracking-tight text-zinc-900 dark:text-white">Aaron Lefkowitz</p>
-                      <p className="text-sm text-zinc-600 dark:text-zinc-400">Founder, Nearby Traveler</p>
-                    </div>
+                  {/* Quote */}
+                  <blockquote className="text-balance text-lg leading-relaxed text-zinc-800 dark:text-zinc-200 md:text-xl max-w-3xl mx-auto">
+                    "For 15 years I opened my home to over 400 travelers from over 50 countries. I learned that what makes traveling unforgettable isn't the sites — it's the people you share them with. Too often, we leave those connections up to luck. I created Nearby Traveler so no one has to explore — or live in their own city — feeling disconnected."
+                  </blockquote>
+
+                  {/* Attribution */}
+                  <div className="pt-2">
+                    <p className="text-base font-semibold tracking-tight text-zinc-900 dark:text-white">
+                      — Aaron Lefkowitz
+                    </p>
+                    <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                      Founder, Nearby Traveler
+                    </p>
                   </div>
 
-                  {/* Text side */}
-                  <div className="space-y-4">
-                    <h3 className="inline-block bg-gradient-to-r from-orange-500 to-blue-600 bg-clip-text text-xl font-bold text-transparent md:text-2xl">
-                      From the Founder
-                    </h3>
-
-                    <blockquote className="text-balance text-lg leading-relaxed text-zinc-800 dark:text-zinc-200 md:text-xl">
-                      "For 15 years I opened my home to over 400 travelers from over 50 countries. I learned that what makes traveling unforgettable isn't the sites — it's the people you share them with. Too often, we leave those connections up to luck. I created Nearby Traveler so no one has to explore — or live in their own city — feeling disconnected."
-                    </blockquote>
-
-                    <div className="flex items-center gap-3 pt-2">
-                      <div className="h-1 w-12 rounded-full bg-gradient-to-r from-orange-500 to-blue-600" />
-                      <p className="text-sm italic text-zinc-600 dark:text-zinc-400">
-                        Here's to connections that last beyond the trip.
-                      </p>
-                    </div>
+                  {/* Tagline */}
+                  <div className="flex items-center justify-center gap-3 pt-2">
+                    <div className="h-1 w-12 rounded-full bg-gradient-to-r from-orange-500 to-blue-600" />
+                    <p className="text-sm italic text-zinc-600 dark:text-zinc-400">
+                      Here's to connections that last beyond the trip.
+                    </p>
+                    <div className="h-1 w-12 rounded-full bg-gradient-to-r from-orange-500 to-blue-600" />
                   </div>
                 </div>
               </div>
