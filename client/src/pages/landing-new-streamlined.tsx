@@ -25,7 +25,7 @@ export default function LandingStreamlined() {
   const [currentSubtext, setCurrentSubtext] = useState(0);
   const subtexts = [
     "Find real connections that last.", // General travelers
-    "Share experiences, not your couch.", // Couchsurfers as hosts
+    "Share experiences, not just your couch.", // Couchsurfers as hosts
     "Connect with families everywhere.", // Families
     "Build authentic professional connections.", // Professional networking
     "Target travelers directly based on their interests and desires." // Business owners
