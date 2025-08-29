@@ -40,9 +40,9 @@ export default function BusinessLanding() {
               <Button
                 onClick={() => setLocation('/join')}
                 size="lg"
-                className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-500 text-white dark:text-white font-medium px-8 py-3 rounded-lg transition-all duration-200"
+                className="bg-black hover:bg-gray-800 dark:bg-purple-600 dark:hover:bg-purple-700 text-white dark:text-white font-medium px-8 py-3 rounded-lg transition-all duration-200"
               >
-                Join Nearby Traveler
+                Join the Journey
               </Button>
             </div>
             
@@ -68,9 +68,9 @@ export default function BusinessLanding() {
               <Button
                 onClick={() => setLocation('/join')}
                 size="lg"
-                className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-500 text-white dark:text-white font-medium px-8 py-3 rounded-lg transition-all duration-200"
+                className="bg-black hover:bg-gray-800 dark:bg-purple-600 dark:hover:bg-purple-700 text-white dark:text-white font-medium px-8 py-3 rounded-lg transition-all duration-200"
               >
-                Join Nearby Traveler
+                Join the Journey
               </Button>
             </div>
           )}
@@ -96,9 +96,9 @@ export default function BusinessLanding() {
       <div className="fixed bottom-6 right-6 z-50">
         <Button
           onClick={() => setLocation('/join')}
-          className="bg-orange-500 hover:bg-orange-600 text-white font-bold px-6 py-4 rounded-full shadow-2xl transition-all duration-300 transform hover:scale-110 animate-pulse border-4 border-white"
+          className="bg-black hover:bg-gray-800 dark:bg-purple-600 dark:hover:bg-purple-700 text-white font-medium px-6 py-3 rounded-lg shadow-lg transition-all duration-200"
         >
-          💼 JOIN BUSINESS
+          Join the Journey
         </Button>
       </div>
 
@@ -114,9 +114,9 @@ export default function BusinessLanding() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
               <Button
                 onClick={() => setLocation('/join')}
-                className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-6 px-8 rounded-2xl text-lg shadow-lg transform hover:scale-105 transition-all duration-200"
+                className="bg-black hover:bg-gray-800 dark:bg-purple-600 dark:hover:bg-purple-700 text-white font-medium py-6 px-8 rounded-lg text-lg shadow-lg transition-all duration-200"
               >
-                🏢 JOIN AS BUSINESS
+                Join the Journey
               </Button>
               <Button
                 onClick={() => setLocation('/join')}
@@ -226,7 +226,7 @@ export default function BusinessLanding() {
           </div>
 
           {/* Get Started Section - Consolidated */}
-          <div className="bg-gradient-to-r from-orange-600 to-blue-600 text-white py-16 rounded-2xl shadow-2xl">
+          <div className="bg-gray-50 dark:bg-gradient-to-r dark:from-orange-600 dark:to-blue-600 text-gray-900 dark:text-white py-16 rounded-2xl shadow-lg border border-gray-200 dark:border-0">
             <div className="max-w-4xl mx-auto text-center px-6">
               <h2 className="text-4xl font-bold mb-4">Ready to Grow Your Business?</h2>
               <p className="text-xl mb-8 opacity-90">Join thousands of businesses already connecting with travelers and locals.</p>
@@ -236,9 +236,9 @@ export default function BusinessLanding() {
                 <Button
                   onClick={() => setLocation('/join')}
                   size="lg"
-                  className="bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white border-2 border-white font-bold text-lg px-8 py-4 rounded-full shadow-lg transition-all duration-200 transform hover:scale-105"
+                  className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-green-500 dark:to-teal-500 dark:hover:from-green-600 dark:hover:to-teal-600 text-white border-2 border-gray-300 dark:border-white font-bold text-lg px-8 py-4 rounded-lg shadow-lg transition-all duration-200"
                 >
-                  📈 Start Free Trial
+                  Join the Journey
                 </Button>
               </div>
               
@@ -270,7 +270,7 @@ export default function BusinessLanding() {
         
         {/* Pricing Widget */}
         <div className="mt-16 mb-8 max-w-4xl mx-auto">
-          <div className="bg-gradient-to-r from-orange-500 to-blue-600 text-white p-8 rounded-2xl shadow-2xl border-4 border-white">
+          <div className="bg-gray-50 dark:bg-gradient-to-r dark:from-orange-500 dark:to-blue-600 text-gray-900 dark:text-white p-8 rounded-2xl shadow-lg border border-gray-200 dark:border-0">
             <div className="text-center">
               <h2 className="text-3xl font-bold mb-4">Simple Business Pricing</h2>
               <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 mb-6">
@@ -305,7 +305,7 @@ export default function BusinessLanding() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
             <div className="col-span-1 sm:col-span-2 lg:col-span-1">
               <div className="flex items-center space-x-2 mb-4">
-                <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full"></div>
+                <div className="w-8 h-8 bg-blue-600 dark:bg-gradient-to-r dark:from-blue-500 dark:to-orange-500 rounded-full"></div>
                 <span className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">Nearby Traveler</span>
               </div>
               <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 leading-relaxed">
