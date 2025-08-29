@@ -31,12 +31,12 @@ export default function NetworkingHero() {
                 <div className="text-center">
                   <div className="max-w-4xl mx-auto">
                     <h1 className="px-3 leading-tight sm:leading-snug">
-                      <span className="block font-black text-[clamp(1.5rem,6vw,2.25rem)] text-white">
+                      <span className="block font-black text-[clamp(1.5rem,6vw,2.25rem)] text-black dark:text-white">
                         Networking, Reinvented.
                       </span>
                       <span className="block font-black text-[clamp(1.25rem,5.5vw,2rem)]">
-                        <span className="text-white">Connect before, during, and after every event </span>
-                        <span className="text-white">— no business cards needed.</span>
+                        <span className="text-black dark:text-white">Connect before, during, and after every event </span>
+                        <span className="text-black dark:text-white">— no business cards needed.</span>
                       </span>
                     </h1>
                     
