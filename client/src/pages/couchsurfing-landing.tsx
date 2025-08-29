@@ -48,7 +48,7 @@ export default function CouchsurfingLanding() {
             trackEvent('signup_cta_click', 'couchsurfing_landing', 'floating_join_now');
             setLocation('/join');
           }}
-          className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-600 text-white dark:text-white shadow-sm transition-all duration-200 px-4 py-2 rounded-lg text-sm font-medium"
+          className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
         >
           Join Now
         </Button>
@@ -87,7 +87,7 @@ export default function CouchsurfingLanding() {
                     trackEvent('signup_cta_click', 'couchsurfing_landing', 'main_hero_button');
                     setLocation('/join');
                   }}
-                  className="rounded-xl bg-black px-6 py-3 text-white font-medium shadow hover:bg-zinc-800 w-full sm:w-auto"
+                  className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200 w-full sm:w-auto"
                   data-testid="button-join-couchsurfing"
                 >
                   Join Now
@@ -261,7 +261,7 @@ export default function CouchsurfingLanding() {
               <Button 
                 onClick={() => setLocation('/join')}
                 size="lg"
-                className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-green-600 dark:to-blue-600 dark:hover:from-green-700 dark:hover:to-blue-700 text-white font-black text-xl px-12 py-6 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300"
+                className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
               >
                 Join Now
               </Button>
@@ -279,7 +279,7 @@ export default function CouchsurfingLanding() {
             <p className="text-lg sm:text-xl mb-6 sm:mb-8 px-4 leading-relaxed">Join hosts and travelers already making authentic connections worldwide.</p>
             <Button 
               onClick={() => setLocation('/join')}
-              className="bg-white dark:bg-white text-black dark:text-green-600 hover:bg-gray-100 dark:hover:bg-gray-200 px-6 sm:px-8 py-3 sm:py-4 text-lg sm:text-xl rounded-full shadow-lg transition-all duration-300 hover:scale-105 border-2 border-black dark:border-none font-bold"
+              className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
             >
               Join Now
             </Button>
