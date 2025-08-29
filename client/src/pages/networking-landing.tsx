@@ -16,11 +16,7 @@ export default function NetworkingLanding() {
         <Button
           onClick={() => setLocation('/join')}
           size="lg"
-          className="bg-black hover:bg-gray-800 dark:bg-purple-500 dark:hover:bg-purple-600 text-white font-black px-8 py-4 rounded-2xl shadow-2xl transition-colors duration-200 border-3 border-white"
-          style={{
-            boxShadow: '0 12px 35px rgba(0,0,0,0.4), 0 0 0 3px rgba(255,255,255,0.9)',
-            animation: 'gentle-pulse 2.5s ease-in-out infinite',
-          }}
+          className="bg-white hover:bg-gray-100 dark:bg-purple-500 dark:hover:bg-purple-600 text-black dark:text-white font-bold px-6 py-3 rounded-xl shadow-lg transition-colors duration-200 border-2 border-black dark:border-white"
         >
           JOIN NETWORK
         </Button>
@@ -66,21 +62,21 @@ export default function NetworkingLanding() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             
             {/* Before Events */}
-            <div className="bg-gradient-to-br from-blue-400 to-blue-500 rounded-2xl p-8 shadow-lg text-center">
+            <div className="bg-blue-200 dark:bg-gradient-to-br dark:from-blue-400 dark:to-blue-500 rounded-2xl p-8 shadow-lg text-center">
               <div className="text-4xl mb-4">🎉</div>
-              <h3 className="text-xl font-bold text-black mb-6">Before Events</h3>
+              <h3 className="text-xl font-bold text-black dark:text-black mb-6">Before Events</h3>
               <div className="grid grid-cols-1 gap-3 text-left">
                 <div className="flex items-center space-x-2">
                   <span className="text-black font-bold">•</span>
-                  <span className="text-black text-base">Browse profiles of fellow attendees heading to the same city/event</span>
+                  <span className="text-black dark:text-black text-base">Browse profiles of fellow attendees heading to the same city/event</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <span className="text-black font-bold">•</span>
-                  <span className="text-black text-base">Break the ice with quick intros or group plans</span>
+                  <span className="text-black dark:text-black text-base">Break the ice with quick intros or group plans</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <span className="text-black font-bold">•</span>
-                  <span className="text-black text-base">Arrive already connected and confident</span>
+                  <span className="text-black dark:text-black text-base">Arrive already connected and confident</span>
                 </div>
               </div>
             </div>
@@ -106,21 +102,21 @@ export default function NetworkingLanding() {
             </div>
             
             {/* After Events */}
-            <div className="bg-gradient-to-br from-purple-400 to-purple-500 rounded-2xl p-8 shadow-lg text-center">
+            <div className="bg-purple-200 dark:bg-gradient-to-br dark:from-purple-400 dark:to-purple-500 rounded-2xl p-8 shadow-lg text-center">
               <div className="text-4xl mb-4">🌍</div>
-              <h3 className="text-xl font-bold text-black mb-6">After Events</h3>
+              <h3 className="text-xl font-bold text-black dark:text-black mb-6">After Events</h3>
               <div className="grid grid-cols-1 gap-3 text-left">
                 <div className="flex items-center space-x-2">
                   <span className="text-black font-bold">•</span>
-                  <span className="text-black text-base">Keep your new contacts alive</span>
+                  <span className="text-black dark:text-black text-base">Keep your new contacts alive</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <span className="text-black font-bold">•</span>
-                  <span className="text-black text-base">Plan future meetups or trips</span>
+                  <span className="text-black dark:text-black text-base">Plan future meetups or trips</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <span className="text-black font-bold">•</span>
-                  <span className="text-black text-base">Instantly recognize connections at future events</span>
+                  <span className="text-black dark:text-black text-base">Instantly recognize connections at future events</span>
                 </div>
               </div>
             </div>
@@ -135,7 +131,7 @@ export default function NetworkingLanding() {
             </h2>
           </div>
           
-          <div className="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl p-8 text-white">
+          <div className="bg-gray-200 dark:bg-gradient-to-r dark:from-purple-600 dark:to-indigo-600 rounded-2xl p-8 text-black dark:text-white">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div>
                 <h3 className="text-2xl font-bold mb-4">❌ Old Way</h3>
@@ -207,20 +203,20 @@ export default function NetworkingLanding() {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/30 dark:to-purple-800/30 p-6 rounded-xl shadow-lg border dark:border-purple-700/50">
+            <div className="bg-gray-100 dark:bg-gradient-to-br dark:from-purple-50 dark:to-purple-100 p-6 rounded-xl shadow-lg border border-gray-300 dark:border-purple-700/50">
               <div className="text-4xl mb-4">🎯</div>
-              <h3 className="text-xl font-bold mb-3 text-black dark:text-white">Better than Business Cards</h3>
-              <p className="text-black dark:text-white">Real profiles with photos & stories that create lasting impressions</p>
+              <h3 className="text-xl font-bold mb-3 text-black dark:text-black">Better than Business Cards</h3>
+              <p className="text-black dark:text-black">Real profiles with photos & stories that create lasting impressions</p>
             </div>
-            <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 dark:from-indigo-900/30 dark:to-indigo-800/30 p-6 rounded-xl shadow-lg border dark:border-indigo-700/50">
+            <div className="bg-gray-100 dark:bg-gradient-to-br dark:from-indigo-50 dark:to-indigo-100 p-6 rounded-xl shadow-lg border border-gray-300 dark:border-indigo-700/50">
               <div className="text-4xl mb-4">🤝</div>
-              <h3 className="text-xl font-bold mb-3 text-black dark:text-white">Pre-Networking Made Easy</h3>
-              <p className="text-black dark:text-white">Walk in with warm intros instead of cold conversations</p>
+              <h3 className="text-xl font-bold mb-3 text-black dark:text-black">Pre-Networking Made Easy</h3>
+              <p className="text-black dark:text-black">Walk in with warm intros instead of cold conversations</p>
             </div>
-            <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/30 dark:to-purple-800/30 p-6 rounded-xl shadow-lg border dark:border-purple-700/50">
+            <div className="bg-gray-100 dark:bg-gradient-to-br dark:from-purple-50 dark:to-purple-100 p-6 rounded-xl shadow-lg border border-gray-300 dark:border-purple-700/50">
               <div className="text-4xl mb-4">🌟</div>
-              <h3 className="text-xl font-bold mb-3 text-black dark:text-white">Connections That Last</h3>
-              <p className="text-black dark:text-white">Friendships & business contacts beyond the event</p>
+              <h3 className="text-xl font-bold mb-3 text-black dark:text-black">Connections That Last</h3>
+              <p className="text-black dark:text-black">Friendships & business contacts beyond the event</p>
             </div>
           </div>
           
@@ -228,42 +224,24 @@ export default function NetworkingLanding() {
             <Button 
               onClick={() => setLocation('/join')}
               size="lg"
-              className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-purple-600 dark:to-indigo-600 dark:hover:from-purple-700 dark:hover:to-indigo-700 text-white font-bold px-8 py-4 rounded-xl text-lg"
+              className="bg-white hover:bg-gray-100 dark:bg-gradient-to-r dark:from-purple-600 dark:to-indigo-600 dark:hover:from-purple-700 dark:hover:to-indigo-700 text-black dark:text-white font-bold px-8 py-4 rounded-xl text-lg border-2 border-black dark:border-white"
             >
               🚀 Start Networking Smarter
             </Button>
           </div>
         </div>
 
-        {/* SOCIAL PROOF */}
-        <div className="max-w-4xl mx-auto mb-16">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border">
-            <div className="text-center">
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-                What Our Network Says
-              </h3>
-              <div className="bg-gradient-to-r from-purple-100 to-indigo-100 dark:from-purple-900/30 dark:to-indigo-900/30 rounded-xl p-6">
-                <p className="text-lg text-gray-700 dark:text-gray-300 italic mb-4">
-                  "Thanks to Nearby Traveler, You can meet half your conference before even landing. An event can feel like a reunion, not a room full of strangers."
-                </p>
-                <p className="text-sm font-bold text-purple-600 dark:text-purple-400">
-                  — Aaron, Founder
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
 
         {/* CLOSING CTA BANNER */}
-        <div className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-16 rounded-2xl shadow-2xl">
+        <div className="bg-gray-100 dark:bg-gradient-to-r dark:from-purple-600 dark:to-indigo-600 text-black dark:text-white py-16 rounded-2xl shadow-lg border-2 border-black dark:border-white">
           <div className="max-w-4xl mx-auto text-center px-6">
             <h2 className="text-4xl font-bold mb-4">💼 Ready to Make Your Next Event Count?</h2>
-            <p className="text-xl mb-8 opacity-90">Don't just show up. Arrive connected.</p>
+            <p className="text-xl mb-8 text-black dark:opacity-90">Don't just show up. Arrive connected.</p>
             
             <Button
               onClick={() => setLocation('/join')}
               size="lg"
-              className="bg-white hover:bg-gray-100 text-purple-600 dark:text-purple-700 font-bold text-xl px-12 py-4 rounded-2xl shadow-lg transition-all duration-200 transform hover:scale-105"
+              className="bg-white hover:bg-gray-100 dark:bg-white dark:hover:bg-gray-100 text-black dark:text-purple-600 font-bold text-xl px-12 py-4 rounded-2xl shadow-lg transition-all duration-200 border-2 border-black dark:border-white"
             >
               👉 Join the Network
             </Button>
