@@ -266,49 +266,14 @@ export default function TravelersLanding() {
             <h2 className="text-4xl font-bold mb-4 text-gray-900 dark:text-white">Ready to Explore Like a Local?</h2>
             <p className="text-xl mb-8 text-gray-700 dark:text-white dark:opacity-90">Start your journey of authentic local connections and experiences.</p>
             
-            {/* Primary CTA Row */}
-            <div className="space-y-4 sm:space-y-0 sm:flex sm:gap-4 sm:justify-center mb-8">
+            {/* Single CTA Button */}
+            <div className="flex justify-center">
               <Button
                 onClick={() => setLocation('/join')}
                 size="lg"
-                className="bg-white dark:bg-white text-black dark:text-blue-600 hover:bg-gray-100 dark:hover:bg-gray-100 font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition-all duration-200 border-2 border-black dark:border-white w-full sm:w-auto"
+                className="bg-white dark:bg-white text-black dark:text-blue-600 hover:bg-gray-100 dark:hover:bg-gray-100 font-bold text-xl px-12 py-6 rounded-xl shadow-lg transition-all duration-200 border-2 border-black dark:border-white"
               >
                 🚀 Join Nearby Traveler
-              </Button>
-              <Button
-                onClick={() => setLocation('/join')}
-                size="lg"
-                className="border-2 border-black dark:border-white text-black dark:text-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-blue-600 font-bold text-lg px-8 py-4 rounded-xl transition-all duration-200 w-full sm:w-auto"
-              >
-                🗺️ Start Exploring Now
-              </Button>
-            </div>
-            
-            {/* Additional Action Buttons */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <Button
-                onClick={() => setLocation('/join')}
-                className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-4 rounded-lg text-sm"
-              >
-                💬 Chat Rooms
-              </Button>
-              <Button
-                onClick={() => setLocation('/join')}
-                className="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-4 rounded-lg text-sm"
-              >
-                📅 Events
-              </Button>
-              <Button
-                onClick={() => setLocation('/join')}
-                className="bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-4 rounded-lg text-sm"
-              >
-                🎯 Matches
-              </Button>
-              <Button
-                onClick={() => setLocation('/join')}
-                className="bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 px-4 rounded-lg text-sm"
-              >
-                🌟 Experiences
               </Button>
             </div>
           </div>
