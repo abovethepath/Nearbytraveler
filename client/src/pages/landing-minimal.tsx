@@ -154,7 +154,7 @@ export default function LandingMinimal() {
                   "I built Nearby Traveler to make those connections possible for everyone — travelers and locals alike."
                 </p>
                 <p className="text-2xl sm:text-3xl text-orange-300 font-black leading-tight mb-6" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', fontWeight: '900', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', letterSpacing: '-0.02em', textShadow: '2px 2px 4px rgba(0,0,0,0.8)' }}>
-                  "I BUILT THE SOLUTION I WISHED EXISTED."
+                  "I BUILT THE SITE I WISHED EXISTED."
                 </p>
               </div>
               
