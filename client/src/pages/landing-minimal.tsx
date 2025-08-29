@@ -49,8 +49,8 @@ export default function LandingMinimal() {
         {/* HERO SECTION - With Original Photo */}
         <div className="relative z-10">
           <div className="bg-gray-800 border-4 border-orange-500 shadow-lg">
-            <div className="relative bg-gray-800 pb-32 overflow-hidden min-h-[600px]">
-              <div className="absolute inset-0 h-full min-h-[600px]">
+            <div className="relative bg-gray-800 pb-32 overflow-hidden min-h-[500px]">
+              <div className="absolute inset-0 h-full min-h-[500px]">
                 <img
                   src="/travelers together hugging_1754971726997.avif"
                   alt="Travel experience"

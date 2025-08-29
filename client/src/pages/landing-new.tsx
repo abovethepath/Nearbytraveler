@@ -97,8 +97,8 @@ export default function Landing() {
       {/* HERO SECTION */}
       <div className="relative z-10">
         <div className="bg-gray-800 dark:bg-gray-900 border-4 border-orange-500 shadow-lg">
-          <div className="relative bg-gray-800 dark:bg-gray-900 pb-32 overflow-hidden min-h-[600px]">
-            <div className="absolute inset-0 h-full min-h-[600px]">
+          <div className="relative bg-gray-800 dark:bg-gray-900 pb-32 overflow-hidden min-h-[500px]">
+            <div className="absolute inset-0 h-full min-h-[500px]">
               <img
                 src="/travelers together hugging_1754971726997.avif"
                 alt="Travel experience"

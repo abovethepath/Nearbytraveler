@@ -7,8 +7,8 @@ export default function NetworkingHero() {
   return (
     <div className="relative z-0">
       <div className="bg-gray-800 dark:bg-gray-900 border-4 border-purple-500 shadow-lg">
-        <div className="relative bg-gray-800 dark:bg-gray-900 pb-32 overflow-hidden min-h-[600px]">
-          <div className="absolute inset-0 h-full min-h-[600px]">
+        <div className="relative bg-gray-800 dark:bg-gray-900 pb-32 overflow-hidden min-h-[500px]">
+          <div className="absolute inset-0 h-full min-h-[500px]">
             <img
               src={networkingHeroImage}
               alt="Professional networking event with people connecting"
@@ -24,16 +24,6 @@ export default function NetworkingHero() {
               aria-hidden="true"
             />
           </div>
-          
-          {/* Extra large red X overlay - positioned on background image only */}
-          <svg
-            className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/4 w-72 h-72 md:w-96 md:h-96 drop-shadow-lg z-5"
-            viewBox="0 0 100 100"
-            aria-hidden="true"
-          >
-            <line x1="15" y1="15" x2="85" y2="85" stroke="#EF4444" strokeWidth="6" strokeLinecap="round" />
-            <line x1="85" y1="15" x2="15" y2="85" stroke="#EF4444" strokeWidth="6" strokeLinecap="round" />
-          </svg>
 
           <div className="relative">
             <div className="sm:pb-16 md:pb-20 lg:pb-28 xl:pb-32">
