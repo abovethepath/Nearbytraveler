@@ -77,7 +77,7 @@ export default function Landing() {
         <Button
           onClick={() => setLocation('/join')}
           size="lg"
-          className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white font-black px-8 py-4 rounded-2xl shadow-2xl transition-all duration-200 border-3 border-white"
+          className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-500 dark:hover:from-blue-700 dark:hover:to-orange-600 text-white font-black px-8 py-4 rounded-2xl shadow-2xl transition-all duration-200 border-3 border-white"
           style={{
             boxShadow: '0 12px 35px rgba(0,0,0,0.4), 0 0 0 3px rgba(255,255,255,0.9)',
             animation: 'gentle-pulse 2.5s ease-in-out infinite',
@@ -148,7 +148,7 @@ export default function Landing() {
                       <Button
                         onClick={() => setLocation('/join')}
                         size="lg"
-                        className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white font-black text-lg sm:text-xl md:text-2xl px-6 sm:px-12 md:px-16 py-4 sm:py-5 md:py-6 rounded-2xl shadow-xl transition-all duration-200 border-2 sm:border-4 border-white w-full max-w-lg mx-auto"
+                        className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-500 dark:hover:from-blue-700 dark:hover:to-orange-600 text-white font-black text-lg sm:text-xl md:text-2xl px-6 sm:px-12 md:px-16 py-4 sm:py-5 md:py-6 rounded-2xl shadow-xl transition-all duration-200 border-2 sm:border-4 border-white w-full max-w-lg mx-auto"
                         style={{
                           fontSize: 'clamp(1.1rem, 3.5vw, 1.8rem)',
                           minHeight: 'clamp(60px, 12vw, 80px)',
@@ -553,7 +553,7 @@ export default function Landing() {
             <Button 
               onClick={() => setLocation('/join')}
               size="lg"
-              className="bg-gradient-to-r from-blue-600 to-orange-600 hover:from-blue-700 hover:to-orange-700 text-white font-black text-xl px-12 py-6 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300"
+              className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-600 dark:hover:from-blue-700 dark:hover:to-orange-700 text-white font-black text-xl px-12 py-6 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300"
             >
               Start Your Adventure Now
             </Button>
@@ -757,7 +757,7 @@ export default function Landing() {
             <Button 
               onClick={() => setLocation('/join')}
               size="lg"
-              className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-lg px-8 py-4 rounded-lg shadow-lg hover:shadow-xl text-white"
+              className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-500 dark:to-orange-500 dark:hover:from-blue-600 dark:hover:to-orange-600 text-lg px-8 py-4 rounded-lg shadow-lg hover:shadow-xl text-white"
             >
               Join Nearby Traveler
             </Button>

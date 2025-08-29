@@ -242,7 +242,7 @@ JOIN THE COMMUNITY TODAY
             <Button
               onClick={() => setLocation('/join')}
               size="lg"
-              className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-black text-xl px-16 py-5 rounded-2xl shadow-2xl transition-all duration-200"
+              className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-500 dark:to-orange-500 dark:hover:from-blue-600 dark:hover:to-orange-600 text-white font-black text-xl px-16 py-5 rounded-2xl shadow-2xl transition-all duration-200"
               style={{
                 boxShadow: '0 12px 40px rgba(0,0,0,0.2)',
                 animation: 'gentle-pulse 2.5s ease-in-out infinite',

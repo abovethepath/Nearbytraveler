@@ -59,7 +59,7 @@ export default function BusinessLanding() {
                         <Button
                           onClick={() => setLocation('/join')}
                           size="lg"
-                          className="bg-orange-500 hover:bg-orange-600 text-white font-bold text-xl px-12 py-6 rounded-2xl shadow-2xl transition-all duration-200 transform hover:scale-105 animate-pulse-glow"
+                          className="bg-black hover:bg-gray-800 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-bold text-xl px-12 py-6 rounded-2xl shadow-2xl transition-all duration-200 transform hover:scale-105 animate-pulse-glow"
                         >
                           Start Reaching Customers
                         </Button>

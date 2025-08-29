@@ -17,7 +17,7 @@ export default function TravelersLanding() {
         <Button
           onClick={() => setLocation('/join')}
           size="lg"
-          className="bg-orange-500 hover:bg-orange-600 text-black font-black px-8 py-4 rounded-2xl shadow-2xl transition-colors duration-200 border-3 border-white"
+          className="bg-black hover:bg-gray-800 text-white dark:bg-orange-500 dark:hover:bg-orange-600 dark:text-black font-black px-8 py-4 rounded-2xl shadow-2xl transition-colors duration-200 border-3 border-white"
           style={{
             boxShadow: '0 12px 35px rgba(0,0,0,0.4), 0 0 0 3px rgba(255,255,255,0.9)',
             animation: 'gentle-pulse 2.5s ease-in-out infinite',
@@ -161,7 +161,7 @@ export default function TravelersLanding() {
             <Button
               onClick={() => setLocation('/join')}
               size="lg"
-              className="bg-purple-500 hover:bg-purple-600 text-white font-bold px-8 py-4 rounded-xl"
+              className="bg-black hover:bg-gray-800 dark:bg-purple-500 dark:hover:bg-purple-600 text-white font-bold px-8 py-4 rounded-xl"
             >
               🗺️ Find Hidden Gems
             </Button>

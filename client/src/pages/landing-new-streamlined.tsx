@@ -36,7 +36,7 @@ export default function LandingStreamlined() {
             trackEvent('signup_cta_click', 'landing_page', 'floating_join_now');
             setLocation('/join');
           }}
-          className="bg-black dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-600 hover:bg-gray-800 dark:hover:from-blue-700 dark:hover:to-orange-700 text-white shadow-lg transition-all duration-300 hover:scale-105 px-4 sm:px-6 py-2 sm:py-3 rounded-full text-sm sm:text-base font-bold border border-gray-300 dark:border-none"
+          className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-600 dark:hover:from-blue-700 dark:hover:to-orange-700 text-white shadow-lg transition-all duration-300 hover:scale-105 px-4 sm:px-6 py-2 sm:py-3 rounded-full text-sm sm:text-base font-bold border border-gray-300 dark:border-none"
         >
           Join Now
         </Button>
@@ -219,7 +219,7 @@ export default function LandingStreamlined() {
                   <p className="text-gray-700 dark:text-gray-300 text-sm sm:text-base mb-8 flex-grow leading-relaxed">Join locals for an authentic beach bonfire with BBQ, music, and sunset views. Experience the real LA beach culture with friendly people.</p>
                   <Button 
                     onClick={() => setLocation('/auth')}
-                    className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold mt-auto"
+                    className="w-full bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-500 dark:to-orange-500 dark:hover:from-blue-600 dark:hover:to-orange-600 text-white font-bold mt-auto"
                   >
                     JOIN TO CONNECT
                   </Button>
@@ -249,7 +249,7 @@ export default function LandingStreamlined() {
                   <p className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm mb-8 flex-grow leading-relaxed">Join locals every Tuesday for authentic street tacos at unbeatable prices. Meet fellow taco lovers and discover the best Mexican spots in the city.</p>
                   <Button 
                     onClick={() => setLocation('/auth')}
-                    className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold mt-auto"
+                    className="w-full bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-500 dark:to-orange-500 dark:hover:from-blue-600 dark:hover:to-orange-600 text-white font-bold mt-auto"
                   >
                     JOIN TO CONNECT
                   </Button>
@@ -279,7 +279,7 @@ export default function LandingStreamlined() {
                   <p className="text-gray-700 dark:text-gray-300 text-sm mb-8 flex-grow">Weekly hike to the iconic Hollywood Sign with locals and travelers. Amazing city views, great photos, and authentic LA hiking culture.</p>
                   <Button 
                     onClick={() => setLocation('/auth')}
-                    className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold mt-auto"
+                    className="w-full bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-500 dark:to-orange-500 dark:hover:from-blue-600 dark:hover:to-orange-600 text-white font-bold mt-auto"
                   >
                     JOIN TO CONNECT
                   </Button>
@@ -380,7 +380,7 @@ export default function LandingStreamlined() {
               <Button 
                 onClick={() => setLocation('/auth')}
                 size="lg"
-                className="bg-gradient-to-r from-blue-600 to-orange-600 hover:from-blue-700 hover:to-orange-700 text-white font-black text-xl px-12 py-6 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300"
+                className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-600 dark:hover:from-blue-700 dark:hover:to-orange-700 text-white font-black text-xl px-12 py-6 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300"
               >
                 Start Your Adventure Now
               </Button>
@@ -492,7 +492,7 @@ export default function LandingStreamlined() {
               <Button 
                 onClick={() => setLocation('/join')}
                 size="lg"
-                className="bg-gradient-to-r from-blue-600 to-orange-600 hover:from-blue-700 hover:to-orange-700 text-white font-black text-lg sm:text-xl px-8 sm:px-12 py-4 sm:py-6 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300"
+                className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-600 dark:hover:from-blue-700 dark:hover:to-orange-700 text-white font-black text-lg sm:text-xl px-8 sm:px-12 py-4 sm:py-6 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300"
               >
                 Join Your People Today
               </Button>
