@@ -47,7 +47,7 @@ export default function NetworkingHero() {
                     <Button
                       onClick={() => setLocation('/join')}
                       size="lg"
-                      className="bg-black dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-500 hover:bg-gray-800 dark:hover:from-blue-700 dark:hover:to-orange-600 text-white font-bold px-8 py-3 rounded-xl shadow-lg transition-all duration-200 border-2 border-gray-300 dark:border-white max-w-md mx-auto"
+                      className="bg-white dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-500 hover:bg-gray-100 dark:hover:from-blue-700 dark:hover:to-orange-600 text-black dark:text-white font-bold px-8 py-3 rounded-xl shadow-lg transition-all duration-200 border-2 border-black dark:border-white max-w-md mx-auto"
                       style={{
                         fontSize: '1.1rem',
                         fontWeight: '700',
