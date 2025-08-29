@@ -280,12 +280,12 @@ BECOME A NEARBY LOCAL NOW
       </div>
 
       {/* Final Power CTA Section */}
-      <div className="py-20 bg-gradient-to-r from-blue-600 via-purple-600 to-orange-600">
+      <div className="py-20 bg-gray-100 dark:bg-gradient-to-r dark:from-blue-600 dark:via-purple-600 dark:to-orange-600">
         <div className="max-w-4xl mx-auto px-4 text-center">
-          <h2 className="text-5xl font-black text-white mb-6">
+          <h2 className="text-5xl font-black text-gray-900 dark:text-white mb-6">
             Ready to Transform Your Social Life?
           </h2>
-          <p className="text-2xl text-white mb-12 leading-relaxed">
+          <p className="text-2xl text-gray-700 dark:text-white mb-12 leading-relaxed">
             Join thousands of locals building global friendships, sharing their cities, and creating unforgettable experiences every single day.
           </p>
           
@@ -302,7 +302,7 @@ BECOME A NEARBY LOCAL NOW
             </Button>
           </div>
           
-          <p className="text-xl text-white/90">
+          <p className="text-xl text-gray-600 dark:text-white/90">
             🏠 Free to join • 🌍 Global community
           </p>
         </div>
