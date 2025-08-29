@@ -672,13 +672,13 @@ div[class*="bg-"][class*="text-"][class*="rounded"] {
 }
 
 .animate-slide-in-1 {
-  animation: slideInFromLeft 0.8s ease-out 0.2s both;
+  animation: slideInFromLeft 1.2s ease-out 0.5s both;
 }
 
 .animate-slide-in-2 {
-  animation: slideInFromLeft 0.8s ease-out 0.6s both;
+  animation: slideInFromLeft 1.2s ease-out 1.2s both;
 }
 
 .animate-slide-in-3 {
-  animation: slideInFromLeft 0.8s ease-out 1s both;
+  animation: slideInFromLeft 1.2s ease-out 1.9s both;
 }
