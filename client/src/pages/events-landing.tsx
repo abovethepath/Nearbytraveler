@@ -293,35 +293,6 @@ export default function EventsLanding() {
               </div>
             </div>
 
-            {/* Game Night */}
-            <div className="bg-gray-100 dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transform transition-all duration-300 flex flex-col">
-              <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-indigo-400 to-purple-500">
-                <img 
-                  src="/board-game-night.png" 
-                  alt="Friends playing board games at cozy café" 
-                  className="w-full h-48 object-cover"
-                />
-              </div>
-              <div className="p-6 flex flex-col flex-grow">
-                <div className="mb-3">
-                  <h3 className="text-sm sm:text-base font-bold text-gray-900 dark:text-white mb-1 leading-tight">Board Game Night</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Monday • 7:00 PM</p>
-                </div>
-                
-                <div className="flex flex-wrap gap-2 mb-3">
-                  <span className="bg-indigo-100 text-indigo-700 px-2 py-1 rounded-full text-xs font-medium">Free</span>
-                  <span className="bg-purple-100 text-purple-700 px-2 py-1 rounded-full text-xs font-medium">Games</span>
-                </div>
-                
-                <p className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm mb-4 flex-grow leading-relaxed">Weekly board game night at cozy local café. From strategy games to party games - perfect for meeting people in a relaxed, fun environment.</p>
-                <a
-                  href="/join"
-                  className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white font-bold py-2 px-4 rounded text-center transition duration-200"
-                >
-                  JOIN GAME NIGHT
-                </a>
-              </div>
-            </div>
           </div>
         </div>
 
