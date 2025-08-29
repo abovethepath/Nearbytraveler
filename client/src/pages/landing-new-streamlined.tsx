@@ -129,7 +129,7 @@ export default function LandingStreamlined() {
           </div>
         </div>
 
-        {/* FROM THE FOUNDER SECTION - Original with 3 Icons */}
+        {/* FROM THE FOUNDER SECTION - Enhanced with Typography & Visual Elements */}
         <div className="relative z-10 py-16 sm:py-20 overflow-hidden mb-16">
           {/* Clean background for light mode */}
           <div className="absolute inset-0 bg-gray-50 dark:bg-gradient-to-r dark:from-blue-600 dark:via-blue-500 dark:to-orange-500"></div>
@@ -142,39 +142,57 @@ export default function LandingStreamlined() {
               <div className="w-24 h-1 bg-black dark:bg-gradient-to-r dark:from-white dark:to-blue-300 mx-auto rounded-full"></div>
             </div>
             
-            {/* Main content with better readability */}
+            {/* Enhanced content with typography treatments */}
             <div className="max-w-3xl mx-auto">
-              <div className="text-center mb-8">
-                <p className="text-lg sm:text-xl text-black dark:text-white leading-relaxed font-medium mb-6" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', fontWeight: '500', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', letterSpacing: '-0.01em' }}>
-                  "After 15 years of hosting 400+ travelers from 50 countries, I saw first-hand how one single connection can change everything."
+              
+              {/* Story in two digestible paragraphs with typography treatments */}
+              <div className="bg-white dark:bg-gray-800/95 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-gray-200 dark:border-gray-700 mb-8">
+                <p className="text-lg sm:text-xl text-black dark:text-white leading-relaxed mb-6 text-center" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', fontWeight: '400', WebkitFontSmoothing: 'antialiased' }}>
+                  <em className="text-gray-700 dark:text-gray-300">"After 15 years of hosting over 400 travelers from 50 countries, I saw firsthand how one connection can change everything."</em> Those moments taught me <strong className="text-black dark:text-white">the best part of travel isn't the flights, tours, or hotels—it's the people.</strong>
                 </p>
-                <p className="text-lg sm:text-xl text-black dark:text-white leading-relaxed font-medium mb-4" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', fontWeight: '500', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', letterSpacing: '-0.01em' }}>
-                  "I built Nearby Traveler to make those connections possible for everyone — travelers and locals alike."
-                </p>
-                <p className="text-2xl sm:text-3xl text-black dark:text-orange-300 font-black leading-tight mb-6" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', fontWeight: '900', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', letterSpacing: '-0.02em', textShadow: 'none' }}>
-                  "I BUILT THE SITE I WISHED EXISTED."
+                
+                <p className="text-lg sm:text-xl text-black dark:text-white leading-relaxed text-center" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', fontWeight: '400', WebkitFontSmoothing: 'antialiased' }}>
+                  Whether you're a traveler or a local, this is <strong className="text-black dark:text-orange-300">the community I always wished existed.</strong>
                 </p>
               </div>
               
-              <div className="bg-white dark:bg-gray-800/95 backdrop-blur-sm rounded-3xl p-8 shadow-2xl border-2 border-gray-200 dark:border-none">
-                <p className="text-lg text-black dark:text-white leading-relaxed mb-6 text-center font-medium">
-                  Nearby Traveler connects travelers and locals through shared interests, activities, demographics, and events—transforming random encounters into life-changing connections.
-                </p>
-                
-                
-                <p className="text-lg text-black dark:text-white leading-relaxed text-center mb-6 font-medium">
-                  It's more than just travel—it's about real community, wherever you are.
-                </p>
-                
-                {/* Founder signature with orange and blue accents */}
-                <div className="text-center pt-6 border-t border-gray-300 dark:border-blue-600">
-                  <p className="text-lg text-black dark:text-gray-200 mb-3 font-medium">Thanks for being part of the journey.</p>
-                  <div className="flex items-center justify-center space-x-4">
-                    <div>
-                      <p className="text-xl font-black text-black dark:text-white">Aaron Lefkowitz</p>
-                      <p className="text-black dark:text-blue-600 font-bold">Founder, Nearby Traveler, Inc.</p>
+              {/* Prominent Pull-Quote with Brand Highlight */}
+              <div className="relative mb-8">
+                <div className="bg-gradient-to-r from-orange-500 to-blue-600 p-1 rounded-2xl shadow-2xl">
+                  <div className="bg-white dark:bg-gray-800 rounded-xl p-8">
+                    <blockquote className="text-2xl sm:text-3xl font-bold text-center text-black dark:text-white leading-tight" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', letterSpacing: '-0.01em' }}>
+                      "I built Nearby Traveler so no one has to leave those connections to chance."
+                    </blockquote>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Founder Details with Photo & Signature Styling */}
+              <div className="bg-white dark:bg-gray-800/95 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-gray-200 dark:border-gray-700">
+                <div className="flex items-center justify-center space-x-6 mb-6">
+                  {/* Circular Founder Photo Placeholder */}
+                  <div className="w-20 h-20 rounded-full bg-gradient-to-r from-orange-400 to-blue-500 p-1 shadow-lg">
+                    <div className="w-full h-full rounded-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center">
+                      <span className="text-2xl font-bold text-gray-600 dark:text-gray-300">AL</span>
                     </div>
                   </div>
+                  
+                  {/* Signature-style Name */}
+                  <div className="text-center">
+                    <p className="text-2xl font-bold text-black dark:text-white mb-1" style={{ fontFamily: 'Brush Script MT, cursive', letterSpacing: '0.5px' }}>
+                      Aaron Lefkowitz
+                    </p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">
+                      Founder, Nearby Traveler
+                    </p>
+                  </div>
+                </div>
+                
+                {/* Personal Note */}
+                <div className="text-center pt-6 border-t border-gray-200 dark:border-gray-600">
+                  <p className="text-lg text-black dark:text-gray-200 italic" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
+                    Thanks for being part of the journey.
+                  </p>
                 </div>
               </div>
             </div>
