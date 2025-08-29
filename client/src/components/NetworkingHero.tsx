@@ -7,8 +7,8 @@ export default function NetworkingHero() {
   return (
     <div className="relative z-0">
       <div className="bg-gray-800 dark:bg-gray-900 border-4 border-purple-500 shadow-lg">
-        <div className="relative bg-gray-800 dark:bg-gray-900 pb-32 overflow-hidden min-h-[500px]">
-          <div className="absolute inset-0 h-full min-h-[500px]">
+        <div className="relative bg-gray-800 dark:bg-gray-900 pb-32 overflow-hidden min-h-[400px]">
+          <div className="absolute inset-0 h-full min-h-[400px]">
             <img
               src={networkingHeroImage}
               alt="Professional networking event with people connecting"

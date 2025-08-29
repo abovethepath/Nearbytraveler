@@ -47,8 +47,8 @@ export default function LandingStreamlined() {
         {/* HERO SECTION - With Original Photo */}
         <div className="relative z-10">
           <div className="bg-white dark:bg-gray-900 border-2 border-gray-300 dark:border-orange-500 shadow-lg rounded-lg">
-            <div className="relative bg-white dark:bg-gray-900 pb-32 overflow-hidden min-h-[500px]">
-              <div className="absolute inset-0 h-full min-h-[500px]">
+            <div className="relative bg-white dark:bg-gray-900 pb-32 overflow-hidden min-h-[400px]">
+              <div className="absolute inset-0 h-full min-h-[400px]">
                 <img
                   src="/travelers together hugging_1754971726997.avif"
                   alt="Travel experience"
