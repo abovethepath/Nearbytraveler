@@ -51,70 +51,50 @@ export default function LandingStreamlined() {
         {/* HERO SECTION */}
         <div className="pt-20 pb-24 bg-white dark:bg-gray-900">
           {isAirbnbStyle ? (
-            // Airbnb-style split layout (for professor)
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            {/* Left side - Content */}
-            <div className="space-y-8">
-              {/* Eye-catching pre-launch banner */}
-              <div className="inline-flex items-center bg-gradient-to-r from-orange-100 to-blue-100 dark:from-orange-900/30 dark:to-blue-900/30 rounded-full px-4 py-2">
-                <span className="text-orange-600 dark:text-orange-400 text-sm font-medium">
-                  🚀 Now launching - be among the first to connect globally
-                </span>
-              </div>
-
+            // Clean, professional hero section
+            <div className="mx-auto max-w-6xl px-6 py-20 grid gap-8 md:grid-cols-2 items-center">
+              {/* Left text side */}
               <div>
-                <h1 className="text-3xl md:text-4xl font-light text-gray-900 dark:text-white mb-6 leading-relaxed">
-                  Traveling Soon? Skip the Tourist Traps, Connect Before Your Trip, Keep Connections Forever and Create Lifelong Friends!!!
+                <h1 className="text-4xl md:text-5xl font-semibold tracking-tight text-zinc-900 dark:text-white">
+                  Skip the Tourist Traps. <br /> Find Real Connections That Last.
                 </h1>
-                <p className="text-lg font-normal text-gray-600 dark:text-gray-300 leading-relaxed">
-                  Meet Locals and Other Nearby Travelers Right Now, Today!!!
+                <p className="mt-2 text-lg italic text-orange-600">
+                  Where Local Experiences Meet Worldwide Connections
                 </p>
-              </div>
-
-              {/* Urgency/scarcity element */}
-              <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
-                <div className="flex items-center">
-                  <span className="text-yellow-600 dark:text-yellow-400 text-sm font-medium">
-                    ⚡ Join early access in select cities - limited spots available
-                  </span>
+                <p className="mt-4 max-w-xl text-lg text-zinc-600 dark:text-zinc-300">
+                  Meet locals and travelers before your trip begins — and turn chance encounters into lifelong friendships.
+                </p>
+                <div className="mt-6 flex gap-4">
+                  <button 
+                    onClick={() => {
+                      trackEvent('signup_cta_click', 'landing_page', 'main_hero_button');
+                      setLocation('/join');
+                    }}
+                    className="rounded-xl bg-black px-6 py-3 text-white font-medium shadow hover:bg-zinc-800"
+                  >
+                    Join the Journey
+                  </button>
+                  <button 
+                    onClick={() => {
+                      trackEvent('learn_more_click', 'landing_page', 'see_how_it_works');
+                      document.querySelector('#community-section')?.scrollIntoView({ behavior: 'smooth' });
+                    }}
+                    className="rounded-xl border border-zinc-300 px-6 py-3 font-medium hover:bg-zinc-50 dark:border-zinc-600 dark:hover:bg-zinc-800"
+                  >
+                    See How It Works
+                  </button>
                 </div>
               </div>
-              
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Button
-                  onClick={() => {
-                    trackEvent('signup_cta_click', 'landing_page', 'main_hero_button');
-                    setLocation('/join');
-                  }}
-                  size="lg"
-                  className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-500 text-white dark:text-white font-medium px-8 py-3 rounded-lg transition-all duration-200"
-                >
-                  Join the Journey
-                </Button>
-                <Button
-                  onClick={() => {
-                    trackEvent('learn_more_click', 'landing_page', 'see_how_it_works');
-                    // Scroll to community section or features
-                    document.querySelector('#community-section')?.scrollIntoView({ behavior: 'smooth' });
-                  }}
-                  variant="outline"
-                  size="lg"
-                  className="border-2 border-black dark:border-white text-black dark:text-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black font-medium px-8 py-3 rounded-lg transition-all duration-200"
-                >
-                  See How It Works
-                </Button>
+
+              {/* Right image side */}
+              <div className="flex justify-center">
+                <img
+                  src="/travelers together hugging_1754971726997.avif"
+                  alt="Travelers connecting"
+                  className="rounded-2xl shadow-lg object-cover"
+                />
               </div>
             </div>
-            
-            {/* Right side - Hero Image */}
-            <div className="relative h-96 lg:h-[500px] rounded-2xl overflow-hidden">
-              <img
-                src="/travelers together hugging_1754971726997.avif"
-                alt="Travelers connecting and creating lifelong friendships"
-                className="w-full h-full object-cover"
-              />
-            </div>
-          </div>
           ) : (
             // Original centered layout (for investors)
             <div className="text-center">
