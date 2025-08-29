@@ -19,7 +19,7 @@ export default function LandingStreamlined() {
     "Love Meeting Travelers? Show Your City!", // Couchsurfers as hosts
     "Want Your Kids to Meet the World?", // Families
     "Hate Forced Networking?", // Professional networking
-    "Run a Business?" // Business owners
+    "Own a Business?" // Business owners
   ];
   
   const [currentSubtext, setCurrentSubtext] = useState(0);
