@@ -331,66 +331,38 @@ export default function EventsLanding() {
             What Makes Our Events Special
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-            <div className="bg-orange-600 p-6 rounded-xl shadow-lg text-white">
+            <div className="bg-orange-200 dark:bg-orange-600 p-6 rounded-xl shadow-lg">
               <div className="text-4xl mb-4">🎪</div>
-              <h3 className="text-xl font-bold mb-3 text-white">Epic Experiences</h3>
-              <p className="text-white">From beach bonfires to rooftop parties - join unforgettable events created by passionate locals who know the best spots.</p>
+              <h3 className="text-xl font-bold mb-3 text-black dark:text-white">Epic Experiences</h3>
+              <p className="text-black dark:text-white">From beach bonfires to rooftop parties - join unforgettable events created by passionate locals who know the best spots.</p>
             </div>
-            <div className="bg-teal-600 p-6 rounded-xl shadow-lg text-white">
+            <div className="bg-teal-200 dark:bg-teal-600 p-6 rounded-xl shadow-lg">
               <div className="text-4xl mb-4">🌟</div>
-              <h3 className="text-xl font-bold mb-3 text-white">Instant Connections</h3>
-              <p className="text-white">Meet amazing travelers and locals who share your interests. Every event is a chance to make lifelong friendships.</p>
+              <h3 className="text-xl font-bold mb-3 text-black dark:text-white">Instant Connections</h3>
+              <p className="text-black dark:text-white">Meet amazing travelers and locals who share your interests. Every event is a chance to make lifelong friendships.</p>
             </div>
-            <div className="bg-orange-700 p-6 rounded-xl shadow-lg text-white">
+            <div className="bg-orange-200 dark:bg-orange-700 p-6 rounded-xl shadow-lg">
               <div className="text-4xl mb-4">📍</div>
-              <h3 className="text-xl font-bold mb-3 text-white">Local Secrets</h3>
-              <p className="text-white">Discover hidden gems and authentic experiences that tourists never find. Access the real side of every city.</p>
+              <h3 className="text-xl font-bold mb-3 text-black dark:text-white">Local Secrets</h3>
+              <p className="text-black dark:text-white">Discover hidden gems and authentic experiences that tourists never find. Access the real side of every city.</p>
             </div>
           </div>
         </div>
 
-        {/* Get Started Section - Enhanced with Multiple CTAs */}
-        <div className="bg-gradient-to-r from-orange-600 to-blue-600 text-white py-16 rounded-2xl shadow-2xl mb-16">
+        {/* Get Started Section - Professional Light Mode */}
+        <div className="bg-gray-100 dark:bg-gradient-to-r dark:from-orange-600 dark:to-blue-600 py-16 rounded-2xl shadow-lg dark:shadow-2xl mb-16">
           <div className="max-w-4xl mx-auto text-center px-6">
-            <h2 className="text-4xl font-bold mb-4">Ready to Join Events Only The Nearby Traveler Community Knows About?</h2>
-            <p className="text-xl mb-8 opacity-90">Join others already creating unforgettable experiences together.</p>
+            <h2 className="text-4xl font-bold mb-4 text-gray-900 dark:text-white">Ready to Join Events Only The Nearby Traveler Community Knows About?</h2>
+            <p className="text-xl mb-8 text-gray-700 dark:text-white dark:opacity-90">Join others already creating unforgettable experiences together.</p>
             
-            {/* Primary CTA Row */}
-            <div className="mb-8 flex justify-center">
+            {/* Single Professional CTA */}
+            <div className="flex justify-center">
               <Button
                 onClick={() => setLocation('/join')}
                 size="lg"
-                className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white border-2 border-white font-bold text-lg px-8 py-4 rounded-full shadow-lg transition-all duration-200 transform hover:scale-105"
+                className="bg-white dark:bg-gradient-to-r dark:from-blue-500 dark:to-orange-500 hover:bg-gray-100 dark:hover:from-blue-600 dark:hover:to-orange-600 text-black dark:text-white font-bold text-xl px-12 py-6 rounded-xl shadow-lg transition-all duration-200 border-2 border-black dark:border-white"
               >
-                🎯 Join Nearby Traveler Today!!!
-              </Button>
-            </div>
-            
-            {/* Additional Action Buttons */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <Button
-                onClick={() => setLocation('/join')}
-                className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold py-3 px-4 rounded-full text-sm shadow-lg transform transition-all duration-200 hover:scale-105"
-              >
-                🏖️ Beach Events
-              </Button>
-              <Button
-                onClick={() => setLocation('/join')}
-                className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 px-4 rounded-full text-sm shadow-lg transform transition-all duration-200 hover:scale-105"
-              >
-                🍕 Food Tours
-              </Button>
-              <Button
-                onClick={() => setLocation('/join')}
-                className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-bold py-3 px-4 rounded-full text-sm shadow-lg transform transition-all duration-200 hover:scale-105"
-              >
-                🎵 Music Events
-              </Button>
-              <Button
-                onClick={() => setLocation('/join')}
-                className="bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white font-bold py-3 px-4 rounded-full text-sm shadow-lg transform transition-all duration-200 hover:scale-105"
-              >
-                🎪 Night Life
+                🎯 Join Nearby Traveler
               </Button>
             </div>
           </div>
