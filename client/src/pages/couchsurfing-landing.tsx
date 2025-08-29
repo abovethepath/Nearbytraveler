@@ -76,10 +76,10 @@ export default function CouchsurfingLanding() {
                 </h1>
               </div>
               <p className="mt-2 text-lg italic text-green-600">
-                Share Your City Without Sharing Your Space
+                Host Smarter, Not Harder
               </p>
               <p className="mt-4 max-w-xl text-lg text-zinc-600 dark:text-zinc-300">
-                Connect with travelers at coffee shops, events, and experiences. All the cultural exchange, none of the hosting concerns.
+                Still want to host? Great! Your guests can connect with other travelers and locals too. Or skip hosting entirely and meet travelers based on shared interests, not just needing a couch.
               </p>
               <div className="mt-6 flex flex-col sm:flex-row gap-4">
                 <button 
@@ -119,10 +119,10 @@ export default function CouchsurfingLanding() {
         {/* VALUE SECTION - Couchsurfing Focused */}
         <section className="mx-auto max-w-6xl px-6 py-20">
           <h2 className="text-center text-3xl font-bold tracking-tight text-zinc-900 dark:text-white">
-            Why Couchsurfers Love Nearby Traveler
+            Beyond Just Needing a Couch
           </h2>
           <p className="mt-2 text-center text-lg text-zinc-600 dark:text-zinc-400">
-            All the cultural exchange you love, with the flexibility you need.
+            Connect based on shared interests, activities, and genuine compatibility - not just accommodation needs.
           </p>
 
           <div className="mt-12 grid gap-12 sm:grid-cols-2 lg:grid-cols-3 text-center">
@@ -279,6 +279,70 @@ export default function CouchsurfingLanding() {
               </p>
               <p className="text-sm mt-2 opacity-80">— Aaron Lefkowitz, Founder</p>
             </div>
+          </div>
+        </section>
+
+        {/* COUCHSURFING REALITY CHECK */}
+        <section className="mx-auto max-w-6xl px-6 py-20 bg-white dark:bg-gray-900">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900 dark:text-white mb-6">
+              The Couchsurfing Reality
+            </h2>
+            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-4xl mx-auto leading-relaxed">
+              Let's be honest about what makes or breaks a couchsurfing experience.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+            {/* Trip Quality Depends on Host */}
+            <div className="bg-gradient-to-br from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20 rounded-2xl p-8 text-center">
+              <div className="w-16 h-16 bg-red-100 dark:bg-red-800 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Users className="w-8 h-8 text-red-600 dark:text-red-400" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+                Your Trip = Your Host
+              </h3>
+              <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+                Amazing host? Amazing trip. Busy or disengaged host? You're on your own. Your experience is entirely dependent on one person's availability and personality.
+              </p>
+            </div>
+
+            {/* Too Old for Couchsurfing */}
+            <div className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-2xl p-8 text-center">
+              <div className="w-16 h-16 bg-blue-100 dark:bg-blue-800 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Heart className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+                Love Locals, Not Couches
+              </h3>
+              <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+                Many people love meeting locals and sharing cultures, but sleeping on strangers' couches feels too risky or uncomfortable as they get older.
+              </p>
+            </div>
+
+            {/* Can't Find Hosts */}
+            <div className="bg-gradient-to-br from-green-50 to-teal-50 dark:from-green-900/20 dark:to-teal-900/20 rounded-2xl p-8 text-center">
+              <div className="w-16 h-16 bg-green-100 dark:bg-green-800 rounded-full flex items-center justify-center mx-auto mb-6">
+                <MapPin className="w-8 h-8 text-green-600 dark:text-green-400" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+                No Host? No Problem
+              </h3>
+              <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+                Popular destinations are oversaturated. Many travelers want to couchsurf but can't find hosts, yet they still crave authentic local connections.
+              </p>
+            </div>
+          </div>
+
+          {/* Solution */}
+          <div className="bg-gradient-to-r from-green-500 to-blue-600 rounded-2xl p-8 text-white text-center">
+            <h3 className="text-2xl sm:text-3xl font-bold mb-4">
+              What If There Was a Better Way?
+            </h3>
+            <p className="text-lg sm:text-xl mb-6 opacity-90 max-w-4xl mx-auto leading-relaxed">
+              Connect based on shared interests and activities. Meet multiple locals and travelers. 
+              <strong className="block mt-2">Your trip quality doesn't depend on one person anymore.</strong>
+            </p>
           </div>
         </section>
 
