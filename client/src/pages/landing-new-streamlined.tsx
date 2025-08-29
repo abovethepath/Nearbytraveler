@@ -28,7 +28,7 @@ export default function LandingStreamlined() {
     "Share your city, not your sofa.", // Couchsurfers as hosts
     "Connect with local and traveling families.", // Families
     "Build authentic professional connections.", // Professional networking
-    "Attract travelers through events and experiences." // Business owners
+    "Target travelers directly based on their interests and desires." // Business owners
   ];
   
   const descriptions = [
