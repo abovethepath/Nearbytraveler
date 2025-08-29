@@ -33,39 +33,48 @@ export default function NetworkingHero({ isAirbnbStyle = true }: NetworkingHeroP
     );
   }
   
-  // Airbnb-style split layout (for professor)
+  // Clean, professional hero section
   return (
-    <div className="pt-20 pb-24 bg-white dark:bg-gray-900">
-      <div className="max-w-7xl mx-auto px-4">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          {/* Left side - Content */}
-          <div className="space-y-8">
-            <div>
-              <h1 className="text-4xl md:text-5xl font-light text-gray-900 dark:text-white mb-6 leading-tight">
-                Networking, Reinvented
-              </h1>
-              <p className="text-xl font-light text-gray-600 dark:text-gray-300 leading-relaxed">
-                Connect before, during, and after every event — no business cards needed
-              </p>
-            </div>
-            
-            <Button
+    <div className="pt-8 pb-12 bg-white dark:bg-gray-900">
+      <div className="mx-auto max-w-6xl px-6 py-8 grid gap-8 md:grid-cols-2 items-center">
+        {/* Left text side */}
+        <div>
+          <div className="mb-4 inline-block rounded-full bg-orange-50 dark:bg-orange-900/30 px-4 py-1 text-sm font-medium text-orange-700 dark:text-orange-400">
+            🚀 Now Launching: Be Among the First to Connect Globally
+          </div>
+          <h1 className="text-4xl md:text-5xl font-semibold tracking-tight text-zinc-900 dark:text-white">
+            Networking, Reinvented
+          </h1>
+          <p className="mt-4 max-w-xl text-lg text-zinc-600 dark:text-zinc-300">
+            Connect before, during, and after every event — no business cards needed
+          </p>
+          <div className="mt-6 flex flex-col sm:flex-row gap-4">
+            <button 
               onClick={() => setLocation('/join')}
-              size="lg"
-              className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-500 text-white dark:text-white font-medium px-8 py-3 rounded-lg transition-all duration-200"
+              className="rounded-xl bg-black px-6 py-3 text-white font-medium shadow hover:bg-zinc-800 w-full sm:w-auto"
+              data-testid="button-join-journey"
             >
-              Join Nearby Traveler
-            </Button>
+              Join the Journey
+            </button>
+            <button 
+              onClick={() => {
+                document.querySelector('#community-section')?.scrollIntoView({ behavior: 'smooth' });
+              }}
+              className="rounded-xl border border-zinc-300 px-6 py-3 font-medium hover:bg-zinc-50 dark:border-zinc-600 dark:hover:bg-zinc-800 w-full sm:w-auto"
+              data-testid="button-see-how-it-works"
+            >
+              See How It Works
+            </button>
           </div>
-          
-          {/* Right side - Hero Image */}
-          <div className="relative h-96 lg:h-[500px] rounded-2xl overflow-hidden">
-            <img
-              src={networkingHeroImage}
-              alt="Professional networking event with people connecting"
-              className="w-full h-full object-cover"
-            />
-          </div>
+        </div>
+        
+        {/* Right image side */}
+        <div className="flex justify-center">
+          <img
+            src={networkingHeroImage}
+            alt="Professional networking event with people connecting"
+            className="rounded-2xl shadow-lg object-cover"
+          />
         </div>
       </div>
     </div>

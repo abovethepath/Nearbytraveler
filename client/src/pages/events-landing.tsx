@@ -26,40 +26,51 @@ export default function EventsLanding() {
       <LandingHeaderSpacer />
       
       {/* HERO SECTION */}
-      <div className="pt-20 pb-24 bg-white dark:bg-gray-900">
-        <div className="max-w-7xl mx-auto px-4">
+      <div className="pt-8 pb-12 bg-white dark:bg-gray-900">
+        <div className="mx-auto max-w-6xl px-6 py-8 grid gap-8 md:grid-cols-2 items-center">
           {isAirbnbStyle ? (
-            // Airbnb-style split layout (for professor)
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-              {/* Left side - Content */}
-              <div className="space-y-8">
-                <div>
-                  <h1 className="text-4xl md:text-5xl font-light text-gray-900 dark:text-white mb-6 leading-tight">
-                    Join User Created Events
-                  </h1>
-                  <p className="text-xl font-light text-gray-600 dark:text-gray-300 leading-relaxed">
-                    Make real connections with nearby travelers and locals through authentic experiences
-                  </p>
-                </div>
-                
-                <Button
-                  onClick={() => setLocation('/join')}
-                  size="lg"
-                  className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-500 text-white dark:text-white font-medium px-8 py-3 rounded-lg transition-all duration-200"
-                >
-                  Join Nearby Traveler
-                </Button>
+            // Clean, professional hero section
+            <>
+            {/* Left text side */}
+            <div>
+              <div className="mb-4 inline-block rounded-full bg-orange-50 dark:bg-orange-900/30 px-4 py-1 text-sm font-medium text-orange-700 dark:text-orange-400">
+                🚀 Now Launching: Be Among the First to Connect Globally
               </div>
-              
-              {/* Right side - Hero Image */}
-              <div className="relative h-96 lg:h-[500px] rounded-2xl overflow-hidden">
-                <img
-                  src={eventHeaderImage}
-                  alt="People enjoying events and activities together"
-                  className="w-full h-full object-cover"
-                />
+              <h1 className="text-4xl md:text-5xl font-semibold tracking-tight text-zinc-900 dark:text-white">
+                Join User Created Events
+              </h1>
+              <p className="mt-4 max-w-xl text-lg text-zinc-600 dark:text-zinc-300">
+                Make real connections with nearby travelers and locals through authentic experiences
+              </p>
+              <div className="mt-6 flex flex-col sm:flex-row gap-4">
+                <button 
+                  onClick={() => setLocation('/join')}
+                  className="rounded-xl bg-black px-6 py-3 text-white font-medium shadow hover:bg-zinc-800 w-full sm:w-auto"
+                  data-testid="button-join-journey"
+                >
+                  Join the Journey
+                </button>
+                <button 
+                  onClick={() => {
+                    document.querySelector('#community-section')?.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                  className="rounded-xl border border-zinc-300 px-6 py-3 font-medium hover:bg-zinc-50 dark:border-zinc-600 dark:hover:bg-zinc-800 w-full sm:w-auto"
+                  data-testid="button-see-how-it-works"
+                >
+                  See How It Works
+                </button>
               </div>
             </div>
+            
+            {/* Right image side */}
+            <div className="flex justify-center">
+              <img
+                src={eventHeaderImage}
+                alt="People enjoying events and activities together"
+                className="rounded-2xl shadow-lg object-cover"
+              />
+            </div>
+            </>
           ) : (
             // Original centered layout (for investors)
             <div className="text-center">
