@@ -55,13 +55,29 @@ export default function LandingStreamlined() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             {/* Left side - Content */}
             <div className="space-y-8">
+              {/* Eye-catching social proof banner */}
+              <div className="inline-flex items-center bg-gradient-to-r from-orange-100 to-blue-100 dark:from-orange-900/30 dark:to-blue-900/30 rounded-full px-4 py-2">
+                <span className="text-orange-600 dark:text-orange-400 text-sm font-medium">
+                  🔥 400+ travelers from 50+ countries already connected
+                </span>
+              </div>
+
               <div>
                 <h1 className="text-4xl md:text-5xl font-light text-gray-900 dark:text-white mb-6 leading-tight">
                   The People You Meet Are the Real Destination
                 </h1>
                 <p className="text-xl font-light text-gray-600 dark:text-gray-300 leading-relaxed">
-                  Travelers shouldn't have to explore alone, and locals shouldn't miss the chance to share their city. Nearby Traveler connects you before the trip begins.
+                  <strong className="text-black dark:text-white">Tired of eating alone while traveling?</strong> Stop wandering solo and start connecting. Meet locals and fellow travelers before you arrive, discover hidden gems, and turn trips into lifelong friendships.
                 </p>
+              </div>
+
+              {/* Urgency/scarcity element */}
+              <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
+                <div className="flex items-center">
+                  <span className="text-yellow-600 dark:text-yellow-400 text-sm font-medium">
+                    ⚡ Join early access in select cities - limited spots available
+                  </span>
+                </div>
               </div>
               
               <div className="flex flex-col sm:flex-row gap-4">
@@ -149,7 +165,7 @@ export default function LandingStreamlined() {
                   <Users className="w-8 h-8 text-orange-600 dark:text-orange-400" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                  Meet Before You Go
+                  Never Eat Alone Again
                 </h3>
                 <p className="text-gray-600 dark:text-gray-300 text-sm">
                   Connect with travelers & locals before your trip starts
@@ -162,10 +178,10 @@ export default function LandingStreamlined() {
                   <Plane className="w-8 h-8 text-blue-600 dark:text-blue-400" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                  Real Experiences
+                  Skip the Tourist Traps
                 </h3>
                 <p className="text-gray-600 dark:text-gray-300 text-sm">
-                  Discover authentic spots, not tourist traps
+                  Discover authentic spots only locals know about
                 </p>
               </div>
               
@@ -175,10 +191,10 @@ export default function LandingStreamlined() {
                   <Handshake className="w-8 h-8 text-green-600 dark:text-green-400" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                  Lifelong Friendships
+                  Friends in Every City
                 </h3>
                 <p className="text-gray-600 dark:text-gray-300 text-sm">
-                  Turn trips into lasting connections worldwide
+                  Build a global network of real connections
                 </p>
               </div>
               
@@ -188,10 +204,10 @@ export default function LandingStreamlined() {
                   <Building2 className="w-8 h-8 text-purple-600 dark:text-purple-400" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                  Share Your City
+                  Earn Money as a Local
                 </h3>
                 <p className="text-gray-600 dark:text-gray-300 text-sm">
-                  Locals: share your city, meet the world
+                  Share your city and earn extra income from visitors
                 </p>
               </div>
               
