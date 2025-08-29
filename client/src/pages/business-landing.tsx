@@ -231,10 +231,10 @@ export default function BusinessLanding() {
           </div>
 
           {/* Get Started Section - Consolidated */}
-          <div className="bg-gray-50 dark:bg-gradient-to-r dark:from-orange-600 dark:to-blue-600 text-gray-900 dark:text-white py-16 rounded-2xl shadow-lg border border-gray-200 dark:border-0">
+          <div className="bg-gradient-to-r from-orange-600 to-blue-600 text-white py-16 rounded-2xl shadow-lg border border-gray-200 dark:border-0">
             <div className="max-w-4xl mx-auto text-center px-6">
-              <h2 className="text-4xl font-bold mb-4">Ready to Grow Your Business?</h2>
-              <p className="text-xl mb-8 opacity-90">Join thousands of businesses already connecting with travelers and locals.</p>
+              <h2 className="text-4xl font-bold mb-4 text-white">Ready to Grow Your Business?</h2>
+              <p className="text-xl mb-8 text-white">Join thousands of businesses already connecting with travelers and locals.</p>
               
               {/* Primary CTA Row */}
               <div className="mb-12 flex justify-center">
@@ -253,19 +253,19 @@ export default function BusinessLanding() {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div className="flex flex-col items-center">
                     <div className="text-3xl mb-2">🍽️</div>
-                    <p className="text-white/90 font-medium">Restaurants</p>
+                    <p className="text-white font-medium">Restaurants</p>
                   </div>
                   <div className="flex flex-col items-center">
                     <div className="text-3xl mb-2">🏨</div>
-                    <p className="text-white/90 font-medium">Hotels</p>
+                    <p className="text-white font-medium">Hotels</p>
                   </div>
                   <div className="flex flex-col items-center">
                     <div className="text-3xl mb-2">🎨</div>
-                    <p className="text-white/90 font-medium">Tours</p>
+                    <p className="text-white font-medium">Tours</p>
                   </div>
                   <div className="flex flex-col items-center">
                     <div className="text-3xl mb-2">🛍️</div>
-                    <p className="text-white/90 font-medium">Retail</p>
+                    <p className="text-white font-medium">Retail</p>
                   </div>
                 </div>
               </div>
@@ -275,17 +275,17 @@ export default function BusinessLanding() {
         
         {/* Pricing Widget */}
         <div className="mt-16 mb-8 max-w-4xl mx-auto">
-          <div className="bg-gray-50 dark:bg-gradient-to-r dark:from-orange-500 dark:to-blue-600 text-gray-900 dark:text-white p-8 rounded-2xl shadow-lg border border-gray-200 dark:border-0">
+          <div className="bg-gradient-to-r from-orange-500 to-blue-600 text-white p-8 rounded-2xl shadow-lg border border-gray-200 dark:border-0">
             <div className="text-center">
               <h2 className="text-3xl font-bold mb-4">Simple Business Pricing</h2>
               <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 mb-6">
                 <div className="text-5xl font-black text-white mb-2">$50</div>
-                <div className="text-xl text-white/90 mb-2">per month</div>
-                <div className="text-2xl font-bold text-orange-200 mb-4">+ $100 Sign Up Fee</div>
+                <div className="text-xl text-white mb-2">per month</div>
+                <div className="text-2xl font-bold text-yellow-200 mb-4">+ $100 Sign Up Fee</div>
                 <div className="bg-green-500 text-white font-bold py-2 px-6 rounded-full text-lg mb-4 inline-block">
                   🎉 FREE DURING BETA
                 </div>
-                <div className="text-white/80 mb-6">
+                <div className="text-white mb-6">
                   <p>✅ Business offers and promotions</p>
                   <p>✅ Event hosting capabilities</p>
                   <p>✅ Direct messaging with customers</p>
