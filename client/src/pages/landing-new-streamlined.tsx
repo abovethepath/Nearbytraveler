@@ -450,17 +450,17 @@ export default function LandingStreamlined() {
             Why Couchsurfers Love Nearby Traveler
           </h2>
           <p className="mt-2 text-center text-lg text-zinc-600 dark:text-zinc-400">
-            All the cultural exchange you love, with the flexibility you need.
+            Host travelers, meet fellow travelers, or connect with locals - your choice.
           </p>
 
           <div className="mt-12 grid gap-12 sm:grid-cols-2 lg:grid-cols-3 text-center">
             <div>
               <Coffee className="mx-auto h-8 w-8 text-green-600" />
               <h3 className="mt-4 text-lg font-semibold text-zinc-900 dark:text-white">
-                Meet at Cafes & Events
+                Host & Connect Beyond Hosting
               </h3>
               <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-                Share your city over coffee, at events, or exploring together - no couch required.
+                Welcome travelers to your home, or meet at cafes and events - expand your hosting network.
               </p>
             </div>
 
@@ -477,10 +477,10 @@ export default function LandingStreamlined() {
             <div>
               <Globe className="mx-auto h-8 w-8 text-purple-600" />
               <h3 className="mt-4 text-lg font-semibold text-zinc-900 dark:text-white">
-                Cultural Exchange
+                Meet Fellow Travelers
               </h3>
               <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-                Experience the world through travelers' stories and share your own culture.
+                Connect with other travelers exploring the same city - share experiences and stories.
               </p>
             </div>
 
@@ -490,7 +490,7 @@ export default function LandingStreamlined() {
                 Flexible Connections
               </h3>
               <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-                Connect when you want, how you want - no hosting obligations.
+                Connect when you want, how you want - host, explore together, or just grab coffee.
               </p>
             </div>
 
@@ -510,7 +510,7 @@ export default function LandingStreamlined() {
                 Safe & Verified
               </h3>
               <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-                Meet in public spaces with community verification and references.
+                Meet with community verification and references, whether hosting or meeting up.
               </p>
             </div>
           </div>
