@@ -46,7 +46,7 @@ export default function TravelersLanding() {
                 className="absolute inset-0"
                 style={{
                   background:
-                    "linear-gradient(to bottom, rgba(255,255,255,.8), rgba(255,255,255,.5), rgba(255,255,255,0.1))"
+                    "linear-gradient(to bottom, rgba(255,255,255,.3), rgba(255,255,255,.2), rgba(255,255,255,0))"
                 }}
                 aria-hidden="true"
               />
