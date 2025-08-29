@@ -71,7 +71,7 @@ export default function CouchsurfingLanding() {
                 A Letter to the Couchsurfing Community
               </h1>
               <blockquote className="text-lg md:text-xl text-zinc-600 dark:text-zinc-300 leading-relaxed border-l-4 border-green-500 pl-6 mb-6">
-                "As a 15-year Couchsurfing host and traveler, I love the site. But I can't always host, I can't always find a couch, but I always want to meet travelers... so I created Nearby Traveler."
+                "As a 15-year Couchsurfing host and traveler, I've had some of the best moments of my life meeting people through the community. But over time, I realized I couldn't always host, I couldn't always find a couch — yet I always wanted to meet travelers. That's why I created Nearby Traveler."
               </blockquote>
               <p className="text-base text-zinc-500 dark:text-zinc-400 mb-6">
                 — Aaron Lefkowitz, Founder & Fellow Couchsurfer
@@ -123,66 +123,33 @@ export default function CouchsurfingLanding() {
             Connect based on shared interests, activities, and genuine compatibility - not just accommodation needs.
           </p>
 
-          <div className="mt-12 grid gap-12 sm:grid-cols-2 lg:grid-cols-3 text-center">
-            <div>
-              <Coffee className="mx-auto h-8 w-8 text-green-600" />
-              <h3 className="mt-4 text-lg font-semibold text-zinc-900 dark:text-white">
-                Meet at Cafes & Events
-              </h3>
-              <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-                Share your city over coffee, at events, or exploring together - no couch required.
-              </p>
-            </div>
-
-            <div>
-              <MapPin className="mx-auto h-8 w-8 text-blue-600" />
-              <h3 className="mt-4 text-lg font-semibold text-zinc-900 dark:text-white">
-                Share Local Secrets
-              </h3>
-              <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-                Show travelers your favorite hidden spots and authentic local experiences.
-              </p>
-            </div>
-
-            <div>
-              <Globe className="mx-auto h-8 w-8 text-purple-600" />
-              <h3 className="mt-4 text-lg font-semibold text-zinc-900 dark:text-white">
-                Cultural Exchange
-              </h3>
-              <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-                Experience the world through travelers' stories and share your own culture.
-              </p>
-            </div>
-
-            <div>
-              <Users className="mx-auto h-8 w-8 text-orange-600" />
-              <h3 className="mt-4 text-lg font-semibold text-zinc-900 dark:text-white">
-                Flexible Connections
-              </h3>
-              <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-                Connect when you want, how you want - no hosting obligations.
-              </p>
-            </div>
-
-            <div>
-              <RefreshCw className="mx-auto h-8 w-8 text-pink-600" />
-              <h3 className="mt-4 text-lg font-semibold text-zinc-900 dark:text-white">
-                Stay Connected
-              </h3>
-              <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-                Keep friendships alive when your new friends travel to other cities.
-              </p>
-            </div>
-
-            <div>
-              <ShieldCheck className="mx-auto h-8 w-8 text-indigo-600" />
-              <h3 className="mt-4 text-lg font-semibold text-zinc-900 dark:text-white">
-                Safe & Verified
-              </h3>
-              <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-                Meet in public spaces with community verification and references.
-              </p>
-            </div>
+          <div className="mt-12 max-w-4xl mx-auto">
+            <ul className="space-y-6 text-lg text-zinc-700 dark:text-zinc-300">
+              <li className="flex items-start">
+                <Coffee className="w-6 h-6 text-green-600 mr-4 mt-1 flex-shrink-0" />
+                <span>Meet through interests and activities, not just accommodation</span>
+              </li>
+              <li className="flex items-start">
+                <MapPin className="w-6 h-6 text-blue-600 mr-4 mt-1 flex-shrink-0" />
+                <span>Connect at cafés, events, and local spots — no couch required</span>
+              </li>
+              <li className="flex items-start">
+                <Globe className="w-6 h-6 text-purple-600 mr-4 mt-1 flex-shrink-0" />
+                <span>Share local secrets and experience cultural exchange</span>
+              </li>
+              <li className="flex items-start">
+                <Users className="w-6 h-6 text-orange-600 mr-4 mt-1 flex-shrink-0" />
+                <span>Connect when you want, how you want — no obligations</span>
+              </li>
+              <li className="flex items-start">
+                <RefreshCw className="w-6 h-6 text-pink-600 mr-4 mt-1 flex-shrink-0" />
+                <span>Stay connected across trips</span>
+              </li>
+              <li className="flex items-start">
+                <ShieldCheck className="w-6 h-6 text-indigo-600 mr-4 mt-1 flex-shrink-0" />
+                <span>Feel safe with verification and references</span>
+              </li>
+            </ul>
           </div>
         </section>
 
@@ -196,7 +163,7 @@ export default function CouchsurfingLanding() {
               We Know You've <span className="text-green-600 dark:text-green-400">Loved Hosting</span>
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-4xl mx-auto leading-relaxed">
-              Couchsurfing has given you incredible memories. But maybe you're ready for something different.
+              If you've hosted before, you know the magic: meeting fascinating people, sharing your city, learning about new cultures. But hosting can also be exhausting, unpredictable, and sometimes just not possible with work or family life. That doesn't mean you're less generous — it just means life changes. With Nearby Traveler, you can keep the spirit of cultural exchange alive in a way that works for you today.
             </p>
           </div>
 
@@ -280,67 +247,62 @@ export default function CouchsurfingLanding() {
           </div>
         </section>
 
-        {/* COUCHSURFING REALITY CHECK */}
+        {/* SIMPLE CONTRASTS */}
         <section className="mx-auto max-w-6xl px-6 py-20 bg-white dark:bg-gray-900">
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900 dark:text-white mb-6">
-              The Couchsurfing Reality
+              Couchsurfing vs Nearby Traveler
             </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-4xl mx-auto leading-relaxed">
-              Let's be honest about what makes or breaks a couchsurfing experience.
-            </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
-            {/* Trip Quality Depends on Host */}
-            <div className="bg-gradient-to-br from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20 rounded-2xl p-8 text-center">
-              <div className="w-16 h-16 bg-red-100 dark:bg-red-800 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Users className="w-8 h-8 text-red-600 dark:text-red-400" />
+          <div className="space-y-8 max-w-4xl mx-auto">
+            <div className="bg-gradient-to-r from-gray-50 to-green-50 dark:from-gray-800 dark:to-green-900/20 rounded-2xl p-6">
+              <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+                <div className="text-center md:text-left">
+                  <p className="text-gray-600 dark:text-gray-300 text-lg">
+                    <strong>Dependent on One Host?</strong>
+                  </p>
+                </div>
+                <div className="text-3xl">→</div>
+                <div className="text-center md:text-right">
+                  <p className="text-green-700 dark:text-green-400 text-lg font-medium">
+                    With NT, you meet multiple locals and travelers
+                  </p>
+                </div>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
-                Your Trip = Your Host
-              </h3>
-              <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                Amazing host? Amazing trip. Busy or disengaged host? You're on your own. Your experience is entirely dependent on one person's availability and personality.
-              </p>
             </div>
 
-            {/* Too Old for Couchsurfing */}
-            <div className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-2xl p-8 text-center">
-              <div className="w-16 h-16 bg-blue-100 dark:bg-blue-800 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Heart className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+            <div className="bg-gradient-to-r from-gray-50 to-blue-50 dark:from-gray-800 dark:to-blue-900/20 rounded-2xl p-6">
+              <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+                <div className="text-center md:text-left">
+                  <p className="text-gray-600 dark:text-gray-300 text-lg">
+                    <strong>Uncomfortable with couches?</strong>
+                  </p>
+                </div>
+                <div className="text-3xl">→</div>
+                <div className="text-center md:text-right">
+                  <p className="text-blue-700 dark:text-blue-400 text-lg font-medium">
+                    Connect at cafés, events, and public spaces
+                  </p>
+                </div>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
-                Love Locals, Not Couches
-              </h3>
-              <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                Many people love meeting locals and sharing cultures, but sleeping on strangers' couches feels too risky or uncomfortable as they get older.
-              </p>
             </div>
 
-            {/* Can't Find Hosts */}
-            <div className="bg-gradient-to-br from-green-50 to-teal-50 dark:from-green-900/20 dark:to-teal-900/20 rounded-2xl p-8 text-center">
-              <div className="w-16 h-16 bg-green-100 dark:bg-green-800 rounded-full flex items-center justify-center mx-auto mb-6">
-                <MapPin className="w-8 h-8 text-green-600 dark:text-green-400" />
+            <div className="bg-gradient-to-r from-gray-50 to-purple-50 dark:from-gray-800 dark:to-purple-900/20 rounded-2xl p-6">
+              <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+                <div className="text-center md:text-left">
+                  <p className="text-gray-600 dark:text-gray-300 text-lg">
+                    <strong>Can't find hosts?</strong>
+                  </p>
+                </div>
+                <div className="text-3xl">→</div>
+                <div className="text-center md:text-right">
+                  <p className="text-purple-700 dark:text-purple-400 text-lg font-medium">
+                    Still find locals and travelers to meet
+                  </p>
+                </div>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
-                No Host? No Problem
-              </h3>
-              <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                Popular destinations are oversaturated. Many travelers want to couchsurf but can't find hosts, yet they still crave authentic local connections.
-              </p>
             </div>
-          </div>
-
-          {/* Solution */}
-          <div className="bg-gradient-to-r from-green-500 to-blue-600 rounded-2xl p-8 text-white text-center">
-            <h3 className="text-2xl sm:text-3xl font-bold mb-4">
-              What If There Was a Better Way?
-            </h3>
-            <p className="text-lg sm:text-xl mb-6 opacity-90 max-w-4xl mx-auto leading-relaxed">
-              Connect based on shared interests and activities. Meet multiple locals and travelers. 
-              <strong className="block mt-2">Your trip quality doesn't depend on one person anymore.</strong>
-            </p>
           </div>
         </section>
 
@@ -428,16 +390,20 @@ export default function CouchsurfingLanding() {
           </div>
         </div>
 
-        {/* CLOSING SECTION */}
-        <section className="text-center py-12 sm:py-16 bg-white dark:bg-gradient-to-r dark:from-green-600 dark:to-blue-600 text-black dark:text-white rounded-2xl mb-8 sm:mb-16 border-2 border-gray-300 dark:border-none">
+        {/* WARM CLOSING */}
+        <section className="text-center py-12 sm:py-16 bg-gradient-to-r from-green-500 to-blue-600 text-white rounded-2xl mb-8 sm:mb-16">
           <div className="max-w-4xl mx-auto px-4 sm:px-6">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4">Ready to Share Your City?</h2>
-            <p className="text-lg sm:text-xl mb-6 sm:mb-8 px-4 leading-relaxed">Join hosts and travelers already making authentic connections worldwide.</p>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-6">
+              Ready for the Next Step?
+            </h2>
+            <p className="text-lg sm:text-xl mb-8 px-4 leading-relaxed opacity-90">
+              Couchsurfing gave us friendships and memories we'll never forget. Nearby Traveler is the next step — the same spirit, with more flexibility. Whether you're a longtime host or just someone who loves connecting with people, you belong here.
+            </p>
             <Button 
               onClick={() => setLocation('/join')}
-              className="bg-black hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-100 text-white dark:text-black font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
+              className="bg-white hover:bg-gray-100 text-green-600 font-bold px-8 py-4 rounded-lg shadow-lg transition-all duration-200 text-lg"
             >
-              Join Now
+              Join Nearby Traveler Today
             </Button>
           </div>
         </section>
