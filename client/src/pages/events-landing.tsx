@@ -237,8 +237,8 @@ export default function EventsLanding() {
             <div className="bg-gray-100 dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transform transition-all duration-300 flex flex-col">
               <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-red-500 to-pink-600">
                 <img 
-                  src="/karaoke-night.png" 
-                  alt="People singing karaoke in a fun bar atmosphere" 
+                  src="@assets/image_1756447354157.png" 
+                  alt="Person singing karaoke with silhouette against stage lights" 
                   className="w-full h-48 object-cover"
                 />
               </div>
