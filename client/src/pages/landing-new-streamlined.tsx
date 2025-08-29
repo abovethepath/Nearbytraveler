@@ -450,7 +450,7 @@ export default function LandingStreamlined() {
             Why Couchsurfers Love Nearby Traveler
           </h2>
           <p className="mt-2 text-center text-lg text-zinc-600 dark:text-zinc-400">
-            Host travelers, meet fellow travelers, or connect with locals - your choice.
+            Love meeting travelers and showing your city? Share experiences, not just your couch.
           </p>
 
           <div className="mt-12 grid gap-12 sm:grid-cols-2 lg:grid-cols-3 text-center">
