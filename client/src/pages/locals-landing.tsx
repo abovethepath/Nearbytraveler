@@ -22,21 +22,21 @@ export default function LocalsLanding() {
       
       {/* HERO SECTION */}
       <div className="pt-8 pb-12 bg-white dark:bg-gray-900">
-        <div className="mx-auto max-w-6xl px-6 py-8 grid gap-8 md:grid-cols-2 items-center">
+        <div className="mx-auto max-w-7xl px-6 py-8 grid gap-8 md:grid-cols-5 items-center">
           {isAirbnbStyle ? (
             // Clean, professional hero section
             <>
             {/* Left text side */}
-            <div>
+            <div className="md:col-span-3">
               <div className="mb-4 inline-block rounded-full bg-orange-50 dark:bg-orange-900/30 px-4 py-1 text-sm font-medium text-orange-700 dark:text-orange-400">
                 🚀 Now Launching: Be Among the First to Connect Globally
               </div>
-              <h1 className="text-4xl md:text-5xl font-semibold tracking-tight text-zinc-900 dark:text-white">
-                Be the Local You'd Want to Meet
-              </h1>
-              <p className="mt-4 max-w-xl text-lg text-zinc-600 dark:text-zinc-300">
-                Share your city's hidden gems with nearby travelers and connect with like-minded locals
-              </p>
+              <div className="text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight text-zinc-900 dark:text-white">
+                <h1>Be the Local You'd Want to Meet</h1>
+              </div>
+              <div className="mt-4 max-w-xl text-lg text-zinc-600 dark:text-zinc-300">
+                <p>Share your city's hidden gems with nearby travelers and connect with like-minded locals</p>
+              </div>
               <div className="mt-6 flex flex-col sm:flex-row gap-4">
                 <button 
                   onClick={() => setLocation('/join')}
@@ -58,12 +58,17 @@ export default function LocalsLanding() {
             </div>
             
             {/* Right image side */}
-            <div className="flex justify-center">
-              <img
-                src={localsHeaderImage}
-                alt="Locals sharing experiences and welcoming travelers"
-                className="rounded-2xl shadow-lg object-cover"
-              />
+            <div className="md:col-span-2 flex flex-col items-center">
+              <div className="overflow-hidden relative w-full h-[400px] rounded-2xl">
+                <img
+                  src={localsHeaderImage}
+                  alt="Locals sharing experiences and welcoming travelers"
+                  className="w-full h-full object-cover rounded-2xl shadow-lg"
+                />
+              </div>
+              <p className="mt-4 text-lg italic text-orange-600 text-center">
+                Where Local Experiences Meet Worldwide Connections
+              </p>
             </div>
             </>
           ) : (

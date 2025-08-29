@@ -25,16 +25,16 @@ export default function BusinessLanding() {
         <div className="max-w-7xl mx-auto px-4">
           {isAirbnbStyle ? (
             // Airbnb-style split layout (for professor)
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-8 items-center">
             {/* Left side - Content */}
-            <div className="space-y-8">
+            <div className="md:col-span-3 space-y-8">
               <div>
-                <h1 className="text-4xl md:text-5xl font-light text-gray-900 dark:text-white mb-6 leading-tight">
-                  Grow Your Business
-                </h1>
-                <p className="text-xl font-light text-gray-600 dark:text-gray-300 leading-relaxed">
-                  Connect with locals and nearby travelers who are already looking for your products and services
-                </p>
+                <div className="text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight text-zinc-900 dark:text-white mb-6">
+                  <h1>Run a Business?</h1>
+                </div>
+                <div className="mt-4 max-w-xl text-lg text-zinc-600 dark:text-zinc-300">
+                  <p>Connect with locals and nearby travelers who are already looking for your products and services</p>
+                </div>
               </div>
               
               <Button
@@ -47,12 +47,17 @@ export default function BusinessLanding() {
             </div>
             
             {/* Right side - Hero Image */}
-            <div className="relative h-96 lg:h-[500px] rounded-2xl overflow-hidden">
-              <img
-                src={businessHeaderPhoto}
-                alt="Business connections and partnerships"
-                className="w-full h-full object-cover"
-              />
+            <div className="md:col-span-2 flex flex-col items-center">
+              <div className="overflow-hidden relative w-full h-[400px] rounded-2xl">
+                <img
+                  src={businessHeaderPhoto}
+                  alt="Business connections and partnerships"
+                  className="w-full h-full object-cover rounded-2xl shadow-lg"
+                />
+              </div>
+              <p className="mt-4 text-lg italic text-orange-600 text-center">
+                Where Local Experiences Meet Worldwide Connections
+              </p>
             </div>
           </div>
           ) : (
