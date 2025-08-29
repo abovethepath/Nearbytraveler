@@ -205,7 +205,7 @@ export default function LandingStreamlined() {
               <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col min-h-[400px]">
                 <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-orange-400 to-red-500">
                   <img 
-                    src="@assets/image_1756427188598.png" 
+                    src="/attached_assets/event page bbq party_1753299541268.png" 
                     alt="Beach bonfire event" 
                     className="w-full h-48 object-cover"
                   />
@@ -235,7 +235,7 @@ export default function LandingStreamlined() {
               <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col min-h-[400px]">
                 <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-yellow-400 to-orange-500">
                   <img 
-                    src="@assets/image_1756427188598.png" 
+                    src="/attached_assets/image_1754973365104.png" 
                     alt="Authentic taco stand with vintage neon sign" 
                     className="w-full h-48 object-cover"
                   />
@@ -265,7 +265,7 @@ export default function LandingStreamlined() {
               <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col min-h-[400px]">
                 <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-blue-500 to-indigo-600">
                   <img 
-                    src="@assets/image_1756427188598.png" 
+                    src="/attached_assets/image_1754974796221.png" 
                     alt="Hollywood Sign at sunrise with mountain views" 
                     className="w-full h-48 object-cover"
                   />
