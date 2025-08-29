@@ -465,7 +465,7 @@ function Router() {
 
       // Allow access to business landing page without authentication for marketing
       if (location === '/business' || location === '/business-landing') {
-        return <BusinessLanding />;
+        return <LandingStreamlined />;
       }
 
       // Allow access to event details without authentication for viral sharing
@@ -836,7 +836,7 @@ function Router() {
       case '/events-landing':
         return <EventsLanding />;
       case '/business-landing':
-        return <BusinessLanding />;
+        return <LandingStreamlined />;
       case '/cs':
         return <CouchsurfingLanding />;
       case '/b':
