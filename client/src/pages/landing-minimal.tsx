@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import Footer from "@/components/footer";
 import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
+import ThemeToggle from "@/components/ThemeToggle";
 import { Users, Plane, Building2, Handshake } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
 import { useTheme } from "@/components/theme-provider";
@@ -22,16 +23,12 @@ export default function LandingMinimal() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Force light mode when component mounts
-  useEffect(() => {
-    setTheme('light');
-    // Also force it on the document element
-    document.documentElement.classList.remove('dark');
-    document.documentElement.classList.add('light');
-  }, [setTheme]);
+  // Remove forced light mode - let user choose
 
   return (
-    <div className="bg-gray-50 font-sans">
+    <div className="bg-gray-50 dark:bg-gray-900 font-sans">
+      <ThemeToggle />
+      
       {/* Fixed CTA Button */}
       <div className="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 z-50">
         <Button 
