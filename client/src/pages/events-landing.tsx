@@ -102,29 +102,6 @@ export default function EventsLanding() {
         </div>
       </div>
 
-
-      <main className="flex-1 px-4 py-16">
-        
-        {/* Final CTA Section */}
-        <div className="py-20 bg-gray-100 dark:bg-gradient-to-r dark:from-blue-600 dark:via-purple-600 dark:to-orange-600 rounded-2xl shadow-lg dark:shadow-2xl mb-16">
-          <div className="max-w-4xl mx-auto text-center px-6">
-            <h2 className="text-4xl font-bold mb-4 text-gray-900 dark:text-white">Ready to Join the Fun?</h2>
-            <p className="text-xl mb-8 text-gray-700 dark:text-white dark:opacity-90">Start connecting through amazing events and experiences.</p>
-            
-            {/* Single CTA Button */}
-            <div className="flex justify-center">
-              <Button
-                onClick={() => setLocation('/join')}
-                size="lg"
-                className="bg-white dark:bg-white text-black dark:text-blue-600 hover:bg-gray-100 dark:hover:bg-gray-100 font-bold text-xl px-12 py-6 rounded-xl shadow-lg transition-all duration-200 border-2 border-black dark:border-white"
-              >
-                🎪 Join Nearby Traveler
-              </Button>
-            </div>
-          </div>
-        </div>
-      </main>
-      
       {/* Sample Events Section */}
       <div className="px-4 py-16">
         <div className="max-w-6xl mx-auto mb-16">
@@ -418,6 +395,28 @@ export default function EventsLanding() {
             </div>
           </div>
         </div>
+
+      <main className="flex-1 px-4 py-16">
+        
+        {/* Final CTA Section */}
+        <div className="py-20 bg-gray-100 dark:bg-gradient-to-r dark:from-blue-600 dark:via-purple-600 dark:to-orange-600 rounded-2xl shadow-lg dark:shadow-2xl mb-16">
+          <div className="max-w-4xl mx-auto text-center px-6">
+            <h2 className="text-4xl font-bold mb-4 text-gray-900 dark:text-white">Ready to Join the Fun?</h2>
+            <p className="text-xl mb-8 text-gray-700 dark:text-white dark:opacity-90">Start connecting through amazing events and experiences.</p>
+            
+            {/* Single CTA Button */}
+            <div className="flex justify-center">
+              <Button
+                onClick={() => setLocation('/join')}
+                size="lg"
+                className="bg-white dark:bg-white text-black dark:text-blue-600 hover:bg-gray-100 dark:hover:bg-gray-100 font-bold text-xl px-12 py-6 rounded-xl shadow-lg transition-all duration-200 border-2 border-black dark:border-white"
+              >
+                🎪 Join Nearby Traveler
+              </Button>
+            </div>
+          </div>
+        </div>
+      </main>
       </div>
       <Footer />
     </div>
