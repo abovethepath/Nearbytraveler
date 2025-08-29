@@ -214,18 +214,11 @@ export default function LandingStreamlined() {
               
               {/* Founder attribution */}
               <div className="text-center">
-                <div className="flex items-center justify-center space-x-4 mb-4">
-                  {/* Circular Founder Photo Placeholder */}
-                  <div className="w-16 h-16 rounded-full bg-gradient-to-r from-orange-400 to-blue-500 p-1 shadow-lg">
-                    <div className="w-full h-full rounded-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center">
-                      <span className="text-lg font-bold text-gray-600 dark:text-gray-300">AL</span>
-                    </div>
-                  </div>
-                  
+                <div className="mb-4">
                   {/* Name & Title */}
-                  <div className="text-left">
+                  <div className="text-center">
                     <p className="text-lg font-bold text-black dark:text-white">
-                      Aaron Lefkowitz
+                      — Aaron Lefkowitz
                     </p>
                     <p className="text-sm text-gray-600 dark:text-gray-400">
                       Founder
