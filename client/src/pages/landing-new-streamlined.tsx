@@ -55,6 +55,9 @@ export default function LandingStreamlined() {
             <div className="mx-auto max-w-6xl px-6 py-20 grid gap-8 md:grid-cols-2 items-center">
               {/* Left text side */}
               <div>
+                <div className="mb-4 inline-block rounded-full bg-orange-50 dark:bg-orange-900/30 px-4 py-1 text-sm font-medium text-orange-700 dark:text-orange-400">
+                  🚀 Now Launching: Be Among the First to Connect Globally
+                </div>
                 <h1 className="text-4xl md:text-5xl font-semibold tracking-tight text-zinc-900 dark:text-white">
                   Skip the Tourist Traps. <br /> Find Real Connections That Last.
                 </h1>
