@@ -109,7 +109,7 @@ export default function CouchsurfingLanding() {
                     — Aaron Lefkowitz, Founder & Fellow Couchsurfer
                   </p>
                   <p className="text-sm md:text-base lg:text-lg text-zinc-600 dark:text-zinc-300 mb-4">
-                    <strong className="text-orange-600 dark:text-orange-400 text-base md:text-lg lg:text-xl">Connect with travelers based on shared interests, not just accommodation needs.</strong>
+                    <strong className="text-blue-600 dark:text-blue-400 text-base md:text-lg lg:text-xl">Connect with travelers based on shared interests, not just accommodation needs.</strong>
                   </p>
                   <p className="text-sm md:text-base lg:text-lg text-zinc-700 dark:text-zinc-200 font-medium">
                     Host when you want. Travel when you can. Meet travelers always.
