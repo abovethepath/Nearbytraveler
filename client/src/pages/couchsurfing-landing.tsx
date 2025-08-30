@@ -207,6 +207,10 @@ export default function CouchsurfingLanding() {
                 <Calendar className="w-5 h-5 sm:w-6 sm:h-6 text-orange-600 mr-3 sm:mr-4 mt-1 flex-shrink-0" />
                 <span>Search for and match with others going to the same events that you are</span>
               </li>
+              <li className="flex items-start">
+                <Building2 className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 mr-3 sm:mr-4 mt-1 flex-shrink-0" />
+                <span>Find local businesses offering traveler specific discounts</span>
+              </li>
             </ul>
           </div>
         </section>
