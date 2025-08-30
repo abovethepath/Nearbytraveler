@@ -342,7 +342,7 @@ const createProfileSchema = (userType: string) => {
       sexualPreference: z.array(z.string()).default([]),
       sexualPreferenceVisible: z.boolean().default(false),
       secretActivities: z.string().optional(),
-      travelingWithChildren: z.boolean().default(false),
+      hasChildren: z.boolean().default(false),
       childrenAges: z.string().max(100, "Children ages must be 100 characters or less").optional(),
       isVeteran: z.boolean().default(false),
       isActiveDuty: z.boolean().default(false),
@@ -856,7 +856,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         gender: z.string().optional(),
         sexualPreference: z.array(z.string()).optional(),
         sexualPreferenceVisible: z.boolean().default(false),
-        travelingWithChildren: z.boolean().default(false),
+        hasChildren: z.boolean().default(false),
         childrenAges: z.string().max(100, "Children ages must be 100 characters or less").optional(),
         isVeteran: z.boolean().default(false),
         isActiveDuty: z.boolean().default(false),
@@ -1327,7 +1327,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       sexualPreference: [],
       sexualPreferenceVisible: false,
       travelStyle: [],
-      travelingWithChildren: false,
+      hasChildren: false,
       childrenAges: "",
       isVeteran: false,
       isActiveDuty: false,
@@ -1405,7 +1405,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           customEvents: (user as any).customEvents || "",
         });
       } else {
-        const travelingWithChildrenValue = !!(user as any).travelingWithChildren;
+        const hasChildrenValue = !!(user as any).hasChildren;
         
         profileForm.reset({
           bio: user.bio || "",
@@ -1424,7 +1424,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           travelHow: user.travelHow || "",
           travelBudget: user.travelBudget || "",
           travelGroup: user.travelGroup || "",
-          travelingWithChildren: travelingWithChildrenValue,
+          hasChildren: hasChildrenValue,
           childrenAges: (user as any).children_ages || (user as any).childrenAges || "",
           isVeteran: Boolean((user as any).is_veteran || user.isVeteran),
           isActiveDuty: Boolean((user as any).is_active_duty || user.isActiveDuty),
@@ -1438,7 +1438,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         
         // Force set the value after reset to ensure React Hook Form properly registers it
         setTimeout(() => {
-          profileForm.setValue('travelingWithChildren', travelingWithChildrenValue);
+          profileForm.setValue('hasChildren', hasChildrenValue);
         }, 100);
       }
     }
@@ -1518,7 +1518,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           sexualPreference: user.sexualPreference || [],
           sexualPreferenceVisible: !!user.sexualPreferenceVisible,
           travelStyle: user.travelStyle || [],
-          travelingWithChildren: !!user.travelingWithChildren,
+          hasChildren: !!user.hasChildren,
           childrenAges: user.childrenAges || (user as any).children_ages || "",
           isVeteran: !!user.isVeteran || !!((user as any).is_veteran),
           isActiveDuty: !!user.isActiveDuty || !!((user as any).is_active_duty),
@@ -2977,7 +2977,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       } : {
         ...data,
         // Only include traveler fields if they exist in the data
-        ...((data as any).hasOwnProperty('travelingWithChildren') && { travelingWithChildren: !!(data as any).travelingWithChildren }),
+        ...((data as any).hasOwnProperty('hasChildren') && { hasChildren: !!(data as any).hasChildren }),
         ...((data as any).hasOwnProperty('ageVisible') && { ageVisible: !!(data as any).ageVisible }),
         ...((data as any).hasOwnProperty('sexualPreferenceVisible') && { sexualPreferenceVisible: !!(data as any).sexualPreferenceVisible }),
         // Always include veteran status fields
@@ -3043,7 +3043,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             sexualPreference: updatedUser.sexualPreference || [],
             sexualPreferenceVisible: updatedUser.sexualPreferenceVisible !== undefined ? updatedUser.sexualPreferenceVisible : false,
             travelStyle: updatedUser.travelStyle || [],
-            travelingWithChildren: updatedUser.travelingWithChildren === true,
+            hasChildren: updatedUser.hasChildren === true,
             childrenAges: (updatedUser as any).childrenAges || "",
             isVeteran: updatedUser.isVeteran !== undefined ? updatedUser.isVeteran : false,
             isActiveDuty: updatedUser.isActiveDuty !== undefined ? updatedUser.isActiveDuty : false,
@@ -3088,9 +3088,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     console.log('🔥 Form valid:', profileForm.formState.isValid);
     
     // Clear children ages if traveling with children is turned off (only for non-business users)
-    if (user?.userType !== 'business' && 'travelingWithChildren' in data && !data.travelingWithChildren) {
+    if (user?.userType !== 'business' && 'hasChildren' in data && !data.hasChildren) {
       (data as any).childrenAges = "";
-      console.log('🔥 FORM SUBMIT: Cleared childrenAges because travelingWithChildren is false');
+      console.log('🔥 FORM SUBMIT: Cleared childrenAges because hasChildren is false');
     }
     
     // Process custom text entries for business users
@@ -3724,6 +3724,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     </div>
                   )}
 
+                  {/* Children Info for non-business users */}
+                  {user?.userType !== 'business' && user?.childrenAges && user?.childrenAges !== 'None' && user?.childrenAges.trim() !== '' && (
+                    <div className="flex items-start">
+                      <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">Children:</span>
+                      <span className="flex-1 break-words">Ages {user.childrenAges}</span>
+                    </div>
+                  )}
+
 
                   {user.sexualPreferenceVisible && user.sexualPreference && (
                     <div className="flex items-start">
@@ -3746,7 +3754,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     </div>
                   )}
 
-                  {user.userType !== 'business' && user.travelingWithChildren && (
+                  {user.userType !== 'business' && user.hasChildren && (
                     <div className="flex items-start">
                       <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">Family:</span>
                       <span className="flex-1 break-words flex items-center gap-1">
@@ -8206,16 +8214,16 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     
                     <FormField
                       control={profileForm.control}
-                      name="travelingWithChildren"
+                      name="hasChildren"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Are you traveling with children?</FormLabel>
+                          <FormLabel>Do you have children?</FormLabel>
                           <FormControl>
                             <div className="space-y-2 border rounded-md p-3">
                               <div className="flex items-center space-x-2">
                                 <input
                                   type="checkbox"
-                                  id="traveling-with-children"
+                                  id="have-children"
                                   checked={!!field.value}
                                   onChange={(e) => {
                                     const checked = e.target.checked;
@@ -8223,13 +8231,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                     // Don't clear children ages - keep them for matching purposes
                                   }}
                                   className="h-4 w-4 border-gray-300 rounded text-purple-600 focus:ring-purple-500"
-                                  data-testid="checkbox-traveling-with-children"
+                                  data-testid="checkbox-have-children"
                                 />
                                 <label 
-                                  htmlFor="traveling-with-children" 
+                                  htmlFor="have-children" 
                                   className="text-sm font-medium text-gray-700 dark:text-white cursor-pointer"
                                 >
-                                  Yes, I'm traveling with children
+                                  Yes, I have children
                                 </label>
                               </div>
                             </div>
@@ -8425,86 +8433,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
 
 
-              {/* Military Status Section */}
-              <div className="space-y-4">
-                <div className="border-t pt-4">
-                  <h3 className="text-lg font-semibold mb-3 text-gray-900 dark:text-white">Military Status</h3>
-                
-                {/* Veteran Status */}
-                <FormField
-                  control={profileForm.control}
-                  name="isVeteran"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-600">
-                      <div className="space-y-0.5">
-                        <FormLabel className="text-gray-900 dark:text-white">{user?.userType === 'business' ? 'Veteran Owned Business' : 'I am a Veteran'}</FormLabel>
-                        <div className="text-sm text-gray-500 dark:text-gray-400">
-                          {user?.userType === 'business' 
-                            ? 'Check if your business is veteran-owned'
-                            : 'Check if you have served in the military and are now a veteran'
-                          }
-                        </div>
-                      </div>
-                      <FormControl>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={() => {
-                            const newValue = !field.value;
-                            field.onChange(newValue);
-                            // If setting veteran to true, set active duty to false
-                            if (newValue) {
-                              profileForm.setValue('isActiveDuty', false);
-                            }
-                          }}
-                          className={`flex items-center gap-2 ${field.value ? 'bg-red-100 border-red-300 text-red-700 dark:bg-red-900/20 dark:border-red-600 dark:text-red-200' : 'dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200'}`}
-                        >
-                          {field.value ? '✓ Veteran' : 'Not Veteran'}
-                        </Button>
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-
-                {/* Active Duty Status */}
-                <FormField
-                  control={profileForm.control}
-                  name="isActiveDuty"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-600">
-                      <div className="space-y-0.5">
-                        <FormLabel className="text-gray-900 dark:text-white">{user?.userType === 'business' ? 'Active Duty Owned Business' : 'I am Active Duty'}</FormLabel>
-                        <div className="text-sm text-gray-500 dark:text-gray-400">
-                          {user?.userType === 'business'
-                            ? 'Check if your business is active duty-owned'
-                            : 'Check if you are currently serving in the military on active duty'
-                          }
-                        </div>
-                      </div>
-                      <FormControl>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={() => {
-                            const newValue = !field.value;
-                            field.onChange(newValue);
-                            // If setting active duty to true, set veteran to false
-                            if (newValue) {
-                              profileForm.setValue('isVeteran', false);
-                            }
-                          }}
-                          className={`flex items-center gap-2 ${field.value ? 'bg-blue-100 border-blue-300 text-blue-700 dark:bg-blue-900/20 dark:border-blue-600 dark:text-blue-200' : 'dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200'}`}
-                        >
-                          {field.value ? '✓ Active Duty' : 'Not Active Duty'}
-                        </Button>
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-              </div>
-            </div>
 
             {/* Diversity Business Ownership - Only show for business users */}
             {user?.userType === 'business' && (
