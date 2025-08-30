@@ -388,7 +388,7 @@ export default function CouchsurfingLanding() {
           </div>
 
           {/* The Big Reveal */}
-          <div className="bg-gradient-to-r from-orange-500 to-pink-600 rounded-2xl p-8 text-white text-center">
+          <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl p-8 text-white text-center">
             <h3 className="text-2xl sm:text-3xl font-bold mb-4">
               Now We Can All Connect
             </h3>
