@@ -21,7 +21,6 @@ export default function EventsLanding() {
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900">
       
-      <ThemeToggle />
       <LandingHeader />
       <LandingHeaderSpacer />
       
@@ -33,9 +32,6 @@ export default function EventsLanding() {
             <>
             {/* Left text side */}
             <div>
-              <div className="mb-4 inline-block rounded-full bg-orange-50 dark:bg-orange-900/30 px-4 py-1 text-sm font-medium text-orange-700 dark:text-orange-400">
-                🚀 Now Launching: Be Among the First to Connect Globally
-              </div>
               <h1 className="text-4xl md:text-5xl font-semibold tracking-tight text-zinc-900 dark:text-white">
                 Join User Created Events
               </h1>

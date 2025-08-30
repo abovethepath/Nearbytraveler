@@ -39,9 +39,6 @@ export default function NetworkingHero({ isAirbnbStyle = true }: NetworkingHeroP
       <div className="mx-auto max-w-7xl px-6 py-8 grid gap-8 md:grid-cols-5 items-center">
         {/* Left text side */}
         <div className="md:col-span-3">
-          <div className="mb-4 inline-block rounded-full bg-orange-50 dark:bg-orange-900/30 px-4 py-1 text-sm font-medium text-orange-700 dark:text-orange-400">
-            🚀 Now Launching: Be Among the First to Connect Globally
-          </div>
           <div className="text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight text-zinc-900 dark:text-white">
             <h1>Networking, Reinvented</h1>
           </div>
