@@ -197,7 +197,7 @@ export default function CouchsurfingLanding() {
               FOR EXPERIENCED HOSTS
             </span>
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-zinc-900 dark:text-white mb-4 sm:mb-6 px-4">
-              We Know You've <span className="text-orange-600 dark:text-orange-400">Loved Hosting</span>
+              We Know You've <span className="text-black dark:text-black">Loved Hosting</span>
             </h2>
             <p className="text-base md:text-lg lg:text-xl text-gray-600 dark:text-gray-300 max-w-4xl mx-auto leading-relaxed px-4">
               If you've hosted before, you know the magic: meeting fascinating people, sharing your city, learning about new cultures. But hosting can also be exhausting, unpredictable, and sometimes just not possible with work or family life. That doesn't mean you're less generous — it just means life changes. With Nearby Traveler, you can keep the spirit of cultural exchange alive in a way that works for you today.
