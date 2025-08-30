@@ -53,7 +53,7 @@ export default function LandingNavbar() {
             <Link href="/auth" className="bg-gray-100 dark:bg-blue-600 hover:bg-gray-200 dark:hover:bg-blue-700 text-black dark:text-white border-2 border-gray-300 dark:border-transparent px-4 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out whitespace-nowrap">
               Sign In
             </Link>
-            <Link href="/join" className="bg-black dark:bg-gradient-to-r dark:from-blue-500 dark:to-orange-500 hover:bg-gray-800 dark:hover:from-blue-600 dark:hover:to-orange-600 text-white dark:text-white border-2 border-black dark:border-transparent px-4 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out whitespace-nowrap">
+            <Link href="/join" className="bg-orange-500 dark:bg-orange-500 hover:bg-orange-600 dark:hover:bg-orange-600 text-white dark:text-white border-2 border-orange-500 dark:border-orange-500 px-4 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out whitespace-nowrap">
               Join Now
             </Link>
           </div>
@@ -146,6 +146,12 @@ export default function LandingNavbar() {
               <div className="flex justify-center mb-2">
                 <ThemeToggle position="relative" />
               </div>
+              <Link href="/join" 
+                className="bg-orange-500 dark:bg-orange-500 hover:bg-orange-600 dark:hover:bg-orange-600 text-white dark:text-white border-2 border-orange-500 dark:border-orange-500 text-center px-4 py-3 rounded-lg text-base font-medium transition-all duration-200 active:scale-95 shadow-lg touch-manipulation mb-2"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Join Now
+              </Link>
               <Link href="/auth" 
                 className="bg-gray-100 dark:bg-blue-600 hover:bg-gray-200 dark:hover:bg-blue-700 text-black dark:text-white border-2 border-gray-300 dark:border-transparent text-center px-4 py-3 rounded-lg text-base font-medium transition-all duration-200 active:scale-95 shadow-lg touch-manipulation"
                 onClick={() => setMobileMenuOpen(false)}
