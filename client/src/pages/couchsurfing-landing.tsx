@@ -100,7 +100,7 @@ export default function CouchsurfingLanding() {
                   A Letter to the Couchsurfing Community
                 </h1>
               </div>
-              <div className="mt-1 sm:mt-2 max-w-xl text-base md:text-lg lg:text-xl text-zinc-600 dark:text-zinc-300 overflow-hidden relative h-[360px] sm:h-[380px] md:h-[400px]">
+              <div className="mt-1 sm:mt-2 max-w-xl text-base md:text-lg lg:text-xl text-zinc-600 dark:text-zinc-300 overflow-hidden relative h-[420px] sm:h-[440px] md:h-[460px]">
                 <div className="absolute top-0 left-0 w-full animate-in slide-in-from-left-full fade-in duration-700">
                   <blockquote className="text-base md:text-lg lg:text-xl text-zinc-600 dark:text-zinc-300 leading-relaxed border-l-4 border-blue-500 pl-4 sm:pl-6 mb-4 sm:mb-6">
                     "As a 15-year Couchsurfing host and traveler, I've had some of the best moments of my life meeting people through the community. But over time, I realized I couldn't always host, I couldn't always find a couch — yet I always wanted to meet travelers. That's why I created Nearby Traveler."
@@ -108,10 +108,12 @@ export default function CouchsurfingLanding() {
                   <p className="text-sm md:text-base lg:text-lg text-zinc-500 dark:text-zinc-400 mb-4 sm:mb-6">
                     — Aaron Lefkowitz, Founder & Fellow Couchsurfer
                   </p>
-                  <p className="text-sm md:text-base lg:text-lg text-zinc-600 dark:text-zinc-300 mb-4">
-                    <strong className="text-blue-600 dark:text-blue-400 text-base md:text-lg lg:text-xl">Connect with travelers based on shared interests, not just accommodation needs.</strong>
-                  </p>
-                  <p className="text-sm md:text-base lg:text-lg text-zinc-700 dark:text-zinc-200 font-medium">
+                  <div className="bg-blue-50 dark:bg-blue-900/30 rounded-lg p-4 border-l-4 border-blue-500 mb-4">
+                    <p className="text-sm md:text-base lg:text-lg font-bold text-blue-700 dark:text-blue-300">
+                      Connect with travelers based on shared interests, not just accommodation needs.
+                    </p>
+                  </div>
+                  <p className="text-sm md:text-base lg:text-lg text-zinc-700 dark:text-zinc-200 font-medium italic">
                     Host when you want. Travel when you can. Meet travelers always.
                   </p>
                 </div>
