@@ -358,10 +358,10 @@ export default function LandingStreamlined() {
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4">
               This Is How Lives Change Forever
             </h2>
-            <p className="text-sm text-gray-600 dark:text-gray-300 mb-2 max-w-3xl mx-auto font-medium">
+            <p className="text-sm md:text-base lg:text-lg text-gray-600 dark:text-gray-300 mb-2 max-w-3xl mx-auto font-medium">
               When travelers and locals connect, magic happens.
             </p>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mb-8 max-w-2xl mx-auto italic">
+            <p className="text-sm md:text-base text-gray-500 dark:text-gray-400 mb-8 max-w-2xl mx-auto italic">
               One conversation. One shared moment. Everything changes.
             </p>
             
@@ -421,9 +421,18 @@ export default function LandingStreamlined() {
               <p className="text-sm text-gray-600 dark:text-gray-300 font-medium mb-2">
                 This isn't just travel. This is transformation.
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400 italic">
+              <p className="text-xs text-gray-500 dark:text-gray-400 italic mb-6">
                 Join thousands who've already discovered their new selves.
               </p>
+              <Button 
+                onClick={() => {
+                  trackEvent('signup_cta_click', 'landing_page', 'transformation_join_now');
+                  setLocation('/join');
+                }}
+                className="bg-black hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-100 text-white dark:text-black font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
+              >
+                Join Now
+              </Button>
             </div>
           </div>
         </div>
