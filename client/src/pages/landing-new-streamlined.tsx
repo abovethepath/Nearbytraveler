@@ -283,7 +283,7 @@ export default function LandingStreamlined() {
 
                   {/* Quote */}
                   <blockquote className="text-balance text-lg leading-relaxed text-zinc-800 dark:text-zinc-200 md:text-xl max-w-3xl mx-auto">
-                    "For 15 years I opened my home to 400+ travelers from 50 countries. I learned what makes travel unforgettable isn't the sites — it's the people you share them with. Too often, those connections are left to luck. I created Nearby Traveler so no one has to explore — or live in their own city — disconnected."
+                    "I was tired of touring cities alone while amazing people walked past me every day. Travelers spend billions on flights, hotels, and tours — yet the most valuable part of a trip, the people you meet, is left to chance. After 15 years of hosting 400+ travelers from 50 countries, I saw first-hand how one single connection can change everything. I built Nearby Traveler so no one has to explore — or live in their own city — without meaningful connections."
                   </blockquote>
 
                   {/* Attribution */}
