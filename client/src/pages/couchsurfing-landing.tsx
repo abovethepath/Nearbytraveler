@@ -179,7 +179,7 @@ export default function CouchsurfingLanding() {
               </li>
               <li className="flex items-start">
                 <RefreshCw className="w-5 h-5 sm:w-6 sm:h-6 text-pink-600 mr-3 sm:mr-4 mt-1 flex-shrink-0" />
-                <span>Stay connected across trips</span>
+                <span>When you're busy hosting, help your guests meet other travelers</span>
               </li>
               <li className="flex items-start">
                 <ShieldCheck className="w-5 h-5 sm:w-6 sm:h-6 text-indigo-600 mr-3 sm:mr-4 mt-1 flex-shrink-0" />
