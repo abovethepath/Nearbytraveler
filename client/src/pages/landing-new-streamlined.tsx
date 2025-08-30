@@ -151,7 +151,7 @@ export default function LandingStreamlined() {
                     {headlines[currentHeadline]} <br /> {subtexts[currentSubtext]}
                   </h1>
                 </div>
-                <div className="mt-3 sm:mt-4 max-w-xl text-sm text-zinc-600 dark:text-zinc-300 overflow-hidden relative h-[60px] sm:h-[80px]">
+                <div className="mt-3 sm:mt-4 max-w-xl text-sm text-zinc-600 dark:text-zinc-300 overflow-hidden relative h-[80px] sm:h-[100px] md:h-[120px]">
                   <p 
                     key={currentSubtext}
                     className="absolute top-0 left-0 w-full animate-in slide-in-from-left-full fade-in duration-700"
