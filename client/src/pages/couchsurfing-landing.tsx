@@ -110,10 +110,10 @@ export default function CouchsurfingLanding() {
             {/* Right image side */}
             <div className="flex flex-col items-center order-first md:order-last">
               {/* Rotating wisdom sayings above static quote */}
-              <div className="mb-1 text-center w-full overflow-hidden relative h-[20px] sm:h-[24px]">
+              <div className="mb-1 text-center w-full overflow-hidden relative h-[20px] sm:h-[24px] md:h-[28px]">
                 <p 
                   key={currentWisdom}
-                  className="absolute top-0 left-0 w-full text-xs font-medium text-zinc-800 dark:text-zinc-200 italic animate-in slide-in-from-right-full fade-in duration-700 px-2"
+                  className="absolute top-0 left-0 w-full text-xs md:text-sm font-medium text-zinc-800 dark:text-zinc-200 italic animate-in slide-in-from-right-full fade-in duration-700 px-2"
                 >
                   <span className="sm:hidden">{wisdomSayingsMobile[currentWisdom]}</span>
                   <span className="hidden sm:inline">{wisdomSayings[currentWisdom]}</span>
@@ -122,7 +122,7 @@ export default function CouchsurfingLanding() {
               
               {/* Static powerful quote */}
               <div className="mb-2 text-center w-full">
-                <p className="text-xs font-medium text-zinc-800 dark:text-zinc-200 italic px-2">
+                <p className="text-xs md:text-sm font-medium text-zinc-800 dark:text-zinc-200 italic px-2">
                   <span className="sm:hidden">Travel doesn't change you — people do.</span>
                   <span className="hidden sm:inline">Travel doesn't change you — the people you meet do.</span>
                 </p>
@@ -136,7 +136,7 @@ export default function CouchsurfingLanding() {
                 />
               </div>
               
-              <p className="mt-2 text-xs italic text-orange-600 text-center">
+              <p className="mt-2 text-xs md:text-sm italic text-orange-600 text-center">
                 Where Local Experiences Meet Worldwide Connections
               </p>
             </div>
