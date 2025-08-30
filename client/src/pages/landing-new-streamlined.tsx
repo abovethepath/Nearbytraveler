@@ -158,13 +158,20 @@ export default function LandingStreamlined() {
 
               {/* Right image side */}
               <div className="md:col-span-2 flex flex-col items-center order-first md:order-last">
-                {/* Rotating wisdom sayings above photo */}
-                <div className="mb-4 text-center w-full overflow-hidden relative h-[40px] sm:h-[48px]">
+                {/* Rotating wisdom sayings above static quote */}
+                <div className="mb-2 text-center w-full overflow-hidden relative h-[40px] sm:h-[48px]">
                   <p 
                     key={currentWisdom}
                     className="absolute top-0 left-0 w-full text-sm sm:text-base font-medium text-zinc-800 dark:text-zinc-200 italic animate-in slide-in-from-right-full fade-in duration-700"
                   >
                     {wisdomSayings[currentWisdom]}
+                  </p>
+                </div>
+                
+                {/* Static powerful quote */}
+                <div className="mb-4 text-center w-full">
+                  <p className="text-sm sm:text-base font-medium text-zinc-800 dark:text-zinc-200 italic">
+                    Travel doesn't change you — the people you meet do.
                   </p>
                 </div>
                 <div className="overflow-hidden relative w-full max-w-sm sm:max-w-md h-[250px] sm:h-[300px] md:h-[400px] rounded-2xl">
