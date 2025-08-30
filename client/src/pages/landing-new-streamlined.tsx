@@ -176,7 +176,7 @@ export default function LandingStreamlined() {
                 
                 {/* Static powerful quote */}
                 <div className="mb-2 text-center w-full">
-                  <p className="text-xs md:text-sm font-medium text-zinc-800 dark:text-zinc-200 italic px-2">
+                  <p className="text-sm md:text-lg lg:text-xl font-bold text-zinc-800 dark:text-zinc-200 italic px-2">
                     <span className="sm:hidden">Travel doesn't change you — people do.</span>
                     <span className="hidden sm:inline">Travel doesn't change you — the people you meet do.</span>
                   </p>
@@ -345,16 +345,6 @@ export default function LandingStreamlined() {
                       Here's to connections that last beyond the trip.
                     </p>
                     <div className="h-2 w-16 rounded-full bg-gradient-to-r from-orange-500 to-blue-600" />
-                  </div>
-                  
-                  {/* Inspiring Quotes */}
-                  <div className="pt-6 space-y-3">
-                    <p className="text-sm md:text-lg lg:text-xl font-bold text-zinc-800 dark:text-zinc-200 italic">
-                      Every stranger is a friend you haven't met yet.
-                    </p>
-                    <p className="text-sm md:text-lg lg:text-xl font-bold text-zinc-800 dark:text-zinc-200 italic">
-                      Travel doesn't change you — the people you meet do.
-                    </p>
                   </div>
                 </div>
               </div>
