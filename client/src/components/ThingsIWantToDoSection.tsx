@@ -272,9 +272,9 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
 
   if (loadingCityActivities || loadingJoinedEvents || loadingEventInterests) {
     return (
-      <div className="bg-gray-800 rounded-lg p-6">
-        <h2 className="text-lg font-semibold text-white mb-6">⭐ Things I Want to Do in...</h2>
-        <div className="text-gray-400">Loading...</div>
+      <div className="bg-slate-100 dark:bg-gray-800 rounded-lg p-6">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">⭐ Things I Want to Do in...</h2>
+        <div className="text-gray-600 dark:text-gray-400">Loading...</div>
       </div>
     );
   }
@@ -285,8 +285,8 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
   }
 
   return (
-    <div className={`bg-gray-800 rounded-lg ${isMobile ? 'p-4' : 'p-6'}`}>
-      <h2 className={`font-semibold text-white mb-4 ${isMobile ? 'text-base' : 'text-lg'}`}>
+    <div className={`bg-slate-100 dark:bg-gray-800 rounded-lg ${isMobile ? 'p-4' : 'p-6'}`}>
+      <h2 className={`font-semibold text-gray-900 dark:text-white mb-4 ${isMobile ? 'text-base' : 'text-lg'}`}>
         ⭐ Things I Want to Do in...
       </h2>
 
@@ -298,7 +298,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
               <div key={cityName}>
                 {/* City Header */}
                 <div className={`flex items-center justify-between mb-3 ${isMobile ? 'flex-col gap-2 items-start' : ''}`}>
-                  <h3 className={`font-semibold text-red-500 ${isMobile ? 'text-base' : 'text-lg'}`}>
+                  <h3 className={`font-semibold text-red-600 dark:text-red-500 ${isMobile ? 'text-base' : 'text-lg'}`}>
                     {cityName}
                   </h3>
                   {isOwnProfile && (
@@ -373,10 +373,10 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
         </div>
       ) : (
         <div className="text-center py-8">
-          <p className={`text-gray-400 mb-4 ${isMobile ? 'text-sm' : 'text-base'}`}>
+          <p className={`text-gray-600 dark:text-gray-400 mb-4 ${isMobile ? 'text-sm' : 'text-base'}`}>
             No activities or events selected yet.
           </p>
-          <p className={`text-gray-500 ${isMobile ? 'text-xs' : 'text-sm'}`}>
+          <p className={`text-gray-500 dark:text-gray-500 ${isMobile ? 'text-xs' : 'text-sm'}`}>
             Go to city match pages to select activities and events!
           </p>
         </div>
