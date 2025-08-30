@@ -47,10 +47,6 @@ export default function BusinessCustomLanding() {
           <div className="mx-auto max-w-6xl px-4 sm:px-6 py-4 sm:py-8 grid gap-6 sm:gap-8 md:grid-cols-2 items-center">
             {/* Left text side */}
             <div>
-              <div className="mb-3 sm:mb-4 inline-block rounded-full bg-blue-50 dark:bg-blue-900/30 px-3 sm:px-4 py-1 text-xs sm:text-sm font-medium text-blue-700 dark:text-blue-400">
-                <Store className="inline w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                For Business Owners
-              </div>
               <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-semibold tracking-tight text-zinc-900 dark:text-white leading-tight">
                 Trouble Meeting Tourists <br /> as a Business?
               </h1>

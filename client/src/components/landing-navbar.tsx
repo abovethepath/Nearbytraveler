@@ -17,7 +17,7 @@ export default function LandingNavbar() {
               <div className="transform scale-150 sm:scale-[1.75] pt-2">
                 <Logo variant="navbar" />
               </div>
-              <span className="hidden sm:inline text-xs text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/30 px-2 py-1 rounded-full font-medium">
+              <span className="text-xs text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/30 px-2 py-1 rounded-full font-medium">
                 Beta Launch
               </span>
             </Link>

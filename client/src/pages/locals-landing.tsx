@@ -28,9 +28,6 @@ export default function LocalsLanding() {
             <>
             {/* Left text side */}
             <div className="md:col-span-3">
-              <div className="mb-3 sm:mb-4 inline-block rounded-full bg-orange-50 dark:bg-orange-900/30 px-3 sm:px-4 py-1 text-xs sm:text-sm font-medium text-orange-700 dark:text-orange-400">
-                🚀 Now Launching: Be Among the First to Connect Globally
-              </div>
               <div className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-semibold tracking-tight text-zinc-900 dark:text-white">
                 <h1>Be the Local You'd Want to Meet</h1>
               </div>
