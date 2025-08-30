@@ -3940,9 +3940,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 {/* Unified Edit Form for All Preferences */}
                 {isOwnProfile && (editingInterests && editingActivities && editingEvents) ? (
                   <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-600">
-                    <div className="flex items-center justify-between mb-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
                       <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Edit All Preferences</h3>
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 w-full sm:w-auto">
                         <Button 
                           onClick={async () => {
                             try {
@@ -3986,7 +3986,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             }
                           }}
                           disabled={false}
-                          className="bg-green-600 hover:bg-green-700 text-white"
+                          className="bg-green-600 hover:bg-green-700 text-white flex-1 sm:flex-none text-sm sm:text-base"
                         >
                           Save All Changes
                         </Button>
@@ -4004,7 +4004,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               events: user?.events || []
                             });
                           }}
-                          className="border-orange-500 text-orange-600 hover:bg-orange-50 dark:border-orange-400 dark:text-orange-400 dark:hover:bg-orange-900/20"
+                          className="border-orange-500 text-orange-600 hover:bg-orange-50 dark:border-orange-400 dark:text-orange-400 dark:hover:bg-orange-900/20 flex-1 sm:flex-none text-sm sm:text-base"
                         >
                           Cancel All
                         </Button>
@@ -4222,7 +4222,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         </div>
                         
                         {/* Bottom Save/Cancel Buttons */}
-                        <div className="flex gap-2 mt-6 pt-4 border-t border-gray-200 dark:border-gray-600">
+                        <div className="flex flex-col sm:flex-row gap-2 mt-6 pt-4 border-t border-gray-200 dark:border-gray-600">
                           <Button 
                             onClick={async () => {
                               try {
@@ -4244,7 +4244,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               }
                             }}
                             disabled={false}
-                            className="bg-green-600 hover:bg-green-700 text-white flex-1"
+                            className="bg-green-600 hover:bg-green-700 text-white flex-1 text-sm sm:text-base"
                           >
                             Save All Changes
                           </Button>
@@ -4265,7 +4265,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                 events: user?.events || []
                               });
                             }}
-                            className="border-orange-500 text-orange-600 hover:bg-orange-50 dark:border-orange-400 dark:text-orange-400 dark:hover:bg-orange-900/20 flex-1"
+                            className="border-orange-500 text-orange-600 hover:bg-orange-50 dark:border-orange-400 dark:text-orange-400 dark:hover:bg-orange-900/20 flex-1 text-sm sm:text-base"
                           >
                             Cancel All
                           </Button>
