@@ -180,49 +180,49 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
         className="user-card card-hover border-gray-200 dark:border-gray-700 shadow-sm bg-white dark:bg-gray-800 overflow-hidden cursor-pointer h-fit"
         onClick={handleCardClick}
       >
-        {/* Compact Header */}
-        <div className="relative h-12 bg-gradient-to-r from-blue-500 to-purple-600">
-          <div className="absolute -bottom-4 left-3">
+        {/* Ultra Compact Header for Mobile */}
+        <div className="relative h-8 sm:h-12 bg-gradient-to-r from-blue-500 to-purple-600">
+          <div className="absolute -bottom-3 sm:-bottom-4 left-2 sm:left-3">
             <SimpleAvatar 
               user={user} 
-              size="sm" 
-              className="border-2 border-white shadow-sm w-8 h-8"
+              size="xs" 
+              className="border-2 border-white shadow-sm w-6 h-6 sm:w-8 sm:h-8"
             />
           </div>
         </div>
       
-        <CardContent className="p-3 pt-6">
-          {/* Compact User Info */}
+        <CardContent className="p-2 sm:p-3 pt-4 sm:pt-6">
+          {/* Ultra Compact User Info */}
           <div className="space-y-1">
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-white truncate">
+            <h3 className="text-xs sm:text-sm font-semibold text-gray-900 dark:text-white truncate">
               @{user.username}
             </h3>
             
-            <div className="text-xs text-gray-600 dark:text-gray-300 flex items-center gap-1">
-              📍 {getLocation()}
+            <div className="text-xs text-gray-600 dark:text-gray-300 flex items-center gap-1 truncate">
+              📍 <span className="truncate">{getLocation()}</span>
             </div>
             
-            {/* Compact Bio */}
+            {/* Compact Bio - Hidden on mobile for space */}
             {user.bio && (
-              <p className="text-xs text-gray-700 dark:text-gray-300 line-clamp-2 leading-tight">
+              <p className="hidden sm:block text-xs text-gray-700 dark:text-gray-300 line-clamp-1 leading-tight">
                 {user.bio}
               </p>
             )}
             
-            {/* Things in Common Badge - Compact */}
+            {/* Things in Common Badge - Ultra Compact */}
             {compatibilityData && (compatibilityData.sharedInterests?.length > 0 || compatibilityData.sharedActivities?.length > 0 || compatibilityData.sharedEvents?.length > 0) && (
-              <div className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full dark:bg-blue-900/30 dark:text-blue-400 inline-block">
+              <div className="bg-blue-100 text-blue-800 text-xs px-1 py-0.5 rounded-full dark:bg-blue-900/30 dark:text-blue-400 inline-block">
                 {(compatibilityData.sharedInterests?.length || 0) + (compatibilityData.sharedActivities?.length || 0) + (compatibilityData.sharedEvents?.length || 0)} in common
               </div>
             )}
             
-            {/* Compact Interests - Only show 1-2 on mobile */}
+            {/* Ultra Compact Interests - Only show 1 on mobile */}
             {(user.interests?.length || 0) > 0 && (
-              <div className="flex flex-wrap gap-1 mt-2">
-                {user.interests?.slice(0, 2).map((interest) => (
+              <div className="flex flex-wrap gap-1 mt-1">
+                {user.interests?.slice(0, 1).map((interest) => (
                   <span 
                     key={interest} 
-                    className="inline-flex items-center justify-center h-4 rounded-full px-2 text-xs font-medium leading-none whitespace-nowrap bg-blue-500 text-white"
+                    className="inline-flex items-center justify-center h-3 sm:h-4 rounded-full px-1 sm:px-2 text-xs font-medium leading-none whitespace-nowrap bg-blue-500 text-white truncate max-w-16 sm:max-w-none"
                   >
                     {interest}
                   </span>
@@ -230,44 +230,44 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
               </div>
             )}
             
-            {/* Compact Buttons */}
-            <div className="flex gap-1 mt-3">
+            {/* Ultra Compact Buttons */}
+            <div className="flex gap-1 mt-2 sm:mt-3">
               {(() => {
                 if (user.username === 'nearbytraveler' || connectionStatus?.status === 'accepted') {
                   return (
                     <Button 
-                      className="flex-1 bg-green-600 hover:bg-green-700 text-white text-xs px-2 py-1 h-7 min-w-0"
+                      className="flex-1 bg-green-600 hover:bg-green-700 text-white text-xs px-1 sm:px-2 py-1 h-6 sm:h-7 min-w-0"
                       disabled
                     >
-                      Connected
+                      ✓
                     </Button>
                   );
                 } else if (connectionStatus?.status === 'pending') {
                   return (
                     <Button 
-                      className="flex-1 bg-gray-500 text-white cursor-not-allowed text-xs px-2 py-1 h-7 min-w-0"
+                      className="flex-1 bg-gray-500 text-white cursor-not-allowed text-xs px-1 sm:px-2 py-1 h-6 sm:h-7 min-w-0"
                       disabled
                     >
-                      Pending
+                      ⏳
                     </Button>
                   );
                 } else {
                   return (
                     <Button 
-                      className="flex-1 bg-travel-blue hover:bg-blue-700 text-white text-xs px-2 py-1 h-7 min-w-0"
+                      className="flex-1 bg-travel-blue hover:bg-blue-700 text-white text-xs px-1 sm:px-2 py-1 h-6 sm:h-7 min-w-0"
                       onClick={handleConnect}
                       disabled={connectMutation.isPending}
                     >
-                      {connectMutation.isPending ? "..." : "Connect"}
+                      {connectMutation.isPending ? "..." : "+"}
                     </Button>
                   );
                 }
               })()}
               <Button 
-                className="flex-1 bg-orange-500 hover:bg-orange-600 text-white text-xs px-2 py-1 h-7 min-w-0"
+                className="flex-1 bg-orange-500 hover:bg-orange-600 text-white text-xs px-1 sm:px-2 py-1 h-6 sm:h-7 min-w-0"
                 onClick={() => setLocation(`/messages?userId=${user.id}`)}
               >
-                Message
+                💬
               </Button>
             </div>
           </div>
