@@ -3588,23 +3588,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       </section>
       
       {/* Main content section - Modern Sectioned Layout */}
-      <div className="w-full max-w-full mx-auto pb-4 px-4 sm:px-6 mt-2 overflow-x-hidden">
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-        </div>
-
+      <div className="w-full max-w-full mx-auto pb-20 sm:pb-4 px-2 sm:px-4 lg:px-6 mt-2 overflow-x-hidden">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
           {/* Main Content Column */}
           <div className="lg:col-span-2 space-y-4 sm:space-y-6">
@@ -3616,42 +3600,65 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             
             {/* About Section */}
             <Card className="mt-2 relative overflow-visible">
-              <CardHeader className="pb-4 px-4 sm:px-6 pt-4 sm:pt-6 flex items-start gap-3 flex-wrap min-w-0 w-full">
-                <CardTitle className="text-lg sm:text-xl font-bold break-words max-w-[calc(100%-3rem)] sm:max-w-none text-left leading-tight">
-                  ABOUT {user?.userType === 'business'
-                    ? (user?.businessName || user?.name || user?.username)
-                    : (user?.username || 'User')}
-                </CardTitle>
+              <CardHeader className="pb-4 px-4 sm:px-6 pt-4 sm:pt-6">
+                <div className="flex items-center justify-between w-full">
+                  <CardTitle className="text-lg sm:text-xl font-bold break-words text-left leading-tight flex-1 pr-2">
+                    ABOUT {user?.userType === 'business'
+                      ? (user?.businessName || user?.name || user?.username)
+                      : (user?.username || 'User')}
+                  </CardTitle>
 
-                {isOwnProfile && (
-                  <>
-                    {/* Icon-only on phones */}
-                    <Button
-                      size="icon"
-                      variant="outline"
-                      onClick={() => setIsEditMode(true)}
-                      className="ml-auto sm:hidden shrink-0"
-                      aria-label="Edit Profile"
-                    >
-                      <svg viewBox="0 0 24 24" className="w-4 h-4" fill="currentColor">
-                        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zm2.92 2.33H5v-.92l8.06-8.06.92.92L5.92 19.58zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
-                      </svg>
-                    </Button>
+                  {isOwnProfile && (
+                    <div className="flex-shrink-0">
+                      {/* Icon-only on phones */}
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setIsEditMode(true)}
+                        className="sm:hidden bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-700"
+                        aria-label="Edit Profile"
+                      >
+                        <Edit2 className="w-4 h-4" />
+                      </Button>
 
-                    {/* Labeled button on ≥ sm */}
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => setIsEditMode(true)}
-                      className="ml-auto hidden sm:inline-flex shrink-0"
-                    >
-                      Edit Profile
-                    </Button>
-                  </>
-                )}
+                      {/* Labeled button on ≥ sm */}
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setIsEditMode(true)}
+                        className="hidden sm:inline-flex bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-700"
+                      >
+                        <Edit2 className="w-4 h-4 mr-2" />
+                        Edit Profile
+                      </Button>
+                    </div>
+                  )}
+                </div>
               </CardHeader>
 
               <CardContent className="space-y-4 px-4 sm:px-6 pb-4 sm:pb-6 min-w-0 break-words overflow-visible">
+                {/* Edit Bio Quick Action for Mobile - Show for all users */}
+                {isOwnProfile && (
+                  <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3 mb-4 sm:hidden">
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-blue-800 dark:text-blue-200">
+                          {(!user?.bio || user?.bio.trim().length === 0) ? 'Add your bio' : 'Edit your bio'}
+                        </p>
+                        <p className="text-xs text-blue-600 dark:text-blue-300">Tell others about yourself</p>
+                      </div>
+                      <Button
+                        size="sm"
+                        onClick={() => setIsEditMode(true)}
+                        className="bg-blue-600 hover:bg-blue-700 text-white ml-2 flex-shrink-0"
+                        data-testid="button-edit-bio-mobile"
+                      >
+                        <Edit2 className="w-4 h-4 mr-1" />
+                        Edit Bio
+                      </Button>
+                    </div>
+                  </div>
+                )}
                 {/* Bio / Business Description */}
                 <div>
                   <p className="text-gray-900 dark:text-white leading-relaxed whitespace-pre-wrap break-words text-left">
@@ -9301,6 +9308,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           </div>
         </DialogContent>
       </Dialog>
+          </div>
+        </div>
+      </div>
       
       {/* Chatroom List Modal */}
       <Dialog open={showChatroomList} onOpenChange={setShowChatroomList}>
@@ -9663,6 +9673,10 @@ function EventOrganizerHubSection({ userId }: { userId: number }) {
         </div>
       </CardContent>
     </Card>
+          </div>
+        </div>
+      </div>
+    </>
   );
 }
 
