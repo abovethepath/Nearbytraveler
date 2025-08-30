@@ -222,18 +222,30 @@ export default function BusinessLanding() {
                   <h4 className="font-bold text-gray-900 dark:text-white text-xl">What Travelers Tell Us</h4>
                 </div>
               </div>
-              <div className="space-y-4 text-gray-700 dark:text-gray-300">
-                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg">
-                  <p className="italic">"I want to play pickleball while I'm in Los Angeles"</p>
-                  <p className="text-sm text-orange-600 mt-1">→ Perfect for sports facilities</p>
+              <div className="space-y-3 text-gray-700 dark:text-gray-300">
+                <div className="bg-white dark:bg-gray-800 p-3 rounded-lg">
+                  <p className="italic">"I want to do Happy Hours in LA"</p>
+                  <p className="text-sm text-orange-600 mt-1">→ Perfect for bars & restaurants</p>
                 </div>
-                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg">
-                  <p className="italic">"Looking for authentic Mexican food, not tourist traps"</p>
-                  <p className="text-sm text-orange-600 mt-1">→ Perfect for local restaurants</p>
+                <div className="bg-white dark:bg-gray-800 p-3 rounded-lg">
+                  <p className="italic">"I want to do bar crawls"</p>
+                  <p className="text-sm text-orange-600 mt-1">→ Perfect for nightlife venues</p>
                 </div>
-                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg">
-                  <p className="italic">"Want to explore street art scene in Los Angeles"</p>
+                <div className="bg-white dark:bg-gray-800 p-3 rounded-lg">
+                  <p className="italic">"I want to tour celebrity homes"</p>
                   <p className="text-sm text-orange-600 mt-1">→ Perfect for tour companies</p>
+                </div>
+                <div className="bg-white dark:bg-gray-800 p-3 rounded-lg">
+                  <p className="italic">"I want to go to the Getty"</p>
+                  <p className="text-sm text-orange-600 mt-1">→ Perfect for cultural attractions</p>
+                </div>
+                <div className="bg-white dark:bg-gray-800 p-3 rounded-lg">
+                  <p className="italic">"I want to go to TopGolf"</p>
+                  <p className="text-sm text-orange-600 mt-1">→ Perfect for entertainment venues</p>
+                </div>
+                <div className="bg-white dark:bg-gray-800 p-3 rounded-lg">
+                  <p className="italic">"I want to hit the gym while traveling"</p>
+                  <p className="text-sm text-orange-600 mt-1">→ Perfect for fitness centers</p>
                 </div>
               </div>
             </div>
