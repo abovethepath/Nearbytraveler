@@ -94,6 +94,26 @@ export default function LandingStreamlined() {
       <LandingHeaderSpacer />
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
+        {/* MOBILE-FIRST ROTATING SAYINGS - Above everything on mobile */}
+        <div className="block md:hidden pt-4 pb-6 text-center bg-white dark:bg-gray-900">
+          <div className="overflow-hidden relative h-[80px]">
+            <h2 
+              key={currentHeadline}
+              className="absolute top-0 left-0 w-full text-2xl font-bold tracking-tight text-zinc-900 dark:text-white animate-in slide-in-from-left-full fade-in duration-700"
+            >
+              {headlines[currentHeadline]}
+            </h2>
+          </div>
+          <div className="mt-2 overflow-hidden relative h-[50px]">
+            <p 
+              key={currentSubtext}
+              className="absolute top-0 left-0 w-full text-sm text-zinc-600 dark:text-zinc-300 animate-in slide-in-from-left-full fade-in duration-700"
+            >
+              {subtexts[currentSubtext]}
+            </p>
+          </div>
+        </div>
+        
         {/* HERO SECTION */}
         <div className="pt-8 pb-12 bg-white dark:bg-gray-900">
           {isAirbnbStyle ? (
