@@ -20,6 +20,24 @@ export default function CouchsurfingLanding() {
     "Meet Travelers Your Way?"
   ];
 
+  const [currentWisdom, setCurrentWisdom] = useState(0);
+  
+  const wisdomSayings = [
+    "The world becomes smaller when you open your door to it.",
+    "Every stranger is a friend you haven't met yet.",
+    "Home is wherever you find genuine human connection.",
+    "The best souvenirs are the people you meet along the way.",
+    "Traveling teaches you, but hosting transforms you."
+  ];
+  
+  const wisdomSayingsMobile = [
+    "Open your door, shrink the world.",
+    "Every stranger is a future friend.", 
+    "Home is where connections happen.",
+    "Best souvenirs are the people.",
+    "Travel teaches, hosting transforms."
+  ];
+
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 640);
@@ -37,6 +55,14 @@ export default function CouchsurfingLanding() {
 
     return () => clearInterval(interval);
   }, [headlines.length]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentWisdom((prev) => (prev + 1) % wisdomSayings.length);
+    }, 8000); // 8 seconds for wisdom sayings
+
+    return () => clearInterval(interval);
+  }, [wisdomSayings.length]);
 
   return (
     <div className="bg-white dark:bg-gray-900 font-sans">
@@ -82,12 +108,35 @@ export default function CouchsurfingLanding() {
             </div>
 
             {/* Right image side */}
-            <div className="flex justify-center order-first md:order-last">
+            <div className="flex flex-col items-center order-first md:order-last">
+              {/* Rotating wisdom sayings above static quote */}
+              <div className="mb-1 text-center w-full overflow-hidden relative h-[20px] sm:h-[24px]">
+                <p 
+                  key={currentWisdom}
+                  className="absolute top-0 left-0 w-full text-xs font-medium text-zinc-800 dark:text-zinc-200 italic animate-in slide-in-from-right-full fade-in duration-700 px-2"
+                >
+                  <span className="sm:hidden">{wisdomSayingsMobile[currentWisdom]}</span>
+                  <span className="hidden sm:inline">{wisdomSayings[currentWisdom]}</span>
+                </p>
+              </div>
+              
+              {/* Static powerful quote */}
+              <div className="mb-2 text-center w-full">
+                <p className="text-xs font-medium text-zinc-800 dark:text-zinc-200 italic px-2">
+                  <span className="sm:hidden">Travel doesn't change you — people do.</span>
+                  <span className="hidden sm:inline">Travel doesn't change you — the people you meet do.</span>
+                </p>
+              </div>
+              
               <img
                 src="/attached_assets/image_1756515286749.png"
                 alt="Couch surfing - literally surfing on a couch in the ocean"
                 className="rounded-2xl shadow-lg object-cover w-full max-w-sm sm:max-w-md h-auto"
               />
+              
+              <p className="mt-2 text-xs italic text-orange-600 text-center">
+                Where Local Experiences Meet Worldwide Connections
+              </p>
             </div>
           </div>
         </div>
