@@ -134,8 +134,8 @@ export default function EventsLanding() {
                 {/* Static powerful quote */}
                 <div className="mb-4 text-center w-full">
                   <p className="text-xs sm:text-sm font-medium text-zinc-800 dark:text-zinc-200 italic px-2">
-                    <span className="sm:hidden">Events create lasting bonds.</span>
-                    <span className="hidden sm:inline">Events create the strongest connections.</span>
+                    <span className="sm:hidden">Travel doesn't change you — people do.</span>
+                    <span className="hidden sm:inline">Travel doesn't change you — the people you meet do.</span>
                   </p>
                 </div>
                 <div className="overflow-hidden relative w-full max-w-sm sm:max-w-md h-[160px] sm:h-[200px] md:h-[280px] rounded-2xl">
