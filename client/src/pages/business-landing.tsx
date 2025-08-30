@@ -76,7 +76,7 @@ export default function BusinessLanding() {
               </h1>
               
               <p className="text-lg md:text-xl lg:text-2xl text-zinc-600 dark:text-zinc-300 leading-relaxed max-w-2xl">
-                Travelers tell us their interests, desired activities, food preferences, and travel plans. You get direct access to this goldmine of customer intent data.
+                Travelers tell us their interests, activities, and preferences. When they're near your business, your deals automatically push to their phone in real-time.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4">
@@ -103,16 +103,16 @@ export default function BusinessLanding() {
               {/* Value Proposition */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6 border-t border-gray-200 dark:border-gray-700">
                 <div className="text-center">
-                  <div className="text-lg font-bold text-orange-600">🍕 Food Preferences</div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">"I want authentic tacos"</div>
+                  <div className="text-lg font-bold text-orange-600">📍 Geo-Targeting</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">Push deals when travelers are nearby</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-lg font-bold text-blue-600">⛳ Activities</div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">"Looking for golf courses"</div>
+                  <div className="text-lg font-bold text-blue-600">🎯 Interest Matching</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">Connect based on exact preferences</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-lg font-bold text-green-600">🎯 Intent Data</div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">Direct access to customer wants</div>
+                  <div className="text-lg font-bold text-green-600">⚡ Real-Time Alerts</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">Instant notifications to their phone</div>
                 </div>
               </div>
             </div>
@@ -432,10 +432,10 @@ export default function BusinessLanding() {
               <div>
                 <h4 className="font-bold text-gray-900 dark:text-white mb-3">🎯 Customer Acquisition</h4>
                 <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-300">
-                  <li>✓ Direct access to travelers in your city</li>
+                  <li>✓ Push deals when travelers walk near your business</li>
                   <li>✓ Target by interests, not demographics</li>
                   <li>✓ Connect with locals seeking new experiences</li>
-                  <li>✓ Real-time customer matching</li>
+                  <li>✓ Real-time geolocation notifications</li>
                 </ul>
               </div>
               <div>
