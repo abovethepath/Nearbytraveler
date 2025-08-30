@@ -280,7 +280,7 @@ export default function LandingStreamlined() {
 
                   {/* Quote */}
                   <blockquote className="text-balance text-lg leading-relaxed text-zinc-800 dark:text-zinc-200 md:text-xl max-w-3xl mx-auto">
-                    "For 15 years I opened my home to 400+ travelers from 50 countries. I learned what makes travel unforgettable isn't the sites — it's the people you share them with. Too often, those connections are left to luck. I created Nearby Traveler so no one has to explore — or live in their own city — disconnected."
+                    "For 15 years, I watched 400+ travelers from 50 countries transform in my living room. A shy person from Japan becomes confident. A lonely traveler from Germany finds their tribe. A business owner from Brazil discovers new perspectives that change everything. I realized travel doesn't change you — the people you meet do. I built Nearby Traveler because everyone deserves to feel that life-changing magic."
                   </blockquote>
 
                   {/* Attribution */}
@@ -310,11 +310,14 @@ export default function LandingStreamlined() {
         {/* What's Possible Section */}
         <div className="py-16 bg-gradient-to-br from-orange-50 to-blue-50 dark:from-gray-800 dark:to-gray-900">
           <div className="max-w-6xl mx-auto px-4 text-center">
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-6">
-              What's Possible When Travelers Meet?
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4">
+              This Is How Lives Change Forever
             </h2>
-            <p className="text-sm text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto">
-              Real connections. Real adventures. Real life.
+            <p className="text-sm text-gray-600 dark:text-gray-300 mb-2 max-w-3xl mx-auto font-medium">
+              When travelers and locals connect, magic happens.
+            </p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-8 max-w-2xl mx-auto italic">
+              One conversation. One shared moment. Everything changes.
             </p>
             
             {/* Dynamic Activity Grid */}
@@ -369,9 +372,14 @@ export default function LandingStreamlined() {
               </div>
             </div>
             
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-8 italic">
-              The possibilities are endless when curious people connect.
-            </p>
+            <div className="mt-8 text-center">
+              <p className="text-sm text-gray-600 dark:text-gray-300 font-medium mb-2">
+                This isn't just travel. This is transformation.
+              </p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 italic">
+                Join thousands who've already discovered their new selves.
+              </p>
+            </div>
           </div>
         </div>
 
