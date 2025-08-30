@@ -418,6 +418,68 @@ export default function BusinessLanding() {
         </div>
       </section>
 
+      {/* DEALS & EVENTS SHOWCASE */}
+      <section className="py-16 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+              Create Deals & Events That Drive Traffic
+            </h2>
+            <p className="text-lg text-gray-600 dark:text-gray-300">
+              Turn traveler interests into profitable events and time-sensitive deals
+            </p>
+          </div>
+
+          {/* Scrolling examples of deals and events */}
+          <div className="overflow-x-auto scrollbar-hide mb-12">
+            <div className="flex gap-6 pb-4" style={{ width: 'max-content' }}>
+              <div className="bg-white dark:bg-gray-800 p-6 rounded-lg min-w-[320px] shadow-lg">
+                <div className="text-2xl mb-3">🍻</div>
+                <h4 className="font-bold text-gray-900 dark:text-white mb-2">Happy Hour Flash Deal</h4>
+                <p className="text-base md:text-lg italic text-gray-700 dark:text-gray-300 mb-2">"50% off drinks 5-7pm for travelers"</p>
+                <p className="text-sm text-blue-600">→ Bars & restaurants</p>
+              </div>
+              <div className="bg-white dark:bg-gray-800 p-6 rounded-lg min-w-[320px] shadow-lg">
+                <div className="text-2xl mb-3">🌮</div>
+                <h4 className="font-bold text-gray-900 dark:text-white mb-2">Taco Tuesday Event</h4>
+                <p className="text-base md:text-lg italic text-gray-700 dark:text-gray-300 mb-2">"2-for-1 tacos + meet fellow travelers"</p>
+                <p className="text-sm text-blue-600">→ Mexican restaurants</p>
+              </div>
+              <div className="bg-white dark:bg-gray-800 p-6 rounded-lg min-w-[320px] shadow-lg">
+                <div className="text-2xl mb-3">🏌️</div>
+                <h4 className="font-bold text-gray-900 dark:text-white mb-2">Golfer Meetup Event</h4>
+                <p className="text-base md:text-lg italic text-gray-700 dark:text-gray-300 mb-2">"Tourist vs Local golf tournament"</p>
+                <p className="text-sm text-blue-600">→ Golf courses</p>
+              </div>
+              <div className="bg-white dark:bg-gray-800 p-6 rounded-lg min-w-[320px] shadow-lg">
+                <div className="text-2xl mb-3">🧘</div>
+                <h4 className="font-bold text-gray-900 dark:text-white mb-2">Traveler Yoga Class</h4>
+                <p className="text-base md:text-lg italic text-gray-700 dark:text-gray-300 mb-2">"Free first class for out-of-town visitors"</p>
+                <p className="text-sm text-blue-600">→ Yoga studios</p>
+              </div>
+              <div className="bg-white dark:bg-gray-800 p-6 rounded-lg min-w-[320px] shadow-lg">
+                <div className="text-2xl mb-3">🎭</div>
+                <h4 className="font-bold text-gray-900 dark:text-white mb-2">Comedy Night Deal</h4>
+                <p className="text-base md:text-lg italic text-gray-700 dark:text-gray-300 mb-2">"Tourist appreciation night - $10 tickets"</p>
+                <p className="text-sm text-blue-600">→ Comedy clubs</p>
+              </div>
+              <div className="bg-white dark:bg-gray-800 p-6 rounded-lg min-w-[320px] shadow-lg">
+                <div className="text-2xl mb-3">🎮</div>
+                <h4 className="font-bold text-gray-900 dark:text-white mb-2">Family Fun Flash Deal</h4>
+                <p className="text-base md:text-lg italic text-gray-700 dark:text-gray-300 mb-2">"Kids play free Sundays for travelers"</p>
+                <p className="text-sm text-blue-600">→ Entertainment venues</p>
+              </div>
+              <div className="bg-white dark:bg-gray-800 p-6 rounded-lg min-w-[320px] shadow-lg">
+                <div className="text-2xl mb-3">🏠</div>
+                <h4 className="font-bold text-gray-900 dark:text-white mb-2">Celebrity Homes Tour</h4>
+                <p className="text-base md:text-lg italic text-gray-700 dark:text-gray-300 mb-2">"Book today, tour tomorrow deal"</p>
+                <p className="text-sm text-blue-600">→ Tour companies</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* BUSINESS TYPES SECTION */}
       <section className="py-16 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
@@ -488,10 +550,10 @@ export default function BusinessLanding() {
               <div>
                 <h4 className="font-bold text-gray-900 dark:text-white mb-3">📈 Revenue Tools</h4>
                 <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-300">
-                  <li>✓ Create time-limited offers & deals</li>
-                  <li>✓ Host events that drive sales</li>
+                  <li>✓ Flash deals (limited-time offers)</li>
+                  <li>✓ Regular deals (ongoing promotions)</li>
+                  <li>✓ Create traveler-focused events</li>
                   <li>✓ Performance analytics dashboard</li>
-                  <li>✓ Customer relationship management</li>
                 </ul>
               </div>
             </div>
