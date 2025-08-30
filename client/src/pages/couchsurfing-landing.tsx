@@ -239,7 +239,7 @@ export default function CouchsurfingLanding() {
             <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 sm:p-6 md:p-8 shadow-lg border-l-4 border-blue-500">
               <h3 className="text-xl sm:text-2xl font-bold text-blue-700 dark:text-blue-400 mb-4 sm:mb-6 flex items-center">
                 <Home className="w-5 h-5 sm:w-6 sm:h-6 mr-2 sm:mr-3" />
-                But Hosting Can Be Challenging...
+                But Hosting Can Be Challenging
               </h3>
               <ul className="space-y-3 sm:space-y-4 text-sm text-gray-700 dark:text-gray-300">
                 <li className="flex items-start">
