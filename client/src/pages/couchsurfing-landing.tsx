@@ -99,15 +99,15 @@ export default function CouchsurfingLanding() {
                   A Letter to the Couchsurfing Community
                 </h1>
               </div>
-              <div className="mt-3 sm:mt-4 max-w-xl text-sm md:text-base lg:text-lg text-zinc-600 dark:text-zinc-300 overflow-hidden relative h-[160px] sm:h-[180px] md:h-[200px]">
+              <div className="mt-3 sm:mt-4 max-w-xl text-base md:text-lg lg:text-xl text-zinc-600 dark:text-zinc-300 overflow-hidden relative h-[180px] sm:h-[200px] md:h-[240px]">
                 <div className="absolute top-0 left-0 w-full animate-in slide-in-from-left-full fade-in duration-700">
-                  <blockquote className="text-sm text-zinc-600 dark:text-zinc-300 leading-relaxed border-l-4 border-green-500 pl-4 sm:pl-6 mb-4 sm:mb-6">
+                  <blockquote className="text-base md:text-lg lg:text-xl text-zinc-600 dark:text-zinc-300 leading-relaxed border-l-4 border-green-500 pl-4 sm:pl-6 mb-4 sm:mb-6">
                     "As a 15-year Couchsurfing host and traveler, I've had some of the best moments of my life meeting people through the community. But over time, I realized I couldn't always host, I couldn't always find a couch — yet I always wanted to meet travelers. That's why I created Nearby Traveler."
                   </blockquote>
-                  <p className="text-xs text-zinc-500 dark:text-zinc-400 mb-4 sm:mb-6">
+                  <p className="text-sm md:text-base lg:text-lg text-zinc-500 dark:text-zinc-400 mb-4 sm:mb-6">
                     — Aaron Lefkowitz, Founder & Fellow Couchsurfer
                   </p>
-                  <p className="text-sm text-zinc-600 dark:text-zinc-300">
+                  <p className="text-sm md:text-base lg:text-lg text-zinc-600 dark:text-zinc-300">
                     Connect with travelers based on shared interests, not just accommodation needs. Host when you want. Travel when you can. Meet travelers always.
                   </p>
                 </div>
@@ -129,7 +129,7 @@ export default function CouchsurfingLanding() {
               
               {/* Static powerful quote */}
               <div className="mb-2 text-center w-full">
-                <p className="text-xs md:text-sm font-medium text-zinc-800 dark:text-zinc-200 italic px-2">
+                <p className="text-sm md:text-lg lg:text-xl font-bold text-zinc-800 dark:text-zinc-200 italic px-2">
                   <span className="sm:hidden">Travel doesn't change you — people do.</span>
                   <span className="hidden sm:inline">Travel doesn't change you — the people you meet do.</span>
                 </p>
@@ -143,7 +143,7 @@ export default function CouchsurfingLanding() {
                 />
               </div>
               
-              <p className="mt-2 text-xs md:text-sm italic text-orange-600 text-center">
+              <p className="mt-2 text-sm md:text-lg lg:text-xl italic text-orange-600 text-center font-semibold">
                 Where Local Experiences Meet Worldwide Connections
               </p>
             </div>
@@ -152,15 +152,15 @@ export default function CouchsurfingLanding() {
 
         {/* VALUE SECTION - Couchsurfing Focused */}
         <section className="mx-auto max-w-6xl px-4 sm:px-6 py-12 sm:py-20">
-          <h2 className="text-center text-xl sm:text-2xl font-bold tracking-tight text-zinc-900 dark:text-white">
+          <h2 className="text-center text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-zinc-900 dark:text-white">
             Beyond Just Needing a Couch
           </h2>
-          <p className="mt-2 text-center text-sm text-zinc-600 dark:text-zinc-400 px-4">
+          <p className="mt-2 text-center text-base md:text-lg lg:text-xl text-zinc-600 dark:text-zinc-400 px-4">
             Connect based on shared interests, activities, and genuine compatibility - not just accommodation needs.
           </p>
 
           <div className="mt-8 sm:mt-12 max-w-4xl mx-auto">
-            <ul className="space-y-4 sm:space-y-6 text-sm text-zinc-700 dark:text-zinc-300">
+            <ul className="space-y-4 sm:space-y-6 text-base md:text-lg lg:text-xl text-zinc-700 dark:text-zinc-300">
               <li className="flex items-start">
                 <Coffee className="w-5 h-5 sm:w-6 sm:h-6 text-green-600 mr-3 sm:mr-4 mt-1 flex-shrink-0" />
                 <span>Match with people who share your hobbies and travel style</span>
