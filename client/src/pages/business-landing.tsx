@@ -561,6 +561,7 @@ export default function BusinessLanding() {
             </div>
           </div>
         </div>
+        </div>
       </section>
 
       {/* BUSINESS TYPES SECTION */}
