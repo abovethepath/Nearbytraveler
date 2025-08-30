@@ -112,7 +112,7 @@ export default function BusinessLanding() {
                 </div>
                 <div className="mt-3 sm:mt-4 max-w-xl text-sm md:text-base lg:text-lg text-zinc-600 dark:text-zinc-300 overflow-hidden relative h-[80px] sm:h-[100px] md:h-[120px]">
                   <p className="absolute top-0 left-0 w-full animate-in slide-in-from-left-full fade-in duration-700">
-                    Travelers share their interests and activities. When they're near your business, your deals reach them instantly.
+                    Travelers share what they love — we connect them with businesses that match.
                   </p>
                 </div>
                 
