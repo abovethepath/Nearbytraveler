@@ -339,12 +339,12 @@ export default function LandingStreamlined() {
                   </div>
 
                   {/* Tagline */}
-                  <div className="flex items-center justify-center gap-3 pt-2">
-                    <div className="h-1 w-12 rounded-full bg-gradient-to-r from-orange-500 to-blue-600" />
-                    <p className="text-sm italic text-zinc-600 dark:text-zinc-400">
+                  <div className="flex items-center justify-center gap-4 pt-4">
+                    <div className="h-2 w-16 rounded-full bg-gradient-to-r from-orange-500 to-blue-600" />
+                    <p className="text-xl md:text-2xl font-bold italic text-zinc-700 dark:text-zinc-300">
                       Here's to connections that last beyond the trip.
                     </p>
-                    <div className="h-1 w-12 rounded-full bg-gradient-to-r from-orange-500 to-blue-600" />
+                    <div className="h-2 w-16 rounded-full bg-gradient-to-r from-orange-500 to-blue-600" />
                   </div>
                 </div>
               </div>
