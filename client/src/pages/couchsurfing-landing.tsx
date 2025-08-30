@@ -118,10 +118,10 @@ export default function CouchsurfingLanding() {
             {/* Right image side */}
             <div className="md:col-span-2 flex flex-col items-center order-first md:order-last">
               {/* Rotating wisdom sayings above static quote */}
-              <div className="mb-1 text-center w-full overflow-hidden relative h-[20px] sm:h-[24px] md:h-[28px]">
+              <div className="mb-1 text-center w-full overflow-hidden relative h-[40px] sm:h-[48px] md:h-[56px]">
                 <p 
                   key={currentWisdom}
-                  className="absolute top-0 left-0 w-full text-xs md:text-sm font-medium text-zinc-800 dark:text-zinc-200 italic animate-in slide-in-from-right-full fade-in duration-700 px-2"
+                  className="absolute top-0 left-0 w-full text-xs md:text-sm font-medium text-zinc-800 dark:text-zinc-200 italic animate-in slide-in-from-right-full fade-in duration-700 px-2 leading-tight"
                 >
                   <span className="sm:hidden">{wisdomSayingsMobile[currentWisdom]}</span>
                   <span className="hidden sm:inline">{wisdomSayings[currentWisdom]}</span>
