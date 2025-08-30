@@ -214,7 +214,7 @@ export default function BusinessCustomLanding() {
               <Button 
                 onClick={() => setLocation('/join')}
                 size="lg"
-                className="bg-black hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-100 text-white dark:text-black font-medium text-xl px-12 py-6 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300"
+                className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-medium text-xl px-12 py-6 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300"
               >
                 Join Now
               </Button>
@@ -232,7 +232,7 @@ export default function BusinessCustomLanding() {
             <p className="text-lg sm:text-xl mb-6 sm:mb-8 px-4 leading-relaxed">Join businesses already connecting with travelers and locals worldwide.</p>
             <Button 
               onClick={() => setLocation('/join')}
-              className="bg-white dark:bg-white text-black dark:text-blue-600 hover:bg-gray-100 dark:hover:bg-gray-200 px-6 sm:px-8 py-3 sm:py-4 text-lg sm:text-xl rounded-full shadow-lg transition-all duration-300 hover:scale-105 border-2 border-black dark:border-none font-bold"
+              className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white px-6 sm:px-8 py-3 sm:py-4 text-lg sm:text-xl rounded-full shadow-lg transition-all duration-300 hover:scale-105 font-bold"
             >
               Join Now
             </Button>

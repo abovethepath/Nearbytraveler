@@ -408,7 +408,7 @@ export default function EventsLanding() {
             <Button
               onClick={() => setLocation('/join')}
               size="lg"
-              className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-500 dark:to-orange-500 text-white dark:text-white font-medium text-lg px-10 py-3 rounded-lg transition-all duration-200"
+              className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-medium text-lg px-10 py-3 rounded-lg transition-all duration-200"
             >
               Join Nearby Traveler
             </Button>

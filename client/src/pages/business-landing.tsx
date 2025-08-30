@@ -310,7 +310,7 @@ export default function BusinessLanding() {
                 <Button
                   onClick={() => setLocation('/join')}
                   size="lg"
-                  className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-green-500 dark:to-teal-500 dark:hover:from-green-600 dark:hover:to-teal-600 text-white border-2 border-gray-300 dark:border-white font-bold text-lg px-8 py-4 rounded-lg shadow-lg transition-all duration-200"
+                  className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-bold text-lg px-8 py-4 rounded-lg shadow-lg transition-all duration-200"
                 >
                   Join the Journey
                 </Button>
