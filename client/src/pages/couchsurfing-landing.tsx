@@ -345,7 +345,7 @@ export default function CouchsurfingLanding() {
               We Know You've <span className="text-black dark:text-black">Loved Surfing</span>
             </h2>
             <p className="text-base md:text-lg lg:text-xl text-gray-600 dark:text-gray-300 max-w-4xl mx-auto leading-relaxed px-4">
-              If you've surfed before, you know the magic: authentic local insights, genuine cultural exchange, and the thrill of discovering a place through someone else's eyes. But finding the right hosts and navigating unpredictable situations can be challenging. With Nearby Traveler, you can keep that authentic travel spirit alive with more options and fewer limitations.
+              If you've surfed before, you know the magic: authentic local insights, genuine cultural exchange, and the thrill of discovering a place through someone else's eyes. But finding the right hosts and navigating unpredictable situations can be challenging. With Nearby Traveler, you can keep that authentic travel spirit alive with more options and fewer limitations. Plus you can still surf, we love couchsurfing, but now you can expand who you meet outside the limitations of just couchsurfing. Open your world to ALL TRAVELERS.
             </p>
           </div>
 
