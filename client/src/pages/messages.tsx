@@ -284,8 +284,8 @@ export default function Messages() {
     }, []);
     
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-900">
-        <div className="text-white">Recovering authentication...</div>
+      <div className="flex items-center justify-center min-h-screen bg-white dark:bg-gray-900">
+        <div className="text-gray-900 dark:text-white">Recovering authentication...</div>
       </div>
     );
   }
@@ -295,38 +295,38 @@ export default function Messages() {
   // Show loading only if no target user and still loading
   if ((connectionsLoading || messagesLoading) && !targetUserId) {
     return (
-      <div className="h-screen bg-gray-900 flex items-center justify-center">
-        <div className="text-gray-400">Loading messages...</div>
+      <div className="h-screen bg-white dark:bg-gray-900 flex items-center justify-center">
+        <div className="text-gray-600 dark:text-gray-400">Loading messages...</div>
       </div>
     );
   }
 
   return (
-    <div className="h-screen bg-gray-900 text-white flex flex-col md:flex-row">
+    <div className="h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white flex flex-col md:flex-row">
       {/* Left Sidebar - Conversations */}
-      <div className="w-full md:w-80 bg-gray-800 flex flex-col border-r-0 md:border-r-2 border-b md:border-b-0 border-gray-500">
-        <div className="p-4 border-b border-gray-700">
+      <div className="w-full md:w-80 bg-gray-100 dark:bg-gray-800 flex flex-col border-r-0 md:border-r-2 border-b md:border-b-0 border-gray-300 dark:border-gray-500">
+        <div className="p-4 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-3 mb-3">
             <UniversalBackButton 
               destination="/discover"
               label=""
-              className="text-gray-400 hover:text-white bg-transparent border-none shadow-none hover:bg-gray-700/50 p-2"
+              className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white bg-transparent border-none shadow-none hover:bg-gray-200 dark:hover:bg-gray-700/50 p-2"
             />
-            <h1 className="text-lg md:text-xl font-bold text-white">Messages</h1>
+            <h1 className="text-lg md:text-xl font-bold text-gray-900 dark:text-white">Messages</h1>
           </div>
           <input
             type="text"
             placeholder="Search conversations..."
             value={connectionSearch}
             onChange={(e) => setConnectionSearch(e.target.value)}
-            className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+            className="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
           />
         </div>
 
         {/* Instructional text */}
         {conversations.length > 0 && (
-          <div className="p-3 bg-gray-700/50 border-b border-gray-700">
-            <p className="text-xs text-gray-400 text-center">
+          <div className="p-3 bg-gray-200/50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700">
+            <p className="text-xs text-gray-600 dark:text-gray-400 text-center">
               Click on a name to open messages
             </p>
           </div>
@@ -334,7 +334,7 @@ export default function Messages() {
 
         <div className="flex-1 overflow-y-auto">
           {conversations.length === 0 ? (
-            <div className="p-4 text-center text-gray-500">
+            <div className="p-4 text-center text-gray-600 dark:text-gray-500">
               <MessageCircle className="w-12 h-12 mx-auto mb-3 opacity-50" />
               <p>No conversations yet</p>
             </div>
@@ -348,10 +348,10 @@ export default function Messages() {
                 <div
                   key={conv.userId}
                   data-conversation-id={conv.userId}
-                  className={`p-4 border-b border-gray-700 cursor-pointer transition-all duration-200 ${
+                  className={`p-4 border-b border-gray-200 dark:border-gray-700 cursor-pointer transition-all duration-200 ${
                     selectedConversation === conv.userId 
-                      ? 'bg-gradient-to-r from-blue-600 to-blue-700 border-l-4 border-l-blue-400 shadow-lg' 
-                      : 'hover:bg-gray-700 hover:border-l-4 hover:border-l-gray-500'
+                      ? 'bg-gradient-to-r from-blue-600 to-blue-700 border-l-4 border-l-blue-400 shadow-lg text-white' 
+                      : 'hover:bg-gray-200 dark:hover:bg-gray-700 hover:border-l-4 hover:border-l-gray-400 dark:hover:border-l-gray-500'
                   } ${
                     targetUserId && conv.userId === parseInt(targetUserId)
                       ? 'ring-2 ring-orange-400 ring-opacity-75'
@@ -382,7 +382,11 @@ export default function Messages() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <h3 className="font-semibold text-white truncate">
+                        <h3 className={`font-semibold truncate ${
+                          selectedConversation === conv.userId 
+                            ? 'text-white' 
+                            : 'text-gray-900 dark:text-white'
+                        }`}>
                           @{conv.username}
                         </h3>
                         {conv.unreadCount > 0 && (
@@ -392,7 +396,11 @@ export default function Messages() {
                         )}
                       </div>
 
-                      <div className="text-xs text-gray-500">
+                      <div className={`text-xs ${
+                        selectedConversation === conv.userId 
+                          ? 'text-gray-200' 
+                          : 'text-gray-600 dark:text-gray-500'
+                      }`}>
                         {conv.location}
                       </div>
                     </div>
@@ -411,13 +419,13 @@ export default function Messages() {
         {selectedConversation && selectedUser ? (
           <>
             {/* Chat Header */}
-            <div className="p-4 border-b border-gray-700 bg-gray-800">
+            <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800">
               <div className="flex items-center gap-3">
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => setSelectedConversation(null)}
-                  className="text-gray-400 hover:text-white md:hidden"
+                  className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white md:hidden"
                 >
                   <ArrowLeft className="w-4 h-4" />
                 </Button>
@@ -433,13 +441,13 @@ export default function Messages() {
                   </Avatar>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-white">
+                  <h3 className="font-semibold text-gray-900 dark:text-white">
                     @{selectedUser.username}
                   </h3>
                   {typingUsers[selectedConversation] && (
-                    <p className="text-xs text-blue-400">typing...</p>
+                    <p className="text-xs text-blue-500 dark:text-blue-400">typing...</p>
                   )}
-                  <div className="flex items-center gap-2 text-sm text-gray-400">
+                  <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                     <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                     <span>Online • {selectedUser.location}</span>
                   </div>
@@ -448,9 +456,9 @@ export default function Messages() {
             </div>
 
             {/* Messages Area */}
-            <div className="flex-1 overflow-y-auto p-4 bg-gray-900">
+            <div className="flex-1 overflow-y-auto p-4 bg-white dark:bg-gray-900">
               {conversationMessages.length === 0 ? (
-                <div className="text-center text-gray-500 py-12">
+                <div className="text-center text-gray-600 dark:text-gray-500 py-12">
                   <MessageCircle className="w-12 h-12 mx-auto mb-3 opacity-50" />
                   <p className="font-medium">No messages yet</p>
                   <p className="text-sm mt-1">Send the first message!</p>
@@ -481,7 +489,7 @@ export default function Messages() {
                           className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
                             isOwnMessage
                               ? 'bg-blue-600 text-white'
-                              : 'bg-gray-700 text-white'
+                              : 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white'
                           }`}
                         >
                           <p>{message.content}</p>
@@ -498,13 +506,13 @@ export default function Messages() {
             </div>
 
             {/* Message Input */}
-            <div className="p-4 border-t border-gray-700 bg-gray-800">
+            <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800">
               <div className="flex gap-2">
                 <Input
                   value={newMessage}
                   onChange={(e) => handleTyping(e.target.value)}
                   placeholder="Type your message..."
-                  className="flex-1 bg-gray-700 border-gray-600 text-white placeholder:text-gray-400"
+                  className="flex-1 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400"
                   onKeyPress={(e) => e.key === 'Enter' && newMessage.trim() && handleSendMessage()}
                 />
                 <Button
@@ -518,20 +526,20 @@ export default function Messages() {
             </div>
           </>
         ) : (
-          <div className="flex-1 flex items-center justify-center bg-gray-900">
-            <div className="text-center text-gray-500">
+          <div className="flex-1 flex items-center justify-center bg-white dark:bg-gray-900">
+            <div className="text-center text-gray-600 dark:text-gray-500">
               <MessageCircle className="w-20 h-20 mx-auto mb-6 opacity-30" />
-              <h3 className="text-2xl font-medium mb-2 text-gray-300">Welcome to Messages</h3>
-              <p className="text-gray-400">Select a conversation to start messaging</p>
+              <h3 className="text-2xl font-medium mb-2 text-gray-800 dark:text-gray-300">Welcome to Messages</h3>
+              <p className="text-gray-600 dark:text-gray-400">Select a conversation to start messaging</p>
             </div>
           </div>
         )}
       </div>
 
       {/* Right Sidebar - Connections */}
-      <div className="hidden lg:flex w-80 bg-gray-800 flex-col border-l-2 border-gray-500">
-        <div className="p-4 border-b border-gray-700">
-          <h2 className="text-lg font-semibold flex items-center gap-2">
+      <div className="hidden lg:flex w-80 bg-gray-100 dark:bg-gray-800 flex-col border-l-2 border-gray-300 dark:border-gray-500">
+        <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+          <h2 className="text-lg font-semibold flex items-center gap-2 text-gray-900 dark:text-white">
             <Users className="w-5 h-5 text-green-500" />
             Connections
           </h2>
@@ -539,7 +547,7 @@ export default function Messages() {
         
         <div className="flex-1 overflow-y-auto p-4">
           {(connections as any[]).length === 0 ? (
-            <div className="text-center text-gray-500">
+            <div className="text-center text-gray-600 dark:text-gray-500">
               <Users className="w-12 h-12 mx-auto mb-3 opacity-50" />
               <p>No connections yet</p>
             </div>
@@ -548,7 +556,7 @@ export default function Messages() {
               {(connections as any[]).map((connection: any) => (
                 <div
                   key={connection.id}
-                  className="p-3 rounded-lg bg-gray-700 hover:bg-gray-600 transition-colors"
+                  className="p-3 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
                 >
                   <div className="flex items-center gap-3 mb-3">
                     <div 
@@ -563,10 +571,10 @@ export default function Messages() {
                       </Avatar>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h4 className="font-medium text-white truncate">
+                      <h4 className="font-medium text-gray-900 dark:text-white truncate">
                         {connection.connectedUser.username}
                       </h4>
-                      <p className="text-sm text-gray-400 truncate">
+                      <p className="text-sm text-gray-600 dark:text-gray-400 truncate">
                         📍 {connection.connectedUser.hometownCity || connection.connectedUser.location} • 
                         {connection.connectedUser.userType === 'traveler' ? ' ✈️ Traveling' : 
                          connection.connectedUser.userType === 'business' ? ' 🏢 Business' : ' 🏠 Local'}
