@@ -3087,11 +3087,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     console.log('🔥 Form errors:', profileForm.formState.errors);
     console.log('🔥 Form valid:', profileForm.formState.isValid);
     
-    // Clear children ages if traveling with children is turned off (only for non-business users)
-    if (user?.userType !== 'business' && 'travelingWithChildren' in data && !data.travelingWithChildren) {
-      (data as any).childrenAges = "";
-      console.log('🔥 FORM SUBMIT: Cleared childrenAges because travelingWithChildren is false');
-    }
+    // Keep children ages regardless of travel status for matching purposes
     
     // Process custom text entries for business users
     if (user?.userType === 'business') {
@@ -3751,20 +3747,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     <div className="flex items-start">
                       <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">Age:</span>
                       <span className="flex-1 break-words">{calculateAge(user.dateOfBirth)} years old</span>
-                    </div>
-                  )}
-
-                  {user.userType !== 'business' && user.travelingWithChildren && (
-                    <div className="flex items-start">
-                      <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">Family:</span>
-                      <span className="flex-1 break-words flex items-center gap-1">
-                        <Users className="w-4 h-4" /> Traveling with children
-                        {(user.childrenAges || (user as any).children_ages) && (
-                          <span className="text-sm text-gray-500 dark:text-gray-400">
-                            (Ages: {user.childrenAges || (user as any).children_ages})
-                          </span>
-                        )}
-                      </span>
                     </div>
                   )}
 
