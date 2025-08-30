@@ -406,11 +406,11 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
           </div>
 
           {/* Search Actions */}
-          <div className="flex gap-4">
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
             <Button
               onClick={handleAdvancedSearch}
               disabled={isAdvancedSearching}
-              className="flex-1"
+              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white border-0"
             >
               {isAdvancedSearching ? "Searching..." : "Search People & Events"}
               <Search className="ml-2 h-4 w-4" />
@@ -418,6 +418,7 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
             <Button
               onClick={clearAdvancedFilters}
               variant="outline"
+              className="border-gray-300 text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800 whitespace-nowrap"
             >
               Clear Filters
               <X className="ml-2 h-4 w-4" />
