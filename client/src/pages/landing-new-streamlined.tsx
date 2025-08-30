@@ -16,7 +16,7 @@ export default function LandingStreamlined() {
   const [currentHeadline, setCurrentHeadline] = useState(0);
   const headlines = [
     "Planning a Trip Soon? Skip The Tourist Traps.", // General travelers
-    "Love Meeting Travelers? Show Your City!", // Couchsurfers as hosts
+    "Live Somewhere Amazing?", // Locals who want to share their city
     "Want Your Kids to Meet the World?", // Families
     "Hate Forced Networking?", // Professional networking
     "Own a Business?" // Business owners
@@ -25,7 +25,7 @@ export default function LandingStreamlined() {
   const [currentSubtext, setCurrentSubtext] = useState(0);
   const subtexts = [
     "Find real connections that last.", // General travelers
-    "Share experiences, not just your couch.", // Couchsurfers as hosts
+    "Share your city with curious travelers.", // Locals who want to share their city
     "Connect with families everywhere.", // Families
     "Build authentic professional connections.", // Professional networking
     "Target travelers directly based on their interests and desires." // Business owners
@@ -33,7 +33,7 @@ export default function LandingStreamlined() {
   
   const descriptions = [
     "Connect with locals and travelers before your trip begins— and create friendships that last a lifetime.", // General
-    "Connect with travelers at coffee shops, events, and experiences. All the cultural exchange, none of the hosting concerns.", // Couchsurfers hosts
+    "Meet travelers at coffee shops, events, and local experiences. Show off your city's hidden gems to curious visitors.", // Locals who want to share their city
     "Help your family build global friendships through safe, public meetups and cultural exchanges.", // Families
     "Tired of Forced Networking? Build Real Connections.", // Networking
     "Showcase your business to travelers through events, experiences, and curated local discounts only for Nearby Travelers." // Business
@@ -50,7 +50,7 @@ export default function LandingStreamlined() {
 
   const heroImageAlts = [
     "Travelers connecting", // General
-    "Locals showing their city", // Couchsurfers
+    "Locals showing their city", // Locals
     "Families traveling together", // Families
     "Professional networking", // Networking
     "Business welcoming travelers" // Business
