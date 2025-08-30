@@ -9309,69 +9309,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         </DialogContent>
       </Dialog>
       
-      {/* Chatroom List Modal */}
-      <Dialog open={showChatroomList} onOpenChange={setShowChatroomList}>
-        <DialogContent className="max-w-lg z-50 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-500 shadow-2xl">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Users className="w-5 h-5" />
-              {isOwnProfile ? 'Your City Chatrooms' : `${user?.username}'s City Chatrooms`}
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-3">
-            {userChatrooms.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">
-                <Users className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-                <p>No city chatrooms yet</p>
-                {isOwnProfile && (
-                  <p className="text-sm mt-2">Join some city chatrooms to connect with locals and travelers!</p>
-                )}
-              </div>
-            ) : (
-              userChatrooms.map((chatroom: any) => (
-                <div 
-                  key={chatroom.id}
-                  className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-500 transition-colors cursor-pointer"
-                  onClick={() => {
-                    setShowChatroomList(false);
-                    setLocation(`/chatroom/${chatroom.id}`);
-                  }}
-                >
-                  <div className="flex-1 min-w-0">
-                    <div className="font-medium text-gray-800 dark:text-gray-200 truncate">
-                      {chatroom.name}
-                    </div>
-                    <div className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-2">
-                      📍 {chatroom.city}
-                      {chatroom.role === 'admin' && (
-                        <span className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0">
-                          Admin
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  <div className="text-sm text-gray-500 dark:text-gray-400 ml-4">
-                    {chatroom.member_count} members
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-          {userChatrooms.length > 0 && (
-            <div className="text-center pt-4">
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setShowChatroomList(false);
-                  setLocation('/city-chatrooms');
-                }}
-              >
-                View All City Chatrooms
-              </Button>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+      </div>
     </>
   );
 }
@@ -9670,7 +9608,7 @@ function EventOrganizerHubSection({ userId }: { userId: number }) {
         </div>
       </CardContent>
     </Card>
-      </div>
+    </div>
     </>
   );
 }
