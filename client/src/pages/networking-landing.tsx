@@ -29,7 +29,6 @@ export default function NetworkingLanding() {
         </Button>
       </div>
       
-      <ThemeToggle />
       <LandingHeader />
       <LandingHeaderSpacer />
       

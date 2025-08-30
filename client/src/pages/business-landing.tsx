@@ -91,7 +91,6 @@ export default function BusinessLanding() {
         </Button>
       </div>
 
-      <ThemeToggle />
       <LandingHeader />
       <LandingHeaderSpacer />
 
