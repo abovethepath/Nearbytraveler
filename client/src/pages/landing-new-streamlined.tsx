@@ -122,8 +122,8 @@ export default function LandingStreamlined() {
 
               {/* Right image side */}
               <div className="md:col-span-2 flex flex-col items-center order-first md:order-last">
-                {/* Intimate whisper-style rotating sayings - right above photo */}
-                <div className="mb-3 text-center">
+                {/* Intimate whisper-style rotating sayings - ABOVE photo, first thing they see */}
+                <div className="mb-3 text-center w-full">
                   <div className="overflow-hidden relative h-[40px]">
                     <p 
                       key={currentHeadline}
