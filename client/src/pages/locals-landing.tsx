@@ -268,7 +268,7 @@ export default function LocalsLanding() {
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-8">
             <h2 className="text-4xl font-black text-gray-900 dark:text-white mb-2">
-              Why Locals Are Obsessed with Nearby Traveler
+              How Locals Connect with Amazing Travelers
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-300">Turn your city knowledge into amazing friendships</p>
           </div>
