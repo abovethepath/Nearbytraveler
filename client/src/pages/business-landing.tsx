@@ -671,9 +671,6 @@ export default function BusinessLanding() {
                   <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
                     — Aaron Lefkowitz, Founder, Nearby Traveler
                   </p>
-                  <p className="text-lg md:text-xl font-bold text-gray-800 dark:text-gray-200">
-                    "Revenue Growth Through Real Connections"
-                  </p>
                 </div>
               </div>
             </div>
