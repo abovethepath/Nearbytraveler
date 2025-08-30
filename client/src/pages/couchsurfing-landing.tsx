@@ -90,7 +90,7 @@ export default function CouchsurfingLanding() {
           <div className="mx-auto max-w-7xl px-2 sm:px-4 md:px-6 py-2 sm:py-4 md:py-6 grid gap-3 sm:gap-4 md:gap-6 md:grid-cols-5 items-center">
             {/* Left text side - wider */}
             <div className="md:col-span-3">
-              <div className="mb-3 sm:mb-4 inline-block rounded-full bg-green-50 dark:bg-green-900/30 px-3 sm:px-4 py-1 text-xs sm:text-sm font-medium text-green-700 dark:text-green-400 animate-in slide-in-from-left-full fade-in duration-700">
+              <div className="mb-3 sm:mb-4 inline-block rounded-full bg-orange-50 dark:bg-orange-900/30 px-3 sm:px-4 py-1 text-xs sm:text-sm font-medium text-orange-700 dark:text-orange-400 animate-in slide-in-from-left-full fade-in duration-700">
                 <span className="inline w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2">❤️</span>
                 From a Fellow Couchsurfer
               </div>
@@ -162,7 +162,7 @@ export default function CouchsurfingLanding() {
           <div className="mt-8 sm:mt-12 max-w-4xl mx-auto">
             <ul className="space-y-4 sm:space-y-6 text-base md:text-lg lg:text-xl text-zinc-700 dark:text-zinc-300">
               <li className="flex items-start">
-                <Coffee className="w-5 h-5 sm:w-6 sm:h-6 text-green-600 mr-3 sm:mr-4 mt-1 flex-shrink-0" />
+                <Coffee className="w-5 h-5 sm:w-6 sm:h-6 text-orange-600 mr-3 sm:mr-4 mt-1 flex-shrink-0" />
                 <span>Match with people who share your hobbies and travel style</span>
               </li>
               <li className="flex items-start">
@@ -170,7 +170,7 @@ export default function CouchsurfingLanding() {
                 <span>Connect at cafés, events, and local spots — no couch required</span>
               </li>
               <li className="flex items-start">
-                <Globe className="w-5 h-5 sm:w-6 sm:h-6 text-purple-600 mr-3 sm:mr-4 mt-1 flex-shrink-0" />
+                <Globe className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 mr-3 sm:mr-4 mt-1 flex-shrink-0" />
                 <span>Share local secrets and experience cultural exchange</span>
               </li>
               <li className="flex items-start">
@@ -178,11 +178,11 @@ export default function CouchsurfingLanding() {
                 <span>Connect when you want, how you want — no obligations</span>
               </li>
               <li className="flex items-start">
-                <RefreshCw className="w-5 h-5 sm:w-6 sm:h-6 text-pink-600 mr-3 sm:mr-4 mt-1 flex-shrink-0" />
+                <RefreshCw className="w-5 h-5 sm:w-6 sm:h-6 text-orange-600 mr-3 sm:mr-4 mt-1 flex-shrink-0" />
                 <span>When you're busy hosting, help your guests meet other travelers</span>
               </li>
               <li className="flex items-start">
-                <ShieldCheck className="w-5 h-5 sm:w-6 sm:h-6 text-indigo-600 mr-3 sm:mr-4 mt-1 flex-shrink-0" />
+                <ShieldCheck className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 mr-3 sm:mr-4 mt-1 flex-shrink-0" />
                 <span>Feel safe with verification and references</span>
               </li>
             </ul>
@@ -190,13 +190,13 @@ export default function CouchsurfingLanding() {
         </section>
 
         {/* THE HOSTING JOURNEY - Honest Perspective */}
-        <section id="hosting-journey" className="mx-auto max-w-6xl px-4 sm:px-6 py-12 sm:py-20 bg-gradient-to-br from-green-50 via-blue-50 to-purple-50 dark:from-green-900/20 dark:via-blue-900/20 dark:to-purple-900/20 rounded-2xl mb-8 sm:mb-16">
+        <section id="hosting-journey" className="mx-auto max-w-6xl px-4 sm:px-6 py-12 sm:py-20 bg-gradient-to-br from-orange-50 via-blue-50 to-orange-100 dark:from-orange-900/20 dark:via-blue-900/20 dark:to-orange-800/20 rounded-2xl mb-8 sm:mb-16">
           <div className="text-center mb-8 sm:mb-16">
-            <span className="inline-block px-4 sm:px-6 py-2 bg-gradient-to-r from-green-100 to-blue-100 dark:from-green-800 to-blue-800 text-green-800 dark:text-green-200 text-xs sm:text-sm font-bold rounded-full mb-4">
+            <span className="inline-block px-4 sm:px-6 py-2 bg-gradient-to-r from-orange-100 to-blue-100 dark:from-orange-800 dark:to-blue-800 text-orange-800 dark:text-orange-200 text-xs sm:text-sm font-bold rounded-full mb-4">
               FOR EXPERIENCED HOSTS
             </span>
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-zinc-900 dark:text-white mb-4 sm:mb-6 px-4">
-              We Know You've <span className="text-green-600 dark:text-green-400">Loved Hosting</span>
+              We Know You've <span className="text-orange-600 dark:text-orange-400">Loved Hosting</span>
             </h2>
             <p className="text-sm text-gray-600 dark:text-gray-300 max-w-4xl mx-auto leading-relaxed px-4">
               If you've hosted before, you know the magic: meeting fascinating people, sharing your city, learning about new cultures. But hosting can also be exhausting, unpredictable, and sometimes just not possible with work or family life. That doesn't mean you're less generous — it just means life changes. With Nearby Traveler, you can keep the spirit of cultural exchange alive in a way that works for you today.
@@ -205,30 +205,30 @@ export default function CouchsurfingLanding() {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 mb-8 sm:mb-16">
             {/* What You Loved */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 sm:p-6 md:p-8 shadow-lg border-l-4 border-green-500">
-              <h3 className="text-xl sm:text-2xl font-bold text-green-700 dark:text-green-400 mb-4 sm:mb-6 flex items-center">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 sm:p-6 md:p-8 shadow-lg border-l-4 border-orange-500">
+              <h3 className="text-xl sm:text-2xl font-bold text-orange-700 dark:text-orange-400 mb-4 sm:mb-6 flex items-center">
                 <Heart className="w-5 h-5 sm:w-6 sm:h-6 mr-2 sm:mr-3" />
                 What You've Loved About Hosting
               </h3>
               <ul className="space-y-3 sm:space-y-4 text-sm text-gray-700 dark:text-gray-300">
                 <li className="flex items-start">
-                  <Globe className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 mr-2 sm:mr-3 mt-1 flex-shrink-0" />
+                  <Globe className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500 mr-2 sm:mr-3 mt-1 flex-shrink-0" />
                   <span>Meeting fascinating people from every corner of the world</span>
                 </li>
                 <li className="flex items-start">
-                  <Users className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 mr-2 sm:mr-3 mt-1 flex-shrink-0" />
+                  <Users className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500 mr-2 sm:mr-3 mt-1 flex-shrink-0" />
                   <span>Creating deep connections and lifelong friendships</span>
                 </li>
                 <li className="flex items-start">
-                  <Coffee className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 mr-2 sm:mr-3 mt-1 flex-shrink-0" />
+                  <Coffee className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500 mr-2 sm:mr-3 mt-1 flex-shrink-0" />
                   <span>Sharing your city's hidden gems and local culture</span>
                 </li>
                 <li className="flex items-start">
-                  <RefreshCw className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 mr-2 sm:mr-3 mt-1 flex-shrink-0" />
+                  <RefreshCw className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500 mr-2 sm:mr-3 mt-1 flex-shrink-0" />
                   <span>Learning about other cultures without traveling</span>
                 </li>
                 <li className="flex items-start">
-                  <Handshake className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 mr-2 sm:mr-3 mt-1 flex-shrink-0" />
+                  <Handshake className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500 mr-2 sm:mr-3 mt-1 flex-shrink-0" />
                   <span>The satisfaction of helping fellow travelers</span>
                 </li>
               </ul>
@@ -285,7 +285,7 @@ export default function CouchsurfingLanding() {
 
 
         {/* HOSTING DOESN'T END - ENHANCEMENT SECTION */}
-        <section className="mx-auto max-w-6xl px-6 py-20 bg-gradient-to-br from-green-50 via-blue-50 to-purple-50 dark:from-green-900/20 dark:via-blue-900/20 dark:to-purple-900/20 rounded-2xl mb-16">
+        <section className="mx-auto max-w-6xl px-6 py-20 bg-gradient-to-br from-orange-50 via-blue-50 to-orange-100 dark:from-orange-900/20 dark:via-blue-900/20 dark:to-orange-800/20 rounded-2xl mb-16">
           <div className="text-center mb-12">
             <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900 dark:text-white mb-6">
               Keep Hosting, Expand Your Impact
@@ -298,8 +298,8 @@ export default function CouchsurfingLanding() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Still Host */}
             <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg">
-              <div className="w-16 h-16 bg-green-100 dark:bg-green-800 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Home className="w-8 h-8 text-green-600 dark:text-green-400" />
+              <div className="w-16 h-16 bg-orange-100 dark:bg-orange-800 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Home className="w-8 h-8 text-orange-600 dark:text-orange-400" />
               </div>
               <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 text-center">
                 Keep Hosting When You Can
@@ -323,7 +323,7 @@ export default function CouchsurfingLanding() {
             </div>
           </div>
 
-          <div className="bg-gradient-to-r from-green-500 to-blue-600 rounded-2xl p-8 text-white text-center mt-12">
+          <div className="bg-gradient-to-r from-orange-500 to-blue-600 rounded-2xl p-8 text-white text-center mt-12">
             <h3 className="text-2xl sm:text-3xl font-bold mb-4">
               The Best of Both Worlds
             </h3>
@@ -373,9 +373,9 @@ export default function CouchsurfingLanding() {
             </div>
 
             {/* Never Heard of CS */}
-            <div className="bg-gradient-to-br from-green-50 to-teal-50 dark:from-green-900/20 dark:to-teal-900/20 rounded-2xl p-8 text-center">
-              <div className="w-16 h-16 bg-green-100 dark:bg-green-800 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Globe className="w-8 h-8 text-green-600 dark:text-green-400" />
+            <div className="bg-gradient-to-br from-orange-50 to-blue-50 dark:from-orange-900/20 dark:to-blue-900/20 rounded-2xl p-8 text-center">
+              <div className="w-16 h-16 bg-orange-100 dark:bg-orange-800 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Globe className="w-8 h-8 text-orange-600 dark:text-orange-400" />
               </div>
               <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
                 "What's Couchsurfing?"
@@ -407,11 +407,11 @@ export default function CouchsurfingLanding() {
         <div className="relative z-10 py-20 bg-gradient-to-br from-gray-50 via-green-50 to-blue-50 dark:from-gray-900 dark:via-green-900/20 dark:to-blue-900/20">
           <div className="max-w-7xl mx-auto px-4">
             <div className="text-center mb-16">
-              <span className="inline-block px-6 py-2 bg-gradient-to-r from-green-100 to-blue-100 text-green-800 text-sm font-bold rounded-full mb-4">
+              <span className="inline-block px-6 py-2 bg-gradient-to-r from-orange-100 to-blue-100 text-orange-800 text-sm font-bold rounded-full mb-4">
                 HOW IT WORKS
               </span>
               <h2 className="text-4xl sm:text-5xl font-black text-gray-900 dark:text-white mb-6">
-                From <span className="text-black dark:bg-gradient-to-r dark:from-green-600 dark:to-blue-600 dark:bg-clip-text dark:text-transparent">Strangers to Friends</span>
+                From <span className="text-black dark:bg-gradient-to-r dark:from-orange-600 dark:to-blue-600 dark:bg-clip-text dark:text-transparent">Strangers to Friends</span>
               </h2>
               <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
                 The couchsurfing spirit, evolved for modern life
@@ -423,7 +423,7 @@ export default function CouchsurfingLanding() {
               <div className="group">
                 <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-shadow duration-300 border border-green-100 dark:border-green-800 h-80 flex flex-col">
                   <div className="relative mb-8">
-                    <div className="w-20 h-20 bg-white dark:bg-gradient-to-r dark:from-green-500 dark:to-green-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg border-2 border-gray-300 dark:border-none">
+                    <div className="w-20 h-20 bg-white dark:bg-gradient-to-r dark:from-orange-500 dark:to-orange-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg border-2 border-gray-300 dark:border-none">
                       <span className="text-black dark:text-white text-2xl font-black">1</span>
                     </div>
                   </div>
@@ -440,7 +440,7 @@ export default function CouchsurfingLanding() {
               <div className="group">
                 <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-shadow duration-300 border border-blue-100 dark:border-blue-800 h-80 flex flex-col">
                   <div className="relative mb-8">
-                    <div className="w-20 h-20 bg-white dark:bg-gradient-to-r dark:from-blue-500 dark:to-green-500 rounded-2xl flex items-center justify-center mx-auto shadow-lg border-2 border-gray-300 dark:border-none">
+                    <div className="w-20 h-20 bg-white dark:bg-gradient-to-r dark:from-blue-500 dark:to-orange-500 rounded-2xl flex items-center justify-center mx-auto shadow-lg border-2 border-gray-300 dark:border-none">
                       <span className="text-black dark:text-white text-2xl font-black">2</span>
                     </div>
                   </div>
@@ -488,7 +488,7 @@ export default function CouchsurfingLanding() {
         </div>
 
         {/* WARM CLOSING */}
-        <section className="text-center py-12 sm:py-16 bg-gradient-to-r from-green-500 to-blue-600 text-white rounded-2xl mb-8 sm:mb-16">
+        <section className="text-center py-12 sm:py-16 bg-gradient-to-r from-orange-500 to-blue-600 text-white rounded-2xl mb-8 sm:mb-16">
           <div className="max-w-4xl mx-auto px-4 sm:px-6">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-6">
               Ready for the Next Step?
@@ -498,7 +498,7 @@ export default function CouchsurfingLanding() {
             </p>
             <Button 
               onClick={() => setLocation('/join')}
-              className="bg-white hover:bg-gray-100 text-green-600 font-bold px-8 py-4 rounded-lg shadow-lg transition-all duration-200 text-lg"
+              className="bg-white hover:bg-gray-100 text-orange-600 font-bold px-8 py-4 rounded-lg shadow-lg transition-all duration-200 text-lg"
             >
               Join Nearby Traveler Today
             </Button>
