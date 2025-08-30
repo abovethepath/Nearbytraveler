@@ -16,7 +16,6 @@ export default function LocalsLanding() {
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900">
       
-      <ThemeToggle />
       <LandingHeader />
       <LandingHeaderSpacer />
       

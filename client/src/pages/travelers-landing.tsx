@@ -27,7 +27,6 @@ export default function TravelersLanding() {
         </Button>
       </div>
       
-      <ThemeToggle />
       <LandingHeader />
       <LandingHeaderSpacer />
       
