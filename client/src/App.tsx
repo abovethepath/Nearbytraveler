@@ -185,7 +185,7 @@ function Router() {
 
   const landingPageRoutes = [
     '/', '/landing', '/landing-new', '/auth', '/join', '/signup', '/signup/local', '/signup/traveler', '/signup/business',
-    '/events-landing', '/business-landing', '/locals-landing', '/travelers-landing', '/networking-landing', '/cs', '/b', '/privacy', '/terms', '/cookies', '/about', '/getting-started',
+    '/events-landing', '/business-landing', '/locals-landing', '/travelers-landing', '/networking-landing', '/couchsurfing', '/cs', '/b', '/privacy', '/terms', '/cookies', '/about', '/getting-started',
     '/forgot-password', '/reset-password', '/welcome', '/welcome-business', '/welcome-travel-agent', '/quick-login', '/preview-landing', '/preview-first-landing',
     '/travel-quiz', '/TravelIntentQuiz', '/signup/travel-agent', '/business-card', '/qr-code'
   ];
@@ -531,7 +531,7 @@ function Router() {
       }
 
       // Allow access to couchsurfing landing page without authentication
-      if (location === '/couchsurfing') {
+      if (location === '/couchsurfing' || location === '/cs') {
         console.log('Showing CouchsurfingLanding for unauthenticated user');
         return <CouchsurfingLanding />;
       }
