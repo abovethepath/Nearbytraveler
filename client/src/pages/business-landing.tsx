@@ -211,77 +211,81 @@ export default function BusinessLanding() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Customer Intent Examples */}
-            <div className="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 rounded-2xl p-8">
-              <div className="flex items-center mb-6">
-                <div className="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center mr-4">
-                  <Target className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h4 className="font-bold text-gray-900 dark:text-white text-xl">What Travelers Tell Us</h4>
-                </div>
+          {/* Scrolling Customer Intent Examples */}
+          <div className="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 rounded-2xl p-8">
+            <div className="flex items-center mb-6">
+              <div className="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center mr-4">
+                <Target className="w-6 h-6 text-white" />
               </div>
-              <div className="space-y-3 text-gray-700 dark:text-gray-300">
-                <div className="bg-white dark:bg-gray-800 p-3 rounded-lg">
-                  <p className="italic">"I want to do Happy Hours in LA"</p>
-                  <p className="text-sm text-orange-600 mt-1">→ Perfect for bars & restaurants</p>
+              <div>
+                <h4 className="font-bold text-gray-900 dark:text-white text-xl">What Travelers Tell Us</h4>
+              </div>
+            </div>
+            
+            {/* Horizontal scrolling container */}
+            <div className="overflow-x-auto scrollbar-hide">
+              <div className="flex gap-6 pb-4" style={{ width: 'max-content' }}>
+                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg min-w-[300px]">
+                  <p className="text-base md:text-lg lg:text-xl italic text-gray-800 dark:text-gray-200">"I want to do Happy Hours in LA"</p>
+                  <p className="text-sm text-orange-600 mt-2">→ Perfect for bars & restaurants</p>
                 </div>
-                <div className="bg-white dark:bg-gray-800 p-3 rounded-lg">
-                  <p className="italic">"I want to do bar crawls"</p>
-                  <p className="text-sm text-orange-600 mt-1">→ Perfect for nightlife venues</p>
+                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg min-w-[300px]">
+                  <p className="text-base md:text-lg lg:text-xl italic text-gray-800 dark:text-gray-200">"I want to do bar crawls"</p>
+                  <p className="text-sm text-orange-600 mt-2">→ Perfect for nightlife venues</p>
                 </div>
-                <div className="bg-white dark:bg-gray-800 p-3 rounded-lg">
-                  <p className="italic">"I want to tour celebrity homes"</p>
-                  <p className="text-sm text-orange-600 mt-1">→ Perfect for tour companies</p>
+                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg min-w-[300px]">
+                  <p className="text-base md:text-lg lg:text-xl italic text-gray-800 dark:text-gray-200">"I want to tour celebrity homes"</p>
+                  <p className="text-sm text-orange-600 mt-2">→ Perfect for tour companies</p>
                 </div>
-                <div className="bg-white dark:bg-gray-800 p-3 rounded-lg">
-                  <p className="italic">"I want to go to the Getty"</p>
-                  <p className="text-sm text-orange-600 mt-1">→ Perfect for cultural attractions</p>
+                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg min-w-[300px]">
+                  <p className="text-base md:text-lg lg:text-xl italic text-gray-800 dark:text-gray-200">"I want to go to the Getty"</p>
+                  <p className="text-sm text-orange-600 mt-2">→ Perfect for cultural attractions</p>
                 </div>
-                <div className="bg-white dark:bg-gray-800 p-3 rounded-lg">
-                  <p className="italic">"I want to go to TopGolf"</p>
-                  <p className="text-sm text-orange-600 mt-1">→ Perfect for entertainment venues</p>
+                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg min-w-[300px]">
+                  <p className="text-base md:text-lg lg:text-xl italic text-gray-800 dark:text-gray-200">"I want to go to TopGolf"</p>
+                  <p className="text-sm text-orange-600 mt-2">→ Perfect for entertainment venues</p>
                 </div>
-                <div className="bg-white dark:bg-gray-800 p-3 rounded-lg">
-                  <p className="italic">"I want to hit the gym while traveling"</p>
-                  <p className="text-sm text-orange-600 mt-1">→ Perfect for fitness centers</p>
+                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg min-w-[300px]">
+                  <p className="text-base md:text-lg lg:text-xl italic text-gray-800 dark:text-gray-200">"I want to hit the gym while traveling"</p>
+                  <p className="text-sm text-orange-600 mt-2">→ Perfect for fitness centers</p>
                 </div>
-                <div className="bg-white dark:bg-gray-800 p-3 rounded-lg">
-                  <p className="italic">"I have a kid and I want to go to SkyZone"</p>
-                  <p className="text-sm text-orange-600 mt-1">→ Perfect for family entertainment</p>
+                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg min-w-[300px]">
+                  <p className="text-base md:text-lg lg:text-xl italic text-gray-800 dark:text-gray-200">"I have a kid and I want to go to SkyZone"</p>
+                  <p className="text-sm text-orange-600 mt-2">→ Perfect for family entertainment</p>
                 </div>
-                <div className="bg-white dark:bg-gray-800 p-3 rounded-lg">
-                  <p className="italic">"I want to go to Universal Studios"</p>
-                  <p className="text-sm text-orange-600 mt-1">→ Perfect for theme parks</p>
+                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg min-w-[300px]">
+                  <p className="text-base md:text-lg lg:text-xl italic text-gray-800 dark:text-gray-200">"I want to go to Universal Studios"</p>
+                  <p className="text-sm text-orange-600 mt-2">→ Perfect for theme parks</p>
                 </div>
-                <div className="bg-white dark:bg-gray-800 p-3 rounded-lg">
-                  <p className="italic">"I want to go to children's museum"</p>
-                  <p className="text-sm text-orange-600 mt-1">→ Perfect for family attractions</p>
+                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg min-w-[300px]">
+                  <p className="text-base md:text-lg lg:text-xl italic text-gray-800 dark:text-gray-200">"I want to go to children's museum"</p>
+                  <p className="text-sm text-orange-600 mt-2">→ Perfect for family attractions</p>
                 </div>
-                <div className="bg-white dark:bg-gray-800 p-3 rounded-lg">
-                  <p className="italic">"I want to try yoga studios in LA"</p>
-                  <p className="text-sm text-orange-600 mt-1">→ Perfect for wellness centers</p>
+                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg min-w-[300px]">
+                  <p className="text-base md:text-lg lg:text-xl italic text-gray-800 dark:text-gray-200">"I want to try yoga studios in LA"</p>
+                  <p className="text-sm text-orange-600 mt-2">→ Perfect for wellness centers</p>
                 </div>
-                <div className="bg-white dark:bg-gray-800 p-3 rounded-lg">
-                  <p className="italic">"Looking for escape rooms"</p>
-                  <p className="text-sm text-orange-600 mt-1">→ Perfect for entertainment venues</p>
+                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg min-w-[300px]">
+                  <p className="text-base md:text-lg lg:text-xl italic text-gray-800 dark:text-gray-200">"Looking for escape rooms"</p>
+                  <p className="text-sm text-orange-600 mt-2">→ Perfect for entertainment venues</p>
                 </div>
-                <div className="bg-white dark:bg-gray-800 p-3 rounded-lg">
-                  <p className="italic">"Want to try comedy shows"</p>
-                  <p className="text-sm text-orange-600 mt-1">→ Perfect for entertainment venues</p>
+                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg min-w-[300px]">
+                  <p className="text-base md:text-lg lg:text-xl italic text-gray-800 dark:text-gray-200">"Want to try comedy shows"</p>
+                  <p className="text-sm text-orange-600 mt-2">→ Perfect for entertainment venues</p>
                 </div>
-                <div className="bg-white dark:bg-gray-800 p-3 rounded-lg">
-                  <p className="italic">"I want to play golf in LA"</p>
-                  <p className="text-sm text-orange-600 mt-1">→ Perfect for golf courses</p>
+                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg min-w-[300px]">
+                  <p className="text-base md:text-lg lg:text-xl italic text-gray-800 dark:text-gray-200">"I want to play golf in LA"</p>
+                  <p className="text-sm text-orange-600 mt-2">→ Perfect for golf courses</p>
                 </div>
-                <div className="bg-white dark:bg-gray-800 p-3 rounded-lg">
-                  <p className="italic">"Looking for rooftop bars with views"</p>
-                  <p className="text-sm text-orange-600 mt-1">→ Perfect for upscale bars</p>
+                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg min-w-[300px]">
+                  <p className="text-base md:text-lg lg:text-xl italic text-gray-800 dark:text-gray-200">"Looking for rooftop bars with views"</p>
+                  <p className="text-sm text-orange-600 mt-2">→ Perfect for upscale bars</p>
                 </div>
               </div>
             </div>
+          </div>
 
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Business Advantage */}
             <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-2xl p-8">
               <div className="flex items-center mb-6">
