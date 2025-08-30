@@ -121,10 +121,10 @@ export default function EventsLanding() {
               {/* Right image side */}
               <div className="md:col-span-2 flex flex-col items-center order-first md:order-last">
                 {/* Rotating wisdom sayings above static quote */}
-                <div className="mb-2 text-center w-full overflow-hidden relative h-[28px] sm:h-[36px]">
+                <div className="mb-1 text-center w-full overflow-hidden relative h-[20px] sm:h-[24px]">
                   <p 
                     key={currentWisdom}
-                    className="absolute top-0 left-0 w-full text-xs sm:text-sm font-medium text-zinc-800 dark:text-zinc-200 italic animate-in slide-in-from-right-full fade-in duration-700 px-2"
+                    className="absolute top-0 left-0 w-full text-xs font-medium text-zinc-800 dark:text-zinc-200 italic animate-in slide-in-from-right-full fade-in duration-700 px-2"
                   >
                     <span className="sm:hidden">{wisdomSayingsMobile[currentWisdom]}</span>
                     <span className="hidden sm:inline">{wisdomSayings[currentWisdom]}</span>
@@ -132,8 +132,8 @@ export default function EventsLanding() {
                 </div>
                 
                 {/* Static powerful quote */}
-                <div className="mb-4 text-center w-full">
-                  <p className="text-xs sm:text-sm font-medium text-zinc-800 dark:text-zinc-200 italic px-2">
+                <div className="mb-2 text-center w-full">
+                  <p className="text-xs font-medium text-zinc-800 dark:text-zinc-200 italic px-2">
                     <span className="sm:hidden">Travel doesn't change you — people do.</span>
                     <span className="hidden sm:inline">Travel doesn't change you — the people you meet do.</span>
                   </p>
@@ -145,7 +145,7 @@ export default function EventsLanding() {
                     className="absolute top-0 left-0 w-full h-full object-cover rounded-2xl shadow-lg"
                   />
                 </div>
-                <p className="mt-3 sm:mt-4 text-xs sm:text-sm italic text-orange-600 text-center">
+                <p className="mt-2 text-xs italic text-orange-600 text-center">
                   Where Shared Experiences Create Lifelong Bonds
                 </p>
               </div>
