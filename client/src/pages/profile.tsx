@@ -5782,15 +5782,15 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
             {/* Photo Gallery */}
             <Card>
-              <CardHeader className="flex flex-row items-center justify-between">
+              <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <CardTitle className="flex items-center gap-2">
                   <Camera className="w-5 h-5" />
                   Photos ({photos.length})
                 </CardTitle>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2 w-full sm:w-auto">
                   <Button 
                     size="sm" 
-                    className="bg-blue-500 text-white hover:bg-blue-600 border-blue-500"
+                    className="bg-blue-500 text-white hover:bg-blue-600 border-blue-500 flex-1 sm:flex-none text-xs sm:text-sm"
                     onClick={() => setLocation('/photos')}
                   >
                     View Gallery
@@ -5800,13 +5800,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       <Button 
                         size="sm" 
                         onClick={() => setLocation('/upload-photos')}
-                        className="bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:from-blue-600 hover:to-purple-600"
+                        className="bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:from-blue-600 hover:to-purple-600 flex-1 sm:flex-none text-xs sm:text-sm"
                       >
                         Upload Photos
                       </Button>
                       <Button 
                         size="sm" 
-                        className="bg-blue-500 text-white hover:bg-blue-600 border-blue-500"
+                        className="bg-blue-500 text-white hover:bg-blue-600 border-blue-500 flex-1 sm:flex-none text-xs sm:text-sm"
                         onClick={() => document.getElementById('photo-upload')?.click()}
                         disabled={uploadingPhoto}
                       >
