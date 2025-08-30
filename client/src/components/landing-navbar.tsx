@@ -13,13 +13,10 @@ export default function LandingNavbar() {
           
           {/* Logo Section - Fixed Width */}
           <div className="flex-shrink-0 flex items-center justify-start" style={{display: 'flex', alignItems: 'center'}}>
-            <Link href="/" className="flex items-center gap-2 text-left">
+            <Link href="/" className="flex items-center text-left">
               <div className="transform scale-150 sm:scale-[1.75] pt-2">
                 <Logo variant="navbar" />
               </div>
-              <span className="text-xs text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/30 px-2 py-1 rounded-full font-medium">
-                Beta Launch
-              </span>
             </Link>
           </div>
 
@@ -61,8 +58,11 @@ export default function LandingNavbar() {
             </Link>
           </div>
 
-          {/* Mobile Menu Button */}
-          <div className="flex items-center lg:hidden">
+          {/* Mobile Menu Button with Beta Badge */}
+          <div className="flex items-center lg:hidden gap-2">
+            <span className="text-xs text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30 px-2 py-1 rounded-full font-medium">
+              Beta Launch
+            </span>
             <button 
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               type="button" 
