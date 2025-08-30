@@ -436,7 +436,7 @@ export default function LandingStreamlined() {
                 See Our Community in Action
               </h2>
               <p className="text-sm text-gray-600 dark:text-gray-300 px-2">
-                ✨ Real stories from real connections:
+                ✨ See our community in action:
               </p>
             </div>
             
