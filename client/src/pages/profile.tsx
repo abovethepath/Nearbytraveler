@@ -1508,7 +1508,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         profileForm.reset({
           bio: user.bio || "",
           secretActivities: user.secretActivities || "",
-          veteranStatus: user.veteranStatus || "",
           hometownCity: user.hometownCity || "",
           hometownState: user.hometownState || "",
           hometownCountry: user.hometownCountry || "",
@@ -8175,30 +8174,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     )}
                   />
 
-                  {/* Veteran Status Field */}
-                  <FormField
-                    control={profileForm.control}
-                    name="veteranStatus"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Veteran Status</FormLabel>
-                        <FormControl>
-                          <Select onValueChange={field.onChange} value={field.value || ''}>
-                            <SelectTrigger className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600">
-                              <SelectValue placeholder="Select veteran status" />
-                            </SelectTrigger>
-                            <SelectContent className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600">
-                              <SelectItem value="none">Not a veteran</SelectItem>
-                              <SelectItem value="veteran">Veteran</SelectItem>
-                              <SelectItem value="active">Active duty</SelectItem>
-                              <SelectItem value="reserve">Reserve/National Guard</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
 
                   {/* Age of Children Field */}
                   <FormField
@@ -8245,10 +8220,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                   onChange={(e) => {
                                     const checked = e.target.checked;
                                     field.onChange(checked);
-                                    if (!checked) {
-                                      // Clear ages when unchecked
-                                      profileForm.setValue('childrenAges', '');
-                                    }
+                                    // Don't clear children ages - keep them for matching purposes
                                   }}
                                   className="h-4 w-4 border-gray-300 rounded text-purple-600 focus:ring-purple-500"
                                   data-testid="checkbox-traveling-with-children"
