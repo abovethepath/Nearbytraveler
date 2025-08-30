@@ -180,11 +180,11 @@ export default function CouchsurfingLanding() {
               </li>
               <li className="flex items-start">
                 <RefreshCw className="w-5 h-5 sm:w-6 sm:h-6 text-orange-600 mr-3 sm:mr-4 mt-1 flex-shrink-0" />
-                <span>When you're busy hosting, help your guests meet other travelers</span>
+                <span>When you're hosting but too busy to hang with your guests, Nearby Traveler connects them to other travelers around town</span>
               </li>
               <li className="flex items-start">
                 <ShieldCheck className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 mr-3 sm:mr-4 mt-1 flex-shrink-0" />
-                <span>Feel safe with verification and references</span>
+                <span>Feel safer with references and a vouching system</span>
               </li>
             </ul>
           </div>
