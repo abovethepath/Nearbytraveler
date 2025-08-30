@@ -168,11 +168,11 @@ export default function CouchsurfingLanding() {
           <div className="mt-8 sm:mt-12 max-w-4xl mx-auto">
             <ul className="space-y-4 sm:space-y-6 text-base md:text-lg lg:text-xl text-zinc-700 dark:text-zinc-300">
               <li className="flex items-start">
-                <Coffee className="w-5 h-5 sm:w-6 sm:h-6 text-orange-600 mr-3 sm:mr-4 mt-1 flex-shrink-0" />
+                <Coffee className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 mr-3 sm:mr-4 mt-1 flex-shrink-0" />
                 <span>Match with people who share your hobbies and travel style</span>
               </li>
               <li className="flex items-start">
-                <MapPin className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 mr-3 sm:mr-4 mt-1 flex-shrink-0" />
+                <MapPin className="w-5 h-5 sm:w-6 sm:h-6 text-orange-600 mr-3 sm:mr-4 mt-1 flex-shrink-0" />
                 <span>Connect at cafés, events, and local spots — no couch required</span>
               </li>
               <li className="flex items-start">
@@ -184,12 +184,24 @@ export default function CouchsurfingLanding() {
                 <span>Connect when you want, how you want — no obligations</span>
               </li>
               <li className="flex items-start">
-                <RefreshCw className="w-5 h-5 sm:w-6 sm:h-6 text-orange-600 mr-3 sm:mr-4 mt-1 flex-shrink-0" />
+                <RefreshCw className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 mr-3 sm:mr-4 mt-1 flex-shrink-0" />
                 <span>When you're hosting but too busy to hang with your guests, Nearby Traveler connects them to other travelers around town</span>
               </li>
               <li className="flex items-start">
-                <ShieldCheck className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 mr-3 sm:mr-4 mt-1 flex-shrink-0" />
+                <ShieldCheck className="w-5 h-5 sm:w-6 sm:h-6 text-orange-600 mr-3 sm:mr-4 mt-1 flex-shrink-0" />
                 <span>Feel safer with references and a vouching system</span>
+              </li>
+              <li className="flex items-start">
+                <Building2 className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 mr-3 sm:mr-4 mt-1 flex-shrink-0" />
+                <span>Connect with business travelers, families, and people of all ages — not just backpackers</span>
+              </li>
+              <li className="flex items-start">
+                <Handshake className="w-5 h-5 sm:w-6 sm:h-6 text-orange-600 mr-3 sm:mr-4 mt-1 flex-shrink-0" />
+                <span>Meet multiple travelers and locals in each city you visit for diverse perspectives</span>
+              </li>
+              <li className="flex items-start">
+                <Plane className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 mr-3 sm:mr-4 mt-1 flex-shrink-0" />
+                <span>Plan meetups in advance so you never arrive in a city without connections</span>
               </li>
             </ul>
           </div>
