@@ -203,6 +203,10 @@ export default function CouchsurfingLanding() {
                 <Plane className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 mr-3 sm:mr-4 mt-1 flex-shrink-0" />
                 <span>Plan meetups in advance so you never arrive in a city without connections</span>
               </li>
+              <li className="flex items-start">
+                <Calendar className="w-5 h-5 sm:w-6 sm:h-6 text-orange-600 mr-3 sm:mr-4 mt-1 flex-shrink-0" />
+                <span>Search for and match with others going to the same events that you are</span>
+              </li>
             </ul>
           </div>
         </section>
