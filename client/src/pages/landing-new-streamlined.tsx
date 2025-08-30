@@ -346,6 +346,16 @@ export default function LandingStreamlined() {
                     </p>
                     <div className="h-2 w-16 rounded-full bg-gradient-to-r from-orange-500 to-blue-600" />
                   </div>
+                  
+                  {/* Inspiring Quotes */}
+                  <div className="pt-6 space-y-3">
+                    <p className="text-sm md:text-lg lg:text-xl font-bold text-zinc-800 dark:text-zinc-200 italic">
+                      Every stranger is a friend you haven't met yet.
+                    </p>
+                    <p className="text-sm md:text-lg lg:text-xl font-bold text-zinc-800 dark:text-zinc-200 italic">
+                      Travel doesn't change you — the people you meet do.
+                    </p>
+                  </div>
                 </div>
               </div>
             </section>
