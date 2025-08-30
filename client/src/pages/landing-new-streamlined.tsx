@@ -692,7 +692,7 @@ export default function LandingStreamlined() {
                 Join Now
               </Button>
               <p className="text-gray-500 dark:text-gray-400 mt-4 text-sm">
-                Join thousands of travelers already making connections
+                Join Nearby Travelers already making connections
               </p>
             </div>
           </div>
