@@ -15,7 +15,7 @@ export default function LocalsLanding() {
   const [currentWisdom, setCurrentWisdom] = useState(0);
   const wisdomSayings = [
     "Your City Needs Your Voice.",
-    "Be the Welcome You Want to See.",
+    "Share What Only Locals Know.",
     "Share Your Hidden Gems.",
     "Local Knowledge Is Power.",
     "Every City Has Secret Stories.",
@@ -25,7 +25,7 @@ export default function LocalsLanding() {
   // Mobile-friendly shorter versions
   const wisdomSayingsMobile = [
     "Your City Needs You.",
-    "Be the Welcome You Want.",
+    "Share Local Secrets.",
     "Share Your Hidden Gems.",
     "Local Knowledge Is Power.",
     "Every City Has Secrets.",
@@ -231,21 +231,6 @@ export default function LocalsLanding() {
             </div>
           </div>
 
-          {/* Mid-section CTA */}
-          <div className="text-center mb-16">
-            <Button
-              onClick={() => setLocation('/join')}
-              size="lg"
-              className="bg-black hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-100 text-white dark:text-black font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
-              style={{
-                boxShadow: '0 8px 30px rgba(0, 0, 0, 0.2)',
-                animation: 'gentle-pulse 3s ease-in-out infinite',
-              }}
-            >
-JOIN THE COMMUNITY TODAY
-            </Button>
-            <p className="text-gray-600 dark:text-gray-300 mt-3 text-lg">Join thousands of locals building global friendships</p>
-          </div>
         </div>
       </div>
 
