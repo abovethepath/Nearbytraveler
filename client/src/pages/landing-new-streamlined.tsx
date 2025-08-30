@@ -332,7 +332,7 @@ export default function LandingStreamlined() {
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-gray-900 dark:text-white mb-4 leading-normal px-2">
                 See Our Community in Action
               </h2>
-              <p className="text-base sm:text-lg md:text-xl text-gray-600 dark:text-gray-300 px-2">
+              <p className="text-sm md:text-xl text-gray-600 dark:text-gray-300 px-2">
                 ✨ See how our community turns strangers into lifelong friends:
               </p>
             </div>
@@ -351,7 +351,7 @@ export default function LandingStreamlined() {
                 </div>
                 <div className="p-6 flex flex-col flex-grow">
                   <div className="mb-3">
-                    <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white mb-1">Beach Bonfire & BBQ</h3>
+                    <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-1">Beach Bonfire & BBQ</h3>
                     <p className="text-sm text-gray-600 dark:text-gray-300">Sunset gathering on the beach</p>
                   </div>
                   
@@ -375,7 +375,7 @@ export default function LandingStreamlined() {
                 </div>
                 <div className="p-6 flex flex-col flex-grow">
                   <div className="mb-3">
-                    <h3 className="text-sm sm:text-base md:text-lg font-bold text-gray-900 dark:text-white mb-1">Taco Tuesday</h3>
+                    <h3 className="text-sm md:text-lg font-bold text-gray-900 dark:text-white mb-1">Taco Tuesday</h3>
                     <p className="text-sm text-gray-600 dark:text-gray-300">Every Tuesday • $1.50 tacos</p>
                   </div>
                   
@@ -399,7 +399,7 @@ export default function LandingStreamlined() {
                 </div>
                 <div className="p-6 flex flex-col flex-grow">
                   <div className="mb-3">
-                    <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white mb-1">Hollywood Sign Hike</h3>
+                    <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-1">Hollywood Sign Hike</h3>
                     <p className="text-sm text-gray-600 dark:text-gray-300">Every Saturday • 9:00 AM</p>
                   </div>
                   

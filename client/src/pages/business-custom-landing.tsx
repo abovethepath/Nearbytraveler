@@ -54,10 +54,10 @@ export default function BusinessCustomLanding() {
               <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-semibold tracking-tight text-zinc-900 dark:text-white leading-tight">
                 Trouble Meeting Tourists <br /> as a Business?
               </h1>
-              <p className="mt-2 text-sm sm:text-base italic text-blue-600">
+              <p className="mt-2 text-sm italic text-blue-600">
                 Turn Your Location Into a Community Hub
               </p>
-              <p className="mt-3 sm:mt-4 max-w-xl text-sm sm:text-base text-zinc-600 dark:text-zinc-300">
+              <p className="mt-3 sm:mt-4 max-w-xl text-sm text-zinc-600 dark:text-zinc-300">
                 Connect directly with travelers and locals looking for authentic experiences at your restaurant, café, shop, or venue.
               </p>
             </div>

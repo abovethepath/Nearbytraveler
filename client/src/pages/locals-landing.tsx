@@ -34,7 +34,7 @@ export default function LocalsLanding() {
               <div className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-semibold tracking-tight text-zinc-900 dark:text-white">
                 <h1>Be the Local You'd Want to Meet</h1>
               </div>
-              <div className="mt-3 sm:mt-4 max-w-xl text-sm sm:text-base text-zinc-600 dark:text-zinc-300">
+              <div className="mt-3 sm:mt-4 max-w-xl text-sm text-zinc-600 dark:text-zinc-300">
                 <p>Share your city's hidden gems with nearby travelers and connect with like-minded locals</p>
               </div>
             </div>
@@ -119,42 +119,42 @@ export default function LocalsLanding() {
               <div className="bg-emerald-200 dark:bg-emerald-600 p-6 rounded-xl shadow-lg text-gray-800 dark:text-white flex flex-col h-full">
                 <div className="text-4xl mb-4">🌍</div>
                 <h3 className="text-lg sm:text-xl font-bold mb-4 text-gray-800 dark:text-white leading-tight">Authentic Local Experiences</h3>
-                <p className="text-gray-700 dark:text-white text-sm sm:text-base leading-relaxed flex-grow">
+                <p className="text-gray-700 dark:text-white text-sm leading-relaxed flex-grow">
                   Skip tourist traps and discover hidden gems with locals who know the city best.
                 </p>
               </div>
               <div className="bg-teal-200 dark:bg-teal-600 p-6 rounded-xl shadow-lg text-gray-800 dark:text-white flex flex-col h-full">
                 <div className="text-4xl mb-4">🤝</div>
                 <h3 className="text-lg sm:text-xl font-bold mb-4 text-gray-800 dark:text-white leading-tight">Real Friendships & Connections</h3>
-                <p className="text-gray-700 dark:text-white text-sm sm:text-base leading-relaxed flex-grow">
+                <p className="text-gray-700 dark:text-white text-sm leading-relaxed flex-grow">
                   Meet people who share your interests and travel style — friendships that last beyond the trip.
                 </p>
               </div>
               <div className="bg-orange-200 dark:bg-orange-600 p-6 rounded-xl shadow-lg text-gray-800 dark:text-white flex flex-col h-full">
                 <div className="text-4xl mb-4">🎉</div>
                 <h3 className="text-lg sm:text-xl font-bold mb-4 text-gray-800 dark:text-white leading-tight">Host or Join Events</h3>
-                <p className="text-gray-700 dark:text-white text-sm sm:text-base leading-relaxed flex-grow">
+                <p className="text-gray-700 dark:text-white text-sm leading-relaxed flex-grow">
                   Create or join activities you love — from rooftop parties and food tours to hikes and art walks.
                 </p>
               </div>
               <div className="bg-purple-200 dark:bg-purple-600 p-6 rounded-xl shadow-lg text-gray-800 dark:text-white flex flex-col h-full">
                 <div className="text-4xl mb-4">💼</div>
                 <h3 className="text-lg sm:text-xl font-bold mb-4 text-gray-800 dark:text-white leading-tight">Pre-Network for Business Events</h3>
-                <p className="text-gray-700 dark:text-white text-sm sm:text-base leading-relaxed flex-grow">
+                <p className="text-gray-700 dark:text-white text-sm leading-relaxed flex-grow">
                   See who's attending conferences, mixers, or meetups before they start. Break the ice early, walk in with warm intros, and keep connections alive afterward.
                 </p>
               </div>
               <div className="bg-blue-200 dark:bg-blue-600 p-6 rounded-xl shadow-lg text-gray-800 dark:text-white flex flex-col h-full">
                 <div className="text-4xl mb-4">📅</div>
                 <h3 className="text-lg sm:text-xl font-bold mb-4 text-gray-800 dark:text-white leading-tight">Your Social Travel Calendar</h3>
-                <p className="text-gray-700 dark:text-white text-sm sm:text-base leading-relaxed flex-grow">
+                <p className="text-gray-700 dark:text-white text-sm leading-relaxed flex-grow">
                   Sync trips, events, and connections into one calendar so you never miss a chance to meet up.
                 </p>
               </div>
               <div className="bg-rose-200 dark:bg-rose-600 p-6 rounded-xl shadow-lg text-gray-800 dark:text-white flex flex-col h-full">
                 <div className="text-4xl mb-4">💕</div>
                 <h3 className="text-lg sm:text-xl font-bold mb-4 text-gray-800 dark:text-white leading-tight">Lasting Memories & Stories</h3>
-                <p className="text-gray-700 dark:text-white text-sm sm:text-base leading-relaxed flex-grow">
+                <p className="text-gray-700 dark:text-white text-sm leading-relaxed flex-grow">
                   Create unforgettable moments and collect amazing stories from every connection you make around the world.
                 </p>
               </div>

@@ -70,13 +70,13 @@ export default function CouchsurfingLanding() {
               <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight text-zinc-900 dark:text-white mb-4 sm:mb-6 leading-tight">
                 A Letter to the Couchsurfing Community
               </h1>
-              <blockquote className="text-sm sm:text-base md:text-lg text-zinc-600 dark:text-zinc-300 leading-relaxed border-l-4 border-green-500 pl-4 sm:pl-6 mb-4 sm:mb-6">
+              <blockquote className="text-sm text-zinc-600 dark:text-zinc-300 leading-relaxed border-l-4 border-green-500 pl-4 sm:pl-6 mb-4 sm:mb-6">
                 "As a 15-year Couchsurfing host and traveler, I've had some of the best moments of my life meeting people through the community. But over time, I realized I couldn't always host, I couldn't always find a couch — yet I always wanted to meet travelers. That's why I created Nearby Traveler."
               </blockquote>
-              <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 mb-4 sm:mb-6">
+              <p className="text-xs text-zinc-500 dark:text-zinc-400 mb-4 sm:mb-6">
                 — Aaron Lefkowitz, Founder & Fellow Couchsurfer
               </p>
-              <p className="mt-3 sm:mt-4 max-w-xl text-sm sm:text-base text-zinc-600 dark:text-zinc-300">
+              <p className="mt-3 sm:mt-4 max-w-xl text-sm text-zinc-600 dark:text-zinc-300">
                 Connect with travelers based on shared interests, not just accommodation needs. Host when you want. Travel when you can. Meet travelers always.
               </p>
             </div>
@@ -97,12 +97,12 @@ export default function CouchsurfingLanding() {
           <h2 className="text-center text-xl sm:text-2xl font-bold tracking-tight text-zinc-900 dark:text-white">
             Beyond Just Needing a Couch
           </h2>
-          <p className="mt-2 text-center text-sm sm:text-base text-zinc-600 dark:text-zinc-400 px-4">
+          <p className="mt-2 text-center text-sm text-zinc-600 dark:text-zinc-400 px-4">
             Connect based on shared interests, activities, and genuine compatibility - not just accommodation needs.
           </p>
 
           <div className="mt-8 sm:mt-12 max-w-4xl mx-auto">
-            <ul className="space-y-4 sm:space-y-6 text-sm sm:text-base text-zinc-700 dark:text-zinc-300">
+            <ul className="space-y-4 sm:space-y-6 text-sm text-zinc-700 dark:text-zinc-300">
               <li className="flex items-start">
                 <Coffee className="w-5 h-5 sm:w-6 sm:h-6 text-green-600 mr-3 sm:mr-4 mt-1 flex-shrink-0" />
                 <span>Match with people who share your hobbies and travel style</span>
@@ -140,7 +140,7 @@ export default function CouchsurfingLanding() {
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-zinc-900 dark:text-white mb-4 sm:mb-6 px-4">
               We Know You've <span className="text-green-600 dark:text-green-400">Loved Hosting</span>
             </h2>
-            <p className="text-base sm:text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-4xl mx-auto leading-relaxed px-4">
+            <p className="text-sm text-gray-600 dark:text-gray-300 max-w-4xl mx-auto leading-relaxed px-4">
               If you've hosted before, you know the magic: meeting fascinating people, sharing your city, learning about new cultures. But hosting can also be exhausting, unpredictable, and sometimes just not possible with work or family life. That doesn't mean you're less generous — it just means life changes. With Nearby Traveler, you can keep the spirit of cultural exchange alive in a way that works for you today.
             </p>
           </div>
@@ -152,7 +152,7 @@ export default function CouchsurfingLanding() {
                 <Heart className="w-5 h-5 sm:w-6 sm:h-6 mr-2 sm:mr-3" />
                 What You've Loved About Hosting
               </h3>
-              <ul className="space-y-3 sm:space-y-4 text-sm sm:text-base text-gray-700 dark:text-gray-300">
+              <ul className="space-y-3 sm:space-y-4 text-sm text-gray-700 dark:text-gray-300">
                 <li className="flex items-start">
                   <Globe className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 mr-2 sm:mr-3 mt-1 flex-shrink-0" />
                   <span>Meeting fascinating people from every corner of the world</span>
@@ -182,7 +182,7 @@ export default function CouchsurfingLanding() {
                 <Home className="w-5 h-5 sm:w-6 sm:h-6 mr-2 sm:mr-3" />
                 But Hosting Can Be...
               </h3>
-              <ul className="space-y-3 sm:space-y-4 text-sm sm:text-base text-gray-700 dark:text-gray-300">
+              <ul className="space-y-3 sm:space-y-4 text-sm text-gray-700 dark:text-gray-300">
                 <li className="flex items-start">
                   <span className="w-4 h-4 sm:w-5 sm:h-5 bg-orange-500 rounded-full mr-2 sm:mr-3 mt-2 flex-shrink-0"></span>
                   <span>Exhausting when you need your personal space</span>

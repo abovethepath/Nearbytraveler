@@ -45,7 +45,7 @@ export default function TravelersLanding() {
               <div className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-semibold tracking-tight text-zinc-900 dark:text-white">
                 <h1>Travel Like a Local</h1>
               </div>
-              <div className="mt-3 sm:mt-4 max-w-xl text-sm sm:text-base text-zinc-600 dark:text-zinc-300">
+              <div className="mt-3 sm:mt-4 max-w-xl text-sm text-zinc-600 dark:text-zinc-300">
                 <p>Skip the tourist traps and connect with nearby travelers and locals for authentic experiences</p>
               </div>
             </div>
