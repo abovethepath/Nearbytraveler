@@ -383,7 +383,7 @@ export default function Messages() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <h3 className="font-semibold text-white truncate">
-                          {conv.username}
+                          @{conv.username}
                         </h3>
                         {conv.unreadCount > 0 && (
                           <div className="bg-red-500 text-white text-xs rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
@@ -434,7 +434,7 @@ export default function Messages() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-white">
-                    {selectedUser.username}
+                    @{selectedUser.username}
                   </h3>
                   {typingUsers[selectedConversation] && (
                     <p className="text-xs text-blue-400">typing...</p>

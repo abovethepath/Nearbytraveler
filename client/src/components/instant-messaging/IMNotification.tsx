@@ -29,7 +29,7 @@ function IMNotification({ message, sender, onClose, onOpenChat }: IMNotification
           <SimpleAvatar user={sender} size="sm" />
           <div>
             <h4 className="font-semibold text-sm text-gray-900 dark:text-white">
-              {sender.username}
+              @{sender.username}
             </h4>
             <p className="text-xs text-gray-500 dark:text-gray-400">New message</p>
           </div>

@@ -235,7 +235,7 @@ export default function ChatroomPage() {
                             className="w-4 h-4 rounded-full object-cover"
                           />
                         )}
-                        <span>{message.username || 'Unknown'}</span>
+                        <span>@{message.username || 'Unknown'}</span>
                       </div>
                       <div>{message.content}</div>
                       <div className="text-xs opacity-75 mt-1">
