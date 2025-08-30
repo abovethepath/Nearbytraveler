@@ -506,7 +506,11 @@ export default function BusinessLanding() {
                     <span className="text-sm bg-white/20 px-2 py-1 rounded">2h left</span>
                   </div>
                   <h5 className="font-bold text-lg mb-1">Happy Hour - 50% Off Drinks</h5>
-                  <p className="text-sm opacity-90 mb-3">The Rooftop Bar & Grill</p>
+                  <p className="text-sm opacity-90 mb-1">The Rooftop Bar & Grill</p>
+                  <div className="flex items-center gap-1 mb-3">
+                    <MapPin className="w-3 h-3 opacity-80" />
+                    <span className="text-xs opacity-80">456 Rooftop Ave, Downtown</span>
+                  </div>
                   <p className="text-sm mb-3">Valid 5-7pm today. Show this deal to bartender.</p>
                   <Button className="w-full bg-white text-orange-600 hover:bg-gray-100">
                     Claim Deal
