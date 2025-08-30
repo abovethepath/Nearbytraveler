@@ -25,6 +25,16 @@ export default function LandingStreamlined() {
     "Because No One Should Explore Alone.",
     "The People You Meet Are the Real Destination."
   ];
+  
+  // Mobile-friendly shorter versions
+  const wisdomSayingsMobile = [
+    "One Connection Changes Everything.",
+    "Adventure Starts With Hello.",
+    "Conversations Change Everything.",
+    "Strangers Become Friends.",
+    "Never Explore Alone.",
+    "People Are the Real Destination."
+  ];
   const headlines = [
     "Planning a Trip Soon? Skip The Tourist Traps.", // General travelers
     "Want to Expand Your Social Circle? Love Meeting Travelers?", // Locals who want to share their city
@@ -130,10 +140,10 @@ export default function LandingStreamlined() {
         <div className="pt-8 pb-12 bg-white dark:bg-gray-900">
           {isAirbnbStyle ? (
             // Clean, professional hero section
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 py-4 sm:py-8 grid gap-6 sm:gap-8 md:grid-cols-5 items-center">
+            <div className="mx-auto max-w-7xl px-2 sm:px-4 md:px-6 py-4 sm:py-8 grid gap-4 sm:gap-6 md:gap-8 md:grid-cols-5 items-center">
               {/* Left text side - wider */}
               <div className="md:col-span-3">
-                <div className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-semibold tracking-tight text-zinc-900 dark:text-white overflow-hidden relative h-[100px] sm:h-[120px] md:h-[140px] lg:h-[180px]">
+                <div className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-semibold tracking-tight text-zinc-900 dark:text-white overflow-hidden relative h-[90px] sm:h-[100px] md:h-[120px] lg:h-[140px]">
                   <h1 
                     key={currentHeadline}
                     className="absolute top-0 left-0 w-full animate-in slide-in-from-left-full fade-in duration-700"
@@ -154,19 +164,21 @@ export default function LandingStreamlined() {
               {/* Right image side */}
               <div className="md:col-span-2 flex flex-col items-center order-first md:order-last">
                 {/* Rotating wisdom sayings above static quote */}
-                <div className="mb-2 text-center w-full overflow-hidden relative h-[32px] sm:h-[40px]">
+                <div className="mb-2 text-center w-full overflow-hidden relative h-[28px] sm:h-[36px]">
                   <p 
                     key={currentWisdom}
-                    className="absolute top-0 left-0 w-full text-sm sm:text-base font-medium text-zinc-800 dark:text-zinc-200 italic animate-in slide-in-from-right-full fade-in duration-700"
+                    className="absolute top-0 left-0 w-full text-xs sm:text-sm font-medium text-zinc-800 dark:text-zinc-200 italic animate-in slide-in-from-right-full fade-in duration-700 px-2"
                   >
-                    {wisdomSayings[currentWisdom]}
+                    <span className="sm:hidden">{wisdomSayingsMobile[currentWisdom]}</span>
+                    <span className="hidden sm:inline">{wisdomSayings[currentWisdom]}</span>
                   </p>
                 </div>
                 
                 {/* Static powerful quote */}
                 <div className="mb-4 text-center w-full">
-                  <p className="text-sm sm:text-base font-medium text-zinc-800 dark:text-zinc-200 italic">
-                    Travel doesn't change you — the people you meet do.
+                  <p className="text-xs sm:text-sm font-medium text-zinc-800 dark:text-zinc-200 italic px-2">
+                    <span className="sm:hidden">Travel doesn't change you — people do.</span>
+                    <span className="hidden sm:inline">Travel doesn't change you — the people you meet do.</span>
                   </p>
                 </div>
                 <div className="overflow-hidden relative w-full max-w-sm sm:max-w-md h-[200px] sm:h-[250px] md:h-[350px] rounded-2xl">
