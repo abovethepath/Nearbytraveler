@@ -20,7 +20,8 @@ import {
   Zap,
   Trophy,
   Heart,
-  Calendar
+  Calendar,
+  ChevronRight
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
@@ -440,8 +441,9 @@ export default function BusinessLanding() {
           </div>
 
           {/* Scrolling examples of deals and events */}
-          <div className="overflow-x-auto scrollbar-hide mb-12">
-            <div className="flex gap-6 pb-4" style={{ width: 'max-content' }}>
+          <div className="relative">
+            <div className="overflow-x-auto scrollbar-hide mb-12">
+              <div className="flex gap-6 pb-4" style={{ width: 'max-content' }}>
               <div className="bg-white dark:bg-gray-800 p-6 rounded-lg min-w-[320px] shadow-lg">
                 <div className="text-2xl mb-3">🍻</div>
                 <h4 className="font-bold text-gray-900 dark:text-white mb-2">Happy Hour Flash Deal</h4>
@@ -484,6 +486,10 @@ export default function BusinessLanding() {
                 <p className="text-base md:text-lg italic text-gray-700 dark:text-gray-300 mb-2">"Book today, tour tomorrow deal"</p>
                 <p className="text-sm text-blue-600">→ Tour companies</p>
               </div>
+            </div>
+            {/* Mobile scroll indicator */}
+            <div className="sm:hidden absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/80 dark:bg-gray-800/80 rounded-full p-2 shadow-lg">
+              <ChevronRight className="w-5 h-5 text-gray-600 dark:text-gray-300" />
             </div>
           </div>
 
@@ -705,7 +711,7 @@ export default function BusinessLanding() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12">
+      <footer className="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white py-12">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div>
