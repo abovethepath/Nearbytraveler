@@ -285,11 +285,8 @@ export default function LandingStreamlined() {
 
                   {/* Attribution */}
                   <div className="pt-2">
-                    <p className="text-base font-semibold tracking-tight text-zinc-900 dark:text-white">
-                      — Aaron Lefkowitz
-                    </p>
                     <p className="text-sm text-zinc-600 dark:text-zinc-400">
-                      Founder, Nearby Traveler
+                      — Aaron Lefkowitz, Founder, Nearby Traveler
                     </p>
                   </div>
 
