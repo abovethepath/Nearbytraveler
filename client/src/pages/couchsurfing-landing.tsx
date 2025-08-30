@@ -59,33 +59,33 @@ export default function CouchsurfingLanding() {
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         {/* FOUNDER STORY HERO */}
-        <div className="pt-8 pb-12 bg-white dark:bg-gray-900">
-          <div className="mx-auto max-w-6xl px-6 py-8 grid gap-8 md:grid-cols-2 items-center">
+        <div className="pt-4 sm:pt-8 pb-8 sm:pb-12 bg-white dark:bg-gray-900">
+          <div className="mx-auto max-w-6xl px-4 sm:px-6 py-4 sm:py-8 grid gap-6 sm:gap-8 md:grid-cols-2 items-center">
             {/* Left text side */}
             <div>
-              <div className="mb-4 inline-block rounded-full bg-green-50 dark:bg-green-900/30 px-4 py-1 text-sm font-medium text-green-700 dark:text-green-400">
-                <Heart className="inline w-4 h-4 mr-2" />
+              <div className="mb-3 sm:mb-4 inline-block rounded-full bg-green-50 dark:bg-green-900/30 px-3 sm:px-4 py-1 text-xs sm:text-sm font-medium text-green-700 dark:text-green-400">
+                <Heart className="inline w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                 From a Fellow Couchsurfer
               </div>
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-zinc-900 dark:text-white mb-6">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-zinc-900 dark:text-white mb-4 sm:mb-6 leading-tight">
                 A Letter to the Couchsurfing Community
               </h1>
-              <blockquote className="text-lg md:text-xl text-zinc-600 dark:text-zinc-300 leading-relaxed border-l-4 border-green-500 pl-6 mb-6">
+              <blockquote className="text-base sm:text-lg md:text-xl text-zinc-600 dark:text-zinc-300 leading-relaxed border-l-4 border-green-500 pl-4 sm:pl-6 mb-4 sm:mb-6">
                 "As a 15-year Couchsurfing host and traveler, I've had some of the best moments of my life meeting people through the community. But over time, I realized I couldn't always host, I couldn't always find a couch — yet I always wanted to meet travelers. That's why I created Nearby Traveler."
               </blockquote>
-              <p className="text-base text-zinc-500 dark:text-zinc-400 mb-6">
+              <p className="text-sm sm:text-base text-zinc-500 dark:text-zinc-400 mb-4 sm:mb-6">
                 — Aaron Lefkowitz, Founder & Fellow Couchsurfer
               </p>
-              <p className="mt-4 max-w-xl text-lg text-zinc-600 dark:text-zinc-300">
+              <p className="mt-3 sm:mt-4 max-w-xl text-base sm:text-lg text-zinc-600 dark:text-zinc-300">
                 Connect with travelers based on shared interests, not just accommodation needs. Host when you want. Travel when you can. Meet travelers always.
               </p>
-              <div className="mt-6 flex flex-col sm:flex-row gap-4">
+              <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row gap-3 sm:gap-4">
                 <button 
                   onClick={() => {
                     trackEvent('signup_cta_click', 'couchsurfing_landing', 'main_hero_button');
                     setLocation('/join');
                   }}
-                  className="bg-black hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-100 text-white dark:text-black font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200 w-full sm:w-auto"
+                  className="bg-black hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-100 text-white dark:text-black font-medium px-4 sm:px-6 py-3 rounded-lg shadow-sm transition-all duration-200 w-full sm:w-auto text-sm sm:text-base"
                   data-testid="button-join-couchsurfing"
                 >
                   Join Now
@@ -95,7 +95,7 @@ export default function CouchsurfingLanding() {
                     trackEvent('learn_more_click', 'couchsurfing_landing', 'see_how_it_works');
                     document.querySelector('#community-section')?.scrollIntoView({ behavior: 'smooth' });
                   }}
-                  className="rounded-xl border border-zinc-300 px-6 py-3 font-medium hover:bg-zinc-50 dark:border-zinc-600 dark:hover:bg-zinc-800 w-full sm:w-auto"
+                  className="rounded-xl border border-zinc-300 px-4 sm:px-6 py-3 font-medium hover:bg-zinc-50 dark:border-zinc-600 dark:hover:bg-zinc-800 w-full sm:w-auto text-sm sm:text-base"
                   data-testid="button-see-how-it-works-cs"
                 >
                   See How It Works
@@ -104,49 +104,49 @@ export default function CouchsurfingLanding() {
             </div>
 
             {/* Right image side */}
-            <div className="flex justify-center">
+            <div className="flex justify-center order-first md:order-last">
               <img
                 src="/attached_assets/image_1756515286749.png"
                 alt="Couch surfing - literally surfing on a couch in the ocean"
-                className="rounded-2xl shadow-lg object-cover max-w-md"
+                className="rounded-2xl shadow-lg object-cover w-full max-w-sm sm:max-w-md h-auto"
               />
             </div>
           </div>
         </div>
 
         {/* VALUE SECTION - Couchsurfing Focused */}
-        <section className="mx-auto max-w-6xl px-6 py-20">
-          <h2 className="text-center text-3xl font-bold tracking-tight text-zinc-900 dark:text-white">
+        <section className="mx-auto max-w-6xl px-4 sm:px-6 py-12 sm:py-20">
+          <h2 className="text-center text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900 dark:text-white">
             Beyond Just Needing a Couch
           </h2>
-          <p className="mt-2 text-center text-lg text-zinc-600 dark:text-zinc-400">
+          <p className="mt-2 text-center text-base sm:text-lg text-zinc-600 dark:text-zinc-400 px-4">
             Connect based on shared interests, activities, and genuine compatibility - not just accommodation needs.
           </p>
 
-          <div className="mt-12 max-w-4xl mx-auto">
-            <ul className="space-y-6 text-lg text-zinc-700 dark:text-zinc-300">
+          <div className="mt-8 sm:mt-12 max-w-4xl mx-auto">
+            <ul className="space-y-4 sm:space-y-6 text-base sm:text-lg text-zinc-700 dark:text-zinc-300">
               <li className="flex items-start">
-                <Coffee className="w-6 h-6 text-green-600 mr-4 mt-1 flex-shrink-0" />
+                <Coffee className="w-5 h-5 sm:w-6 sm:h-6 text-green-600 mr-3 sm:mr-4 mt-1 flex-shrink-0" />
                 <span>Match with people who share your hobbies and travel style</span>
               </li>
               <li className="flex items-start">
-                <MapPin className="w-6 h-6 text-blue-600 mr-4 mt-1 flex-shrink-0" />
+                <MapPin className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 mr-3 sm:mr-4 mt-1 flex-shrink-0" />
                 <span>Connect at cafés, events, and local spots — no couch required</span>
               </li>
               <li className="flex items-start">
-                <Globe className="w-6 h-6 text-purple-600 mr-4 mt-1 flex-shrink-0" />
+                <Globe className="w-5 h-5 sm:w-6 sm:h-6 text-purple-600 mr-3 sm:mr-4 mt-1 flex-shrink-0" />
                 <span>Share local secrets and experience cultural exchange</span>
               </li>
               <li className="flex items-start">
-                <Users className="w-6 h-6 text-orange-600 mr-4 mt-1 flex-shrink-0" />
+                <Users className="w-5 h-5 sm:w-6 sm:h-6 text-orange-600 mr-3 sm:mr-4 mt-1 flex-shrink-0" />
                 <span>Connect when you want, how you want — no obligations</span>
               </li>
               <li className="flex items-start">
-                <RefreshCw className="w-6 h-6 text-pink-600 mr-4 mt-1 flex-shrink-0" />
+                <RefreshCw className="w-5 h-5 sm:w-6 sm:h-6 text-pink-600 mr-3 sm:mr-4 mt-1 flex-shrink-0" />
                 <span>Stay connected across trips</span>
               </li>
               <li className="flex items-start">
-                <ShieldCheck className="w-6 h-6 text-indigo-600 mr-4 mt-1 flex-shrink-0" />
+                <ShieldCheck className="w-5 h-5 sm:w-6 sm:h-6 text-indigo-600 mr-3 sm:mr-4 mt-1 flex-shrink-0" />
                 <span>Feel safe with verification and references</span>
               </li>
             </ul>
@@ -154,75 +154,75 @@ export default function CouchsurfingLanding() {
         </section>
 
         {/* THE HOSTING JOURNEY - Honest Perspective */}
-        <section id="hosting-journey" className="mx-auto max-w-6xl px-6 py-20 bg-gradient-to-br from-green-50 via-blue-50 to-purple-50 dark:from-green-900/20 dark:via-blue-900/20 dark:to-purple-900/20 rounded-2xl mb-16">
-          <div className="text-center mb-16">
-            <span className="inline-block px-6 py-2 bg-gradient-to-r from-green-100 to-blue-100 dark:from-green-800 to-blue-800 text-green-800 dark:text-green-200 text-sm font-bold rounded-full mb-4">
+        <section id="hosting-journey" className="mx-auto max-w-6xl px-4 sm:px-6 py-12 sm:py-20 bg-gradient-to-br from-green-50 via-blue-50 to-purple-50 dark:from-green-900/20 dark:via-blue-900/20 dark:to-purple-900/20 rounded-2xl mb-8 sm:mb-16">
+          <div className="text-center mb-8 sm:mb-16">
+            <span className="inline-block px-4 sm:px-6 py-2 bg-gradient-to-r from-green-100 to-blue-100 dark:from-green-800 to-blue-800 text-green-800 dark:text-green-200 text-xs sm:text-sm font-bold rounded-full mb-4">
               FOR EXPERIENCED HOSTS
             </span>
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900 dark:text-white mb-6">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-zinc-900 dark:text-white mb-4 sm:mb-6 px-4">
               We Know You've <span className="text-green-600 dark:text-green-400">Loved Hosting</span>
             </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-4xl mx-auto leading-relaxed">
+            <p className="text-base sm:text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-4xl mx-auto leading-relaxed px-4">
               If you've hosted before, you know the magic: meeting fascinating people, sharing your city, learning about new cultures. But hosting can also be exhausting, unpredictable, and sometimes just not possible with work or family life. That doesn't mean you're less generous — it just means life changes. With Nearby Traveler, you can keep the spirit of cultural exchange alive in a way that works for you today.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 mb-8 sm:mb-16">
             {/* What You Loved */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border-l-4 border-green-500">
-              <h3 className="text-2xl font-bold text-green-700 dark:text-green-400 mb-6 flex items-center">
-                <Heart className="w-6 h-6 mr-3" />
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 sm:p-6 md:p-8 shadow-lg border-l-4 border-green-500">
+              <h3 className="text-xl sm:text-2xl font-bold text-green-700 dark:text-green-400 mb-4 sm:mb-6 flex items-center">
+                <Heart className="w-5 h-5 sm:w-6 sm:h-6 mr-2 sm:mr-3" />
                 What You've Loved About Hosting
               </h3>
-              <ul className="space-y-4 text-gray-700 dark:text-gray-300">
+              <ul className="space-y-3 sm:space-y-4 text-sm sm:text-base text-gray-700 dark:text-gray-300">
                 <li className="flex items-start">
-                  <Globe className="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" />
+                  <Globe className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 mr-2 sm:mr-3 mt-1 flex-shrink-0" />
                   <span>Meeting fascinating people from every corner of the world</span>
                 </li>
                 <li className="flex items-start">
-                  <Users className="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" />
+                  <Users className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 mr-2 sm:mr-3 mt-1 flex-shrink-0" />
                   <span>Creating deep connections and lifelong friendships</span>
                 </li>
                 <li className="flex items-start">
-                  <Coffee className="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" />
+                  <Coffee className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 mr-2 sm:mr-3 mt-1 flex-shrink-0" />
                   <span>Sharing your city's hidden gems and local culture</span>
                 </li>
                 <li className="flex items-start">
-                  <RefreshCw className="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" />
+                  <RefreshCw className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 mr-2 sm:mr-3 mt-1 flex-shrink-0" />
                   <span>Learning about other cultures without traveling</span>
                 </li>
                 <li className="flex items-start">
-                  <Handshake className="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" />
+                  <Handshake className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 mr-2 sm:mr-3 mt-1 flex-shrink-0" />
                   <span>The satisfaction of helping fellow travelers</span>
                 </li>
               </ul>
             </div>
 
             {/* The Challenges */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border-l-4 border-orange-500">
-              <h3 className="text-2xl font-bold text-orange-700 dark:text-orange-400 mb-6 flex items-center">
-                <Home className="w-6 h-6 mr-3" />
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 sm:p-6 md:p-8 shadow-lg border-l-4 border-orange-500">
+              <h3 className="text-xl sm:text-2xl font-bold text-orange-700 dark:text-orange-400 mb-4 sm:mb-6 flex items-center">
+                <Home className="w-5 h-5 sm:w-6 sm:h-6 mr-2 sm:mr-3" />
                 But Hosting Can Be...
               </h3>
-              <ul className="space-y-4 text-gray-700 dark:text-gray-300">
+              <ul className="space-y-3 sm:space-y-4 text-sm sm:text-base text-gray-700 dark:text-gray-300">
                 <li className="flex items-start">
-                  <span className="w-5 h-5 bg-orange-500 rounded-full mr-3 mt-2 flex-shrink-0"></span>
+                  <span className="w-4 h-4 sm:w-5 sm:h-5 bg-orange-500 rounded-full mr-2 sm:mr-3 mt-2 flex-shrink-0"></span>
                   <span>Exhausting when you need your personal space</span>
                 </li>
                 <li className="flex items-start">
-                  <span className="w-5 h-5 bg-orange-500 rounded-full mr-3 mt-2 flex-shrink-0"></span>
+                  <span className="w-4 h-4 sm:w-5 sm:h-5 bg-orange-500 rounded-full mr-2 sm:mr-3 mt-2 flex-shrink-0"></span>
                   <span>Stressful with work, family, or relationship commitments</span>
                 </li>
                 <li className="flex items-start">
-                  <span className="w-5 h-5 bg-orange-500 rounded-full mr-3 mt-2 flex-shrink-0"></span>
+                  <span className="w-4 h-4 sm:w-5 sm:h-5 bg-orange-500 rounded-full mr-2 sm:mr-3 mt-2 flex-shrink-0"></span>
                   <span>Unpredictable with last-minute cancellations or no-shows</span>
                 </li>
                 <li className="flex items-start">
-                  <span className="w-5 h-5 bg-orange-500 rounded-full mr-3 mt-2 flex-shrink-0"></span>
+                  <span className="w-4 h-4 sm:w-5 sm:h-5 bg-orange-500 rounded-full mr-2 sm:mr-3 mt-2 flex-shrink-0"></span>
                   <span>Limiting when your living situation changes</span>
                 </li>
                 <li className="flex items-start">
-                  <span className="w-5 h-5 bg-orange-500 rounded-full mr-3 mt-2 flex-shrink-0"></span>
+                  <span className="w-4 h-4 sm:w-5 sm:h-5 bg-orange-500 rounded-full mr-2 sm:mr-3 mt-2 flex-shrink-0"></span>
                   <span>Overwhelming when you just want a quiet weekend</span>
                 </li>
               </ul>
