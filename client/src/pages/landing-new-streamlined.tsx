@@ -137,10 +137,10 @@ export default function LandingStreamlined() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         
         {/* HERO SECTION */}
-        <div className="pt-8 pb-12 bg-white dark:bg-gray-900">
+        <div className="pt-4 pb-6 sm:pt-6 sm:pb-8 bg-white dark:bg-gray-900">
           {isAirbnbStyle ? (
             // Clean, professional hero section
-            <div className="mx-auto max-w-7xl px-2 sm:px-4 md:px-6 py-4 sm:py-8 grid gap-4 sm:gap-6 md:gap-8 md:grid-cols-5 items-center">
+            <div className="mx-auto max-w-7xl px-2 sm:px-4 md:px-6 py-2 sm:py-4 md:py-6 grid gap-3 sm:gap-4 md:gap-6 md:grid-cols-5 items-center">
               {/* Left text side - wider */}
               <div className="md:col-span-3">
                 <div className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-semibold tracking-tight text-zinc-900 dark:text-white overflow-hidden relative h-[90px] sm:h-[100px] md:h-[120px] lg:h-[140px]">
@@ -234,7 +234,7 @@ export default function LandingStreamlined() {
 
 
         {/* VALUE SECTION - What It Does */}
-        <section className="mx-auto max-w-6xl px-6 py-20">
+        <section className="mx-auto max-w-6xl px-6 py-8 sm:py-12 md:py-16">
           <h2 className="text-center text-3xl font-bold tracking-tight text-zinc-900 dark:text-white">
             Why Nearby Traveler
           </h2>
