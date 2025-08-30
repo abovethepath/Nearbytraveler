@@ -100,7 +100,7 @@ export default function CouchsurfingLanding() {
                   A Letter to the Couchsurfing Community
                 </h1>
               </div>
-              <div className="mt-1 sm:mt-2 max-w-xl text-base md:text-lg lg:text-xl text-zinc-600 dark:text-zinc-300 overflow-hidden relative h-[420px] sm:h-[440px] md:h-[460px]">
+              <div className="mt-1 sm:mt-2 max-w-xl text-base md:text-lg lg:text-xl text-zinc-600 dark:text-zinc-300 overflow-hidden relative h-[480px] sm:h-[500px] md:h-[520px]">
                 <div className="absolute top-0 left-0 w-full animate-in slide-in-from-left-full fade-in duration-700">
                   <blockquote className="text-base md:text-lg lg:text-xl text-zinc-600 dark:text-zinc-300 leading-relaxed border-l-4 border-blue-500 pl-4 sm:pl-6 mb-4 sm:mb-6">
                     "As a 15-year Couchsurfing host and traveler, I've had some of the best moments of my life meeting people through the community. But over time, I realized I couldn't always host, I couldn't always find a couch — yet I always wanted to meet travelers. That's why I created Nearby Traveler."
