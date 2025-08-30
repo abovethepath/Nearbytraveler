@@ -16,7 +16,7 @@ export default function LandingStreamlined() {
   const [currentHeadline, setCurrentHeadline] = useState(0);
   const headlines = [
     "Planning a Trip Soon? Skip The Tourist Traps.", // General travelers
-    "Live Somewhere Amazing?", // Locals who want to share their city
+    "Love Meeting Travelers? Want to Expand Your Social Circle?", // Locals who want to share their city
     "Want Your Kids to Meet the World?", // Families
     "Hate Forced Networking?", // Professional networking
     "Own a Business?" // Business owners
@@ -25,7 +25,7 @@ export default function LandingStreamlined() {
   const [currentSubtext, setCurrentSubtext] = useState(0);
   const subtexts = [
     "Find real connections that last.", // General travelers
-    "Share your city with curious travelers.", // Locals who want to share their city
+    "Meet up and show your city to nearby travelers.", // Locals who want to share their city
     "Connect with families everywhere.", // Families
     "Build authentic professional connections.", // Professional networking
     "Target travelers directly based on their interests and desires." // Business owners
