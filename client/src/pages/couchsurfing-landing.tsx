@@ -287,8 +287,11 @@ export default function CouchsurfingLanding() {
         <section className="mx-auto max-w-6xl px-6 py-20 bg-white dark:bg-gray-900">
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900 dark:text-white mb-6">
-              Couchsurfing vs Nearby Traveler
+              Expanding the Couchsurfing Spirit
             </h2>
+            <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+              Built by couchsurfers, for couchsurfers. Same values, more ways to connect.
+            </p>
           </div>
 
           <div className="space-y-8 max-w-4xl mx-auto">
@@ -296,13 +299,13 @@ export default function CouchsurfingLanding() {
               <div className="flex flex-col md:flex-row items-center justify-between gap-6">
                 <div className="text-center md:text-left">
                   <p className="text-gray-600 dark:text-gray-300 text-lg">
-                    <strong>Dependent on One Host?</strong>
+                    <strong>Love hosting but can't always?</strong>
                   </p>
                 </div>
                 <div className="text-3xl">→</div>
                 <div className="text-center md:text-right">
                   <p className="text-green-700 dark:text-green-400 text-lg font-medium">
-                    With NT, you meet multiple locals and travelers
+                    Still connect with travelers year-round
                   </p>
                 </div>
               </div>
@@ -312,7 +315,7 @@ export default function CouchsurfingLanding() {
               <div className="flex flex-col md:flex-row items-center justify-between gap-6">
                 <div className="text-center md:text-left">
                   <p className="text-gray-600 dark:text-gray-300 text-lg">
-                    <strong>Uncomfortable with couches?</strong>
+                    <strong>Want more meeting options?</strong>
                   </p>
                 </div>
                 <div className="text-3xl">→</div>
@@ -328,13 +331,13 @@ export default function CouchsurfingLanding() {
               <div className="flex flex-col md:flex-row items-center justify-between gap-6">
                 <div className="text-center md:text-left">
                   <p className="text-gray-600 dark:text-gray-300 text-lg">
-                    <strong>Can't find hosts?</strong>
+                    <strong>Missing the community spirit?</strong>
                   </p>
                 </div>
                 <div className="text-3xl">→</div>
                 <div className="text-center md:text-right">
                   <p className="text-purple-700 dark:text-purple-400 text-lg font-medium">
-                    Still find locals and travelers to meet
+                    Free platform built by longtime couchsurfers
                   </p>
                 </div>
               </div>
