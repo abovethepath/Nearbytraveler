@@ -224,7 +224,7 @@ export default function BusinessLanding() {
               </div>
               <div className="space-y-4 text-gray-700 dark:text-gray-300">
                 <div className="bg-white dark:bg-gray-800 p-4 rounded-lg">
-                  <p className="italic">"I want to play pickleball while I'm in Austin"</p>
+                  <p className="italic">"I want to play pickleball while I'm in Los Angeles"</p>
                   <p className="text-sm text-orange-600 mt-1">→ Perfect for sports facilities</p>
                 </div>
                 <div className="bg-white dark:bg-gray-800 p-4 rounded-lg">
@@ -232,7 +232,7 @@ export default function BusinessLanding() {
                   <p className="text-sm text-orange-600 mt-1">→ Perfect for local restaurants</p>
                 </div>
                 <div className="bg-white dark:bg-gray-800 p-4 rounded-lg">
-                  <p className="italic">"Want to explore street art scene in Brooklyn"</p>
+                  <p className="italic">"Want to explore street art scene in Los Angeles"</p>
                   <p className="text-sm text-orange-600 mt-1">→ Perfect for tour companies</p>
                 </div>
               </div>
