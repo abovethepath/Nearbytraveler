@@ -90,15 +90,27 @@ export default function CouchsurfingLanding() {
           <div className="mx-auto max-w-7xl px-2 sm:px-4 md:px-6 py-2 sm:py-4 md:py-6 grid gap-3 sm:gap-4 md:gap-6 md:grid-cols-5 items-center">
             {/* Left text side - wider */}
             <div className="md:col-span-3">
+              <div className="mb-3 sm:mb-4 inline-block rounded-full bg-green-50 dark:bg-green-900/30 px-3 sm:px-4 py-1 text-xs sm:text-sm font-medium text-green-700 dark:text-green-400 animate-in slide-in-from-left-full fade-in duration-700">
+                <span className="inline w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2">❤️</span>
+                From a Fellow Couchsurfer
+              </div>
               <div className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-semibold tracking-tight text-zinc-900 dark:text-white overflow-hidden relative h-[90px] sm:h-[100px] md:h-[120px] lg:h-[140px]">
                 <h1 className="absolute top-0 left-0 w-full animate-in slide-in-from-left-full fade-in duration-700">
                   A Letter to the Couchsurfing Community
                 </h1>
               </div>
-              <div className="mt-3 sm:mt-4 max-w-xl text-sm md:text-base lg:text-lg text-zinc-600 dark:text-zinc-300 overflow-hidden relative h-[80px] sm:h-[100px] md:h-[120px]">
-                <p className="absolute top-0 left-0 w-full animate-in slide-in-from-left-full fade-in duration-700">
-                  Connect with travelers based on shared interests, not just accommodation needs. Host when you want. Travel when you can. Meet travelers always.
-                </p>
+              <div className="mt-3 sm:mt-4 max-w-xl text-sm md:text-base lg:text-lg text-zinc-600 dark:text-zinc-300 overflow-hidden relative h-[160px] sm:h-[180px] md:h-[200px]">
+                <div className="absolute top-0 left-0 w-full animate-in slide-in-from-left-full fade-in duration-700">
+                  <blockquote className="text-sm text-zinc-600 dark:text-zinc-300 leading-relaxed border-l-4 border-green-500 pl-4 sm:pl-6 mb-4 sm:mb-6">
+                    "As a 15-year Couchsurfing host and traveler, I've had some of the best moments of my life meeting people through the community. But over time, I realized I couldn't always host, I couldn't always find a couch — yet I always wanted to meet travelers. That's why I created Nearby Traveler."
+                  </blockquote>
+                  <p className="text-xs text-zinc-500 dark:text-zinc-400 mb-4 sm:mb-6">
+                    — Aaron Lefkowitz, Founder & Fellow Couchsurfer
+                  </p>
+                  <p className="text-sm text-zinc-600 dark:text-zinc-300">
+                    Connect with travelers based on shared interests, not just accommodation needs. Host when you want. Travel when you can. Meet travelers always.
+                  </p>
+                </div>
               </div>
             </div>
 
