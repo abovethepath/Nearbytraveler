@@ -335,6 +335,99 @@ export default function CouchsurfingLanding() {
           </div>
         </section>
 
+        {/* THE SURFING EXPERIENCE - Honest Perspective */}
+        <section id="surfing-journey" className="mx-auto max-w-6xl px-4 sm:px-6 py-12 sm:py-20 bg-gradient-to-br from-blue-50 via-orange-50 to-blue-100 dark:from-blue-900/20 dark:via-orange-900/20 dark:to-blue-800/20 rounded-2xl mb-8 sm:mb-6 sm:mb-8">
+          <div className="text-center mb-8 sm:mb-6 sm:mb-8">
+            <span className="inline-block px-4 sm:px-6 py-2 bg-gradient-to-r from-blue-100 to-orange-100 dark:from-blue-800 dark:to-orange-800 text-blue-800 dark:text-blue-200 text-xs sm:text-sm font-bold rounded-full mb-4">
+              FOR EXPERIENCED SURFERS
+            </span>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-zinc-900 dark:text-white mb-4 sm:mb-6 px-4">
+              We Know You've <span className="text-black dark:text-black">Loved Surfing</span>
+            </h2>
+            <p className="text-base md:text-lg lg:text-xl text-gray-600 dark:text-gray-300 max-w-4xl mx-auto leading-relaxed px-4">
+              If you've surfed before, you know the magic: authentic local insights, genuine cultural exchange, and the thrill of discovering a place through someone else's eyes. But finding the right hosts and navigating unpredictable situations can be challenging. With Nearby Traveler, you can keep that authentic travel spirit alive with more options and fewer limitations.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 mb-8 sm:mb-6 sm:mb-8">
+            {/* What You Loved About Surfing */}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 sm:p-6 md:p-8 shadow-lg border-l-4 border-orange-500">
+              <h3 className="text-xl sm:text-2xl font-bold text-orange-700 dark:text-orange-400 mb-4 sm:mb-6 flex items-center">
+                <Plane className="w-5 h-5 sm:w-6 sm:h-6 mr-2 sm:mr-3" />
+                What You've Loved About Surfing
+              </h3>
+              <ul className="space-y-3 sm:space-y-4 text-sm text-gray-700 dark:text-gray-300">
+                <li className="flex items-start">
+                  <Globe className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500 mr-2 sm:mr-3 mt-1 flex-shrink-0" />
+                  <span>Getting authentic local insights from passionate hosts</span>
+                </li>
+                <li className="flex items-start">
+                  <Users className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500 mr-2 sm:mr-3 mt-1 flex-shrink-0" />
+                  <span>Making deep connections and lifelong friendships</span>
+                </li>
+                <li className="flex items-start">
+                  <Coffee className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500 mr-2 sm:mr-3 mt-1 flex-shrink-0" />
+                  <span>Discovering hidden gems tourists never find</span>
+                </li>
+                <li className="flex items-start">
+                  <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500 mr-2 sm:mr-3 mt-1 flex-shrink-0" />
+                  <span>Experiencing genuine cultural exchange</span>
+                </li>
+                <li className="flex items-start">
+                  <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500 mr-2 sm:mr-3 mt-1 flex-shrink-0" />
+                  <span>Traveling affordably while meeting amazing people</span>
+                </li>
+              </ul>
+            </div>
+
+            {/* Surfing Challenges */}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 sm:p-6 md:p-8 shadow-lg border-l-4 border-orange-500">
+              <h3 className="text-xl sm:text-2xl font-bold text-orange-700 dark:text-orange-400 mb-4 sm:mb-6 flex items-center">
+                <Plane className="w-5 h-5 sm:w-6 sm:h-6 mr-2 sm:mr-3" />
+                But Surfing Can Be Challenging
+              </h3>
+              <ul className="space-y-3 sm:space-y-4 text-sm text-gray-700 dark:text-gray-300">
+                <li className="flex items-start">
+                  <span className="w-4 h-4 sm:w-5 sm:h-5 bg-orange-500 rounded-full mr-2 sm:mr-3 mt-2 flex-shrink-0"></span>
+                  <span>Hard to find available couches in popular destinations</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="w-4 h-4 sm:w-5 sm:h-5 bg-orange-500 rounded-full mr-2 sm:mr-3 mt-2 flex-shrink-0"></span>
+                  <span>Sometimes hosts aren't available to hang out or show you around</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="w-4 h-4 sm:w-5 sm:h-5 bg-orange-500 rounded-full mr-2 sm:mr-3 mt-2 flex-shrink-0"></span>
+                  <span>Stuck with incompatible hosts or awkward situations</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="w-4 h-4 sm:w-5 sm:h-5 bg-orange-500 rounded-full mr-2 sm:mr-3 mt-2 flex-shrink-0"></span>
+                  <span>Last-minute rejections leaving you scrambling for accommodation</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="w-4 h-4 sm:w-5 sm:h-5 bg-orange-500 rounded-full mr-2 sm:mr-3 mt-2 flex-shrink-0"></span>
+                  <span>Limited to hosts' schedules and availability</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* How Nearby Traveler Solves Surfing Problems */}
+          <div className="bg-gradient-to-r from-orange-500 to-blue-600 rounded-2xl p-8 text-white text-center">
+            <h3 className="text-2xl sm:text-3xl font-bold mb-4">
+              Travel With More Connections, Fewer Limitations
+            </h3>
+            <p className="text-lg sm:text-xl mb-6 opacity-90 max-w-4xl mx-auto leading-relaxed">
+              Connect with multiple locals and travelers in each city. Meet for coffee, join events, explore together — whether you have a couch or not.
+              <strong className="block mt-2">Your travel experience becomes richer, more flexible, and less dependent on any single person.</strong>
+            </p>
+            <div className="bg-white/10 rounded-xl p-6 max-w-3xl mx-auto">
+              <p className="text-lg font-medium">
+                "Instead of hoping one host has time to show you around, you can connect with locals who love hiking, foodies who know the best restaurants, and fellow travelers exploring the same neighborhoods. Your trip becomes an adventure, not a gamble."
+              </p>
+            </div>
+          </div>
+        </section>
+
         {/* OPENING UP THE COMMUNITY - EXPANSION SECTION */}
         <section className="mx-auto max-w-6xl px-6 py-20 bg-white dark:bg-gray-900">
           <div className="text-center mb-6 sm:mb-8">
