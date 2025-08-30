@@ -129,7 +129,7 @@ export default function JoinNowWidgetNew() {
     }
 
     // Username length validation
-    if (formData.username.length < 6 || formData.username.length > 13) {
+    if (formData.username.length < 6 || formData.username.length > 12) {
       const errorMsg = "Username must be 6-12 characters long";
       setCurrentError(errorMsg);
       toast({
@@ -345,11 +345,11 @@ export default function JoinNowWidgetNew() {
                   onChange={(e) => handleUsernameChange(e.target.value)}
                   placeholder="Choose username (6-12 characters)"
                   required
-                  maxLength={13}
+                  maxLength={12}
                   className={`pr-10 text-base py-3 text-crisp font-medium ${
                     usernameAvailable === true ? 'border-green-500' : 
                     usernameAvailable === false ? 'border-red-500' : 
-                    formData.username.length > 13 ? 'border-red-500' : ''
+                    formData.username.length > 12 ? 'border-red-500' : ''
                   }`}
                 />
                 <div className="absolute inset-y-0 right-0 flex items-center pr-3 z-10">
