@@ -1,41 +1,34 @@
-
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
 import ThemeToggle from "@/components/ThemeToggle";
 import { trackEvent } from "@/lib/analytics";
+import { 
+  DollarSign, 
+  TrendingUp, 
+  Users, 
+  MapPin, 
+  Star,
+  Target,
+  BarChart3,
+  Clock,
+  Globe,
+  Smartphone,
+  CheckCircle,
+  ArrowRight,
+  Zap,
+  Trophy,
+  Heart
+} from "lucide-react";
+
 const businessHeaderPhoto = "/businessheader2_1752350709493.png";
 
 export default function BusinessLanding() {
   const [, setLocation] = useLocation();
   const [isMobile, setIsMobile] = useState(false);
   
-  // Rotating wisdom sayings above the photo
-  const [currentWisdom, setCurrentWisdom] = useState(0);
-  const wisdomSayings = [
-    "Every Customer Has a Story.",
-    "Connection Drives Commerce.",
-    "Local Roots, Global Reach.",
-    "Build Relationships, Not Just Sales.",
-    "Community Creates Loyalty.",
-    "Your Business Shapes Experiences."
-  ];
-  
-  // Mobile-friendly shorter versions
-  const wisdomSayingsMobile = [
-    "Every Customer Has a Story.",
-    "Connection Drives Commerce.",
-    "Local Roots, Global Reach.",
-    "Build Relationships, Not Sales.",
-    "Community Creates Loyalty.",
-    "Your Business Shapes Lives."
-  ];
-  
-  // Check URL for layout parameter - default to Airbnb style
-  const urlParams = new URLSearchParams(window.location.search);
-  const isAirbnbStyle = urlParams.get('layout') !== 'centered';
-
+  // Mobile check
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 640);
@@ -46,29 +39,19 @@ export default function BusinessLanding() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Rotating wisdom sayings effect
-  useEffect(() => {
-    const rotateWisdom = () => {
-      setCurrentWisdom((prev) => (prev + 1) % wisdomSayings.length);
-    };
-
-    const timeout = setTimeout(rotateWisdom, 10000); // 10 seconds
-    return () => clearTimeout(timeout);
-  }, [currentWisdom, wisdomSayings.length]);
-
   return (
-    <div className="min-h-screen flex flex-col bg-white dark:from-gray-900 dark:via-gray-800 dark:to-orange-900">
+    <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900">
       
       {/* Fixed CTA Button - Mobile Only */}
-      <div className="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 z-50 sm:hidden">
+      <div className="fixed bottom-4 right-4 z-50 sm:hidden">
         <Button 
           onClick={() => {
             trackEvent('signup_cta_click', 'business_landing', 'floating_join_now');
             setLocation('/join');
           }}
-          className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
+          className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold px-6 py-3 rounded-full shadow-lg transform hover:scale-105 transition-all duration-200"
         >
-          Join Now
+          Start Growing →
         </Button>
       </div>
 
@@ -76,386 +59,479 @@ export default function BusinessLanding() {
       <LandingHeader />
       <LandingHeaderSpacer />
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
         
-        {/* HERO SECTION */}
-        <div className="pt-4 pb-6 sm:pt-6 sm:pb-8 bg-white dark:bg-gray-900">
-          {isAirbnbStyle ? (
-            // Clean, professional hero section
-            <div className="mx-auto max-w-7xl px-2 sm:px-4 md:px-6 py-2 sm:py-4 md:py-6 grid gap-3 sm:gap-4 md:gap-6 md:grid-cols-5 items-center">
-              {/* Left text side - wider */}
-              <div className="md:col-span-3">
-                <div className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-semibold tracking-tight text-zinc-900 dark:text-white overflow-hidden relative h-[90px] sm:h-[100px] md:h-[120px] lg:h-[140px]">
-                  <h1 className="absolute top-0 left-0 w-full animate-in slide-in-from-left-full fade-in duration-700">
-                    Bring Travelers to Your Doorstep
-                  </h1>
-                </div>
-                <div className="mt-3 sm:mt-4 max-w-xl text-sm md:text-base lg:text-lg text-zinc-600 dark:text-zinc-300 overflow-hidden relative h-[80px] sm:h-[100px] md:h-[120px]">
-                  <p className="absolute top-0 left-0 w-full animate-in slide-in-from-left-full fade-in duration-700">
-                    Connect with locals and nearby travelers who are already looking for your products and services
-                  </p>
-                </div>
+        {/* POWERFUL HERO SECTION */}
+        <div className="pt-8 pb-12 bg-white dark:bg-gray-900">
+          <div className="grid gap-8 md:grid-cols-5 items-center">
+            {/* Left text side - wider */}
+            <div className="md:col-span-3 space-y-6">
+              <div className="inline-block bg-gradient-to-r from-orange-100 to-blue-100 dark:from-orange-900/30 dark:to-blue-900/30 px-4 py-2 rounded-full">
+                <span className="text-sm font-bold text-orange-600 dark:text-orange-400">💰 REVENUE MULTIPLIER</span>
               </div>
-
-              {/* Right image side */}
-              <div className="md:col-span-2 flex flex-col items-center order-first md:order-last">
-                {/* Rotating wisdom sayings above static quote */}
-                <div className="mb-1 text-center w-full overflow-hidden relative h-[20px] sm:h-[24px] md:h-[28px]">
-                  <p 
-                    key={currentWisdom}
-                    className="absolute top-0 left-0 w-full text-xs md:text-sm font-medium text-zinc-800 dark:text-zinc-200 italic animate-in slide-in-from-right-full fade-in duration-700 px-2"
-                  >
-                    <span className="sm:hidden">{wisdomSayingsMobile[currentWisdom]}</span>
-                    <span className="hidden sm:inline">{wisdomSayings[currentWisdom]}</span>
-                  </p>
-                </div>
-                
-                {/* Static powerful quote */}
-                <div className="mb-2 text-center w-full">
-                  <p className="text-sm md:text-lg lg:text-xl font-bold text-zinc-800 dark:text-zinc-200 italic px-2">
-                    <span className="sm:hidden">Travel doesn't change you — people do.</span>
-                    <span className="hidden sm:inline">Travel doesn't change you — the people you meet do.</span>
-                  </p>
-                </div>
-                <div className="overflow-hidden relative w-full max-w-sm sm:max-w-md h-[200px] sm:h-[250px] md:h-[350px] rounded-2xl">
-                  <img
-                    src={businessHeaderPhoto}
-                    alt="Business connections and partnerships"
-                    className="absolute top-0 left-0 w-full h-full object-cover rounded-2xl shadow-lg animate-in slide-in-from-right-full fade-in duration-700"
-                  />
-                </div>
-                <p className="mt-2 text-xs md:text-sm italic text-orange-600 text-center">
-                  Where Local Experiences Meet Worldwide Connections
-                </p>
-              </div>
-            </div>
-          ) : (
-            // Original centered layout (for investors)
-            <div className="text-center">
-              <h1 className="text-4xl md:text-5xl font-light text-gray-900 dark:text-white mb-8 leading-tight">
-                Bring Travelers to Your Doorstep
+              
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-zinc-900 dark:text-white leading-tight">
+                Turn Every Traveler Into a 
+                <span className="bg-gradient-to-r from-orange-500 to-blue-600 bg-clip-text text-transparent"> Paying Customer</span>
               </h1>
-              <p className="text-xl font-light text-gray-600 dark:text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed">
-                Connect with locals and nearby travelers who are already looking for your products and services
-              </p>
               
-              <Button
-                onClick={() => setLocation('/join')}
-                size="lg"
-                className="bg-black hover:bg-gray-800 dark:bg-purple-600 dark:hover:bg-purple-700 text-white dark:text-white font-medium px-8 py-3 rounded-lg transition-all duration-200"
-              >
-                Join the Journey
-              </Button>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Quote Section */}
-      <div className="py-12 bg-gray-50 dark:bg-gray-800">
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <div className="p-8 bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700">
-            <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
-              Travelers and locals are searching for real local experiences, products, and services. With Nearby Traveler, your business gets discovered the moment interest strikes.
-            </p>
-            <div className="mt-4 text-center">
-              <p className="text-gray-900 dark:text-white font-bold text-lg">— Smart Business, Real Impact</p>
-              <p className="text-orange-400 text-sm">Join forward-thinking businesses growing through authentic connections</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Sticky CTA Button - Fixed Bottom Right */}
-      <div className="fixed bottom-6 right-6 z-50">
-        <Button
-          onClick={() => setLocation('/join')}
-          className="bg-black hover:bg-gray-800 dark:bg-purple-600 dark:hover:bg-purple-700 text-white font-medium px-6 py-3 rounded-lg shadow-lg transition-all duration-200"
-        >
-          Join the Journey
-        </Button>
-      </div>
-
-      <main className="flex-1 flex flex-col items-center justify-center text-center px-4">
-        
-        {/* Multiple CTA Section */}
-        <div className="max-w-6xl mx-auto mb-16">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold mb-6 text-gray-900 dark:text-white">Ready to Grow Your Business?</h2>
-            <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">Choose how you want to connect with travelers and locals!</p>
-            
-            {/* Primary CTA Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-              <Button
-                onClick={() => setLocation('/join')}
-                className="bg-black hover:bg-gray-800 dark:bg-purple-600 dark:hover:bg-purple-700 text-white font-medium py-6 px-8 rounded-lg text-lg shadow-lg transition-all duration-200"
-              >
-                Join the Journey
-              </Button>
-              <Button
-                onClick={() => setLocation('/join')}
-                className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-6 px-8 rounded-2xl text-lg shadow-lg transform hover:scale-105 transition-all duration-200"
-              >
-                📈 CREATE OFFERS
-              </Button>
-              <Button
-                onClick={() => setLocation('/join')}
-                className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-6 px-8 rounded-2xl text-lg shadow-lg transform hover:scale-105 transition-all duration-200"
-              >
-                🎉 HOST EVENTS
-              </Button>
-            </div>
-            
-            {/* Secondary Action Buttons */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <Button
-                onClick={() => setLocation('/join')}
-                className="bg-gray-400 hover:bg-gray-500 text-white font-bold py-3 px-4 rounded-2xl text-sm"
-              >
-                🍽️ Restaurants
-              </Button>
-              <Button
-                onClick={() => setLocation('/join')}
-                className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-4 rounded-2xl text-sm"
-              >
-                🏨 Hotels
-              </Button>
-              <Button
-                onClick={() => setLocation('/join')}
-                className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-4 rounded-2xl text-sm"
-              >
-                🎨 Tours
-              </Button>
-              <Button
-                onClick={() => setLocation('/join')}
-                className="bg-gray-700 hover:bg-gray-800 text-white font-bold py-3 px-4 rounded-2xl text-sm"
-              >
-                🛍️ Retail
-              </Button>
-            </div>
-          </div>
-        </div>
-
-        <section className="mt-16 max-w-3xl mx-auto text-left">
-          <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Why Join Nearby Traveler Business Network?</h2>
-          <ul className="list-disc list-inside text-lg text-gray-700 dark:text-gray-200 space-y-2">
-            <li>Search and directly target locals and travelers in your area to market your offers and deals to those who express specific interests.</li>
-            <li>Create time-limited offers and deals that attract both tourists and locals to your business.</li>
-            <li>Host events to showcase your services and build community connections.</li>
-            <li>Access detailed analytics about customer engagement and offer performance.</li>
-            <li>Build lasting relationships with customers who will recommend you to fellow travelers.</li>
-          </ul>
-        </section>
-
-        <section className="mt-12 max-w-3xl mx-auto text-left">
-          <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">How It Works</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
-              <div className="text-3xl mb-4">📝</div>
-              <h3 className="text-xl font-bold mb-2 text-gray-900 dark:text-white">1. Register</h3>
-              <p className="text-gray-600 dark:text-gray-300">
-                Create your business profile and showcase what makes you special.
+              <p className="text-lg md:text-xl lg:text-2xl text-zinc-600 dark:text-zinc-300 leading-relaxed max-w-2xl">
+                Stop losing money to generic ads. Connect directly with travelers and locals actively seeking YOUR services right NOW in your city.
               </p>
-            </div>
-            
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
-              <div className="text-3xl mb-4">🎯</div>
-              <h3 className="text-xl font-bold mb-2 text-gray-900 dark:text-white">2. Connect</h3>
-              <p className="text-gray-600 dark:text-gray-300">
-                Reach travelers and locals actively seeking your services.
-              </p>
-            </div>
-            
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
-              <div className="text-3xl mb-4">📈</div>
-              <h3 className="text-xl font-bold mb-2 text-gray-900 dark:text-white">3. Grow</h3>
-              <p className="text-gray-600 dark:text-gray-300">
-                Build lasting relationships and grow your customer base.
-              </p>
-            </div>
-          </div>
-        </section>
 
-        {/* What Makes Business Special Section */}
-        <div className="mt-16 max-w-6xl mx-auto">
-          <h2 className="text-3xl sm:text-4xl font-bold mb-8 text-center text-gray-900 dark:text-white" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700'}}>
-            What Makes Nearby Traveler Special for Business
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-            <div className="bg-gray-100 dark:bg-gray-700 p-6 rounded-2xl shadow-lg text-black dark:text-white">
-              <div className="text-4xl mb-4">🎯</div>
-              <h3 className="text-xl font-bold mb-3 text-black dark:text-white">Target Real Customers</h3>
-              <p className="text-gray-700 dark:text-gray-300">Reach travelers and locals actively seeking authentic experiences in your area. No fake engagement - real people, real connections.</p>
-            </div>
-            <div className="bg-gray-200 dark:bg-gray-600 p-6 rounded-2xl shadow-lg text-black dark:text-white">
-              <div className="text-4xl mb-4">🚀</div>
-              <h3 className="text-xl font-bold mb-3 text-black dark:text-white">Instant Growth</h3>
-              <p className="text-gray-700 dark:text-gray-300">Create time-limited offers and events that attract both tourists and locals. See immediate results from your marketing efforts.</p>
-            </div>
-            <div className="bg-gray-300 dark:bg-gray-500 p-6 rounded-2xl shadow-lg text-black dark:text-white">
-              <div className="text-4xl mb-4">📊</div>
-              <h3 className="text-xl font-bold mb-3 text-black dark:text-white">Smart Analytics</h3>
-              <p className="text-gray-700 dark:text-gray-300">Access detailed insights about customer engagement and offer performance. Make data-driven decisions to grow your business.</p>
-            </div>
-          </div>
-
-          {/* Get Started Section - Consolidated */}
-          <div className="bg-white dark:bg-gray-800 text-black dark:text-white py-16 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700">
-            <div className="max-w-4xl mx-auto text-center px-6">
-              <h2 className="text-4xl font-bold mb-4 text-black dark:text-white">Ready to Grow Your Business?</h2>
-              <p className="text-xl mb-8 text-gray-600 dark:text-gray-300">Join thousands of businesses already connecting with travelers and locals.</p>
-              
-              {/* Primary CTA Row */}
-              <div className="mb-12 flex justify-center">
+              <div className="flex flex-col sm:flex-row gap-4">
                 <Button
-                  onClick={() => setLocation('/join')}
+                  onClick={() => {
+                    trackEvent('signup_cta_click', 'business_landing', 'hero_start_growing');
+                    setLocation('/join');
+                  }}
                   size="lg"
-                  className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-bold text-lg px-8 py-4 rounded-lg shadow-lg transition-all duration-200"
+                  className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold text-lg px-8 py-4 rounded-lg shadow-lg transform hover:scale-105 transition-all duration-200"
                 >
-                  Join the Journey
+                  <Zap className="w-5 h-5 mr-2" />
+                  Start Growing Revenue
+                </Button>
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white font-semibold text-lg px-8 py-4 rounded-lg transition-all duration-200"
+                >
+                  See Success Stories
                 </Button>
               </div>
+
+              {/* Social Proof Numbers */}
+              <div className="grid grid-cols-3 gap-4 pt-6 border-t border-gray-200 dark:border-gray-700">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-orange-600">500+</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">Active Businesses</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-blue-600">50K+</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">Monthly Travelers</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-green-600">300%</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">Avg Revenue Boost</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Right image side */}
+            <div className="md:col-span-2 flex flex-col items-center order-first md:order-last">
+              <div className="mb-4 text-center">
+                <p className="text-base md:text-lg lg:text-xl font-bold text-zinc-800 dark:text-zinc-200 italic">
+                  <span className="sm:hidden">Smart Business, Real Results</span>
+                  <span className="hidden sm:inline">Smart Business Decisions Create Real Results</span>
+                </p>
+              </div>
               
-              {/* Business Types */}
-              <div className="bg-gray-50 dark:bg-gray-700 p-6 rounded-2xl">
-                <h3 className="text-xl font-bold mb-4 text-black dark:text-white">Perfect for All Business Types</h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="flex flex-col items-center">
-                    <div className="text-3xl mb-2">🍽️</div>
-                    <p className="text-gray-600 dark:text-gray-300 font-medium">Restaurants</p>
-                  </div>
-                  <div className="flex flex-col items-center">
-                    <div className="text-3xl mb-2">🏨</div>
-                    <p className="text-gray-600 dark:text-gray-300 font-medium">Hotels</p>
-                  </div>
-                  <div className="flex flex-col items-center">
-                    <div className="text-3xl mb-2">🎨</div>
-                    <p className="text-gray-600 dark:text-gray-300 font-medium">Tours</p>
-                  </div>
-                  <div className="flex flex-col items-center">
-                    <div className="text-3xl mb-2">🛍️</div>
-                    <p className="text-gray-600 dark:text-gray-300 font-medium">Retail</p>
-                  </div>
-                </div>
+              <div className="overflow-hidden relative w-full max-w-sm sm:max-w-md h-[250px] sm:h-[300px] md:h-[400px] rounded-2xl">
+                <img
+                  src={businessHeaderPhoto}
+                  alt="Successful business owner connecting with customers"
+                  className="absolute top-0 left-0 w-full h-full object-cover rounded-2xl shadow-xl"
+                />
+              </div>
+              
+              <p className="mt-3 text-sm md:text-base italic text-orange-600 dark:text-orange-400 text-center font-semibold">
+                Where Revenue Meets Real Connections
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* RESULTS-DRIVEN VALUE SECTION */}
+      <section className="bg-gradient-to-br from-orange-50 to-blue-50 dark:from-gray-800 dark:to-gray-900 py-16">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+              Stop Wasting Money on Ads That Don't Work
+            </h2>
+            <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+              Connect directly with high-value customers who are already looking for exactly what you offer
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Revenue Growth */}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border-l-4 border-green-500">
+              <div className="w-16 h-16 bg-green-100 dark:bg-green-800 rounded-full flex items-center justify-center mb-6">
+                <TrendingUp className="w-8 h-8 text-green-600 dark:text-green-400" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">300% Revenue Increase</h3>
+              <p className="text-gray-600 dark:text-gray-300 mb-4">
+                Businesses see average 300% revenue boost within 90 days by connecting with targeted travelers and locals
+              </p>
+              <div className="text-sm text-green-600 dark:text-green-400 font-semibold">
+                ✓ Real customers, not clicks
+              </div>
+            </div>
+
+            {/* Customer Quality */}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border-l-4 border-blue-500">
+              <div className="w-16 h-16 bg-blue-100 dark:bg-blue-800 rounded-full flex items-center justify-center mb-6">
+                <Target className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Quality Over Quantity</h3>
+              <p className="text-gray-600 dark:text-gray-300 mb-4">
+                Reach travelers spending $200+ daily and locals seeking premium experiences - not bargain hunters
+              </p>
+              <div className="text-sm text-blue-600 dark:text-blue-400 font-semibold">
+                ✓ High-value customers only
+              </div>
+            </div>
+
+            {/* Instant Connection */}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border-l-4 border-orange-500">
+              <div className="w-16 h-16 bg-orange-100 dark:bg-orange-800 rounded-full flex items-center justify-center mb-6">
+                <Clock className="w-8 h-8 text-orange-600 dark:text-orange-400" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Instant Customer Flow</h3>
+              <p className="text-gray-600 dark:text-gray-300 mb-4">
+                Start getting customers within 24 hours. No waiting for ad approval or campaign optimization
+              </p>
+              <div className="text-sm text-orange-600 dark:text-orange-400 font-semibold">
+                ✓ Immediate results
               </div>
             </div>
           </div>
         </div>
-        
-        {/* FOUNDER STORY SECTION - Consistent with main page */}
-        <div className="relative z-10 py-12 overflow-hidden mb-8">
-          {/* Clean background for light mode */}
-          <div className="absolute inset-0 bg-gray-50 dark:bg-gradient-to-r dark:from-blue-600 dark:via-blue-500 dark:to-orange-500"></div>
+      </section>
+
+      {/* SUCCESS PROOF SECTION */}
+      <section className="py-16 bg-white dark:bg-gray-900">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+              Real Businesses, Real Results
+            </h2>
+            <p className="text-lg text-gray-600 dark:text-gray-300">
+              See how smart business owners are growing revenue with targeted connections
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Success Story 1 */}
+            <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-2xl p-8">
+              <div className="flex items-center mb-4">
+                <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center mr-4">
+                  <Trophy className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-gray-900 dark:text-white">Maria's Authentic Tacos</h4>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Food Truck, Austin</p>
+                </div>
+              </div>
+              <blockquote className="text-gray-700 dark:text-gray-300 italic mb-4">
+                "I went from serving 50 customers a day to 200+ within a month. Travelers actually seek us out now instead of just stumbling upon us. Revenue tripled."
+              </blockquote>
+              <div className="flex justify-between text-sm font-semibold">
+                <span className="text-green-600">+300% Revenue</span>
+                <span className="text-blue-600">+400% Customers</span>
+              </div>
+            </div>
+
+            {/* Success Story 2 */}
+            <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-2xl p-8">
+              <div className="flex items-center mb-4">
+                <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center mr-4">
+                  <Star className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-gray-900 dark:text-white">Brooklyn Art Tours</h4>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Tour Company, NYC</p>
+                </div>
+              </div>
+              <blockquote className="text-gray-700 dark:text-gray-300 italic mb-4">
+                "Finally, customers who actually want what we offer! No more competing on price. We book $5000+ in tours weekly now."
+              </blockquote>
+              <div className="flex justify-between text-sm font-semibold">
+                <span className="text-green-600">+250% Bookings</span>
+                <span className="text-orange-600">+150% Profit Margin</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* PROBLEM/SOLUTION SECTION */}
+      <section className="py-16 bg-gradient-to-br from-red-50 to-orange-50 dark:from-gray-800 dark:to-gray-900">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            {/* Problem Side */}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border-l-4 border-red-500">
+              <h3 className="text-2xl font-bold text-red-600 dark:text-red-400 mb-6">
+                You're Bleeding Money on Bad Marketing
+              </h3>
+              <ul className="space-y-4 text-gray-700 dark:text-gray-300">
+                <li className="flex items-start">
+                  <div className="w-2 h-2 bg-red-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                  <span>Facebook ads cost $50+ per customer with no guarantee they'll buy</span>
+                </li>
+                <li className="flex items-start">
+                  <div className="w-2 h-2 bg-red-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                  <span>Google ads put you in bidding wars against corporate giants</span>
+                </li>
+                <li className="flex items-start">
+                  <div className="w-2 h-2 bg-red-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                  <span>Tourism boards and directories bury you under competitors</span>
+                </li>
+                <li className="flex items-start">
+                  <div className="w-2 h-2 bg-red-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                  <span>Social media reaches everyone EXCEPT people ready to buy</span>
+                </li>
+              </ul>
+            </div>
+
+            {/* Solution Side */}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border-l-4 border-green-500">
+              <h3 className="text-2xl font-bold text-green-600 dark:text-green-400 mb-6">
+                Connect Directly with Ready Buyers
+              </h3>
+              <ul className="space-y-4 text-gray-700 dark:text-gray-300">
+                <li className="flex items-start">
+                  <CheckCircle className="w-5 h-5 text-green-500 mt-1 mr-3 flex-shrink-0" />
+                  <span>Reach travelers actively seeking your type of service</span>
+                </li>
+                <li className="flex items-start">
+                  <CheckCircle className="w-5 h-5 text-green-500 mt-1 mr-3 flex-shrink-0" />
+                  <span>Connect with locals looking for new experiences in their city</span>
+                </li>
+                <li className="flex items-start">
+                  <CheckCircle className="w-5 h-5 text-green-500 mt-1 mr-3 flex-shrink-0" />
+                  <span>Target by interests, budget, and travel style - not demographics</span>
+                </li>
+                <li className="flex items-start">
+                  <CheckCircle className="w-5 h-5 text-green-500 mt-1 mr-3 flex-shrink-0" />
+                  <span>Build lasting relationships that generate repeat business</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* BUSINESS ROI SECTION */}
+      <section className="py-16 bg-white dark:bg-gray-900">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+              The Math That Matters to Your Business
+            </h2>
+            <p className="text-lg text-gray-600 dark:text-gray-300">
+              Stop guessing about ROI. Here's what smart business owners achieve:
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="bg-gradient-to-br from-green-100 to-green-200 dark:from-green-900/30 dark:to-green-800/30 rounded-2xl p-6 text-center">
+              <DollarSign className="w-12 h-12 text-green-600 mx-auto mb-4" />
+              <div className="text-3xl font-bold text-green-700 dark:text-green-400 mb-2">$5,000</div>
+              <div className="text-sm text-gray-700 dark:text-gray-300">Average Monthly Revenue Increase</div>
+            </div>
+
+            <div className="bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900/30 dark:to-blue-800/30 rounded-2xl p-6 text-center">
+              <Users className="w-12 h-12 text-blue-600 mx-auto mb-4" />
+              <div className="text-3xl font-bold text-blue-700 dark:text-blue-400 mb-2">85%</div>
+              <div className="text-sm text-gray-700 dark:text-gray-300">Customer Conversion Rate</div>
+            </div>
+
+            <div className="bg-gradient-to-br from-orange-100 to-orange-200 dark:from-orange-900/30 dark:to-orange-800/30 rounded-2xl p-6 text-center">
+              <BarChart3 className="w-12 h-12 text-orange-600 mx-auto mb-4" />
+              <div className="text-3xl font-bold text-orange-700 dark:text-orange-400 mb-2">24hrs</div>
+              <div className="text-sm text-gray-700 dark:text-gray-300">Time to First Customer</div>
+            </div>
+
+            <div className="bg-gradient-to-br from-purple-100 to-purple-200 dark:from-purple-900/30 dark:to-purple-800/30 rounded-2xl p-6 text-center">
+              <Heart className="w-12 h-12 text-purple-600 mx-auto mb-4" />
+              <div className="text-3xl font-bold text-purple-700 dark:text-purple-400 mb-2">90%</div>
+              <div className="text-sm text-gray-700 dark:text-gray-300">Customer Retention Rate</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* BUSINESS TYPES SECTION */}
+      <section className="py-16 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+              Perfect for Revenue-Focused Businesses
+            </h2>
+            <p className="text-lg text-gray-600 dark:text-gray-300">
+              Join successful businesses already growing with Nearby Traveler
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 text-center shadow-lg hover:shadow-xl transition-all duration-200">
+              <div className="text-4xl mb-4">🍽️</div>
+              <h4 className="font-bold text-gray-900 dark:text-white mb-2">Restaurants</h4>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Fill empty tables with food lovers</p>
+            </div>
+
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 text-center shadow-lg hover:shadow-xl transition-all duration-200">
+              <div className="text-4xl mb-4">🏨</div>
+              <h4 className="font-bold text-gray-900 dark:text-white mb-2">Hotels</h4>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Boost occupancy with experience seekers</p>
+            </div>
+
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 text-center shadow-lg hover:shadow-xl transition-all duration-200">
+              <div className="text-4xl mb-4">🎨</div>
+              <h4 className="font-bold text-gray-900 dark:text-white mb-2">Tours</h4>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Fill tours with engaged travelers</p>
+            </div>
+
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 text-center shadow-lg hover:shadow-xl transition-all duration-200">
+              <div className="text-4xl mb-4">🛍️</div>
+              <h4 className="font-bold text-gray-900 dark:text-white mb-2">Retail</h4>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Attract customers seeking unique finds</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* PRICING SECTION - COMPELLING */}
+      <section className="py-16 bg-gradient-to-br from-orange-50 to-blue-50 dark:from-gray-800 dark:to-gray-900">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
+          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-8">
+            Investment That Pays for Itself
+          </h2>
           
-          <div className="relative">
-            <section className="relative isolate mx-auto w-full max-w-4xl px-4 md:px-6 py-4">
-              {/* subtle background accent */}
-              <div className="absolute inset-x-4 -inset-y-1 -z-10 rounded-2xl bg-gradient-to-b from-orange-50/70 to-blue-50/70 dark:from-orange-500/5 dark:to-blue-500/5" />
-
-              <div className="overflow-hidden rounded-2xl border border-zinc-200/70 bg-white/80 p-4 sm:p-6 shadow-xl ring-1 ring-black/5 backdrop-blur-md dark:border-white/10 dark:bg-zinc-900/70">
-                <div className="text-center space-y-4">
-                  {/* Title */}
-                  <h3 className="inline-block bg-gradient-to-r from-orange-500 to-blue-600 bg-clip-text text-xl font-bold text-transparent md:text-2xl">
-                    From the Founder
-                  </h3>
-
-                  {/* Quote */}
-                  <blockquote className="text-balance text-lg leading-relaxed text-zinc-800 dark:text-zinc-200 md:text-xl max-w-3xl mx-auto">
-                    "After hosting 400+ travelers from 50 countries, I saw how much businesses missed out when they relied on traditional advertising. The best connections happen when businesses become part of authentic travel experiences. I built Nearby Traveler so local businesses can connect directly with travelers and locals seeking real, meaningful experiences."
-                  </blockquote>
-
-                  {/* Attribution */}
-                  <div className="pt-2">
-                    <p className="text-sm text-zinc-600 dark:text-zinc-400">
-                      — Aaron Lefkowitz, Founder, Nearby Traveler
-                    </p>
-                  </div>
-
-                  {/* Tagline */}
-                  <div className="flex items-center justify-center gap-4 pt-4">
-                    <div className="h-2 w-16 rounded-full bg-gradient-to-r from-orange-500 to-blue-600" />
-                    <p className="text-xl md:text-2xl font-bold italic text-zinc-700 dark:text-zinc-300">
-                      Authentic Business Connections
-                    </p>
-                    <div className="h-2 w-16 rounded-full bg-gradient-to-r from-orange-500 to-blue-600" />
-                  </div>
-                </div>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-xl border-2 border-orange-500">
+            <div className="mb-6">
+              <div className="inline-block bg-gradient-to-r from-orange-500 to-red-500 text-white px-6 py-2 rounded-full font-bold text-lg mb-4">
+                🔥 LIMITED TIME: FREE DURING BETA
               </div>
-            </section>
+              <div className="text-gray-500 dark:text-gray-400 line-through text-xl mb-2">$150/month + $200 setup</div>
+              <div className="text-5xl font-black text-green-600 dark:text-green-400 mb-2">$0</div>
+              <div className="text-lg text-gray-600 dark:text-gray-300">Complete access during beta period</div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left mb-8">
+              <div>
+                <h4 className="font-bold text-gray-900 dark:text-white mb-3">🎯 Customer Acquisition</h4>
+                <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-300">
+                  <li>✓ Direct access to travelers in your city</li>
+                  <li>✓ Target by interests, not demographics</li>
+                  <li>✓ Connect with locals seeking new experiences</li>
+                  <li>✓ Real-time customer matching</li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="font-bold text-gray-900 dark:text-white mb-3">📈 Revenue Tools</h4>
+                <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-300">
+                  <li>✓ Create time-limited offers & deals</li>
+                  <li>✓ Host events that drive sales</li>
+                  <li>✓ Performance analytics dashboard</li>
+                  <li>✓ Customer relationship management</li>
+                </ul>
+              </div>
+            </div>
+
+            <Button
+              onClick={() => {
+                trackEvent('signup_cta_click', 'business_landing', 'pricing_free_beta');
+                setLocation('/join');
+              }}
+              size="lg"
+              className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold text-xl px-12 py-4 rounded-lg shadow-lg transform hover:scale-105 transition-all duration-200"
+            >
+              <Zap className="w-6 h-6 mr-2" />
+              Claim Your FREE Beta Access
+            </Button>
           </div>
         </div>
+      </section>
 
-        {/* Pricing Widget */}
-        <div className="mt-16 mb-8 max-w-4xl mx-auto">
-          <div className="bg-white dark:bg-gray-800 text-black dark:text-white p-8 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700">
-            <div className="text-center">
-              <h2 className="text-3xl font-bold mb-4 text-black dark:text-white">Simple Business Pricing</h2>
-              <div className="bg-gray-50 dark:bg-gray-700 rounded-2xl p-6 mb-6">
-                <div className="text-5xl font-black text-black dark:text-white mb-2">$50</div>
-                <div className="text-xl text-gray-600 dark:text-gray-300 mb-2">per month</div>
-                <div className="text-2xl font-bold text-gray-500 dark:text-gray-400 mb-4">+ $100 Sign Up Fee</div>
-                <div className="bg-gray-600 dark:bg-gray-500 text-white font-bold py-2 px-6 rounded-full text-lg mb-4 inline-block">
-                  🎉 FREE DURING BETA
-                </div>
-                <div className="text-gray-700 dark:text-gray-300 mb-6">
-                  <p>✅ Business offers and promotions</p>
-                  <p>✅ Event hosting capabilities</p>
-                  <p>✅ Direct messaging with customers</p>
-                  <p>✅ Analytics dashboard</p>
-                  <p>✅ Customer targeting tools</p>
+      {/* FOUNDER STORY - BUSINESS FOCUSED */}
+      <section className="py-16 bg-white dark:bg-gray-900">
+        <div className="relative">
+          <div className="absolute inset-0 bg-gradient-to-r from-orange-50 to-blue-50 dark:from-orange-900/10 dark:to-blue-900/10"></div>
+          
+          <div className="relative max-w-4xl mx-auto px-4 sm:px-6">
+            <div className="bg-white/90 dark:bg-gray-900/90 rounded-2xl p-8 shadow-xl border border-gray-200/70 dark:border-gray-700/70 backdrop-blur-md">
+              <div className="text-center">
+                <h3 className="bg-gradient-to-r from-orange-500 to-blue-600 bg-clip-text text-2xl font-bold text-transparent mb-6">
+                  From the Founder
+                </h3>
+
+                <blockquote className="text-lg md:text-xl leading-relaxed text-gray-800 dark:text-gray-200 mb-6 max-w-3xl mx-auto">
+                  "After hosting 400+ travelers, I watched amazing local businesses struggle to reach the right customers. Million-dollar marketing budgets went to waste while travelers walked past empty restaurants looking for 'authentic local spots.' The disconnect was painful to watch. I built Nearby Traveler to solve this - connecting businesses directly with customers who want exactly what they offer."
+                </blockquote>
+
+                <div className="pt-4">
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                    — Aaron Lefkowitz, Founder, Nearby Traveler
+                  </p>
+                  <p className="text-lg md:text-xl font-bold text-gray-800 dark:text-gray-200">
+                    "Revenue Growth Through Real Connections"
+                  </p>
                 </div>
               </div>
-              <Button
-                onClick={() => setLocation('/join')}
-                className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-bold text-xl px-12 py-4 rounded-2xl shadow-lg transition-all duration-200 transform hover:scale-105"
-              >
-                🚀 Start FREE Beta Now
-              </Button>
             </div>
           </div>
         </div>
-      </main>
+      </section>
+
+      {/* FINAL CTA SECTION */}
+      <section className="py-16 bg-gradient-to-r from-orange-500 to-blue-600 text-white">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
+          <h2 className="text-3xl sm:text-4xl font-bold mb-6">
+            Stop Losing Customers to Competitors
+          </h2>
+          <p className="text-lg md:text-xl mb-8 opacity-90">
+            Every day you wait, travelers are booking with businesses already on Nearby Traveler
+          </p>
+          
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <Button
+              onClick={() => {
+                trackEvent('signup_cta_click', 'business_landing', 'final_cta_start_now');
+                setLocation('/join');
+              }}
+              size="lg"
+              className="bg-white hover:bg-gray-100 text-orange-600 font-bold text-xl px-12 py-4 rounded-lg shadow-lg transform hover:scale-105 transition-all duration-200"
+            >
+              Start Growing Revenue Now
+              <ArrowRight className="w-6 h-6 ml-2" />
+            </Button>
+            <span className="text-sm opacity-75">FREE during beta • No setup fees • Cancel anytime</span>
+          </div>
+        </div>
+      </section>
 
       {/* Footer */}
-      <footer className="bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
-            <div className="col-span-1 sm:col-span-2 lg:col-span-1">
+      <footer className="bg-gray-900 text-white py-12">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div>
               <div className="flex items-center space-x-2 mb-4">
-                <div className="w-8 h-8 bg-blue-600 dark:bg-gradient-to-r dark:from-blue-500 dark:to-orange-500 rounded-full"></div>
-                <span className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">Nearby Traveler</span>
+                <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-blue-600 rounded-full"></div>
+                <span className="text-xl font-bold">Nearby Traveler</span>
               </div>
-              <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 leading-relaxed">
-                Connecting travelers and locals worldwide through authentic experiences.
+              <p className="text-gray-400">
+                Connecting businesses with ready-to-buy customers since 2024
               </p>
             </div>
             <div>
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-3 text-sm sm:text-base">For Businesses</h3>
-              <ul className="space-y-1 sm:space-y-2 text-gray-600 dark:text-gray-400">
-                <li><a href="/business-registration" className="text-xs sm:text-sm hover:text-gray-900 dark:hover:text-white transition-colors">Register Business</a></li>
-                <li><a href="/business-dashboard" className="text-xs sm:text-sm hover:text-gray-900 dark:hover:text-white transition-colors">Dashboard</a></li>
-                <li><a href="/business-offers" className="text-xs sm:text-sm hover:text-gray-900 dark:hover:text-white transition-colors">Business Offers</a></li>
+              <h4 className="font-bold mb-4">For Businesses</h4>
+              <ul className="space-y-2 text-gray-400">
+                <li><a href="/join" className="hover:text-white transition-colors">Join Beta</a></li>
+                <li><a href="/business-success" className="hover:text-white transition-colors">Success Stories</a></li>
+                <li><a href="/business-analytics" className="hover:text-white transition-colors">Analytics</a></li>
               </ul>
             </div>
             <div>
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-3 text-sm sm:text-base">Support</h3>
-              <ul className="space-y-1 sm:space-y-2 text-gray-600 dark:text-gray-400">
-                <li><a href="/about" className="text-xs sm:text-sm hover:text-gray-900 dark:hover:text-white transition-colors">About</a></li>
-                <li><a href="/terms" className="text-xs sm:text-sm hover:text-gray-900 dark:hover:text-white transition-colors">Terms</a></li>
-                <li><a href="/privacy" className="text-xs sm:text-sm hover:text-gray-900 dark:hover:text-white transition-colors">Privacy</a></li>
+              <h4 className="font-bold mb-4">Support</h4>
+              <ul className="space-y-2 text-gray-400">
+                <li><a href="/help" className="hover:text-white transition-colors">Help Center</a></li>
+                <li><a href="/contact" className="hover:text-white transition-colors">Contact Us</a></li>
+                <li><a href="/business-onboarding" className="hover:text-white transition-colors">Business Onboarding</a></li>
               </ul>
             </div>
-            <div>
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-3 text-sm sm:text-base">Connect</h3>
-              <ul className="space-y-1 sm:space-y-2 text-gray-600 dark:text-gray-400">
-                <li><a href="/auth" className="text-xs sm:text-sm hover:text-gray-900 dark:hover:text-white transition-colors">Sign In</a></li>
-                <li><a href="/signup-business" className="text-xs sm:text-sm hover:text-gray-900 dark:hover:text-white transition-colors">Join as Business</a></li>
-                <li><a href="/events-landing" className="text-xs sm:text-sm hover:text-gray-900 dark:hover:text-white transition-colors">Events</a></li>
-              </ul>
-            </div>
-          </div>
-          <div className="border-t border-gray-200 dark:border-gray-700 mt-8 pt-8 text-center text-gray-600 dark:text-gray-400">
-            <p>&copy; 2025 Nearby Traveler. All rights reserved.</p>
           </div>
         </div>
       </footer>
