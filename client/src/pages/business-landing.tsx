@@ -71,12 +71,12 @@ export default function BusinessLanding() {
               </div>
               
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-zinc-900 dark:text-white leading-tight">
-                Turn Every Traveler Into a 
-                <span className="bg-gradient-to-r from-orange-500 to-blue-600 bg-clip-text text-transparent"> Paying Customer</span>
+                Access Travelers' 
+                <span className="bg-gradient-to-r from-orange-500 to-blue-600 bg-clip-text text-transparent">Exact Wants & Needs</span>
               </h1>
               
               <p className="text-lg md:text-xl lg:text-2xl text-zinc-600 dark:text-zinc-300 leading-relaxed max-w-2xl">
-                Stop losing money to generic ads. Connect directly with travelers and locals actively seeking YOUR services right NOW in your city.
+                Travelers tell us their interests, desired activities, food preferences, and travel plans. You get direct access to this goldmine of customer intent data.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4">
@@ -100,19 +100,19 @@ export default function BusinessLanding() {
                 </Button>
               </div>
 
-              {/* Social Proof Numbers */}
-              <div className="grid grid-cols-3 gap-4 pt-6 border-t border-gray-200 dark:border-gray-700">
+              {/* Value Proposition */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6 border-t border-gray-200 dark:border-gray-700">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-orange-600">500+</div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">Active Businesses</div>
+                  <div className="text-lg font-bold text-orange-600">🍕 Food Preferences</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">"I want authentic tacos"</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-blue-600">50K+</div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">Monthly Travelers</div>
+                  <div className="text-lg font-bold text-blue-600">⛳ Activities</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">"Looking for golf courses"</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-green-600">300%</div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">Avg Revenue Boost</div>
+                  <div className="text-lg font-bold text-green-600">🎯 Intent Data</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">Direct access to customer wants</div>
                 </div>
               </div>
             </div>
@@ -155,45 +155,45 @@ export default function BusinessLanding() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Revenue Growth */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border-l-4 border-green-500">
-              <div className="w-16 h-16 bg-green-100 dark:bg-green-800 rounded-full flex items-center justify-center mb-6">
-                <TrendingUp className="w-8 h-8 text-green-600 dark:text-green-400" />
-              </div>
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">300% Revenue Increase</h3>
-              <p className="text-gray-600 dark:text-gray-300 mb-4">
-                Businesses see average 300% revenue boost within 90 days by connecting with targeted travelers and locals
-              </p>
-              <div className="text-sm text-green-600 dark:text-green-400 font-semibold">
-                ✓ Real customers, not clicks
-              </div>
-            </div>
-
-            {/* Customer Quality */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border-l-4 border-blue-500">
-              <div className="w-16 h-16 bg-blue-100 dark:bg-blue-800 rounded-full flex items-center justify-center mb-6">
-                <Target className="w-8 h-8 text-blue-600 dark:text-blue-400" />
-              </div>
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Quality Over Quantity</h3>
-              <p className="text-gray-600 dark:text-gray-300 mb-4">
-                Reach travelers spending $200+ daily and locals seeking premium experiences - not bargain hunters
-              </p>
-              <div className="text-sm text-blue-600 dark:text-blue-400 font-semibold">
-                ✓ High-value customers only
-              </div>
-            </div>
-
-            {/* Instant Connection */}
+            {/* Intent Data */}
             <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border-l-4 border-orange-500">
               <div className="w-16 h-16 bg-orange-100 dark:bg-orange-800 rounded-full flex items-center justify-center mb-6">
-                <Clock className="w-8 h-8 text-orange-600 dark:text-orange-400" />
+                <Target className="w-8 h-8 text-orange-600 dark:text-orange-400" />
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Instant Customer Flow</h3>
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Pure Customer Intent</h3>
               <p className="text-gray-600 dark:text-gray-300 mb-4">
-                Start getting customers within 24 hours. No waiting for ad approval or campaign optimization
+                Travelers explicitly share what they want to eat, where they want to go, activities they want to try. No guesswork required.
               </p>
               <div className="text-sm text-orange-600 dark:text-orange-400 font-semibold">
-                ✓ Immediate results
+                ✓ Direct access to wants & needs
+              </div>
+            </div>
+
+            {/* No Competition */}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border-l-4 border-blue-500">
+              <div className="w-16 h-16 bg-blue-100 dark:bg-blue-800 rounded-full flex items-center justify-center mb-6">
+                <Trophy className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Zero Competition</h3>
+              <p className="text-gray-600 dark:text-gray-300 mb-4">
+                Connect with travelers seeking your specific services before they even know your competitors exist.
+              </p>
+              <div className="text-sm text-blue-600 dark:text-blue-400 font-semibold">
+                ✓ First-mover advantage
+              </div>
+            </div>
+
+            {/* Quality Customers */}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border-l-4 border-green-500">
+              <div className="w-16 h-16 bg-green-100 dark:bg-green-800 rounded-full flex items-center justify-center mb-6">
+                <Users className="w-8 h-8 text-green-600 dark:text-green-400" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">High-Value Customers</h3>
+              <p className="text-gray-600 dark:text-gray-300 mb-4">
+                Travelers actively seeking experiences (not bargains) and locals looking to explore their own city with fresh perspectives.
+              </p>
+              <div className="text-sm text-green-600 dark:text-green-400 font-semibold">
+                ✓ Experience seekers, not price shoppers
               </div>
             </div>
           </div>
@@ -205,52 +205,68 @@ export default function BusinessLanding() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-12">
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-              Real Businesses, Real Results
+              Travelers Tell Us Exactly What They Want
             </h2>
             <p className="text-lg text-gray-600 dark:text-gray-300">
-              See how smart business owners are growing revenue with targeted connections
+              This is marketing gold - direct access to customer intent before they even start searching
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Success Story 1 */}
-            <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-2xl p-8">
-              <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center mr-4">
-                  <Trophy className="w-6 h-6 text-white" />
+            {/* Customer Intent Examples */}
+            <div className="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 rounded-2xl p-8">
+              <div className="flex items-center mb-6">
+                <div className="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center mr-4">
+                  <Target className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-gray-900 dark:text-white">Maria's Authentic Tacos</h4>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Food Truck, Austin</p>
+                  <h4 className="font-bold text-gray-900 dark:text-white text-xl">What Travelers Tell Us</h4>
                 </div>
               </div>
-              <blockquote className="text-gray-700 dark:text-gray-300 italic mb-4">
-                "I went from serving 50 customers a day to 200+ within a month. Travelers actually seek us out now instead of just stumbling upon us. Revenue tripled."
-              </blockquote>
-              <div className="flex justify-between text-sm font-semibold">
-                <span className="text-green-600">+300% Revenue</span>
-                <span className="text-blue-600">+400% Customers</span>
+              <div className="space-y-4 text-gray-700 dark:text-gray-300">
+                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg">
+                  <p className="italic">"I want to play pickleball while I'm in Austin"</p>
+                  <p className="text-sm text-orange-600 mt-1">→ Perfect for sports facilities</p>
+                </div>
+                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg">
+                  <p className="italic">"Looking for authentic Mexican food, not tourist traps"</p>
+                  <p className="text-sm text-orange-600 mt-1">→ Perfect for local restaurants</p>
+                </div>
+                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg">
+                  <p className="italic">"Want to explore street art scene in Brooklyn"</p>
+                  <p className="text-sm text-orange-600 mt-1">→ Perfect for tour companies</p>
+                </div>
               </div>
             </div>
 
-            {/* Success Story 2 */}
+            {/* Business Advantage */}
             <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-2xl p-8">
-              <div className="flex items-center mb-4">
+              <div className="flex items-center mb-6">
                 <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center mr-4">
-                  <Star className="w-6 h-6 text-white" />
+                  <Zap className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-gray-900 dark:text-white">Brooklyn Art Tours</h4>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Tour Company, NYC</p>
+                  <h4 className="font-bold text-gray-900 dark:text-white text-xl">Your Business Advantage</h4>
                 </div>
               </div>
-              <blockquote className="text-gray-700 dark:text-gray-300 italic mb-4">
-                "Finally, customers who actually want what we offer! No more competing on price. We book $5000+ in tours weekly now."
-              </blockquote>
-              <div className="flex justify-between text-sm font-semibold">
-                <span className="text-green-600">+250% Bookings</span>
-                <span className="text-orange-600">+150% Profit Margin</span>
-              </div>
+              <ul className="space-y-4 text-gray-700 dark:text-gray-300">
+                <li className="flex items-start">
+                  <CheckCircle className="w-5 h-5 text-blue-500 mt-1 mr-3 flex-shrink-0" />
+                  <span>Reach customers BEFORE they start googling competitors</span>
+                </li>
+                <li className="flex items-start">
+                  <CheckCircle className="w-5 h-5 text-blue-500 mt-1 mr-3 flex-shrink-0" />
+                  <span>No bidding wars - you connect directly with interested travelers</span>
+                </li>
+                <li className="flex items-start">
+                  <CheckCircle className="w-5 h-5 text-blue-500 mt-1 mr-3 flex-shrink-0" />
+                  <span>Target by what they want to DO, not who they are</span>
+                </li>
+                <li className="flex items-start">
+                  <CheckCircle className="w-5 h-5 text-blue-500 mt-1 mr-3 flex-shrink-0" />
+                  <span>Build relationships that create repeat business</span>
+                </li>
+              </ul>
             </div>
           </div>
         </div>
@@ -325,29 +341,31 @@ export default function BusinessLanding() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="bg-gradient-to-br from-green-100 to-green-200 dark:from-green-900/30 dark:to-green-800/30 rounded-2xl p-6 text-center">
-              <DollarSign className="w-12 h-12 text-green-600 mx-auto mb-4" />
-              <div className="text-3xl font-bold text-green-700 dark:text-green-400 mb-2">$5,000</div>
-              <div className="text-sm text-gray-700 dark:text-gray-300">Average Monthly Revenue Increase</div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border-l-4 border-orange-500">
+              <div className="w-16 h-16 bg-orange-100 dark:bg-orange-800 rounded-full flex items-center justify-center mb-6">
+                <Smartphone className="w-8 h-8 text-orange-600 dark:text-orange-400" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Rich Customer Profiles</h3>
+              <p className="text-gray-600 dark:text-gray-300 mb-4">
+                Every traveler shares their budget, interests, group size, travel dates, and specific preferences. You know exactly who you're reaching.
+              </p>
+              <div className="text-sm text-orange-600 dark:text-orange-400 font-semibold">
+                ✓ Complete customer intelligence
+              </div>
             </div>
 
-            <div className="bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900/30 dark:to-blue-800/30 rounded-2xl p-6 text-center">
-              <Users className="w-12 h-12 text-blue-600 mx-auto mb-4" />
-              <div className="text-3xl font-bold text-blue-700 dark:text-blue-400 mb-2">85%</div>
-              <div className="text-sm text-gray-700 dark:text-gray-300">Customer Conversion Rate</div>
-            </div>
-
-            <div className="bg-gradient-to-br from-orange-100 to-orange-200 dark:from-orange-900/30 dark:to-orange-800/30 rounded-2xl p-6 text-center">
-              <BarChart3 className="w-12 h-12 text-orange-600 mx-auto mb-4" />
-              <div className="text-3xl font-bold text-orange-700 dark:text-orange-400 mb-2">24hrs</div>
-              <div className="text-sm text-gray-700 dark:text-gray-300">Time to First Customer</div>
-            </div>
-
-            <div className="bg-gradient-to-br from-purple-100 to-purple-200 dark:from-purple-900/30 dark:to-purple-800/30 rounded-2xl p-6 text-center">
-              <Heart className="w-12 h-12 text-purple-600 mx-auto mb-4" />
-              <div className="text-3xl font-bold text-purple-700 dark:text-purple-400 mb-2">90%</div>
-              <div className="text-sm text-gray-700 dark:text-gray-300">Customer Retention Rate</div>
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border-l-4 border-blue-500">
+              <div className="w-16 h-16 bg-blue-100 dark:bg-blue-800 rounded-full flex items-center justify-center mb-6">
+                <MapPin className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Location-Based Targeting</h3>
+              <p className="text-gray-600 dark:text-gray-300 mb-4">
+                Connect with travelers already in your city or planning to visit. Plus locals seeking new experiences in their own neighborhood.
+              </p>
+              <div className="text-sm text-blue-600 dark:text-blue-400 font-semibold">
+                ✓ Hyper-local customer reach
+              </div>
             </div>
           </div>
         </div>
