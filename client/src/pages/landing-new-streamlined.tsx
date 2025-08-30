@@ -16,7 +16,7 @@ export default function LandingStreamlined() {
   const [currentHeadline, setCurrentHeadline] = useState(0);
   const headlines = [
     "Planning a Trip Soon? Skip The Tourist Traps.", // General travelers
-    "Love Meeting Travelers? Want to Expand Your Social Circle?", // Locals who want to share their city
+    "Want to Expand Your Social Circle? Love Meeting Travelers?", // Locals who want to share their city
     "Want Your Kids to Meet the World?", // Families
     "Hate Forced Networking?", // Professional networking
     "Own a Business?" // Business owners
