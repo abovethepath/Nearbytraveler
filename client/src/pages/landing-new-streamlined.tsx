@@ -106,12 +106,9 @@ export default function LandingStreamlined() {
         <div className="pt-8 pb-12 bg-white dark:bg-gray-900">
           {isAirbnbStyle ? (
             // Clean, professional hero section
-            <div className="mx-auto max-w-7xl px-6 py-8 grid gap-8 md:grid-cols-5 items-center">
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 py-4 sm:py-8 grid gap-6 sm:gap-8 md:grid-cols-5 items-center">
               {/* Left text side - wider */}
               <div className="md:col-span-3">
-                <div className="mb-4 inline-block rounded-full bg-orange-50 dark:bg-orange-900/30 px-4 py-1 text-sm font-medium text-orange-700 dark:text-orange-400">
-                  Now Launching Beta: Be Among the First to Connect Globally
-                </div>
                 <div className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-semibold tracking-tight text-zinc-900 dark:text-white overflow-hidden relative h-[140px] sm:h-[160px] md:h-[180px] lg:h-[220px]">
                   <h1 
                     key={currentHeadline}
@@ -120,7 +117,7 @@ export default function LandingStreamlined() {
                     {headlines[currentHeadline]} <br /> {subtexts[currentSubtext]}
                   </h1>
                 </div>
-                <div className="mt-4 max-w-xl text-lg text-zinc-600 dark:text-zinc-300 overflow-hidden relative h-[120px]">
+                <div className="mt-3 sm:mt-4 max-w-xl text-sm text-zinc-600 dark:text-zinc-300 overflow-hidden relative h-[90px] sm:h-[120px]">
                   <p 
                     key={currentSubtext}
                     className="absolute top-0 left-0 w-full animate-in slide-in-from-left-full fade-in duration-700"
@@ -128,33 +125,11 @@ export default function LandingStreamlined() {
                     {descriptions[currentSubtext]}
                   </p>
                 </div>
-                <div className="mt-6 flex flex-col sm:flex-row gap-4">
-                  <button 
-                    onClick={() => {
-                      trackEvent('signup_cta_click', 'landing_page', 'main_hero_button');
-                      setLocation('/join');
-                    }}
-                    className="bg-black hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-100 text-white dark:text-black font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200 w-full sm:w-auto"
-                    data-testid="button-join-journey"
-                  >
-                    Join Now
-                  </button>
-                  <button 
-                    onClick={() => {
-                      trackEvent('learn_more_click', 'landing_page', 'see_how_it_works');
-                      document.querySelector('#community-section')?.scrollIntoView({ behavior: 'smooth' });
-                    }}
-                    className="rounded-xl border border-zinc-300 px-6 py-3 font-medium hover:bg-zinc-50 dark:border-zinc-600 dark:hover:bg-zinc-800 w-full sm:w-auto"
-                    data-testid="button-see-how-it-works"
-                  >
-                    See How It Works
-                  </button>
-                </div>
               </div>
 
               {/* Right image side */}
-              <div className="md:col-span-2 flex flex-col items-center">
-                <div className="overflow-hidden relative w-full h-[400px] rounded-2xl">
+              <div className="md:col-span-2 flex flex-col items-center order-first md:order-last">
+                <div className="overflow-hidden relative w-full max-w-sm sm:max-w-md h-[250px] sm:h-[300px] md:h-[400px] rounded-2xl">
                   <img
                     key={currentHeadline}
                     src={heroImages[currentHeadline]}
@@ -162,7 +137,7 @@ export default function LandingStreamlined() {
                     className="absolute top-0 left-0 w-full h-full object-cover rounded-2xl shadow-lg animate-in slide-in-from-right-full fade-in duration-700"
                   />
                 </div>
-                <p className="mt-4 text-lg italic text-orange-600 text-center">
+                <p className="mt-3 sm:mt-4 text-xs sm:text-sm italic text-orange-600 text-center">
                   Where Local Experiences Meet Worldwide Connections
                 </p>
               </div>
