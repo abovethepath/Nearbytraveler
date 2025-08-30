@@ -412,16 +412,16 @@ export default function CouchsurfingLanding() {
           </div>
 
           {/* How Nearby Traveler Solves Surfing Problems */}
-          <div className="bg-gradient-to-r from-orange-500 to-blue-600 rounded-2xl p-8 text-white text-center">
-            <h3 className="text-2xl sm:text-3xl font-bold mb-4">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 text-center">
+            <h3 className="text-2xl sm:text-3xl font-bold mb-4 text-black dark:text-black">
               Travel With More Connections, Fewer Limitations
             </h3>
-            <p className="text-lg sm:text-xl mb-6 opacity-90 max-w-4xl mx-auto leading-relaxed">
+            <p className="text-lg sm:text-xl mb-6 max-w-4xl mx-auto leading-relaxed text-gray-700 dark:text-gray-300">
               Connect with multiple locals and travelers in each city. Meet for coffee, join events, explore together — whether you have a couch or not.
-              <strong className="block mt-2">Your travel experience becomes richer, more flexible, and less dependent on any single person.</strong>
+              <strong className="block mt-2 text-black dark:text-black">Your travel experience becomes richer, more flexible, and less dependent on any single person.</strong>
             </p>
-            <div className="bg-white/10 rounded-xl p-6 max-w-3xl mx-auto">
-              <p className="text-lg font-medium">
+            <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-6 max-w-3xl mx-auto border border-gray-200 dark:border-gray-600">
+              <p className="text-lg font-medium text-gray-800 dark:text-gray-200">
                 "Instead of hoping one host has time to show you around, you can connect with locals who love hiking, foodies who know the best restaurants, and fellow travelers exploring the same neighborhoods. Your trip becomes an adventure, not a gamble."
               </p>
             </div>
