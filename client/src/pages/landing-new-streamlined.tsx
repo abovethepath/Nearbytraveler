@@ -94,25 +94,6 @@ export default function LandingStreamlined() {
       <LandingHeaderSpacer />
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        {/* MOBILE-FIRST ROTATING SAYINGS - Above everything on mobile */}
-        <div className="block md:hidden pt-4 pb-6 text-center bg-white dark:bg-gray-900">
-          <div className="overflow-hidden relative h-[80px]">
-            <h2 
-              key={currentHeadline}
-              className="absolute top-0 left-0 w-full text-2xl font-bold tracking-tight text-zinc-900 dark:text-white animate-in slide-in-from-left-full fade-in duration-700"
-            >
-              {headlines[currentHeadline]}
-            </h2>
-          </div>
-          <div className="mt-2 overflow-hidden relative h-[50px]">
-            <p 
-              key={currentSubtext}
-              className="absolute top-0 left-0 w-full text-sm text-zinc-600 dark:text-zinc-300 animate-in slide-in-from-left-full fade-in duration-700"
-            >
-              {subtexts[currentSubtext]}
-            </p>
-          </div>
-        </div>
         
         {/* HERO SECTION */}
         <div className="pt-8 pb-12 bg-white dark:bg-gray-900">
@@ -141,6 +122,17 @@ export default function LandingStreamlined() {
 
               {/* Right image side */}
               <div className="md:col-span-2 flex flex-col items-center order-first md:order-last">
+                {/* Intimate whisper-style rotating sayings - right above photo */}
+                <div className="mb-3 text-center">
+                  <div className="overflow-hidden relative h-[40px]">
+                    <p 
+                      key={currentHeadline}
+                      className="absolute top-0 left-0 w-full text-sm sm:text-base font-medium text-zinc-700 dark:text-zinc-300 animate-in slide-in-from-left-full fade-in duration-700 italic"
+                    >
+                      {headlines[currentHeadline]}
+                    </p>
+                  </div>
+                </div>
                 <div className="overflow-hidden relative w-full max-w-sm sm:max-w-md h-[250px] sm:h-[300px] md:h-[400px] rounded-2xl">
                   <img
                     key={currentHeadline}
