@@ -283,67 +283,6 @@ export default function CouchsurfingLanding() {
           </div>
         </section>
 
-        {/* SIMPLE CONTRASTS */}
-        <section className="mx-auto max-w-6xl px-6 py-20 bg-white dark:bg-gray-900">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900 dark:text-white mb-6">
-              Expanding the Couchsurfing Spirit
-            </h2>
-            <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-              Built by couchsurfers, for couchsurfers. Same values, more ways to connect.
-            </p>
-          </div>
-
-          <div className="space-y-8 max-w-4xl mx-auto">
-            <div className="bg-gradient-to-r from-gray-50 to-green-50 dark:from-gray-800 dark:to-green-900/20 rounded-2xl p-6">
-              <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-                <div className="text-center md:text-left">
-                  <p className="text-gray-600 dark:text-gray-300 text-lg">
-                    <strong>Love hosting but can't always?</strong>
-                  </p>
-                </div>
-                <div className="text-3xl">→</div>
-                <div className="text-center md:text-right">
-                  <p className="text-green-700 dark:text-green-400 text-lg font-medium">
-                    Still connect with travelers year-round
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-gradient-to-r from-gray-50 to-blue-50 dark:from-gray-800 dark:to-blue-900/20 rounded-2xl p-6">
-              <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-                <div className="text-center md:text-left">
-                  <p className="text-gray-600 dark:text-gray-300 text-lg">
-                    <strong>Want to welcome ALL travelers?</strong>
-                  </p>
-                </div>
-                <div className="text-3xl">→</div>
-                <div className="text-center md:text-right">
-                  <p className="text-blue-700 dark:text-blue-400 text-lg font-medium">
-                    Open to every traveler, not just those needing hosting
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-gradient-to-r from-gray-50 to-purple-50 dark:from-gray-800 dark:to-purple-900/20 rounded-2xl p-6">
-              <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-                <div className="text-center md:text-left">
-                  <p className="text-gray-600 dark:text-gray-300 text-lg">
-                    <strong>Missing the community spirit?</strong>
-                  </p>
-                </div>
-                <div className="text-3xl">→</div>
-                <div className="text-center md:text-right">
-                  <p className="text-purple-700 dark:text-purple-400 text-lg font-medium">
-                    Free platform built by longtime couchsurfers
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
 
         {/* HOSTING DOESN'T END - ENHANCEMENT SECTION */}
         <section className="mx-auto max-w-6xl px-6 py-20 bg-gradient-to-br from-green-50 via-blue-50 to-purple-50 dark:from-green-900/20 dark:via-blue-900/20 dark:to-purple-900/20 rounded-2xl mb-16">
