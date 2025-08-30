@@ -19,8 +19,10 @@ import {
   ArrowRight,
   Zap,
   Trophy,
-  Heart
+  Heart,
+  Calendar
 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 const businessHeaderPhoto = "/businessheader2_1752350709493.png";
 
@@ -474,6 +476,70 @@ export default function BusinessLanding() {
                 <h4 className="font-bold text-gray-900 dark:text-white mb-2">Celebrity Homes Tour</h4>
                 <p className="text-base md:text-lg italic text-gray-700 dark:text-gray-300 mb-2">"Book today, tour tomorrow deal"</p>
                 <p className="text-sm text-blue-600">→ Tour companies</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Live Widget Preview */}
+          <div className="mt-16">
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-white text-center mb-8">
+              See How Your Deals Look to Travelers
+            </h3>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Flash Deal Widget Preview */}
+              <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-xl border">
+                <h4 className="font-bold text-lg mb-4 text-gray-900 dark:text-white">Flash Deal Widget</h4>
+                <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white p-4 rounded-lg">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <Zap className="w-5 h-5" />
+                      <span className="font-bold">FLASH DEAL</span>
+                    </div>
+                    <span className="text-sm bg-white/20 px-2 py-1 rounded">2h left</span>
+                  </div>
+                  <h5 className="font-bold text-lg mb-1">Happy Hour - 50% Off Drinks</h5>
+                  <p className="text-sm opacity-90 mb-3">The Rooftop Bar & Grill</p>
+                  <p className="text-sm mb-3">Valid 5-7pm today. Show this deal to bartender.</p>
+                  <Button className="w-full bg-white text-orange-600 hover:bg-gray-100">
+                    Claim Deal
+                  </Button>
+                </div>
+              </div>
+
+              {/* Business Event Preview */}
+              <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-xl border">
+                <h4 className="font-bold text-lg mb-4 text-gray-900 dark:text-white">Event Widget</h4>
+                <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
+                  <div className="flex items-start justify-between mb-3">
+                    <div>
+                      <h5 className="font-bold text-gray-900 dark:text-white mb-1">Taco Tuesday Traveler Night</h5>
+                      <p className="text-sm text-blue-600">Hosted by Casa Bonita</p>
+                    </div>
+                    <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
+                      Tonight
+                    </Badge>
+                  </div>
+                  <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">
+                    2-for-1 tacos + meet fellow travelers! Special menu for tourists.
+                  </p>
+                  <div className="space-y-1 text-xs text-gray-500 dark:text-gray-400 mb-4">
+                    <div className="flex items-center gap-1">
+                      <Calendar className="w-3 h-3" />
+                      <span>Tonight, 6:00 PM</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <MapPin className="w-3 h-3" />
+                      <span>123 Sunset Blvd, Hollywood</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Users className="w-3 h-3" />
+                      <span>8 travelers attending</span>
+                    </div>
+                  </div>
+                  <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+                    Join Event
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
