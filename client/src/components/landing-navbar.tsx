@@ -102,7 +102,11 @@ export default function LandingNavbar() {
             </Link>
             <Link href="/locals-landing" 
               className="border-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 block pl-3 pr-3 py-2 border-l-4 text-sm font-medium rounded-r-lg transition-all duration-200 touch-manipulation"
-              onClick={() => setMobileMenuOpen(false)}
+              onClick={(e) => {
+                console.log('🗺️ Locals link clicked!');
+                setMobileMenuOpen(false);
+              }}
+              data-testid="mobile-locals-link"
             >
               🗺️ For Locals
             </Link>
