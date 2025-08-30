@@ -37,6 +37,7 @@ import SmartPhotoGallery from "@/components/smart-photo-gallery";
 import SmartLocationInput from "@/components/SmartLocationInput";
 import AICityEventsWidget from "@/components/ai-city-events";
 import TravelMatches from "@/components/travel-matches";
+import staticHeroImage from "@assets/travelers coffee_1750995178947.png";
 
 import ResponsiveUserGrid from "@/components/ResponsiveUserGrid";
 import { SimpleAvatar } from "@/components/simple-avatar";
@@ -574,7 +575,6 @@ export default function Home() {
 
 
   // Use static hero image to prevent caching issues - try URL encoding for space
-  const staticHeroImage = '/travelers%20coffee_1750995178947.png';
 
   console.log('🖼️ Home Hero: Using static image:', staticHeroImage);
   

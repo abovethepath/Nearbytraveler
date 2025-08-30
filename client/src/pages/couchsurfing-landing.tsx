@@ -6,6 +6,7 @@ import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
 import { Users, MapPin, Globe, RefreshCw, Home, ShieldCheck, Plane, Building2, Handshake, Coffee, Heart } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
 import { useTheme } from "@/components/theme-provider";
+import couchsurfingHeroImage from "@assets/image_1756515286749.png";
 
 export default function CouchsurfingLanding() {
   const [, setLocation] = useLocation();
@@ -137,7 +138,7 @@ export default function CouchsurfingLanding() {
               
               <div className="overflow-hidden relative w-full max-w-sm sm:max-w-md h-[200px] sm:h-[250px] md:h-[350px] rounded-2xl">
                 <img
-                  src="/attached_assets/image_1756515286749.png"
+                  src={couchsurfingHeroImage}
                   alt="Couch surfing - literally surfing on a couch in the ocean"
                   className="absolute top-0 left-0 w-full h-full object-cover rounded-2xl shadow-lg animate-in slide-in-from-right-full fade-in duration-700"
                 />

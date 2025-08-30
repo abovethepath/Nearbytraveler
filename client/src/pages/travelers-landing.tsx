@@ -6,7 +6,7 @@ import ThemeToggle from "@/components/ThemeToggle";
 import Footer from "@/components/footer";
 import { trackEvent } from "@/lib/analytics";
 import backgroundImage from "@assets/image_1755178154302.png";
-const travelersHeaderImage = "/attached_assets/travelers together hugging_1754971726997.avif";
+import travelersHeaderImage from "@assets/travelers together hugging_1754971726997.avif";
 
 export default function TravelersLanding() {
   const [, setLocation] = useLocation();
