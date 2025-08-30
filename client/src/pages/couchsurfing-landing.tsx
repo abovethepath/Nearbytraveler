@@ -481,16 +481,16 @@ export default function CouchsurfingLanding() {
           </div>
 
           {/* The Big Reveal */}
-          <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl p-8 text-white text-center">
-            <h3 className="text-2xl sm:text-3xl font-bold mb-4">
+          <div className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-8 text-center">
+            <h3 className="text-2xl sm:text-3xl font-bold mb-4 text-black dark:text-black">
               Now We Can All Connect
             </h3>
-            <p className="text-lg sm:text-xl mb-6 opacity-90 max-w-4xl mx-auto leading-relaxed">
+            <p className="text-lg sm:text-xl mb-6 max-w-4xl mx-auto leading-relaxed text-gray-700 dark:text-gray-300">
               Imagine our couchsurfing community expanded to include every traveler who shares our values — not just those who can host or surf. 
-              <strong className="block mt-2">That's millions more cultural exchanges, friendships, and adventures waiting to happen.</strong>
+              <strong className="block mt-2 text-black dark:text-black">That's millions more cultural exchanges, friendships, and adventures waiting to happen.</strong>
             </p>
-            <div className="bg-white/10 rounded-xl p-6 max-w-3xl mx-auto">
-              <p className="text-lg font-medium italic">
+            <div className="bg-white dark:bg-gray-700 rounded-xl p-6 max-w-3xl mx-auto border border-gray-200 dark:border-gray-600">
+              <p className="text-lg font-medium italic text-gray-800 dark:text-gray-200">
                 "The couchsurfing spirit was never really about the couch — it was about the connection. Now everyone can experience that magic."
               </p>
             </div>
