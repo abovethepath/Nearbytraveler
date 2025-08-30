@@ -582,7 +582,7 @@ export default function BusinessLanding() {
                   <div className="flex items-start justify-between mb-3">
                     <div>
                       <h5 className="font-bold text-gray-900 dark:text-white mb-1">Taco Tuesday Traveler Night</h5>
-                      <p className="text-sm text-blue-600">Hosted by Casa Bonita</p>
+                      <p className="text-sm text-blue-600">Hosted by Casa Muy Bien</p>
                     </div>
                     <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
                       Tonight
