@@ -206,52 +206,52 @@ export default function CouchsurfingLanding() {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 mb-8 sm:mb-6 sm:mb-8">
             {/* What You Loved */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 sm:p-6 md:p-8 shadow-lg border-l-4 border-orange-500">
-              <h3 className="text-xl sm:text-2xl font-bold text-orange-700 dark:text-orange-400 mb-4 sm:mb-6 flex items-center">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 sm:p-6 md:p-8 shadow-lg border-l-4 border-blue-500">
+              <h3 className="text-xl sm:text-2xl font-bold text-blue-700 dark:text-blue-400 mb-4 sm:mb-6 flex items-center">
                 <Heart className="w-5 h-5 sm:w-6 sm:h-6 mr-2 sm:mr-3" />
                 What You've Loved About Hosting
               </h3>
               <ul className="space-y-3 sm:space-y-4 text-sm text-gray-700 dark:text-gray-300">
                 <li className="flex items-start">
-                  <Globe className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500 mr-2 sm:mr-3 mt-1 flex-shrink-0" />
+                  <Globe className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500 mr-2 sm:mr-3 mt-1 flex-shrink-0" />
                   <span>Meeting fascinating people from every corner of the world</span>
                 </li>
                 <li className="flex items-start">
-                  <Users className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500 mr-2 sm:mr-3 mt-1 flex-shrink-0" />
+                  <Users className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500 mr-2 sm:mr-3 mt-1 flex-shrink-0" />
                   <span>Creating deep connections and lifelong friendships</span>
                 </li>
                 <li className="flex items-start">
-                  <Coffee className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500 mr-2 sm:mr-3 mt-1 flex-shrink-0" />
+                  <Coffee className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500 mr-2 sm:mr-3 mt-1 flex-shrink-0" />
                   <span>Sharing your city's hidden gems and local culture</span>
                 </li>
                 <li className="flex items-start">
-                  <RefreshCw className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500 mr-2 sm:mr-3 mt-1 flex-shrink-0" />
+                  <RefreshCw className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500 mr-2 sm:mr-3 mt-1 flex-shrink-0" />
                   <span>Learning about other cultures without traveling</span>
                 </li>
                 <li className="flex items-start">
-                  <Handshake className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500 mr-2 sm:mr-3 mt-1 flex-shrink-0" />
+                  <Handshake className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500 mr-2 sm:mr-3 mt-1 flex-shrink-0" />
                   <span>The satisfaction of helping fellow travelers</span>
                 </li>
               </ul>
             </div>
 
             {/* The Challenges */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 sm:p-6 md:p-8 shadow-lg border-l-4 border-orange-500">
-              <h3 className="text-xl sm:text-2xl font-bold text-orange-700 dark:text-orange-400 mb-4 sm:mb-6 flex items-center">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 sm:p-6 md:p-8 shadow-lg border-l-4 border-blue-500">
+              <h3 className="text-xl sm:text-2xl font-bold text-blue-700 dark:text-blue-400 mb-4 sm:mb-6 flex items-center">
                 <Home className="w-5 h-5 sm:w-6 sm:h-6 mr-2 sm:mr-3" />
-                But Hosting Can Be...
+                But Hosting Can Be Challenging...
               </h3>
               <ul className="space-y-3 sm:space-y-4 text-sm text-gray-700 dark:text-gray-300">
                 <li className="flex items-start">
-                  <span className="w-4 h-4 sm:w-5 sm:h-5 bg-orange-500 rounded-full mr-2 sm:mr-3 mt-2 flex-shrink-0"></span>
+                  <span className="w-4 h-4 sm:w-5 sm:h-5 bg-blue-500 rounded-full mr-2 sm:mr-3 mt-2 flex-shrink-0"></span>
                   <span>Exhausting when you need your personal space</span>
                 </li>
                 <li className="flex items-start">
-                  <span className="w-4 h-4 sm:w-5 sm:h-5 bg-orange-500 rounded-full mr-2 sm:mr-3 mt-2 flex-shrink-0"></span>
+                  <span className="w-4 h-4 sm:w-5 sm:h-5 bg-blue-500 rounded-full mr-2 sm:mr-3 mt-2 flex-shrink-0"></span>
                   <span>Stressful with work, family, or relationship commitments</span>
                 </li>
                 <li className="flex items-start">
-                  <span className="w-4 h-4 sm:w-5 sm:h-5 bg-orange-500 rounded-full mr-2 sm:mr-3 mt-2 flex-shrink-0"></span>
+                  <span className="w-4 h-4 sm:w-5 sm:h-5 bg-blue-500 rounded-full mr-2 sm:mr-3 mt-2 flex-shrink-0"></span>
                   <span>Unpredictable with last-minute cancellations or no-shows</span>
                 </li>
                 <li className="flex items-start">
