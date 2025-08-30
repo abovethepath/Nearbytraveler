@@ -320,8 +320,36 @@ export default function LandingStreamlined() {
             {/* Dynamic Activity Grid */}
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 text-sm">
               <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all duration-200">
-                <span className="text-2xl mb-2 block">🎉</span>
-                <span className="text-gray-700 dark:text-gray-300">Party together</span>
+                <span className="text-2xl mb-2 block">🏠</span>
+                <span className="text-gray-700 dark:text-gray-300">Meet your locals</span>
+              </div>
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all duration-200">
+                <span className="text-2xl mb-2 block">🏢</span>
+                <span className="text-gray-700 dark:text-gray-300">Meet local businesses</span>
+              </div>
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all duration-200">
+                <span className="text-2xl mb-2 block">👨‍👩‍👧‍👦</span>
+                <span className="text-gray-700 dark:text-gray-300">Families meet families</span>
+              </div>
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all duration-200">
+                <span className="text-2xl mb-2 block">🦋</span>
+                <span className="text-gray-700 dark:text-gray-300">Reimagine yourself</span>
+              </div>
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all duration-200">
+                <span className="text-2xl mb-2 block">🌟</span>
+                <span className="text-gray-700 dark:text-gray-300">Reinvent yourself</span>
+              </div>
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all duration-200">
+                <span className="text-2xl mb-2 block">🌍</span>
+                <span className="text-gray-700 dark:text-gray-300">Bring countries to you</span>
+              </div>
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all duration-200">
+                <span className="text-2xl mb-2 block">🤝</span>
+                <span className="text-gray-700 dark:text-gray-300">Business network</span>
+              </div>
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all duration-200">
+                <span className="text-2xl mb-2 block">🍻</span>
+                <span className="text-gray-700 dark:text-gray-300">Socialize & party</span>
               </div>
               <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all duration-200">
                 <span className="text-2xl mb-2 block">💕</span>
@@ -332,36 +360,8 @@ export default function LandingStreamlined() {
                 <span className="text-gray-700 dark:text-gray-300">Language exchange</span>
               </div>
               <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all duration-200">
-                <span className="text-2xl mb-2 block">🌍</span>
-                <span className="text-gray-700 dark:text-gray-300">Culture exchange</span>
-              </div>
-              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all duration-200">
-                <span className="text-2xl mb-2 block">💪</span>
-                <span className="text-gray-700 dark:text-gray-300">Exercise together</span>
-              </div>
-              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all duration-200">
-                <span className="text-2xl mb-2 block">🗺️</span>
-                <span className="text-gray-700 dark:text-gray-300">Explore cities</span>
-              </div>
-              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all duration-200">
                 <span className="text-2xl mb-2 block">🚗</span>
-                <span className="text-gray-700 dark:text-gray-300">Day trips</span>
-              </div>
-              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all duration-200">
-                <span className="text-2xl mb-2 block">🥾</span>
-                <span className="text-gray-700 dark:text-gray-300">Hike mountains</span>
-              </div>
-              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all duration-200">
-                <span className="text-2xl mb-2 block">🚴</span>
-                <span className="text-gray-700 dark:text-gray-300">Bike tours</span>
-              </div>
-              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all duration-200">
-                <span className="text-2xl mb-2 block">🥐</span>
-                <span className="text-gray-700 dark:text-gray-300">Brunch dates</span>
-              </div>
-              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all duration-200">
-                <span className="text-2xl mb-2 block">🔍</span>
-                <span className="text-gray-700 dark:text-gray-300">Discover hidden gems</span>
+                <span className="text-gray-700 dark:text-gray-300">Day trips & explore</span>
               </div>
               <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all duration-200">
                 <span className="text-2xl mb-2 block">✨</span>
