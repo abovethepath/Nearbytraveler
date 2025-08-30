@@ -15,30 +15,45 @@ export default function LandingStreamlined() {
   // Rotating headlines for different audience pain points
   const [currentHeadline, setCurrentHeadline] = useState(0);
   const headlines = [
-    "The Life You Want Is One Connection Away.", // Transformational message 1
-    "Your Next Adventure Starts With Hello." // Transformational message 2
+    "Planning a Trip Soon? Skip The Tourist Traps.", // General travelers
+    "Want to Expand Your Social Circle? Love Meeting Travelers?", // Locals who want to share their city
+    "Want Your Kids to Meet the World?", // Families
+    "Hate Forced Networking?", // Professional networking
+    "Own a Business?" // Business owners
   ];
   
   const [currentSubtext, setCurrentSubtext] = useState(0);
   const subtexts = [
-    "Find real connections that last.", // Supporting message 1
-    "Meet locals, travelers, and businesses everywhere." // Supporting message 2
+    "Find real connections that last.", // General travelers
+    "Meet up and show your city to nearby travelers.", // Locals who want to share their city
+    "Connect with families everywhere.", // Families
+    "Build authentic professional connections.", // Professional networking
+    "Target travelers directly based on their interests and desires." // Business owners
   ];
   
   const descriptions = [
-    "Connect with locals and travelers before your trip begins— and create friendships that last a lifetime.", // Supporting description 1
-    "Join a global community where authentic human connections transform how you experience the world." // Supporting description 2
+    "Connect with locals and travelers before your trip begins— and create friendships that last a lifetime.", // General
+    "Meet travelers at coffee shops, events, and local experiences. Show off your city's hidden gems to curious visitors.", // Locals who want to share their city
+    "Help your family build global friendships through safe, public meetups and cultural exchanges.", // Families
+    "Tired of Forced Networking? Build Real Connections.", // Networking
+    "Showcase your business to travelers through events, experiences, and curated local discounts only for Nearby Travelers." // Business
   ];
 
   // Images that match each rotating headline
   const heroImages = [
-    "/travelers together hugging_1754971726997.avif", // Connection and transformation
-    "/Image-Social-Travel-with-Contiki-photo-courtesy-Co_1756483970192.webp" // Adventure and hello moments
+    "/travelers together hugging_1754971726997.avif", // General travelers - current default
+    "/Image-Social-Travel-with-Contiki-photo-courtesy-Co_1756483970192.webp", // Locals sharing experiences - group adventure
+    "/image_1756483833676.png", // Families - family at airport watching plane
+    "/image_1756483700289.png?v=2", // Networking/professional exchange - cache bust
+    "/image_1756483716831.png"  // Business - local cafe/business atmosphere
   ];
 
   const heroImageAlts = [
-    "Travelers connecting and transforming", // Connection message
-    "Adventure starting with hello" // Hello message
+    "Travelers connecting", // General
+    "Locals showing their city", // Locals
+    "Families traveling together", // Families
+    "Professional networking", // Networking
+    "Business welcoming travelers" // Business
   ];
   
   // Check URL for layout parameter - default to Airbnb style
