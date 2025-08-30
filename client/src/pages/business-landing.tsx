@@ -30,7 +30,31 @@ export default function BusinessLanding() {
   const [, setLocation] = useLocation();
   const [isMobile, setIsMobile] = useState(false);
   
-  // Mobile check
+  // Rotating wisdom sayings above the photo
+  const [currentWisdom, setCurrentWisdom] = useState(0);
+  const wisdomSayings = [
+    "Smart Business, Real Results.",
+    "Where Customers Find You First.",
+    "Turn Location Into Revenue.",
+    "Real-Time Deals That Convert.",
+    "Every Tourist Is a Sale Waiting.",
+    "Local Knowledge, Global Reach."
+  ];
+  
+  // Mobile-friendly shorter versions
+  const wisdomSayingsMobile = [
+    "Smart Business, Real Results.",
+    "Customers Find You First.",
+    "Location Equals Revenue.",
+    "Real-Time Deals Convert.",
+    "Every Tourist Is a Sale.",
+    "Local Knowledge, Global Reach."
+  ];
+  
+  // Check URL for layout parameter - default to Airbnb style
+  const urlParams = new URLSearchParams(window.location.search);
+  const isAirbnbStyle = urlParams.get('layout') !== 'centered';
+
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 640);
@@ -40,6 +64,16 @@ export default function BusinessLanding() {
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
+
+  // Rotating wisdom sayings effect
+  useEffect(() => {
+    const rotateWisdom = () => {
+      setCurrentWisdom((prev) => (prev + 1) % wisdomSayings.length);
+    };
+
+    const timeout = setTimeout(rotateWisdom, 10000); // 10 seconds
+    return () => clearTimeout(timeout);
+  }, [currentWisdom, wisdomSayings.length]);
 
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900">
@@ -61,90 +95,101 @@ export default function BusinessLanding() {
       <LandingHeader />
       <LandingHeaderSpacer />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6">
         
-        {/* POWERFUL HERO SECTION */}
-        <div className="pt-8 pb-12 bg-white dark:bg-gray-900">
-          <div className="grid gap-8 md:grid-cols-5 items-center">
-            {/* Left text side - wider */}
-            <div className="md:col-span-3 space-y-6">
-              <div className="inline-block bg-gradient-to-r from-orange-100 to-blue-100 dark:from-orange-900/30 dark:to-blue-900/30 px-4 py-2 rounded-full">
-                <span className="text-sm font-bold text-orange-600 dark:text-orange-400">💰 REVENUE MULTIPLIER</span>
-              </div>
-              
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-zinc-900 dark:text-white leading-tight">
-                Access Travelers' Exact Wants & Needs
-              </h1>
-              
-              <p className="text-lg md:text-xl lg:text-2xl text-zinc-600 dark:text-zinc-300 leading-relaxed max-w-2xl">
-                Travelers tell us their interests, activities, and preferences. When they're near your business, your deals automatically push to their phone in real-time.
-              </p>
-
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Button
-                  onClick={() => {
-                    trackEvent('signup_cta_click', 'business_landing', 'hero_start_growing');
-                    setLocation('/join');
-                  }}
-                  size="lg"
-                  className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold text-lg px-8 py-4 rounded-lg shadow-lg transform hover:scale-105 transition-all duration-200"
-                >
-                  <Zap className="w-5 h-5 mr-2" />
-                  Join Now
-                </Button>
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white font-semibold text-lg px-8 py-4 rounded-lg transition-all duration-200"
-                >
-                  Join Now
-                </Button>
-              </div>
-
-              {/* Value Proposition */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6 border-t border-gray-200 dark:border-gray-700">
-                <div className="text-center">
-                  <div className="text-lg font-bold text-orange-600">📍 Geo-Targeting</div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">Push deals when travelers are nearby</div>
+        {/* HERO SECTION */}
+        <div className="pt-4 pb-6 sm:pt-6 sm:pb-8 bg-white dark:bg-gray-900">
+          {isAirbnbStyle ? (
+            // Clean, professional hero section
+            <div className="mx-auto max-w-7xl px-2 sm:px-4 md:px-6 py-2 sm:py-4 md:py-6 grid gap-3 sm:gap-4 md:gap-6 md:grid-cols-5 items-center">
+              {/* Left text side - wider */}
+              <div className="md:col-span-3">
+                <div className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-semibold tracking-tight text-zinc-900 dark:text-white overflow-hidden relative h-[90px] sm:h-[100px] md:h-[120px] lg:h-[140px]">
+                  <h1 className="absolute top-0 left-0 w-full animate-in slide-in-from-left-full fade-in duration-700">Access Travelers' Exact Wants & Needs</h1>
                 </div>
-                <div className="text-center">
-                  <div className="text-lg font-bold text-blue-600">🎯 Interest Matching</div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">Connect based on exact preferences</div>
+                <div className="mt-3 sm:mt-4 max-w-xl text-sm md:text-base lg:text-lg text-zinc-600 dark:text-zinc-300 overflow-hidden relative h-[80px] sm:h-[100px] md:h-[120px]">
+                  <p className="absolute top-0 left-0 w-full animate-in slide-in-from-left-full fade-in duration-700">Turn location into revenue with real-time deals that convert travelers into customers</p>
                 </div>
-                <div className="text-center">
-                  <div className="text-lg font-bold text-green-600">⚡ Real-Time Alerts</div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">Instant notifications to their phone</div>
+                {/* Desktop CTAs */}
+                <div className="hidden sm:flex mt-6 flex-col sm:flex-row gap-4">
+                  <button 
+                    onClick={() => {
+                      trackEvent('signup_cta_click', 'business_landing', 'join_journey');
+                      setLocation('/join');
+                    }}
+                    className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200 w-full sm:w-auto"
+                    data-testid="button-join-journey"
+                  >
+                    Start Growing Revenue
+                  </button>
+                  <button 
+                    onClick={() => {
+                      document.querySelector('#value-section')?.scrollIntoView({ behavior: 'smooth' });
+                    }}
+                    className="rounded-xl border border-zinc-300 px-6 py-3 font-medium hover:bg-zinc-50 dark:border-zinc-600 dark:hover:bg-zinc-800 w-full sm:w-auto"
+                    data-testid="button-see-how-it-works"
+                  >
+                    See How It Works
+                  </button>
                 </div>
               </div>
-            </div>
 
-            {/* Right image side */}
-            <div className="md:col-span-2 flex flex-col items-center order-first md:order-last">
-              <div className="mb-4 text-center">
-                <p className="text-base md:text-lg lg:text-xl font-bold text-zinc-800 dark:text-zinc-200 italic">
-                  <span className="sm:hidden">Smart Business, Real Results</span>
-                  <span className="hidden sm:inline">Smart Business Decisions Create Real Results</span>
+              {/* Right image side */}
+              <div className="md:col-span-2 flex flex-col items-center order-first md:order-last">
+                {/* Rotating wisdom sayings above static quote */}
+                <div className="mb-1 text-center w-full overflow-hidden relative h-[20px] sm:h-[24px] md:h-[28px]">
+                  <p 
+                    key={currentWisdom}
+                    className="absolute top-0 left-0 w-full text-xs md:text-sm font-medium text-zinc-800 dark:text-zinc-200 italic animate-in slide-in-from-right-full fade-in duration-700 px-2"
+                  >
+                    <span className="sm:hidden">{wisdomSayingsMobile[currentWisdom]}</span>
+                    <span className="hidden sm:inline">{wisdomSayings[currentWisdom]}</span>
+                  </p>
+                </div>
+                
+                {/* Static powerful quote */}
+                <div className="mb-2 text-center w-full">
+                  <p className="text-sm md:text-lg lg:text-xl font-bold text-zinc-800 dark:text-zinc-200 italic px-2">
+                    <span className="sm:hidden">Every tourist is a sale waiting to happen.</span>
+                    <span className="hidden sm:inline">Every tourist is a sale waiting to happen.</span>
+                  </p>
+                </div>
+                <div className="overflow-hidden relative w-full max-w-sm sm:max-w-md h-[200px] sm:h-[250px] md:h-[350px] rounded-2xl">
+                  <img
+                    src={businessHeaderPhoto}
+                    alt="Successful business owner connecting with customers"
+                    className="absolute top-0 left-0 w-full h-full object-cover rounded-2xl shadow-lg animate-in slide-in-from-right-full fade-in duration-700"
+                  />
+                </div>
+                <p className="mt-2 text-xs md:text-sm italic text-orange-600 text-center">
+                  Where Authentic Experiences Meet Local Business
                 </p>
               </div>
-              
-              <div className="overflow-hidden relative w-full max-w-sm sm:max-w-md h-[250px] sm:h-[300px] md:h-[400px] rounded-2xl">
-                <img
-                  src={businessHeaderPhoto}
-                  alt="Successful business owner connecting with customers"
-                  className="absolute top-0 left-0 w-full h-full object-cover rounded-2xl shadow-xl"
-                />
-              </div>
-              
-              <p className="mt-3 text-sm md:text-base italic text-orange-600 dark:text-orange-400 text-center font-semibold">
-                Where Authentic Experiences Meet Local Business
-              </p>
             </div>
-          </div>
+          ) : (
+            // Original centered layout (for investors)  
+            <div className="text-center">
+              <h1 className="text-4xl md:text-5xl font-light text-gray-900 dark:text-white mb-8 leading-tight">
+                Smart Business, Real Results
+              </h1>
+              <p className="text-xl font-light text-gray-600 dark:text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed">
+                Access travelers' exact wants and needs with location-based deals that convert
+              </p>
+              
+              <Button
+                onClick={() => setLocation('/join')}
+                size="lg"
+                className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-500 text-white dark:text-white font-medium px-8 py-3 rounded-lg transition-all duration-200"
+              >
+                Start Growing Revenue
+              </Button>
+            </div>
+          )}
         </div>
       </div>
 
       {/* RESULTS-DRIVEN VALUE SECTION */}
-      <section className="bg-gradient-to-br from-orange-50 to-blue-50 dark:from-gray-800 dark:to-gray-900 py-16">
+      <section id="value-section" className="bg-gradient-to-br from-orange-50 to-blue-50 dark:from-gray-800 dark:to-gray-900 py-16">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-12">
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
