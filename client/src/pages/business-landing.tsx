@@ -71,8 +71,7 @@ export default function BusinessLanding() {
               </div>
               
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-zinc-900 dark:text-white leading-tight">
-                Access Travelers' 
-                <span className="bg-gradient-to-r from-orange-500 to-blue-600 bg-clip-text text-transparent">Exact Wants & Needs</span>
+                Access Travelers' Exact Wants & Needs
               </h1>
               
               <p className="text-lg md:text-xl lg:text-2xl text-zinc-600 dark:text-zinc-300 leading-relaxed max-w-2xl">
