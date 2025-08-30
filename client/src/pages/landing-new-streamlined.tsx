@@ -307,6 +307,74 @@ export default function LandingStreamlined() {
           </div>
         </div>
 
+        {/* What's Possible Section */}
+        <div className="py-16 bg-gradient-to-br from-orange-50 to-blue-50 dark:from-gray-800 dark:to-gray-900">
+          <div className="max-w-6xl mx-auto px-4 text-center">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-6">
+              What's Possible When Travelers Meet?
+            </h2>
+            <p className="text-sm text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto">
+              Real connections. Real adventures. Real life.
+            </p>
+            
+            {/* Dynamic Activity Grid */}
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 text-sm">
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all duration-200">
+                <span className="text-2xl mb-2 block">🎉</span>
+                <span className="text-gray-700 dark:text-gray-300">Party together</span>
+              </div>
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all duration-200">
+                <span className="text-2xl mb-2 block">💕</span>
+                <span className="text-gray-700 dark:text-gray-300">Find romance</span>
+              </div>
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all duration-200">
+                <span className="text-2xl mb-2 block">💬</span>
+                <span className="text-gray-700 dark:text-gray-300">Language exchange</span>
+              </div>
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all duration-200">
+                <span className="text-2xl mb-2 block">🌍</span>
+                <span className="text-gray-700 dark:text-gray-300">Culture exchange</span>
+              </div>
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all duration-200">
+                <span className="text-2xl mb-2 block">💪</span>
+                <span className="text-gray-700 dark:text-gray-300">Exercise together</span>
+              </div>
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all duration-200">
+                <span className="text-2xl mb-2 block">🗺️</span>
+                <span className="text-gray-700 dark:text-gray-300">Explore cities</span>
+              </div>
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all duration-200">
+                <span className="text-2xl mb-2 block">🚗</span>
+                <span className="text-gray-700 dark:text-gray-300">Day trips</span>
+              </div>
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all duration-200">
+                <span className="text-2xl mb-2 block">🥾</span>
+                <span className="text-gray-700 dark:text-gray-300">Hike mountains</span>
+              </div>
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all duration-200">
+                <span className="text-2xl mb-2 block">🚴</span>
+                <span className="text-gray-700 dark:text-gray-300">Bike tours</span>
+              </div>
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all duration-200">
+                <span className="text-2xl mb-2 block">🥐</span>
+                <span className="text-gray-700 dark:text-gray-300">Brunch dates</span>
+              </div>
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all duration-200">
+                <span className="text-2xl mb-2 block">🔍</span>
+                <span className="text-gray-700 dark:text-gray-300">Discover hidden gems</span>
+              </div>
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all duration-200">
+                <span className="text-2xl mb-2 block">✨</span>
+                <span className="text-gray-700 dark:text-gray-300">...and so much more</span>
+              </div>
+            </div>
+            
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-8 italic">
+              The possibilities are endless when curious people connect.
+            </p>
+          </div>
+        </div>
+
         {/* Featured Experiences - With Original Photos */}
         <div id="community-section" className="relative z-10 py-16 bg-white dark:bg-gray-900">
           <div className="max-w-7xl mx-auto px-4">
@@ -314,8 +382,8 @@ export default function LandingStreamlined() {
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-gray-900 dark:text-white mb-4 leading-normal px-2">
                 See Our Community in Action
               </h2>
-              <p className="text-sm md:text-xl text-gray-600 dark:text-gray-300 px-2">
-                ✨ See how our community turns strangers into lifelong friends:
+              <p className="text-sm text-gray-600 dark:text-gray-300 px-2">
+                ✨ Real stories from real connections:
               </p>
             </div>
             
