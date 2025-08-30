@@ -247,6 +247,18 @@ export default function BusinessLanding() {
                   <p className="italic">"I want to hit the gym while traveling"</p>
                   <p className="text-sm text-orange-600 mt-1">→ Perfect for fitness centers</p>
                 </div>
+                <div className="bg-white dark:bg-gray-800 p-3 rounded-lg">
+                  <p className="italic">"I have a kid and I want to go to SkyZone"</p>
+                  <p className="text-sm text-orange-600 mt-1">→ Perfect for family entertainment</p>
+                </div>
+                <div className="bg-white dark:bg-gray-800 p-3 rounded-lg">
+                  <p className="italic">"I want to go to Universal Studios"</p>
+                  <p className="text-sm text-orange-600 mt-1">→ Perfect for theme parks</p>
+                </div>
+                <div className="bg-white dark:bg-gray-800 p-3 rounded-lg">
+                  <p className="italic">"I want to go to children's museum"</p>
+                  <p className="text-sm text-orange-600 mt-1">→ Perfect for family attractions</p>
+                </div>
               </div>
             </div>
 
