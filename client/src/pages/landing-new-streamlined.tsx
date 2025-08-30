@@ -435,9 +435,6 @@ export default function LandingStreamlined() {
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-gray-900 dark:text-white mb-4 leading-normal px-2">
                 See Our Community in Action
               </h2>
-              <p className="text-sm text-gray-600 dark:text-gray-300 px-2">
-                ✨ See our community in action:
-              </p>
             </div>
             
             {/* Event Cards - Original Style with Photos */}
