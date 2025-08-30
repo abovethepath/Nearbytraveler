@@ -255,11 +255,11 @@ export default function CouchsurfingLanding() {
                   <span>Unpredictable with last-minute cancellations or no-shows</span>
                 </li>
                 <li className="flex items-start">
-                  <span className="w-4 h-4 sm:w-5 sm:h-5 bg-orange-500 rounded-full mr-2 sm:mr-3 mt-2 flex-shrink-0"></span>
+                  <span className="w-4 h-4 sm:w-5 sm:h-5 bg-blue-500 rounded-full mr-2 sm:mr-3 mt-2 flex-shrink-0"></span>
                   <span>Limiting when your living situation changes</span>
                 </li>
                 <li className="flex items-start">
-                  <span className="w-4 h-4 sm:w-5 sm:h-5 bg-orange-500 rounded-full mr-2 sm:mr-3 mt-2 flex-shrink-0"></span>
+                  <span className="w-4 h-4 sm:w-5 sm:h-5 bg-blue-500 rounded-full mr-2 sm:mr-3 mt-2 flex-shrink-0"></span>
                   <span>Overwhelming when you just want a quiet weekend</span>
                 </li>
               </ul>
