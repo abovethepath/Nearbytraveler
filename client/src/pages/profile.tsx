@@ -3588,7 +3588,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       </section>
       
       {/* Main content section - Modern Sectioned Layout */}
-      <div className="w-full max-w-full mx-auto pb-0 px-2 sm:px-4 -mt-2 overflow-x-hidden">
+      <div className="w-full max-w-full mx-auto pb-4 px-4 sm:px-6 mt-2 overflow-x-hidden">
         
 
 
@@ -3605,9 +3605,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-2">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
           {/* Main Content Column */}
-          <div className="lg:col-span-2 space-y-2">
+          <div className="lg:col-span-2 space-y-4 sm:space-y-6">
 
 
             
@@ -3615,9 +3615,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
             
             {/* About Section */}
-            <Card className="mt-6 relative overflow-visible">
-              <CardHeader className="flex items-start gap-2 flex-wrap min-w-0 w-full">
-                <CardTitle className="text-xl sm:text-2xl font-bold break-words max-w-[calc(100%-3rem)] sm:max-w-none text-left">
+            <Card className="mt-2 relative overflow-visible">
+              <CardHeader className="pb-4 px-4 sm:px-6 pt-4 sm:pt-6 flex items-start gap-3 flex-wrap min-w-0 w-full">
+                <CardTitle className="text-lg sm:text-xl font-bold break-words max-w-[calc(100%-3rem)] sm:max-w-none text-left leading-tight">
                   ABOUT {user?.userType === 'business'
                     ? (user?.businessName || user?.name || user?.username)
                     : (user?.username || 'User')}
@@ -3651,7 +3651,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 )}
               </CardHeader>
 
-              <CardContent className="space-y-4 pr-3 sm:pr-4 min-w-0 break-words overflow-visible">
+              <CardContent className="space-y-4 px-4 sm:px-6 pb-4 sm:pb-6 min-w-0 break-words overflow-visible">
                 {/* Bio / Business Description */}
                 <div>
                   <p className="text-gray-900 dark:text-white leading-relaxed whitespace-pre-wrap break-words text-left">
@@ -3933,13 +3933,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             {/* Local Interests, Activities & Events Section - For non-business users only */}
             {user?.userType !== 'business' && (
             <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+              <CardHeader className="pb-4 px-4 sm:px-6 pt-4 sm:pt-6">
+                <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
                   <Heart className="w-5 h-5 text-red-500" />
                   Local Interests, Activities & Events
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-6 break-words overflow-hidden">
+              <CardContent className="space-y-6 px-4 sm:px-6 pb-4 sm:pb-6 break-words overflow-hidden">
 
                 {/* Unified Edit Form for All Preferences */}
                 {isOwnProfile && (editingInterests && editingActivities && editingEvents) ? (
@@ -4304,9 +4304,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     <Star className="w-4 h-4 text-yellow-500" />
                     Top Choices for Most Travelers
                   </h4>
-                  <div className="flex flex-wrap gap-2 p-3 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 rounded-lg border border-blue-200 dark:border-blue-700">
+                  <div className="flex flex-wrap gap-2 sm:gap-3 p-3 sm:p-4 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 rounded-lg border border-blue-200 dark:border-blue-700">
                     {MOST_POPULAR_INTERESTS.slice(0, 12).map((item) => (
-                      <div key={item} className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none bg-gradient-to-r from-blue-500 to-purple-500 text-white border-0 shadow-sm">
+                      <div key={item} className="inline-flex items-center justify-center h-7 sm:h-8 rounded-full px-3 sm:px-4 text-xs sm:text-sm font-medium whitespace-nowrap leading-none bg-gradient-to-r from-blue-500 to-purple-500 text-white border-0 shadow-sm">
                         {item}
                       </div>
                     ))}
@@ -4426,7 +4426,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               {(user?.interests || []).filter(interest => !MOST_POPULAR_INTERESTS.includes(interest)).length} additional interests selected
                             </span>
                           </div>
-                          <div className="flex flex-wrap gap-2">
+                          <div className="flex flex-wrap gap-2 sm:gap-3">
                             {(() => {
                               // Filter out top choices from interests to avoid duplication
                               const allInterests = user?.interests || [];
@@ -4437,12 +4437,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               return (
                                 <>
                                   {topInterests.map((interest, index) => (
-                                    <div key={`interest-${index}`} className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0">
+                                    <div key={`interest-${index}`} className="inline-flex items-center justify-center h-7 sm:h-8 rounded-full px-3 sm:px-4 text-xs sm:text-sm font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0">
                                       {interest}
                                     </div>
                                   ))}
                                   {remaining > 0 && (
-                                    <div className="inline-flex items-center justify-center h-6 rounded-full px-2 text-xs font-medium whitespace-nowrap leading-none border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 bg-transparent">
+                                    <div className="inline-flex items-center justify-center h-7 sm:h-8 rounded-full px-3 sm:px-4 text-xs sm:text-sm font-medium whitespace-nowrap leading-none border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 bg-transparent">
                                       +{remaining} more
                                     </div>
                                   )}
