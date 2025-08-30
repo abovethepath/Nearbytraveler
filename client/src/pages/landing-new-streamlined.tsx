@@ -128,17 +128,6 @@ export default function LandingStreamlined() {
                     Travel doesn't change you — the people you meet do.
                   </p>
                 </div>
-                {/* Intimate whisper-style rotating sayings */}
-                <div className="mb-3 text-center w-full">
-                  <div className="overflow-hidden relative h-[40px]">
-                    <p 
-                      key={currentHeadline}
-                      className="absolute top-0 left-0 w-full text-sm sm:text-base font-medium text-zinc-700 dark:text-zinc-300 animate-in slide-in-from-left-full fade-in duration-700 italic"
-                    >
-                      {headlines[currentHeadline]}
-                    </p>
-                  </div>
-                </div>
                 <div className="overflow-hidden relative w-full max-w-sm sm:max-w-md h-[250px] sm:h-[300px] md:h-[400px] rounded-2xl">
                   <img
                     key={currentHeadline}
