@@ -9608,8 +9608,6 @@ function EventOrganizerHubSection({ userId }: { userId: number }) {
         </div>
       </CardContent>
     </Card>
-    </div>
-    </>
   );
 }
 
