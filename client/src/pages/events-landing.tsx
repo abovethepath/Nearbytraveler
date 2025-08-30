@@ -88,11 +88,11 @@ export default function EventsLanding() {
             <div className="mx-auto max-w-7xl px-2 sm:px-4 md:px-6 py-2 sm:py-4 md:py-6 grid gap-3 sm:gap-4 md:gap-6 md:grid-cols-5 items-center">
               {/* Left text side - wider */}
               <div className="md:col-span-3">
-                <div className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-semibold tracking-tight text-zinc-900 dark:text-white">
-                  <h1>Join User Created Events</h1>
+                <div className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-semibold tracking-tight text-zinc-900 dark:text-white overflow-hidden relative h-[90px] sm:h-[100px] md:h-[120px] lg:h-[140px]">
+                  <h1 className="absolute top-0 left-0 w-full animate-in slide-in-from-left-full fade-in duration-700">Join User Created Events</h1>
                 </div>
-                <div className="mt-3 sm:mt-4 max-w-xl text-sm text-zinc-600 dark:text-zinc-300">
-                  <p>Make real connections with nearby travelers and locals through authentic experiences</p>
+                <div className="mt-3 sm:mt-4 max-w-xl text-sm md:text-base lg:text-lg text-zinc-600 dark:text-zinc-300 overflow-hidden relative h-[80px] sm:h-[100px] md:h-[120px]">
+                  <p className="absolute top-0 left-0 w-full animate-in slide-in-from-left-full fade-in duration-700">Make real connections with nearby travelers and locals through authentic experiences</p>
                 </div>
                 {/* Desktop CTAs */}
                 <div className="hidden sm:flex mt-6 flex-col sm:flex-row gap-4">
