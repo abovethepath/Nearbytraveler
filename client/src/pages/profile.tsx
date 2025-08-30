@@ -342,7 +342,7 @@ const createProfileSchema = (userType: string) => {
       sexualPreference: z.array(z.string()).default([]),
       sexualPreferenceVisible: z.boolean().default(false),
       secretActivities: z.string().optional(),
-      hasChildren: z.boolean().default(false),
+      travelingWithChildren: z.boolean().default(false),
       childrenAges: z.string().max(100, "Children ages must be 100 characters or less").optional(),
       isVeteran: z.boolean().default(false),
       isActiveDuty: z.boolean().default(false),
@@ -856,7 +856,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         gender: z.string().optional(),
         sexualPreference: z.array(z.string()).optional(),
         sexualPreferenceVisible: z.boolean().default(false),
-        hasChildren: z.boolean().default(false),
+        travelingWithChildren: z.boolean().default(false),
         childrenAges: z.string().max(100, "Children ages must be 100 characters or less").optional(),
         isVeteran: z.boolean().default(false),
         isActiveDuty: z.boolean().default(false),
@@ -1327,7 +1327,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       sexualPreference: [],
       sexualPreferenceVisible: false,
       travelStyle: [],
-      hasChildren: false,
+      travelingWithChildren: false,
       childrenAges: "",
       isVeteran: false,
       isActiveDuty: false,
@@ -1405,7 +1405,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           customEvents: (user as any).customEvents || "",
         });
       } else {
-        const hasChildrenValue = !!(user as any).hasChildren;
+        const travelingWithChildrenValue = !!(user as any).travelingWithChildren;
         
         profileForm.reset({
           bio: user.bio || "",
@@ -1424,7 +1424,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           travelHow: user.travelHow || "",
           travelBudget: user.travelBudget || "",
           travelGroup: user.travelGroup || "",
-          hasChildren: hasChildrenValue,
+          travelingWithChildren: travelingWithChildrenValue,
           childrenAges: (user as any).children_ages || (user as any).childrenAges || "",
           isVeteran: Boolean((user as any).is_veteran || user.isVeteran),
           isActiveDuty: Boolean((user as any).is_active_duty || user.isActiveDuty),
@@ -1438,7 +1438,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         
         // Force set the value after reset to ensure React Hook Form properly registers it
         setTimeout(() => {
-          profileForm.setValue('hasChildren', hasChildrenValue);
+          profileForm.setValue('travelingWithChildren', travelingWithChildrenValue);
         }, 100);
       }
     }
@@ -1518,7 +1518,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           sexualPreference: user.sexualPreference || [],
           sexualPreferenceVisible: !!user.sexualPreferenceVisible,
           travelStyle: user.travelStyle || [],
-          hasChildren: !!user.hasChildren,
+          travelingWithChildren: !!user.travelingWithChildren,
           childrenAges: user.childrenAges || (user as any).children_ages || "",
           isVeteran: !!user.isVeteran || !!((user as any).is_veteran),
           isActiveDuty: !!user.isActiveDuty || !!((user as any).is_active_duty),
@@ -2977,7 +2977,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       } : {
         ...data,
         // Only include traveler fields if they exist in the data
-        ...((data as any).hasOwnProperty('hasChildren') && { hasChildren: !!(data as any).hasChildren }),
+        ...((data as any).hasOwnProperty('travelingWithChildren') && { travelingWithChildren: !!(data as any).travelingWithChildren }),
         ...((data as any).hasOwnProperty('ageVisible') && { ageVisible: !!(data as any).ageVisible }),
         ...((data as any).hasOwnProperty('sexualPreferenceVisible') && { sexualPreferenceVisible: !!(data as any).sexualPreferenceVisible }),
         // Always include veteran status fields
@@ -3043,7 +3043,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             sexualPreference: updatedUser.sexualPreference || [],
             sexualPreferenceVisible: updatedUser.sexualPreferenceVisible !== undefined ? updatedUser.sexualPreferenceVisible : false,
             travelStyle: updatedUser.travelStyle || [],
-            hasChildren: updatedUser.hasChildren === true,
+            travelingWithChildren: updatedUser.travelingWithChildren === true,
             childrenAges: (updatedUser as any).childrenAges || "",
             isVeteran: updatedUser.isVeteran !== undefined ? updatedUser.isVeteran : false,
             isActiveDuty: updatedUser.isActiveDuty !== undefined ? updatedUser.isActiveDuty : false,
@@ -3088,9 +3088,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     console.log('🔥 Form valid:', profileForm.formState.isValid);
     
     // Clear children ages if traveling with children is turned off (only for non-business users)
-    if (user?.userType !== 'business' && 'hasChildren' in data && !data.hasChildren) {
+    if (user?.userType !== 'business' && 'travelingWithChildren' in data && !data.travelingWithChildren) {
       (data as any).childrenAges = "";
-      console.log('🔥 FORM SUBMIT: Cleared childrenAges because hasChildren is false');
+      console.log('🔥 FORM SUBMIT: Cleared childrenAges because travelingWithChildren is false');
     }
     
     // Process custom text entries for business users
@@ -3754,7 +3754,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     </div>
                   )}
 
-                  {user.userType !== 'business' && user.hasChildren && (
+                  {user.userType !== 'business' && user.travelingWithChildren && (
                     <div className="flex items-start">
                       <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">Family:</span>
                       <span className="flex-1 break-words flex items-center gap-1">
@@ -8214,7 +8214,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     
                     <FormField
                       control={profileForm.control}
-                      name="hasChildren"
+                      name="travelingWithChildren"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Do you have children?</FormLabel>
