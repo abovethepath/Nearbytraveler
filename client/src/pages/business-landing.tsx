@@ -135,7 +135,7 @@ export default function BusinessLanding() {
               </div>
               
               <p className="mt-3 text-sm md:text-base italic text-orange-600 dark:text-orange-400 text-center font-semibold">
-                Where Revenue Meets Real Connections
+                Where Authentic Experiences Meet Local Business
               </p>
             </div>
           </div>
