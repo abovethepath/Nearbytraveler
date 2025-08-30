@@ -347,7 +347,7 @@ export default function CityPage({ cityName }: CityPageProps) {
                 {/* Users Grid */}
                 {filteredUsers.length > 0 ? (
                   <>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4">
                       {displayedUsers.map((user: User) => (
                         <UserCard key={user.id} user={user} searchLocation={decodedCityName} />
                       ))}
