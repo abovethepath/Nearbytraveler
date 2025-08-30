@@ -70,15 +70,22 @@ export default function LandingStreamlined() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
   
-  // Rotating headlines effect
+  // Rotating headlines effect - "Planning a Trip Soon?" stays longer
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentHeadline((prev) => (prev + 1) % headlines.length);
+    const rotate = () => {
+      setCurrentHeadline((prev) => {
+        const next = (prev + 1) % headlines.length;
+        return next;
+      });
       setCurrentSubtext((prev) => (prev + 1) % subtexts.length);
-    }, 10000); // 10 seconds
+    };
 
-    return () => clearInterval(interval);
-  }, [headlines.length, subtexts.length]);
+    // First headline ("Planning a Trip Soon?") shows for 15 seconds, others for 10 seconds
+    const getDelay = () => currentHeadline === 0 ? 15000 : 10000;
+    
+    const timeout = setTimeout(rotate, getDelay());
+    return () => clearTimeout(timeout);
+  }, [currentHeadline, headlines.length, subtexts.length]);
 
   // Allow user to choose theme - don't force it
 
