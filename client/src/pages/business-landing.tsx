@@ -690,9 +690,6 @@ export default function BusinessLanding() {
           <h2 className="text-3xl sm:text-4xl font-bold mb-6">
             Stop Losing Customers to Competitors
           </h2>
-          <p className="text-lg md:text-xl mb-8 opacity-90">
-            Every day you wait, travelers are booking with businesses already on Nearby Traveler
-          </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Button
@@ -720,9 +717,6 @@ export default function BusinessLanding() {
                 <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-blue-600 rounded-full"></div>
                 <span className="text-xl font-bold">Nearby Traveler</span>
               </div>
-              <p className="text-gray-400">
-                Connecting businesses with ready-to-buy customers since 2024
-              </p>
             </div>
             <div>
               <h4 className="font-bold mb-4">For Businesses</h4>
