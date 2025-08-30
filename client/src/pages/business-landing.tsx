@@ -342,6 +342,49 @@ export default function BusinessLanding() {
           </div>
         </div>
         
+        {/* FOUNDER STORY SECTION - Consistent with main page */}
+        <div className="relative z-10 py-12 overflow-hidden mb-8">
+          {/* Clean background for light mode */}
+          <div className="absolute inset-0 bg-gray-50 dark:bg-gradient-to-r dark:from-blue-600 dark:via-blue-500 dark:to-orange-500"></div>
+          
+          <div className="relative">
+            <section className="relative isolate mx-auto w-full max-w-4xl px-4 md:px-6 py-4">
+              {/* subtle background accent */}
+              <div className="absolute inset-x-4 -inset-y-1 -z-10 rounded-2xl bg-gradient-to-b from-orange-50/70 to-blue-50/70 dark:from-orange-500/5 dark:to-blue-500/5" />
+
+              <div className="overflow-hidden rounded-2xl border border-zinc-200/70 bg-white/80 p-4 sm:p-6 shadow-xl ring-1 ring-black/5 backdrop-blur-md dark:border-white/10 dark:bg-zinc-900/70">
+                <div className="text-center space-y-4">
+                  {/* Title */}
+                  <h3 className="inline-block bg-gradient-to-r from-orange-500 to-blue-600 bg-clip-text text-xl font-bold text-transparent md:text-2xl">
+                    From the Founder
+                  </h3>
+
+                  {/* Quote */}
+                  <blockquote className="text-balance text-lg leading-relaxed text-zinc-800 dark:text-zinc-200 md:text-xl max-w-3xl mx-auto">
+                    "After hosting 400+ travelers from 50 countries, I saw how much businesses missed out when they relied on traditional advertising. The best connections happen when businesses become part of authentic travel experiences. I built Nearby Traveler so local businesses can connect directly with travelers and locals seeking real, meaningful experiences."
+                  </blockquote>
+
+                  {/* Attribution */}
+                  <div className="pt-2">
+                    <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                      — Aaron Lefkowitz, Founder, Nearby Traveler
+                    </p>
+                  </div>
+
+                  {/* Tagline */}
+                  <div className="flex items-center justify-center gap-4 pt-4">
+                    <div className="h-2 w-16 rounded-full bg-gradient-to-r from-orange-500 to-blue-600" />
+                    <p className="text-xl md:text-2xl font-bold italic text-zinc-700 dark:text-zinc-300">
+                      Authentic Business Connections
+                    </p>
+                    <div className="h-2 w-16 rounded-full bg-gradient-to-r from-orange-500 to-blue-600" />
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+
         {/* Pricing Widget */}
         <div className="mt-16 mb-8 max-w-4xl mx-auto">
           <div className="bg-white dark:bg-gray-800 text-black dark:text-white p-8 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700">

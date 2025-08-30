@@ -150,26 +150,48 @@ export default function LocalsLanding() {
         </div>
       </div>
 
-      {/* Quote Section */}
-      <div className="py-12 bg-gray-50 dark:bg-gray-800">
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <div className="p-8 bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700">
-            <p className="text-xl text-black dark:text-white leading-relaxed">
-              <span className="text-black dark:text-orange-500 font-bold">"I have friends spanning across the globe now"</span>
-              <span className="text-black dark:text-white"> —Aaron, Founder</span>
-            </p>
-            <div className="mt-6">
-              <p className="text-lg text-black dark:text-gray-300 leading-relaxed">
-                <span className="text-black dark:text-orange-500 font-bold">"Share your city's best-kept secrets and hidden gems.</span>
-                <span className="text-black dark:text-gray-300"> Connect with genuine travelers who want authentic local experiences, not tourist traps. Be the local friend you'd want to meet."</span>
-              </p>
-            </div>
-            <div className="mt-4 text-center">
-              <p className="text-black dark:text-white font-bold text-lg">— Real Locals, Real Connections</p>
-            </div>
+        {/* FOUNDER STORY SECTION - Consistent with main page */}
+        <div className="relative z-10 py-12 overflow-hidden mb-8">
+          {/* Clean background for light mode */}
+          <div className="absolute inset-0 bg-gray-50 dark:bg-gradient-to-r dark:from-blue-600 dark:via-blue-500 dark:to-orange-500"></div>
+          
+          <div className="relative">
+            <section className="relative isolate mx-auto w-full max-w-4xl px-4 md:px-6 py-4">
+              {/* subtle background accent */}
+              <div className="absolute inset-x-4 -inset-y-1 -z-10 rounded-2xl bg-gradient-to-b from-orange-50/70 to-blue-50/70 dark:from-orange-500/5 dark:to-blue-500/5" />
+
+              <div className="overflow-hidden rounded-2xl border border-zinc-200/70 bg-white/80 p-4 sm:p-6 shadow-xl ring-1 ring-black/5 backdrop-blur-md dark:border-white/10 dark:bg-zinc-900/70">
+                <div className="text-center space-y-4">
+                  {/* Title */}
+                  <h3 className="inline-block bg-gradient-to-r from-orange-500 to-blue-600 bg-clip-text text-xl font-bold text-transparent md:text-2xl">
+                    From the Founder
+                  </h3>
+
+                  {/* Quote */}
+                  <blockquote className="text-balance text-lg leading-relaxed text-zinc-800 dark:text-zinc-200 md:text-xl max-w-3xl mx-auto">
+                    "I have friends spanning across the globe now. Share your city's best-kept secrets and hidden gems. Connect with genuine travelers who want authentic local experiences, not tourist traps. Be the local friend you'd want to meet."
+                  </blockquote>
+
+                  {/* Attribution */}
+                  <div className="pt-2">
+                    <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                      — Aaron Lefkowitz, Founder, Nearby Traveler
+                    </p>
+                  </div>
+
+                  {/* Tagline */}
+                  <div className="flex items-center justify-center gap-4 pt-4">
+                    <div className="h-2 w-16 rounded-full bg-gradient-to-r from-orange-500 to-blue-600" />
+                    <p className="text-xl md:text-2xl font-bold italic text-zinc-700 dark:text-zinc-300">
+                      Real Locals, Real Connections
+                    </p>
+                    <div className="h-2 w-16 rounded-full bg-gradient-to-r from-orange-500 to-blue-600" />
+                  </div>
+                </div>
+              </div>
+            </section>
           </div>
         </div>
-      </div>
 
       {/* Live Local Experiences Section */}
       <div className="py-16 bg-white dark:bg-gray-900">
