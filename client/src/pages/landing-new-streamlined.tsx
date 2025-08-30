@@ -785,7 +785,7 @@ export default function LandingStreamlined() {
                 trackEvent('signup_cta_click', 'landing_page', 'find_your_people');
                 setLocation('/join');
               }}
-              className="rounded-xl bg-black px-6 py-3 text-white font-medium shadow hover:bg-zinc-800"
+              className="rounded-xl bg-black hover:bg-zinc-800 dark:bg-white dark:hover:bg-gray-100 text-white dark:text-black font-medium px-6 py-3 shadow transition-all duration-200"
             >
               Find Your People
             </button>
