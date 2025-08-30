@@ -20,7 +20,7 @@ export default function TravelersLanding() {
     "Travel Deeper, Connect Stronger.",
     "Explore Like You Live There.",
     "Every Journey Starts With Hello.",
-    "Wanderlust Meets Authentic Connection."
+    "Adventure Meets Real Connection."
   ];
   
   // Mobile-friendly shorter versions

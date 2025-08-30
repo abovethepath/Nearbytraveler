@@ -14,7 +14,7 @@ export default function CouchsurfingLanding() {
   const { setTheme } = useTheme();
 
   const headlines = [
-    "Love Meeting Tourists?",
+    "Love Meeting Travelers?",
     "Tired of Couch Roulette?",
     "Want Cultural Exchange?",
     "Meet Travelers Your Way?"

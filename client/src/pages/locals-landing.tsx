@@ -18,7 +18,7 @@ export default function LocalsLanding() {
     "Share What Only Locals Know.",
     "Share Your Hidden Gems.",
     "Local Knowledge Is Power.",
-    "Every City Has Secret Stories.",
+    "Every City Has Stories to Share.",
     "Locals Make Travel Authentic."
   ];
   

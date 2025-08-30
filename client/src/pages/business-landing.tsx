@@ -86,7 +86,7 @@ export default function BusinessLanding() {
             <div className="md:col-span-3 space-y-8">
               <div>
                 <div className="text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight text-zinc-900 dark:text-white mb-6">
-                  <h1>Own a Business?</h1>
+                  <h1>Bring Travelers to Your Doorstep</h1>
                 </div>
                 <div className="mt-4 max-w-xl text-lg text-zinc-600 dark:text-zinc-300">
                   <p>Connect with locals and nearby travelers who are already looking for your products and services</p>
@@ -138,7 +138,7 @@ export default function BusinessLanding() {
             // Original centered layout (for investors)
             <div className="text-center">
               <h1 className="text-4xl md:text-5xl font-light text-gray-900 dark:text-white mb-8 leading-tight">
-                Grow Your Business
+                Bring Travelers to Your Doorstep
               </h1>
               <p className="text-xl font-light text-gray-600 dark:text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed">
                 Connect with locals and nearby travelers who are already looking for your products and services

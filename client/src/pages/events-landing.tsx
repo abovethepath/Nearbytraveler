@@ -22,7 +22,7 @@ export default function EventsLanding() {
     "Every Event Tells a Story.",
     "Where Memories Are Made.",
     "Connect Through Shared Experiences.",
-    "Life Happens at Events.",
+    "Life Happens Together.",
     "Create Moments That Matter.",
     "Events Bring People Together."
   ];
@@ -32,7 +32,7 @@ export default function EventsLanding() {
     "Every Event Tells a Story.",
     "Where Memories Are Made.",
     "Connect Through Experiences.",
-    "Life Happens at Events.",
+    "Life Happens Together.",
     "Create Moments That Matter.",
     "Events Bring People Together."
   ];

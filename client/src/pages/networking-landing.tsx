@@ -59,7 +59,7 @@ export default function NetworkingLanding() {
               How It Works
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-300">
-              Connect before, during, and after every event
+              Turn Conferences Into Communities
             </p>
           </div>
           
