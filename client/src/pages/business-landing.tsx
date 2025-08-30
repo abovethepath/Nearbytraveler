@@ -667,7 +667,7 @@ export default function BusinessLanding() {
               <div className="inline-block bg-gradient-to-r from-orange-500 to-red-500 text-white px-6 py-2 rounded-full font-bold text-lg mb-4">
                 🔥 LIMITED TIME: FREE DURING BETA
               </div>
-              <div className="text-gray-500 dark:text-gray-400 line-through text-xl mb-2">$150/month + $200 setup</div>
+              <div className="text-gray-500 dark:text-gray-400 line-through text-xl mb-2">$50/month + $100 setup</div>
               <div className="text-5xl font-black text-green-600 dark:text-green-400 mb-2">$0</div>
               <div className="text-lg text-gray-600 dark:text-gray-300">Complete access during beta period</div>
             </div>
