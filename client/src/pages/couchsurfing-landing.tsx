@@ -211,6 +211,10 @@ export default function CouchsurfingLanding() {
                 <Building2 className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 mr-3 sm:mr-4 mt-1 flex-shrink-0" />
                 <span>Find local businesses offering traveler specific discounts</span>
               </li>
+              <li className="flex items-start">
+                <Heart className="w-5 h-5 sm:w-6 sm:h-6 text-orange-600 mr-3 sm:mr-4 mt-1 flex-shrink-0" />
+                <span>Reconnect with travelers you meet with our Nearby Friends features</span>
+              </li>
             </ul>
           </div>
         </section>
