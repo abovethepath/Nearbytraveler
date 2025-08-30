@@ -64,11 +64,17 @@ export default function LandingNavbar() {
               Beta Launch
             </span>
             <button 
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('🍔 Hamburger clicked, current state:', mobileMenuOpen);
+                setMobileMenuOpen(!mobileMenuOpen);
+              }}
               type="button" 
-              className="inline-flex items-center justify-center p-3 rounded-xl text-gray-600 hover:text-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 active:scale-95 transition-all duration-200 touch-manipulation bg-gray-50"
+              className="inline-flex items-center justify-center p-3 rounded-xl text-gray-600 hover:text-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 active:scale-95 transition-all duration-200 touch-manipulation bg-gray-50 relative z-50"
               style={{ minHeight: '48px', minWidth: '48px', display: 'flex', visibility: 'visible' }}
               aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+              data-testid="mobile-menu-button"
             >
               {!mobileMenuOpen ? (
                 <svg className="block h-7 w-7" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
