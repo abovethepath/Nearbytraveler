@@ -267,19 +267,19 @@ export default function CouchsurfingLanding() {
           </div>
 
           {/* The Evolution */}
-          <div className="bg-gradient-to-r from-orange-500 to-blue-600 rounded-2xl p-8 text-white text-center">
-            <h3 className="text-2xl sm:text-3xl font-bold mb-4">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 text-center">
+            <h3 className="text-2xl sm:text-3xl font-bold mb-4 text-black dark:text-black">
               Sometimes We Just Grow Out of It
             </h3>
-            <p className="text-lg sm:text-xl mb-6 opacity-90 max-w-4xl mx-auto leading-relaxed">
+            <p className="text-lg sm:text-xl mb-6 max-w-4xl mx-auto leading-relaxed text-gray-700 dark:text-gray-300">
               You're not less generous. You're not less welcoming. Life evolves, priorities shift, and that's completely normal. 
-              <strong className="block mt-2">You can still share your love for your city—just differently.</strong>
+              <strong className="block mt-2 text-black dark:text-black">You can still share your love for your city—just differently.</strong>
             </p>
-            <div className="bg-white/10 rounded-xl p-6 max-w-3xl mx-auto">
-              <p className="text-lg font-medium">
+            <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-6 max-w-3xl mx-auto border border-gray-200 dark:border-gray-600">
+              <p className="text-lg font-medium text-gray-800 dark:text-gray-200">
                 "For 15 years I opened my home to 400+ travelers from 50 countries. I learned what makes travel unforgettable isn't the sites — it's the people you share them with. Too often, those connections are left to luck. I created Nearby Traveler so no one has to explore — or live in their own city — without meaningful connections."
               </p>
-              <p className="text-sm mt-2 opacity-80">— Aaron Lefkowitz, Founder</p>
+              <p className="text-sm mt-2 text-gray-600 dark:text-gray-400">— Aaron Lefkowitz, Founder</p>
             </div>
           </div>
         </section>
