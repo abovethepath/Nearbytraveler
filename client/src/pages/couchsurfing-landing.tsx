@@ -106,9 +106,9 @@ export default function CouchsurfingLanding() {
             {/* Right image side */}
             <div className="flex justify-center">
               <img
-                src="/travelers together hugging_1754971726997.avif"
-                alt="People connecting over coffee"
-                className="rounded-2xl shadow-lg object-cover"
+                src="/attached_assets/image_1756515286749.png"
+                alt="Couch surfing - literally surfing on a couch in the ocean"
+                className="rounded-2xl shadow-lg object-cover max-w-md"
               />
             </div>
           </div>
