@@ -128,11 +128,13 @@ export default function CouchsurfingLanding() {
                 </p>
               </div>
               
-              <img
-                src="/attached_assets/image_1756515286749.png"
-                alt="Couch surfing - literally surfing on a couch in the ocean"
-                className="rounded-2xl shadow-lg object-cover w-full max-w-sm sm:max-w-md h-auto"
-              />
+              <div className="overflow-hidden relative w-full max-w-sm sm:max-w-md h-[200px] sm:h-[250px] md:h-[350px] rounded-2xl">
+                <img
+                  src="/attached_assets/image_1756515286749.png"
+                  alt="Couch surfing - literally surfing on a couch in the ocean"
+                  className="absolute top-0 left-0 w-full h-full object-cover rounded-2xl shadow-lg animate-in slide-in-from-right-full fade-in duration-700"
+                />
+              </div>
               
               <p className="mt-2 text-xs italic text-orange-600 text-center">
                 Where Local Experiences Meet Worldwide Connections

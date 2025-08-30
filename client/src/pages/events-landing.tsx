@@ -138,11 +138,11 @@ export default function EventsLanding() {
                     <span className="hidden sm:inline">Travel doesn't change you — the people you meet do.</span>
                   </p>
                 </div>
-                <div className="overflow-hidden relative w-full max-w-sm sm:max-w-md h-[160px] sm:h-[200px] md:h-[280px] rounded-2xl">
+                <div className="overflow-hidden relative w-full max-w-sm sm:max-w-md h-[200px] sm:h-[250px] md:h-[350px] rounded-2xl">
                   <img
                     src={eventHeaderImage}
                     alt="People enjoying events and activities together"
-                    className="absolute top-0 left-0 w-full h-full object-cover rounded-2xl shadow-lg"
+                    className="absolute top-0 left-0 w-full h-full object-cover rounded-2xl shadow-lg animate-in slide-in-from-right-full fade-in duration-700"
                   />
                 </div>
                 <p className="mt-2 text-xs italic text-orange-600 text-center">
