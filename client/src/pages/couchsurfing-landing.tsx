@@ -67,40 +67,18 @@ export default function CouchsurfingLanding() {
                 <Heart className="inline w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                 From a Fellow Couchsurfer
               </div>
-              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-zinc-900 dark:text-white mb-4 sm:mb-6 leading-tight">
+              <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight text-zinc-900 dark:text-white mb-4 sm:mb-6 leading-tight">
                 A Letter to the Couchsurfing Community
               </h1>
-              <blockquote className="text-base sm:text-lg md:text-xl text-zinc-600 dark:text-zinc-300 leading-relaxed border-l-4 border-green-500 pl-4 sm:pl-6 mb-4 sm:mb-6">
+              <blockquote className="text-sm sm:text-base md:text-lg text-zinc-600 dark:text-zinc-300 leading-relaxed border-l-4 border-green-500 pl-4 sm:pl-6 mb-4 sm:mb-6">
                 "As a 15-year Couchsurfing host and traveler, I've had some of the best moments of my life meeting people through the community. But over time, I realized I couldn't always host, I couldn't always find a couch — yet I always wanted to meet travelers. That's why I created Nearby Traveler."
               </blockquote>
-              <p className="text-sm sm:text-base text-zinc-500 dark:text-zinc-400 mb-4 sm:mb-6">
+              <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 mb-4 sm:mb-6">
                 — Aaron Lefkowitz, Founder & Fellow Couchsurfer
               </p>
-              <p className="mt-3 sm:mt-4 max-w-xl text-base sm:text-lg text-zinc-600 dark:text-zinc-300">
+              <p className="mt-3 sm:mt-4 max-w-xl text-sm sm:text-base text-zinc-600 dark:text-zinc-300">
                 Connect with travelers based on shared interests, not just accommodation needs. Host when you want. Travel when you can. Meet travelers always.
               </p>
-              <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row gap-3 sm:gap-4">
-                <button 
-                  onClick={() => {
-                    trackEvent('signup_cta_click', 'couchsurfing_landing', 'main_hero_button');
-                    setLocation('/join');
-                  }}
-                  className="bg-black hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-100 text-white dark:text-black font-medium px-4 sm:px-6 py-3 rounded-lg shadow-sm transition-all duration-200 w-full sm:w-auto text-sm sm:text-base"
-                  data-testid="button-join-couchsurfing"
-                >
-                  Join Now
-                </button>
-                <button 
-                  onClick={() => {
-                    trackEvent('learn_more_click', 'couchsurfing_landing', 'see_how_it_works');
-                    document.querySelector('#community-section')?.scrollIntoView({ behavior: 'smooth' });
-                  }}
-                  className="rounded-xl border border-zinc-300 px-4 sm:px-6 py-3 font-medium hover:bg-zinc-50 dark:border-zinc-600 dark:hover:bg-zinc-800 w-full sm:w-auto text-sm sm:text-base"
-                  data-testid="button-see-how-it-works-cs"
-                >
-                  See How It Works
-                </button>
-              </div>
             </div>
 
             {/* Right image side */}
@@ -116,15 +94,15 @@ export default function CouchsurfingLanding() {
 
         {/* VALUE SECTION - Couchsurfing Focused */}
         <section className="mx-auto max-w-6xl px-4 sm:px-6 py-12 sm:py-20">
-          <h2 className="text-center text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900 dark:text-white">
+          <h2 className="text-center text-xl sm:text-2xl font-bold tracking-tight text-zinc-900 dark:text-white">
             Beyond Just Needing a Couch
           </h2>
-          <p className="mt-2 text-center text-base sm:text-lg text-zinc-600 dark:text-zinc-400 px-4">
+          <p className="mt-2 text-center text-sm sm:text-base text-zinc-600 dark:text-zinc-400 px-4">
             Connect based on shared interests, activities, and genuine compatibility - not just accommodation needs.
           </p>
 
           <div className="mt-8 sm:mt-12 max-w-4xl mx-auto">
-            <ul className="space-y-4 sm:space-y-6 text-base sm:text-lg text-zinc-700 dark:text-zinc-300">
+            <ul className="space-y-4 sm:space-y-6 text-sm sm:text-base text-zinc-700 dark:text-zinc-300">
               <li className="flex items-start">
                 <Coffee className="w-5 h-5 sm:w-6 sm:h-6 text-green-600 mr-3 sm:mr-4 mt-1 flex-shrink-0" />
                 <span>Match with people who share your hobbies and travel style</span>

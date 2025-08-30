@@ -86,64 +86,58 @@ export default function LandingNavbar() {
         <div className="lg:hidden bg-white dark:bg-gray-800 shadow-lg max-h-screen overflow-y-auto">
           <div className="pt-3 pb-3 space-y-1 px-4">
             <Link href="/" 
-              className="border-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 block pl-4 pr-4 py-4 border-l-4 text-lg font-medium rounded-r-lg transition-all duration-200 touch-manipulation"
+              className="border-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 block pl-3 pr-3 py-2 border-l-4 text-sm font-medium rounded-r-lg transition-all duration-200 touch-manipulation"
               onClick={() => setMobileMenuOpen(false)}
             >
               🏠 Home
             </Link>
             <Link href="/locals-landing" 
-              className="border-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 block pl-4 pr-4 py-4 border-l-4 text-lg font-medium rounded-r-lg transition-all duration-200 touch-manipulation"
+              className="border-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 block pl-3 pr-3 py-2 border-l-4 text-sm font-medium rounded-r-lg transition-all duration-200 touch-manipulation"
               onClick={() => setMobileMenuOpen(false)}
             >
               🗺️ For Locals
             </Link>
             <Link href="/travelers-landing" 
-              className="border-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 block pl-4 pr-4 py-4 border-l-4 text-lg font-medium rounded-r-lg transition-all duration-200 touch-manipulation"
+              className="border-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 block pl-3 pr-3 py-2 border-l-4 text-sm font-medium rounded-r-lg transition-all duration-200 touch-manipulation"
               onClick={() => setMobileMenuOpen(false)}
             >
               ✈️ For Travelers
             </Link>
             <Link href="/events-landing" 
-              className="border-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 block pl-4 pr-4 py-4 border-l-4 text-lg font-medium rounded-r-lg transition-all duration-200 touch-manipulation"
+              className="border-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 block pl-3 pr-3 py-2 border-l-4 text-sm font-medium rounded-r-lg transition-all duration-200 touch-manipulation"
               onClick={() => setMobileMenuOpen(false)}
             >
               📅 For Events
             </Link>
             <Link href="/networking-landing" 
-              className="border-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 block pl-4 pr-4 py-4 border-l-4 text-lg font-medium rounded-r-lg transition-all duration-200 touch-manipulation"
+              className="border-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 block pl-3 pr-3 py-2 border-l-4 text-sm font-medium rounded-r-lg transition-all duration-200 touch-manipulation"
               onClick={() => setMobileMenuOpen(false)}
             >
               🤝 Networking
             </Link>
             <Link href="/business-landing" 
-              className="border-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 block pl-4 pr-4 py-4 border-l-4 text-lg font-medium rounded-r-lg transition-all duration-200 touch-manipulation"
+              className="border-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 block pl-3 pr-3 py-2 border-l-4 text-sm font-medium rounded-r-lg transition-all duration-200 touch-manipulation"
               onClick={() => setMobileMenuOpen(false)}
             >
               💼 For Businesses
             </Link>
             <Link href="/cs" 
-              className="border-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 block pl-4 pr-4 py-4 border-l-4 text-lg font-medium rounded-r-lg transition-all duration-200 touch-manipulation"
+              className="border-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 block pl-3 pr-3 py-2 border-l-4 text-sm font-medium rounded-r-lg transition-all duration-200 touch-manipulation"
               onClick={() => setMobileMenuOpen(false)}
             >
               🛋️ Couchsurfer
             </Link>
           </div>
-          <div className="pt-4 pb-6 border-t border-gray-200 dark:border-gray-700 px-4">
-            <div className="flex flex-col space-y-3">
+          <div className="pt-3 pb-4 border-t border-gray-200 dark:border-gray-700 px-4">
+            <div className="flex flex-col space-y-2">
               <div className="flex justify-center mb-2">
                 <ThemeToggle position="relative" />
               </div>
               <Link href="/auth" 
-                className="bg-white dark:bg-blue-600 hover:bg-gray-100 dark:hover:bg-blue-700 text-black dark:text-white border-2 border-black dark:border-transparent text-center px-6 py-4 rounded-xl text-lg font-medium transition-all duration-200 active:scale-95 shadow-lg touch-manipulation"
+                className="bg-white dark:bg-blue-600 hover:bg-gray-100 dark:hover:bg-blue-700 text-black dark:text-white border-2 border-black dark:border-transparent text-center px-4 py-3 rounded-lg text-base font-medium transition-all duration-200 active:scale-95 shadow-lg touch-manipulation"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Sign In
-              </Link>
-              <Link href="/join" 
-                className="bg-white dark:bg-gradient-to-r dark:from-blue-500 dark:to-orange-500 hover:bg-gray-100 dark:hover:from-blue-600 dark:hover:to-orange-600 text-black dark:text-white border-2 border-black dark:border-transparent text-center px-6 py-4 rounded-xl text-lg font-medium transition-all duration-200 active:scale-95 shadow-lg touch-manipulation"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Join Nearby Traveler
               </Link>
             </div>
           </div>

@@ -51,37 +51,15 @@ export default function BusinessCustomLanding() {
                 <Store className="inline w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                 For Business Owners
               </div>
-              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight text-zinc-900 dark:text-white leading-tight">
+              <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-semibold tracking-tight text-zinc-900 dark:text-white leading-tight">
                 Trouble Meeting Tourists <br /> as a Business?
               </h1>
-              <p className="mt-2 text-base sm:text-lg italic text-blue-600">
+              <p className="mt-2 text-sm sm:text-base italic text-blue-600">
                 Turn Your Location Into a Community Hub
               </p>
-              <p className="mt-3 sm:mt-4 max-w-xl text-base sm:text-lg text-zinc-600 dark:text-zinc-300">
+              <p className="mt-3 sm:mt-4 max-w-xl text-sm sm:text-base text-zinc-600 dark:text-zinc-300">
                 Connect directly with travelers and locals looking for authentic experiences at your restaurant, café, shop, or venue.
               </p>
-              <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row gap-3 sm:gap-4">
-                <button 
-                  onClick={() => {
-                    trackEvent('signup_cta_click', 'business_custom_landing', 'main_hero_button');
-                    setLocation('/join');
-                  }}
-                  className="bg-black hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-100 text-white dark:text-black font-medium px-4 sm:px-6 py-3 rounded-lg shadow-sm transition-all duration-200 w-full sm:w-auto text-sm sm:text-base"
-                  data-testid="button-join-business"
-                >
-                  Join Now
-                </button>
-                <button 
-                  onClick={() => {
-                    trackEvent('learn_more_click', 'business_custom_landing', 'see_how_it_works');
-                    document.querySelector('#community-section')?.scrollIntoView({ behavior: 'smooth' });
-                  }}
-                  className="rounded-xl border border-zinc-300 px-4 sm:px-6 py-3 font-medium hover:bg-zinc-50 dark:border-zinc-600 dark:hover:bg-zinc-800 w-full sm:w-auto text-sm sm:text-base"
-                  data-testid="button-see-how-it-works-biz"
-                >
-                  See How It Works
-                </button>
-              </div>
             </div>
 
             {/* Right image side */}
