@@ -333,7 +333,7 @@ export default function LandingStreamlined() {
                     <p className="text-sm text-zinc-600 dark:text-zinc-400">
                       — Aaron Lefkowitz, Founder, Nearby Traveler
                     </p>
-                    <p className="text-xs font-semibold text-zinc-800 dark:text-zinc-200 mt-2 tracking-wide">
+                    <p className="text-sm md:text-lg lg:text-xl font-bold text-zinc-800 dark:text-zinc-200 mt-2 tracking-wide">
                       "I BUILT THE SOLUTION I WISHED EXISTED."
                     </p>
                   </div>
