@@ -276,7 +276,7 @@ export default function CouchsurfingLanding() {
             </p>
             <div className="bg-white/10 rounded-xl p-6 max-w-3xl mx-auto">
               <p className="text-lg font-medium">
-                "For 15 years I opened my home to 400+ travelers from 50 countries. I learned what makes travel unforgettable isn't the sites — it's the people you share them with. Too often, those connections are left to luck. I created Nearby Traveler so no one has to explore — or live in their own city — disconnected."
+                "For 15 years I opened my home to 400+ travelers from 50 countries. I learned what makes travel unforgettable isn't the sites — it's the people you share them with. Too often, those connections are left to luck. I created Nearby Traveler so no one has to explore — or live in their own city — without meaningful connections."
               </p>
               <p className="text-sm mt-2 opacity-80">— Aaron Lefkowitz, Founder</p>
             </div>
