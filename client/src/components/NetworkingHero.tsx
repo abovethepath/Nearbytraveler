@@ -1,5 +1,7 @@
+import React, { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
+import { trackEvent } from "@/lib/analytics";
 import networkingHeroImage from "@assets/image_1756131077690.png";
 
 interface NetworkingHeroProps {
@@ -8,6 +10,48 @@ interface NetworkingHeroProps {
 
 export default function NetworkingHero({ isAirbnbStyle = true }: NetworkingHeroProps) {
   const [, setLocation] = useLocation();
+  const [isMobile, setIsMobile] = useState(false);
+  
+  // Rotating wisdom sayings above the photo
+  const [currentWisdom, setCurrentWisdom] = useState(0);
+  const wisdomSayings = [
+    "Business Cards Are Yesterday's News.",
+    "Networking That Actually Works.",
+    "Connect Before You Even Arrive.",
+    "Where Professional Meets Personal.",
+    "Real Relationships, Real Results.",
+    "Turn Events Into Opportunities."
+  ];
+  
+  // Mobile-friendly shorter versions
+  const wisdomSayingsMobile = [
+    "Business Cards Are Old News.",
+    "Networking That Works.",
+    "Connect Before You Arrive.",
+    "Professional Meets Personal.",
+    "Real Relationships, Real Results.",
+    "Turn Events Into Opportunities."
+  ];
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Rotating wisdom sayings effect
+  useEffect(() => {
+    const rotateWisdom = () => {
+      setCurrentWisdom((prev) => (prev + 1) % wisdomSayings.length);
+    };
+
+    const timeout = setTimeout(rotateWisdom, 10000); // 10 seconds
+    return () => clearTimeout(timeout);
+  }, [currentWisdom, wisdomSayings.length]);
   
   if (!isAirbnbStyle) {
     // Original centered layout (for investors)
@@ -66,12 +110,30 @@ export default function NetworkingHero({ isAirbnbStyle = true }: NetworkingHeroP
         </div>
         
         {/* Right image side */}
-        <div className="md:col-span-2 flex flex-col items-center">
-          <div className="overflow-hidden relative w-full h-[400px] rounded-2xl">
+        <div className="md:col-span-2 flex flex-col items-center order-first md:order-last">
+          {/* Rotating wisdom sayings above static quote */}
+          <div className="mb-2 text-center w-full overflow-hidden relative h-[28px] sm:h-[36px]">
+            <p 
+              key={currentWisdom}
+              className="absolute top-0 left-0 w-full text-xs sm:text-sm font-medium text-zinc-800 dark:text-zinc-200 italic animate-in slide-in-from-right-full fade-in duration-700 px-2"
+            >
+              <span className="sm:hidden">{wisdomSayingsMobile[currentWisdom]}</span>
+              <span className="hidden sm:inline">{wisdomSayings[currentWisdom]}</span>
+            </p>
+          </div>
+          
+          {/* Static powerful quote */}
+          <div className="mb-4 text-center w-full">
+            <p className="text-xs sm:text-sm font-medium text-zinc-800 dark:text-zinc-200 italic px-2">
+              <span className="sm:hidden">Connect before, during, after events.</span>
+              <span className="hidden sm:inline">Connect before, during, and after every event.</span>
+            </p>
+          </div>
+          <div className="overflow-hidden relative w-full max-w-sm sm:max-w-md h-[160px] sm:h-[200px] md:h-[280px] rounded-2xl">
             <img
               src={networkingHeroImage}
               alt="Professional networking event with people connecting"
-              className="w-full h-full object-cover rounded-2xl shadow-lg"
+              className="absolute top-0 left-0 w-full h-full object-cover rounded-2xl shadow-lg"
             />
           </div>
           <p className="mt-4 text-lg italic text-orange-600 text-center">

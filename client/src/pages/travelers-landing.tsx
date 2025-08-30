@@ -1,27 +1,72 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
 import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
 import ThemeToggle from "@/components/ThemeToggle";
 import Footer from "@/components/footer";
+import { trackEvent } from "@/lib/analytics";
 import backgroundImage from "@assets/image_1755178154302.png";
 const travelersHeaderImage = "/attached_assets/travelers together hugging_1754971726997.avif";
 
 export default function TravelersLanding() {
   const [, setLocation] = useLocation();
+  const [isMobile, setIsMobile] = useState(false);
+  
+  // Rotating wisdom sayings above the photo
+  const [currentWisdom, setCurrentWisdom] = useState(0);
+  const wisdomSayings = [
+    "Adventure Awaits Around Every Corner.",
+    "The World Is Your Playground.",
+    "Travel Deeper, Connect Stronger.",
+    "Explore Like You Live There.",
+    "Every Journey Starts With Hello.",
+    "Wanderlust Meets Authentic Connection."
+  ];
+  
+  // Mobile-friendly shorter versions
+  const wisdomSayingsMobile = [
+    "Adventure Awaits Everywhere.",
+    "The World Is Your Playground.",
+    "Travel Deeper, Connect More.",
+    "Explore Like a Local.",
+    "Every Journey Starts With Hello.",
+    "Wanderlust Meets Connection."
+  ];
   
   // Check URL for layout parameter - default to Airbnb style
   const urlParams = new URLSearchParams(window.location.search);
   const isAirbnbStyle = urlParams.get('layout') !== 'centered';
 
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Rotating wisdom sayings effect
+  useEffect(() => {
+    const rotateWisdom = () => {
+      setCurrentWisdom((prev) => (prev + 1) % wisdomSayings.length);
+    };
+
+    const timeout = setTimeout(rotateWisdom, 10000); // 10 seconds
+    return () => clearTimeout(timeout);
+  }, [currentWisdom, wisdomSayings.length]);
+
   return (
     <div className="bg-white dark:bg-gray-900 font-sans" key="travelers-landing-v2">
-      {/* Sticky CTA - Clean Style */}
-      <div className="fixed bottom-6 right-6 z-50">
-        <Button
-          onClick={() => setLocation('/join')}
-          size="sm"
-          className="bg-black hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-100 text-white dark:text-black font-medium px-4 py-2 rounded-lg shadow-sm transition-all duration-200"
+      {/* Fixed CTA Button - Mobile Only */}
+      <div className="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 z-50 sm:hidden">
+        <Button 
+          onClick={() => {
+            trackEvent('signup_cta_click', 'travelers_landing', 'floating_join_now');
+            setLocation('/join');
+          }}
+          className="bg-black hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-100 text-white dark:text-black font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
         >
           Join Now
         </Button>
@@ -47,12 +92,30 @@ export default function TravelersLanding() {
             </div>
             
             {/* Right image side */}
-            <div className="flex flex-col items-center order-first md:order-last md:col-span-2">
-              <div className="overflow-hidden relative w-full max-w-sm sm:max-w-md h-[250px] sm:h-[300px] md:h-[400px] rounded-2xl">
+            <div className="md:col-span-2 flex flex-col items-center order-first md:order-last">
+              {/* Rotating wisdom sayings above static quote */}
+              <div className="mb-2 text-center w-full overflow-hidden relative h-[28px] sm:h-[36px]">
+                <p 
+                  key={currentWisdom}
+                  className="absolute top-0 left-0 w-full text-xs sm:text-sm font-medium text-zinc-800 dark:text-zinc-200 italic animate-in slide-in-from-right-full fade-in duration-700 px-2"
+                >
+                  <span className="sm:hidden">{wisdomSayingsMobile[currentWisdom]}</span>
+                  <span className="hidden sm:inline">{wisdomSayings[currentWisdom]}</span>
+                </p>
+              </div>
+              
+              {/* Static powerful quote */}
+              <div className="mb-4 text-center w-full">
+                <p className="text-xs sm:text-sm font-medium text-zinc-800 dark:text-zinc-200 italic px-2">
+                  <span className="sm:hidden">Skip tourist traps — explore authentically.</span>
+                  <span className="hidden sm:inline">Skip the tourist traps — explore authentically with locals.</span>
+                </p>
+              </div>
+              <div className="overflow-hidden relative w-full max-w-sm sm:max-w-md h-[160px] sm:h-[200px] md:h-[280px] rounded-2xl">
                 <img
                   src={travelersHeaderImage}
                   alt="Travelers connecting and exploring together"
-                  className="w-full h-full object-cover rounded-2xl shadow-lg"
+                  className="absolute top-0 left-0 w-full h-full object-cover rounded-2xl shadow-lg"
                 />
               </div>
               <p className="mt-3 sm:mt-4 text-xs sm:text-sm italic text-orange-600 text-center">

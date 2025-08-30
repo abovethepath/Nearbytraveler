@@ -1,10 +1,11 @@
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
 import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
 import ThemeToggle from "@/components/ThemeToggle";
 import Footer from "@/components/footer";
+import { trackEvent } from "@/lib/analytics";
 import karaokeImage from "@assets/image_1756447354157.png";
 import bikeImage from "@assets/image_1756447442403.png";
 import artWalkImage from "@assets/image_1756447587360.png";
@@ -13,60 +14,142 @@ const eventHeaderImage = "/event page bbq party_1753299541268.png";
 
 export default function EventsLanding() {
   const [, setLocation] = useLocation();
+  const [isMobile, setIsMobile] = useState(false);
+  
+  // Rotating wisdom sayings above the photo
+  const [currentWisdom, setCurrentWisdom] = useState(0);
+  const wisdomSayings = [
+    "Every Event Tells a Story.",
+    "Where Memories Are Made.",
+    "Connect Through Shared Experiences.",
+    "Life Happens at Events.",
+    "Create Moments That Matter.",
+    "Events Bring People Together."
+  ];
+  
+  // Mobile-friendly shorter versions
+  const wisdomSayingsMobile = [
+    "Every Event Tells a Story.",
+    "Where Memories Are Made.",
+    "Connect Through Experiences.",
+    "Life Happens at Events.",
+    "Create Moments That Matter.",
+    "Events Bring People Together."
+  ];
   
   // Check URL for layout parameter - default to Airbnb style
   const urlParams = new URLSearchParams(window.location.search);
   const isAirbnbStyle = urlParams.get('layout') !== 'centered';
 
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Rotating wisdom sayings effect
+  useEffect(() => {
+    const rotateWisdom = () => {
+      setCurrentWisdom((prev) => (prev + 1) % wisdomSayings.length);
+    };
+
+    const timeout = setTimeout(rotateWisdom, 10000); // 10 seconds
+    return () => clearTimeout(timeout);
+  }, [currentWisdom, wisdomSayings.length]);
+
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900">
       
+      {/* Fixed CTA Button - Mobile Only */}
+      <div className="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 z-50 sm:hidden">
+        <Button 
+          onClick={() => {
+            trackEvent('signup_cta_click', 'events_landing', 'floating_join_now');
+            setLocation('/join');
+          }}
+          className="bg-black hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-100 text-white dark:text-black font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
+        >
+          Join Now
+        </Button>
+      </div>
+
       <LandingHeader />
       <LandingHeaderSpacer />
       
       {/* HERO SECTION */}
-      <div className="pt-8 pb-12 bg-white dark:bg-gray-900">
-        <div className="mx-auto max-w-6xl px-6 py-8 grid gap-8 md:grid-cols-2 items-center">
+      <div className="pt-4 pb-6 sm:pt-6 sm:pb-8 bg-white dark:bg-gray-900">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
           {isAirbnbStyle ? (
             // Clean, professional hero section
-            <>
-            {/* Left text side */}
-            <div>
-              <h1 className="text-4xl md:text-5xl font-semibold tracking-tight text-zinc-900 dark:text-white">
-                Join User Created Events
-              </h1>
-              <p className="mt-4 max-w-xl text-lg text-zinc-600 dark:text-zinc-300">
-                Make real connections with nearby travelers and locals through authentic experiences
-              </p>
-              <div className="mt-6 flex flex-col sm:flex-row gap-4">
-                <button 
-                  onClick={() => setLocation('/join')}
-                  className="bg-black hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-100 text-white dark:text-black font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200 w-full sm:w-auto"
-                  data-testid="button-join-journey"
-                >
-                  Join the Journey
-                </button>
-                <button 
-                  onClick={() => {
-                    document.querySelector('#community-section')?.scrollIntoView({ behavior: 'smooth' });
-                  }}
-                  className="rounded-xl border border-zinc-300 px-6 py-3 font-medium hover:bg-zinc-50 dark:border-zinc-600 dark:hover:bg-zinc-800 w-full sm:w-auto"
-                  data-testid="button-see-how-it-works"
-                >
-                  See How It Works
-                </button>
+            <div className="mx-auto max-w-7xl px-2 sm:px-4 md:px-6 py-2 sm:py-4 md:py-6 grid gap-3 sm:gap-4 md:gap-6 md:grid-cols-5 items-center">
+              {/* Left text side - wider */}
+              <div className="md:col-span-3">
+                <div className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-semibold tracking-tight text-zinc-900 dark:text-white">
+                  <h1>Join User Created Events</h1>
+                </div>
+                <div className="mt-3 sm:mt-4 max-w-xl text-sm text-zinc-600 dark:text-zinc-300">
+                  <p>Make real connections with nearby travelers and locals through authentic experiences</p>
+                </div>
+                {/* Desktop CTAs */}
+                <div className="hidden sm:flex mt-6 flex-col sm:flex-row gap-4">
+                  <button 
+                    onClick={() => {
+                      trackEvent('signup_cta_click', 'events_landing', 'join_journey');
+                      setLocation('/join');
+                    }}
+                    className="bg-black hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-100 text-white dark:text-black font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200 w-full sm:w-auto"
+                    data-testid="button-join-journey"
+                  >
+                    Join the Journey
+                  </button>
+                  <button 
+                    onClick={() => {
+                      document.querySelector('#community-section')?.scrollIntoView({ behavior: 'smooth' });
+                    }}
+                    className="rounded-xl border border-zinc-300 px-6 py-3 font-medium hover:bg-zinc-50 dark:border-zinc-600 dark:hover:bg-zinc-800 w-full sm:w-auto"
+                    data-testid="button-see-how-it-works"
+                  >
+                    See How It Works
+                  </button>
+                </div>
+              </div>
+
+              {/* Right image side */}
+              <div className="md:col-span-2 flex flex-col items-center order-first md:order-last">
+                {/* Rotating wisdom sayings above static quote */}
+                <div className="mb-2 text-center w-full overflow-hidden relative h-[28px] sm:h-[36px]">
+                  <p 
+                    key={currentWisdom}
+                    className="absolute top-0 left-0 w-full text-xs sm:text-sm font-medium text-zinc-800 dark:text-zinc-200 italic animate-in slide-in-from-right-full fade-in duration-700 px-2"
+                  >
+                    <span className="sm:hidden">{wisdomSayingsMobile[currentWisdom]}</span>
+                    <span className="hidden sm:inline">{wisdomSayings[currentWisdom]}</span>
+                  </p>
+                </div>
+                
+                {/* Static powerful quote */}
+                <div className="mb-4 text-center w-full">
+                  <p className="text-xs sm:text-sm font-medium text-zinc-800 dark:text-zinc-200 italic px-2">
+                    <span className="sm:hidden">Events create lasting bonds.</span>
+                    <span className="hidden sm:inline">Events create the strongest connections.</span>
+                  </p>
+                </div>
+                <div className="overflow-hidden relative w-full max-w-sm sm:max-w-md h-[160px] sm:h-[200px] md:h-[280px] rounded-2xl">
+                  <img
+                    src={eventHeaderImage}
+                    alt="People enjoying events and activities together"
+                    className="absolute top-0 left-0 w-full h-full object-cover rounded-2xl shadow-lg"
+                  />
+                </div>
+                <p className="mt-3 sm:mt-4 text-xs sm:text-sm italic text-orange-600 text-center">
+                  Where Shared Experiences Create Lifelong Bonds
+                </p>
               </div>
             </div>
-            
-            {/* Right image side */}
-            <div className="flex justify-center">
-              <img
-                src={eventHeaderImage}
-                alt="People enjoying events and activities together"
-                className="rounded-2xl shadow-lg object-cover"
-              />
-            </div>
-            </>
           ) : (
             // Original centered layout (for investors)
             <div className="text-center">

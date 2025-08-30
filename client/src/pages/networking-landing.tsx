@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
 import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
 import ThemeToggle from "@/components/ThemeToggle";
 import Footer from "@/components/footer";
+import { trackEvent } from "@/lib/analytics";
 import NetworkingHero from "@/components/NetworkingHero";
 
 export default function NetworkingLanding() {
@@ -15,14 +16,16 @@ export default function NetworkingLanding() {
 
   return (
     <div className="bg-white dark:bg-gray-900 font-sans">
-      {/* Sticky CTA - Always Visible */}
-      <div className="fixed bottom-6 right-6 z-50">
-        <Button
-          onClick={() => setLocation('/join')}
-          size="sm"
-          className="bg-black hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-100 text-white dark:text-black font-medium px-4 py-2 rounded-lg shadow-sm transition-all duration-200"
+      {/* Fixed CTA Button - Mobile Only */}
+      <div className="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 z-50 sm:hidden">
+        <Button 
+          onClick={() => {
+            trackEvent('signup_cta_click', 'networking_landing', 'floating_join_now');
+            setLocation('/join');
+          }}
+          className="bg-black hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-100 text-white dark:text-black font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
         >
-          Join Network
+          Join Now
         </Button>
       </div>
       

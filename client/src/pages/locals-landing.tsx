@@ -1,21 +1,77 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
 import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
 import ThemeToggle from "@/components/ThemeToggle";
 import Footer from "@/components/footer";
+import { trackEvent } from "@/lib/analytics";
 const localsHeaderImage = "/ChatGPT Image Jul 23, 2025, 01_18_34 PM_1753301968074.png";
 
 export default function LocalsLanding() {
   const [, setLocation] = useLocation();
+  const [isMobile, setIsMobile] = useState(false);
+  
+  // Rotating wisdom sayings above the photo
+  const [currentWisdom, setCurrentWisdom] = useState(0);
+  const wisdomSayings = [
+    "Your City Needs Your Voice.",
+    "Be the Welcome You Want to See.",
+    "Share Your Hidden Gems.",
+    "Local Knowledge Is Power.",
+    "Every City Has Secret Stories.",
+    "Locals Make Travel Authentic."
+  ];
+  
+  // Mobile-friendly shorter versions
+  const wisdomSayingsMobile = [
+    "Your City Needs You.",
+    "Be the Welcome You Want.",
+    "Share Your Hidden Gems.",
+    "Local Knowledge Is Power.",
+    "Every City Has Secrets.",
+    "Locals Make Travel Real."
+  ];
   
   // Check URL for layout parameter - default to Airbnb style
   const urlParams = new URLSearchParams(window.location.search);
   const isAirbnbStyle = urlParams.get('layout') !== 'centered';
 
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Rotating wisdom sayings effect
+  useEffect(() => {
+    const rotateWisdom = () => {
+      setCurrentWisdom((prev) => (prev + 1) % wisdomSayings.length);
+    };
+
+    const timeout = setTimeout(rotateWisdom, 10000); // 10 seconds
+    return () => clearTimeout(timeout);
+  }, [currentWisdom, wisdomSayings.length]);
+
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900">
       
+      {/* Fixed CTA Button - Mobile Only */}
+      <div className="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 z-50 sm:hidden">
+        <Button 
+          onClick={() => {
+            trackEvent('signup_cta_click', 'locals_landing', 'floating_join_now');
+            setLocation('/join');
+          }}
+          className="bg-black hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-100 text-white dark:text-black font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
+        >
+          Join Now
+        </Button>
+      </div>
+
       <LandingHeader />
       <LandingHeaderSpacer />
       
@@ -37,11 +93,29 @@ export default function LocalsLanding() {
             
             {/* Right image side */}
             <div className="md:col-span-2 flex flex-col items-center order-first md:order-last">
-              <div className="overflow-hidden relative w-full max-w-sm sm:max-w-md h-[250px] sm:h-[300px] md:h-[400px] rounded-2xl">
+              {/* Rotating wisdom sayings above static quote */}
+              <div className="mb-2 text-center w-full overflow-hidden relative h-[28px] sm:h-[36px]">
+                <p 
+                  key={currentWisdom}
+                  className="absolute top-0 left-0 w-full text-xs sm:text-sm font-medium text-zinc-800 dark:text-zinc-200 italic animate-in slide-in-from-right-full fade-in duration-700 px-2"
+                >
+                  <span className="sm:hidden">{wisdomSayingsMobile[currentWisdom]}</span>
+                  <span className="hidden sm:inline">{wisdomSayings[currentWisdom]}</span>
+                </p>
+              </div>
+              
+              {/* Static powerful quote */}
+              <div className="mb-4 text-center w-full">
+                <p className="text-xs sm:text-sm font-medium text-zinc-800 dark:text-zinc-200 italic px-2">
+                  <span className="sm:hidden">Be the local you want to meet.</span>
+                  <span className="hidden sm:inline">Be the local you'd want to meet traveling.</span>
+                </p>
+              </div>
+              <div className="overflow-hidden relative w-full max-w-sm sm:max-w-md h-[160px] sm:h-[200px] md:h-[280px] rounded-2xl">
                 <img
                   src={localsHeaderImage}
                   alt="Locals sharing experiences and welcoming travelers"
-                  className="w-full h-full object-cover rounded-2xl shadow-lg"
+                  className="absolute top-0 left-0 w-full h-full object-cover rounded-2xl shadow-lg"
                 />
               </div>
               <p className="mt-3 sm:mt-4 text-xs sm:text-sm italic text-orange-600 text-center">
