@@ -125,7 +125,7 @@ export default function LandingStreamlined() {
             trackEvent('signup_cta_click', 'landing_page', 'floating_join_now');
             setLocation('/join');
           }}
-          className="bg-black hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-100 text-white dark:text-black font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
+          className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
         >
           Join Now
         </Button>
@@ -211,7 +211,7 @@ export default function LandingStreamlined() {
                     setLocation('/join');
                   }}
                   size="lg"
-                  className="bg-black hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-100 text-white dark:text-black font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
+                  className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
                 >
                   Join Now
                 </Button>
@@ -429,7 +429,7 @@ export default function LandingStreamlined() {
                   trackEvent('signup_cta_click', 'landing_page', 'transformation_join_now');
                   setLocation('/join');
                 }}
-                className="bg-black hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-100 text-white dark:text-black font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
+                className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
               >
                 Join Now
               </button>
@@ -687,7 +687,7 @@ export default function LandingStreamlined() {
               <Button 
                 onClick={() => setLocation('/auth')}
                 size="lg"
-                className="bg-black hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-100 text-white dark:text-black font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
+                className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
               >
                 Join Now
               </Button>
@@ -794,7 +794,7 @@ export default function LandingStreamlined() {
                 trackEvent('signup_cta_click', 'landing_page', 'find_your_people');
                 setLocation('/join');
               }}
-              className="rounded-xl bg-black hover:bg-zinc-800 dark:bg-white dark:hover:bg-gray-100 text-white dark:text-black font-medium px-6 py-3 shadow transition-all duration-200"
+              className="rounded-xl bg-orange-500 hover:bg-orange-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-medium px-6 py-3 shadow transition-all duration-200"
             >
               Find Your People
             </button>
