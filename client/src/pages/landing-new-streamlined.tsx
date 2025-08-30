@@ -14,6 +14,17 @@ export default function LandingStreamlined() {
   
   // Rotating headlines for different audience pain points
   const [currentHeadline, setCurrentHeadline] = useState(0);
+  
+  // Rotating wisdom sayings above the photo
+  const [currentWisdom, setCurrentWisdom] = useState(0);
+  const wisdomSayings = [
+    "The Life You Want Is One Connection Away.",
+    "Your Next Adventure Starts With Hello.",
+    "One Conversation Can Change Everything.",
+    "Where Strangers Become Friends.",
+    "Because No One Should Explore Alone.",
+    "The People You Meet Are the Real Destination."
+  ];
   const headlines = [
     "Planning a Trip Soon? Skip The Tourist Traps.", // General travelers
     "Want to Expand Your Social Circle? Love Meeting Travelers?", // Locals who want to share their city
@@ -87,6 +98,16 @@ export default function LandingStreamlined() {
     return () => clearTimeout(timeout);
   }, [currentHeadline, headlines.length, subtexts.length]);
 
+  // Rotating wisdom sayings effect - independent timer
+  useEffect(() => {
+    const rotateWisdom = () => {
+      setCurrentWisdom((prev) => (prev + 1) % wisdomSayings.length);
+    };
+
+    const timeout = setTimeout(rotateWisdom, 10000); // 10 seconds for wisdom sayings
+    return () => clearTimeout(timeout);
+  }, [currentWisdom, wisdomSayings.length]);
+
   // Allow user to choose theme - don't force it
 
   return (
@@ -137,10 +158,13 @@ export default function LandingStreamlined() {
 
               {/* Right image side */}
               <div className="md:col-span-2 flex flex-col items-center order-first md:order-last">
-                {/* Powerful static quote above photo */}
-                <div className="mb-4 text-center w-full">
-                  <p className="text-sm sm:text-base font-medium text-zinc-800 dark:text-zinc-200 italic">
-                    Travel doesn't change you — the people you meet do.
+                {/* Rotating wisdom sayings above photo */}
+                <div className="mb-4 text-center w-full overflow-hidden relative h-[40px] sm:h-[48px]">
+                  <p 
+                    key={currentWisdom}
+                    className="absolute top-0 left-0 w-full text-sm sm:text-base font-medium text-zinc-800 dark:text-zinc-200 italic animate-in slide-in-from-right-full fade-in duration-700"
+                  >
+                    {wisdomSayings[currentWisdom]}
                   </p>
                 </div>
                 <div className="overflow-hidden relative w-full max-w-sm sm:max-w-md h-[250px] sm:h-[300px] md:h-[400px] rounded-2xl">
