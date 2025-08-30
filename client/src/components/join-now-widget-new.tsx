@@ -287,16 +287,14 @@ export default function JoinNowWidgetNew() {
           </div>
 
           <div className="mt-8 pt-4">
-            <div
-              onClick={userType ? handleStepOne : undefined}
-              className={`join-page-gradient-button w-full py-3 px-4 rounded-md font-bold text-center select-none text-base md:text-lg text-crisp ${
-                userType ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'
-              }`}
-              style={{
-                pointerEvents: userType ? 'auto' : 'none'
-              }}
-            >
-              Continue
+            <div className="w-full p-4 rounded-lg bg-gray-100 dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 text-center">
+              <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
+                🚀 Coming Soon!
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                We're putting the finishing touches on Nearby Traveler.<br/>
+                Check back soon - we'll be live shortly!
+              </p>
             </div>
           </div>
         </>
@@ -525,11 +523,14 @@ export default function JoinNowWidgetNew() {
           </div>
 
           <div className="mt-8 pt-4 space-y-3">
-            <div
-              onClick={handleCreateAccount}
-              className="join-page-gradient-button w-full py-3 px-4 rounded-md font-bold text-center cursor-pointer select-none text-base md:text-lg text-crisp"
-            >
-              Create Account & Continue
+            <div className="w-full p-4 rounded-lg bg-gray-100 dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 text-center">
+              <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
+                🚀 Coming Soon!
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                We're putting the finishing touches on Nearby Traveler.<br/>
+                Check back soon - we'll be live shortly!
+              </p>
             </div>
             
             <Button

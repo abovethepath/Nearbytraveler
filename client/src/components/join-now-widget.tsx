@@ -165,19 +165,15 @@ export default function JoinNowWidget() {
             </div>
 
             <div className="mt-8 pt-4">
-              <Button
-                onClick={handleStepOne}
-                disabled={!userType}
-                className="w-full font-semibold disabled:cursor-not-allowed"
-                style={{
-                  background: userType ? 'linear-gradient(135deg, #3b82f6 0%, #f97316 100%)' : 'linear-gradient(135deg, #6b7280 0%, #4b5563 100%)',
-                  border: 'none',
-                  color: '#000000',
-                  opacity: userType ? 1 : 0.5
-                }}
-              >
-                Continue
-              </Button>
+              <div className="w-full p-4 rounded-lg bg-gray-100 dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 text-center">
+                <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
+                  🚀 Coming Soon!
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  We're putting the finishing touches on Nearby Traveler.<br/>
+                  Check back soon - we'll be live shortly!
+                </p>
+              </div>
             </div>
           </>
         ) : (
@@ -327,17 +323,15 @@ export default function JoinNowWidget() {
             </div>
 
             <div className="mt-8 pt-4 space-y-3">
-              <Button
-                onClick={handleCreateAccount}
-                className="w-full font-semibold"
-                style={{
-                  background: 'linear-gradient(135deg, #3b82f6 0%, #f97316 100%) !important',
-                  border: 'none !important',
-                  color: '#000000 !important'
-                }}
-              >
-                Create Account & Continue
-              </Button>
+              <div className="w-full p-4 rounded-lg bg-gray-100 dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 text-center">
+                <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
+                  🚀 Coming Soon!
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  We're putting the finishing touches on Nearby Traveler.<br/>
+                  Check back soon - we'll be live shortly!
+                </p>
+              </div>
               
               <Button
                 onClick={() => setLocation('/')}

@@ -152,7 +152,17 @@ export default function Auth() {
           </CardHeader>
           <CardContent className="space-y-6">
             {!isLogin ? (
-              <JoinNowWidgetNew />
+              <div className="text-center space-y-4">
+                <div className="w-full p-6 rounded-lg bg-gray-100 dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600">
+                  <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-3">
+                    🚀 Coming Soon!
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-400 mb-4">
+                    We're putting the finishing touches on Nearby Traveler.<br/>
+                    Check back soon - we'll be live shortly!
+                  </p>
+                </div>
+              </div>
             ) : (
               <>
                 {/* Login Form */}
@@ -207,7 +217,7 @@ export default function Auth() {
                 onClick={() => setIsLogin(!isLogin)}
                 className="text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:text-gray-100 text-sm font-medium"
               >
-                {isLogin ? "Don't have an account? Create Account" : "Already have an account? Sign In"}
+                {isLogin ? "Registration temporarily disabled - Launch coming soon!" : "Already have an account? Sign In"}
               </button>
             </div>
           </CardContent>

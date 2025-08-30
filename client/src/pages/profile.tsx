@@ -9308,9 +9308,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           </div>
         </DialogContent>
       </Dialog>
-          </div>
-        </div>
-      </div>
       
       {/* Chatroom List Modal */}
       <Dialog open={showChatroomList} onOpenChange={setShowChatroomList}>
@@ -9673,8 +9670,6 @@ function EventOrganizerHubSection({ userId }: { userId: number }) {
         </div>
       </CardContent>
     </Card>
-          </div>
-        </div>
       </div>
     </>
   );

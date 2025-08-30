@@ -135,6 +135,7 @@ import QRCodePage from "@/pages/qr-code";
 import QRSimplePage from "@/pages/qr-simple";
 import LandingStreamlined from "@/pages/landing-new-streamlined";
 import LandingMinimal from "@/pages/landing-minimal";
+import ComingSoon from "@/pages/coming-soon";
 
 
 import Navbar from "@/components/navbar";
@@ -568,28 +569,20 @@ function Router() {
         }
         return <LandingStreamlined />;
       }
-      // QR code signup route
+      // QR code signup route - DISABLED FOR LAUNCH
       if (location.startsWith('/signup/qr/')) {
-        const referralCode = location.split('/')[3];
-        if (referralCode) {
-          console.log('Showing QRSignup for referral code:', referralCode);
-          return <QRSignup referralCode={referralCode} />;
-        }
+        return <ComingSoon />;
       }
 
-      // Allow access to signup pages without authentication
-      // Three separate signup forms: Local, Traveling, Business
+      // Signup pages - DISABLED FOR LAUNCH
       if (location === '/signup/local' || location === '/signup/traveler') {
-        console.log('Showing SignupLocalTraveler for:', location);
-        return <SignupLocalTraveler />;
+        return <ComingSoon />;
       }
       if (location === '/signup/traveling') {
-        console.log('Showing SignupTraveling for:', location);
-        return <SignupTraveling />;
+        return <ComingSoon />;
       }
       if (location === '/signup/business') {
-        console.log('Showing SignupBusinessSimple for:', location);
-        return <SignupBusinessSimple />;
+        return <ComingSoon />;
       }
       // Allow access to legal pages without authentication
       if (location === '/privacy') {
@@ -624,8 +617,7 @@ function Router() {
         return <Auth />;
       }
       if (location === '/signup' || location === '/join') {
-        console.log('Returning Auth component for /signup or /join');
-        return <Auth />; // Will show JoinNowWidget when isLogin=false
+        return <ComingSoon />;
       }
       if (location === '/business-card') {
         console.log('Returning BusinessCard component for /business-card - PUBLIC ACCESS');
@@ -848,15 +840,15 @@ function Router() {
       case '/b':
         return <BusinessCustomLanding />;
       case '/signup/local':
-        return <SignupLocalTraveler />;
+        return <ComingSoon />;
       case '/signup/traveler':
-        return <SignupLocalTraveler />;
+        return <ComingSoon />;
       case '/join':
-        return <SignupLocalTraveler />;
+        return <ComingSoon />;
       case '/signup':
-        return <SignupLocalTraveler />;
+        return <ComingSoon />;
       case '/signup/business':
-        return <SignupBusinessSimple />;
+        return <ComingSoon />;
       case '/business-registration':
         return <BusinessRegistration />;
       case '/profile':
@@ -957,7 +949,7 @@ function Router() {
       case '/travel-agent-dashboard':
         return <TravelAgentDashboard />;
       case '/signup/travel-agent':
-        return <TravelAgentSignup />;
+        return <ComingSoon />;
       case '/agent/:username':
         return <TravelAgentPage />;
       case '/welcome':
