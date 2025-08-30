@@ -102,20 +102,14 @@ export default function LandingStreamlined() {
             <div className="mx-auto max-w-7xl px-4 sm:px-6 py-4 sm:py-8 grid gap-6 sm:gap-8 md:grid-cols-5 items-center">
               {/* Left text side - wider */}
               <div className="md:col-span-3">
-                <div className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-semibold tracking-tight text-zinc-900 dark:text-white overflow-hidden relative h-[140px] sm:h-[160px] md:h-[180px] lg:h-[220px]">
-                  <h1 
-                    key={currentHeadline}
-                    className="absolute top-0 left-0 w-full animate-in slide-in-from-left-full fade-in duration-700"
-                  >
-                    {headlines[currentHeadline]} <br /> {subtexts[currentSubtext]}
+                <div className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-semibold tracking-tight text-zinc-900 dark:text-white">
+                  <h1>
+                    Connect with locals, travelers, and businesses everywhere
                   </h1>
                 </div>
-                <div className="mt-3 sm:mt-4 max-w-xl text-sm text-zinc-600 dark:text-zinc-300 overflow-hidden relative h-[90px] sm:h-[120px]">
-                  <p 
-                    key={currentSubtext}
-                    className="absolute top-0 left-0 w-full animate-in slide-in-from-left-full fade-in duration-700"
-                  >
-                    {descriptions[currentSubtext]}
+                <div className="mt-3 sm:mt-4 max-w-xl text-sm text-zinc-600 dark:text-zinc-300">
+                  <p>
+                    Join a global community where authentic human connections transform how you experience the world.
                   </p>
                 </div>
               </div>
