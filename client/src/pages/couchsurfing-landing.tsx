@@ -315,13 +315,13 @@ export default function CouchsurfingLanding() {
               <div className="flex flex-col md:flex-row items-center justify-between gap-6">
                 <div className="text-center md:text-left">
                   <p className="text-gray-600 dark:text-gray-300 text-lg">
-                    <strong>Want more meeting options?</strong>
+                    <strong>Want to welcome ALL travelers?</strong>
                   </p>
                 </div>
                 <div className="text-3xl">→</div>
                 <div className="text-center md:text-right">
                   <p className="text-blue-700 dark:text-blue-400 text-lg font-medium">
-                    Connect at cafés, events, and public spaces
+                    Open to every traveler, not just those needing hosting
                   </p>
                 </div>
               </div>
