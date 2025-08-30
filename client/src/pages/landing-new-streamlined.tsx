@@ -122,7 +122,13 @@ export default function LandingStreamlined() {
 
               {/* Right image side */}
               <div className="md:col-span-2 flex flex-col items-center order-first md:order-last">
-                {/* Intimate whisper-style rotating sayings - ABOVE photo, first thing they see */}
+                {/* Powerful static quote above photo */}
+                <div className="mb-4 text-center w-full">
+                  <p className="text-sm sm:text-base font-medium text-zinc-800 dark:text-zinc-200 italic">
+                    Travel doesn't change you — the people you meet do.
+                  </p>
+                </div>
+                {/* Intimate whisper-style rotating sayings */}
                 <div className="mb-3 text-center w-full">
                   <div className="overflow-hidden relative h-[40px]">
                     <p 
@@ -277,7 +283,7 @@ export default function LandingStreamlined() {
 
                   {/* Quote */}
                   <blockquote className="text-balance text-lg leading-relaxed text-zinc-800 dark:text-zinc-200 md:text-xl max-w-3xl mx-auto">
-                    "For 15 years, I watched 400+ travelers from 50 countries transform in my living room. A shy person from Japan becomes confident. A lonely traveler from Germany finds their tribe. A business owner from Brazil discovers new perspectives that change everything. I realized travel doesn't change you — the people you meet do. I built Nearby Traveler because everyone deserves to feel that life-changing magic."
+                    "For 15 years, I watched 400+ travelers from 50 countries transform in my living room. A shy person from Japan becomes confident. A lonely traveler from Germany finds their tribe. A business owner from Brazil discovers new perspectives that change everything. I built Nearby Traveler because everyone deserves to feel that life-changing magic."
                   </blockquote>
 
                   {/* Attribution */}
