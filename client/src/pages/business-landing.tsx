@@ -111,9 +111,9 @@ export default function BusinessLanding() {
                 <div className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-semibold tracking-tight text-zinc-900 dark:text-white overflow-hidden relative h-[90px] sm:h-[100px] md:h-[120px] lg:h-[140px]">
                   <h1 className="absolute top-0 left-0 w-full animate-in slide-in-from-left-full fade-in duration-700">Access Travelers' Exact Wants & Needs</h1>
                 </div>
-                <div className="mt-3 sm:mt-4 max-w-xl text-sm md:text-base lg:text-lg text-zinc-600 dark:text-zinc-300 overflow-hidden relative h-[100px] sm:h-[120px] md:h-[140px]">
+                <div className="mt-3 sm:mt-4 max-w-xl text-sm md:text-base lg:text-lg text-zinc-600 dark:text-zinc-300 overflow-hidden relative h-[80px] sm:h-[100px] md:h-[120px]">
                   <p className="absolute top-0 left-0 w-full animate-in slide-in-from-left-full fade-in duration-700">
-                    Travelers tell us their interests, activities, and preferences. When they're near your business, your deals automatically push to their phone in real-time.
+                    Travelers share their interests and activities. When they're near your business, your deals reach them instantly.
                   </p>
                 </div>
                 
@@ -137,18 +137,18 @@ export default function BusinessLanding() {
                 <div className="hidden sm:flex mt-6 flex-col sm:flex-row gap-4">
                   <button 
                     onClick={() => {
-                      trackEvent('signup_cta_click', 'business_landing', 'join_journey');
+                      trackEvent('signup_cta_click', 'business_landing', 'claim_beta');
                       setLocation('/join');
                     }}
                     className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold px-8 py-3 rounded-lg shadow-lg transform hover:scale-105 transition-all duration-200 w-full sm:w-auto"
-                    data-testid="button-join-journey"
+                    data-testid="button-claim-beta"
                   >
                     <Zap className="w-5 h-5 mr-2 inline" />
-                    Join Now
+                    Claim Free Beta Access
                   </button>
                   <button 
                     onClick={() => {
-                      document.querySelector('#value-section')?.scrollIntoView({ behavior: 'smooth' });
+                      document.querySelector('#problem-section')?.scrollIntoView({ behavior: 'smooth' });
                     }}
                     className="border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white font-semibold px-8 py-3 rounded-lg transition-all duration-200 w-full sm:w-auto"
                     data-testid="button-see-how-it-works"
@@ -212,179 +212,118 @@ export default function BusinessLanding() {
         </div>
       </div>
 
-      {/* RESULTS-DRIVEN VALUE SECTION */}
-      <section id="value-section" className="bg-gradient-to-br from-orange-50 to-blue-50 dark:from-gray-800 dark:to-gray-900 py-16">
+      {/* THE BUSINESS PROBLEM */}
+      <section id="problem-section" className="bg-gradient-to-br from-red-50 to-orange-50 dark:from-gray-800 dark:to-gray-900 py-16">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-6">
               Stop Wasting Money on Ads That Don't Work
             </h2>
-            <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-              Connect directly with high-value customers who are already looking for exactly what you offer
-            </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Intent Data */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border-l-4 border-orange-500">
-              <div className="w-16 h-16 bg-orange-100 dark:bg-orange-800 rounded-full flex items-center justify-center mb-6">
-                <Target className="w-8 h-8 text-orange-600 dark:text-orange-400" />
-              </div>
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Pure Customer Intent</h3>
-              <p className="text-gray-600 dark:text-gray-300 mb-4">
-                Travelers explicitly share what they want to eat, where they want to go, activities they want to try. No guesswork required.
-              </p>
-              <div className="text-sm text-orange-600 dark:text-orange-400 font-semibold">
-                ✓ Direct access to wants & needs
-              </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg">
+              <div className="text-red-500 text-2xl mb-3">📱</div>
+              <h3 className="font-bold text-gray-900 dark:text-white mb-2">Facebook Ads</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-300">$50+ per customer with no guarantee</p>
             </div>
-
-            {/* No Competition */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border-l-4 border-blue-500">
-              <div className="w-16 h-16 bg-blue-100 dark:bg-blue-800 rounded-full flex items-center justify-center mb-6">
-                <Trophy className="w-8 h-8 text-blue-600 dark:text-blue-400" />
-              </div>
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Zero Competition</h3>
-              <p className="text-gray-600 dark:text-gray-300 mb-4">
-                Connect with travelers seeking your specific services before they even know your competitors exist.
-              </p>
-              <div className="text-sm text-blue-600 dark:text-blue-400 font-semibold">
-                ✓ First-mover advantage
-              </div>
+            
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg">
+              <div className="text-red-500 text-2xl mb-3">🔍</div>
+              <h3 className="font-bold text-gray-900 dark:text-white mb-2">Google Ads</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Bidding wars with corporate giants</p>
             </div>
-
-            {/* Quality Customers */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border-l-4 border-green-500">
-              <div className="w-16 h-16 bg-green-100 dark:bg-green-800 rounded-full flex items-center justify-center mb-6">
-                <Users className="w-8 h-8 text-green-600 dark:text-green-400" />
-              </div>
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">High-Value Customers</h3>
-              <p className="text-gray-600 dark:text-gray-300 mb-4">
-                Travelers actively seeking experiences (not bargains) and locals looking to explore their own city with fresh perspectives.
-              </p>
-              <div className="text-sm text-green-600 dark:text-green-400 font-semibold">
-                ✓ Experience seekers, not price shoppers
-              </div>
+            
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg">
+              <div className="text-red-500 text-2xl mb-3">📁</div>
+              <h3 className="font-bold text-gray-900 dark:text-white mb-2">Directories</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Bury you under competitors</p>
+            </div>
+            
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg">
+              <div className="text-red-500 text-2xl mb-3">📲</div>
+              <h3 className="font-bold text-gray-900 dark:text-white mb-2">Social Media</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Reaches everyone except ready-to-buy travelers</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* SUCCESS PROOF SECTION */}
-      <section className="py-16 bg-white dark:bg-gray-900">
+      {/* THE SOLUTION: DIRECT CUSTOMER INTENT */}
+      <section className="bg-white dark:bg-gray-900 py-16">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-12">
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-              Travelers Tell Us Exactly What They Want
+              The Solution: Direct Customer Intent
             </h2>
-            <p className="text-lg text-gray-600 dark:text-gray-300">
-              This is marketing gold - direct access to customer intent before they even start searching
-            </p>
+            <div className="space-y-2">
+              <p className="text-lg text-gray-600 dark:text-gray-300">✅ Travelers tell us exactly what they want to eat, drink, and do</p>
+              <p className="text-lg text-gray-600 dark:text-gray-300">✅ Connect before they search Google or Yelp</p>
+              <p className="text-lg text-gray-600 dark:text-gray-300">✅ Reach locals seeking fresh experiences, too</p>
+            </div>
+          </div>
+          {/* Clean examples grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
+              <p className="text-lg italic text-gray-800 dark:text-gray-200 mb-2">"I want happy hours in LA"</p>
+              <p className="text-sm text-orange-600 font-semibold">→ Bars & Restaurants</p>
+            </div>
+            <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
+              <p className="text-lg italic text-gray-800 dark:text-gray-200 mb-2">"I want bar crawls"</p>
+              <p className="text-sm text-orange-600 font-semibold">→ Nightlife Venues</p>
+            </div>
+            <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
+              <p className="text-lg italic text-gray-800 dark:text-gray-200 mb-2">"I want to go to the Getty"</p>
+              <p className="text-sm text-orange-600 font-semibold">→ Cultural Attractions</p>
+            </div>
+            <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
+              <p className="text-lg italic text-gray-800 dark:text-gray-200 mb-2">"I want to hit the gym"</p>
+              <p className="text-sm text-orange-600 font-semibold">→ Fitness Centers</p>
+            </div>
+            <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
+              <p className="text-lg italic text-gray-800 dark:text-gray-200 mb-2">"I want family fun activities"</p>
+              <p className="text-sm text-orange-600 font-semibold">→ Entertainment Venues</p>
+            </div>
+            <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
+              <p className="text-lg italic text-gray-800 dark:text-gray-200 mb-2">"I want to try yoga studios"</p>
+              <p className="text-sm text-orange-600 font-semibold">→ Wellness Centers</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* YOUR BUSINESS ADVANTAGE */}
+      <section className="bg-white dark:bg-gray-900 py-16">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+              Your Business Advantage
+            </h2>
           </div>
 
-          {/* Scrolling Customer Intent Examples */}
-          <div className="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 rounded-2xl p-8">
-            <div className="flex items-center mb-6">
-              <div className="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center mr-4">
-                <Target className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h4 className="font-bold text-gray-900 dark:text-white text-xl">What Travelers Tell Us</h4>
-              </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-xl p-6 text-center">
+              <Trophy className="w-12 h-12 text-blue-600 mx-auto mb-4" />
+              <h3 className="font-bold text-gray-900 dark:text-white mb-2">First Mover Advantage</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Reach travelers before competitors</p>
             </div>
             
-            {/* Horizontal scrolling container */}
-            <div className="overflow-x-auto scrollbar-hide">
-              <div className="flex gap-6 pb-4" style={{ width: 'max-content' }}>
-                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg min-w-[300px]">
-                  <p className="text-base md:text-lg lg:text-xl italic text-gray-800 dark:text-gray-200">"I want to do Happy Hours in LA"</p>
-                  <p className="text-sm text-orange-600 mt-2">→ Perfect for bars & restaurants</p>
-                </div>
-                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg min-w-[300px]">
-                  <p className="text-base md:text-lg lg:text-xl italic text-gray-800 dark:text-gray-200">"I want to do bar crawls"</p>
-                  <p className="text-sm text-orange-600 mt-2">→ Perfect for nightlife venues</p>
-                </div>
-                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg min-w-[300px]">
-                  <p className="text-base md:text-lg lg:text-xl italic text-gray-800 dark:text-gray-200">"I want to tour celebrity homes"</p>
-                  <p className="text-sm text-orange-600 mt-2">→ Perfect for tour companies</p>
-                </div>
-                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg min-w-[300px]">
-                  <p className="text-base md:text-lg lg:text-xl italic text-gray-800 dark:text-gray-200">"I want to go to the Getty"</p>
-                  <p className="text-sm text-orange-600 mt-2">→ Perfect for cultural attractions</p>
-                </div>
-                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg min-w-[300px]">
-                  <p className="text-base md:text-lg lg:text-xl italic text-gray-800 dark:text-gray-200">"I want to go to TopGolf"</p>
-                  <p className="text-sm text-orange-600 mt-2">→ Perfect for entertainment venues</p>
-                </div>
-                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg min-w-[300px]">
-                  <p className="text-base md:text-lg lg:text-xl italic text-gray-800 dark:text-gray-200">"I want to hit the gym while traveling"</p>
-                  <p className="text-sm text-orange-600 mt-2">→ Perfect for fitness centers</p>
-                </div>
-                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg min-w-[300px]">
-                  <p className="text-base md:text-lg lg:text-xl italic text-gray-800 dark:text-gray-200">"I have a kid and I want to go to SkyZone"</p>
-                  <p className="text-sm text-orange-600 mt-2">→ Perfect for family entertainment</p>
-                </div>
-                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg min-w-[300px]">
-                  <p className="text-base md:text-lg lg:text-xl italic text-gray-800 dark:text-gray-200">"I want to go to Universal Studios"</p>
-                  <p className="text-sm text-orange-600 mt-2">→ Perfect for theme parks</p>
-                </div>
-                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg min-w-[300px]">
-                  <p className="text-base md:text-lg lg:text-xl italic text-gray-800 dark:text-gray-200">"I want to go to children's museum"</p>
-                  <p className="text-sm text-orange-600 mt-2">→ Perfect for family attractions</p>
-                </div>
-                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg min-w-[300px]">
-                  <p className="text-base md:text-lg lg:text-xl italic text-gray-800 dark:text-gray-200">"I want to try yoga studios in LA"</p>
-                  <p className="text-sm text-orange-600 mt-2">→ Perfect for wellness centers</p>
-                </div>
-                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg min-w-[300px]">
-                  <p className="text-base md:text-lg lg:text-xl italic text-gray-800 dark:text-gray-200">"Looking for escape rooms"</p>
-                  <p className="text-sm text-orange-600 mt-2">→ Perfect for entertainment venues</p>
-                </div>
-                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg min-w-[300px]">
-                  <p className="text-base md:text-lg lg:text-xl italic text-gray-800 dark:text-gray-200">"Want to try comedy shows"</p>
-                  <p className="text-sm text-orange-600 mt-2">→ Perfect for entertainment venues</p>
-                </div>
-                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg min-w-[300px]">
-                  <p className="text-base md:text-lg lg:text-xl italic text-gray-800 dark:text-gray-200">"I want to play golf in LA"</p>
-                  <p className="text-sm text-orange-600 mt-2">→ Perfect for golf courses</p>
-                </div>
-                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg min-w-[300px]">
-                  <p className="text-base md:text-lg lg:text-xl italic text-gray-800 dark:text-gray-200">"Looking for rooftop bars with views"</p>
-                  <p className="text-sm text-orange-600 mt-2">→ Perfect for upscale bars</p>
-                </div>
-              </div>
+            <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-xl p-6 text-center">
+              <Target className="w-12 h-12 text-green-600 mx-auto mb-4" />
+              <h3 className="font-bold text-gray-900 dark:text-white mb-2">Zero Competition</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Direct push, no bidding wars</p>
             </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Business Advantage */}
-            <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-2xl p-8">
-              <div className="flex items-center mb-6">
-                <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center mr-4">
-                  <Zap className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h4 className="font-bold text-gray-900 dark:text-white text-xl">Your Business Advantage</h4>
-                </div>
-              </div>
-              <ul className="space-y-4 text-gray-700 dark:text-gray-300">
-                <li className="flex items-start">
-                  <CheckCircle className="w-5 h-5 text-blue-500 mt-1 mr-3 flex-shrink-0" />
-                  <span>Reach customers BEFORE they start googling competitors</span>
-                </li>
-                <li className="flex items-start">
-                  <CheckCircle className="w-5 h-5 text-blue-500 mt-1 mr-3 flex-shrink-0" />
-                  <span>No bidding wars - you connect directly with interested travelers</span>
-                </li>
-                <li className="flex items-start">
-                  <CheckCircle className="w-5 h-5 text-blue-500 mt-1 mr-3 flex-shrink-0" />
-                  <span>Target by what they want to DO, not who they are</span>
-                </li>
-                <li className="flex items-start">
-                  <CheckCircle className="w-5 h-5 text-blue-500 mt-1 mr-3 flex-shrink-0" />
-                  <span>Build relationships that create repeat business</span>
-                </li>
-              </ul>
+            
+            <div className="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 rounded-xl p-6 text-center">
+              <Star className="w-12 h-12 text-orange-600 mx-auto mb-4" />
+              <h3 className="font-bold text-gray-900 dark:text-white mb-2">High-Value Customers</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Experience seekers, not bargain hunters</p>
+            </div>
+            
+            <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 rounded-xl p-6 text-center">
+              <BarChart3 className="w-12 h-12 text-purple-600 mx-auto mb-4" />
+              <h3 className="font-bold text-gray-900 dark:text-white mb-2">Complete Intelligence</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Interests, budgets, group size, travel dates</p>
             </div>
           </div>
         </div>
