@@ -51,7 +51,7 @@ export default function BusinessLanding() {
           }}
           className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold px-6 py-3 rounded-full shadow-lg transform hover:scale-105 transition-all duration-200"
         >
-          Start Growing →
+          Join Now →
         </Button>
       </div>
 
@@ -88,14 +88,14 @@ export default function BusinessLanding() {
                   className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold text-lg px-8 py-4 rounded-lg shadow-lg transform hover:scale-105 transition-all duration-200"
                 >
                   <Zap className="w-5 h-5 mr-2" />
-                  Start Growing Revenue
+                  Join Now
                 </Button>
                 <Button
                   variant="outline"
                   size="lg"
                   className="border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white font-semibold text-lg px-8 py-4 rounded-lg transition-all duration-200"
                 >
-                  See Success Stories
+                  Join Now
                 </Button>
               </div>
 
@@ -512,7 +512,7 @@ export default function BusinessLanding() {
               size="lg"
               className="bg-white hover:bg-gray-100 text-orange-600 font-bold text-xl px-12 py-4 rounded-lg shadow-lg transform hover:scale-105 transition-all duration-200"
             >
-              Start Growing Revenue Now
+              Join Now
               <ArrowRight className="w-6 h-6 ml-2" />
             </Button>
             <span className="text-sm opacity-75">FREE during beta • No setup fees • Cancel anytime</span>
