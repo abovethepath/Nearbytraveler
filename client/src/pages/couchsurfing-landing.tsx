@@ -213,7 +213,7 @@ export default function CouchsurfingLanding() {
               </li>
               <li className="flex items-start">
                 <Heart className="w-5 h-5 sm:w-6 sm:h-6 text-orange-600 mr-3 sm:mr-4 mt-1 flex-shrink-0" />
-                <span>Reconnect with travelers you meet with our Nearby Friends features</span>
+                <span>Reconnect with travelers you meet with our Discover People Nearby features</span>
               </li>
             </ul>
           </div>
