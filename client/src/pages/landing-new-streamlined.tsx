@@ -283,7 +283,7 @@ export default function LandingStreamlined() {
 
                   {/* Quote */}
                   <blockquote className="text-balance text-lg leading-relaxed text-zinc-800 dark:text-zinc-200 md:text-xl max-w-3xl mx-auto">
-                    "For 15 years, I watched 400+ travelers from 50 countries transform in my living room. A shy person from Japan becomes confident. A lonely traveler from Germany finds their tribe. A business owner from Brazil discovers new perspectives that change everything. I built Nearby Traveler because everyone deserves to feel that life-changing magic."
+                    "For 15 years I opened my home to 400+ travelers from 50 countries. I learned what makes travel unforgettable isn't the sites — it's the people you share them with. Too often, those connections are left to luck. I created Nearby Traveler so no one has to explore — or live in their own city — disconnected."
                   </blockquote>
 
                   {/* Attribution */}
