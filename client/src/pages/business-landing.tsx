@@ -104,12 +104,35 @@ export default function BusinessLanding() {
             <div className="mx-auto max-w-7xl px-2 sm:px-4 md:px-6 py-2 sm:py-4 md:py-6 grid gap-3 sm:gap-4 md:gap-6 md:grid-cols-5 items-center">
               {/* Left text side - wider */}
               <div className="md:col-span-3">
+                <div className="inline-block bg-gradient-to-r from-orange-100 to-blue-100 dark:from-orange-900/30 dark:to-blue-900/30 px-4 py-2 rounded-full mb-4">
+                  <span className="text-sm font-bold text-orange-600 dark:text-orange-400">💰 REVENUE MULTIPLIER</span>
+                </div>
+                
                 <div className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-semibold tracking-tight text-zinc-900 dark:text-white overflow-hidden relative h-[90px] sm:h-[100px] md:h-[120px] lg:h-[140px]">
                   <h1 className="absolute top-0 left-0 w-full animate-in slide-in-from-left-full fade-in duration-700">Access Travelers' Exact Wants & Needs</h1>
                 </div>
-                <div className="mt-3 sm:mt-4 max-w-xl text-sm md:text-base lg:text-lg text-zinc-600 dark:text-zinc-300 overflow-hidden relative h-[80px] sm:h-[100px] md:h-[120px]">
-                  <p className="absolute top-0 left-0 w-full animate-in slide-in-from-left-full fade-in duration-700">Turn location into revenue with real-time deals that convert travelers into customers</p>
+                <div className="mt-3 sm:mt-4 max-w-xl text-sm md:text-base lg:text-lg text-zinc-600 dark:text-zinc-300 overflow-hidden relative h-[100px] sm:h-[120px] md:h-[140px]">
+                  <p className="absolute top-0 left-0 w-full animate-in slide-in-from-left-full fade-in duration-700">
+                    Travelers tell us their interests, activities, and preferences. When they're near your business, your deals automatically push to their phone in real-time.
+                  </p>
                 </div>
+                
+                {/* Value Proposition Quick Points */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
+                  <div className="text-center">
+                    <div className="text-sm font-bold text-orange-600">📍 Geo-Targeting</div>
+                    <div className="text-xs text-gray-600 dark:text-gray-400">Push deals when travelers are nearby</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-sm font-bold text-blue-600">🎯 Interest Matching</div>
+                    <div className="text-xs text-gray-600 dark:text-gray-400">Connect based on exact preferences</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-sm font-bold text-green-600">⚡ Real-Time Alerts</div>
+                    <div className="text-xs text-gray-600 dark:text-gray-400">Instant notifications to their phone</div>
+                  </div>
+                </div>
+                
                 {/* Desktop CTAs */}
                 <div className="hidden sm:flex mt-6 flex-col sm:flex-row gap-4">
                   <button 
@@ -117,16 +140,17 @@ export default function BusinessLanding() {
                       trackEvent('signup_cta_click', 'business_landing', 'join_journey');
                       setLocation('/join');
                     }}
-                    className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200 w-full sm:w-auto"
+                    className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold px-8 py-3 rounded-lg shadow-lg transform hover:scale-105 transition-all duration-200 w-full sm:w-auto"
                     data-testid="button-join-journey"
                   >
-                    Start Growing Revenue
+                    <Zap className="w-5 h-5 mr-2 inline" />
+                    Join Now
                   </button>
                   <button 
                     onClick={() => {
                       document.querySelector('#value-section')?.scrollIntoView({ behavior: 'smooth' });
                     }}
-                    className="rounded-xl border border-zinc-300 px-6 py-3 font-medium hover:bg-zinc-50 dark:border-zinc-600 dark:hover:bg-zinc-800 w-full sm:w-auto"
+                    className="border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white font-semibold px-8 py-3 rounded-lg transition-all duration-200 w-full sm:w-auto"
                     data-testid="button-see-how-it-works"
                   >
                     See How It Works
