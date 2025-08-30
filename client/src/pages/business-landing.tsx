@@ -213,9 +213,9 @@ export default function BusinessLanding() {
       </div>
 
       {/* THE BUSINESS PROBLEM */}
-      <section id="problem-section" className="bg-gradient-to-br from-red-50 to-orange-50 dark:from-gray-800 dark:to-gray-900 py-16">
+      <section id="problem-section" className="bg-gradient-to-br from-red-50 to-orange-50 dark:from-gray-800 dark:to-gray-900 py-6 sm:py-12">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-12">
+          <div className="text-center mb-6 sm:mb-8">
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-6">
               Stop Wasting Money on Ads That Don't Work
             </h2>
@@ -250,9 +250,9 @@ export default function BusinessLanding() {
       </section>
 
       {/* THE SOLUTION: DIRECT CUSTOMER INTENT */}
-      <section className="bg-white dark:bg-gray-900 py-16">
+      <section className="bg-white dark:bg-gray-900 py-6 sm:py-12">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-12">
+          <div className="text-center mb-6 sm:mb-8">
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
               The Solution: Direct Customer Intent
             </h2>
@@ -293,9 +293,9 @@ export default function BusinessLanding() {
       </section>
 
       {/* YOUR BUSINESS ADVANTAGE */}
-      <section className="bg-white dark:bg-gray-900 py-16">
+      <section className="bg-white dark:bg-gray-900 py-6 sm:py-12">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-12">
+          <div className="text-center mb-6 sm:mb-8">
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
               Your Business Advantage
             </h2>
@@ -330,7 +330,7 @@ export default function BusinessLanding() {
       </section>
 
       {/* PROBLEM/SOLUTION SECTION */}
-      <section className="py-16 bg-gradient-to-br from-red-50 to-orange-50 dark:from-gray-800 dark:to-gray-900">
+      <section className="py-6 sm:py-12 bg-gradient-to-br from-red-50 to-orange-50 dark:from-gray-800 dark:to-gray-900">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             {/* Problem Side */}
@@ -387,9 +387,9 @@ export default function BusinessLanding() {
       </section>
 
       {/* BUSINESS ROI SECTION */}
-      <section className="py-16 bg-white dark:bg-gray-900">
+      <section className="py-6 sm:py-12 bg-white dark:bg-gray-900">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-12">
+          <div className="text-center mb-6 sm:mb-8">
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
               The Math That Matters to Your Business
             </h2>
@@ -429,9 +429,9 @@ export default function BusinessLanding() {
       </section>
 
       {/* DEALS & EVENTS SHOWCASE */}
-      <section className="py-16 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20">
+      <section className="py-6 sm:py-12 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-12">
+          <div className="text-center mb-6 sm:mb-8">
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
               Create Deals & Events That Drive Traffic
             </h2>
@@ -494,7 +494,7 @@ export default function BusinessLanding() {
           </div>
 
           {/* Live Widget Preview */}
-          <div className="mt-16">
+          <div className="mt-8 sm:mt-12">
             <h3 className="text-2xl font-bold text-gray-900 dark:text-white text-center mb-8">
               See How Your Deals Look to Travelers
             </h3>
@@ -565,9 +565,9 @@ export default function BusinessLanding() {
       </section>
 
       {/* BUSINESS TYPES SECTION */}
-      <section className="py-16 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900">
+      <section className="py-6 sm:py-12 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-12">
+          <div className="text-center mb-6 sm:mb-8">
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
               Perfect for Revenue-Focused Businesses
             </h2>
@@ -605,7 +605,7 @@ export default function BusinessLanding() {
       </section>
 
       {/* PRICING SECTION - COMPELLING */}
-      <section className="py-16 bg-gradient-to-br from-orange-50 to-blue-50 dark:from-gray-800 dark:to-gray-900">
+      <section className="py-6 sm:py-12 bg-gradient-to-br from-orange-50 to-blue-50 dark:from-gray-800 dark:to-gray-900">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
           <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-8">
             Investment That Pays for Itself
@@ -658,7 +658,7 @@ export default function BusinessLanding() {
       </section>
 
       {/* FOUNDER STORY - BUSINESS FOCUSED */}
-      <section className="py-16 bg-white dark:bg-gray-900">
+      <section className="py-6 sm:py-12 bg-white dark:bg-gray-900">
         <div className="relative">
           <div className="absolute inset-0 bg-gradient-to-r from-orange-50 to-blue-50 dark:from-orange-900/10 dark:to-blue-900/10"></div>
           
@@ -685,7 +685,7 @@ export default function BusinessLanding() {
       </section>
 
       {/* FINAL CTA SECTION */}
-      <section className="py-16 bg-gradient-to-r from-orange-500 to-blue-600 text-white">
+      <section className="py-6 sm:py-12 bg-gradient-to-r from-orange-500 to-blue-600 text-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
           <h2 className="text-3xl sm:text-4xl font-bold mb-6">
             Stop Losing Customers to Competitors

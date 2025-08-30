@@ -36,7 +36,7 @@ export default function NetworkingLanding() {
       <NetworkingHero isAirbnbStyle={isAirbnbStyle} />
 
       {/* Quote Section */}
-      <div className="py-16 bg-white dark:bg-gray-800">
+      <div className="py-6 sm:py-12 bg-white dark:bg-gray-800">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <div className="p-8">
             <p className="text-xl text-gray-800 dark:text-gray-300 leading-relaxed text-center font-light">
@@ -49,7 +49,7 @@ export default function NetworkingLanding() {
         </div>
       </div>
 
-      <main className="flex-1 px-4 py-16">
+      <main className="flex-1 px-4 py-6 sm:py-12">
         
         {/* HOW IT WORKS - TIMELINE */}
         <div className="max-w-6xl mx-auto mb-16">

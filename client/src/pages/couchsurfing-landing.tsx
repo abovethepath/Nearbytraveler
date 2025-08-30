@@ -191,8 +191,8 @@ export default function CouchsurfingLanding() {
         </section>
 
         {/* THE HOSTING JOURNEY - Honest Perspective */}
-        <section id="hosting-journey" className="mx-auto max-w-6xl px-4 sm:px-6 py-12 sm:py-20 bg-gradient-to-br from-orange-50 via-blue-50 to-orange-100 dark:from-orange-900/20 dark:via-blue-900/20 dark:to-orange-800/20 rounded-2xl mb-8 sm:mb-16">
-          <div className="text-center mb-8 sm:mb-16">
+        <section id="hosting-journey" className="mx-auto max-w-6xl px-4 sm:px-6 py-12 sm:py-20 bg-gradient-to-br from-orange-50 via-blue-50 to-orange-100 dark:from-orange-900/20 dark:via-blue-900/20 dark:to-orange-800/20 rounded-2xl mb-8 sm:mb-6 sm:mb-8">
+          <div className="text-center mb-8 sm:mb-6 sm:mb-8">
             <span className="inline-block px-4 sm:px-6 py-2 bg-gradient-to-r from-orange-100 to-blue-100 dark:from-orange-800 dark:to-blue-800 text-orange-800 dark:text-orange-200 text-xs sm:text-sm font-bold rounded-full mb-4">
               FOR EXPERIENCED HOSTS
             </span>
@@ -204,7 +204,7 @@ export default function CouchsurfingLanding() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 mb-8 sm:mb-16">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 mb-8 sm:mb-6 sm:mb-8">
             {/* What You Loved */}
             <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 sm:p-6 md:p-8 shadow-lg border-l-4 border-orange-500">
               <h3 className="text-xl sm:text-2xl font-bold text-orange-700 dark:text-orange-400 mb-4 sm:mb-6 flex items-center">
@@ -286,7 +286,7 @@ export default function CouchsurfingLanding() {
 
 
         {/* HOSTING DOESN'T END - ENHANCEMENT SECTION */}
-        <section className="mx-auto max-w-6xl px-6 py-20 bg-gradient-to-br from-orange-50 via-blue-50 to-orange-100 dark:from-orange-900/20 dark:via-blue-900/20 dark:to-orange-800/20 rounded-2xl mb-16">
+        <section className="mx-auto max-w-6xl px-6 py-20 bg-gradient-to-br from-orange-50 via-blue-50 to-orange-100 dark:from-orange-900/20 dark:via-blue-900/20 dark:to-orange-800/20 rounded-2xl mb-6 sm:mb-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900 dark:text-white mb-6">
               Keep Hosting, Expand Your Impact
@@ -337,7 +337,7 @@ export default function CouchsurfingLanding() {
 
         {/* OPENING UP THE COMMUNITY - EXPANSION SECTION */}
         <section className="mx-auto max-w-6xl px-6 py-20 bg-white dark:bg-gray-900">
-          <div className="text-center mb-16">
+          <div className="text-center mb-6 sm:mb-8">
             <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900 dark:text-white mb-6">
               Opening Our Community to <span className="text-orange-600 dark:text-orange-400">All Travelers</span>
             </h2>
@@ -407,7 +407,7 @@ export default function CouchsurfingLanding() {
         {/* HOW IT WORKS - Couchsurfing Style */}
         <div className="relative z-10 py-20 bg-gradient-to-br from-gray-50 via-green-50 to-blue-50 dark:from-gray-900 dark:via-green-900/20 dark:to-blue-900/20">
           <div className="max-w-7xl mx-auto px-4">
-            <div className="text-center mb-16">
+            <div className="text-center mb-6 sm:mb-8">
               <span className="inline-block px-6 py-2 bg-gradient-to-r from-orange-100 to-blue-100 text-orange-800 text-sm font-bold rounded-full mb-4">
                 HOW IT WORKS
               </span>
@@ -489,7 +489,7 @@ export default function CouchsurfingLanding() {
         </div>
 
         {/* WARM CLOSING */}
-        <section className="text-center py-12 sm:py-16 bg-gradient-to-r from-orange-500 to-blue-600 text-white rounded-2xl mb-8 sm:mb-16">
+        <section className="text-center py-12 sm:py-6 sm:py-12 bg-gradient-to-r from-orange-500 to-blue-600 text-white rounded-2xl mb-8 sm:mb-6 sm:mb-8">
           <div className="max-w-4xl mx-auto px-4 sm:px-6">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-6">
               Ready for the Next Step?

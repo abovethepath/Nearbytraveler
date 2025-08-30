@@ -194,7 +194,7 @@ export default function LocalsLanding() {
         </div>
 
       {/* Live Local Experiences Section */}
-      <div className="py-16 bg-white dark:bg-gray-900">
+      <div className="py-6 sm:py-12 bg-white dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-12 animate-slide-in-left">
             <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black text-gray-900 dark:text-white mb-4 leading-tight px-2">
@@ -208,7 +208,7 @@ export default function LocalsLanding() {
 
 
           {/* Unique Features Section */}
-          <div className="max-w-6xl mx-auto px-4 text-center mb-16">
+          <div className="max-w-6xl mx-auto px-4 text-center mb-6 sm:mb-8">
             <h2 className="text-3xl sm:text-4xl font-bold mb-8 text-gray-900 dark:text-white" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700'}}>
               What Makes Nearby Traveler Special
             </h2>
@@ -296,9 +296,9 @@ export default function LocalsLanding() {
       </div>
 
       {/* How It Works - Modern Steps */}
-      <div className="py-16 bg-white dark:bg-gray-900">
+      <div className="py-6 sm:py-12 bg-white dark:bg-gray-900">
         <div className="max-w-6xl mx-auto px-4">
-          <div className="text-center mb-16">
+          <div className="text-center mb-6 sm:mb-8">
             <h2 className="text-4xl font-black text-gray-900 dark:text-white mb-4">
               Join in 3 Simple Steps
             </h2>

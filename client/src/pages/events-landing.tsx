@@ -185,12 +185,12 @@ export default function EventsLanding() {
       </div>
 
       {/* Sample Events Section */}
-      <div className="px-4 py-16">
-        <div className="max-w-6xl mx-auto mb-16">
-          <h2 className="text-2xl font-light mb-16 text-center text-gray-900 dark:text-white">
+      <div className="px-4 py-6 sm:py-12">
+        <div className="max-w-6xl mx-auto mb-6 sm:mb-8">
+          <h2 className="text-2xl font-light mb-6 sm:mb-8 text-center text-gray-900 dark:text-white">
             Upcoming Local Events & Experiences
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-6 sm:mb-8">
             
             {/* Venice Beach Dance Party */}
             <div className="bg-gray-100 dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transform transition-all duration-300 flex flex-col">
@@ -380,7 +380,7 @@ export default function EventsLanding() {
 
         {/* What Makes Events Special Section */}
         <div className="mt-20 max-w-6xl mx-auto">
-          <h2 className="text-2xl font-light mb-16 text-center text-gray-900 dark:text-white">
+          <h2 className="text-2xl font-light mb-6 sm:mb-8 text-center text-gray-900 dark:text-white">
             What Makes Our Events Special
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-16 mb-20">
@@ -400,7 +400,7 @@ export default function EventsLanding() {
         </div>
 
         {/* Get Started Section - Clean Airbnb Style */}
-        <div className="bg-white dark:bg-gradient-to-r dark:from-orange-600 dark:to-blue-600 py-20 border-t border-gray-200 dark:border-0 mb-16">
+        <div className="bg-white dark:bg-gradient-to-r dark:from-orange-600 dark:to-blue-600 py-20 border-t border-gray-200 dark:border-0 mb-6 sm:mb-8">
           <div className="max-w-4xl mx-auto text-center px-6">
             <h2 className="text-3xl font-light mb-6 text-gray-900 dark:text-white">Ready to Join Events Only The Nearby Traveler Community Knows About?</h2>
             <p className="text-lg mb-10 text-gray-600 dark:text-white dark:opacity-90 font-light">Join others already creating unforgettable experiences together.</p>

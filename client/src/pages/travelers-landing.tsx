@@ -163,10 +163,10 @@ export default function TravelersLanding() {
       </div>
 
 
-      <main className="flex-1 px-4 py-16">
+      <main className="flex-1 px-4 py-6 sm:py-12">
         {/* Why Travelers Love Nearby Traveler */}
-        <div className="max-w-6xl mx-auto text-center mb-20">
-          <h2 className="text-2xl font-light mb-16 text-gray-900 dark:text-white">
+        <div className="max-w-6xl mx-auto text-center mb-8 sm:mb-12">
+          <h2 className="text-2xl font-light mb-6 sm:mb-8 text-gray-900 dark:text-white">
             Why Travelers Choose Nearby Traveler
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-16">
@@ -231,7 +231,7 @@ export default function TravelersLanding() {
         </div>
 
         {/* How It Works for Travelers */}
-        <div className="max-w-6xl mx-auto mb-16">
+        <div className="max-w-6xl mx-auto mb-6 sm:mb-8">
           <h2 className="text-3xl sm:text-4xl font-bold text-center mb-12 text-gray-900 dark:text-white" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700'}}>
             How It Works for Travelers
           </h2>
@@ -261,7 +261,7 @@ export default function TravelersLanding() {
         </div>
 
         {/* Advanced Travel Features */}
-        <div className="max-w-6xl mx-auto mb-16">
+        <div className="max-w-6xl mx-auto mb-6 sm:mb-8">
           <h2 className="text-3xl sm:text-4xl font-bold text-center mb-12 text-gray-900 dark:text-white" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700'}}>
             Advanced Travel Features
           </h2>
@@ -300,7 +300,7 @@ export default function TravelersLanding() {
         </div>
         
         {/* Get Started Section - Enhanced with Multiple CTAs */}
-        <div className="bg-gray-100 dark:bg-gradient-to-r dark:from-orange-600 dark:to-blue-600 text-gray-900 dark:text-white py-16 rounded-2xl shadow-lg dark:shadow-2xl mb-16">
+        <div className="bg-gray-100 dark:bg-gradient-to-r dark:from-orange-600 dark:to-blue-600 text-gray-900 dark:text-white py-6 sm:py-12 rounded-2xl shadow-lg dark:shadow-2xl mb-6 sm:mb-8">
           <div className="max-w-4xl mx-auto text-center px-6">
             <h2 className="text-4xl font-bold mb-4 text-gray-900 dark:text-white">Ready to Explore Like a Local?</h2>
             <p className="text-xl mb-8 text-gray-700 dark:text-white dark:opacity-90">Start your journey of authentic local connections and experiences.</p>
