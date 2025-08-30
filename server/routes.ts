@@ -2953,32 +2953,77 @@ Questions? Just reply to this message. Welcome aboard!
 
       // User type filter
       if (userType && typeof userType === 'string') {
-        const typeList = userType.split(',');
-        whereConditions.push(inArray(users.userType, typeList));
+        const typeList = userType.split(',').map(t => t.trim().toLowerCase()).filter(Boolean);
+        if (typeList.length > 0) {
+          whereConditions.push(or(
+            ...typeList.map(type => eq(users.userType, type))
+          ));
+        }
       }
-      
-      // CRITICAL FIX: Add interests filtering logic
-      if (interests && Array.isArray(interests) && interests.length > 0) {
-        if (process.env.NODE_ENV === 'development') console.log('🎯 INTERESTS FILTER: Searching for users with interests:', interests);
-        
-        const interestsFilter = or(
-          ...interests.map(interest => 
-            sql`${users.interests} && ARRAY[${interest}]::text[]`
-          )
-        );
-        whereConditions.push(interestsFilter);
-      } else if (interests && typeof interests === 'string') {
-        // Handle comma-separated string format
+
+      // Gender filter
+      if (gender && typeof gender === 'string') {
+        const genderList = gender.split(',').map(g => g.trim()).filter(Boolean);
+        if (genderList.length > 0) {
+          whereConditions.push(or(
+            ...genderList.map(g => ilike(users.gender, `%${g}%`))
+          ));
+        }
+      }
+
+      // Sexual preference filter
+      if (sexualPreference && typeof sexualPreference === 'string') {
+        const prefList = sexualPreference.split(',').map(p => p.trim()).filter(Boolean);
+        if (prefList.length > 0) {
+          whereConditions.push(or(
+            ...prefList.map(pref => ilike(users.sexualPreference, `%${pref}%`))
+          ));
+        }
+      }
+
+      // Age range filter
+      if (minAge && !isNaN(parseInt(minAge as string))) {
+        whereConditions.push(gte(users.age, parseInt(minAge as string)));
+      }
+      if (maxAge && !isNaN(parseInt(maxAge as string))) {
+        whereConditions.push(lte(users.age, parseInt(maxAge as string)));
+      }
+
+      // Activities filter
+      if (activities && typeof activities === 'string') {
+        const activityList = activities.split(',').map(a => a.trim()).filter(Boolean);
+        if (activityList.length > 0) {
+          whereConditions.push(or(
+            ...activityList.map(activity => 
+              ilike(users.activities, `%${activity}%`)
+            )
+          ));
+        }
+      }
+
+      // Military status filter
+      if (militaryStatus && typeof militaryStatus === 'string') {
+        const statusList = militaryStatus.split(',').map(s => s.trim()).filter(Boolean);
+        if (statusList.length > 0) {
+          whereConditions.push(or(
+            ...statusList.map(status => 
+              ilike(users.militaryStatus, `%${status}%`)
+            )
+          ));
+        }
+      }
+
+      // Interests filter (fixed)
+      if (interests && typeof interests === 'string') {
         const interestsList = interests.split(',').map(i => i.trim()).filter(Boolean);
         if (interestsList.length > 0) {
-          if (process.env.NODE_ENV === 'development') console.log('🎯 INTERESTS FILTER (string): Searching for users with interests:', interestsList);
+          if (process.env.NODE_ENV === 'development') console.log('🎯 INTERESTS FILTER: Searching for users with interests:', interestsList);
           
-          const interestsFilter = or(
+          whereConditions.push(or(
             ...interestsList.map(interest => 
-              sql`${users.interests} && ARRAY[${interest}]::text[]`
+              ilike(users.interests, `%${interest}%`)
             )
-          );
-          whereConditions.push(interestsFilter);
+          ));
         }
       }
 

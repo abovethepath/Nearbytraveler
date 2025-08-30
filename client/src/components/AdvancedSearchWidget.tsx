@@ -9,10 +9,12 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { ChevronDown, Search, X, Users, Filter } from "lucide-react";
 import { SmartLocationInput } from "@/components/SmartLocationInput";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import type { User } from "@shared/schema";
 import EventCard from "@/components/event-card";
-import { Calendar } from "lucide-react";
+import { Calendar, UserPlus } from "lucide-react";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { authStorage } from "@/lib/auth";
 
 interface AdvancedSearchWidgetProps {
   open: boolean;
@@ -21,6 +23,7 @@ interface AdvancedSearchWidgetProps {
 
 export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidgetProps) {
   const { toast } = useToast();
+  const currentUser = authStorage.getUser();
 
   console.log("🔍 AdvancedSearchWidget render:", { open });
 
@@ -72,6 +75,35 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
   const [eventSearchResults, setEventSearchResults] = useState<any[]>([]);
   const [isAdvancedSearching, setIsAdvancedSearching] = useState(false);
 
+  // Connection functionality
+  const sendConnectionMutation = useMutation({
+    mutationFn: async (targetUserId: number) => {
+      const response = await apiRequest('POST', '/api/connections', {
+        requesterId: currentUser?.id,
+        targetUserId: targetUserId,
+        receiverId: targetUserId
+      });
+      if (!response.ok) throw new Error('Failed to send connection request');
+      return response.json();
+    },
+    onSuccess: (_, targetUserId) => {
+      queryClient.invalidateQueries({ queryKey: [`/api/connections/${currentUser?.id}`] });
+      const targetUser = advancedSearchResults.find(u => u.id === targetUserId);
+      toast({
+        title: "Connection request sent",
+        description: `Your connection request has been sent to @${targetUser?.username}.`,
+      });
+    },
+    onError: (error) => {
+      console.error('Connection error:', error);
+      toast({
+        title: "Connection failed",
+        description: "Failed to send connection request. Please try again.",
+        variant: "destructive",
+      });
+    }
+  });
+
   // Handle checkbox changes for array fields
   const handleCheckboxChange = (field: keyof typeof advancedFilters, value: string, checked: boolean) => {
     setAdvancedFilters(prev => ({
@@ -111,6 +143,9 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
       console.log('🔍 Advanced user search results:', userData);
       
       // Handle the response format: { users: [], total: number, page: number, hasMore: boolean }
+      if (!userResponse.ok) {
+        throw new Error(`Search failed: ${userResponse.status}`);
+      }
       const users = userData.users || userData || [];
       setAdvancedSearchResults(users);
       
@@ -432,12 +467,15 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
                 <Users className="h-5 w-5 text-black dark:text-white" />
                 <h3 className="text-lg font-semibold text-black dark:text-white">Search Results ({advancedSearchResults.length})</h3>
               </div>
-              <div className="grid gap-4 max-h-60 overflow-y-auto">
+              <div className="grid gap-4 max-h-80 overflow-y-auto">
                 {advancedSearchResults.map((user) => (
-                  <Card key={user.id} className="cursor-pointer hover:shadow-md transition-shadow">
+                  <Card key={user.id} className="hover:shadow-md transition-shadow">
                     <CardContent className="p-4">
-                      <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center">
+                      <div className="flex items-start gap-4">
+                        <div 
+                          className="w-12 h-12 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center cursor-pointer"
+                          onClick={() => window.open(`/profile/${user.id}`, '_blank')}
+                        >
                           {user.profileImage ? (
                             <img 
                               src={user.profileImage} 
@@ -451,22 +489,62 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
                           ) : null}
                           <Users className={`h-6 w-6 text-gray-600 ${user.profileImage ? 'hidden' : ''}`} />
                         </div>
-                        <div className="flex-1">
-                          <h4 className="font-medium text-black dark:text-white">@{user.username}</h4>
+                        <div className="flex-1 min-w-0">
+                          <h4 
+                            className="font-medium text-black dark:text-white cursor-pointer hover:text-blue-600 dark:hover:text-blue-400"
+                            onClick={() => window.open(`/profile/${user.id}`, '_blank')}
+                          >
+                            @{user.username}
+                          </h4>
+                          {user.name && (
+                            <p className="text-sm text-gray-800 dark:text-gray-300 font-medium">
+                              {user.name}
+                            </p>
+                          )}
                           <p className="text-sm text-gray-600 dark:text-gray-400">
-                            {user.hometownCity && `${user.hometownCity}, `}
+                            📍 {user.hometownCity && `${user.hometownCity}, `}
                             {user.hometownState}
                           </p>
-                          <div className="flex gap-1 mt-1">
+                          {user.bio && (
+                            <p className="text-xs text-gray-600 dark:text-gray-400 mt-1 line-clamp-2">
+                              {user.bio}
+                            </p>
+                          )}
+                          <div className="flex flex-wrap gap-1 mt-2">
                             <Badge variant="secondary" className="text-xs">
-                              {user.userType || 'User'}
+                              {user.userType === 'traveler' ? '✈️ Traveler' : 
+                               user.userType === 'business' ? '🏢 Business' : '🏠 Local'}
                             </Badge>
                             {user.age && (
                               <Badge variant="outline" className="text-xs">
                                 Age {user.age}
                               </Badge>
                             )}
+                            {user.gender && (
+                              <Badge variant="outline" className="text-xs">
+                                {user.gender}
+                              </Badge>
+                            )}
                           </div>
+                        </div>
+                        <div className="flex flex-col gap-2">
+                          <Button
+                            size="sm"
+                            onClick={() => sendConnectionMutation.mutate(user.id)}
+                            disabled={sendConnectionMutation.isPending}
+                            className="bg-blue-600 hover:bg-blue-700 text-white"
+                          >
+                            <UserPlus className="w-4 h-4 mr-1" />
+                            Connect
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => window.open(`/messages?userId=${user.id}`, '_blank')}
+                            className="border-gray-300 dark:border-gray-600"
+                          >
+                            Message
+                          </Button>
                         </div>
                       </div>
                     </CardContent>
@@ -474,6 +552,27 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
                 ))}
               </div>
             </div>
+          )}
+
+          {/* No Results Message */}
+          {!isAdvancedSearching && advancedSearchResults.length === 0 && eventSearchResults.length === 0 && (
+            (advancedFilters.search || advancedFilters.location || advancedFilters.interests.length > 0 || 
+             advancedFilters.activities.length > 0 || advancedFilters.userType.length > 0) && (
+              <div className="text-center py-8">
+                <Users className="w-12 h-12 mx-auto mb-3 opacity-50 text-gray-400" />
+                <h3 className="text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">No results found</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                  Try adjusting your search filters or search terms
+                </p>
+                <Button
+                  onClick={clearAdvancedFilters}
+                  variant="outline"
+                  size="sm"
+                >
+                  Clear all filters
+                </Button>
+              </div>
+            )
           )}
 
           {/* Event Search Results */}
