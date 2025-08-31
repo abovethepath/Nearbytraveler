@@ -17,25 +17,49 @@ import {
   type BusinessOfferData,
   type LocationMatchData
 } from '../templates/emailTemplates.js';
+import sgMail from '@sendgrid/mail';
 
 export class EmailService {
   private sgMail: any;
+  private isInitialized: boolean = false;
 
   constructor() {
-    this.initializeSendGrid();
+    this.ensureInitialized();
   }
 
-  private async initializeSendGrid() {
+  private ensureInitialized() {
+    console.log('🔍 SENDGRID DEBUG: Checking initialization. Current state:', {
+      isInitialized: this.isInitialized,
+      hasApiKey: !!process.env.SENDGRID_API_KEY,
+      apiKeyPrefix: process.env.SENDGRID_API_KEY?.substring(0, 10)
+    });
+
+    if (this.isInitialized) {
+      console.log('✅ SendGrid already initialized');
+      return;
+    }
+
     if (process.env.SENDGRID_API_KEY) {
-      const sgMail = await import('@sendgrid/mail');
-      this.sgMail = sgMail.default;
-      this.sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+      try {
+        console.log('🔧 Attempting SendGrid initialization...');
+        this.sgMail = sgMail;
+        this.sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+        this.isInitialized = true;
+        console.log('✅ SendGrid initialized successfully with key starting with:', process.env.SENDGRID_API_KEY.substring(0, 10));
+      } catch (error) {
+        console.error('❌ SendGrid initialization failed:', error);
+      }
+    } else {
+      console.log('⚠️ SENDGRID_API_KEY not found - emails will not be sent');
     }
   }
 
   private async sendEmail(to: string, subject: string, html: string, text?: string) {
-    if (!this.sgMail) {
-      console.log('SendGrid not configured - email not sent');
+    // Ensure initialization before each send
+    this.ensureInitialized();
+    
+    if (!this.sgMail || !this.isInitialized) {
+      console.log('SendGrid not properly initialized - email not sent');
       console.log(`Email would be sent to: ${to}`);
       console.log(`Subject: ${subject}`);
       return false;
@@ -44,17 +68,35 @@ export class EmailService {
     try {
       const msg = {
         to,
-        from: 'aaron_marc2004@yahoo.com', // Your verified email address
+        from: 'aaron_marc2004@yahoo.com', // Verified sender address
         subject,
         html,
         text
       };
 
+      console.log('📧 Sending email:', { to, from: msg.from, subject });
+
       await this.sgMail.send(msg);
       console.log(`Email sent successfully to ${to}: ${subject}`);
       return true;
-    } catch (error) {
-      console.error('Email sending failed:', error);
+    } catch (error: any) {
+      console.error('📧 SendGrid Email sending failed:', error.message);
+      if (error.code === 401) {
+        console.error('❌ SendGrid API authentication failed (401 Unauthorized)');
+        const errorBody = error.response?.body;
+        console.error('🔍 Error details:', JSON.stringify(errorBody, null, 2));
+        
+        // Check for specific error conditions
+        if (errorBody?.errors?.some((e: any) => e.message?.includes('Maximum credits exceeded'))) {
+          console.error('💳 CRITICAL: SendGrid account has exceeded its credit limit!');
+          console.error('📞 Contact the account owner to add more SendGrid credits.');
+        } else {
+          console.error('🔍 This usually means:');
+          console.error('   1. API key is invalid/expired');
+          console.error('   2. Sender email domain is not verified in SendGrid');
+          console.error('   3. API key does not have permission to send emails');
+        }
+      }
       return false;
     }
   }
