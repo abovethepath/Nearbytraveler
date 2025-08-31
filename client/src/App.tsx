@@ -74,6 +74,43 @@ import Passport from "@/pages/passport";
 import Auth from "@/pages/auth";
 import JoinNowWidgetNew from "@/components/join-now-widget-new";
 import Logo from "@/components/logo";
+
+// Join page component with sign in option
+function JoinPageWithSignIn() {
+  const [, setLocation] = useLocation();
+  
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        <div className="text-center mb-8">
+          <div className="flex justify-center mb-4">
+            <Logo className="h-16 w-auto" />
+          </div>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+            Join Nearby Traveler
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400">
+            Find real connections that last
+          </p>
+        </div>
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+          <JoinNowWidgetNew />
+        </div>
+        <div className="text-center mt-4">
+          <p className="text-gray-600 dark:text-gray-400">
+            Already have an account?{" "}
+            <button 
+              onClick={() => setLocation('/auth')}
+              className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium underline"
+            >
+              Sign In
+            </button>
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
 // import SignupLocal from "@/pages/signup-local"; // Removed broken file
 import SignupLocalTraveler from "@/pages/signup-local-traveler";
 import SignupTraveling from "@/pages/signup-traveling";
@@ -513,26 +550,7 @@ function Router() {
       // Allow access to join page - restore original working route
       if (location === '/join') {
         console.log('Showing Join page with signup form');
-        return (
-          <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
-            <div className="w-full max-w-md">
-              <div className="text-center mb-8">
-                <div className="flex justify-center mb-4">
-                  <Logo className="h-16 w-auto" />
-                </div>
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                  Join Nearby Traveler
-                </h1>
-                <p className="text-gray-600 dark:text-gray-400">
-                  Find real connections that last
-                </p>
-              </div>
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
-                <JoinNowWidgetNew />
-              </div>
-            </div>
-          </div>
-        );
+        return <JoinPageWithSignIn />;
       }
 
       // Show landing page
