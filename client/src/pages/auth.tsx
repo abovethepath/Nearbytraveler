@@ -284,193 +284,73 @@ export default function Auth() {
           <CardContent className="space-y-6">
             {!isLogin ? (
               <>
-                {/* Comprehensive Signup Form */}
-                <div className="space-y-6 max-h-96 overflow-y-auto">
-                  
-                  {/* Basic Account Info */}
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Account Information</h3>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="name" className="text-sm font-medium text-gray-900 dark:text-white">Full Name *</Label>
-                        <Input
-                          id="name"
-                          type="text"
-                          value={formData.name}
-                          onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                          placeholder="Your full name"
-                          className="text-sm py-2"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="username" className="text-sm font-medium text-gray-900 dark:text-white">Username *</Label>
-                        <Input
-                          id="username"
-                          type="text"
-                          value={formData.username}
-                          onChange={(e) => setFormData(prev => ({ ...prev, username: e.target.value }))}
-                          placeholder="Choose a username"
-                          className="text-sm py-2"
-                        />
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <Label htmlFor="email" className="text-sm font-medium text-gray-900 dark:text-white">Email *</Label>
-                      <Input
-                        id="email"
-                        type="email"
-                        value={formData.email}
-                        onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                        placeholder="Enter your email"
-                        className="text-sm py-2"
-                      />
-                    </div>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="password" className="text-sm font-medium text-gray-900 dark:text-white">Password *</Label>
-                        <Input
-                          id="password"
-                          type="password"
-                          value={formData.password}
-                          onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
-                          placeholder="Create a password"
-                          className="text-sm py-2"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="confirmPassword" className="text-sm font-medium text-gray-900 dark:text-white">Confirm Password *</Label>
-                        <Input
-                          id="confirmPassword"
-                          type="password"
-                          value={formData.confirmPassword}
-                          onChange={(e) => setFormData(prev => ({ ...prev, confirmPassword: e.target.value }))}
-                          placeholder="Confirm your password"
-                          className="text-sm py-2"
-                        />
-                      </div>
-                    </div>
+                {/* Simple Signup Form */}
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="signupName" className="text-base md:text-lg font-medium text-gray-900 dark:text-white text-crisp">Name</Label>
+                    <Input
+                      id="signupName"
+                      type="text"
+                      value={formData.name}
+                      onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                      placeholder="Your name"
+                      className="text-base py-3 text-crisp font-medium"
+                    />
                   </div>
-
-                  {/* Personal Information */}
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Personal Information</h3>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="dateOfBirth" className="text-sm font-medium text-gray-900 dark:text-white">Date of Birth *</Label>
-                        <Input
-                          id="dateOfBirth"
-                          type="date"
-                          value={formData.dateOfBirth}
-                          onChange={(e) => setFormData(prev => ({ ...prev, dateOfBirth: e.target.value }))}
-                          className="text-sm py-2"
-                        />
-                      </div>
-                      <div>
-                        <Label className="text-sm font-medium text-gray-900 dark:text-white">User Type</Label>
-                        <Select value={formData.userType} onValueChange={(value: any) => setFormData(prev => ({ ...prev, userType: value }))}>
-                          <SelectTrigger className="text-sm py-2">
-                            <SelectValue placeholder="I am a..." />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="traveler">Traveler</SelectItem>
-                            <SelectItem value="local">Local</SelectItem>
-                            <SelectItem value="business">Business</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
+                  <div>
+                    <Label htmlFor="signupUsername" className="text-base md:text-lg font-medium text-gray-900 dark:text-white text-crisp">Username</Label>
+                    <Input
+                      id="signupUsername"
+                      type="text"
+                      value={formData.username}
+                      onChange={(e) => setFormData(prev => ({ ...prev, username: e.target.value }))}
+                      placeholder="Choose a username"
+                      className="text-base py-3 text-crisp font-medium"
+                    />
                   </div>
-
-                  {/* Location */}
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Location</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div>
-                        <Label htmlFor="hometownCountry" className="text-sm font-medium text-gray-900 dark:text-white">Country</Label>
-                        <Input
-                          id="hometownCountry"
-                          type="text"
-                          value={formData.hometownCountry}
-                          onChange={(e) => setFormData(prev => ({ ...prev, hometownCountry: e.target.value }))}
-                          placeholder="e.g., United States"
-                          className="text-sm py-2"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="hometownCity" className="text-sm font-medium text-gray-900 dark:text-white">City</Label>
-                        <Input
-                          id="hometownCity"
-                          type="text"
-                          value={formData.hometownCity}
-                          onChange={(e) => setFormData(prev => ({ ...prev, hometownCity: e.target.value }))}
-                          placeholder="e.g., Los Angeles"
-                          className="text-sm py-2"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="hometownState" className="text-sm font-medium text-gray-900 dark:text-white">State/Province</Label>
-                        <Input
-                          id="hometownState"
-                          type="text"
-                          value={formData.hometownState}
-                          onChange={(e) => setFormData(prev => ({ ...prev, hometownState: e.target.value }))}
-                          placeholder="e.g., California"
-                          className="text-sm py-2"
-                        />
-                      </div>
-                    </div>
+                  <div>
+                    <Label htmlFor="signupEmail" className="text-base md:text-lg font-medium text-gray-900 dark:text-white text-crisp">Email</Label>
+                    <Input
+                      id="signupEmail"
+                      type="email"
+                      value={formData.email}
+                      onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                      placeholder="Enter your email"
+                      className="text-base py-3 text-crisp font-medium"
+                    />
                   </div>
-
-                  {/* Quick Interests Selection */}
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Interests (Select a few to get started)</h3>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                      {MOST_POPULAR_INTERESTS.slice(0, 12).map(interest => (
-                        <div key={interest} className="flex items-center space-x-2">
-                          <Checkbox
-                            id={`interest-${interest}`}
-                            checked={formData.interests.includes(interest)}
-                            onCheckedChange={(checked) => {
-                              if (checked) {
-                                setFormData(prev => ({ ...prev, interests: [...prev.interests, interest] }));
-                              } else {
-                                setFormData(prev => ({ ...prev, interests: prev.interests.filter(i => i !== interest) }));
-                              }
-                            }}
-                          />
-                          <Label htmlFor={`interest-${interest}`} className="text-xs">{interest}</Label>
-                        </div>
-                      ))}
-                    </div>
+                  <div>
+                    <Label htmlFor="signupPassword" className="text-base md:text-lg font-medium text-gray-900 dark:text-white text-crisp">Password</Label>
+                    <Input
+                      id="signupPassword"
+                      type="password"
+                      value={formData.password}
+                      onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
+                      placeholder="Create a password"
+                      className="text-base py-3 text-crisp font-medium"
+                    />
                   </div>
-
-                  {/* Travel Status */}
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Travel Status</h3>
-                    <div className="space-y-2">
-                      <div className="flex items-center space-x-2">
-                        <Checkbox
-                          id="isCurrentlyTraveling"
-                          checked={formData.isCurrentlyTraveling}
-                          onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isCurrentlyTraveling: !!checked }))}
-                        />
-                        <Label htmlFor="isCurrentlyTraveling" className="text-sm">I am currently traveling</Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Checkbox
-                          id="travelingWithChildren"
-                          checked={formData.travelingWithChildren}
-                          onCheckedChange={(checked) => setFormData(prev => ({ ...prev, travelingWithChildren: !!checked }))}
-                        />
-                        <Label htmlFor="travelingWithChildren" className="text-sm">I travel with children</Label>
-                      </div>
-                    </div>
+                  <div>
+                    <Label htmlFor="confirmPassword" className="text-base md:text-lg font-medium text-gray-900 dark:text-white text-crisp">Confirm Password</Label>
+                    <Input
+                      id="confirmPassword"
+                      type="password"
+                      value={formData.confirmPassword}
+                      onChange={(e) => setFormData(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                      placeholder="Confirm your password"
+                      className="text-base py-3 text-crisp font-medium"
+                    />
                   </div>
-
+                  <div>
+                    <Label htmlFor="dateOfBirth" className="text-base md:text-lg font-medium text-gray-900 dark:text-white text-crisp">Date of Birth</Label>
+                    <Input
+                      id="dateOfBirth"
+                      type="date"
+                      value={formData.dateOfBirth}
+                      onChange={(e) => setFormData(prev => ({ ...prev, dateOfBirth: e.target.value }))}
+                      className="text-base py-3 text-crisp font-medium"
+                    />
+                  </div>
                 </div>
 
                 <div className="mt-8 pt-4 space-y-3">
