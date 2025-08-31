@@ -518,7 +518,7 @@ function Router() {
             <div className="w-full max-w-md">
               <div className="text-center mb-8">
                 <div className="flex justify-center mb-4">
-                  <Logo className="h-12 w-auto" />
+                  <Logo className="h-16 w-auto" />
                 </div>
                 <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
                   Join Nearby Traveler
