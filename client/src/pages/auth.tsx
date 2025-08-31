@@ -4,62 +4,38 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Textarea } from "@/components/ui/textarea";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import Logo from "@/components/logo";
 import { authStorage } from "@/lib/auth";
-import { SmartLocationInput } from "@/components/SmartLocationInput";
-import { getAllInterests, getAllActivities, getAllEvents, getAllLanguages, MOST_POPULAR_INTERESTS } from "../../../shared/base-options";
-import { GENDER_OPTIONS, SEXUAL_PREFERENCE_OPTIONS } from "@/lib/formConstants";
 import JoinNowWidgetNew from "@/components/join-now-widget-new";
 // Background image handled via direct path in CSS
 
 
 export default function Auth() {
   console.log('🟢 AUTH PAGE IS LOADING - URL:', window.location.pathname);
+  
+  const [, setLocation] = useLocation();
   const { toast } = useToast();
-  const [location, setLocation] = useLocation();
 
-  // Check URL for signup mode - /join should show signup, /auth should show login
+  // Check if we're on the join page or in register mode
   const urlParams = new URLSearchParams(window.location.search);
   const mode = urlParams.get('mode');
   const isJoinPage = window.location.pathname === '/join';
   const [isLogin, setIsLogin] = useState(!isJoinPage && mode !== 'register');
+  
+  // Basic form fields
   const [formData, setFormData] = useState({
-    // Basic auth fields
     email: "",
     password: "",
     confirmPassword: "",
     username: "",
     name: "",
-    
-    // Personal info
     dateOfBirth: "",
-    gender: "",
-    sexualPreference: [] as string[],
-    languagesSpoken: [] as string[],
-    
-    // Location
     hometownCountry: "",
     hometownCity: "",
     hometownState: "",
-    
-    // Interests & Activities
-    interests: [] as string[],
-    activities: [] as string[],
-    events: [] as string[],
-    
-    // Demographics
-    isVeteran: false,
-    isActiveDuty: false,
-    travelingWithChildren: false,
-    isCurrentlyTraveling: false,
-    
-    // User type
-    userType: "traveler" as "traveler" | "local" | "business"
+    userType: "traveler"
   });
   
   const [isLoading, setIsLoading] = useState(false);
@@ -88,43 +64,36 @@ export default function Auth() {
       console.log('Login response status:', response.status);
       if (response.ok) {
         const user = await response.json();
-        console.log('Login successful:', user.username);
-
-        // Store the actual user object from the response
-        authStorage.setUser(user.user);
-
-        // Invalidate queries to refresh data
-        queryClient.invalidateQueries();
-
+        console.log('Login successful, user:', user);
+        
+        // Store auth data
+        authStorage.setUser(user);
+        authStorage.setAuthToken('authenticated');
+        
+        // Invalidate auth queries to refresh user state
+        queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+        
         toast({
           title: "Welcome back!",
-          description: "Successfully signed in.",
+          description: "Successfully logged in.",
         });
-
-        // Redirect users to appropriate welcome page based on user type
-        console.log('Login response user object:', user);
-        if (user?.userType === 'business' || user?.user?.userType === 'business') {
-          console.log('Redirecting business user to business welcome page');
-          setLocation("/welcome-business");
-        } else {
-          console.log('Redirecting to traveler/local welcome page');
-          setLocation("/welcome");
-        }
-        return;
+        
+        // Redirect to home
+        setLocation('/');
       } else {
-        const error = await response.json();
-        console.log('Login error:', error);
+        const error = await response.text();
+        console.log('Login failed with error:', error);
         toast({
-          title: "Sign in failed",
-          description: error.message || "Invalid email or password.",
+          title: "Login failed",
+          description: error || "Invalid credentials. Please try again.",
           variant: "destructive",
         });
       }
     } catch (error) {
-      console.error("Login error:", error);
+      console.error('Login error:', error);
       toast({
-        title: "Connection error",
-        description: "Unable to connect to server.",
+        title: "Login failed",
+        description: "Network error. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -135,14 +104,10 @@ export default function Auth() {
   const handleSignup = async () => {
     console.log('handleSignup called with data:', formData);
     
-    // Validate required fields
-    const requiredFields = ['email', 'password', 'confirmPassword', 'username', 'name', 'dateOfBirth'];
-    const missingFields = requiredFields.filter(field => !formData[field as keyof typeof formData]);
-    
-    if (missingFields.length > 0) {
+    if (!formData.email || !formData.password || !formData.confirmPassword || !formData.username || !formData.name) {
       toast({
-        title: "Missing required fields",
-        description: `Please fill in: ${missingFields.join(', ')}`,
+        title: "Missing fields",
+        description: "Please fill in all required fields.",
         variant: "destructive",
       });
       return;
@@ -157,67 +122,58 @@ export default function Auth() {
       return;
     }
 
-    // Validate age
-    const birthDate = new Date(formData.dateOfBirth);
-    const today = new Date();
-    let age = today.getFullYear() - birthDate.getFullYear();
-    if (today.getMonth() < birthDate.getMonth() || 
-        (today.getMonth() === birthDate.getMonth() && today.getDate() < birthDate.getDate())) {
-      age--;
-    }
-    
-    if (age < 16) {
-      toast({
-        title: "Age requirement",
-        description: "You must be at least 16 years old to register.",
-        variant: "destructive",
-      });
-      return;
-    }
-
     setIsLoading(true);
-    console.log('Starting comprehensive signup request...');
+    console.log('Starting signup request...');
     try {
       const response = await fetch('/api/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          ...formData,
           email: formData.email.toLowerCase().trim(),
+          password: formData.password,
           username: formData.username.trim(),
-          name: formData.name.trim()
+          name: formData.name.trim(),
+          dateOfBirth: formData.dateOfBirth,
+          hometownCountry: formData.hometownCountry,
+          hometownCity: formData.hometownCity,
+          hometownState: formData.hometownState,
+          userType: formData.userType
         }),
       });
 
       console.log('Signup response status:', response.status);
       if (response.ok) {
         const user = await response.json();
-        console.log('Signup successful:', user);
-
+        console.log('Signup successful, user:', user);
+        
+        // Store auth data
+        authStorage.setUser(user);
+        authStorage.setAuthToken('authenticated');
+        
+        // Invalidate auth queries to refresh user state
+        queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+        
         toast({
           title: "Welcome to Nearby Traveler!",
           description: "Your account has been created successfully.",
         });
-
-        // Auto-login after successful signup
-        authStorage.setUser(user.user);
-        queryClient.invalidateQueries();
-        setLocation("/welcome");
-        return;
+        
+        // Redirect to home
+        setLocation('/');
       } else {
-        const error = await response.json();
-        console.log('Signup error:', error);
+        const error = await response.text();
+        console.log('Signup failed with error:', error);
         toast({
-          title: "Sign up failed",
-          description: error.message || "Unable to create account.",
+          title: "Signup failed",
+          description: error || "Failed to create account. Please try again.",
           variant: "destructive",
         });
       }
     } catch (error) {
-      console.error("Signup error:", error);
+      console.error('Signup error:', error);
       toast({
-        title: "Connection error",
-        description: "Unable to connect to server.",
+        title: "Signup failed",
+        description: "Network error. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -226,137 +182,149 @@ export default function Auth() {
   };
 
   return (
-    <>
-      <style>
-        {`
-          .join-page-gradient-button, .login-page-gradient-button {
-            background: linear-gradient(135deg, #3b82f6 0%, #f97316 100%) !important;
-            color: #000000 !important;
-            border: none !important;
-          }
-          .join-page-gradient-button:disabled, .login-page-gradient-button:disabled {
-            background: #9ca3af !important;
-            color: #ffffff !important;
-          }
-          .join-page-background, .login-page-background {
-            background-image: linear-gradient(135deg, rgba(59, 130, 246, 0.3) 0%, rgba(249, 115, 22, 0.3) 100%), url('/assets/travelers-map.webp') !important;
-            background-size: cover !important;
-            background-position: center !important;
-            background-repeat: no-repeat !important;
-            background-attachment: fixed !important;
-          }
-          .auth-page-card {
-            border: 3px solid rgba(59, 130, 246, 0.3) !important;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2) !important;
-          }
-        `}
-      </style>
-      <div className={`${!isLogin ? 'join-page-background' : 'login-page-background'} min-h-screen flex flex-col items-center justify-center p-4 relative`}>
-      {/* Overlay to maintain readability */}
-      <div className="absolute inset-0 bg-white/10 dark:bg-gray-900/20"></div>
-      <div className="w-full max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl relative z-10">
-        <Card className="auth-page-card shadow-2xl border-4 border-blue-500/50 bg-white/80 dark:bg-gray-900/95 backdrop-blur-md">
-          <CardHeader className="text-center">
-            <div className="flex justify-start mb-4">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setLocation('/')}
-                className="text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
-              >
-                ← Back
-              </Button>
+    <div 
+      className="min-h-screen flex items-center justify-center p-4"
+      style={{
+        background: `linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0.1) 100%), url('/hero-image-7.webp')`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      }}
+    >
+      <div className="w-full max-w-2xl">
+        <Card className="bg-white/95 backdrop-blur-sm shadow-2xl border-0">
+          <CardHeader className="text-center pb-8">
+            <div className="flex justify-center mb-6">
+              <Logo width="60" height="60" />
             </div>
-            <div className="flex justify-center mb-2">
-              <div className="scale-[6.3] transform-gpu">
-                <Logo variant="landing" />
-              </div>
-            </div>
-            <CardTitle className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white text-crisp leading-tight">
-              {isLogin ? "Welcome Back" : "Join Nearby Traveler"}
+            <CardTitle className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">
+              {isLogin ? 'Welcome Back' : 'Join Nearby Traveler'}
             </CardTitle>
-            {!isLogin && (
-              <p className="text-sm md:text-base text-gray-600 dark:text-gray-300 mt-2 leading-relaxed text-crisp">
-                Start Connecting with Nearby Locals and Nearby Travelers Today Based on Common Interests and Demographics
+            {isJoinPage && (
+              <p className="text-lg text-gray-600 mt-2">
+                Connect with travelers and locals worldwide
               </p>
             )}
           </CardHeader>
           <CardContent className="space-y-6">
             {!isLogin ? (
               <>
-                {/* Simple Signup Form */}
+                {/* Signup Form */}
                 <div className="space-y-4">
-                  <div>
-                    <Label htmlFor="signupName" className="text-base md:text-lg font-medium text-gray-900 dark:text-white text-crisp">Name</Label>
-                    <Input
-                      id="signupName"
-                      type="text"
-                      value={formData.name}
-                      onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                      placeholder="Your name"
-                      className="text-base py-3 text-crisp font-medium"
-                    />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="name" className="text-base font-medium text-gray-900">Name *</Label>
+                      <Input
+                        id="name"
+                        type="text"
+                        value={formData.name}
+                        onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                        placeholder="Your full name"
+                        className="text-base py-3"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="username" className="text-base font-medium text-gray-900">Username *</Label>
+                      <Input
+                        id="username"
+                        type="text"
+                        value={formData.username}
+                        onChange={(e) => setFormData(prev => ({ ...prev, username: e.target.value }))}
+                        placeholder="Choose a username"
+                        className="text-base py-3"
+                      />
+                    </div>
                   </div>
+                  
                   <div>
-                    <Label htmlFor="signupUsername" className="text-base md:text-lg font-medium text-gray-900 dark:text-white text-crisp">Username</Label>
+                    <Label htmlFor="email" className="text-base font-medium text-gray-900">Email *</Label>
                     <Input
-                      id="signupUsername"
-                      type="text"
-                      value={formData.username}
-                      onChange={(e) => setFormData(prev => ({ ...prev, username: e.target.value }))}
-                      placeholder="Choose a username"
-                      className="text-base py-3 text-crisp font-medium"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="signupEmail" className="text-base md:text-lg font-medium text-gray-900 dark:text-white text-crisp">Email</Label>
-                    <Input
-                      id="signupEmail"
+                      id="email"
                       type="email"
                       value={formData.email}
                       onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
                       placeholder="Enter your email"
-                      className="text-base py-3 text-crisp font-medium"
+                      className="text-base py-3"
                     />
                   </div>
-                  <div>
-                    <Label htmlFor="signupPassword" className="text-base md:text-lg font-medium text-gray-900 dark:text-white text-crisp">Password</Label>
-                    <Input
-                      id="signupPassword"
-                      type="password"
-                      value={formData.password}
-                      onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
-                      placeholder="Create a password"
-                      className="text-base py-3 text-crisp font-medium"
-                    />
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="password" className="text-base font-medium text-gray-900">Password *</Label>
+                      <Input
+                        id="password"
+                        type="password"
+                        value={formData.password}
+                        onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
+                        placeholder="Create a password"
+                        className="text-base py-3"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="confirmPassword" className="text-base font-medium text-gray-900">Confirm Password *</Label>
+                      <Input
+                        id="confirmPassword"
+                        type="password"
+                        value={formData.confirmPassword}
+                        onChange={(e) => setFormData(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                        placeholder="Confirm your password"
+                        className="text-base py-3"
+                      />
+                    </div>
                   </div>
+                  
                   <div>
-                    <Label htmlFor="confirmPassword" className="text-base md:text-lg font-medium text-gray-900 dark:text-white text-crisp">Confirm Password</Label>
-                    <Input
-                      id="confirmPassword"
-                      type="password"
-                      value={formData.confirmPassword}
-                      onChange={(e) => setFormData(prev => ({ ...prev, confirmPassword: e.target.value }))}
-                      placeholder="Confirm your password"
-                      className="text-base py-3 text-crisp font-medium"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="dateOfBirth" className="text-base md:text-lg font-medium text-gray-900 dark:text-white text-crisp">Date of Birth</Label>
+                    <Label htmlFor="dateOfBirth" className="text-base font-medium text-gray-900">Date of Birth</Label>
                     <Input
                       id="dateOfBirth"
                       type="date"
                       value={formData.dateOfBirth}
                       onChange={(e) => setFormData(prev => ({ ...prev, dateOfBirth: e.target.value }))}
-                      className="text-base py-3 text-crisp font-medium"
+                      className="text-base py-3"
                     />
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <Label htmlFor="country" className="text-base font-medium text-gray-900">Country</Label>
+                      <Input
+                        id="country"
+                        type="text"
+                        value={formData.hometownCountry}
+                        onChange={(e) => setFormData(prev => ({ ...prev, hometownCountry: e.target.value }))}
+                        placeholder="e.g., United States"
+                        className="text-base py-3"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="city" className="text-base font-medium text-gray-900">City</Label>
+                      <Input
+                        id="city"
+                        type="text"
+                        value={formData.hometownCity}
+                        onChange={(e) => setFormData(prev => ({ ...prev, hometownCity: e.target.value }))}
+                        placeholder="e.g., Los Angeles"
+                        className="text-base py-3"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="state" className="text-base font-medium text-gray-900">State</Label>
+                      <Input
+                        id="state"
+                        type="text"
+                        value={formData.hometownState}
+                        onChange={(e) => setFormData(prev => ({ ...prev, hometownState: e.target.value }))}
+                        placeholder="e.g., California"
+                        className="text-base py-3"
+                      />
+                    </div>
                   </div>
                 </div>
 
                 <div className="mt-8 pt-4 space-y-3">
                   <Button
                     onClick={handleSignup}
-                    disabled={isLoading || !formData.email || !formData.password || !formData.confirmPassword || !formData.username || !formData.name || !formData.dateOfBirth}
+                    disabled={isLoading || !formData.email || !formData.password || !formData.confirmPassword || !formData.username || !formData.name}
                     className="join-page-gradient-button w-full py-3 px-4 rounded-md font-bold text-center select-none text-base md:text-lg text-crisp"
                   >
                     {isLoading ? "Creating Account..." : "Join Nearby Traveler"}
@@ -372,8 +340,8 @@ export default function Auth() {
                     <Input
                       id="loginEmail"
                       type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                      value={formData.email}
+                      onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
                       placeholder="Enter your email"
                       className="text-base py-3 text-crisp font-medium"
                     />
@@ -383,8 +351,8 @@ export default function Auth() {
                     <Input
                       id="loginPassword"
                       type="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
+                      value={formData.password}
+                      onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
                       placeholder="Enter your password"
                       className="text-base py-3 text-crisp font-medium"
                     />
@@ -394,36 +362,33 @@ export default function Auth() {
                 <div className="mt-8 pt-4 space-y-3">
                   <Button
                     onClick={handleLogin}
-                    disabled={isLoading || !email || !password}
-                    className="login-page-gradient-button w-full py-3 px-4 rounded-md font-bold text-center select-none text-base md:text-lg text-crisp"
+                    disabled={isLoading || !formData.email || !formData.password}
+                    className="join-page-gradient-button w-full py-3 px-4 rounded-md font-bold text-center select-none text-base md:text-lg text-crisp"
                   >
                     {isLoading ? "Signing In..." : "Sign In"}
                   </Button>
                 </div>
-
-                <div className="text-center space-y-2">
-                  <button
-                    onClick={() => setLocation('/forgot-password')}
-                    className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm"
-                  >
-                    Forgot Password?
-                  </button>
-                </div>
               </>
             )}
 
-            <div className="text-center mt-6">
+            <div className="text-center pt-4">
               <button
                 onClick={() => setIsLogin(!isLogin)}
-                className="text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:text-gray-100 text-sm font-medium"
+                className="text-blue-600 hover:text-blue-800 font-medium"
               >
-                {isLogin ? "Registration temporarily disabled - Launch coming soon!" : "Already have an account? Sign In"}
+                {isLogin ? "Need an account? Sign up" : "Already have an account? Sign in"}
               </button>
             </div>
           </CardContent>
         </Card>
+
+        {/* Join Now Widget for join page */}
+        {isJoinPage && !isLogin && (
+          <div className="mt-8">
+            <JoinNowWidgetNew />
+          </div>
+        )}
       </div>
-      </div>
-    </>
+    </div>
   );
 }
