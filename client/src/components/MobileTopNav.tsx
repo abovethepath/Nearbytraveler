@@ -20,19 +20,41 @@ export function MobileTopNav() {
   const [showDropdown, setShowDropdown] = useState(false);
   const [currentUser, setCurrentUser] = useState<any>(null);
 
-  // hydrate currentUser from best source available
+  // hydrate currentUser from best source available - fixed for auth consistency
   useEffect(() => {
-    if (user?.username) return setCurrentUser(user);
-    const storedUser = authStorage.getUser();
-    if (storedUser?.username) return setCurrentUser(storedUser);
-    try {
-      const raw = localStorage.getItem("travelconnect_user");
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        if (parsed?.username) return setCurrentUser(parsed);
+    console.log('🔍 MobileTopNav hydrating user - AuthContext user:', user?.username);
+    
+    // Try multiple sources in order of preference
+    let effectiveUser = null;
+    
+    // 1. AuthContext user (should be primary)
+    if (user?.username) {
+      effectiveUser = user;
+      console.log('✅ Using AuthContext user:', user.username);
+    } 
+    // 2. AuthStorage 
+    else {
+      const storedUser = authStorage.getUser();
+      if (storedUser?.username) {
+        effectiveUser = storedUser;
+        console.log('✅ Using authStorage user:', storedUser.username);
+      } else {
+        // 3. Raw localStorage as fallback
+        try {
+          const raw = localStorage.getItem("user") || localStorage.getItem("travelconnect_user");
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (parsed?.username) {
+              effectiveUser = parsed;
+              console.log('✅ Using localStorage user:', parsed.username);
+            }
+          }
+        } catch {}
       }
-    } catch {}
-    setCurrentUser(null);
+    }
+    
+    setCurrentUser(effectiveUser);
+    console.log('🔍 Final currentUser set to:', effectiveUser?.username || 'null');
   }, [user]);
 
   // close on profile updates
@@ -207,14 +229,21 @@ export function MobileTopNav() {
               className="px-4 py-3 text-left hover:bg-red-50 dark:hover:bg-red-900/20 border-t border-gray-200 dark:border-gray-700 text-red-600 dark:text-red-400 font-medium"
               onClick={() => {
                 console.log('🚪 Mobile logout button clicked');
-                console.log('🚪 Logout function type:', typeof logout);
-                console.log('🚪 AuthContext:', authContext);
+                console.log('🚪 CurrentUser:', currentUser?.username);
+                console.log('🚪 AuthContext user:', authContext.user?.username);
                 setShowDropdown(false);
-                console.log('🚪 Calling logout function...');
-                try {
+                
+                // Force logout by clearing everything manually if AuthContext is inconsistent
+                if (!authContext.user && currentUser) {
+                  console.log('🚪 AuthContext inconsistent - doing manual logout');
+                  // Clear all auth data manually
+                  localStorage.clear();
+                  sessionStorage.clear();
+                  authStorage.clearUser();
+                  window.location.href = '/';
+                } else {
+                  console.log('🚪 Using AuthContext logout');
                   logout();
-                } catch (error) {
-                  console.error('🚪 Error calling logout:', error);
                 }
               }}
             >
