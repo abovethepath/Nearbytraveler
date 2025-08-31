@@ -17,10 +17,10 @@ import {
   type BusinessOfferData,
   type LocationMatchData
 } from '../templates/emailTemplates.js';
-import sgMail from '@sendgrid/mail';
+import * as brevo from '@getbrevo/brevo';
 
 export class EmailService {
-  private sgMail: any;
+  private brevoApi: any;
   private isInitialized: boolean = false;
 
   constructor() {
@@ -28,29 +28,31 @@ export class EmailService {
   }
 
   private ensureInitialized() {
-    console.log('🔍 SENDGRID DEBUG: Checking initialization. Current state:', {
+    console.log('🔍 BREVO DEBUG: Checking initialization. Current state:', {
       isInitialized: this.isInitialized,
-      hasApiKey: !!process.env.SENDGRID_API_KEY,
-      apiKeyPrefix: process.env.SENDGRID_API_KEY?.substring(0, 10)
+      hasApiKey: !!process.env.BREVO_API_KEY,
+      apiKeyPrefix: process.env.BREVO_API_KEY?.substring(0, 10)
     });
 
     if (this.isInitialized) {
-      console.log('✅ SendGrid already initialized');
+      console.log('✅ Brevo already initialized');
       return;
     }
 
-    if (process.env.SENDGRID_API_KEY) {
+    if (process.env.BREVO_API_KEY) {
       try {
-        console.log('🔧 Attempting SendGrid initialization...');
-        this.sgMail = sgMail;
-        this.sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+        console.log('🔧 Attempting Brevo initialization...');
+        const defaultClient = brevo.ApiClient.instance;
+        const apiKey = defaultClient.authentications['api-key'];
+        apiKey.apiKey = process.env.BREVO_API_KEY;
+        this.brevoApi = new brevo.TransactionalEmailsApi();
         this.isInitialized = true;
-        console.log('✅ SendGrid initialized successfully with key starting with:', process.env.SENDGRID_API_KEY.substring(0, 10));
+        console.log('✅ Brevo initialized successfully with key starting with:', process.env.BREVO_API_KEY.substring(0, 10));
       } catch (error) {
-        console.error('❌ SendGrid initialization failed:', error);
+        console.error('❌ Brevo initialization failed:', error);
       }
     } else {
-      console.log('⚠️ SENDGRID_API_KEY not found - emails will not be sent');
+      console.log('⚠️ BREVO_API_KEY not found - emails will not be sent');
     }
   }
 
@@ -58,44 +60,32 @@ export class EmailService {
     // Ensure initialization before each send
     this.ensureInitialized();
     
-    if (!this.sgMail || !this.isInitialized) {
-      console.log('SendGrid not properly initialized - email not sent');
+    if (!this.brevoApi || !this.isInitialized) {
+      console.log('Brevo not properly initialized - email not sent');
       console.log(`Email would be sent to: ${to}`);
       console.log(`Subject: ${subject}`);
       return false;
     }
 
     try {
-      const msg = {
-        to,
-        from: 'aaron_marc2004@yahoo.com', // Verified sender address
+      const emailData = {
+        sender: { email: 'aaron_marc2004@yahoo.com', name: 'Nearby Traveler' },
+        to: [{ email: to }],
         subject,
-        html,
-        text
+        htmlContent: html,
+        textContent: text
       };
 
-      console.log('📧 Sending email:', { to, from: msg.from, subject });
+      console.log('📧 Sending email via Brevo:', { to, from: emailData.sender.email, subject });
 
-      await this.sgMail.send(msg);
-      console.log(`Email sent successfully to ${to}: ${subject}`);
+      await this.brevoApi.sendTransacEmail(emailData);
+      console.log(`✅ Email sent successfully via Brevo to ${to}: ${subject}`);
       return true;
     } catch (error: any) {
-      console.error('📧 SendGrid Email sending failed:', error.message);
-      if (error.code === 401) {
-        console.error('❌ SendGrid API authentication failed (401 Unauthorized)');
-        const errorBody = error.response?.body;
-        console.error('🔍 Error details:', JSON.stringify(errorBody, null, 2));
-        
-        // Check for specific error conditions
-        if (errorBody?.errors?.some((e: any) => e.message?.includes('Maximum credits exceeded'))) {
-          console.error('💳 CRITICAL: SendGrid account has exceeded its credit limit!');
-          console.error('📞 Contact the account owner to add more SendGrid credits.');
-        } else {
-          console.error('🔍 This usually means:');
-          console.error('   1. API key is invalid/expired');
-          console.error('   2. Sender email domain is not verified in SendGrid');
-          console.error('   3. API key does not have permission to send emails');
-        }
+      console.error('📧 Brevo Email sending failed:', error.message);
+      if (error.response) {
+        console.error('🔍 Brevo Error details:', JSON.stringify(error.response.data, null, 2));
+        console.error('🔍 Status code:', error.response.status);
       }
       return false;
     }
