@@ -21,6 +21,7 @@ import * as brevo from '@getbrevo/brevo';
 
 export class EmailService {
   private brevoApi: any;
+  private apiKey: string | undefined;
   private isInitialized: boolean = false;
 
   constructor() {
@@ -42,9 +43,8 @@ export class EmailService {
     if (process.env.BREVO_API_KEY) {
       try {
         console.log('🔧 Attempting Brevo initialization...');
-        const defaultClient = brevo.ApiClient.instance;
-        const apiKey = defaultClient.authentications['api-key'];
-        apiKey.apiKey = process.env.BREVO_API_KEY;
+        // Store API key for direct use
+        this.apiKey = process.env.BREVO_API_KEY;
         this.brevoApi = new brevo.TransactionalEmailsApi();
         this.isInitialized = true;
         console.log('✅ Brevo initialized successfully with key starting with:', process.env.BREVO_API_KEY.substring(0, 10));
@@ -78,6 +78,8 @@ export class EmailService {
 
       console.log('📧 Sending email via Brevo:', { to, from: emailData.sender.email, subject });
 
+      // Set API key authentication
+      this.brevoApi.authentications['api-key'].apiKey = this.apiKey;
       await this.brevoApi.sendTransacEmail(emailData);
       console.log(`✅ Email sent successfully via Brevo to ${to}: ${subject}`);
       return true;
