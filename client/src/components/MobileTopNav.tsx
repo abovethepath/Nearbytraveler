@@ -8,7 +8,14 @@ import Logo from "@/components/logo";
 import { authStorage } from "@/lib/auth";
 
 export function MobileTopNav() {
-  const { user, logout } = React.useContext(AuthContext);
+  const authContext = React.useContext(AuthContext);
+  const { user, logout } = authContext;
+  
+  console.log('🔍 MobileTopNav AuthContext:', {
+    hasContext: !!authContext,
+    hasLogout: typeof logout === 'function',
+    user: user?.username
+  });
   const [, setLocation] = useLocation();
   const [showDropdown, setShowDropdown] = useState(false);
   const [currentUser, setCurrentUser] = useState<any>(null);
@@ -200,9 +207,15 @@ export function MobileTopNav() {
               className="px-4 py-3 text-left hover:bg-red-50 dark:hover:bg-red-900/20 border-t border-gray-200 dark:border-gray-700 text-red-600 dark:text-red-400 font-medium"
               onClick={() => {
                 console.log('🚪 Mobile logout button clicked');
+                console.log('🚪 Logout function type:', typeof logout);
+                console.log('🚪 AuthContext:', authContext);
                 setShowDropdown(false);
                 console.log('🚪 Calling logout function...');
-                logout();
+                try {
+                  logout();
+                } catch (error) {
+                  console.error('🚪 Error calling logout:', error);
+                }
               }}
             >
               Sign Out
