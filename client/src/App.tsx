@@ -73,6 +73,7 @@ import Passport from "@/pages/passport";
 
 import Auth from "@/pages/auth";
 import JoinNowWidgetNew from "@/components/join-now-widget-new";
+import Logo from "@/components/logo";
 // import SignupLocal from "@/pages/signup-local"; // Removed broken file
 import SignupLocalTraveler from "@/pages/signup-local-traveler";
 import SignupTraveling from "@/pages/signup-traveling";
@@ -511,8 +512,27 @@ function Router() {
 
       // Allow access to join page - restore original working route
       if (location === '/join') {
-        console.log('Showing Join page');
-        return <Auth />;
+        console.log('Showing Join page with signup form');
+        return (
+          <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
+            <div className="w-full max-w-md">
+              <div className="text-center mb-8">
+                <div className="flex justify-center mb-4">
+                  <Logo className="h-12 w-auto" />
+                </div>
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                  Join Nearby Traveler
+                </h1>
+                <p className="text-gray-600 dark:text-gray-400">
+                  Connect with travelers, locals, and businesses worldwide
+                </p>
+              </div>
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+                <JoinNowWidgetNew />
+              </div>
+            </div>
+          </div>
+        );
       }
 
       // Show landing page
@@ -636,8 +656,8 @@ function Router() {
         console.log('Returning Auth component for /auth');
         return <Auth />;
       }
-      if (location === '/signup' || location === '/join') {
-        console.log('Showing Join page');
+      if (location === '/signup') {
+        console.log('Showing Signup page');
         return <Auth />;
       }
       if (location === '/business-card') {
