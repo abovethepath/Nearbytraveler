@@ -2874,6 +2874,68 @@ Questions? Just reply to this message. Welcome aboard!
                 ilike(travelPlans.destinationCountry, `%${searchTerm}%`)
               )
             );
+
+          // Create a subquery to find users who created events matching this term
+          const eventCreatorSubquery = db
+            .selectDistinct({ userId: events.createdBy })
+            .from(events)
+            .where(
+              or(
+                ilike(events.title, `%${searchTerm}%`),
+                ilike(events.description, `%${searchTerm}%`),
+                ilike(events.venueName, `%${searchTerm}%`),
+                ilike(events.street, `%${searchTerm}%`),
+                ilike(events.city, `%${searchTerm}%`),
+                ilike(events.state, `%${searchTerm}%`),
+                ilike(events.country, `%${searchTerm}%`),
+                ilike(events.location, `%${searchTerm}%`),
+                ilike(events.eventType, `%${searchTerm}%`),
+                ilike(events.audience, `%${searchTerm}%`)
+              )
+            );
+
+          // Create a subquery to find users who are attending events matching this term
+          const eventAttendeeSubquery = db
+            .selectDistinct({ userId: eventParticipants.userId })
+            .from(eventParticipants)
+            .leftJoin(events, eq(eventParticipants.eventId, events.id))
+            .where(
+              or(
+                ilike(events.title, `%${searchTerm}%`),
+                ilike(events.description, `%${searchTerm}%`),
+                ilike(events.venueName, `%${searchTerm}%`),
+                ilike(events.city, `%${searchTerm}%`),
+                ilike(events.eventType, `%${searchTerm}%`)
+              )
+            );
+
+          // Create a subquery to find users who created quick meetups matching this term
+          const quickMeetupCreatorSubquery = db
+            .selectDistinct({ userId: quickMeetups.userId })
+            .from(quickMeetups)
+            .where(
+              or(
+                ilike(quickMeetups.title, `%${searchTerm}%`),
+                ilike(quickMeetups.description, `%${searchTerm}%`),
+                ilike(quickMeetups.location, `%${searchTerm}%`),
+                ilike(quickMeetups.city, `%${searchTerm}%`),
+                ilike(quickMeetups.activityType, `%${searchTerm}%`)
+              )
+            );
+
+          // Create a subquery to find users who joined quick meetups matching this term
+          const quickMeetupParticipantSubquery = db
+            .selectDistinct({ userId: quickMeetupParticipants.userId })
+            .from(quickMeetupParticipants)
+            .leftJoin(quickMeetups, eq(quickMeetupParticipants.quickMeetupId, quickMeetups.id))
+            .where(
+              or(
+                ilike(quickMeetups.title, `%${searchTerm}%`),
+                ilike(quickMeetups.description, `%${searchTerm}%`),
+                ilike(quickMeetups.location, `%${searchTerm}%`),
+                ilike(quickMeetups.activityType, `%${searchTerm}%`)
+              )
+            );
           
           // Each search term must match somewhere in the user's profile (AND logic)
           whereConditions.push(
@@ -2905,7 +2967,12 @@ Questions? Just reply to this message. Welcome aboard!
               ilike(users.hometownCountry, `%${searchTerm}%`),
               ilike(users.currentCity, `%${searchTerm}%`),
               ilike(users.zipCode, `%${searchTerm}%`),
-              inArray(users.id, travelPlanSubquery)
+              // Include users from travel plans, events, and meetups
+              inArray(users.id, travelPlanSubquery),
+              inArray(users.id, eventCreatorSubquery),
+              inArray(users.id, eventAttendeeSubquery),
+              inArray(users.id, quickMeetupCreatorSubquery),
+              inArray(users.id, quickMeetupParticipantSubquery)
             )
           );
         }
