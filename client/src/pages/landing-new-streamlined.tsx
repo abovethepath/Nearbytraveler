@@ -232,74 +232,76 @@ export default function LandingStreamlined() {
           )}
         </div>
 
-        {/* SOCIAL PROOF SECTION - For Travelers & Families */}
-        <section className="mx-auto max-w-5xl px-6 py-12 bg-gradient-to-br from-blue-50 to-orange-50 dark:from-blue-900/10 dark:to-orange-900/10">
-          <div className="text-center mb-8">
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4">
-              This Is Why We Built Nearby Traveler
-            </h2>
-          </div>
+        {/* SOCIAL PROOF SECTION - Shows when family slide is active */}
+        {currentHeadline === 2 && (
+          <section className="mx-auto max-w-5xl px-6 py-12 bg-gradient-to-br from-blue-50 to-orange-50 dark:from-blue-900/10 dark:to-orange-900/10">
+            <div className="text-center mb-8">
+              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4">
+                This Is Why We Built Nearby Traveler
+              </h2>
+            </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg mb-8 max-w-3xl mx-auto">
-            <div className="flex items-start space-x-4">
-              <div className="flex-shrink-0">
-                <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                  <span className="text-white font-bold text-lg">A</span>
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg mb-8 max-w-3xl mx-auto">
+              <div className="flex items-start space-x-4">
+                <div className="flex-shrink-0">
+                  <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                    <span className="text-white font-bold text-lg">A</span>
+                  </div>
+                </div>
+                <div>
+                  <blockquote className="text-gray-700 dark:text-gray-300 italic mb-3">
+                    "We've been traveling for a year with our 5-year-old son, and while we love meeting other travelers, my son hasn't been able to make any child friends. I wish there was a way to connect with families who have kids his age before we arrive somewhere new."
+                  </blockquote>
+                  <p className="font-semibold text-gray-900 dark:text-white">— Angelique, traveling family from France</p>
                 </div>
               </div>
-              <div>
-                <blockquote className="text-gray-700 dark:text-gray-300 italic mb-3">
-                  "We've been traveling for a year with our 5-year-old son, and while we love meeting other travelers, my son hasn't been able to make any child friends. I wish there was a way to connect with families who have kids his age before we arrive somewhere new."
-                </blockquote>
-                <p className="font-semibold text-gray-900 dark:text-white">— Angelique, traveling family from France</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-6">
-            <div className="flex items-center space-x-4">
-              <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
-                <Users className="w-8 h-8 text-blue-600" />
-              </div>
-              <div>
-                <h3 className="font-bold text-gray-900 dark:text-white">Connect Families with Families</h3>
-                <p className="text-gray-600 dark:text-gray-300 text-sm">Kids deserve to make friends while traveling too</p>
-              </div>
             </div>
 
-            <div className="flex items-center space-x-4">
-              <div className="w-16 h-16 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center">
-                <MapPin className="w-8 h-8 text-orange-600" />
+            <div className="grid md:grid-cols-3 gap-6">
+              <div className="flex items-center space-x-4">
+                <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+                  <Users className="w-8 h-8 text-blue-600" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-gray-900 dark:text-white">Connect Families with Families</h3>
+                  <p className="text-gray-600 dark:text-gray-300 text-sm">Kids deserve to make friends while traveling too</p>
+                </div>
               </div>
-              <div>
-                <h3 className="font-bold text-gray-900 dark:text-white">Plan Connections Before You Go</h3>
-                <p className="text-gray-600 dark:text-gray-300 text-sm">Meet locals and travelers before your trip starts</p>
+
+              <div className="flex items-center space-x-4">
+                <div className="w-16 h-16 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center">
+                  <MapPin className="w-8 h-8 text-orange-600" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-gray-900 dark:text-white">Plan Connections Before You Go</h3>
+                  <p className="text-gray-600 dark:text-gray-300 text-sm">Meet locals and travelers before your trip starts</p>
+                </div>
+              </div>
+
+              <div className="flex items-center space-x-4">
+                <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
+                  <ShieldCheck className="w-8 h-8 text-green-600" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-gray-900 dark:text-white">Safe & Verified</h3>
+                  <p className="text-gray-600 dark:text-gray-300 text-sm">Community references for peace of mind</p>
+                </div>
               </div>
             </div>
 
-            <div className="flex items-center space-x-4">
-              <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
-                <ShieldCheck className="w-8 h-8 text-green-600" />
-              </div>
-              <div>
-                <h3 className="font-bold text-gray-900 dark:text-white">Safe & Verified</h3>
-                <p className="text-gray-600 dark:text-gray-300 text-sm">Community references for peace of mind</p>
-              </div>
+            <div className="text-center mt-8">
+              <Button 
+                onClick={() => {
+                  trackEvent('signup_cta_click', 'landing_page', 'social_proof_join');
+                  setLocation('/join');
+                }}
+                className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-medium px-8 py-3 rounded-lg shadow-sm transition-all duration-200"
+              >
+                Start Connecting Now
+              </Button>
             </div>
-          </div>
-
-          <div className="text-center mt-8">
-            <Button 
-              onClick={() => {
-                trackEvent('signup_cta_click', 'landing_page', 'social_proof_join');
-                setLocation('/join');
-              }}
-              className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-medium px-8 py-3 rounded-lg shadow-sm transition-all duration-200"
-            >
-              Start Connecting Now
-            </Button>
-          </div>
-        </section>
+          </section>
+        )}
 
         {/* VALUE SECTION - What It Does */}
         <section className="mx-auto max-w-6xl px-6 py-8 sm:py-12 md:py-16">
