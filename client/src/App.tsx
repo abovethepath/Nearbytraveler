@@ -591,7 +591,7 @@ function Router() {
       // QR code signup route
       if (location.startsWith('/signup/qr/')) {
         const qrData = location.split('/signup/qr/')[1];
-        return <QRSignup />;
+        return <QRSignup referralCode={qrData || ''} />;
       }
 
       // Signup pages
