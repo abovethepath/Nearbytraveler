@@ -4,10 +4,16 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Textarea } from "@/components/ui/textarea";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import Logo from "@/components/logo";
 import { authStorage } from "@/lib/auth";
+import { SmartLocationInput } from "@/components/SmartLocationInput";
+import { getAllInterests, getAllActivities, getAllEvents, getAllLanguages, MOST_POPULAR_INTERESTS } from "../../../shared/base-options";
+import { GENDER_OPTIONS, SEXUAL_PREFERENCE_OPTIONS } from "@/lib/formConstants";
 import JoinNowWidgetNew from "@/components/join-now-widget-new";
 // Background image handled via direct path in CSS
 
@@ -22,15 +28,45 @@ export default function Auth() {
   const mode = urlParams.get('mode');
   const isJoinPage = window.location.pathname === '/join';
   const [isLogin, setIsLogin] = useState(!isJoinPage && mode !== 'register');
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [username, setUsername] = useState("");
+  const [formData, setFormData] = useState({
+    // Basic auth fields
+    email: "",
+    password: "",
+    confirmPassword: "",
+    username: "",
+    name: "",
+    
+    // Personal info
+    dateOfBirth: "",
+    gender: "",
+    sexualPreference: [] as string[],
+    languagesSpoken: [] as string[],
+    
+    // Location
+    hometownCountry: "",
+    hometownCity: "",
+    hometownState: "",
+    
+    // Interests & Activities
+    interests: [] as string[],
+    activities: [] as string[],
+    events: [] as string[],
+    
+    // Demographics
+    isVeteran: false,
+    isActiveDuty: false,
+    travelingWithChildren: false,
+    isCurrentlyTraveling: false,
+    
+    // User type
+    userType: "traveler" as "traveler" | "local" | "business"
+  });
+  
   const [isLoading, setIsLoading] = useState(false);
 
   const handleLogin = async () => {
-    console.log('handleLogin called with email:', email, 'password length:', password?.length);
-    if (!email || !password) {
+    console.log('handleLogin called with email:', formData.email, 'password length:', formData.password?.length);
+    if (!formData.email || !formData.password) {
       console.log('Missing email or password');
       toast({
         title: "Missing fields",
@@ -46,7 +82,7 @@ export default function Auth() {
       const response = await fetch('/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: email.toLowerCase().trim(), password }),
+        body: JSON.stringify({ email: formData.email.toLowerCase().trim(), password: formData.password }),
       });
 
       console.log('Login response status:', response.status);
@@ -97,17 +133,22 @@ export default function Auth() {
   };
 
   const handleSignup = async () => {
-    console.log('handleSignup called with email:', email, 'username:', username);
-    if (!email || !password || !confirmPassword || !username) {
+    console.log('handleSignup called with data:', formData);
+    
+    // Validate required fields
+    const requiredFields = ['email', 'password', 'confirmPassword', 'username', 'name', 'dateOfBirth', 'gender'];
+    const missingFields = requiredFields.filter(field => !formData[field as keyof typeof formData]);
+    
+    if (missingFields.length > 0) {
       toast({
-        title: "Missing fields",
-        description: "Please fill in all required fields.",
+        title: "Missing required fields",
+        description: `Please fill in: ${missingFields.join(', ')}`,
         variant: "destructive",
       });
       return;
     }
 
-    if (password !== confirmPassword) {
+    if (formData.password !== formData.confirmPassword) {
       toast({
         title: "Password mismatch",
         description: "Passwords do not match.",
@@ -116,17 +157,35 @@ export default function Auth() {
       return;
     }
 
+    // Validate age
+    const birthDate = new Date(formData.dateOfBirth);
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    if (today.getMonth() < birthDate.getMonth() || 
+        (today.getMonth() === birthDate.getMonth() && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    
+    if (age < 16) {
+      toast({
+        title: "Age requirement",
+        description: "You must be at least 16 years old to register.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsLoading(true);
-    console.log('Starting signup request...');
+    console.log('Starting comprehensive signup request...');
     try {
       const response = await fetch('/api/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          email: email.toLowerCase().trim(), 
-          password,
-          username: username.trim(),
-          userType: 'traveler' // Default to traveler for now
+        body: JSON.stringify({
+          ...formData,
+          email: formData.email.toLowerCase().trim(),
+          username: formData.username.trim(),
+          name: formData.name.trim()
         }),
       });
 
@@ -225,58 +284,213 @@ export default function Auth() {
           <CardContent className="space-y-6">
             {!isLogin ? (
               <>
-                {/* Signup Form */}
-                <div className="space-y-4">
-                  <div>
-                    <Label htmlFor="signupUsername" className="text-base md:text-lg font-medium text-gray-900 dark:text-white text-crisp">Username</Label>
-                    <Input
-                      id="signupUsername"
-                      type="text"
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
-                      placeholder="Choose a username"
-                      className="text-base py-3 text-crisp font-medium"
-                    />
+                {/* Comprehensive Signup Form */}
+                <div className="space-y-6 max-h-96 overflow-y-auto">
+                  
+                  {/* Basic Account Info */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Account Information</h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="name" className="text-sm font-medium text-gray-900 dark:text-white">Full Name *</Label>
+                        <Input
+                          id="name"
+                          type="text"
+                          value={formData.name}
+                          onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                          placeholder="Your full name"
+                          className="text-sm py-2"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="username" className="text-sm font-medium text-gray-900 dark:text-white">Username *</Label>
+                        <Input
+                          id="username"
+                          type="text"
+                          value={formData.username}
+                          onChange={(e) => setFormData(prev => ({ ...prev, username: e.target.value }))}
+                          placeholder="Choose a username"
+                          className="text-sm py-2"
+                        />
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="email" className="text-sm font-medium text-gray-900 dark:text-white">Email *</Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        value={formData.email}
+                        onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                        placeholder="Enter your email"
+                        className="text-sm py-2"
+                      />
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="password" className="text-sm font-medium text-gray-900 dark:text-white">Password *</Label>
+                        <Input
+                          id="password"
+                          type="password"
+                          value={formData.password}
+                          onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
+                          placeholder="Create a password"
+                          className="text-sm py-2"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="confirmPassword" className="text-sm font-medium text-gray-900 dark:text-white">Confirm Password *</Label>
+                        <Input
+                          id="confirmPassword"
+                          type="password"
+                          value={formData.confirmPassword}
+                          onChange={(e) => setFormData(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                          placeholder="Confirm your password"
+                          className="text-sm py-2"
+                        />
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <Label htmlFor="signupEmail" className="text-base md:text-lg font-medium text-gray-900 dark:text-white text-crisp">Email</Label>
-                    <Input
-                      id="signupEmail"
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="Enter your email"
-                      className="text-base py-3 text-crisp font-medium"
-                    />
+
+                  {/* Personal Information */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Personal Information</h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="dateOfBirth" className="text-sm font-medium text-gray-900 dark:text-white">Date of Birth *</Label>
+                        <Input
+                          id="dateOfBirth"
+                          type="date"
+                          value={formData.dateOfBirth}
+                          onChange={(e) => setFormData(prev => ({ ...prev, dateOfBirth: e.target.value }))}
+                          className="text-sm py-2"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="gender" className="text-sm font-medium text-gray-900 dark:text-white">Gender *</Label>
+                        <Select value={formData.gender} onValueChange={(value) => setFormData(prev => ({ ...prev, gender: value }))}>
+                          <SelectTrigger className="text-sm py-2">
+                            <SelectValue placeholder="Select gender" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {GENDER_OPTIONS.map(option => (
+                              <SelectItem key={option} value={option}>{option}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <Label className="text-sm font-medium text-gray-900 dark:text-white">User Type</Label>
+                      <Select value={formData.userType} onValueChange={(value: any) => setFormData(prev => ({ ...prev, userType: value }))}>
+                        <SelectTrigger className="text-sm py-2">
+                          <SelectValue placeholder="I am a..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="traveler">Traveler</SelectItem>
+                          <SelectItem value="local">Local</SelectItem>
+                          <SelectItem value="business">Business</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
-                  <div>
-                    <Label htmlFor="signupPassword" className="text-base md:text-lg font-medium text-gray-900 dark:text-white text-crisp">Password</Label>
-                    <Input
-                      id="signupPassword"
-                      type="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="Create a password"
-                      className="text-base py-3 text-crisp font-medium"
-                    />
+
+                  {/* Location */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Location</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div>
+                        <Label htmlFor="hometownCountry" className="text-sm font-medium text-gray-900 dark:text-white">Country</Label>
+                        <Input
+                          id="hometownCountry"
+                          type="text"
+                          value={formData.hometownCountry}
+                          onChange={(e) => setFormData(prev => ({ ...prev, hometownCountry: e.target.value }))}
+                          placeholder="e.g., United States"
+                          className="text-sm py-2"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="hometownCity" className="text-sm font-medium text-gray-900 dark:text-white">City</Label>
+                        <Input
+                          id="hometownCity"
+                          type="text"
+                          value={formData.hometownCity}
+                          onChange={(e) => setFormData(prev => ({ ...prev, hometownCity: e.target.value }))}
+                          placeholder="e.g., Los Angeles"
+                          className="text-sm py-2"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="hometownState" className="text-sm font-medium text-gray-900 dark:text-white">State/Province</Label>
+                        <Input
+                          id="hometownState"
+                          type="text"
+                          value={formData.hometownState}
+                          onChange={(e) => setFormData(prev => ({ ...prev, hometownState: e.target.value }))}
+                          placeholder="e.g., California"
+                          className="text-sm py-2"
+                        />
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <Label htmlFor="confirmPassword" className="text-base md:text-lg font-medium text-gray-900 dark:text-white text-crisp">Confirm Password</Label>
-                    <Input
-                      id="confirmPassword"
-                      type="password"
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      placeholder="Confirm your password"
-                      className="text-base py-3 text-crisp font-medium"
-                    />
+
+                  {/* Quick Interests Selection */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Interests (Select a few to get started)</h3>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                      {MOST_POPULAR_INTERESTS.slice(0, 12).map(interest => (
+                        <div key={interest} className="flex items-center space-x-2">
+                          <Checkbox
+                            id={`interest-${interest}`}
+                            checked={formData.interests.includes(interest)}
+                            onCheckedChange={(checked) => {
+                              if (checked) {
+                                setFormData(prev => ({ ...prev, interests: [...prev.interests, interest] }));
+                              } else {
+                                setFormData(prev => ({ ...prev, interests: prev.interests.filter(i => i !== interest) }));
+                              }
+                            }}
+                          />
+                          <Label htmlFor={`interest-${interest}`} className="text-xs">{interest}</Label>
+                        </div>
+                      ))}
+                    </div>
                   </div>
+
+                  {/* Travel Status */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Travel Status</h3>
+                    <div className="space-y-2">
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id="isCurrentlyTraveling"
+                          checked={formData.isCurrentlyTraveling}
+                          onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isCurrentlyTraveling: !!checked }))}
+                        />
+                        <Label htmlFor="isCurrentlyTraveling" className="text-sm">I am currently traveling</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id="travelingWithChildren"
+                          checked={formData.travelingWithChildren}
+                          onCheckedChange={(checked) => setFormData(prev => ({ ...prev, travelingWithChildren: !!checked }))}
+                        />
+                        <Label htmlFor="travelingWithChildren" className="text-sm">I travel with children</Label>
+                      </div>
+                    </div>
+                  </div>
+
                 </div>
 
                 <div className="mt-8 pt-4 space-y-3">
                   <Button
                     onClick={handleSignup}
-                    disabled={isLoading || !email || !password || !confirmPassword || !username}
+                    disabled={isLoading || !formData.email || !formData.password || !formData.confirmPassword || !formData.username || !formData.name || !formData.dateOfBirth || !formData.gender}
                     className="join-page-gradient-button w-full py-3 px-4 rounded-md font-bold text-center select-none text-base md:text-lg text-crisp"
                   >
                     {isLoading ? "Creating Account..." : "Join Nearby Traveler"}
