@@ -5428,9 +5428,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             }, 100);
                           }}
                           size="sm"
-                          className="bg-travel-blue hover:bg-travel-blue/90 text-white"
+                          className="bg-gradient-to-r from-blue-600 to-orange-600 hover:from-blue-700 hover:to-orange-700 text-white font-semibold shadow-lg"
                         >
-                          Add New Trip
+                          ✈️ Add New Trip
                         </Button>
                         <Button
                           onClick={() => {
