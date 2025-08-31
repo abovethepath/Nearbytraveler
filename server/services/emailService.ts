@@ -7,12 +7,15 @@ import {
   eventInviteEmail, 
   businessOfferEmail,
   weeklyDigestEmail,
+  locationMatchEmail,
+  forgotPasswordEmail,
   type WelcomeEmailData,
   type PasswordResetData,
   type ReferralEmailData,
   type ConnectionRequestData,
   type EventInviteData,
-  type BusinessOfferData
+  type BusinessOfferData,
+  type LocationMatchData
 } from '../templates/emailTemplates.js';
 
 export class EmailService {
@@ -63,6 +66,16 @@ export class EmailService {
 
   async sendPasswordResetEmail(to: string, data: PasswordResetData) {
     const template = passwordResetEmail(data);
+    return this.sendEmail(to, template.subject, template.html, template.text);
+  }
+
+  async sendForgotPasswordEmail(to: string, data: PasswordResetData) {
+    const template = forgotPasswordEmail(data);
+    return this.sendEmail(to, template.subject, template.html, template.text);
+  }
+
+  async sendLocationMatchEmail(to: string, data: LocationMatchData) {
+    const template = locationMatchEmail(data);
     return this.sendEmail(to, template.subject, template.html, template.text);
   }
 

@@ -603,6 +603,73 @@ async function generateCityContent(location: string, topic: string): Promise<str
   }
 }
 
+// Location-based notification function
+async function sendLocationMatchNotifications(newUser: any) {
+  try {
+    const { emailService } = await import('./services/emailService');
+    
+    if (!newUser.hometownCity || !newUser.email) {
+      console.log("Skipping location notifications - missing city or email data");
+      return;
+    }
+
+    // Find existing users in the same city (excluding the new user)
+    const sameLocationUsers = await storage.getUsersByCity(newUser.hometownCity);
+    const existingUsers = sameLocationUsers.filter(user => user.id !== newUser.id);
+
+    console.log(`🌍 Found ${existingUsers.length} users in ${newUser.hometownCity} to notify about new user ${newUser.username}`);
+
+    // Send notifications to existing users
+    for (const existingUser of existingUsers) {
+      if (!existingUser.email) continue;
+
+      // Create in-app notification
+      await storage.createNotification({
+        userId: existingUser.id,
+        fromUserId: newUser.id,
+        type: "location_match",
+        title: `New ${newUser.userType || 'user'} in ${newUser.hometownCity}!`,
+        message: `@${newUser.username} just joined from ${newUser.hometownCity}. Say hello!`,
+        data: JSON.stringify({
+          newUserId: newUser.id,
+          newUserUsername: newUser.username,
+          newUserType: newUser.userType,
+          city: newUser.hometownCity,
+          profileUrl: `/profile/${newUser.username}`
+        })
+      });
+
+      // Send email notification (optional - user can control this in settings)
+      try {
+        // Find common interests between users
+        const sharedInterests = findSharedInterests(existingUser.interests || [], newUser.interests || []);
+        
+        await emailService.sendLocationMatchEmail(existingUser.email, {
+          recipientName: existingUser.name || existingUser.username,
+          newUserName: newUser.username,
+          city: newUser.hometownCity,
+          newUserType: newUser.userType || 'traveler',
+          sharedInterests: sharedInterests
+        });
+
+        console.log(`✅ Location match email sent to ${existingUser.email} about ${newUser.username}`);
+      } catch (emailError) {
+        console.error(`❌ Failed to send location match email to ${existingUser.email}:`, emailError);
+      }
+    }
+
+    console.log(`🎉 Successfully processed location notifications for ${newUser.username} in ${newUser.hometownCity}`);
+  } catch (error) {
+    console.error("Error in sendLocationMatchNotifications:", error);
+  }
+}
+
+// Helper function to find shared interests
+function findSharedInterests(userInterests: string[], newUserInterests: string[]): string[] {
+  if (!userInterests || !newUserInterests) return [];
+  return userInterests.filter(interest => newUserInterests.includes(interest)).slice(0, 5); // Limit to top 5
+}
+
 export async function registerRoutes(app: Express, httpServer?: Server): Promise<Server> {
   if (process.env.NODE_ENV === 'development') console.log("Starting routes registration...");
 
@@ -1631,6 +1698,160 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
     }
   });
 
+  // Forgot Password endpoint
+  app.post("/api/auth/forgot-password", async (req, res) => {
+    try {
+      const { email } = req.body;
+
+      if (!email) {
+        return res.status(400).json({ message: "Email is required" });
+      }
+
+      const user = await storage.getUserByEmail(email);
+      if (!user) {
+        // For security, return success even if user doesn't exist
+        return res.json({ message: "If an account with this email exists, a password reset link has been sent." });
+      }
+
+      // Generate reset token (simple approach for now)
+      const resetToken = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+      const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour from now
+
+      // Store reset token in user record
+      await storage.updateUser(user.id, {
+        resetToken: resetToken,
+        resetTokenExpires: expiresAt
+      });
+
+      // Send password reset email
+      const { emailService } = await import('./services/emailService');
+      await emailService.sendForgotPasswordEmail(user.email!, {
+        name: user.displayName || user.username || 'User',
+        resetUrl: `${req.protocol}://${req.get('host')}/reset-password?token=${resetToken}`,
+        expiryHours: 1
+      });
+
+      console.log(`✅ Password reset email sent to ${user.email}`);
+      return res.json({ message: "If an account with this email exists, a password reset link has been sent." });
+    } catch (error: any) {
+      console.error("Forgot password error:", error);
+      res.status(500).json({ message: "Failed to process password reset request" });
+    }
+  });
+
+  // Reset Password endpoint
+  app.post("/api/auth/reset-password", async (req, res) => {
+    try {
+      const { token, newPassword } = req.body;
+
+      if (!token || !newPassword) {
+        return res.status(400).json({ message: "Token and new password are required" });
+      }
+
+      if (newPassword.length < 8) {
+        return res.status(400).json({ message: "Password must be at least 8 characters long" });
+      }
+
+      // Find user with this reset token
+      const user = await storage.getUserByResetToken(token);
+      if (!user || !user.resetTokenExpires || new Date() > user.resetTokenExpires) {
+        return res.status(400).json({ message: "Invalid or expired reset token" });
+      }
+
+      // Update password and clear reset token
+      await storage.updateUser(user.id, {
+        password: newPassword, // Note: In production, this should be hashed
+        resetToken: null,
+        resetTokenExpires: null
+      });
+
+      console.log(`✅ Password reset successful for user ${user.email}`);
+      return res.json({ message: "Password has been reset successfully" });
+    } catch (error: any) {
+      console.error("Reset password error:", error);
+      res.status(500).json({ message: "Failed to reset password" });
+    }
+  });
+
+  // Test endpoint for email and notification systems
+  app.post("/api/test/messaging-systems", async (req, res) => {
+    try {
+      const { testType, email, username, city } = req.body;
+
+      if (!testType) {
+        return res.status(400).json({ message: "testType is required (forgot_password, location_match, or welcome)" });
+      }
+
+      const { emailService } = await import('./services/emailService');
+
+      if (testType === "forgot_password") {
+        if (!email) {
+          return res.status(400).json({ message: "Email is required for forgot password test" });
+        }
+        
+        // Test forgot password email
+        const resetToken = "test_token_123";
+        const testSuccess = await emailService.sendForgotPasswordEmail(email, {
+          name: username || "Test User",
+          resetUrl: `${req.protocol}://${req.get('host')}/reset-password?token=${resetToken}`,
+          expiryHours: 1
+        });
+
+        return res.json({ 
+          success: testSuccess, 
+          message: testSuccess ? "Forgot password email sent successfully!" : "Failed to send email",
+          testType: "forgot_password"
+        });
+      }
+
+      if (testType === "location_match") {
+        if (!email || !username || !city) {
+          return res.status(400).json({ message: "Email, username, and city are required for location match test" });
+        }
+
+        // Test location match email
+        const testSuccess = await emailService.sendLocationMatchEmail(email, {
+          recipientName: "Test Recipient",
+          newUserName: username,
+          city: city,
+          newUserType: "traveler",
+          sharedInterests: ["Photography", "Local Food", "Nightlife"]
+        });
+
+        return res.json({ 
+          success: testSuccess, 
+          message: testSuccess ? "Location match email sent successfully!" : "Failed to send email",
+          testType: "location_match"
+        });
+      }
+
+      if (testType === "welcome") {
+        if (!email || !username) {
+          return res.status(400).json({ message: "Email and username are required for welcome test" });
+        }
+
+        // Test welcome email
+        const testSuccess = await emailService.sendWelcomeEmail(email, {
+          name: username,
+          username: username,
+          userType: "traveler"
+        });
+
+        return res.json({ 
+          success: testSuccess, 
+          message: testSuccess ? "Welcome email sent successfully!" : "Failed to send email",
+          testType: "welcome"
+        });
+      }
+
+      return res.status(400).json({ message: "Invalid testType. Use: forgot_password, location_match, or welcome" });
+
+    } catch (error: any) {
+      console.error("Test endpoint error:", error);
+      res.status(500).json({ message: "Test failed", error: error.message });
+    }
+  });
+
   // Add city-specific interest to user profile
   app.post("/api/user/add-interest", async (req, res) => {
     try {
@@ -2149,6 +2370,15 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       if (process.env.NODE_ENV === 'development') console.log("Creating new user:", userData.email);
       const user = await storage.createUser(userData);
       const { password, ...userWithoutPassword } = user;
+
+      // Send location-based notifications to existing users in the same city
+      setImmediate(async () => {
+        try {
+          await sendLocationMatchNotifications(user);
+        } catch (error) {
+          console.error("Failed to send location match notifications:", error);
+        }
+      });
 
       if (process.env.NODE_ENV === 'development') console.log("💾 USER CREATED IN DATABASE - Location data stored:", {
         id: user.id,

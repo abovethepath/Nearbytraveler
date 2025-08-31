@@ -47,6 +47,14 @@ export interface BusinessOfferData {
   businessUrl: string;
 }
 
+export interface LocationMatchData {
+  recipientName: string;
+  newUserName: string;
+  city: string;
+  newUserType: string;
+  sharedInterests?: string[];
+}
+
 const emailStyles = `
   <style>
     .email-container {
@@ -667,6 +675,142 @@ This week in ${data.location}:
 - ${data.newOffers} exclusive offers
 
 Explore opportunities: https://nearbytraveler.com/discover
+
+The Nearby Traveler Team`
+});
+
+export const locationMatchEmail = (data: LocationMatchData): EmailTemplate => ({
+  subject: `New ${data.newUserType} from ${data.city} joined Nearby Traveler! 🌍`,
+  html: `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Location Match - Nearby Traveler</title>
+      ${emailStyles}
+    </head>
+    <body style="margin: 0; padding: 20px; background-color: #f3f4f6;">
+      <div class="email-container">
+        <div class="header">
+          <div class="logo">Nearby Traveler</div>
+          <div class="tagline">Someone New in Your City!</div>
+        </div>
+        
+        <div class="content">
+          <div class="greeting">Hi ${data.recipientName}! 👋</div>
+          
+          <p>Exciting news! <strong>@${data.newUserName}</strong> just joined Nearby Traveler from <strong>${data.city}</strong> - the same city as you!</p>
+          
+          <div class="highlight">
+            <strong>🌟 New ${data.newUserType} in ${data.city}</strong><br>
+            ${data.sharedInterests && data.sharedInterests.length > 0 ? `
+              <p><strong>You might have things in common:</strong></p>
+              <ul>
+                ${data.sharedInterests.map(interest => `<li>${interest}</li>`).join('')}
+              </ul>
+            ` : ''}
+            <p>This could be the start of a great connection!</p>
+          </div>
+          
+          <p>Why not reach out and say hello? Local connections often lead to the best experiences and friendships.</p>
+          
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="https://nearbytraveler.com/discover" class="button">Discover ${data.newUserName}</a>
+          </div>
+          
+          <p>Remember to always meet in public places when connecting with new people for the first time.</p>
+          
+          <p>Happy connecting!<br>
+          <strong>The Nearby Traveler Team</strong></p>
+        </div>
+        
+        <div class="footer">
+          <p>Location-based notification for ${data.city}.</p>
+          <p><a href="https://nearbytraveler.com/settings" style="color: #6b7280;">Manage notification preferences</a></p>
+          <p>© 2025 Nearby Traveler. All rights reserved.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `,
+  text: `New ${data.newUserType} from ${data.city} joined Nearby Traveler!
+
+Hi ${data.recipientName}!
+
+@${data.newUserName} just joined from ${data.city} - the same city as you!
+
+${data.sharedInterests && data.sharedInterests.length > 0 ? 
+  `You might have things in common: ${data.sharedInterests.join(', ')}` : ''}
+
+Why not reach out and say hello? Visit: https://nearbytraveler.com/discover
+
+The Nearby Traveler Team`
+});
+
+export const forgotPasswordEmail = (data: PasswordResetData): EmailTemplate => ({
+  subject: "Reset Your Nearby Traveler Password 🔑",
+  html: `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Password Reset - Nearby Traveler</title>
+      ${emailStyles}
+    </head>
+    <body style="margin: 0; padding: 20px; background-color: #f3f4f6;">
+      <div class="email-container">
+        <div class="header">
+          <div class="logo">Nearby Traveler</div>
+          <div class="tagline">Password Reset Request</div>
+        </div>
+        
+        <div class="content">
+          <div class="greeting">Hi ${data.name}! 🔐</div>
+          
+          <p>You requested to reset your password for your Nearby Traveler account. Don't worry - it happens to the best of us!</p>
+          
+          <div class="highlight">
+            <strong>🔒 Security Notice:</strong><br>
+            • This link expires in <strong>${data.expiryHours} hours</strong><br>
+            • Only use this link if you requested the password reset<br>
+            • If you didn't request this, you can safely ignore this email
+          </div>
+          
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${data.resetUrl}" class="button">Reset My Password</a>
+          </div>
+          
+          <p><strong>Can't click the button?</strong> Copy and paste this link into your browser:</p>
+          <p style="background-color: #f8fafc; padding: 10px; border-radius: 4px; word-break: break-all; font-family: monospace; font-size: 12px;">${data.resetUrl}</p>
+          
+          <p>If you continue to have trouble accessing your account, reply to this email and we'll help you out.</p>
+          
+          <p>Stay secure!<br>
+          <strong>The Nearby Traveler Team</strong></p>
+        </div>
+        
+        <div class="footer">
+          <p>This password reset request was made from your account.</p>
+          <p><a href="https://nearbytraveler.com/help" style="color: #6b7280;">Need help?</a></p>
+          <p>© 2025 Nearby Traveler. All rights reserved.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `,
+  text: `Password Reset - Nearby Traveler
+
+Hi ${data.name}!
+
+You requested to reset your password for your Nearby Traveler account.
+
+Reset your password here: ${data.resetUrl}
+
+This link expires in ${data.expiryHours} hours.
+
+If you didn't request this, you can safely ignore this email.
 
 The Nearby Traveler Team`
 });
