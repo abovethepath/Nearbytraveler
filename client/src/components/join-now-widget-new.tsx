@@ -260,7 +260,7 @@ export default function JoinNowWidgetNew() {
                 }`}
               >
                 <div className="text-sm font-medium text-gray-900 dark:text-white">
-                  Currently Traveling
+                  Nearby Traveler
                 </div>
                 <div className="text-xs text-gray-600 dark:text-gray-400">
                   On a Trip Now
@@ -280,7 +280,7 @@ export default function JoinNowWidgetNew() {
                   Nearby Business
                 </div>
                 <div className="text-xs text-gray-600 dark:text-gray-400">
-                  Service Provider
+                  Local Business
                 </div>
               </div>
             </div>
