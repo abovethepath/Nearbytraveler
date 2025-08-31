@@ -199,7 +199,9 @@ export function MobileTopNav() {
             <button
               className="px-4 py-3 text-left hover:bg-red-50 dark:hover:bg-red-900/20 border-t border-gray-200 dark:border-gray-700 text-red-600 dark:text-red-400 font-medium"
               onClick={() => {
+                console.log('🚪 Mobile logout button clicked');
                 setShowDropdown(false);
+                console.log('🚪 Calling logout function...');
                 logout();
               }}
             >
