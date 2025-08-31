@@ -524,7 +524,7 @@ function Router() {
                   Join Nearby Traveler
                 </h1>
                 <p className="text-gray-600 dark:text-gray-400">
-                  Connect with travelers, locals, and businesses worldwide
+                  Find real connections that last
                 </p>
               </div>
               <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
