@@ -95,6 +95,12 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
     queryKey: [`/api/travel-plans/user/${otherUserId}`]
   });
 
+  // Fetch mutual connections between the two users
+  const { data: mutualConnections = [] } = useQuery<any[]>({
+    queryKey: [`/api/mutual-connections/${currentUserId}/${otherUserId}`],
+    enabled: !!(currentUserId && otherUserId && currentUserId !== otherUserId)
+  });
+
   // Fetch direct compatibility data from the API (consistent with discover page)
   const { data: compatibilityData, isLoading } = useQuery<{
     totalCommonalities: number;
@@ -421,12 +427,6 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
 
   const { data: otherUserPlans = [] } = useQuery<TravelPlan[]>({
     queryKey: [`/api/travel-plans/${otherUserId}`]
-  });
-
-  // Fetch mutual connections between the two users
-  const { data: mutualConnections = [] } = useQuery<any[]>({
-    queryKey: [`/api/mutual-connections/${currentUserId}/${otherUserId}`],
-    enabled: !!(currentUserId && otherUserId && currentUserId !== otherUserId)
   });
 
   // Calculate shared trips based on overlapping destinations and dates
