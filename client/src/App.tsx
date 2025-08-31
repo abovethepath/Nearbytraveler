@@ -863,7 +863,7 @@ function Router() {
       case '/signup/traveler':
         return <ComingSoon />;
       case '/join':
-        return <ComingSoon />;
+        return <Auth />;
       case '/signup':
         return <ComingSoon />;
       case '/signup/business':
