@@ -18,6 +18,7 @@ import {
   type LocationMatchData
 } from '../templates/emailTemplates.js';
 import * as brevo from '@getbrevo/brevo';
+import fetch from 'node-fetch';
 
 export class EmailService {
   private brevoApi: any;
@@ -60,7 +61,7 @@ export class EmailService {
     // Ensure initialization before each send
     this.ensureInitialized();
     
-    if (!this.brevoApi || !this.isInitialized) {
+    if (!this.apiKey || !this.isInitialized) {
       console.log('Brevo not properly initialized - email not sent');
       console.log(`Email would be sent to: ${to}`);
       console.log(`Subject: ${subject}`);
@@ -78,17 +79,30 @@ export class EmailService {
 
       console.log('📧 Sending email via Brevo:', { to, from: emailData.sender.email, subject });
 
-      // Set API key authentication
-      this.brevoApi.authentications['api-key'].apiKey = this.apiKey;
-      await this.brevoApi.sendTransacEmail(emailData);
-      console.log(`✅ Email sent successfully via Brevo to ${to}: ${subject}`);
+      // Use direct API call for reliable authentication
+      console.log('📧 Using direct Brevo API call...');
+      const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+        method: 'POST',
+        headers: {
+          'api-key': this.apiKey,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(emailData)
+      });
+      
+      console.log('📧 Brevo API Response status:', response.status);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('🔍 Brevo API Error:', errorText);
+        throw new Error(`HTTP ${response.status}: ${errorText}`);
+      }
+
+      const result = await response.json();
+      console.log(`✅ Email sent successfully via Brevo to ${to}: ${subject}`, result);
       return true;
     } catch (error: any) {
       console.error('📧 Brevo Email sending failed:', error.message);
-      if (error.response) {
-        console.error('🔍 Brevo Error details:', JSON.stringify(error.response.data, null, 2));
-        console.error('🔍 Status code:', error.response.status);
-      }
       return false;
     }
   }
