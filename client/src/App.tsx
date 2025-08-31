@@ -588,20 +588,21 @@ function Router() {
         }
         return <LandingStreamlined />;
       }
-      // QR code signup route - DISABLED FOR LAUNCH
+      // QR code signup route
       if (location.startsWith('/signup/qr/')) {
-        return <ComingSoon />;
+        const qrData = location.split('/signup/qr/')[1];
+        return <QRSignup />;
       }
 
-      // Signup pages - DISABLED FOR LAUNCH
+      // Signup pages
       if (location === '/signup/local' || location === '/signup/traveler') {
-        return <ComingSoon />;
+        return <SignupLocalTraveler />;
       }
       if (location === '/signup/traveling') {
-        return <ComingSoon />;
+        return <SignupTraveling />;
       }
       if (location === '/signup/business') {
-        return <ComingSoon />;
+        return <SignupBusinessSimple />;
       }
       // Allow access to legal pages without authentication
       if (location === '/privacy') {
@@ -636,7 +637,8 @@ function Router() {
         return <Auth />;
       }
       if (location === '/signup' || location === '/join') {
-        return <ComingSoon />;
+        console.log('Showing Join page');
+        return <Auth />;
       }
       if (location === '/business-card') {
         console.log('Returning BusinessCard component for /business-card - PUBLIC ACCESS');
