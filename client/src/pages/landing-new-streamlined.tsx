@@ -232,6 +232,82 @@ export default function LandingStreamlined() {
           )}
         </div>
 
+        {/* SOCIAL PROOF SECTION - For Travelers & Families */}
+        <section className="mx-auto max-w-5xl px-6 py-12 bg-gradient-to-br from-blue-50 to-orange-50 dark:from-blue-900/10 dark:to-orange-900/10">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4">
+              Why Travelers & Families Choose Nearby Traveler
+            </h2>
+            <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+              From solo adventurers to family explorers, our community creates connections that transform trips into lifelong memories.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8 items-center">
+            {/* Testimonial */}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg">
+              <div className="flex items-start space-x-4">
+                <div className="flex-shrink-0">
+                  <div className="w-12 h-12 bg-gradient-to-r from-orange-400 to-blue-500 rounded-full flex items-center justify-center">
+                    <span className="text-white font-bold text-lg">M</span>
+                  </div>
+                </div>
+                <div>
+                  <blockquote className="text-gray-700 dark:text-gray-300 italic mb-3">
+                    "I used to travel alone and rely on tourist guidebooks. Through Nearby Traveler, I connected with a local family in Barcelona before my trip. They showed me hidden tapas spots and we're still friends today. My kids now have pen pals in Spain!"
+                  </blockquote>
+                  <p className="font-semibold text-gray-900 dark:text-white">— Maria K., Family Traveler</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Connected with 8 families across Europe</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Stats/Benefits */}
+            <div className="space-y-6">
+              <div className="flex items-center space-x-4">
+                <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+                  <Users className="w-8 h-8 text-blue-600" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-gray-900 dark:text-white">Safe Family Connections</h3>
+                  <p className="text-gray-600 dark:text-gray-300 text-sm">Verified families helping families explore the world together</p>
+                </div>
+              </div>
+
+              <div className="flex items-center space-x-4">
+                <div className="w-16 h-16 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center">
+                  <MapPin className="w-8 h-8 text-orange-600" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-gray-900 dark:text-white">Local Insider Knowledge</h3>
+                  <p className="text-gray-600 dark:text-gray-300 text-sm">Skip tourist traps and discover authentic experiences locals love</p>
+                </div>
+              </div>
+
+              <div className="flex items-center space-x-4">
+                <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
+                  <ShieldCheck className="w-8 h-8 text-green-600" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-gray-900 dark:text-white">Trusted Community</h3>
+                  <p className="text-gray-600 dark:text-gray-300 text-sm">References and verification for peace of mind when traveling</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="text-center mt-8">
+            <Button 
+              onClick={() => {
+                trackEvent('signup_cta_click', 'landing_page', 'social_proof_join');
+                setLocation('/join');
+              }}
+              className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-medium px-8 py-3 rounded-lg shadow-sm transition-all duration-200"
+            >
+              Start Connecting Now
+            </Button>
+          </div>
+        </section>
 
         {/* VALUE SECTION - What It Does */}
         <section className="mx-auto max-w-6xl px-6 py-8 sm:py-12 md:py-16">
