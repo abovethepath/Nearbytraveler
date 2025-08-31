@@ -24,6 +24,8 @@ export default function Auth() {
   const [isLogin, setIsLogin] = useState(!isJoinPage && mode !== 'register');
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [username, setUsername] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const handleLogin = async () => {
@@ -94,6 +96,76 @@ export default function Auth() {
     }
   };
 
+  const handleSignup = async () => {
+    console.log('handleSignup called with email:', email, 'username:', username);
+    if (!email || !password || !confirmPassword || !username) {
+      toast({
+        title: "Missing fields",
+        description: "Please fill in all required fields.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      toast({
+        title: "Password mismatch",
+        description: "Passwords do not match.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    console.log('Starting signup request...');
+    try {
+      const response = await fetch('/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          email: email.toLowerCase().trim(), 
+          password,
+          username: username.trim(),
+          userType: 'traveler' // Default to traveler for now
+        }),
+      });
+
+      console.log('Signup response status:', response.status);
+      if (response.ok) {
+        const user = await response.json();
+        console.log('Signup successful:', user);
+
+        toast({
+          title: "Welcome to Nearby Traveler!",
+          description: "Your account has been created successfully.",
+        });
+
+        // Auto-login after successful signup
+        authStorage.setUser(user.user);
+        queryClient.invalidateQueries();
+        setLocation("/welcome");
+        return;
+      } else {
+        const error = await response.json();
+        console.log('Signup error:', error);
+        toast({
+          title: "Sign up failed",
+          description: error.message || "Unable to create account.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error("Signup error:", error);
+      toast({
+        title: "Connection error",
+        description: "Unable to connect to server.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <>
       <style>
@@ -152,17 +224,65 @@ export default function Auth() {
           </CardHeader>
           <CardContent className="space-y-6">
             {!isLogin ? (
-              <div className="text-center space-y-4">
-                <div className="w-full p-6 rounded-lg bg-gray-100 dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600">
-                  <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-3">
-                    🚀 Coming Soon!
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-400 mb-4">
-                    We're putting the finishing touches on Nearby Traveler.<br/>
-                    Check back soon - we'll be live shortly!
-                  </p>
+              <>
+                {/* Signup Form */}
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="signupUsername" className="text-base md:text-lg font-medium text-gray-900 dark:text-white text-crisp">Username</Label>
+                    <Input
+                      id="signupUsername"
+                      type="text"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      placeholder="Choose a username"
+                      className="text-base py-3 text-crisp font-medium"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="signupEmail" className="text-base md:text-lg font-medium text-gray-900 dark:text-white text-crisp">Email</Label>
+                    <Input
+                      id="signupEmail"
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="Enter your email"
+                      className="text-base py-3 text-crisp font-medium"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="signupPassword" className="text-base md:text-lg font-medium text-gray-900 dark:text-white text-crisp">Password</Label>
+                    <Input
+                      id="signupPassword"
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="Create a password"
+                      className="text-base py-3 text-crisp font-medium"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="confirmPassword" className="text-base md:text-lg font-medium text-gray-900 dark:text-white text-crisp">Confirm Password</Label>
+                    <Input
+                      id="confirmPassword"
+                      type="password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      placeholder="Confirm your password"
+                      className="text-base py-3 text-crisp font-medium"
+                    />
+                  </div>
                 </div>
-              </div>
+
+                <div className="mt-8 pt-4 space-y-3">
+                  <Button
+                    onClick={handleSignup}
+                    disabled={isLoading || !email || !password || !confirmPassword || !username}
+                    className="join-page-gradient-button w-full py-3 px-4 rounded-md font-bold text-center select-none text-base md:text-lg text-crisp"
+                  >
+                    {isLoading ? "Creating Account..." : "Join Nearby Traveler"}
+                  </Button>
+                </div>
+              </>
             ) : (
               <>
                 {/* Login Form */}
