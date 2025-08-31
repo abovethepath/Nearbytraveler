@@ -4223,11 +4223,11 @@ export class DatabaseStorage implements IStorage {
           .limit(2);
 
         if (existingChatrooms.length < 2) {
-          // Create General chatroom
-          if (!existingChatrooms.some(room => room.name.includes('General'))) {
+          // Create Welcome Newcomers chatroom
+          if (!existingChatrooms.some(room => room.name.includes('Welcome Newcomers'))) {
             await db.insert(citychatrooms).values({
-              name: `${city} General`,
-              description: `General discussion for ${city} locals and travelers`,
+              name: `Welcome Newcomers ${city}`,
+              description: `Welcome new visitors and locals to ${city}`,
               city,
               state: state || '',
               country,
@@ -4235,17 +4235,17 @@ export class DatabaseStorage implements IStorage {
               isActive: true,
               isPublic: true,
               maxMembers: 500,
-              tags: ['general', 'locals', 'travelers'],
+              tags: ['welcome', 'newcomers', 'locals', 'travelers'],
               rules: 'Be respectful and helpful to fellow travelers and locals'
             });
-            console.log(`✅ CITY SETUP: Created General chatroom for ${city}`);
+            console.log(`✅ CITY SETUP: Created Welcome Newcomers chatroom for ${city}`);
           }
 
-          // Create Travel Tips chatroom
-          if (!existingChatrooms.some(room => room.name.includes('Travel Tips'))) {
+          // Create Let's Meet Up chatroom
+          if (!existingChatrooms.some(room => room.name.includes("Let's Meet Up"))) {
             await db.insert(citychatrooms).values({
-              name: `${city} Travel Tips`,
-              description: `Share travel tips, recommendations, and local insights for ${city}`,
+              name: `Let's Meet Up ${city}`,
+              description: `Plan meetups and events with locals and travelers in ${city}`,
               city,
               state: state || '',
               country,
@@ -4253,10 +4253,10 @@ export class DatabaseStorage implements IStorage {
               isActive: true,
               isPublic: true,
               maxMembers: 300,
-              tags: ['travel', 'tips', 'recommendations'],
-              rules: 'Share helpful local tips and travel advice'
+              tags: ['meetup', 'events', 'social'],
+              rules: 'Share helpful local tips and coordinate meetups'
             });
-            console.log(`✅ CITY SETUP: Created Travel Tips chatroom for ${city}`);
+            console.log(`✅ CITY SETUP: Created Let's Meet Up chatroom for ${city}`);
           }
         }
       } catch (error) {
