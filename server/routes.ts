@@ -674,6 +674,115 @@ function findSharedInterests(userInterests: string[], newUserInterests: string[]
   return userInterests.filter(interest => newUserInterests.includes(interest)).slice(0, 5); // Limit to top 5
 }
 
+// Track user for weekly digest instead of instant notifications
+async function trackUserForWeeklyDigest(user: any) {
+  try {
+    if (!user.hometownCity || !user.username) {
+      console.log("⚠️ Skipping weekly digest tracking - missing city or username data");
+      return;
+    }
+
+    await storage.trackUserForWeeklyDigest(
+      user.id,
+      user.hometownCity,
+      user.username,
+      user.userType || 'traveler',
+      user.interests || []
+    );
+
+    console.log(`📋 User @${user.username} tracked for weekly digest in ${user.hometownCity}`);
+  } catch (error) {
+    console.error("Error tracking user for weekly digest:", error);
+  }
+}
+
+// Send weekly digest emails function
+async function sendWeeklyDigestEmails() {
+  try {
+    const { emailService } = await import('./services/emailService');
+    
+    // Calculate the previous week (Monday to Sunday)
+    const now = new Date();
+    const dayOfWeek = now.getDay(); // 0 = Sunday, 1 = Monday, etc.
+    const daysToLastMonday = dayOfWeek === 0 ? 7 : dayOfWeek; // If Sunday, go back 7 days to last Monday
+    
+    const lastWeekStart = new Date(now);
+    lastWeekStart.setDate(now.getDate() - daysToLastMonday - 6); // Go back to last Monday
+    lastWeekStart.setHours(0, 0, 0, 0);
+    
+    const lastWeekEnd = new Date(lastWeekStart);
+    lastWeekEnd.setDate(lastWeekStart.getDate() + 6);
+    lastWeekEnd.setHours(23, 59, 59, 999);
+
+    console.log(`📧 Starting weekly digest for week: ${lastWeekStart.toDateString()} - ${lastWeekEnd.toDateString()}`);
+
+    // Get users who joined last week grouped by city
+    const weeklyDigestData = await storage.getWeeklyDigestUsers(lastWeekStart, lastWeekEnd);
+    
+    if (weeklyDigestData.length === 0) {
+      console.log("📭 No new users to digest for last week");
+      return { citiesProcessed: 0, emailsSent: 0, message: "No new users for weekly digest" };
+    }
+
+    let totalEmailsSent = 0;
+    let citiesProcessed = 0;
+
+    for (const cityData of weeklyDigestData) {
+      const { city, new_users } = cityData;
+      citiesProcessed++;
+
+      console.log(`🌍 Processing weekly digest for ${city}: ${new_users.length} new users`);
+
+      // Get existing users in this city to send the digest to
+      const existingUsers = await storage.getUsersByCity(city);
+      
+      // Filter out users who joined this week (they shouldn't get digest about themselves)
+      const recipientUsers = existingUsers.filter(user => {
+        const userJoinDate = new Date(user.createdAt || user.joinDate);
+        return userJoinDate < lastWeekStart;
+      });
+
+      console.log(`📮 Sending weekly digest to ${recipientUsers.length} existing users in ${city}`);
+
+      // Send digest email to each existing user
+      for (const recipient of recipientUsers) {
+        if (!recipient.email) continue;
+
+        try {
+          await emailService.sendWeeklyNewUsersDigest(recipient.email, {
+            recipientName: recipient.name || recipient.username,
+            city: city,
+            newUsers: new_users,
+            weekStart: lastWeekStart,
+            weekEnd: lastWeekEnd
+          });
+
+          totalEmailsSent++;
+          console.log(`✅ Weekly digest sent to ${recipient.email} about ${new_users.length} new users in ${city}`);
+        } catch (emailError) {
+          console.error(`❌ Failed to send weekly digest to ${recipient.email}:`, emailError);
+        }
+      }
+    }
+
+    // Mark this week's digest as sent
+    await storage.markDigestAsSent(lastWeekStart, lastWeekEnd);
+
+    console.log(`🎉 Weekly digest completed: ${totalEmailsSent} emails sent across ${citiesProcessed} cities`);
+
+    return {
+      citiesProcessed,
+      emailsSent: totalEmailsSent,
+      weekRange: `${lastWeekStart.toDateString()} - ${lastWeekEnd.toDateString()}`,
+      message: "Weekly digest sent successfully"
+    };
+
+  } catch (error) {
+    console.error("Error in sendWeeklyDigestEmails:", error);
+    throw error;
+  }
+}
+
 export async function registerRoutes(app: Express, httpServer?: Server): Promise<Server> {
   if (process.env.NODE_ENV === 'development') console.log("Starting routes registration...");
 
@@ -1783,7 +1892,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       const { testType, email, username, city } = req.body;
 
       if (!testType) {
-        return res.status(400).json({ message: "testType is required (forgot_password, location_match, or welcome)" });
+        return res.status(400).json({ message: "testType is required (forgot_password, location_match, welcome, or weekly_digest)" });
       }
 
       const { emailService } = await import('./services/emailService');
@@ -1848,11 +1957,64 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         });
       }
 
-      return res.status(400).json({ message: "Invalid testType. Use: forgot_password, location_match, or welcome" });
+      if (testType === "weekly_digest") {
+        if (!email || !city) {
+          return res.status(400).json({ message: "Email and city are required for weekly digest test" });
+        }
+
+        // Test weekly digest email with mock data
+        const mockWeekStart = new Date();
+        const mockWeekEnd = new Date(mockWeekStart);
+        mockWeekEnd.setDate(mockWeekStart.getDate() + 6);
+
+        const testSuccess = await emailService.sendWeeklyNewUsersDigest(email, {
+          recipientName: username || "Test User",
+          city: city,
+          newUsers: [
+            {
+              username: "alex_traveler",
+              userType: "traveler",
+              interests: ["Photography", "Local Food"],
+              joinDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000) // 2 days ago
+            },
+            {
+              username: "sarah_local",
+              userType: "local",
+              interests: ["Nightlife", "Art Galleries", "Hiking"],
+              joinDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000) // 1 day ago
+            }
+          ],
+          weekStart: mockWeekStart,
+          weekEnd: mockWeekEnd
+        });
+
+        return res.json({ 
+          success: testSuccess, 
+          message: testSuccess ? "Weekly digest email sent successfully!" : "Failed to send email",
+          testType: "weekly_digest"
+        });
+      }
+
+      return res.status(400).json({ message: "Invalid testType. Use: forgot_password, location_match, welcome, or weekly_digest" });
 
     } catch (error: any) {
       console.error("Test endpoint error:", error);
       res.status(500).json({ message: "Test failed", error: error.message });
+    }
+  });
+
+  // Send weekly digest emails (manual trigger or cron job)
+  app.post("/api/admin/send-weekly-digest", async (req, res) => {
+    try {
+      const result = await sendWeeklyDigestEmails();
+      res.json({ 
+        success: true, 
+        message: "Weekly digest process completed",
+        ...result
+      });
+    } catch (error: any) {
+      console.error("Weekly digest sending failed:", error);
+      res.status(500).json({ message: "Failed to send weekly digest", error: error.message });
     }
   });
 
@@ -2390,8 +2552,8 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
             console.log(`✅ Welcome email sent to new user ${user.email}`);
           }
 
-          // Send location match notifications to existing users in the same city
-          await sendLocationMatchNotifications(user);
+          // Track user for weekly digest instead of instant notifications
+          await trackUserForWeeklyDigest(user);
         } catch (error) {
           console.error("Failed to send welcome email or location notifications:", error);
         }

@@ -500,6 +500,21 @@ export const notifications = pgTable("notifications", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Weekly digest tracking table
+export const weeklyDigestTracker = pgTable("weekly_digest_tracker", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(), // User who joined
+  city: text("city").notNull(), // City they joined from
+  username: text("username").notNull(),
+  userType: text("user_type").notNull(),
+  interests: text("interests").array(),
+  joinDate: timestamp("join_date").defaultNow(),
+  weekStart: timestamp("week_start").notNull(), // Monday of the week they joined
+  weekEnd: timestamp("week_end").notNull(), // Sunday of the week they joined
+  digestSent: boolean("digest_sent").default(false), // Whether weekly digest has been sent for this user
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // User blocking system
 export const blockedUsers = pgTable("blocked_users", {
   id: serial("id").primaryKey(),

@@ -66,6 +66,11 @@ export interface IStorage {
   markNotificationAsRead(id: number): Promise<Notification | undefined>;
   markAllNotificationsAsRead(userId: number): Promise<void>;
   deleteNotification(id: number): Promise<boolean>;
+
+  // Weekly digest methods
+  trackUserForWeeklyDigest(userId: number, city: string, username: string, userType: string, interests: string[]): Promise<void>;
+  getWeeklyDigestUsers(weekStart: Date, weekEnd: Date): Promise<any[]>;
+  markDigestAsSent(weekStart: Date, weekEnd: Date): Promise<void>;
   
   // Travel plan methods
   createTravelPlan(travelPlan: InsertTravelPlan): Promise<TravelPlan>;
@@ -1598,6 +1603,75 @@ export class DatabaseStorage implements IStorage {
   async deleteNotification(id: number): Promise<boolean> {
     await db.delete(notifications).where(eq(notifications.id, id));
     return true;
+  }
+
+  // Weekly digest methods
+  async trackUserForWeeklyDigest(userId: number, city: string, username: string, userType: string, interests: string[]): Promise<void> {
+    // Calculate the week start (Monday) and week end (Sunday) for the current week
+    const now = new Date();
+    const dayOfWeek = now.getDay(); // 0 = Sunday, 1 = Monday, etc.
+    const daysToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek; // If Sunday, go back 6 days to Monday
+    
+    const weekStart = new Date(now);
+    weekStart.setDate(now.getDate() + daysToMonday);
+    weekStart.setHours(0, 0, 0, 0);
+    
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekStart.getDate() + 6);
+    weekEnd.setHours(23, 59, 59, 999);
+
+    try {
+      await db.execute(sql`
+        INSERT INTO weekly_digest_tracker (user_id, city, username, user_type, interests, join_date, week_start, week_end)
+        VALUES (${userId}, ${city}, ${username}, ${userType}, ${interests}, NOW(), ${weekStart}, ${weekEnd})
+      `);
+      
+      console.log(`📅 Tracked user ${username} for weekly digest in ${city} (Week: ${weekStart.toDateString()} - ${weekEnd.toDateString()})`);
+    } catch (error) {
+      console.error("Failed to track user for weekly digest:", error);
+    }
+  }
+
+  async getWeeklyDigestUsers(weekStart: Date, weekEnd: Date): Promise<any[]> {
+    try {
+      const results = await db.execute(sql`
+        SELECT 
+          city,
+          array_agg(
+            json_build_object(
+              'username', username,
+              'userType', user_type,
+              'interests', interests,
+              'joinDate', join_date
+            ) ORDER BY join_date
+          ) as new_users
+        FROM weekly_digest_tracker
+        WHERE week_start = ${weekStart} 
+          AND week_end = ${weekEnd}
+          AND digest_sent = false
+        GROUP BY city
+        HAVING count(*) > 0
+      `);
+      
+      return results.rows || [];
+    } catch (error) {
+      console.error("Failed to get weekly digest users:", error);
+      return [];
+    }
+  }
+
+  async markDigestAsSent(weekStart: Date, weekEnd: Date): Promise<void> {
+    try {
+      await db.execute(sql`
+        UPDATE weekly_digest_tracker 
+        SET digest_sent = true 
+        WHERE week_start = ${weekStart} AND week_end = ${weekEnd}
+      `);
+      
+      console.log(`✅ Marked weekly digest as sent for week ${weekStart.toDateString()} - ${weekEnd.toDateString()}`);
+    } catch (error) {
+      console.error("Failed to mark digest as sent:", error);
+    }
   }
 
   // Travel plan methods

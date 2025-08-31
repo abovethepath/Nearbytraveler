@@ -110,6 +110,99 @@ export class EmailService {
     return this.sendEmail(to, template.subject, template.html, template.text);
   }
 
+  async sendWeeklyNewUsersDigest(to: string, data: {
+    recipientName: string;
+    city: string;
+    newUsers: Array<{
+      username: string;
+      userType: string;
+      interests: string[];
+      joinDate: Date;
+    }>;
+    weekStart: Date;
+    weekEnd: Date;
+  }) {
+    const formatDate = (date: Date) => date.toLocaleDateString('en-US', { 
+      month: 'short', 
+      day: 'numeric' 
+    });
+
+    const subject = `Weekly Update: ${data.newUsers.length} new people joined ${data.city} this week`;
+    
+    const html = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="text-align: center; margin-bottom: 30px;">
+          <h1 style="color: #3b82f6; margin: 0;">Nearby Traveler</h1>
+          <p style="color: #6b7280; margin: 5px 0;">Weekly Community Update</p>
+        </div>
+
+        <h2 style="color: #1f2937;">Hi ${data.recipientName}!</h2>
+        
+        <p style="color: #374151; line-height: 1.6;">
+          Here's who joined the ${data.city} community this week (${formatDate(data.weekStart)} - ${formatDate(data.weekEnd)}):
+        </p>
+
+        <div style="background-color: #f8fafc; border-radius: 8px; padding: 20px; margin: 20px 0;">
+          ${data.newUsers.map(user => `
+            <div style="border-bottom: 1px solid #e5e7eb; padding: 15px 0; margin-bottom: 15px;">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <strong style="color: #1f2937;">@${user.username}</strong>
+                <span style="background-color: #3b82f6; color: white; padding: 2px 8px; border-radius: 12px; font-size: 12px; text-transform: capitalize;">
+                  ${user.userType}
+                </span>
+              </div>
+              ${user.interests.length > 0 ? `
+                <p style="color: #6b7280; margin: 5px 0; font-size: 14px;">
+                  Interested in: ${user.interests.slice(0, 3).join(', ')}${user.interests.length > 3 ? '...' : ''}
+                </p>
+              ` : ''}
+              <p style="color: #9ca3af; margin: 0; font-size: 12px;">
+                Joined ${formatDate(user.joinDate)}
+              </p>
+            </div>
+          `).join('')}
+        </div>
+
+        <div style="text-align: center; margin: 30px 0;">
+          <a href="https://www.thenearbytraveler.com/discover" 
+             style="background-color: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;">
+            Discover & Connect
+          </a>
+        </div>
+
+        <p style="color: #6b7280; font-size: 14px; text-align: center;">
+          Want to reach out? Send them a message or plan a meetup!
+        </p>
+
+        <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;">
+        
+        <p style="color: #9ca3af; font-size: 12px; text-align: center;">
+          You're receiving this because you're part of the ${data.city} community on Nearby Traveler.
+          <br>
+          <a href="#" style="color: #3b82f6;">Manage email preferences</a>
+        </p>
+      </div>
+    `;
+
+    const text = `Weekly Community Update for ${data.city}
+
+Hi ${data.recipientName}!
+
+Here's who joined the ${data.city} community this week (${formatDate(data.weekStart)} - ${formatDate(data.weekEnd)}):
+
+${data.newUsers.map(user => 
+  `• @${user.username} (${user.userType}) - ${user.interests.slice(0, 3).join(', ')} - Joined ${formatDate(user.joinDate)}`
+).join('\n')}
+
+Discover & Connect: https://www.thenearbytraveler.com/discover
+
+Want to reach out? Send them a message or plan a meetup!
+
+You're receiving this because you're part of the ${data.city} community on Nearby Traveler.`;
+
+    return this.sendEmail(to, subject, html, text);
+  }
+
   async sendBusinessReferralInvitation(data: {
     to: string;
     referrerName: string;
