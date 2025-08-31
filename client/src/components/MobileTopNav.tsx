@@ -10,34 +10,24 @@ import { authStorage } from "@/lib/auth";
 export function MobileTopNav() {
   const authContext = React.useContext(AuthContext);
   const { user, logout } = authContext;
-  
-  console.log('🔍 MobileTopNav AuthContext:', {
-    hasContext: !!authContext,
-    hasLogout: typeof logout === 'function',
-    user: user?.username
-  });
   const [, setLocation] = useLocation();
   const [showDropdown, setShowDropdown] = useState(false);
   const [currentUser, setCurrentUser] = useState<any>(null);
 
   // hydrate currentUser from best source available - fixed for auth consistency
   useEffect(() => {
-    console.log('🔍 MobileTopNav hydrating user - AuthContext user:', user?.username);
-    
     // Try multiple sources in order of preference
     let effectiveUser = null;
     
     // 1. AuthContext user (should be primary)
     if (user?.username) {
       effectiveUser = user;
-      console.log('✅ Using AuthContext user:', user.username);
     } 
     // 2. AuthStorage 
     else {
       const storedUser = authStorage.getUser();
       if (storedUser?.username) {
         effectiveUser = storedUser;
-        console.log('✅ Using authStorage user:', storedUser.username);
       } else {
         // 3. Raw localStorage as fallback
         try {
@@ -46,7 +36,6 @@ export function MobileTopNav() {
             const parsed = JSON.parse(raw);
             if (parsed?.username) {
               effectiveUser = parsed;
-              console.log('✅ Using localStorage user:', parsed.username);
             }
           }
         } catch {}
@@ -54,7 +43,6 @@ export function MobileTopNav() {
     }
     
     setCurrentUser(effectiveUser);
-    console.log('🔍 Final currentUser set to:', effectiveUser?.username || 'null');
   }, [user]);
 
   // close on profile updates
@@ -228,21 +216,16 @@ export function MobileTopNav() {
             <button
               className="px-4 py-3 text-left hover:bg-red-50 dark:hover:bg-red-900/20 border-t border-gray-200 dark:border-gray-700 text-red-600 dark:text-red-400 font-medium"
               onClick={() => {
-                console.log('🚪 Mobile logout button clicked');
-                console.log('🚪 CurrentUser:', currentUser?.username);
-                console.log('🚪 AuthContext user:', authContext.user?.username);
                 setShowDropdown(false);
                 
                 // Force logout by clearing everything manually if AuthContext is inconsistent
                 if (!authContext.user && currentUser) {
-                  console.log('🚪 AuthContext inconsistent - doing manual logout');
                   // Clear all auth data manually
                   localStorage.clear();
                   sessionStorage.clear();
                   authStorage.clearUser();
                   window.location.href = '/';
                 } else {
-                  console.log('🚪 Using AuthContext logout');
                   logout();
                 }
               }}
