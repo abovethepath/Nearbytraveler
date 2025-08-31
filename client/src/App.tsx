@@ -293,11 +293,30 @@ function Router() {
         authStorage.setUser(newUser);
         setUser(newUser);
       },
-      logout: () => {
+      logout: async () => {
         console.log('🚪 AuthContext logout called - starting logout process');
         console.log('Current user before logout:', user?.username);
 
         try {
+          // First call server logout to destroy session
+          try {
+            const response = await fetch('/api/logout', {
+              method: 'POST',
+              credentials: 'include',
+              headers: {
+                'Content-Type': 'application/json'
+              }
+            });
+            
+            if (response.ok) {
+              console.log('✅ Server session destroyed');
+            } else {
+              console.warn('⚠️ Server logout failed, continuing with client cleanup');
+            }
+          } catch (serverError) {
+            console.warn('⚠️ Server logout request failed:', serverError);
+          }
+
           // Clear all authentication data
           authStorage.clearUser();
           console.log('✅ Cleared authStorage');

@@ -11256,6 +11256,39 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // ========================================
+  // AUTHENTICATION ROUTES
+  // ========================================
+
+  // Logout route - properly destroy server session
+  app.post("/api/logout", (req, res) => {
+    try {
+      console.log('🚪 Server logout called for session:', req.sessionID);
+      
+      // Destroy the session
+      req.session.destroy((err) => {
+        if (err) {
+          console.error('❌ Error destroying session:', err);
+          return res.status(500).json({ message: "Failed to logout" });
+        }
+        
+        console.log('✅ Session destroyed successfully');
+        
+        // Clear the session cookie
+        res.clearCookie('connect.sid', { 
+          path: '/',
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production'
+        });
+        
+        res.json({ message: "Logged out successfully" });
+      });
+    } catch (error) {
+      console.error('❌ Server logout error:', error);
+      res.status(500).json({ message: "Failed to logout" });
+    }
+  });
+
   // Return the configured HTTP server with WebSocket support  
   return httpServer;
 }
