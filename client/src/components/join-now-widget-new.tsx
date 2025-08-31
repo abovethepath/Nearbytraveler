@@ -286,16 +286,13 @@ export default function JoinNowWidgetNew() {
             </div>
           </div>
 
-          <div className="mt-8 pt-4">
-            <div className="w-full p-4 rounded-lg bg-gray-100 dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 text-center">
-              <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
-                🚀 Coming Soon!
-              </h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                We're putting the finishing touches on Nearby Traveler.<br/>
-                Check back soon - we'll be live shortly!
-              </p>
-            </div>
+          <div className="mt-6">
+            <Button
+              onClick={handleStepOne}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 text-base font-medium"
+            >
+              Continue →
+            </Button>
           </div>
         </>
       ) : (
@@ -523,15 +520,13 @@ export default function JoinNowWidgetNew() {
           </div>
 
           <div className="mt-8 pt-4 space-y-3">
-            <div className="w-full p-4 rounded-lg bg-gray-100 dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 text-center">
-              <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
-                🚀 Coming Soon!
-              </h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                We're putting the finishing touches on Nearby Traveler.<br/>
-                Check back soon - we'll be live shortly!
-              </p>
-            </div>
+            <Button
+              onClick={handleCreateAccount}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 text-base font-medium"
+              disabled={usernameAvailable === false || usernameChecking}
+            >
+              {usernameChecking ? 'Checking Username...' : 'Create Account →'}
+            </Button>
             
             <Button
               onClick={() => setLocation('/')}
