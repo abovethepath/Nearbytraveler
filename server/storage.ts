@@ -4180,11 +4180,104 @@ export class DatabaseStorage implements IStorage {
   async respondToChatroomInvitation(): Promise<any> { return undefined; }
   async canUserAccessChatroom(): Promise<any> { return true; }
   async ensureCityExists(city: string, state: string, country: string): Promise<boolean> {
-    // This method ensures a city exists in our system for discover page
-    // It doesn't need to create actual database entries, just ensures the city
-    // will appear in city statistics when users from that location exist
-    console.log(`Ensuring city exists: ${city}, ${state}, ${country}`);
-    return true;
+    try {
+      console.log(`🏙️ CITY SETUP: Ensuring complete city infrastructure for ${city}, ${state}, ${country}`);
+      
+      // 1. Create city page entry
+      try {
+        const existingCityPage = await db
+          .select()
+          .from(cityPages)
+          .where(and(
+            eq(cityPages.city, city),
+            eq(cityPages.country, country)
+          ))
+          .limit(1);
+
+        if (existingCityPage.length === 0) {
+          await db.insert(cityPages).values({
+            city,
+            state: state || '',
+            country,
+            description: `Discover ${city} - Connect with locals and travelers, find events, and explore amazing experiences.`,
+            imageUrl: null,
+            createdAt: new Date(),
+            updatedAt: new Date()
+          });
+          console.log(`✅ CITY SETUP: Created city page for ${city}`);
+        }
+      } catch (error) {
+        console.error(`❌ CITY SETUP: Error creating city page for ${city}:`, error);
+      }
+
+      // 2. Create default chatrooms for the city
+      try {
+        // Check if chatrooms already exist
+        const existingChatrooms = await db
+          .select()
+          .from(citychatrooms)
+          .where(and(
+            eq(citychatrooms.city, city),
+            eq(citychatrooms.country, country)
+          ))
+          .limit(2);
+
+        if (existingChatrooms.length < 2) {
+          // Create General chatroom
+          if (!existingChatrooms.some(room => room.name.includes('General'))) {
+            await db.insert(citychatrooms).values({
+              name: `${city} General`,
+              description: `General discussion for ${city} locals and travelers`,
+              city,
+              state: state || '',
+              country,
+              createdById: 1, // System user
+              isActive: true,
+              isPublic: true,
+              maxMembers: 500,
+              tags: ['general', 'locals', 'travelers'],
+              rules: 'Be respectful and helpful to fellow travelers and locals'
+            });
+            console.log(`✅ CITY SETUP: Created General chatroom for ${city}`);
+          }
+
+          // Create Travel Tips chatroom
+          if (!existingChatrooms.some(room => room.name.includes('Travel Tips'))) {
+            await db.insert(citychatrooms).values({
+              name: `${city} Travel Tips`,
+              description: `Share travel tips, recommendations, and local insights for ${city}`,
+              city,
+              state: state || '',
+              country,
+              createdById: 1, // System user
+              isActive: true,
+              isPublic: true,
+              maxMembers: 300,
+              tags: ['travel', 'tips', 'recommendations'],
+              rules: 'Share helpful local tips and travel advice'
+            });
+            console.log(`✅ CITY SETUP: Created Travel Tips chatroom for ${city}`);
+          }
+        }
+      } catch (error) {
+        console.error(`❌ CITY SETUP: Error creating chatrooms for ${city}:`, error);
+      }
+
+      // 3. Ensure city has activities
+      try {
+        const { ensureCityHasActivities } = await import('./auto-city-setup.js');
+        await ensureCityHasActivities(city, 1);
+        console.log(`✅ CITY SETUP: Ensured activities for ${city}`);
+      } catch (error) {
+        console.error(`❌ CITY SETUP: Error setting up activities for ${city}:`, error);
+      }
+
+      console.log(`🎉 CITY SETUP: Complete city infrastructure ready for ${city}`);
+      return true;
+    } catch (error) {
+      console.error(`❌ CITY SETUP: Failed to ensure city exists for ${city}:`, error);
+      return false;
+    }
   }
 
   async getCityStatistics(): Promise<any> {

@@ -3945,6 +3945,21 @@ Questions? Just reply to this message. Welcome aboard!
       if (process.env.NODE_ENV === 'development') console.log('=== TRAVEL PLAN CREATED ===');
       if (process.env.NODE_ENV === 'development') console.log('New travel plan:', newTravelPlan);
       
+      // Automatically set up city infrastructure for travel destination
+      if (travelPlanData.destinationCity && travelPlanData.destinationCountry) {
+        try {
+          console.log(`🏙️ AUTO-SETUP: Setting up city infrastructure for travel destination: ${travelPlanData.destinationCity}`);
+          await storage.ensureCityExists(
+            travelPlanData.destinationCity,
+            travelPlanData.destinationState || '',
+            travelPlanData.destinationCountry
+          );
+          console.log(`✅ AUTO-SETUP: City infrastructure ready for ${travelPlanData.destinationCity}`);
+        } catch (error) {
+          console.error('❌ AUTO-SETUP: Failed to set up city infrastructure:', error);
+        }
+      }
+      
       // Award 4 aura points for planning a trip
       await awardAuraPoints(travelPlanData.userId, 4, 'planning a trip');
       
