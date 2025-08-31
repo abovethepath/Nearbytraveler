@@ -674,11 +674,11 @@ function findSharedInterests(userInterests: string[], newUserInterests: string[]
   return userInterests.filter(interest => newUserInterests.includes(interest)).slice(0, 5); // Limit to top 5
 }
 
-// Track user for weekly digest instead of instant notifications
+// Track user for 3-day digest instead of instant notifications
 async function trackUserForWeeklyDigest(user: any) {
   try {
     if (!user.hometownCity || !user.username) {
-      console.log("⚠️ Skipping weekly digest tracking - missing city or username data");
+      console.log("⚠️ Skipping 3-day digest tracking - missing city or username data");
       return;
     }
 
@@ -690,59 +690,58 @@ async function trackUserForWeeklyDigest(user: any) {
       user.interests || []
     );
 
-    console.log(`📋 User @${user.username} tracked for weekly digest in ${user.hometownCity}`);
+    console.log(`📋 User @${user.username} tracked for 3-day digest in ${user.hometownCity}`);
   } catch (error) {
-    console.error("Error tracking user for weekly digest:", error);
+    console.error("Error tracking user for 3-day digest:", error);
   }
 }
 
-// Send weekly digest emails function
+// Send 3-day digest emails function
 async function sendWeeklyDigestEmails() {
   try {
     const { emailService } = await import('./services/emailService');
     
-    // Calculate the previous week (Monday to Sunday)
+    // Calculate the previous 3-day cycle
     const now = new Date();
-    const dayOfWeek = now.getDay(); // 0 = Sunday, 1 = Monday, etc.
-    const daysToLastMonday = dayOfWeek === 0 ? 7 : dayOfWeek; // If Sunday, go back 7 days to last Monday
+    const daysSinceEpoch = Math.floor(now.getTime() / (1000 * 60 * 60 * 24));
+    const previousCycleNumber = Math.floor(daysSinceEpoch / 3) - 1; // Previous 3-day cycle
     
-    const lastWeekStart = new Date(now);
-    lastWeekStart.setDate(now.getDate() - daysToLastMonday - 6); // Go back to last Monday
-    lastWeekStart.setHours(0, 0, 0, 0);
+    const lastCycleStart = new Date(previousCycleNumber * 3 * 24 * 60 * 60 * 1000);
+    lastCycleStart.setHours(0, 0, 0, 0);
     
-    const lastWeekEnd = new Date(lastWeekStart);
-    lastWeekEnd.setDate(lastWeekStart.getDate() + 6);
-    lastWeekEnd.setHours(23, 59, 59, 999);
+    const lastCycleEnd = new Date(lastCycleStart);
+    lastCycleEnd.setDate(lastCycleStart.getDate() + 2);
+    lastCycleEnd.setHours(23, 59, 59, 999);
 
-    console.log(`📧 Starting weekly digest for week: ${lastWeekStart.toDateString()} - ${lastWeekEnd.toDateString()}`);
+    console.log(`📧 Starting 3-day digest for cycle: ${lastCycleStart.toDateString()} - ${lastCycleEnd.toDateString()}`);
 
-    // Get users who joined last week grouped by city
-    const weeklyDigestData = await storage.getWeeklyDigestUsers(lastWeekStart, lastWeekEnd);
+    // Get users who joined in the last 3-day cycle grouped by city
+    const digestData = await storage.getWeeklyDigestUsers(lastCycleStart, lastCycleEnd);
     
-    if (weeklyDigestData.length === 0) {
-      console.log("📭 No new users to digest for last week");
-      return { citiesProcessed: 0, emailsSent: 0, message: "No new users for weekly digest" };
+    if (digestData.length === 0) {
+      console.log("📭 No new users to digest for last 3-day cycle");
+      return { citiesProcessed: 0, emailsSent: 0, message: "No new users for 3-day digest" };
     }
 
     let totalEmailsSent = 0;
     let citiesProcessed = 0;
 
-    for (const cityData of weeklyDigestData) {
+    for (const cityData of digestData) {
       const { city, new_users } = cityData;
       citiesProcessed++;
 
-      console.log(`🌍 Processing weekly digest for ${city}: ${new_users.length} new users`);
+      console.log(`🌍 Processing 3-day digest for ${city}: ${new_users.length} new users`);
 
       // Get existing users in this city to send the digest to
       const existingUsers = await storage.getUsersByCity(city);
       
-      // Filter out users who joined this week (they shouldn't get digest about themselves)
+      // Filter out users who joined in this cycle (they shouldn't get digest about themselves)
       const recipientUsers = existingUsers.filter(user => {
         const userJoinDate = new Date(user.createdAt || user.joinDate);
-        return userJoinDate < lastWeekStart;
+        return userJoinDate < lastCycleStart;
       });
 
-      console.log(`📮 Sending weekly digest to ${recipientUsers.length} existing users in ${city}`);
+      console.log(`📮 Sending 3-day digest to ${recipientUsers.length} existing users in ${city}`);
 
       // Send digest email to each existing user
       for (const recipient of recipientUsers) {
@@ -753,28 +752,28 @@ async function sendWeeklyDigestEmails() {
             recipientName: recipient.name || recipient.username,
             city: city,
             newUsers: new_users,
-            weekStart: lastWeekStart,
-            weekEnd: lastWeekEnd
+            weekStart: lastCycleStart,
+            weekEnd: lastCycleEnd
           });
 
           totalEmailsSent++;
-          console.log(`✅ Weekly digest sent to ${recipient.email} about ${new_users.length} new users in ${city}`);
+          console.log(`✅ 3-day digest sent to ${recipient.email} about ${new_users.length} new users in ${city}`);
         } catch (emailError) {
-          console.error(`❌ Failed to send weekly digest to ${recipient.email}:`, emailError);
+          console.error(`❌ Failed to send 3-day digest to ${recipient.email}:`, emailError);
         }
       }
     }
 
-    // Mark this week's digest as sent
-    await storage.markDigestAsSent(lastWeekStart, lastWeekEnd);
+    // Mark this cycle's digest as sent
+    await storage.markDigestAsSent(lastCycleStart, lastCycleEnd);
 
-    console.log(`🎉 Weekly digest completed: ${totalEmailsSent} emails sent across ${citiesProcessed} cities`);
+    console.log(`🎉 3-day digest completed: ${totalEmailsSent} emails sent across ${citiesProcessed} cities`);
 
     return {
       citiesProcessed,
       emailsSent: totalEmailsSent,
-      weekRange: `${lastWeekStart.toDateString()} - ${lastWeekEnd.toDateString()}`,
-      message: "Weekly digest sent successfully"
+      cycleRange: `${lastCycleStart.toDateString()} - ${lastCycleEnd.toDateString()}`,
+      message: "3-day digest sent successfully"
     };
 
   } catch (error) {
@@ -2003,18 +2002,18 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
     }
   });
 
-  // Send weekly digest emails (manual trigger or cron job)
+  // Send 3-day digest emails (manual trigger or cron job)
   app.post("/api/admin/send-weekly-digest", async (req, res) => {
     try {
       const result = await sendWeeklyDigestEmails();
       res.json({ 
         success: true, 
-        message: "Weekly digest process completed",
+        message: "3-day digest process completed",
         ...result
       });
     } catch (error: any) {
-      console.error("Weekly digest sending failed:", error);
-      res.status(500).json({ message: "Failed to send weekly digest", error: error.message });
+      console.error("3-day digest sending failed:", error);
+      res.status(500).json({ message: "Failed to send 3-day digest", error: error.message });
     }
   });
 
@@ -2552,7 +2551,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
             console.log(`✅ Welcome email sent to new user ${user.email}`);
           }
 
-          // Track user for weekly digest instead of instant notifications
+          // Track user for 3-day digest instead of instant notifications
           await trackUserForWeeklyDigest(user);
         } catch (error) {
           console.error("Failed to send welcome email or location notifications:", error);

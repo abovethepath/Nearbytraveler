@@ -127,19 +127,19 @@ export class EmailService {
       day: 'numeric' 
     });
 
-    const subject = `Weekly Update: ${data.newUsers.length} new people joined ${data.city} this week`;
+    const subject = `New Update: ${data.newUsers.length} new people joined ${data.city} recently`;
     
     const html = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
         <div style="text-align: center; margin-bottom: 30px;">
           <h1 style="color: #3b82f6; margin: 0;">Nearby Traveler</h1>
-          <p style="color: #6b7280; margin: 5px 0;">Weekly Community Update</p>
+          <p style="color: #6b7280; margin: 5px 0;">Community Update</p>
         </div>
 
         <h2 style="color: #1f2937;">Hi ${data.recipientName}!</h2>
         
         <p style="color: #374151; line-height: 1.6;">
-          Here's who joined the ${data.city} community this week (${formatDate(data.weekStart)} - ${formatDate(data.weekEnd)}):
+          Here's who joined the ${data.city} community recently (${formatDate(data.weekStart)} - ${formatDate(data.weekEnd)}):
         </p>
 
         <div style="background-color: #f8fafc; border-radius: 8px; padding: 20px; margin: 20px 0;">

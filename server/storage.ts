@@ -1605,34 +1605,33 @@ export class DatabaseStorage implements IStorage {
     return true;
   }
 
-  // Weekly digest methods
+  // 3-day digest methods
   async trackUserForWeeklyDigest(userId: number, city: string, username: string, userType: string, interests: string[]): Promise<void> {
-    // Calculate the week start (Monday) and week end (Sunday) for the current week
+    // Calculate the current 3-day cycle
     const now = new Date();
-    const dayOfWeek = now.getDay(); // 0 = Sunday, 1 = Monday, etc.
-    const daysToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek; // If Sunday, go back 6 days to Monday
+    const daysSinceEpoch = Math.floor(now.getTime() / (1000 * 60 * 60 * 24));
+    const cycleNumber = Math.floor(daysSinceEpoch / 3); // Every 3 days
     
-    const weekStart = new Date(now);
-    weekStart.setDate(now.getDate() + daysToMonday);
-    weekStart.setHours(0, 0, 0, 0);
+    const cycleStart = new Date(cycleNumber * 3 * 24 * 60 * 60 * 1000);
+    cycleStart.setHours(0, 0, 0, 0);
     
-    const weekEnd = new Date(weekStart);
-    weekEnd.setDate(weekStart.getDate() + 6);
-    weekEnd.setHours(23, 59, 59, 999);
+    const cycleEnd = new Date(cycleStart);
+    cycleEnd.setDate(cycleStart.getDate() + 2);
+    cycleEnd.setHours(23, 59, 59, 999);
 
     try {
       await db.execute(sql`
         INSERT INTO weekly_digest_tracker (user_id, city, username, user_type, interests, join_date, week_start, week_end)
-        VALUES (${userId}, ${city}, ${username}, ${userType}, ${interests}, NOW(), ${weekStart}, ${weekEnd})
+        VALUES (${userId}, ${city}, ${username}, ${userType}, ${interests}, NOW(), ${cycleStart}, ${cycleEnd})
       `);
       
-      console.log(`📅 Tracked user ${username} for weekly digest in ${city} (Week: ${weekStart.toDateString()} - ${weekEnd.toDateString()})`);
+      console.log(`📅 Tracked user ${username} for 3-day digest in ${city} (Cycle: ${cycleStart.toDateString()} - ${cycleEnd.toDateString()})`);
     } catch (error) {
-      console.error("Failed to track user for weekly digest:", error);
+      console.error("Failed to track user for 3-day digest:", error);
     }
   }
 
-  async getWeeklyDigestUsers(weekStart: Date, weekEnd: Date): Promise<any[]> {
+  async getWeeklyDigestUsers(cycleStart: Date, cycleEnd: Date): Promise<any[]> {
     try {
       const results = await db.execute(sql`
         SELECT 
@@ -1646,8 +1645,8 @@ export class DatabaseStorage implements IStorage {
             ) ORDER BY join_date
           ) as new_users
         FROM weekly_digest_tracker
-        WHERE week_start = ${weekStart} 
-          AND week_end = ${weekEnd}
+        WHERE week_start = ${cycleStart} 
+          AND week_end = ${cycleEnd}
           AND digest_sent = false
         GROUP BY city
         HAVING count(*) > 0
@@ -1655,20 +1654,20 @@ export class DatabaseStorage implements IStorage {
       
       return results.rows || [];
     } catch (error) {
-      console.error("Failed to get weekly digest users:", error);
+      console.error("Failed to get 3-day digest users:", error);
       return [];
     }
   }
 
-  async markDigestAsSent(weekStart: Date, weekEnd: Date): Promise<void> {
+  async markDigestAsSent(cycleStart: Date, cycleEnd: Date): Promise<void> {
     try {
       await db.execute(sql`
         UPDATE weekly_digest_tracker 
         SET digest_sent = true 
-        WHERE week_start = ${weekStart} AND week_end = ${weekEnd}
+        WHERE week_start = ${cycleStart} AND week_end = ${cycleEnd}
       `);
       
-      console.log(`✅ Marked weekly digest as sent for week ${weekStart.toDateString()} - ${weekEnd.toDateString()}`);
+      console.log(`✅ Marked 3-day digest as sent for cycle ${cycleStart.toDateString()} - ${cycleEnd.toDateString()}`);
     } catch (error) {
       console.error("Failed to mark digest as sent:", error);
     }
