@@ -10569,7 +10569,7 @@ Questions? Just reply to this message. Welcome aboard!
     try {
       if (process.env.NODE_ENV === 'development') console.log('🏙️ CITIES API: Fetching all cities...');
 
-      // Get actual counts for each city
+      // Get actual counts for each city (excluding test cities)
       const citiesFromPages = await db
         .select({
           city: cityPages.city,
@@ -10580,6 +10580,14 @@ Questions? Just reply to this message. Welcome aboard!
           eventCount: sql<number>`(SELECT COUNT(*) FROM ${events} WHERE ${events.location} LIKE '%' || ${cityPages.city} || '%')`.as('eventCount')
         })
         .from(cityPages)
+        .where(
+          and(
+            ne(cityPages.city, 'Test City'),
+            ne(cityPages.city, 'Global'),
+            ne(cityPages.city, 'test city'),
+            ne(cityPages.city, 'global')
+          )
+        )
         .orderBy(sql<number>`(SELECT COUNT(*) FROM users WHERE hometown_city = ${cityPages.city}) + (SELECT COUNT(*) FROM users WHERE is_currently_traveling = true AND travel_destination LIKE '%' || ${cityPages.city} || '%') DESC`)
         .limit(50);
 
