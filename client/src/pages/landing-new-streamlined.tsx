@@ -236,11 +236,24 @@ export default function LandingStreamlined() {
         <section className="mx-auto max-w-5xl px-6 py-12 bg-gradient-to-br from-blue-50 to-orange-50 dark:from-blue-900/10 dark:to-orange-900/10">
           <div className="text-center mb-8">
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4">
-              Built for Travelers & Families Who Want More
+              This Is Why We Built Nearby Traveler
             </h2>
-            <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-              Stop leaving the best part of travel—the people you meet—to chance.
-            </p>
+          </div>
+
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg mb-8 max-w-3xl mx-auto">
+            <div className="flex items-start space-x-4">
+              <div className="flex-shrink-0">
+                <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                  <span className="text-white font-bold text-lg">A</span>
+                </div>
+              </div>
+              <div>
+                <blockquote className="text-gray-700 dark:text-gray-300 italic mb-3">
+                  "We've been traveling for a year with our 5-year-old son, and while we love meeting other travelers, my son hasn't been able to make any child friends. I wish there was a way to connect with families who have kids his age before we arrive somewhere new."
+                </blockquote>
+                <p className="font-semibold text-gray-900 dark:text-white">— Angelique, traveling family from France</p>
+              </div>
+            </div>
           </div>
 
           <div className="grid md:grid-cols-3 gap-6">
@@ -249,8 +262,8 @@ export default function LandingStreamlined() {
                 <Users className="w-8 h-8 text-blue-600" />
               </div>
               <div>
-                <h3 className="font-bold text-gray-900 dark:text-white">Connect Before You Go</h3>
-                <p className="text-gray-600 dark:text-gray-300 text-sm">Meet locals and travelers before your trip starts</p>
+                <h3 className="font-bold text-gray-900 dark:text-white">Connect Families with Families</h3>
+                <p className="text-gray-600 dark:text-gray-300 text-sm">Kids deserve to make friends while traveling too</p>
               </div>
             </div>
 
@@ -259,8 +272,8 @@ export default function LandingStreamlined() {
                 <MapPin className="w-8 h-8 text-orange-600" />
               </div>
               <div>
-                <h3 className="font-bold text-gray-900 dark:text-white">Skip Tourist Traps</h3>
-                <p className="text-gray-600 dark:text-gray-300 text-sm">Discover authentic experiences locals actually love</p>
+                <h3 className="font-bold text-gray-900 dark:text-white">Plan Connections Before You Go</h3>
+                <p className="text-gray-600 dark:text-gray-300 text-sm">Meet locals and travelers before your trip starts</p>
               </div>
             </div>
 
