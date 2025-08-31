@@ -166,12 +166,12 @@ export default function DiscoverPage() {
                   </div>
                   <CardContent className="p-3 sm:p-4">
                     <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
-                      <MapPin className="w-5 sm:w-6 h-5 sm:h-6 text-orange-300 flex-shrink-0" />
-                      <h3 className="font-bold text-base sm:text-lg text-orange-100">
+                      <MapPin className="w-5 sm:w-6 h-5 sm:h-6 text-orange-600 dark:text-orange-300 flex-shrink-0" />
+                      <h3 className="font-bold text-base sm:text-lg text-gray-900 dark:text-orange-100">
                         {city.city}
                       </h3>
                     </div>
-                    <p className="text-sm sm:text-lg mb-4 sm:mb-6 text-orange-200/80">
+                    <p className="text-sm sm:text-lg mb-4 sm:mb-6 text-gray-700 dark:text-orange-200/80">
                       {city.country === 'United States' 
                         ? `${city.city}, ${city.state || 'California'}, United States`
                         : city.country || 'Unknown Location'
