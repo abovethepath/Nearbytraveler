@@ -603,13 +603,13 @@ async function generateCityContent(location: string, topic: string): Promise<str
   }
 }
 
-// Location-based notification function
+// Location-based notification function - sends notifications to EXISTING users about NEW user
 async function sendLocationMatchNotifications(newUser: any) {
   try {
     const { emailService } = await import('./services/emailService');
     
-    if (!newUser.hometownCity || !newUser.email) {
-      console.log("Skipping location notifications - missing city or email data");
+    if (!newUser.hometownCity) {
+      console.log("Skipping location notifications - new user has no city data");
       return;
     }
 
@@ -617,31 +617,35 @@ async function sendLocationMatchNotifications(newUser: any) {
     const sameLocationUsers = await storage.getUsersByCity(newUser.hometownCity);
     const existingUsers = sameLocationUsers.filter(user => user.id !== newUser.id);
 
-    console.log(`🌍 Found ${existingUsers.length} users in ${newUser.hometownCity} to notify about new user ${newUser.username}`);
+    console.log(`🌍 Found ${existingUsers.length} existing users in ${newUser.hometownCity} to notify about new user @${newUser.username}`);
 
-    // Send notifications to existing users
+    if (existingUsers.length === 0) {
+      console.log(`📭 No existing users in ${newUser.hometownCity} to notify`);
+      return;
+    }
+
+    // Send notifications to existing users about the new user
     for (const existingUser of existingUsers) {
       if (!existingUser.email) continue;
 
-      // Create in-app notification
-      await storage.createNotification({
-        userId: existingUser.id,
-        fromUserId: newUser.id,
-        type: "location_match",
-        title: `New ${newUser.userType || 'user'} in ${newUser.hometownCity}!`,
-        message: `@${newUser.username} just joined from ${newUser.hometownCity}. Say hello!`,
-        data: JSON.stringify({
-          newUserId: newUser.id,
-          newUserUsername: newUser.username,
-          newUserType: newUser.userType,
-          city: newUser.hometownCity,
-          profileUrl: `/profile/${newUser.username}`
-        })
-      });
-
-      // Send email notification (optional - user can control this in settings)
       try {
-        // Find common interests between users
+        // Create in-app notification for existing user
+        await storage.createNotification({
+          userId: existingUser.id,
+          fromUserId: newUser.id,
+          type: "location_match",
+          title: `New ${newUser.userType || 'user'} in ${newUser.hometownCity}!`,
+          message: `@${newUser.username} just joined from ${newUser.hometownCity}. Say hello!`,
+          data: JSON.stringify({
+            newUserId: newUser.id,
+            newUserUsername: newUser.username,
+            newUserType: newUser.userType,
+            city: newUser.hometownCity,
+            profileUrl: `/profile/${newUser.username}`
+          })
+        });
+
+        // Send email notification to existing user about new user
         const sharedInterests = findSharedInterests(existingUser.interests || [], newUser.interests || []);
         
         await emailService.sendLocationMatchEmail(existingUser.email, {
@@ -652,13 +656,13 @@ async function sendLocationMatchNotifications(newUser: any) {
           sharedInterests: sharedInterests
         });
 
-        console.log(`✅ Location match email sent to ${existingUser.email} about ${newUser.username}`);
-      } catch (emailError) {
-        console.error(`❌ Failed to send location match email to ${existingUser.email}:`, emailError);
+        console.log(`✅ Location match notification sent to existing user ${existingUser.email} about new user @${newUser.username}`);
+      } catch (notificationError) {
+        console.error(`❌ Failed to send notification to ${existingUser.email}:`, notificationError);
       }
     }
 
-    console.log(`🎉 Successfully processed location notifications for ${newUser.username} in ${newUser.hometownCity}`);
+    console.log(`🎉 Successfully notified ${existingUsers.length} existing users in ${newUser.hometownCity} about new user @${newUser.username}`);
   } catch (error) {
     console.error("Error in sendLocationMatchNotifications:", error);
   }
@@ -2371,12 +2375,25 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       const user = await storage.createUser(userData);
       const { password, ...userWithoutPassword } = user;
 
-      // Send location-based notifications to existing users in the same city
+      // Send welcome email to new user and location notifications to existing users
       setImmediate(async () => {
         try {
+          const { emailService } = await import('./services/emailService');
+          
+          // Send welcome email to the new user
+          if (user.email) {
+            await emailService.sendWelcomeEmail(user.email, {
+              name: user.name || user.username,
+              username: user.username,
+              userType: user.userType || 'traveler'
+            });
+            console.log(`✅ Welcome email sent to new user ${user.email}`);
+          }
+
+          // Send location match notifications to existing users in the same city
           await sendLocationMatchNotifications(user);
         } catch (error) {
-          console.error("Failed to send location match notifications:", error);
+          console.error("Failed to send welcome email or location notifications:", error);
         }
       });
 
