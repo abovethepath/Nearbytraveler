@@ -136,7 +136,7 @@ export default function Auth() {
     console.log('handleSignup called with data:', formData);
     
     // Validate required fields
-    const requiredFields = ['email', 'password', 'confirmPassword', 'username', 'name', 'dateOfBirth', 'gender'];
+    const requiredFields = ['email', 'password', 'confirmPassword', 'username', 'name', 'dateOfBirth'];
     const missingFields = requiredFields.filter(field => !formData[field as keyof typeof formData]);
     
     if (missingFields.length > 0) {
@@ -370,32 +370,18 @@ export default function Auth() {
                         />
                       </div>
                       <div>
-                        <Label htmlFor="gender" className="text-sm font-medium text-gray-900 dark:text-white">Gender *</Label>
-                        <Select value={formData.gender} onValueChange={(value) => setFormData(prev => ({ ...prev, gender: value }))}>
+                        <Label className="text-sm font-medium text-gray-900 dark:text-white">User Type</Label>
+                        <Select value={formData.userType} onValueChange={(value: any) => setFormData(prev => ({ ...prev, userType: value }))}>
                           <SelectTrigger className="text-sm py-2">
-                            <SelectValue placeholder="Select gender" />
+                            <SelectValue placeholder="I am a..." />
                           </SelectTrigger>
                           <SelectContent>
-                            {GENDER_OPTIONS.map(option => (
-                              <SelectItem key={option} value={option}>{option}</SelectItem>
-                            ))}
+                            <SelectItem value="traveler">Traveler</SelectItem>
+                            <SelectItem value="local">Local</SelectItem>
+                            <SelectItem value="business">Business</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
-                    </div>
-                    
-                    <div>
-                      <Label className="text-sm font-medium text-gray-900 dark:text-white">User Type</Label>
-                      <Select value={formData.userType} onValueChange={(value: any) => setFormData(prev => ({ ...prev, userType: value }))}>
-                        <SelectTrigger className="text-sm py-2">
-                          <SelectValue placeholder="I am a..." />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="traveler">Traveler</SelectItem>
-                          <SelectItem value="local">Local</SelectItem>
-                          <SelectItem value="business">Business</SelectItem>
-                        </SelectContent>
-                      </Select>
                     </div>
                   </div>
 
@@ -490,7 +476,7 @@ export default function Auth() {
                 <div className="mt-8 pt-4 space-y-3">
                   <Button
                     onClick={handleSignup}
-                    disabled={isLoading || !formData.email || !formData.password || !formData.confirmPassword || !formData.username || !formData.name || !formData.dateOfBirth || !formData.gender}
+                    disabled={isLoading || !formData.email || !formData.password || !formData.confirmPassword || !formData.username || !formData.name || !formData.dateOfBirth}
                     className="join-page-gradient-button w-full py-3 px-4 rounded-md font-bold text-center select-none text-base md:text-lg text-crisp"
                   >
                     {isLoading ? "Creating Account..." : "Join Nearby Traveler"}
