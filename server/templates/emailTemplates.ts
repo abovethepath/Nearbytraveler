@@ -187,12 +187,12 @@ export const welcomeEmail = (data: WelcomeEmailData): EmailTemplate => ({
           <p><strong>Your username:</strong> @${data.username}</p>
           
           <div style="text-align: center; margin: 30px 0;">
-            <a href="https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev/profile" class="button">Complete Your Profile</a>
+            <a href="https://www.thenearbytraveler.com/profile" class="button">Complete Your Profile</a>
           </div>
           
 
           
-          <p>Need help getting started? Check out our <a href="https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev/getting-started" style="color: #3b82f6;">Getting Started Guide</a> or reply to this email with any questions.</p>
+          <p>Need help getting started? Check out our <a href="https://www.thenearbytraveler.com/getting-started" style="color: #3b82f6;">Getting Started Guide</a> or reply to this email with any questions.</p>
           
           <p>Happy connecting!<br>
           <strong>Aaron</strong></p>
@@ -201,9 +201,9 @@ export const welcomeEmail = (data: WelcomeEmailData): EmailTemplate => ({
         <div class="footer">
           <p>© 2025 Nearby Traveler. All rights reserved.</p>
           <p>
-            <a href="https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev/privacy" style="color: #6b7280;">Privacy Policy</a> | 
-            <a href="https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev/terms" style="color: #6b7280;">Terms of Service</a> | 
-            <a href="https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev/settings" style="color: #6b7280;">Email Preferences</a>
+            <a href="https://www.thenearbytraveler.com/privacy" style="color: #6b7280;">Privacy Policy</a> | 
+            <a href="https://www.thenearbytraveler.com/terms" style="color: #6b7280;">Terms of Service</a> | 
+            <a href="https://www.thenearbytraveler.com/settings" style="color: #6b7280;">Email Preferences</a>
           </p>
         </div>
       </div>
@@ -233,7 +233,7 @@ Start by completing your profile and exploring your city page!`}
 
 Your username: @${data.username}
 
-Complete your profile: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev/profile
+Complete your profile: https://www.thenearbytraveler.com/profile
 
 Happy connecting!
 Aaron`
@@ -646,7 +646,7 @@ export const weeklyDigestEmail = (data: {
           </div>
           
           <div style="text-align: center; margin: 30px 0;">
-            <a href="https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev/discover" class="button">Explore Opportunities</a>
+            <a href="https://www.thenearbytraveler.com/discover" class="button">Explore Opportunities</a>
           </div>
           
           <p><strong>💡 This Week's Tip:</strong></p>
@@ -658,7 +658,7 @@ export const weeklyDigestEmail = (data: {
         
         <div class="footer">
           <p>Weekly digest for ${data.location} area.</p>
-          <p><a href="https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev/settings" style="color: #6b7280;">Unsubscribe from weekly digests</a></p>
+          <p><a href="https://www.thenearbytraveler.com/settings" style="color: #6b7280;">Unsubscribe from weekly digests</a></p>
           <p>© 2025 Nearby Traveler. All rights reserved.</p>
         </div>
       </div>
@@ -674,7 +674,7 @@ This week in ${data.location}:
 - ${data.newEvents} new events
 - ${data.newOffers} exclusive offers
 
-Explore opportunities: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev/discover
+Explore opportunities: https://www.thenearbytraveler.com/discover
 
 The Nearby Traveler Team`
 });
@@ -716,7 +716,7 @@ export const locationMatchEmail = (data: LocationMatchData): EmailTemplate => ({
           <p>Why not reach out and say hello? Local connections often lead to the best experiences and friendships.</p>
           
           <div style="text-align: center; margin: 30px 0;">
-            <a href="https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev/discover" class="button">Discover ${data.newUserName}</a>
+            <a href="https://www.thenearbytraveler.com/discover" class="button">Discover ${data.newUserName}</a>
           </div>
           
           <p>Remember to always meet in public places when connecting with new people for the first time.</p>
@@ -727,7 +727,7 @@ export const locationMatchEmail = (data: LocationMatchData): EmailTemplate => ({
         
         <div class="footer">
           <p>Location-based notification for ${data.city}.</p>
-          <p><a href="https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev/settings" style="color: #6b7280;">Manage notification preferences</a></p>
+          <p><a href="https://www.thenearbytraveler.com/settings" style="color: #6b7280;">Manage notification preferences</a></p>
           <p>© 2025 Nearby Traveler. All rights reserved.</p>
         </div>
       </div>
@@ -743,7 +743,7 @@ Hi ${data.recipientName}!
 ${data.sharedInterests && data.sharedInterests.length > 0 ? 
   `You might have things in common: ${data.sharedInterests.join(', ')}` : ''}
 
-Why not reach out and say hello? Visit: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev/discover
+Why not reach out and say hello? Visit: https://www.thenearbytraveler.com/discover
 
 The Nearby Traveler Team`
 });
@@ -793,7 +793,7 @@ export const forgotPasswordEmail = (data: PasswordResetData): EmailTemplate => (
         
         <div class="footer">
           <p>This password reset request was made from your account.</p>
-          <p><a href="https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev/help" style="color: #6b7280;">Need help?</a></p>
+          <p><a href="https://www.thenearbytraveler.com/help" style="color: #6b7280;">Need help?</a></p>
           <p>© 2025 Nearby Traveler. All rights reserved.</p>
         </div>
       </div>
