@@ -4920,6 +4920,7 @@ Questions? Just reply to this message. Welcome aboard!
         FROM city_chatrooms cc
         INNER JOIN chatroom_members cm ON cc.id = cm.chatroom_id
         WHERE cm.user_id = ${userId}
+        AND cm.is_active = true
         AND cc.is_active = true
         ORDER BY cc.created_at DESC
       `);
