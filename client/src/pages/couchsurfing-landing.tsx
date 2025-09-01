@@ -181,7 +181,7 @@ export default function CouchsurfingLanding() {
               <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-blue-500">
                 <div className="flex items-start">
                   <Users className="w-6 h-6 text-blue-600 mt-1 mr-3 flex-shrink-0" />
-                  <p className="text-zinc-700 dark:text-zinc-300">Match with people who share your hobbies and travel style</p>
+                  <p className="text-zinc-700 dark:text-zinc-300">Match with people who share your hobbies</p>
                 </div>
               </div>
               
