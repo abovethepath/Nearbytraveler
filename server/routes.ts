@@ -11066,18 +11066,10 @@ Questions? Just reply to this message. Welcome aboard!
           }));
         }
 
-        // Mark messages as read
-        await db
-          .update(messages)
-          .set({ isRead: true })
-          .where(
-            and(
-              eq(messages.receiverId, userId),
-              eq(messages.isRead, false)
-            )
-          );
+        // NOTE: Messages remain unread until user actually opens the conversation
+        // This ensures notification badges show properly for new messages
 
-        if (process.env.NODE_ENV === 'development') console.log(` Marked ${unreadMessages.length} messages as read for user ${userId}`);
+        if (process.env.NODE_ENV === 'development') console.log(` Delivered ${unreadMessages.length} offline messages to user ${userId} (kept as unread for notifications)`);
       }
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error(' Error delivering offline messages:', error);
