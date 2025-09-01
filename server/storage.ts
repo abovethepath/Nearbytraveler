@@ -1449,6 +1449,7 @@ export class DatabaseStorage implements IStorage {
           createdAt: connections.createdAt,
           requesterId: connections.requesterId,
           receiverId: connections.receiverId,
+          connectionNote: connections.connectionNote,
           // Join with users table to get the connected user's information
           connectedUser: {
             id: users.id,
@@ -1538,6 +1539,7 @@ export class DatabaseStorage implements IStorage {
         id: conn.connectionId,
         status: conn.status,
         createdAt: conn.createdAt,
+        connectionNote: conn.connectionNote,
         connectedUser: conn.connectedUser
       }));
 
