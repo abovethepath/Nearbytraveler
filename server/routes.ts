@@ -11562,7 +11562,10 @@ Questions? Just reply to this message. Welcome aboard!
         user = await storage.getUser(userId); // Refresh user data
       }
 
-      const signupUrl = `${req.protocol}://${req.get('host')}/qr-signup?code=${user.referralCode}`;
+      // Use proper external domain for QR codes (not localhost in development)
+      const host = process.env.REPLIT_DOMAINS ? process.env.REPLIT_DOMAINS.split(',')[0] : req.get('host');
+      const protocol = process.env.REPLIT_DOMAINS ? 'https' : req.protocol;
+      const signupUrl = `${protocol}://${host}/qr-signup?code=${user.referralCode}`;
       
       // Generate QR code as data URL
       const qrCodeDataUrl = await QRCode.toDataURL(signupUrl, {
