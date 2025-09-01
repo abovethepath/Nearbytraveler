@@ -449,15 +449,6 @@ function Router() {
     console.log('🔍 ROUTING DEBUG - isAuthenticated:', authValue.isAuthenticated, 'location:', location, 'user:', user);
     console.log('🔍 Current window.location.pathname:', window.location.pathname);
 
-    // Don't handle API routes in frontend router - redirect once only
-    if (location.startsWith('/api/')) {
-      console.log('🔄 API ROUTE DETECTED:', location, '- redirecting immediately');
-      // Use replace to avoid back button issues
-      window.location.replace(location);
-      return <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-      </div>;
-    }
 
     // IMPROVED AUTHENTICATION CHECK: Multiple fallbacks to ensure authenticated users stay authenticated
     const hasUserInLocalStorage = !!localStorage.getItem('user');
