@@ -803,13 +803,13 @@ export default function PlanTrip() {
                 </div>
                 
                 {/* Top Choices Section */}
-                {/* Popular Interests Section - Mobile Responsive */}
+                {/* Popular Interests Section - Mobile Responsive with Better Readability */}
                 <div className="mb-4 sm:mb-6 overflow-hidden break-words">
-                  <div className="bg-gradient-to-r from-blue-500 via-orange-500 to-red-500 p-3 sm:p-4 md:p-6 rounded-lg overflow-hidden break-words">
+                  <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 p-3 sm:p-4 md:p-6 rounded-lg overflow-hidden break-words shadow-sm">
                     <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 mb-3 overflow-hidden break-words">
                       <div className="flex items-center gap-2 overflow-hidden break-words">
-                        <span className="text-yellow-300 text-base sm:text-lg">⭐</span>
-                        <h4 className="text-white font-bold text-sm sm:text-base md:text-lg break-words overflow-hidden">Top Choices for Most Locals and Travelers</h4>
+                        <span className="text-yellow-500 text-base sm:text-lg">⭐</span>
+                        <h4 className="text-gray-900 dark:text-white font-bold text-sm sm:text-base md:text-lg break-words overflow-hidden">Top Choices for Most Locals and Travelers</h4>
                       </div>
                       <Button 
                         type="button" 
@@ -819,7 +819,7 @@ export default function PlanTrip() {
                           const newInterests = [...new Set([...tripPlan.interests, ...MOST_POPULAR_INTERESTS])];
                           setTripPlan(prev => ({ ...prev, interests: newInterests }));
                         }}
-                        className="text-xs h-7 px-2 text-blue-600 border-blue-300 hover:bg-blue-50 bg-white/90 ml-auto sm:ml-0 shrink-0"
+                        className="text-xs h-7 px-2 text-blue-600 border-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 bg-white dark:bg-gray-700 ml-auto sm:ml-0 shrink-0"
                       >
                         Select All
                       </Button>
@@ -840,10 +840,10 @@ export default function PlanTrip() {
                               return { ...prev, interests: newInterests };
                             });
                           }}
-                          className={`px-2 sm:px-3 py-2 sm:py-3 rounded-md text-xs sm:text-sm font-medium transition-all break-words overflow-hidden text-center leading-tight ${
+                          className={`px-2 sm:px-3 py-2 sm:py-3 rounded-md text-xs sm:text-sm font-medium transition-all break-words overflow-hidden text-center leading-tight border ${
                             tripPlan.interests.includes(interest)
-                              ? 'bg-blue-600 text-white font-bold transform scale-105 shadow-lg'
-                              : 'bg-white/20 text-white hover:bg-white/30'
+                              ? 'bg-blue-600 text-white font-bold transform scale-105 shadow-lg border-blue-600'
+                              : 'bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-600 border-gray-200 dark:border-gray-600'
                           }`}
                         >
                           {interest}
