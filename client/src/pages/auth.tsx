@@ -24,6 +24,8 @@ export default function Auth() {
   const isJoinPage = window.location.pathname === '/join';
   const [isLogin, setIsLogin] = useState(mode === 'register' ? false : !isJoinPage);
   
+  console.log('🔍 AUTH DEBUG - URL:', window.location.pathname, 'mode:', mode, 'isJoinPage:', isJoinPage, 'isLogin:', isLogin);
+  
   // Basic form fields
   const [formData, setFormData] = useState({
     email: "",
