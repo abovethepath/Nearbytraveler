@@ -25,7 +25,6 @@ import { authStorage } from "@/lib/auth";
 // Predefined categories for events - Streamlined for travelers
 const EVENT_CATEGORIES = [
   "Food & Dining",
-  "Adventure Sports",
   "Social Networking",
   "Culture & Arts",
   "Music & Entertainment",
