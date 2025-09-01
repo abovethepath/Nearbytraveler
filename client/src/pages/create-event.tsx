@@ -1050,7 +1050,7 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
                       <SelectValue placeholder="Open to all genders" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Open to all genders</SelectItem>
+                      <SelectItem value="all">Open to all genders</SelectItem>
                       <SelectItem value="female">Women only</SelectItem>
                       <SelectItem value="male">Men only</SelectItem>
                       <SelectItem value="non-binary">Non-binary only</SelectItem>
