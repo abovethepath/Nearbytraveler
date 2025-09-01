@@ -69,7 +69,7 @@ export default function CouchsurfingLanding() {
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         
-        {/* HERO SECTION - CLEAN VERSION LIKE IMAGE */}
+        {/* HERO SECTION - CLEAN VERSION */}
         <div className="pt-8 pb-12 sm:pt-12 sm:pb-16 bg-white dark:bg-gray-900">
           <div className="grid grid-cols-1 md:grid-cols-5 gap-8 md:gap-12 items-center">
             {/* Left text side */}
@@ -85,7 +85,7 @@ export default function CouchsurfingLanding() {
                 <span className="text-blue-600">You'll Love This.</span>
               </h1>
               <p className="text-lg sm:text-xl md:text-2xl text-zinc-600 dark:text-zinc-300 mb-8 max-w-4xl mx-auto leading-relaxed">
-                Meet travelers and locals through shared interests, activities, events and demographics — whether you can host or not.
+                Meet travelers and locals through shared commonalities, activities, events and demographics — whether you can host or not.
               </p>
               
               {/* Desktop CTAs */}
@@ -146,6 +146,326 @@ export default function CouchsurfingLanding() {
             </div>
           </div>
         </div>
+
+        {/* WHAT'S COUCHSURFING SECTION - FOR NEWCOMERS */}
+        <section className="py-16 sm:py-24 bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 rounded-2xl mb-16">
+          <div className="px-6 sm:px-8">
+            <div className="text-center mb-12">
+              <div className="w-16 h-16 bg-orange-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Globe className="w-8 h-8 text-white" />
+              </div>
+              <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900 dark:text-white mb-4">
+                "What's Couchsurfing?"
+              </h2>
+              <p className="text-lg sm:text-xl text-zinc-600 dark:text-zinc-400 max-w-4xl mx-auto leading-relaxed">
+                Millions of travelers have never heard of couchsurfing but would love to meet locals and other travelers. They've been missing out on our amazing community all along.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* NOW WE CAN ALL CONNECT SECTION */}
+        <section className="py-16 sm:py-24 mb-16">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-zinc-900 dark:text-white mb-4">
+              Now We Can All Connect
+            </h2>
+            <p className="text-lg sm:text-xl text-zinc-600 dark:text-zinc-400 max-w-4xl mx-auto leading-relaxed">
+              Imagine our couchsurfing community expanded to include everyone who shares our values — not just those who can host or surf.
+            </p>
+            <div className="mt-8 max-w-4xl mx-auto">
+              <p className="text-xl sm:text-2xl font-semibold text-zinc-800 dark:text-zinc-200 leading-relaxed">
+                That's millions more cultural exchanges, friendships, and adventures waiting to happen.
+              </p>
+            </div>
+          </div>
+          
+          {/* Powerful Quote */}
+          <div className="max-w-4xl mx-auto bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-8 border border-blue-200 dark:border-blue-800">
+            <blockquote className="text-center text-xl sm:text-2xl font-medium text-zinc-800 dark:text-zinc-200 italic leading-relaxed">
+              "The couchsurfing spirit was never really about the couch — it was about the connection. Now everyone can experience that magic."
+            </blockquote>
+          </div>
+        </section>
+
+        {/* SOMETIMES WE JUST GROW OUT OF IT SECTION */}
+        <section className="py-16 sm:py-24 bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900/20 dark:to-blue-900/20 rounded-2xl mb-16">
+          <div className="px-6 sm:px-8">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900 dark:text-white mb-4">
+                Sometimes We Just Grow Out of It
+              </h2>
+              <p className="text-lg sm:text-xl text-zinc-600 dark:text-zinc-400 max-w-3xl mx-auto leading-relaxed">
+                You're not less generous. You're not less welcoming. Life evolves, priorities shift, and that's completely normal.
+              </p>
+              <div className="mt-8">
+                <p className="text-xl sm:text-2xl font-semibold text-zinc-800 dark:text-zinc-200">
+                  You can still share your love for your city—just differently.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* CONNECT WHEN YOU CAN'T HOST SECTION */}
+        <section className="py-16 sm:py-24 mb-16">
+          <div className="text-center mb-12">
+            <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Users className="w-8 h-8 text-white" />
+            </div>
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900 dark:text-white mb-4">
+              Connect When You Can't Host
+            </h2>
+            <p className="text-lg sm:text-xl text-zinc-600 dark:text-zinc-400 max-w-4xl mx-auto leading-relaxed">
+              No space but still want to meet travelers? Join them for coffee, show them your favorite spots, or attend events together. Share your city without opening your home.
+            </p>
+          </div>
+        </section>
+
+        {/* WHAT YOU'VE LOVED ABOUT HOSTING SECTION */}
+        <section className="py-16 sm:py-24 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl mb-16">
+          <div className="px-6 sm:px-8">
+            <div className="text-center mb-12">
+              <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Heart className="w-8 h-8 text-white" />
+              </div>
+              <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900 dark:text-white mb-4">
+                What You've Loved About Hosting
+              </h2>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-blue-500">
+                <div className="flex items-start">
+                  <Globe className="w-6 h-6 text-blue-600 mt-1 mr-3 flex-shrink-0" />
+                  <p className="text-zinc-700 dark:text-zinc-300">Meeting fascinating people from every corner of the world</p>
+                </div>
+              </div>
+              
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-green-500">
+                <div className="flex items-start">
+                  <Users className="w-6 h-6 text-green-600 mt-1 mr-3 flex-shrink-0" />
+                  <p className="text-zinc-700 dark:text-zinc-300">Creating deep connections and lifelong friendships</p>
+                </div>
+              </div>
+              
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-orange-500">
+                <div className="flex items-start">
+                  <MapPin className="w-6 h-6 text-orange-600 mt-1 mr-3 flex-shrink-0" />
+                  <p className="text-zinc-700 dark:text-zinc-300">Sharing your city's hidden gems and local culture</p>
+                </div>
+              </div>
+              
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-purple-500">
+                <div className="flex items-start">
+                  <Coffee className="w-6 h-6 text-purple-600 mt-1 mr-3 flex-shrink-0" />
+                  <p className="text-zinc-700 dark:text-zinc-300">Experiencing genuine cultural exchange</p>
+                </div>
+              </div>
+              
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-rose-500">
+                <div className="flex items-start">
+                  <Gift className="w-6 h-6 text-rose-600 mt-1 mr-3 flex-shrink-0" />
+                  <p className="text-zinc-700 dark:text-zinc-300">The satisfaction of helping fellow travelers</p>
+                </div>
+              </div>
+              
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-indigo-500">
+                <div className="flex items-start">
+                  <Plane className="w-6 h-6 text-indigo-600 mt-1 mr-3 flex-shrink-0" />
+                  <p className="text-zinc-700 dark:text-zinc-300">Learning about other cultures without traveling</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* BUT HOSTING CAN BE CHALLENGING SECTION */}
+        <section className="py-16 sm:py-24 bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 rounded-2xl mb-16">
+          <div className="px-6 sm:px-8">
+            <div className="text-center mb-12">
+              <div className="w-16 h-16 bg-orange-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Home className="w-8 h-8 text-white" />
+              </div>
+              <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900 dark:text-white mb-4">
+                But Hosting Can Be Challenging
+              </h2>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-orange-500">
+                <div className="flex items-start">
+                  <X className="w-6 h-6 text-orange-500 mt-1 mr-3 flex-shrink-0" />
+                  <p className="text-orange-700 dark:text-orange-300">Hard to find available couches in popular destinations</p>
+                </div>
+              </div>
+              
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-red-500">
+                <div className="flex items-start">
+                  <X className="w-6 h-6 text-red-500 mt-1 mr-3 flex-shrink-0" />
+                  <p className="text-orange-700 dark:text-orange-300">Sometimes hosts aren't available to hang out</p>
+                </div>
+              </div>
+              
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-yellow-500">
+                <div className="flex items-start">
+                  <X className="w-6 h-6 text-yellow-500 mt-1 mr-3 flex-shrink-0" />
+                  <p className="text-orange-700 dark:text-orange-300">Stressful with work, family, or relationship commitments</p>
+                </div>
+              </div>
+              
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-pink-500">
+                <div className="flex items-start">
+                  <X className="w-6 h-6 text-pink-500 mt-1 mr-3 flex-shrink-0" />
+                  <p className="text-orange-700 dark:text-orange-300">Unpredictable with last-minute cancellations or no-shows</p>
+                </div>
+              </div>
+              
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-purple-500">
+                <div className="flex items-start">
+                  <X className="w-6 h-6 text-purple-500 mt-1 mr-3 flex-shrink-0" />
+                  <p className="text-orange-700 dark:text-orange-300">Limiting when your living situation changes</p>
+                </div>
+              </div>
+              
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-indigo-500">
+                <div className="flex items-start">
+                  <X className="w-6 h-6 text-indigo-500 mt-1 mr-3 flex-shrink-0" />
+                  <p className="text-orange-700 dark:text-orange-300">Overwhelming when you just want a quiet weekend</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* WHAT YOU'VE LOVED ABOUT SURFING SECTION */}
+        <section className="py-16 sm:py-24 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl mb-16">
+          <div className="px-6 sm:px-8">
+            <div className="text-center mb-12">
+              <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Plane className="w-8 h-8 text-white" />
+              </div>
+              <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900 dark:text-white mb-4">
+                What You've Loved About Surfing
+              </h2>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-green-500">
+                <div className="flex items-start">
+                  <Globe className="w-6 h-6 text-green-600 mt-1 mr-3 flex-shrink-0" />
+                  <p className="text-zinc-700 dark:text-zinc-300">Getting authentic local insights from passionate hosts</p>
+                </div>
+              </div>
+              
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-blue-500">
+                <div className="flex items-start">
+                  <Users className="w-6 h-6 text-blue-600 mt-1 mr-3 flex-shrink-0" />
+                  <p className="text-zinc-700 dark:text-zinc-300">Making deep connections and lifelong friendships</p>
+                </div>
+              </div>
+              
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-orange-500">
+                <div className="flex items-start">
+                  <Compass className="w-6 h-6 text-orange-600 mt-1 mr-3 flex-shrink-0" />
+                  <p className="text-zinc-700 dark:text-zinc-300">Discovering hidden gems tourists never find</p>
+                </div>
+              </div>
+              
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-purple-500">
+                <div className="flex items-start">
+                  <Heart className="w-6 h-6 text-purple-600 mt-1 mr-3 flex-shrink-0" />
+                  <p className="text-zinc-700 dark:text-zinc-300">Experiencing genuine cultural exchange</p>
+                </div>
+              </div>
+              
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-indigo-500">
+                <div className="flex items-start">
+                  <Gift className="w-6 h-6 text-indigo-600 mt-1 mr-3 flex-shrink-0" />
+                  <p className="text-zinc-700 dark:text-zinc-300">Traveling affordably while meeting amazing people</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* BUT SURFING CAN BE CHALLENGING SECTION */}
+        <section className="py-16 sm:py-24 bg-gradient-to-br from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20 rounded-2xl mb-16">
+          <div className="px-6 sm:px-8">
+            <div className="text-center mb-12">
+              <div className="w-16 h-16 bg-red-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                <ShieldCheck className="w-8 h-8 text-white" />
+              </div>
+              <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900 dark:text-white mb-4">
+                But Surfing Can Be Challenging
+              </h2>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-red-500">
+                <div className="flex items-start">
+                  <X className="w-6 h-6 text-red-500 mt-1 mr-3 flex-shrink-0" />
+                  <p className="text-red-700 dark:text-red-300">Hard to find available couches in popular destinations</p>
+                </div>
+              </div>
+              
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-orange-500">
+                <div className="flex items-start">
+                  <X className="w-6 h-6 text-orange-500 mt-1 mr-3 flex-shrink-0" />
+                  <p className="text-red-700 dark:text-red-300">Sometimes hosts aren't available to hang out</p>
+                </div>
+              </div>
+              
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-yellow-500">
+                <div className="flex items-start">
+                  <X className="w-6 h-6 text-yellow-500 mt-1 mr-3 flex-shrink-0" />
+                  <p className="text-red-700 dark:text-red-300">Unpredictable with last-minute cancellations or no-shows</p>
+                </div>
+              </div>
+              
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-pink-500">
+                <div className="flex items-start">
+                  <X className="w-6 h-6 text-pink-500 mt-1 mr-3 flex-shrink-0" />
+                  <p className="text-red-700 dark:text-red-300">Can feel invasive with personal space boundaries</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* THE BEST OF BOTH WORLDS SECTION */}
+        <section className="py-16 sm:py-24 mb-16">
+          <div className="max-w-4xl mx-auto">
+            <div className="bg-gradient-to-r from-orange-500 to-blue-600 rounded-2xl p-8 text-center text-white">
+              <h2 className="text-3xl sm:text-4xl font-bold mb-6">
+                The Best of Both Worlds
+              </h2>
+              <p className="text-lg sm:text-xl mb-6 leading-relaxed">
+                Host when your schedule allows. Meet travelers when hosting isn't possible.
+              </p>
+              <p className="text-xl sm:text-2xl font-semibold">
+                Your generosity and love for cultural exchange never has to stop.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* FOR EXPERIENCED SURFERS SECTION */}
+        <section className="py-16 sm:py-24 bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-2xl mb-16">
+          <div className="px-6 sm:px-8">
+            <div className="text-center mb-12">
+              <div className="inline-block bg-indigo-100 dark:bg-indigo-900/50 px-4 py-2 rounded-full text-sm font-medium text-indigo-700 dark:text-indigo-400 mb-4">
+                FOR EXPERIENCED SURFERS
+              </div>
+              <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900 dark:text-white mb-4">
+                We Know You've Loved Surfing
+              </h2>
+              <p className="text-lg sm:text-xl text-zinc-600 dark:text-zinc-400 max-w-4xl mx-auto leading-relaxed">
+                If you've surfed before, you know the magic: authentic local insights, genuine cultural exchange, and the thrill of discovering a place through someone else's eyes. But finding the right hosts and navigating unpredictable situations can be challenging. With Nearby Traveler, you can keep that authentic travel spirit alive with more options and fewer limitations. Plus you can still surf, we love couchsurfing, but now you can expand who you meet outside the limitations of just couchsurfing. Open your world to ALL TRAVELERS.
+              </p>
+            </div>
+          </div>
+        </section>
       </div>
       
       {/* FOUNDER STORY SECTION */}
@@ -183,385 +503,6 @@ export default function CouchsurfingLanding() {
             </div>
           </section>
         </div>
-      </div>
-
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        
-        {/* WHY SURFERS LOVE US SECTION */}
-        <section className="py-16 sm:py-24">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-zinc-900 dark:text-white mb-4">
-              Why Couchsurfers Love Nearby Traveler
-            </h2>
-            <p className="text-lg sm:text-xl text-zinc-600 dark:text-zinc-400 max-w-3xl mx-auto">
-              Everything you love about the community, evolved for modern life
-            </p>
-          </div>
-          
-          {/* Horizontal Scrolling Benefits */}
-          <div className="relative mb-16">
-            <div className="flex gap-6 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide">
-              <div className="flex-none w-80 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 rounded-xl p-6 snap-start">
-                <Coffee className="w-8 h-8 text-blue-600 mb-4" />
-                <h3 className="font-bold text-lg mb-3 text-zinc-900 dark:text-white">Same Values, Zero Pressure</h3>
-                <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                  Cultural exchange, genuine connections, and sharing local insights - but meet for coffee, not couch obligations. Connect when you want, how you want.
-                </p>
-              </div>
-              
-              <div className="flex-none w-80 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/30 dark:to-green-800/30 rounded-xl p-6 snap-start">
-                <MapPin className="w-8 h-8 text-green-600 mb-4" />
-                <h3 className="font-bold text-lg mb-3 text-zinc-900 dark:text-white">More Travelers Than Ever</h3>
-                <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                  Meet travelers who aren't just looking for accommodation. Connect with people exploring your city, attending events, or just wanting authentic local experiences.
-                </p>
-              </div>
-              
-              <div className="flex-none w-80 bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/30 dark:to-orange-800/30 rounded-xl p-6 snap-start">
-                <Globe className="w-8 h-8 text-orange-600 mb-4" />
-                <h3 className="font-bold text-lg mb-3 text-zinc-900 dark:text-white">Perfect Matching</h3>
-                <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                  Connect based on shared commonalities, not just accommodation needs. Find travelers who love the same food, culture, nightlife, or outdoor adventures you do.
-                </p>
-              </div>
-              
-              <div className="flex-none w-80 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/30 dark:to-purple-800/30 rounded-xl p-6 snap-start">
-                <Heart className="w-8 h-8 text-purple-600 mb-4" />
-                <h3 className="font-bold text-lg mb-3 text-zinc-900 dark:text-white">Your Schedule, Your Terms</h3>
-                <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                  Host when you can, meet for coffee when you can't. No guilt, no pressure, no "sorry I can't host right now" messages. Pure flexibility.
-                </p>
-              </div>
-              
-              <div className="flex-none w-80 bg-gradient-to-br from-rose-50 to-rose-100 dark:from-rose-900/30 dark:to-rose-800/30 rounded-xl p-6 snap-start">
-                <ShieldCheck className="w-8 h-8 text-rose-600 mb-4" />
-                <h3 className="font-bold text-lg mb-3 text-zinc-900 dark:text-white">Safe & Smart Connections</h3>
-                <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                  Meet in public first, connect with verified community members. All the authentic connections, with modern safety and convenience features.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* WHY HOSTS LOVE US SECTION */}
-        <section className="py-16 sm:py-24 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl mb-16">
-          <div className="px-6 sm:px-8">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-zinc-900 dark:text-white mb-4">
-                Why Couchsurfing Hosts Love Us
-              </h2>
-              <p className="text-lg sm:text-xl text-zinc-600 dark:text-zinc-400 max-w-3xl mx-auto">
-                Keep meeting amazing travelers without the hosting pressure
-              </p>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-green-500">
-                <CheckCircle className="w-8 h-8 text-green-600 mb-4" />
-                <h3 className="font-semibold text-lg mb-2 text-zinc-900 dark:text-white">No More Hosting Guilt</h3>
-                <p className="text-zinc-600 dark:text-zinc-400">
-                  Can't host this week? No problem. Meet travelers for coffee, city tours, or local events instead. Zero guilt, maximum connection.
-                </p>
-              </div>
-              
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-blue-500">
-                <Users className="w-8 h-8 text-blue-600 mb-4" />
-                <h3 className="font-semibold text-lg mb-2 text-zinc-900 dark:text-white">Meet More Travelers</h3>
-                <p className="text-zinc-600 dark:text-zinc-400">
-                  Connect with travelers who aren't looking for accommodation but want authentic local experiences. Expand your circle exponentially.
-                </p>
-              </div>
-              
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-orange-500">
-                <Calendar className="w-8 h-8 text-orange-600 mb-4" />
-                <h3 className="font-semibold text-lg mb-2 text-zinc-900 dark:text-white">Perfect Timing</h3>
-                <p className="text-zinc-600 dark:text-zinc-400">
-                  Share your city knowledge when you're free, host when you want to. Your schedule, your rules, same amazing connections.
-                </p>
-              </div>
-              
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-purple-500">
-                <MessageCircle className="w-8 h-8 text-purple-600 mb-4" />
-                <h3 className="font-semibold text-lg mb-2 text-zinc-900 dark:text-white">Better Conversations</h3>
-                <p className="text-zinc-600 dark:text-zinc-400">
-                  Connect with travelers who share your actual interests. No more explaining why you love street art to someone who just needs a bed.
-                </p>
-              </div>
-              
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-rose-500">
-                <Award className="w-8 h-8 text-rose-600 mb-4" />
-                <h3 className="font-semibold text-lg mb-2 text-zinc-900 dark:text-white">Share Your Expertise</h3>
-                <p className="text-zinc-600 dark:text-zinc-400">
-                  Love showing off your city's best food? Amazing local hikes? Underground music scene? Connect with travelers who actually want those experiences.
-                </p>
-              </div>
-              
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-indigo-500">
-                <Gift className="w-8 h-8 text-indigo-600 mb-4" />
-                <h3 className="font-semibold text-lg mb-2 text-zinc-900 dark:text-white">Give Back Your Way</h3>
-                <p className="text-zinc-600 dark:text-zinc-400">
-                  Share local knowledge, recommend hidden gems, join for dinner or events. All the cultural exchange, your way, your schedule.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* WHY TRAVELERS LOVE US SECTION */}
-        <section className="py-16 sm:py-24 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl mb-16">
-          <div className="px-6 sm:px-8">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-zinc-900 dark:text-white mb-4">
-                Why Traveling Couchsurfers Love Us
-              </h2>
-              <p className="text-lg sm:text-xl text-zinc-600 dark:text-zinc-400 max-w-3xl mx-auto">
-                Same authentic connections, way more options
-              </p>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-blue-500">
-                <Plane className="w-8 h-8 text-blue-600 mb-4" />
-                <h3 className="font-semibent text-lg mb-2 text-zinc-900 dark:text-white">No Couch Stress</h3>
-                <p className="text-zinc-600 dark:text-zinc-400">
-                  Don't need accommodation? Perfect! Connect with locals who want to share their city without the hosting logistics. Pure cultural exchange.
-                </p>
-              </div>
-              
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-green-500">
-                <Coffee className="w-8 h-8 text-green-600 mb-4" />
-                <h3 className="font-semibold text-lg mb-2 text-zinc-900 dark:text-white">Meet Your Tribe</h3>
-                <p className="text-zinc-600 dark:text-zinc-400">
-                  Find locals who actually share your interests. Love food tours? Hiking? Nightlife? Underground music? Connect with people who get excited about the same things.
-                </p>
-              </div>
-              
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-orange-500">
-                <Compass className="w-8 h-8 text-orange-600 mb-4" />
-                <h3 className="font-semibold text-lg mb-2 text-zinc-900 dark:text-white">Authentic Experiences</h3>
-                <p className="text-zinc-600 dark:text-zinc-400">
-                  Skip the tourist traps. Connect with locals who want to share their real city - the places they actually hang out, the food they actually eat.
-                </p>
-              </div>
-              
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-purple-500">
-                <MessageCircle className="w-8 h-8 text-purple-600 mb-4" />
-                <h3 className="font-semibold text-lg mb-2 text-zinc-900 dark:text-white">Deep Conversations</h3>
-                <p className="text-zinc-600 dark:text-zinc-400">
-                  Those amazing late-night conversations about life, culture, and dreams? You'll still have them - over dinner, coffee, or exploring together.
-                </p>
-              </div>
-              
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-rose-500">
-                <Heart className="w-8 h-8 text-rose-600 mb-4" />
-                <h3 className="font-semibold text-lg mb-2 text-zinc-900 dark:text-white">Instant Local Friends</h3>
-                <p className="text-zinc-600 dark:text-zinc-400">
-                  Make real friends in every city you visit. Not just hosts - friends who become your local connection for life.
-                </p>
-              </div>
-              
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-indigo-500">
-                <Globe className="w-8 h-8 text-indigo-600 mb-4" />
-                <h3 className="font-semibold text-lg mb-2 text-zinc-900 dark:text-white">Global Community</h3>
-                <p className="text-zinc-600 dark:text-zinc-400">
-                  Stay connected with fellow travelers and locals worldwide. Build your global network of authentic connections.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* POSITIVE VS NEGATIVE COMPARISON SECTION */}
-        <section className="py-16 sm:py-24">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900 dark:text-white mb-4">
-              Traditional Couchsurfing vs Nearby Traveler
-            </h2>
-            <p className="text-lg sm:text-xl text-zinc-600 dark:text-zinc-400 max-w-3xl mx-auto">
-              Same spirit, evolved approach
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
-            {/* Traditional Couchsurfing */}
-            <div className="bg-orange-50 dark:bg-orange-900/20 rounded-xl p-6 border border-orange-200 dark:border-orange-800">
-              <div className="text-center mb-6">
-                <h3 className="text-xl font-bold text-orange-700 dark:text-orange-400 mb-2">Traditional Couchsurfing</h3>
-                <p className="text-orange-600 dark:text-orange-400 text-sm">Limited by accommodation logistics</p>
-              </div>
-              
-              <div className="space-y-4">
-                <div className="flex items-start">
-                  <X className="w-5 h-5 text-orange-500 mt-1 mr-3 flex-shrink-0" />
-                  <p className="text-orange-700 dark:text-orange-300">Can only meet travelers who need accommodation</p>
-                </div>
-                <div className="flex items-start">
-                  <X className="w-5 h-5 text-orange-500 mt-1 mr-3 flex-shrink-0" />
-                  <p className="text-orange-700 dark:text-orange-300">Hosting pressure when you can't accommodate</p>
-                </div>
-                <div className="flex items-start">
-                  <X className="w-5 h-5 text-orange-500 mt-1 mr-3 flex-shrink-0" />
-                  <p className="text-orange-700 dark:text-orange-300">Limited matching - mostly based on availability</p>
-                </div>
-                <div className="flex items-start">
-                  <X className="w-5 h-5 text-orange-500 mt-1 mr-3 flex-shrink-0" />
-                  <p className="text-orange-700 dark:text-orange-300">Awkward when you can't help with accommodation</p>
-                </div>
-              </div>
-            </div>
-            
-            {/* Nearby Traveler */}
-            <div className="bg-green-50 dark:bg-green-900/20 rounded-xl p-6 border border-green-200 dark:border-green-800">
-              <div className="text-center mb-6">
-                <h3 className="text-xl font-bold text-green-700 dark:text-green-400 mb-2">Nearby Traveler</h3>
-                <p className="text-green-600 dark:text-green-400 text-sm">Expanded connections, same values</p>
-              </div>
-              
-              <div className="space-y-4">
-                <div className="flex items-start">
-                  <CheckCircle className="w-5 h-5 text-green-500 mt-1 mr-3 flex-shrink-0" />
-                  <p className="text-green-700 dark:text-green-300">Meet ALL travelers - those with accommodation and those exploring</p>
-                </div>
-                <div className="flex items-start">
-                  <CheckCircle className="w-5 h-5 text-green-500 mt-1 mr-3 flex-shrink-0" />
-                  <p className="text-green-700 dark:text-green-300">Zero pressure - connect how and when you want</p>
-                </div>
-                <div className="flex items-start">
-                  <CheckCircle className="w-5 h-5 text-green-500 mt-1 mr-3 flex-shrink-0" />
-                  <p className="text-green-700 dark:text-green-300">Smart matching by interests, activities, and demographics</p>
-                </div>
-                <div className="flex items-start">
-                  <CheckCircle className="w-5 h-5 text-green-500 mt-1 mr-3 flex-shrink-0" />
-                  <p className="text-green-700 dark:text-green-300">Always helpful - share local knowledge however works for you</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* HOW IT WORKS SECTION */}
-        <section className="py-16 sm:py-24">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-zinc-900 dark:text-white mb-4">
-              How It Works
-            </h2>
-            <p className="text-lg sm:text-xl text-zinc-600 dark:text-zinc-400">
-              Three simple steps to meaningful connections
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
-            {/* Step 1 */}
-            <div className="text-center">
-              <div className="w-16 h-16 bg-blue-100 dark:bg-blue-800 rounded-full flex items-center justify-center mx-auto mb-6">
-                <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">1</span>
-              </div>
-              <h3 className="text-xl font-semibold text-zinc-900 dark:text-white mb-4">Share Your Passions</h3>
-              <p className="text-zinc-600 dark:text-zinc-400">
-                Tell us what you love about your city - food scenes, hiking spots, cultural events, nightlife, or hidden local gems.
-              </p>
-            </div>
-            
-            {/* Step 2 */}
-            <div className="text-center">
-              <div className="w-16 h-16 bg-blue-100 dark:bg-blue-800 rounded-full flex items-center justify-center mx-auto mb-6">
-                <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">2</span>
-              </div>
-              <h3 className="text-xl font-semibold text-zinc-900 dark:text-white mb-4">Get Smart Matches</h3>
-              <p className="text-zinc-600 dark:text-zinc-400">
-                We connect you with travelers who genuinely share your interests and want the authentic experiences you love sharing.
-              </p>
-            </div>
-            
-            {/* Step 3 */}
-            <div className="text-center">
-              <div className="w-16 h-16 bg-blue-100 dark:bg-blue-800 rounded-full flex items-center justify-center mx-auto mb-6">
-                <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">3</span>
-              </div>
-              <h3 className="text-xl font-semibold text-zinc-900 dark:text-white mb-4">Connect & Share</h3>
-              <p className="text-zinc-600 dark:text-zinc-400">
-                Meet for coffee, explore together, host when you want, or just share insider tips. However feels right for you.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* REAL STORIES SECTION - NOT TESTIMONIALS, REAL EXPERIENCES */}
-        <section className="py-16 sm:py-24 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-2xl mb-16">
-          <div className="px-6 sm:px-8">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900 dark:text-white mb-4">
-                Real Couchsurfing Stories
-              </h2>
-              <p className="text-lg sm:text-xl text-zinc-600 dark:text-zinc-400 max-w-3xl mx-auto">
-                How the spirit of Couchsurfing lives on through new connections
-              </p>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md">
-                <div className="mb-4">
-                  <h4 className="font-semibold text-lg text-zinc-900 dark:text-white mb-2">The Coffee Connection</h4>
-                  <p className="text-zinc-600 dark:text-zinc-400 italic">
-                    "I met Maria through our shared love of specialty coffee. She showed me the three best roasters in Prague - places I never would have found. We spent four hours talking about travel, life, and dreams. Same deep connection, zero couch logistics."
-                  </p>
-                </div>
-                <div className="flex items-center">
-                  <div className="w-10 h-10 bg-blue-100 dark:bg-blue-800 rounded-full flex items-center justify-center mr-3">
-                    <Coffee className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                  </div>
-                  <div>
-                    <p className="font-medium text-zinc-900 dark:text-white">David from Berlin</p>
-                    <p className="text-sm text-zinc-500 dark:text-zinc-400">Traveler & Former CS Surfer</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md">
-                <div className="mb-4">
-                  <h4 className="font-semibold text-lg text-zinc-900 dark:text-white mb-2">The Local Guide</h4>
-                  <p className="text-zinc-600 dark:text-zinc-400 italic">
-                    "I couldn't host Jake, but we both love street art. I showed him the best murals in my neighborhood, we grabbed tacos, talked about art and culture for hours. He said it was better than any tour he could have booked."
-                  </p>
-                </div>
-                <div className="flex items-center">
-                  <div className="w-10 h-10 bg-green-100 dark:bg-green-800 rounded-full flex items-center justify-center mr-3">
-                    <MapPin className="w-5 h-5 text-green-600 dark:text-green-400" />
-                  </div>
-                  <div>
-                    <p className="font-medium text-zinc-900 dark:text-white">Sofia from Mexico City</p>
-                    <p className="text-sm text-zinc-500 dark:text-zinc-400">Local & Former CS Host</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* FINAL CTA SECTION */}
-        <section className="text-center py-16 sm:py-20 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-2xl mb-16">
-          <div className="max-w-4xl mx-auto px-6 sm:px-8">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6">
-              Ready to Keep the Spirit Alive?
-            </h2>
-            <p className="text-lg sm:text-xl mb-8 leading-relaxed opacity-90">
-              Join thousands of Couchsurfers who've discovered how to maintain that amazing community spirit in their everyday lives.
-            </p>
-            <Button 
-              onClick={() => {
-                trackEvent('signup_cta_click', 'couchsurfing_landing', 'bottom_join_now');
-                setLocation('/launching-soon');
-              }}
-              className="bg-white hover:bg-gray-100 text-blue-600 font-bold px-8 py-4 rounded-lg shadow-lg transition-all duration-200 text-lg transform hover:scale-105"
-            >
-              JOIN NOW
-            </Button>
-            <p className="text-sm opacity-75 mt-4">
-              Free to join • Same values • More connections
-            </p>
-          </div>
-        </section>
       </div>
 
       <Footer />
