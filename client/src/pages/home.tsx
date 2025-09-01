@@ -111,11 +111,12 @@ export default function Home() {
     }
 
     // Calculate current travel status with proper destination logic
+    // Prioritize API data over travel plans for travel status
     const currentTravelPlan = getCurrentTravelDestination(travelPlans || []);
-    const isCurrentlyTraveling = !!currentTravelPlan;
+    const isCurrentlyTraveling = userData.isCurrentlyTraveling ?? !!currentTravelPlan;
     
-    // Use the destination exactly as stored in travel plan
-    const travelDestination = currentTravelPlan?.destination || null;
+    // Use the destination from API first, fallback to travel plan
+    const travelDestination = userData.travelDestination || currentTravelPlan?.destination || null;
 
     // Return enriched user data with travel context
     const enrichedUser = {
