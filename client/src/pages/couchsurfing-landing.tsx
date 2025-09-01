@@ -182,57 +182,67 @@ export default function CouchsurfingLanding() {
               {/* Match by what you love */}
               <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md">
                 <h3 className="text-xl font-bold text-zinc-900 dark:text-white mb-3">Match by what you love</h3>
-                <p className="text-zinc-700 dark:text-zinc-300 mb-3">Hobbies, interests, travel style, and demographics</p>
-                <p className="text-zinc-700 dark:text-zinc-300">See who's also going to Taylor Swift, Comic-Con, SXSW, and more</p>
+                <p className="text-zinc-700 dark:text-zinc-300">Interests and activities.</p>
+              </div>
+              
+              {/* Headed to the same events */}
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md">
+                <h3 className="text-xl font-bold text-zinc-900 dark:text-white mb-3">Headed to the same events</h3>
+                <p className="text-zinc-700 dark:text-zinc-300">See who's also going to Taylor Swift, Comic-Con, SXSW, and more.</p>
               </div>
               
               {/* Meet your way */}
               <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md">
                 <h3 className="text-xl font-bold text-zinc-900 dark:text-white mb-3">Meet your way</h3>
-                <p className="text-zinc-700 dark:text-zinc-300 mb-3">Coffee, hikes, shows, markets, bars, local spots, the beach</p>
-                <p className="text-zinc-700 dark:text-zinc-300">Share hidden gems and build real experiences together</p>
+                <p className="text-zinc-700 dark:text-zinc-300">Coffee, hikes, shows, markets, bars, the beach.</p>
               </div>
               
-              {/* Connect when you want */}
+              {/* Real moments, not just messages */}
               <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md">
-                <h3 className="text-xl font-bold text-zinc-900 dark:text-white mb-3">Connect when you want, how you want, where you want</h3>
+                <h3 className="text-xl font-bold text-zinc-900 dark:text-white mb-3">Real moments, not just messages</h3>
+                <p className="text-zinc-700 dark:text-zinc-300">Share hidden gems and build experiences together.</p>
               </div>
               
-              {/* Keep the spark when you're busy */}
+              {/* Total flexibility */}
               <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md">
-                <h3 className="text-xl font-bold text-zinc-900 dark:text-white mb-3">Keep the spark when you're busy</h3>
-                <p className="text-zinc-700 dark:text-zinc-300">Hosting but tied up? We'll connect your guests with other travelers and locals nearby</p>
+                <h3 className="text-xl font-bold text-zinc-900 dark:text-white mb-3">Total flexibility</h3>
+                <p className="text-zinc-700 dark:text-zinc-300">Connect when you want—hosting or not.</p>
+              </div>
+              
+              {/* Short on time while hosting? */}
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md">
+                <h3 className="text-xl font-bold text-zinc-900 dark:text-white mb-3">Short on time while hosting?</h3>
+                <p className="text-zinc-700 dark:text-zinc-300">Point guests to Nearby Traveler so they can meet others in town.</p>
               </div>
               
               {/* Make informed connections */}
               <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md">
                 <h3 className="text-xl font-bold text-zinc-900 dark:text-white mb-3">Make informed connections</h3>
-                <p className="text-zinc-700 dark:text-zinc-300">Check references and vouches, review profiles, and decide what feels right for you. Public meetups encouraged.</p>
+                <p className="text-zinc-700 dark:text-zinc-300">Check references & vouches, review profiles, and start in public places if you'd like.</p>
               </div>
               
               {/* Broaden who you meet */}
               <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md">
                 <h3 className="text-xl font-bold text-zinc-900 dark:text-white mb-3">Broaden who you meet</h3>
-                <p className="text-zinc-700 dark:text-zinc-300">Business travelers, families, students, digital nomads—people of all ages</p>
+                <p className="text-zinc-700 dark:text-zinc-300">Business travelers, families, students, digital nomads—people of all ages.</p>
               </div>
               
               {/* Plan ahead, never land cold */}
               <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md">
                 <h3 className="text-xl font-bold text-zinc-900 dark:text-white mb-3">Plan ahead, never land cold</h3>
-                <p className="text-zinc-700 dark:text-zinc-300 mb-3">Set up meetups before you arrive</p>
-                <p className="text-zinc-700 dark:text-zinc-300">Meet multiple travelers and locals in every city</p>
+                <p className="text-zinc-700 dark:text-zinc-300">Line up intros before you arrive; meet more than one person per city.</p>
               </div>
               
               {/* Local perks */}
               <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md">
                 <h3 className="text-xl font-bold text-zinc-900 dark:text-white mb-3">Local perks</h3>
-                <p className="text-zinc-700 dark:text-zinc-300">Discover businesses offering traveler-friendly discounts</p>
+                <p className="text-zinc-700 dark:text-zinc-300">Discover traveler-friendly deals from nearby businesses.</p>
               </div>
               
               {/* Stay connected */}
               <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md">
                 <h3 className="text-xl font-bold text-zinc-900 dark:text-white mb-3">Stay connected</h3>
-                <p className="text-zinc-700 dark:text-zinc-300">Reconnect years later with Discover People Nearby</p>
+                <p className="text-zinc-700 dark:text-zinc-300">Reconnect years later with Discover People Nearby.</p>
               </div>
               
             </div>
