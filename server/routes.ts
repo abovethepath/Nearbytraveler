@@ -1,4 +1,5 @@
 import type { Express, Request, Response } from "express";
+import { setupSimpleAuth } from "./simpleAuth";
 
 // Extend session interface to include user property
 declare module 'express-session' {
@@ -784,6 +785,10 @@ async function sendWeeklyDigestEmails() {
 
 export async function registerRoutes(app: Express, httpServer?: Server): Promise<Server> {
   if (process.env.NODE_ENV === 'development') console.log("Starting routes registration...");
+
+  // FIRST: Setup authentication
+  setupSimpleAuth(app);
+  if (process.env.NODE_ENV === 'development') console.log("Authentication setup completed");
 
   // CRITICAL: Register location widgets routes
   app.use(locationWidgetsRouter);
@@ -1735,39 +1740,6 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
     }
   });
 
-  // Login endpoint
-  app.post("/api/login", async (req, res) => {
-    try {
-      const { email, password } = loginSchema.parse(req.body);
-      if (process.env.NODE_ENV === 'development') console.log("Login attempt for:", email);
-
-      // Try to find user by email or username
-      let user = await storage.getUserByEmail(email);
-      if (!user) {
-        user = await storage.getUserByUsername(email);
-      }
-
-      if (!user) {
-        return res.status(401).json({ message: "Invalid email/username or password" });
-      }
-
-      // For demo purposes, check password directly
-      if (user.password !== password) {
-        return res.status(401).json({ message: "Invalid email/username or password" });
-      }
-
-      // Remove password from response
-      const { password: _, ...userWithoutPassword } = user;
-
-      return res.json({
-        user: userWithoutPassword,
-        token: 'auth_token_' + user.id
-      });
-    } catch (error: any) {
-      if (process.env.NODE_ENV === 'development') console.error("Login error:", error);
-      return res.status(400).json({ message: "Login failed. Please check your credentials." });
-    }
-  });
 
   // Email validation endpoint
   app.post("/api/auth/check-email", async (req, res) => {
@@ -11778,6 +11750,18 @@ Questions? Just reply to this message. Welcome aboard!
   // ========================================
   // AUTHENTICATION ROUTES
   // ========================================
+
+  // Auth user route
+  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      res.json(user);
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      res.status(500).json({ message: "Failed to fetch user" });
+    }
+  });
 
   // Logout route - properly destroy server session
   app.post("/api/logout", (req, res) => {

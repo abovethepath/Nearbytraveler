@@ -18,6 +18,7 @@ export interface IStorage {
   updateUser(id: number, updates: Partial<User>): Promise<User | undefined>;
   updateUserAura(userId: number, auraPoints: number): Promise<void>;
   deleteUser(id: number): Promise<boolean>;
+  upsertUser(user: any): Promise<User>;
   
   // Event methods
   createEvent(event: InsertEvent): Promise<Event>;
@@ -611,6 +612,34 @@ export class DatabaseStorage implements IStorage {
     });
     
     return newUser;
+  }
+
+  async upsertUser(userData: any): Promise<User> {
+    const [user] = await db
+      .insert(users)
+      .values({
+        id: userData.id,
+        email: userData.email,
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        profileImageUrl: userData.profileImageUrl,
+        username: userData.email || `user_${userData.id}`,
+        userType: 'traveler',
+        location: 'Los Angeles',
+        hometown: 'Los Angeles'
+      })
+      .onConflictDoUpdate({
+        target: users.id,
+        set: {
+          email: userData.email,
+          firstName: userData.firstName,
+          lastName: userData.lastName,
+          profileImageUrl: userData.profileImageUrl,
+          updatedAt: new Date(),
+        },
+      })
+      .returning();
+    return user;
   }
 
   async updateUser(id: number, data: Partial<User>): Promise<User | undefined> {
