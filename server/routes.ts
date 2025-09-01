@@ -5573,6 +5573,20 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // Get nearby events - must be before /:id route to avoid "NaN" error
+  app.get("/api/events/nearby", async (req, res) => {
+    try {
+      // For now, return empty array or redirect to main events endpoint
+      // This prevents the "NaN" error when EventsGrid calls this endpoint
+      console.log('📍 Nearby events endpoint called - returning all events');
+      const allEvents = await storage.getAllEvents();
+      return res.json(allEvents || []);
+    } catch (error: any) {
+      console.error("Error fetching nearby events:", error);
+      return res.status(500).json({ message: "Failed to fetch nearby events" });
+    }
+  });
+
   // CRITICAL: Get event details by ID
   app.get("/api/events/:id", async (req, res) => {
     try {
