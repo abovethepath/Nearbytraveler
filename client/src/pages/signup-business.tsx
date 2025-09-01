@@ -164,7 +164,7 @@ export default function SignupBusinessSimple() {
       // Show initial loading message
       toast({
         title: "Creating your business account...",
-        description: "Setting up your business profile and generating personalized content. This may take a few moments.",
+        description: "Setting up your business profile and generating personalized content. This may take a few moments. You'll receive a welcome email - check your promotions tab if needed and mark as not spam.",
         variant: "default",
       });
 
