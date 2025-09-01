@@ -156,7 +156,7 @@ export default function CouchsurfingLanding() {
                 FOR EXPERIENCED HOSTS
               </div>
               <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900 dark:text-white mb-4">
-                We Know You've Loved Hosting
+                We Know You Love Hosting
               </h2>
               <p className="text-lg sm:text-xl text-zinc-600 dark:text-zinc-400 max-w-4xl mx-auto leading-relaxed">
                 If you've hosted before, you know the magic: meeting fascinating people, sharing your city, learning about new cultures. But hosting can sometimes just not be possible with work or family life. That doesn't mean you're less generous — it just means life changes. With Nearby Traveler, you can keep the spirit of meaningful connections alive in a way that works for you today.
@@ -311,7 +311,7 @@ export default function CouchsurfingLanding() {
                 <Heart className="w-8 h-8 text-white" />
               </div>
               <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900 dark:text-white mb-4">
-                What You've Loved About Hosting
+                We Know You Love Hosting
               </h2>
             </div>
             
