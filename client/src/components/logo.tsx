@@ -19,7 +19,7 @@ export default function Logo({ className, variant = "default" }: LogoProps) {
       case "footer":
         return "h-73 w-auto md:h-73 sm:h-63"; // Footer size exactly matching navbar
       case "header":
-        return "h-48 w-auto scale-x-110"; // Much bigger header size
+        return "h-32 sm:h-48 md:h-56 lg:h-64 w-auto scale-x-110"; // Much bigger on mobile, scaling up
       default:
         return "h-12 w-auto scale-x-125"; // Increased default size
     }
