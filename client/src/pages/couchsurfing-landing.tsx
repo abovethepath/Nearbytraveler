@@ -579,19 +579,19 @@ export default function CouchsurfingLanding() {
                 Connect with 100% of Travelers
               </h2>
               <p className="text-lg sm:text-xl text-zinc-600 dark:text-zinc-400 max-w-4xl mx-auto leading-relaxed mb-8">
-                Traditional hosting only reaches travelers who need accommodation. Our "Let's Meet Now" function reaches ALL travelers — those staying in hotels, hostels, Airbnbs, with friends, or anywhere else. Connect with every traveler in your city, not just the small percentage looking for a couch.
+                Traditional hosting only reaches travelers who need accommodation — a tiny percentage of all travelers. Nearby Traveler reaches ALL travelers: those staying in hotels, hostels, Airbnbs, with friends, or anywhere else. Connect with every traveler in your city, not just the small percentage looking for a couch.
               </p>
               
               <Button 
                 onClick={() => {
-                  trackEvent('meetup_cta_click', 'couchsurfing_landing', 'reach_all_travelers');
-                  setLocation('/meetups');
+                  trackEvent('signup_cta_click', 'couchsurfing_landing', 'reach_all_travelers');
+                  setLocation('/launching-soon');
                 }}
                 className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold px-8 py-4 rounded-lg shadow-lg text-lg"
                 data-testid="button-reach-all-travelers"
               >
                 <Globe className="w-5 h-5 mr-2" />
-                See How It Works
+                Join the Platform
               </Button>
             </div>
             
