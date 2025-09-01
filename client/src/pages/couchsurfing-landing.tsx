@@ -188,7 +188,7 @@ export default function CouchsurfingLanding() {
               <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-green-500">
                 <div className="flex items-start">
                   <Coffee className="w-6 h-6 text-green-600 mt-1 mr-3 flex-shrink-0" />
-                  <p className="text-zinc-700 dark:text-zinc-300">Connect at cafés, events, and local spots — no couch required</p>
+                  <p className="text-zinc-700 dark:text-zinc-300">Connect at cafés, events, and local spots</p>
                 </div>
               </div>
               
