@@ -47,7 +47,8 @@ export default function AICityEvents({ cityName, currentUser }: AICityEventsProp
   const { data: regularEvents = [], isLoading: eventsLoading } = useQuery({
     queryKey: ['/api/events', cityName],
     queryFn: async () => {
-      const response = await fetch(`/api/events?city=${encodeURIComponent(cityName)}`);
+      const userParam = currentUser?.id ? `&userId=${currentUser.id}` : '';
+      const response = await fetch(`/api/events?city=${encodeURIComponent(cityName)}${userParam}`);
       if (!response.ok) throw new Error('Failed to fetch events');
       return response.json();
     },

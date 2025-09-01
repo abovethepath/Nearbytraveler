@@ -70,9 +70,13 @@ const EventsGrid = ({
         return response.json();
       } else {
         console.log('🎯 EventsGrid: Fetching single location events');
-        const url = location 
+        const baseUrl = location 
           ? `/api/events?city=${encodeURIComponent(location)}`
           : '/api/events/nearby';
+        
+        // Add user ID for private event filtering if available
+        const userParam = userId ? `${baseUrl.includes('?') ? '&' : '?'}userId=${userId}` : '';
+        const url = baseUrl + userParam;
         
         const response = await fetch(url);
         if (!response.ok) throw new Error('Failed to fetch events');

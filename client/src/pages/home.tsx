@@ -313,7 +313,9 @@ export default function Home() {
       const allEvents = [];
       for (const city of cities) {
         try {
-          const response = await fetch(`/api/events?city=${encodeURIComponent(city)}`);
+          const userId = effectiveUser?.id;
+          const userParam = userId ? `&userId=${userId}` : '';
+          const response = await fetch(`/api/events?city=${encodeURIComponent(city)}${userParam}`);
           const cityEvents = await response.json();
           allEvents.push(...cityEvents);
         } catch (error) {

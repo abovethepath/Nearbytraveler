@@ -121,6 +121,19 @@ interface EventFormData {
   recurrenceEnd?: string;
   // Same-day event checkbox
   isSameDay?: boolean;
+  // PRIVATE EVENT VISIBILITY TAGS
+  genderRestriction?: string;
+  sexualOrientationRestriction?: string[];
+  lgbtqiaOnly?: boolean;
+  veteransOnly?: boolean;
+  activeDutyOnly?: boolean;
+  womenOnly?: boolean;
+  menOnly?: boolean;
+  singlePeopleOnly?: boolean;
+  familiesOnly?: boolean;
+  ageRestrictionMin?: number;
+  ageRestrictionMax?: number;
+  privateNotes?: string;
 }
 
 export default function CreateEvent({ onEventCreated }: CreateEventProps) {
@@ -522,6 +535,19 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
           const date = new Date(data.recurrenceEnd);
           return !isNaN(date.getTime()) ? date : null;
         })() : null,
+        // Private visibility fields
+        genderRestriction: data.genderRestriction || null,
+        sexualOrientationRestriction: data.sexualOrientationRestriction || null,
+        lgbtqiaOnly: data.lgbtqiaOnly || false,
+        veteransOnly: data.veteransOnly || false,
+        activeDutyOnly: data.activeDutyOnly || false,
+        womenOnly: data.womenOnly || false,
+        menOnly: data.menOnly || false,
+        singlePeopleOnly: data.singlePeopleOnly || false,
+        familiesOnly: data.familiesOnly || false,
+        ageRestrictionMin: data.ageRestrictionMin || null,
+        ageRestrictionMax: data.ageRestrictionMax || null,
+        privateNotes: data.privateNotes || null,
       };
 
       await createEventMutation.mutateAsync(eventData);
@@ -999,6 +1025,116 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
                 className="w-full"
               />
             </div>
+
+            {/* PRIVATE EVENT VISIBILITY TAGS */}
+            <Card className="border-2 border-orange-200 dark:border-orange-800 bg-orange-50 dark:bg-orange-950/20">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg flex items-center gap-2 text-orange-800 dark:text-orange-200">
+                  🔒 Private Event Settings
+                </CardTitle>
+                <p className="text-sm text-orange-700 dark:text-orange-300">
+                  Control who can see this event based on demographics. These settings create safe spaces for specific communities.
+                </p>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {/* Gender Restrictions */}
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Gender Restriction</Label>
+                  <Select onValueChange={(value) => setValue("genderRestriction", value || undefined)}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Open to all genders" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">Open to all genders</SelectItem>
+                      <SelectItem value="female">Women only</SelectItem>
+                      <SelectItem value="male">Men only</SelectItem>
+                      <SelectItem value="non-binary">Non-binary only</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Quick Toggle Options */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="lgbtqiaOnly" 
+                      {...register("lgbtqiaOnly")}
+                      data-testid="checkbox-lgbtqia-only"
+                    />
+                    <Label htmlFor="lgbtqiaOnly" className="text-sm">🏳️‍🌈 LGBTQIA+ only</Label>
+                  </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="veteransOnly" 
+                      {...register("veteransOnly")}
+                      data-testid="checkbox-veterans-only"
+                    />
+                    <Label htmlFor="veteransOnly" className="text-sm">🪖 Veterans only</Label>
+                  </div>
+
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="singlePeopleOnly" 
+                      {...register("singlePeopleOnly")}
+                      data-testid="checkbox-single-people-only"
+                    />
+                    <Label htmlFor="singlePeopleOnly" className="text-sm">💝 Singles only</Label>
+                  </div>
+
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="familiesOnly" 
+                      {...register("familiesOnly")}
+                      data-testid="checkbox-families-only"
+                    />
+                    <Label htmlFor="familiesOnly" className="text-sm">👨‍👩‍👧‍👦 Families only</Label>
+                  </div>
+                </div>
+
+                {/* Age Restrictions */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-2">
+                    <Label htmlFor="ageRestrictionMin" className="text-sm">Minimum Age</Label>
+                    <Input
+                      id="ageRestrictionMin"
+                      type="number"
+                      {...register("ageRestrictionMin", { valueAsNumber: true })}
+                      placeholder="18"
+                      min="13"
+                      max="99"
+                      data-testid="input-age-min"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="ageRestrictionMax" className="text-sm">Maximum Age</Label>
+                    <Input
+                      id="ageRestrictionMax"
+                      type="number"
+                      {...register("ageRestrictionMax", { valueAsNumber: true })}
+                      placeholder="65"
+                      min="13"
+                      max="99"
+                      data-testid="input-age-max"
+                    />
+                  </div>
+                </div>
+
+                {/* Private Organizer Notes */}
+                <div className="space-y-2">
+                  <Label htmlFor="privateNotes" className="text-sm">Private Organizer Notes</Label>
+                  <Textarea
+                    id="privateNotes"
+                    {...register("privateNotes")}
+                    placeholder="Internal notes about who you want to attend (only you can see this)"
+                    className="w-full text-sm"
+                    rows={2}
+                    data-testid="textarea-private-notes"
+                  />
+                  <p className="text-xs text-gray-500">These notes are private and only visible to you as the organizer.</p>
+                </div>
+              </CardContent>
+            </Card>
 
             {/* Tags */}
             <div className="space-y-2">

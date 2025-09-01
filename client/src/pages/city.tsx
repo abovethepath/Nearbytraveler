@@ -105,6 +105,12 @@ export default function CityPage({ cityName }: CityPageProps) {
       if (stateName) params.set('state', stateName);
       if (countryName) params.set('country', countryName);
       
+      // Add user ID for private event filtering
+      const currentUser = JSON.parse(localStorage.getItem('travelconnect_user') || '{}');
+      if (currentUser?.id) {
+        params.set('userId', currentUser.id.toString());
+      }
+      
       const response = await fetch(`/api/events?${params.toString()}`);
       if (!response.ok) throw new Error('Failed to fetch events');
       return response.json();

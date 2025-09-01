@@ -5038,7 +5038,7 @@ Questions? Just reply to this message. Welcome aboard!
     console.log("🟢 EVENTS ENDPOINT HIT! Query:", req.query, "URL:", req.url);
     try {
       console.log(`📅 EVENTS DEBUG: Full query parameters:`, req.query);
-      const { city, state, country } = req.query;
+      const { city, state, country, userId } = req.query;
       console.log(`📅 EVENTS DEBUG: Extracted city="${city}" state="${state}" country="${country}"`);
       console.log(`📅 EVENTS DEBUG: City type: ${typeof city}, truthy: ${!!city}, trimmed: "${typeof city === 'string' ? city.trim() : 'N/A'}"`);
       if (process.env.NODE_ENV === 'development') console.log(`📅 DIRECT API: Fetching events with query:`, req.query);
@@ -5204,8 +5204,52 @@ Questions? Just reply to this message. Welcome aboard!
         })
       );
 
-      if (process.env.NODE_ENV === 'development') console.log(`🎪 EVENTS: Enhanced ${eventsWithCountsAndOrganizers.length} events with participant counts and organizer info`);
-      return res.json(eventsWithCountsAndOrganizers);
+      // PRIVATE EVENT FILTERING: Filter events based on user demographics
+      let filteredEvents = eventsWithCountsAndOrganizers;
+      if (userId && typeof userId === 'string') {
+        const userIdNum = parseInt(userId);
+        if (!isNaN(userIdNum)) {
+          const user = await storage.getUser(userIdNum);
+          if (user) {
+            console.log(`🔒 PRIVATE EVENTS: Filtering events for user ${user.username} with demographics`);
+            filteredEvents = [];
+            
+            for (const event of eventsWithCountsAndOrganizers) {
+              // Check if user can see this event based on demographics
+              const canSee = await storage.canUserSeeEvent(event, userIdNum);
+              if (canSee) {
+                filteredEvents.push(event);
+              } else {
+                console.log(`🔒 PRIVATE EVENTS: Hidden event "${event.title}" from user ${user.username} due to demographic restrictions`);
+              }
+            }
+            
+            console.log(`🔒 PRIVATE EVENTS: Filtered ${eventsWithCountsAndOrganizers.length} events down to ${filteredEvents.length} visible events`);
+          }
+        }
+      } else {
+        // No user ID provided - filter out all private events
+        filteredEvents = [];
+        for (const event of eventsWithCountsAndOrganizers) {
+          // Only show events with no demographic restrictions
+          if (!event.genderRestriction && 
+              !event.lgbtqiaOnly && 
+              !event.veteransOnly && 
+              !event.activeDutyOnly && 
+              !event.womenOnly && 
+              !event.menOnly && 
+              !event.singlePeopleOnly && 
+              !event.familiesOnly && 
+              !event.ageRestrictionMin && 
+              !event.ageRestrictionMax) {
+            filteredEvents.push(event);
+          }
+        }
+        console.log(`🔒 PRIVATE EVENTS: No user provided - filtered ${eventsWithCountsAndOrganizers.length} events down to ${filteredEvents.length} public events`);
+      }
+
+      if (process.env.NODE_ENV === 'development') console.log(`🎪 EVENTS: Enhanced ${filteredEvents.length} events with participant counts and organizer info`);
+      return res.json(filteredEvents);
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error fetching events:", error);
       return res.status(500).json({ message: "Failed to fetch events" });

@@ -22,7 +22,8 @@ export interface IStorage {
   // Event methods
   createEvent(event: InsertEvent): Promise<Event>;
   getEvent(id: number): Promise<Event | undefined>;
-  getAllEvents(): Promise<Event[]>;
+  getAllEvents(userId?: number): Promise<Event[]>;
+  canUserSeeEvent(event: Event, userId?: number): Promise<boolean>;
   getUpcomingEvents(city: string): Promise<Event[]>;
   getUserEvents(userId: number): Promise<Event[]>;
   getEventsByOrganizer(organizerId: number): Promise<Event[]>;
@@ -886,13 +887,98 @@ export class DatabaseStorage implements IStorage {
     return event || undefined;
   }
 
-  async getAllEvents(): Promise<Event[]> {
+  // Method to check if user can see an event based on demographics
+  async canUserSeeEvent(event: Event, userId?: number): Promise<boolean> {
+    // If no user ID provided, only show public events with no restrictions
+    if (!userId) {
+      return !event.genderRestriction && 
+             !event.lgbtqiaOnly && 
+             !event.veteransOnly && 
+             !event.activeDutyOnly && 
+             !event.womenOnly && 
+             !event.menOnly && 
+             !event.singlePeopleOnly && 
+             !event.familiesOnly && 
+             !event.ageRestrictionMin && 
+             !event.ageRestrictionMax;
+    }
+
+    // Get user demographics
+    const user = await this.getUser(userId);
+    if (!user) return false;
+
+    // Check gender restrictions
+    if (event.genderRestriction && user.gender !== event.genderRestriction) {
+      return false;
+    }
+
+    // Check women/men only flags (legacy support for boolean flags)
+    if (event.womenOnly && user.gender !== 'female') {
+      return false;
+    }
+    if (event.menOnly && user.gender !== 'male') {
+      return false;
+    }
+
+    // Check LGBTQIA+ only events
+    if (event.lgbtqiaOnly) {
+      const lgbtqiaOrientations = ['gay', 'lesbian', 'bisexual', 'pansexual', 'queer'];
+      if (!user.sexualPreference?.some(pref => lgbtqiaOrientations.includes(pref))) {
+        return false;
+      }
+    }
+
+    // Check veteran status
+    if (event.veteransOnly && !user.isVeteran) {
+      return false;
+    }
+
+    // Check active duty status
+    if (event.activeDutyOnly && !user.isActiveDuty) {
+      return false;
+    }
+
+    // Check single people only
+    if (event.singlePeopleOnly) {
+      const singleInterests = user.interests?.includes('single and looking');
+      if (!singleInterests) {
+        return false;
+      }
+    }
+
+    // Check families only
+    if (event.familiesOnly && !user.travelingWithChildren) {
+      return false;
+    }
+
+    // Check age restrictions
+    if (user.age) {
+      if (event.ageRestrictionMin && user.age < event.ageRestrictionMin) {
+        return false;
+      }
+      if (event.ageRestrictionMax && user.age > event.ageRestrictionMax) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  async getAllEvents(userId?: number): Promise<Event[]> {
     try {
       const allEvents = await db.select().from(events).orderBy(desc(events.date));
       
-      // Get participant counts for all events
+      // Filter events based on user demographics
+      const visibleEvents = [];
+      for (const event of allEvents) {
+        if (await this.canUserSeeEvent(event, userId)) {
+          visibleEvents.push(event);
+        }
+      }
+
+      // Get participant counts for visible events
       const participantCounts = await Promise.all(
-        allEvents.map(async (event) => {
+        visibleEvents.map(async (event) => {
           const [result] = await db
             .select({ count: sql<number>`count(*)` })
             .from(eventParticipants)
@@ -905,7 +991,7 @@ export class DatabaseStorage implements IStorage {
       const participantCountMap = new Map(participantCounts.map(pc => [pc.eventId, pc.count]));
 
       // Add participant counts to events
-      const eventsWithCounts = allEvents.map(event => ({
+      const eventsWithCounts = visibleEvents.map(event => ({
         ...event,
         participantCount: participantCountMap.get(event.id) || 0
       }));

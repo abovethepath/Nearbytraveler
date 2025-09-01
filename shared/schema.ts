@@ -386,6 +386,20 @@ export const events = pgTable("events", {
   parentEventId: integer("parent_event_id"), // Links to original event for recurring instances
   instanceDate: timestamp("instance_date"), // Original date of this recurring instance
   
+  // PRIVATE EVENT VISIBILITY TAGS - Only show to matching demographics
+  genderRestriction: text("gender_restriction"), // 'male', 'female', 'non-binary', null (open to all)
+  sexualOrientationRestriction: text("sexual_orientation_restriction").array(), // ['gay', 'lesbian', 'bisexual', etc] or null (open to all)
+  lgbtqiaOnly: boolean("lgbtqia_only").default(false), // LGBTQIA+ only events
+  veteransOnly: boolean("veterans_only").default(false), // Veterans/military only
+  activeDutyOnly: boolean("active_duty_only").default(false), // Active duty military only
+  womenOnly: boolean("women_only").default(false), // Women only events
+  menOnly: boolean("men_only").default(false), // Men only events
+  singlePeopleOnly: boolean("single_people_only").default(false), // Singles only events
+  familiesOnly: boolean("families_only").default(false), // Families with children only
+  ageRestrictionMin: integer("age_restriction_min"), // Minimum age requirement
+  ageRestrictionMax: integer("age_restriction_max"), // Maximum age requirement
+  privateNotes: text("private_notes"), // Private organizer notes about who should attend
+  
   createdAt: timestamp("created_at").defaultNow(),
 });
 
