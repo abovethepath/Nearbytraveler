@@ -183,6 +183,10 @@ export const users = pgTable("users", {
   // Email tracking
   welcomeEmailSent: boolean("welcome_email_sent").default(false), // Track if welcome email was sent to prevent duplicates
   
+  // Password reset fields
+  resetPasswordToken: text("reset_password_token"),
+  resetPasswordExpiry: timestamp("reset_password_expiry"),
+  
   createdAt: timestamp("created_at").defaultNow(),
 });
 

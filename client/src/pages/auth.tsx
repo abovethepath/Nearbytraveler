@@ -243,6 +243,15 @@ export default function Auth() {
                 >
                   {isLoading ? "Signing In..." : "Sign In"}
                 </Button>
+                
+                <div className="text-center">
+                  <button
+                    onClick={() => window.location.href = '/forgot-password'}
+                    className="text-sm text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 underline"
+                  >
+                    Forgot your password?
+                  </button>
+                </div>
               </div>
             ) : (
               <>
