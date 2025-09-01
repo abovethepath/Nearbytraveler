@@ -114,7 +114,7 @@ export default function CouchsurfingLanding() {
           <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md">
             <Globe className="w-8 h-8 text-blue-600 mb-4" />
             <h3 className="font-semibold text-lg mb-2 text-zinc-900 dark:text-white">Better Matching</h3>
-            <p className="text-zinc-600 dark:text-zinc-400">Connect based on shared interests, not just accommodation needs</p>
+            <p className="text-zinc-600 dark:text-zinc-400">Connect based on shared commonalities, not just accommodation needs</p>
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md">
             <Heart className="w-8 h-8 text-blue-600 mb-4" />
