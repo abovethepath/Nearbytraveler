@@ -371,12 +371,21 @@ export default function Auth() {
             )}
 
             <div className="text-center pt-4">
-              <button
-                onClick={() => setIsLogin(!isLogin)}
-                className="text-blue-600 hover:text-blue-800 font-medium"
-              >
-                {isLogin ? "Need an account? Sign up" : "Already have an account? Sign in"}
-              </button>
+              {isLogin ? (
+                <button
+                  onClick={() => window.location.href = '/join'}
+                  className="text-blue-600 hover:text-blue-800 font-medium"
+                >
+                  Need an account? Sign up
+                </button>
+              ) : (
+                <button
+                  onClick={() => setIsLogin(true)}
+                  className="text-blue-600 hover:text-blue-800 font-medium"
+                >
+                  Already have an account? Sign in
+                </button>
+              )}
             </div>
           </CardContent>
         </Card>
