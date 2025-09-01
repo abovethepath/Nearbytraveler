@@ -5241,7 +5241,8 @@ Questions? Just reply to this message. Welcome aboard!
               !event.singlePeopleOnly && 
               !event.familiesOnly && 
               !event.ageRestrictionMin && 
-              !event.ageRestrictionMax) {
+              !event.ageRestrictionMax &&
+              !event.customRestriction) {
             filteredEvents.push(event);
           }
         }

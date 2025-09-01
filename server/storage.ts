@@ -900,7 +900,8 @@ export class DatabaseStorage implements IStorage {
              !event.singlePeopleOnly && 
              !event.familiesOnly && 
              !event.ageRestrictionMin && 
-             !event.ageRestrictionMax;
+             !event.ageRestrictionMax &&
+             !event.customRestriction;
     }
 
     // Get user demographics

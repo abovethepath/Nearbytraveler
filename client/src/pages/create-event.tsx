@@ -548,6 +548,7 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
         ageRestrictionMin: data.ageRestrictionMin || null,
         ageRestrictionMax: data.ageRestrictionMax || null,
         privateNotes: data.privateNotes || null,
+        customRestriction: data.customRestriction || null,
       };
 
       await createEventMutation.mutateAsync(eventData);
@@ -1439,10 +1440,32 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
                   </div>
                 </div>
 
+                {/* Custom Restriction Field */}
+                <div className="mt-4 pt-4 border-t border-red-200 dark:border-red-800">
+                  <h4 className="font-semibold text-red-800 dark:text-red-300 text-sm mb-3">CUSTOM RESTRICTION</h4>
+                  <div className="p-3 bg-orange-50 dark:bg-orange-900/20 rounded border border-orange-200 dark:border-orange-800">
+                    <Label htmlFor="customRestriction" className="text-sm font-bold text-orange-800 dark:text-orange-300">
+                      🏷️ CREATE YOUR OWN RESTRICTION TAG
+                    </Label>
+                    <p className="text-xs text-orange-700 dark:text-orange-400 mt-1 mb-2">
+                      Create a custom restriction like "Taylor Swift fans only", "Dog lovers only", "Photographers only", etc.
+                    </p>
+                    <Input
+                      id="customRestriction"
+                      {...register("customRestriction")}
+                      placeholder="e.g. Taylor Swift fans only, Dog lovers only, Photographers only..."
+                      className="mt-1 border-orange-300 dark:border-orange-700 bg-white dark:bg-gray-900"
+                    />
+                    <p className="text-xs text-orange-600 dark:text-orange-400 mt-1">
+                      This will be displayed as a visible tag on your event and ONLY users who feel they match this description will join
+                    </p>
+                  </div>
+                </div>
+
                 {/* Warning */}
                 <div className="mt-4 p-3 bg-red-100 dark:bg-red-900/30 border border-red-300 dark:border-red-700 rounded">
                   <p className="text-sm font-bold text-red-800 dark:text-red-300">
-                    ⚠️ IMPORTANT: If you select ANY of these options, your event will be HIDDEN from users who don't meet the criteria. 
+                    ⚠️ IMPORTANT: If you select ANY of these options or add a custom restriction, your event will be HIDDEN from users who don't meet the criteria. 
                     Only use these for events that truly need to be restricted to specific communities.
                   </p>
                 </div>

@@ -399,6 +399,7 @@ export const events = pgTable("events", {
   ageRestrictionMin: integer("age_restriction_min"), // Minimum age requirement
   ageRestrictionMax: integer("age_restriction_max"), // Maximum age requirement
   privateNotes: text("private_notes"), // Private organizer notes about who should attend
+  customRestriction: text("custom_restriction"), // Custom restriction label like "Taylor Swift fans only", "Dog lovers only", etc.
   
   createdAt: timestamp("created_at").defaultNow(),
 });
