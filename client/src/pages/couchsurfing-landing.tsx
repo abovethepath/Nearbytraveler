@@ -230,7 +230,7 @@ export default function CouchsurfingLanding() {
               <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-teal-500">
                 <div className="flex items-start">
                   <Handshake className="w-6 h-6 text-teal-600 mt-1 mr-3 flex-shrink-0" />
-                  <p className="text-zinc-700 dark:text-zinc-300">Meet multiple travelers and locals in each city you visit for diverse perspectives</p>
+                  <p className="text-zinc-700 dark:text-zinc-300">Meet multiple travelers and locals in each city you visit expanding from our community</p>
                 </div>
               </div>
               
