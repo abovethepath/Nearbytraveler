@@ -57,7 +57,7 @@ export default function Auth() {
     setIsLoading(true);
     console.log('Starting login request...');
     try {
-      const response = await fetch('/api/login', {
+      const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: formData.email.toLowerCase().trim(), password: formData.password }),

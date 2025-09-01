@@ -100,7 +100,7 @@ function JoinPageWithSignIn() {
           <p className="text-gray-600 dark:text-gray-400">
             Already have an account?{" "}
             <button 
-              onClick={() => window.location.href = '/api/login'}
+              onClick={() => setLocation('/signup')}
               className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium underline"
             >
               Sign In
