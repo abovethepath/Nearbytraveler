@@ -2539,32 +2539,27 @@ export default function Home() {
                             </div>
                             
                             {/* Current Location or Hometown */}
-                            {isCurrentlyTraveling ? (
-                              <div className="text-xs space-y-1">
+                            <div className="text-xs space-y-1">
+                              {isCurrentlyTraveling && (
                                 <div className="text-blue-600 dark:text-blue-400 truncate flex items-center">
-                                  <Plane className="w-3 h-3 mr-1 flex-shrink-0" />
-                                  <span className="truncate">
-                                    {formatTravelDestination(enrichedUser.travelDestination)}
+                                  🧳 <span className="truncate ml-1">
+                                    Traveling to {formatTravelDestination(enrichedUser.travelDestination)}
                                   </span>
                                 </div>
-                                <div className="text-gray-500 dark:text-gray-400 truncate">
-                                  From {enrichedUser.hometownCity && enrichedUser.hometownCountry
+                              )}
+                              <div className="text-gray-500 dark:text-gray-400 truncate flex items-center">
+                                🏠 <span className="truncate ml-1">
+                                  Local {enrichedUser.hometownCity && enrichedUser.hometownCountry
                                     ? `${enrichedUser.hometownCity}, ${enrichedUser.hometownCountry.replace("United States", "USA")}`
                                     : enrichedUser.location || "Location not set"}
-                                </div>
+                                </span>
                               </div>
-                            ) : (
-                              <div className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                                {enrichedUser.hometownCity && enrichedUser.hometownCountry
-                                  ? `${enrichedUser.hometownCity}, ${enrichedUser.hometownCountry.replace("United States", "USA")}`
-                                  : enrichedUser.location || "Location not set"}
-                              </div>
-                            )}
+                            </div>
                             
                             {/* Things in Common */}
                             {thingsInCommon > 0 && (
                               <div className="text-xs text-green-600 dark:text-green-400 truncate">
-                                {thingsInCommon} thing{thingsInCommon !== 1 ? 's' : ''} in common
+                                {thingsInCommon} Things in Common
                               </div>
                             )}
                           </div>
@@ -2669,32 +2664,27 @@ export default function Home() {
                                 </div>
                                 
                                 {/* Current Location or Hometown */}
-                                {isCurrentlyTraveling ? (
-                                  <div className="text-xs space-y-1">
+                                <div className="text-xs space-y-1">
+                                  {isCurrentlyTraveling && (
                                     <div className="text-blue-600 dark:text-blue-400 truncate flex items-center">
-                                      <Plane className="w-3 h-3 mr-1 flex-shrink-0" />
-                                      <span className="truncate">
-                                        {formatTravelDestination(enrichedUser.travelDestination)}
+                                      🧳 <span className="truncate ml-1">
+                                        Traveling to {formatTravelDestination(enrichedUser.travelDestination)}
                                       </span>
                                     </div>
-                                    <div className="text-gray-500 dark:text-gray-400 truncate">
-                                      📍 From {enrichedUser.hometownCity && enrichedUser.hometownCountry 
+                                  )}
+                                  <div className="text-gray-500 dark:text-gray-400 truncate flex items-center">
+                                    🏠 <span className="truncate ml-1">
+                                      Local {enrichedUser.hometownCity && enrichedUser.hometownCountry 
                                         ? `${enrichedUser.hometownCity}, ${enrichedUser.hometownCountry.replace("United States","USA")}` 
                                         : enrichedUser.location || "Location not set"}
-                                    </div>
+                                    </span>
                                   </div>
-                                ) : (
-                                  <div className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                                    📍 {enrichedUser.hometownCity && enrichedUser.hometownCountry 
-                                      ? `${enrichedUser.hometownCity}, ${enrichedUser.hometownCountry.replace("United States","USA")}` 
-                                      : enrichedUser.location || "Location not set"}
-                                  </div>
-                                )}
+                                </div>
                                 
                                 {/* Things in Common */}
                                 {thingsInCommon > 0 ? (
                                   <div className="text-xs text-green-600 dark:text-green-400 font-medium">
-                                    ✨ {thingsInCommon} thing{thingsInCommon !== 1 ? 's' : ''} in common
+                                    ✨ {thingsInCommon} Things in Common
                                   </div>
                                 ) : (
                                   <div className="text-xs text-gray-400 dark:text-gray-500">
