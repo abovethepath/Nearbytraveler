@@ -25,7 +25,7 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
-import businessHeaderPhoto from "@assets/image_1756763535350.png";
+import businessHeaderPhoto from "@assets/image_1756765621788.png";
 
 export default function BusinessLanding() {
   const [, setLocation] = useLocation();
