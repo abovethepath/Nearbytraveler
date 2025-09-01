@@ -239,51 +239,76 @@ function Router() {
   useEffect(() => {
     console.log('🚀 PRODUCTION CACHE BUST v2025-08-17-17-28 - Starting authentication check');
 
-    // Try multiple localStorage keys to find user data
-    const possibleKeys = ['user', 'travelconnect_user', 'currentUser', 'authUser'];
-    let foundUser = null;
-
-    for (const key of possibleKeys) {
+    // Check server-side session first
+    const checkServerAuth = async () => {
       try {
-        const stored = localStorage.getItem(key);
-        if (stored && stored !== 'undefined' && stored !== 'null') {
-          const parsed = JSON.parse(stored);
-          if (parsed && parsed.id && parsed.username) {
-            console.log(`🎯 FOUND USER DATA in ${key}:`, parsed.username, 'ID:', parsed.id);
-            foundUser = parsed;
-
-            // Standardize to 'user' key
-            if (key !== 'user') {
-              localStorage.setItem('user', JSON.stringify(parsed));
-              localStorage.removeItem(key);
-            }
-            break;
-          }
+        console.log('🔍 Checking server-side authentication...');
+        const response = await fetch('/api/auth/user', {
+          credentials: 'include' // Include cookies/session
+        });
+        
+        if (response.ok) {
+          const serverUser = await response.json();
+          console.log('✅ Server session found:', serverUser.username, 'ID:', serverUser.id);
+          setUser(serverUser);
+          // Also store in localStorage for consistency
+          authStorage.setUser(serverUser);
+          setIsLoading(false);
+          return;
+        } else {
+          console.log('❌ No server session found, checking localStorage...');
         }
       } catch (error) {
-        console.error(`Error parsing ${key}:`, error);
-        localStorage.removeItem(key);
+        console.log('❌ Server auth check failed:', error);
       }
-    }
 
-    if (foundUser) {
-      setUser(foundUser);
-      console.log('✅ USER SET SUCCESSFULLY:', foundUser.username, 'ID:', foundUser.id);
-    } else {
-      console.log('❌ NO USER DATA FOUND - STAYING LOGGED OUT');
-      setUser(null);
-    }
+      // Fallback to localStorage check
+      const possibleKeys = ['user', 'travelconnect_user', 'currentUser', 'authUser'];
+      let foundUser = null;
 
-    // Always set loading to false after 100ms to prevent infinite loading
-    // Immediate loading completion for chatroom routes to prevent white screen flash
-    if (location.includes('chatroom')) {
-      console.log('🚀 CHATROOM ROUTE: Skipping auth delay to prevent white screen');
-      setIsLoading(false);
-    } else {
-      setTimeout(() => {
+      for (const key of possibleKeys) {
+        try {
+          const stored = localStorage.getItem(key);
+          if (stored && stored !== 'undefined' && stored !== 'null') {
+            const parsed = JSON.parse(stored);
+            if (parsed && parsed.id && parsed.username) {
+              console.log(`🎯 FOUND USER DATA in ${key}:`, parsed.username, 'ID:', parsed.id);
+              foundUser = parsed;
+
+              // Standardize to 'user' key
+              if (key !== 'user') {
+                localStorage.setItem('user', JSON.stringify(parsed));
+                localStorage.removeItem(key);
+              }
+              break;
+            }
+          }
+        } catch (error) {
+          console.error(`Error parsing ${key}:`, error);
+          localStorage.removeItem(key);
+        }
+      }
+
+      if (foundUser) {
+        setUser(foundUser);
+        console.log('✅ USER SET SUCCESSFULLY:', foundUser.username, 'ID:', foundUser.id);
+      } else {
+        console.log('❌ NO USER DATA FOUND - STAYING LOGGED OUT');
+        setUser(null);
+      }
+
+      // Always set loading to false after auth check
+      if (location.includes('chatroom')) {
+        console.log('🚀 CHATROOM ROUTE: Skipping auth delay to prevent white screen');
         setIsLoading(false);
-      }, 100);
-    }
+      } else {
+        setTimeout(() => {
+          setIsLoading(false);
+        }, 100);
+      }
+    };
+
+    checkServerAuth();
   }, []);
 
   // Initialize WebSocket connection for authenticated users
