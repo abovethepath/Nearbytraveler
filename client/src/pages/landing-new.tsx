@@ -75,7 +75,7 @@ export default function Landing() {
       {/* Sticky CTA - Always Visible on All Devices */}
       <div className="fixed bottom-6 right-6 z-50">
         <Button
-          onClick={() => setLocation('/join')}
+          onClick={() => setLocation('/launching-soon')}
           size="lg"
           className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-black px-8 py-4 rounded-2xl shadow-2xl transition-all duration-200"
           style={{
@@ -146,7 +146,7 @@ export default function Landing() {
                     {/* Primary signup CTA */}
                     <div className="mt-12 mb-8 px-4">
                       <Button
-                        onClick={() => setLocation('/join')}
+                        onClick={() => setLocation('/launching-soon')}
                         size="lg"
                         className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-black text-lg sm:text-xl md:text-2xl px-6 sm:px-12 md:px-16 py-4 sm:py-5 md:py-6 rounded-2xl shadow-xl transition-all duration-200 w-full max-w-lg mx-auto"
                         style={{
@@ -210,7 +210,7 @@ export default function Landing() {
                 
                 <p className="text-gray-700 dark:text-gray-300 text-sm sm:text-base mb-8 flex-grow leading-relaxed" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Join locals for an authentic beach bonfire with BBQ, music, and sunset views. Experience the real LA beach culture with friendly people.</p>
                 <Button 
-                  onClick={() => setLocation('/join')}
+                  onClick={() => setLocation('/launching-soon')}
                   className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold mt-auto"
                   style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}
                 >
@@ -242,7 +242,7 @@ export default function Landing() {
                 
                 <p className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm mb-8 flex-grow leading-relaxed" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Join locals every Tuesday for authentic street tacos at unbeatable prices. Meet fellow taco lovers and discover the best Mexican spots in the city.</p>
                 <Button 
-                  onClick={() => setLocation('/join')}
+                  onClick={() => setLocation('/launching-soon')}
                   className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold mt-auto"
                   style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}
                 >
@@ -274,7 +274,7 @@ export default function Landing() {
                 
                 <p className="text-gray-700 dark:text-gray-300 text-sm mb-8 flex-grow" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Weekly hike to the iconic Hollywood Sign with locals and travelers. Amazing city views, great photos, and authentic LA hiking culture.</p>
                 <Button 
-                  onClick={() => setLocation('/join')}
+                  onClick={() => setLocation('/launching-soon')}
                   className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold mt-auto"
                   style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}
                 >
@@ -306,7 +306,7 @@ export default function Landing() {
                 
                 <p className="text-gray-700 dark:text-gray-300 text-sm mb-8 flex-grow" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Join locals and travelers for Thursday happy hour with live music at Jameson Pub. Great drinks, live bands, and authentic LA nightlife.</p>
                 <Button 
-                  onClick={() => setLocation('/join')}
+                  onClick={() => setLocation('/launching-soon')}
                   className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold mt-auto"
                   style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}
                 >
@@ -337,7 +337,7 @@ export default function Landing() {
                 
                 <p className="text-gray-700 dark:text-gray-300 text-sm mb-8 flex-grow" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Unwind with peaceful yoga as the sun sets over the Pacific. Perfect for connecting with wellness-focused travelers and locals. All levels welcome.</p>
                 <Button 
-                  onClick={() => setLocation('/join')}
+                  onClick={() => setLocation('/launching-soon')}
                   className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold mt-auto"
                   style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}
                 >
@@ -369,7 +369,7 @@ export default function Landing() {
                 
                 <p className="text-gray-700 dark:text-gray-300 text-sm mb-8 flex-grow" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Explore the cosmos with fellow stargazers at LA's iconic observatory. Perfect for curious minds who love science, space, and stunning city views.</p>
                 <Button 
-                  onClick={() => setLocation('/join')}
+                  onClick={() => setLocation('/launching-soon')}
                   className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold mt-auto"
                   style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}
                 >
@@ -551,7 +551,7 @@ export default function Landing() {
           {/* Call to Action */}
           <div className="text-center mt-16">
             <Button 
-              onClick={() => setLocation('/join')}
+              onClick={() => setLocation('/launching-soon')}
               size="lg"
               className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-black text-xl px-12 py-6 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300"
             >
@@ -638,7 +638,7 @@ export default function Landing() {
                     Meet locals and Nearby Travelers who share your interests and build lasting friendships. From weekend adventures to casual hangouts, grow your circle locally and globally.
                   </p>
                   <Button 
-                    onClick={() => setLocation('/join')}
+                    onClick={() => setLocation('/launching-soon')}
                     size="lg"
                     className="w-full bg-gradient-to-r from-blue-600 to-teal-600 hover:from-blue-700 hover:to-teal-700 text-white font-black text-lg px-8 py-4 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300"
                   >
@@ -670,7 +670,7 @@ export default function Landing() {
                     Connect with locals who'll show you their city's soul and fellow travelers who share your wanderlust.
                   </p>
                   <Button 
-                    onClick={() => setLocation('/join')}
+                    onClick={() => setLocation('/launching-soon')}
                     size="lg"
                     className="w-full bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white font-black text-lg px-8 py-4 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300"
                   >
@@ -755,7 +755,7 @@ export default function Landing() {
           </p>
           <div className="flex justify-center">
             <Button 
-              onClick={() => setLocation('/join')}
+              onClick={() => setLocation('/launching-soon')}
               size="lg"
               className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-lg px-8 py-4 rounded-lg shadow-lg hover:shadow-xl text-white"
             >

@@ -684,7 +684,7 @@ export default function LandingStreamlined() {
             {/* Call to Action */}
             <div className="text-center mt-16">
               <Button 
-                onClick={() => window.location.href = '/join'}
+                onClick={() => setLocation('/launching-soon')}
                 size="lg"
                 className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
               >
@@ -806,7 +806,7 @@ export default function LandingStreamlined() {
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4">No matter where you are, you belong here.</h2>
             <p className="text-lg sm:text-xl mb-6 sm:mb-8 px-4 leading-relaxed">Join travelers, locals, and businesses already building real connections worldwide.</p>
             <Button 
-              onClick={() => setLocation('/join')}
+              onClick={() => setLocation('/launching-soon')}
               className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
             >
               Join Now

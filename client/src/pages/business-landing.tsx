@@ -84,7 +84,7 @@ export default function BusinessLanding() {
         <Button 
           onClick={() => {
             trackEvent('signup_cta_click', 'business_landing', 'floating_join_now');
-            setLocation('/join');
+            setLocation('/launching-soon');
           }}
           className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold px-6 py-3 rounded-full shadow-lg transform hover:scale-105 transition-all duration-200"
         >
@@ -138,7 +138,7 @@ export default function BusinessLanding() {
                   <button 
                     onClick={() => {
                       trackEvent('signup_cta_click', 'business_landing', 'claim_beta');
-                      setLocation('/join');
+                      setLocation('/launching-soon');
                     }}
                     className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold px-8 py-3 rounded-lg shadow-lg transform hover:scale-105 transition-all duration-200 w-full sm:w-auto"
                     data-testid="button-claim-beta"
@@ -201,7 +201,7 @@ export default function BusinessLanding() {
               </p>
               
               <Button
-                onClick={() => setLocation('/join')}
+                onClick={() => setLocation('/launching-soon')}
                 size="lg"
                 className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-500 text-white dark:text-white font-medium px-8 py-3 rounded-lg transition-all duration-200"
               >
@@ -645,7 +645,7 @@ export default function BusinessLanding() {
             <Button
               onClick={() => {
                 trackEvent('signup_cta_click', 'business_landing', 'pricing_free_beta');
-                setLocation('/join');
+                setLocation('/launching-soon');
               }}
               size="lg"
               className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold text-xl px-12 py-4 rounded-lg shadow-lg transform hover:scale-105 transition-all duration-200"
@@ -695,7 +695,7 @@ export default function BusinessLanding() {
             <Button
               onClick={() => {
                 trackEvent('signup_cta_click', 'business_landing', 'final_cta_start_now');
-                setLocation('/join');
+                setLocation('/launching-soon');
               }}
               size="lg"
               className="bg-white hover:bg-gray-100 text-orange-600 font-bold text-xl px-12 py-4 rounded-lg shadow-lg transform hover:scale-105 transition-all duration-200"

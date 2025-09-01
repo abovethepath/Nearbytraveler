@@ -64,7 +64,7 @@ export default function TravelersLanding() {
         <Button 
           onClick={() => {
             trackEvent('signup_cta_click', 'travelers_landing', 'floating_join_now');
-            setLocation('/join');
+            setLocation('/launching-soon');
           }}
           className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
         >
@@ -139,7 +139,7 @@ export default function TravelersLanding() {
               </p>
               
               <Button
-                onClick={() => setLocation('/join')}
+                onClick={() => setLocation('/launching-soon')}
                 size="lg"
                 className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
               >
@@ -308,7 +308,7 @@ export default function TravelersLanding() {
             {/* Single CTA Button */}
             <div className="flex justify-center">
               <Button
-                onClick={() => setLocation('/join')}
+                onClick={() => setLocation('/launching-soon')}
                 size="lg"
                 className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
               >

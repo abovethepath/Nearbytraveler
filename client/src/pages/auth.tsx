@@ -382,7 +382,7 @@ export default function Auth() {
             <div className="text-center pt-4">
               {isLogin ? (
                 <button
-                  onClick={() => window.location.href = '/join'}
+                  onClick={() => window.location.href = '/launching-soon'}
                   className="text-blue-600 hover:text-blue-800 font-medium"
                 >
                   Need an account? Sign up
