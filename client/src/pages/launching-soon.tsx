@@ -64,7 +64,7 @@ export default function LaunchingSoon() {
           <Card className="border-2 border-green-200 shadow-xl">
             <CardHeader className="text-center pb-4">
               <div className="flex justify-center mb-4">
-                <Logo className="h-24 sm:h-32 md:h-40 w-auto" />
+                <Logo className="h-40 sm:h-48 md:h-56 w-auto" />
               </div>
               <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Mail className="w-8 h-8 text-green-600" />
@@ -98,7 +98,7 @@ export default function LaunchingSoon() {
         <Card className="border-2 border-orange-200 shadow-xl">
           <CardHeader className="text-center pb-4">
             <div className="flex justify-center mb-4">
-              <Logo className="h-24 sm:h-32 md:h-40 w-auto" />
+              <Logo className="h-40 sm:h-48 md:h-56 w-auto" />
             </div>
             <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <Rocket className="w-8 h-8 text-orange-600" />
