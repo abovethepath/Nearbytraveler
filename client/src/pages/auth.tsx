@@ -46,7 +46,7 @@ export default function Auth() {
       console.log('Missing email or password');
       toast({
         title: "Missing fields",
-        description: "Please enter both email and password.",
+        description: "Please enter email/username and password.",
         variant: "destructive",
       });
       return;
@@ -336,13 +336,13 @@ export default function Auth() {
                 {/* Login Form */}
                 <div className="space-y-4">
                   <div>
-                    <Label htmlFor="loginEmail" className="text-base md:text-lg font-medium text-gray-900 dark:text-white text-crisp">Email</Label>
+                    <Label htmlFor="loginEmail" className="text-base md:text-lg font-medium text-gray-900 dark:text-white text-crisp">Email or Username</Label>
                     <Input
                       id="loginEmail"
-                      type="email"
+                      type="text"
                       value={formData.email}
                       onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                      placeholder="Enter your email"
+                      placeholder="Enter your email or username"
                       className="text-base py-3 text-crisp font-medium"
                     />
                   </div>
