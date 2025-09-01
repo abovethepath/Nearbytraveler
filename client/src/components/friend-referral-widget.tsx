@@ -23,8 +23,8 @@ export default function FriendReferralWidget() {
   const username = currentUser.username || '';
   const userFirstName = currentUser.name?.split(' ')[0] || username;
 
-  // Use professional custom domain for public launch
-  const signupUrl = 'https://thenearbytraveler.com';
+  // Use working custom domain for public launch
+  const signupUrl = 'https://nearbytraveler.org';
   
   const generatePersonalMessage = () => {
     return `Hey ${emailForm.friendName || 'there'}!
