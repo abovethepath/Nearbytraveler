@@ -137,7 +137,7 @@ const emailStyles = `
 `;
 
 export const welcomeEmail = (data: WelcomeEmailData): EmailTemplate => ({
-  subject: `Account confirmed: Welcome to Nearby Traveler, ${data.name}`,
+  subject: `Welcome to Nearby Traveler, ${data.name}`,
   html: `
     <!DOCTYPE html>
     <html>
@@ -145,94 +145,86 @@ export const welcomeEmail = (data: WelcomeEmailData): EmailTemplate => ({
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Welcome to Nearby Traveler</title>
-      ${emailStyles}
+      <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 20px; }
+        .container { max-width: 500px; margin: 0 auto; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .content { background: #ffffff; padding: 30px; border-radius: 8px; }
+        .button { display: inline-block; background: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 20px 0; }
+      </style>
     </head>
-    <body style="margin: 0; padding: 20px; background-color: #f3f4f6;">
-      <div class="email-container">
-        <div class="header">
-          <div class="logo">Nearby Traveler</div>
-          <div class="tagline">Your Next Great Connection Awaits</div>
-        </div>
-        
+    <body>
+      <div class="container">
         <div class="content">
-          <div class="greeting">Hi ${data.name},</div>
-          
-          <p>Your Nearby Traveler account has been successfully created. Welcome to our community!</p>
-          
-          <p>Your account details:</p>
-          <div class="highlight">
-            <strong>Username:</strong> @${data.username}<br>
-            <strong>Account Type:</strong> ${data.userType === 'business' ? 'Business' : data.userType === 'local' ? 'Local' : 'Traveler'}<br>
-            <strong>Status:</strong> Active
+          <div class="header">
+            <h1 style="color: #3b82f6; margin: 0;">Nearby Traveler</h1>
           </div>
           
-          <p>Next steps to get started:</p>
+          <p>Hello ${data.name},</p>
           
+          <p>Your account has been created successfully. You're now part of the Nearby Traveler community.</p>
+          
+          <p><strong>Your account:</strong><br>
+          Username: @${data.username}<br>
+          Type: ${data.userType === 'business' ? 'Business' : data.userType === 'local' ? 'Local' : 'Traveler'}</p>
+          
+          <p><strong>What's available:</strong></p>
           ${data.userType === 'business' ? `
-            <ul>
-              <li>Complete your business profile with photos and contact information</li>
-              <li>Set your service areas and specialties</li>
-              <li>Create your first offer or deal to attract customers</li>
-              <li>Enable notifications to connect with travelers in your area</li>
-            </ul>
+            <p>• Business profile management<br>
+            • Create deals and offers<br>
+            • Connect with travelers and locals<br>
+            • Access to business analytics</p>
           ` : `
-            <ul>
-              <li>Complete your profile with interests and activities</li>
-              <li>Add photos to help others recognize you</li>
-              <li>Explore the discover page to find people near you</li>
-              <li>Join local events or create your own</li>
-            </ul>
+            <p>• Discover people with shared interests<br>
+            • Find and create local events<br>
+            • Connect with travelers and locals<br>
+            • Join location-based chat rooms</p>
           `}
           
-          <div style="text-align: center; margin: 30px 0;">
-            <a href="https://nearbytraveler.org/profile" class="button">Complete Your Profile</a>
+          <p><strong>Next step:</strong></p>
+          <p>Complete your profile to start connecting with others in your area.</p>
+          
+          <div style="text-align: center;">
+            <a href="https://nearbytraveler.org/profile" class="button">Complete Profile</a>
           </div>
           
-          <p>Need help getting started? Reply to this email for assistance.</p>
+          <p>Questions? Reply to this email.</p>
           
-          <p>Best regards,<br>
-          The Nearby Traveler Team</p>
-        </div>
-        
-        <div class="footer">
-          <p>© 2025 Nearby Traveler. All rights reserved.</p>
-          <p>
-            <a href="https://nearbytraveler.org/privacy" style="color: #6b7280;">Privacy Policy</a> | 
-            <a href="https://nearbytraveler.org/terms" style="color: #6b7280;">Terms of Service</a> | 
-            <a href="https://nearbytraveler.org/settings" style="color: #6b7280;">Email Preferences</a>
-          </p>
+          <p>Best,<br>
+          Nearby Traveler Team</p>
         </div>
       </div>
     </body>
     </html>
   `,
-  text: `Account Confirmed: Welcome to Nearby Traveler
+  text: `Welcome to Nearby Traveler
 
-Hi ${data.name},
+Hello ${data.name},
 
-Your Nearby Traveler account has been successfully created. Welcome to our community!
+Your account has been created successfully. You're now part of the Nearby Traveler community.
 
-Account Details:
+Your account:
 Username: @${data.username}
-Account Type: ${data.userType === 'business' ? 'Business' : data.userType === 'local' ? 'Local' : 'Traveler'}
-Status: Active
+Type: ${data.userType === 'business' ? 'Business' : data.userType === 'local' ? 'Local' : 'Traveler'}
 
-${data.userType === 'business' ? `Next steps to get started:
-• Complete your business profile with photos and contact information
-• Set your service areas and specialties
-• Create your first offer or deal to attract customers
-• Enable notifications to connect with travelers in your area` : `Next steps to get started:
-• Complete your profile with interests and activities
-• Add photos to help others recognize you
-• Explore the discover page to find people near you
-• Join local events or create your own`}
+What's available:
+${data.userType === 'business' ? `• Business profile management
+• Create deals and offers
+• Connect with travelers and locals
+• Access to business analytics` : `• Discover people with shared interests
+• Find and create local events
+• Connect with travelers and locals
+• Join location-based chat rooms`}
 
-Complete your profile: https://nearbytraveler.org/profile
+Next step:
+Complete your profile to start connecting with others in your area.
 
-Need help getting started? Reply to this email for assistance.
+Complete profile: https://nearbytraveler.org/profile
 
-Best regards,
-The Nearby Traveler Team`
+Questions? Reply to this email.
+
+Best,
+Nearby Traveler Team`
 });
 
 export const passwordResetEmail = (data: PasswordResetData): EmailTemplate => ({
