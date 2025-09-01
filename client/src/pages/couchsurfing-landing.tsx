@@ -423,12 +423,6 @@ export default function CouchsurfingLanding() {
                 </div>
               </div>
               
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-indigo-500">
-                <div className="flex items-start">
-                  <X className="w-6 h-6 text-indigo-500 mt-1 mr-3 flex-shrink-0" />
-                  <p className="text-orange-700 dark:text-orange-300">Overwhelming when you just want a quiet weekend</p>
-                </div>
-              </div>
             </div>
           </div>
         </section>
