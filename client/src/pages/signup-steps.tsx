@@ -55,10 +55,26 @@ interface SignupData {
   isCurrentlyTraveling: boolean;
 }
 
-const validateAge = (dateString: string): boolean => {
-  if (!dateString) return false;
+const validateAge = (dateString: string): { isValid: boolean; message?: string } => {
+  if (!dateString) return { isValid: false, message: "Date of birth is required" };
+  
+  const today = new Date();
+  const birthDate = new Date(dateString);
+  
+  if (isNaN(birthDate.getTime())) {
+    return { isValid: false, message: "Please enter a valid date of birth" };
+  }
+  
+  if (birthDate > today) {
+    return { isValid: false, message: "Date of birth cannot be in the future" };
+  }
+  
   const age = calculateAge(dateString);
-  return age >= 18;
+  if (age < 18) {
+    return { isValid: false, message: "You must be at least 18 years old to join" };
+  }
+  
+  return { isValid: true };
 };
 
 const calculateAge = (dateString: string): number => {
@@ -692,7 +708,7 @@ export default function SignupSteps() {
                           {interest}
                         </Label>
                       </div>
-                    ))
+                    ))}
                   </div>
                 </div>
 
@@ -778,8 +794,6 @@ export default function SignupSteps() {
                         <Label htmlFor={`event-${event}`} className="text-xs">{event}</Label>
                       </div>
                     ))}
-                  </div>
-                  <div>
                   </div>
                 </div>
               </>
