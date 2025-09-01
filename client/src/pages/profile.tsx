@@ -4275,8 +4275,22 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </div>
                 ) : null}
 
+                {/* Top Choices Section - Now at the top where it belongs */}
+                <div className="mb-6">
+                  <h4 className="font-medium text-gray-800 dark:text-white flex items-center gap-2 mb-3">
+                    <Star className="w-4 h-4 text-yellow-500" />
+                    Top Choices for Most Travelers
+                  </h4>
+                  <div className="flex flex-wrap gap-2 sm:gap-3 p-3 sm:p-4 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 rounded-lg border border-blue-200 dark:border-blue-700">
+                    {MOST_POPULAR_INTERESTS.slice(0, 12).map((item) => (
+                      <div key={item} className="inline-flex items-center justify-center h-7 sm:h-8 rounded-full px-3 sm:px-4 text-xs sm:text-sm font-medium whitespace-nowrap leading-none bg-gradient-to-r from-blue-500 to-purple-500 text-white border-0 shadow-sm">
+                        {item}
+                      </div>
+                    ))}
+                  </div>
+                </div>
 
-                {/* Edit All Preferences Button */}
+                {/* Edit All Preferences Button - Now comes after Top Choices */}
                 {isOwnProfile && (
                   <div className="mb-4">
                     <Button
@@ -4293,21 +4307,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     </Button>
                   </div>
                 )}
-
-                {/* Top Choices Section */}
-                <div className="mb-6">
-                  <h4 className="font-medium text-gray-800 dark:text-white flex items-center gap-2 mb-3">
-                    <Star className="w-4 h-4 text-yellow-500" />
-                    Top Choices for Most Travelers
-                  </h4>
-                  <div className="flex flex-wrap gap-2 sm:gap-3 p-3 sm:p-4 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 rounded-lg border border-blue-200 dark:border-blue-700">
-                    {MOST_POPULAR_INTERESTS.slice(0, 12).map((item) => (
-                      <div key={item} className="inline-flex items-center justify-center h-7 sm:h-8 rounded-full px-3 sm:px-4 text-xs sm:text-sm font-medium whitespace-nowrap leading-none bg-gradient-to-r from-blue-500 to-purple-500 text-white border-0 shadow-sm">
-                        {item}
-                      </div>
-                    ))}
-                  </div>
-                </div>
 
                 {/* Interests */}
                 <div className="mb-6">
