@@ -823,6 +823,50 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
     }
   });
 
+  // Real login endpoint with credentials
+  app.post("/api/auth/login", async (req, res) => {
+    try {
+      const { email, password } = req.body || {};
+      if (!email || !password) {
+        return res.status(400).json({ message: "Email and password are required" });
+      }
+
+      console.log("🔐 Login attempt for:", email);
+      const user = await storage.getUserByEmail(email);
+      if (!user) {
+        return res.status(401).json({ message: "Invalid credentials" });
+      }
+
+      // Simple password check (in production, use bcrypt)
+      const isValidPassword = password === user.password;
+      if (!isValidPassword) {
+        return res.status(401).json({ message: "Invalid credentials" });
+      }
+
+      // Create session
+      (req as any).session = (req as any).session || {};
+      (req as any).session.user = {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        profileImageUrl: user.profileImage
+      };
+
+      // Save session
+      (req as any).session.save((err: any) => {
+        if (err) {
+          console.error("Session save error:", err);
+          return res.status(500).json({ message: "Session error" });
+        }
+        console.log("✅ Login successful for:", email);
+        return res.status(200).json({ ok: true, user: { id: user.id, username: user.username } });
+      });
+    } catch (error) {
+      console.error("Login error:", error);
+      return res.status(500).json({ message: "Server error" });
+    }
+  });
+
   // Logout route - supports both GET and POST
   app.get("/api/logout", (req, res) => {
     console.log("🔐 Logout GET");
