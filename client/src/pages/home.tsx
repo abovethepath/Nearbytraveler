@@ -447,7 +447,7 @@ export default function Home() {
   const getSortedUsers = (users: any[]) => {
     if (!users) return [];
 
-    // Enrich users with travel destination data, especially the current user
+    // Enrich users with travel destination data for all users
     const enrichedUsers = [...users].map(user => {
       const currentUserId = effectiveUser?.id || currentUserProfile?.id;
       
@@ -461,7 +461,13 @@ export default function Home() {
         };
       }
       
-      return user;
+      // For other users, they should already have travelDestination from the database
+      // Make sure they have isCurrentlyTraveling set properly
+      return {
+        ...user,
+        isCurrentlyTraveling: user.isCurrentlyTraveling || !!user.travelDestination,
+        travelDestination: user.travelDestination
+      };
     });
 
     return enrichedUsers.sort((a, b) => {
