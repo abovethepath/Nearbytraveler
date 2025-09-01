@@ -639,7 +639,7 @@ export default function CouchsurfingLanding() {
                 Is it free?
               </h3>
               <p className="text-zinc-600 dark:text-zinc-300">
-                Early beta will be free while we learn.
+                Yes, it's free while we learn.
               </p>
             </div>
             
@@ -668,7 +668,7 @@ export default function CouchsurfingLanding() {
             </Button>
             
             <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-4">
-              Free during beta • Same spirit • More ways to connect
+              Same spirit • More ways to connect
             </p>
             
             <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-6 max-w-2xl mx-auto">
