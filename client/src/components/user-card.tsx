@@ -198,12 +198,15 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
               @{user.username}
             </h3>
             
-            <div className="text-xs text-gray-600 dark:text-gray-300 flex items-center gap-1 truncate">
-              {user.isCurrentlyTraveling && user.travelDestination ? (
-                <>🧳 <span className="truncate">Traveling to {user.travelDestination.split(',')[0]}</span></>
-              ) : (
-                <>🏠 <span className="truncate">Local {user.hometownCity ? user.hometownCity.split(',')[0] : getLocation()}</span></>
+            <div className="text-xs text-gray-600 dark:text-gray-300 space-y-1">
+              {user.isCurrentlyTraveling && user.travelDestination && (
+                <div className="flex items-center gap-1 truncate">
+                  🧳 <span className="truncate">Traveling to {user.travelDestination.split(',')[0]}</span>
+                </div>
               )}
+              <div className="flex items-center gap-1 truncate">
+                🏠 <span className="truncate">Local {user.hometownCity ? user.hometownCity.split(',')[0] : getLocation()}</span>
+              </div>
             </div>
             
             {/* Compact Bio - Hidden on mobile for space */}
