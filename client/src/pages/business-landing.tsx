@@ -98,7 +98,7 @@ export default function BusinessLanding() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         
         {/* HERO SECTION */}
-        <div className="pt-4 pb-6 sm:pt-6 sm:pb-8 bg-white dark:bg-gray-900">
+        <div className="pt-2 pb-4 sm:pt-4 sm:pb-6 bg-white dark:bg-gray-900">
           {isAirbnbStyle ? (
             // Clean, professional hero section
             <div className="mx-auto max-w-7xl px-2 sm:px-4 md:px-6 py-2 sm:py-4 md:py-6 grid gap-3 sm:gap-4 md:gap-6 md:grid-cols-5 items-center">
@@ -118,7 +118,7 @@ export default function BusinessLanding() {
                 </div>
                 
                 {/* Value Proposition Quick Points */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
                   <div className="text-center">
                     <div className="text-sm font-bold text-orange-600">📍 Geo-Targeting</div>
                     <div className="text-xs text-gray-600 dark:text-gray-400">Push deals when travelers are nearby</div>
@@ -134,7 +134,7 @@ export default function BusinessLanding() {
                 </div>
                 
                 {/* Desktop CTAs */}
-                <div className="hidden sm:flex mt-6 flex-col sm:flex-row gap-4">
+                <div className="hidden sm:flex mt-4 flex-col sm:flex-row gap-4">
                   <button 
                     onClick={() => {
                       trackEvent('signup_cta_click', 'business_landing', 'claim_beta');
@@ -215,7 +215,7 @@ export default function BusinessLanding() {
       {/* THE BUSINESS PROBLEM */}
       <section id="problem-section" className="bg-gradient-to-br from-red-50 to-orange-50 dark:from-gray-800 dark:to-gray-900 py-6 sm:py-12">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-6 sm:mb-8">
+          <div className="text-center mb-4 sm:mb-6">
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-6">
               Stop Wasting Money on Ads That Don't Work
             </h2>
@@ -252,7 +252,7 @@ export default function BusinessLanding() {
       {/* THE SOLUTION: DIRECT CUSTOMER INTENT */}
       <section className="bg-white dark:bg-gray-900 py-6 sm:py-12">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-6 sm:mb-8">
+          <div className="text-center mb-4 sm:mb-6">
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
               The Solution: Direct Customer Intent
             </h2>
@@ -295,7 +295,7 @@ export default function BusinessLanding() {
       {/* YOUR BUSINESS ADVANTAGE */}
       <section className="bg-white dark:bg-gray-900 py-6 sm:py-12">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-6 sm:mb-8">
+          <div className="text-center mb-4 sm:mb-6">
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
               Your Business Advantage
             </h2>
@@ -389,7 +389,7 @@ export default function BusinessLanding() {
       {/* BUSINESS ROI SECTION */}
       <section className="py-6 sm:py-12 bg-white dark:bg-gray-900">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-6 sm:mb-8">
+          <div className="text-center mb-4 sm:mb-6">
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
               The Math That Matters to Your Business
             </h2>
@@ -431,7 +431,7 @@ export default function BusinessLanding() {
       {/* DEALS & EVENTS SHOWCASE */}
       <section className="py-6 sm:py-12 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-6 sm:mb-8">
+          <div className="text-center mb-4 sm:mb-6">
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
               Create Deals & Events That Drive Traffic
             </h2>
@@ -567,7 +567,7 @@ export default function BusinessLanding() {
       {/* BUSINESS TYPES SECTION */}
       <section className="py-6 sm:py-12 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-6 sm:mb-8">
+          <div className="text-center mb-4 sm:mb-6">
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
               Perfect for Revenue-Focused Businesses
             </h2>

@@ -61,7 +61,7 @@ export default function LaunchingSoon() {
 
   if (isSubmitted) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-orange-50 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-orange-50 flex items-center justify-center p-2">
         <div className="max-w-md w-full">
           <Card className="border-2 border-green-200 shadow-xl">
             <CardHeader className="text-center pb-4">
@@ -77,11 +77,11 @@ export default function LaunchingSoon() {
                   Back
                 </Button>
                 <div className="flex-1 flex justify-center">
-                  <Logo className="h-40 sm:h-48 md:h-56 w-auto" />
+                  <Logo className="h-32 sm:h-40 md:h-48 w-auto" />
                 </div>
                 <div className="w-20"></div>
               </div>
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
                 <Mail className="w-8 h-8 text-green-600" />
               </div>
               <CardTitle className="text-2xl font-bold text-green-700">
@@ -92,7 +92,7 @@ export default function LaunchingSoon() {
               </CardDescription>
             </CardHeader>
             <CardContent className="text-center">
-              <p className="text-gray-600 mb-6">
+              <p className="text-gray-600 mb-4">
                 You're now on our exclusive launch list. We'll send you an email as soon as Nearby Traveler is ready for you to explore.
               </p>
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
@@ -108,7 +108,7 @@ export default function LaunchingSoon() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-orange-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-orange-50 flex items-center justify-center p-2">
       <div className="max-w-md w-full">
         <Card className="border-2 border-orange-200 shadow-xl">
           <CardHeader className="text-center pb-4">
@@ -124,11 +124,11 @@ export default function LaunchingSoon() {
                 Back
               </Button>
               <div className="flex-1 flex justify-center">
-                <Logo className="h-40 sm:h-48 md:h-56 w-auto" />
+                <Logo className="h-32 sm:h-40 md:h-48 w-auto" />
               </div>
               <div className="w-20"></div>
             </div>
-            <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-3">
               <Rocket className="w-8 h-8 text-orange-600" />
             </div>
             <CardTitle className="text-3xl font-bold text-gray-900">
