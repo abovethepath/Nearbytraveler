@@ -22,6 +22,25 @@ export function setupSimpleAuth(app: Express) {
     res.redirect(redirectUrl);
   });
 
+  // Development bypass login - immediate login without OAuth
+  app.get("/api/dev-login", (req, res) => {
+    console.log("🔧 Development bypass login");
+    
+    // Create user session directly for development
+    const userInfo = {
+      id: "2", // Use existing nearbytraveler user ID from database
+      username: "nearbytraveler", 
+      email: "nearbytraveler@thenearbytraveler.com",
+      profileImageUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=nearbytraveler"
+    };
+
+    // Store user session
+    (req as any).session.user = userInfo;
+
+    console.log("✅ Development bypass session created for:", userInfo.username);
+    res.redirect("/");
+  });
+
   // Development OAuth callback - simulates successful login  
   app.get("/api/callback", (req, res) => {
     console.log("🔐 OAuth callback hit with code:", req.query.code);
