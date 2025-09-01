@@ -527,7 +527,7 @@ export function PhotoAlbumWidget({ userId, isOwnProfile = false }: TravelMemoryW
 
       {/* Create Travel Memory Modal */}
       <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700">
+        <DialogContent className="w-[95vw] max-w-2xl h-[95vh] max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 p-4 sm:p-6">
           <DialogHeader>
             <DialogTitle>Create Travel Memory</DialogTitle>
             <DialogDescription>
@@ -560,7 +560,7 @@ export function PhotoAlbumWidget({ userId, isOwnProfile = false }: TravelMemoryW
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
                 Trip Start Date (Optional - defaults to photo date)
@@ -569,7 +569,7 @@ export function PhotoAlbumWidget({ userId, isOwnProfile = false }: TravelMemoryW
                 type="date"
                 value={newMemory.startDate}
                 onChange={(e) => setNewMemory(prev => ({ ...prev, startDate: e.target.value }))}
-                className="border-gray-300 dark:border-gray-600"
+                className="border-gray-300 dark:border-gray-600 w-full"
                 min="1900-01-01"
                 max="2099-12-31"
               />
@@ -582,7 +582,7 @@ export function PhotoAlbumWidget({ userId, isOwnProfile = false }: TravelMemoryW
                 type="date"
                 value={newMemory.endDate}
                 onChange={(e) => setNewMemory(prev => ({ ...prev, endDate: e.target.value }))}
-                className="border-gray-300 dark:border-gray-600"
+                className="border-gray-300 dark:border-gray-600 w-full"
                 min="1900-01-01"
                 max="2099-12-31"
               />
@@ -608,48 +608,50 @@ export function PhotoAlbumWidget({ userId, isOwnProfile = false }: TravelMemoryW
             </label>
             <div className="space-y-3">
               {/* Upload Button */}
-              <div className="flex items-center gap-3">
-                <input
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  onChange={handlePhotoUpload}
-                  className="hidden"
-                  id="album-photo-upload"
-                />
-                <label
-                  htmlFor="album-photo-upload"
-                  className="flex items-center gap-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg cursor-pointer transition-colors"
-                >
-                  <Camera className="w-4 h-4" />
-                  Upload New
-                </label>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setShowGalleryPickerModal(true)}
-                  className="flex items-center gap-2"
-                >
-                  <Grid className="w-4 h-4" />
-                  From Gallery
-                </Button>
+              <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                <div className="flex items-center gap-3">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handlePhotoUpload}
+                    className="hidden"
+                    id="album-photo-upload"
+                  />
+                  <label
+                    htmlFor="album-photo-upload"
+                    className="flex items-center gap-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg cursor-pointer transition-colors text-sm"
+                  >
+                    <Camera className="w-4 h-4" />
+                    Upload New
+                  </label>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setShowGalleryPickerModal(true)}
+                    className="flex items-center gap-2 text-sm"
+                  >
+                    <Grid className="w-4 h-4" />
+                    From Gallery
+                  </Button>
+                </div>
                 <p className="text-xs text-gray-500">Max 20 photos, up to 10MB each</p>
               </div>
 
               {/* Photo Previews */}
               {photoPreview.length > 0 && (
-                <div className="grid grid-cols-3 md:grid-cols-4 gap-3">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                   {photoPreview.map((url, index) => (
                     <div key={index} className="relative group">
                       <img
                         src={url}
                         alt={`Preview ${index + 1}`}
-                        className="w-full h-20 object-cover rounded-lg border border-gray-300"
+                        className="w-full h-20 sm:h-24 object-cover rounded-lg border border-gray-300"
                       />
                       <button
                         type="button"
                         onClick={() => removePhoto(index)}
-                        className="absolute -top-2 -right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs"
+                        className="absolute -top-2 -right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs touch-target"
                       >
                         ×
                       </button>
@@ -709,18 +711,18 @@ export function PhotoAlbumWidget({ userId, isOwnProfile = false }: TravelMemoryW
             </label>
           </div>
 
-          <div className="flex gap-4 pt-4">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-4">
             <Button 
               variant="outline" 
               onClick={() => setShowCreateModal(false)}
-              className="flex-1"
+              className="flex-1 w-full sm:w-auto"
             >
               Cancel
             </Button>
             <Button 
               onClick={handleCreateMemory}
               disabled={createMemoryMutation.isPending || isUploading || !newMemory.title || (newMemory.photos.length === 0 && selectedPhotosFromGallery.length === 0)}
-              className="flex-1 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white"
+              className="flex-1 w-full sm:w-auto bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white"
             >
               {isUploading ? 'Uploading Photos...' : createMemoryMutation.isPending ? 'Creating...' : 'Create Memory'}
             </Button>
@@ -758,11 +760,10 @@ export function PhotoAlbumWidget({ userId, isOwnProfile = false }: TravelMemoryW
           }}
         >
           <div 
-            className="bg-white dark:bg-gray-800 rounded-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto"
+            className="bg-white dark:bg-gray-800 rounded-lg w-[95vw] max-w-4xl h-[95vh] max-h-[90vh] overflow-y-auto p-4 sm:p-6"
             style={{
               backgroundColor: 'white',
               borderRadius: '8px',
-              padding: '24px',
               maxWidth: '800px',
               maxHeight: '90vh',
               overflow: 'auto'

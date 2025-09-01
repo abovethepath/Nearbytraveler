@@ -73,6 +73,19 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Touch-friendly mobile interactions */
+.touch-target {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+@media (max-width: 640px) {
+  .touch-target {
+    min-width: 48px;
+    min-height: 48px;
+  }
+}
+
 /* Set Inter as the default font for the entire application */
 body, html {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
