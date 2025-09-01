@@ -165,102 +165,76 @@ export default function CouchsurfingLanding() {
           </div>
         </section>
 
-        {/* BEYOND JUST NEEDING A COUCH SECTION */}
+        {/* BEYOND THE COUCH SECTION */}
         <section className="py-8 sm:py-16 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl mb-8">
           <div className="px-6 sm:px-8">
-            <div className="text-center mb-6">
+            <div className="text-center mb-8">
               <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900 dark:text-white mb-4">
-                Beyond Just Needing a Couch
+                Beyond the Couch
               </h2>
               <p className="text-lg sm:text-xl text-zinc-600 dark:text-zinc-400 max-w-4xl mx-auto leading-relaxed">
-                Open to ALL TRAVELERS — whether you need accommodation, have your own place, or are staying elsewhere. Connect based on shared commonalities, activities, demographics, planned events, and genuine compatibility.
+                Open to all travelers — whether you're hosting, have your own place, or staying elsewhere. Nearby Traveler helps you meet people through shared interests, activities, events, and genuine compatibility.
               </p>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-blue-500">
-                <div className="flex items-start">
-                  <Users className="w-6 h-6 text-blue-600 mt-1 mr-3 flex-shrink-0" />
-                  <p className="text-zinc-700 dark:text-zinc-300">Match with people who share your hobbies</p>
-                </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+              
+              {/* Match by what you love */}
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md">
+                <h3 className="text-xl font-bold text-zinc-900 dark:text-white mb-3">Match by what you love</h3>
+                <p className="text-zinc-700 dark:text-zinc-300 mb-3">Hobbies, interests, travel style, and demographics</p>
+                <p className="text-zinc-700 dark:text-zinc-300">See who's also going to Taylor Swift, Comic-Con, SXSW, and more</p>
               </div>
               
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-green-500">
-                <div className="flex items-start">
-                  <Coffee className="w-6 h-6 text-green-600 mt-1 mr-3 flex-shrink-0" />
-                  <p className="text-zinc-700 dark:text-zinc-300">Connect at cafés, events, hiking, bars, and local spots</p>
-                </div>
+              {/* Meet your way */}
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md">
+                <h3 className="text-xl font-bold text-zinc-900 dark:text-white mb-3">Meet your way</h3>
+                <p className="text-zinc-700 dark:text-zinc-300 mb-3">Coffee, hikes, shows, markets, bars, local spots, the beach</p>
+                <p className="text-zinc-700 dark:text-zinc-300">Share hidden gems and build real experiences together</p>
               </div>
               
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-orange-500">
-                <div className="flex items-start">
-                  <Globe className="w-6 h-6 text-orange-600 mt-1 mr-3 flex-shrink-0" />
-                  <p className="text-zinc-700 dark:text-zinc-300">Share local secrets and create meaningful experiences</p>
-                </div>
+              {/* Connect when you want */}
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md">
+                <h3 className="text-xl font-bold text-zinc-900 dark:text-white mb-3">Connect when you want, how you want, where you want</h3>
               </div>
               
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-purple-500">
-                <div className="flex items-start">
-                  <Heart className="w-6 h-6 text-purple-600 mt-1 mr-3 flex-shrink-0" />
-                  <p className="text-zinc-700 dark:text-zinc-300">Connect when you want, how you want, where you want</p>
-                </div>
+              {/* Keep the spark when you're busy */}
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md">
+                <h3 className="text-xl font-bold text-zinc-900 dark:text-white mb-3">Keep the spark when you're busy</h3>
+                <p className="text-zinc-700 dark:text-zinc-300">Hosting but tied up? We'll connect your guests with other travelers and locals nearby</p>
               </div>
               
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-indigo-500">
-                <div className="flex items-start">
-                  <RefreshCw className="w-6 h-6 text-indigo-600 mt-1 mr-3 flex-shrink-0" />
-                  <p className="text-zinc-700 dark:text-zinc-300">When you're hosting but too busy to hang with your guests, Nearby Traveler connects them to other travelers around town</p>
-                </div>
+              {/* Make informed connections */}
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md">
+                <h3 className="text-xl font-bold text-zinc-900 dark:text-white mb-3">Make informed connections</h3>
+                <p className="text-zinc-700 dark:text-zinc-300">Check references and vouches, review profiles, and decide what feels right for you. Public meetups encouraged.</p>
               </div>
               
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-rose-500">
-                <div className="flex items-start">
-                  <ShieldCheck className="w-6 h-6 text-rose-600 mt-1 mr-3 flex-shrink-0" />
-                  <p className="text-zinc-700 dark:text-zinc-300">References and a vouching system</p>
-                </div>
+              {/* Broaden who you meet */}
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md">
+                <h3 className="text-xl font-bold text-zinc-900 dark:text-white mb-3">Broaden who you meet</h3>
+                <p className="text-zinc-700 dark:text-zinc-300">Business travelers, families, students, digital nomads—people of all ages</p>
               </div>
               
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-yellow-500">
-                <div className="flex items-start">
-                  <Building2 className="w-6 h-6 text-yellow-600 mt-1 mr-3 flex-shrink-0" />
-                  <p className="text-zinc-700 dark:text-zinc-300">Connect with business travelers, families, and people of all ages — not just surfers</p>
-                </div>
+              {/* Plan ahead, never land cold */}
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md">
+                <h3 className="text-xl font-bold text-zinc-900 dark:text-white mb-3">Plan ahead, never land cold</h3>
+                <p className="text-zinc-700 dark:text-zinc-300 mb-3">Set up meetups before you arrive</p>
+                <p className="text-zinc-700 dark:text-zinc-300">Meet multiple travelers and locals in every city</p>
               </div>
               
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-teal-500">
-                <div className="flex items-start">
-                  <Handshake className="w-6 h-6 text-teal-600 mt-1 mr-3 flex-shrink-0" />
-                  <p className="text-zinc-700 dark:text-zinc-300">Meet multiple travelers and locals in each city you visit expanding from our community</p>
-                </div>
+              {/* Local perks */}
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md">
+                <h3 className="text-xl font-bold text-zinc-900 dark:text-white mb-3">Local perks</h3>
+                <p className="text-zinc-700 dark:text-zinc-300">Discover businesses offering traveler-friendly discounts</p>
               </div>
               
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-cyan-500">
-                <div className="flex items-start">
-                  <Calendar className="w-6 h-6 text-cyan-600 mt-1 mr-3 flex-shrink-0" />
-                  <p className="text-zinc-700 dark:text-zinc-300">Plan meetups in advance so you never arrive in a city without connections</p>
-                </div>
+              {/* Stay connected */}
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md">
+                <h3 className="text-xl font-bold text-zinc-900 dark:text-white mb-3">Stay connected</h3>
+                <p className="text-zinc-700 dark:text-zinc-300">Reconnect years later with Discover People Nearby</p>
               </div>
               
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-emerald-500">
-                <div className="flex items-start">
-                  <Star className="w-6 h-6 text-emerald-600 mt-1 mr-3 flex-shrink-0" />
-                  <p className="text-zinc-700 dark:text-zinc-300">Search for and match with others going to the same events that you are. ie Taylor Swift, Comic Con, SXSW etc...</p>
-                </div>
-              </div>
-              
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-pink-500">
-                <div className="flex items-start">
-                  <Gift className="w-6 h-6 text-pink-600 mt-1 mr-3 flex-shrink-0" />
-                  <p className="text-zinc-700 dark:text-zinc-300">Find local businesses offering traveler specific discounts</p>
-                </div>
-              </div>
-              
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-violet-500">
-                <div className="flex items-start">
-                  <Compass className="w-6 h-6 text-violet-600 mt-1 mr-3 flex-shrink-0" />
-                  <p className="text-zinc-700 dark:text-zinc-300">Reconnect with travelers you meet years later, with our "Discover People Nearby" features</p>
-                </div>
-              </div>
             </div>
           </div>
         </section>
