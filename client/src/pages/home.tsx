@@ -2543,7 +2543,7 @@ export default function Home() {
                               {isCurrentlyTraveling && (
                                 <div className="text-blue-600 dark:text-blue-400 truncate flex items-center">
                                   🧳 <span className="truncate ml-1">
-                                    Traveling to {formatTravelDestination(enrichedUser.travelDestination)}
+                                    Traveling to {enrichedUser.travelDestination || "Unknown destination"}
                                   </span>
                                 </div>
                               )}
@@ -2668,7 +2668,7 @@ export default function Home() {
                                   {isCurrentlyTraveling && (
                                     <div className="text-blue-600 dark:text-blue-400 truncate flex items-center">
                                       🧳 <span className="truncate ml-1">
-                                        Traveling to {formatTravelDestination(enrichedUser.travelDestination)}
+                                        Traveling to {enrichedUser.travelDestination || "Unknown destination"}
                                       </span>
                                     </div>
                                   )}
