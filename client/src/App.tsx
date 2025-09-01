@@ -503,8 +503,11 @@ function Router() {
 
     // Don't intercept API routes - let backend handle them
     if (location.startsWith('/api/')) {
-      console.log('🔄 API ROUTE DETECTED:', location, '- letting backend handle');
-      return null;
+      console.log('🔄 API ROUTE DETECTED:', location, '- redirecting to backend');
+      window.location.href = location;
+      return <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      </div>;
     }
 
     if (!isActuallyAuthenticated) {
