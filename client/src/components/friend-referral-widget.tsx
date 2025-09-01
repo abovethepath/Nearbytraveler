@@ -73,8 +73,13 @@ ${userFirstName}`;
     const mailtoLink = `mailto:${emailForm.friendEmail}?subject=${subject}&body=${body}`;
     
     try {
-      // Open the default email client
-      window.location.href = mailtoLink;
+      // Try multiple methods to open email client for better compatibility
+      const opened = window.open(mailtoLink, '_blank');
+      
+      // Fallback to location href if window.open fails
+      if (!opened || opened.closed || typeof opened.closed === 'undefined') {
+        window.location.href = mailtoLink;
+      }
       
       // Reset form and show success
       setTimeout(() => {
