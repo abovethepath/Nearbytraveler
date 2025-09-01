@@ -77,7 +77,7 @@ export default function CouchsurfingLanding() {
               {/* Clean Badge */}
               <div className="mb-6 inline-block rounded-full bg-blue-50 dark:bg-blue-900/30 px-4 sm:px-6 py-2 text-sm font-medium text-blue-700 dark:text-blue-400">
                 <span className="inline w-4 h-4 mr-2">❤️</span>
-                Same Spirit, More People
+                Same Spirit, Less Hassle
               </div>
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-zinc-900 dark:text-white mb-6">
                 Love Couchsurfing?
@@ -85,7 +85,7 @@ export default function CouchsurfingLanding() {
                 <span className="text-blue-600">You'll Love This.</span>
               </h1>
               <p className="text-lg sm:text-xl md:text-2xl text-zinc-600 dark:text-zinc-300 mb-8 max-w-4xl mx-auto leading-relaxed">
-                Meet travelers and locals through shared commonalities, activities, events and demographics — whether you can host or not.
+                Meet travelers and locals through shared interests — whether you can host or not.
               </p>
               
               {/* Desktop CTAs */}
