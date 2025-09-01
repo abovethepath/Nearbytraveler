@@ -23,8 +23,8 @@ export default function FriendReferralWidget() {
   const username = currentUser.username || '';
   const userFirstName = currentUser.name?.split(' ')[0] || username;
 
-  // Use current working URL that people can actually access
-  const signupUrl = `${window.location.protocol}//${window.location.host}`;
+  // Use the shorter .replit.app domain from deployment
+  const signupUrl = 'https://nearby-traveler-aaronmarc2004.replit.app';
   
   const generatePersonalMessage = () => {
     return `Hey ${emailForm.friendName || 'there'}!
