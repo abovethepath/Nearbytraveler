@@ -148,6 +148,23 @@ export default function CouchsurfingLanding() {
         </div>
 
 
+        {/* FOR EXPERIENCED HOSTS SECTION */}
+        <section className="py-16 sm:py-24 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl mb-16">
+          <div className="px-6 sm:px-8">
+            <div className="text-center mb-12">
+              <div className="inline-block bg-blue-100 dark:bg-blue-900/50 px-4 py-2 rounded-full text-sm font-medium text-blue-700 dark:text-blue-400 mb-4">
+                FOR EXPERIENCED HOSTS
+              </div>
+              <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900 dark:text-white mb-4">
+                We Know You've Loved Hosting
+              </h2>
+              <p className="text-lg sm:text-xl text-zinc-600 dark:text-zinc-400 max-w-4xl mx-auto leading-relaxed">
+                If you've hosted before, you know the magic: meeting fascinating people, sharing your city, learning about new cultures. But hosting can also be exhausting, unpredictable, and sometimes just not possible with work or family life. That doesn't mean you're less generous — it just means life changes. With Nearby Traveler, you can keep the spirit of cultural exchange alive in a way that works for you today.
+              </p>
+            </div>
+          </div>
+        </section>
+
         {/* NOW WE CAN ALL CONNECT SECTION */}
         <section className="py-16 sm:py-24 mb-16">
           <div className="text-center mb-12">
