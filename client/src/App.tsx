@@ -449,6 +449,13 @@ function Router() {
     console.log('🔍 ROUTING DEBUG - isAuthenticated:', authValue.isAuthenticated, 'location:', location, 'user:', user);
     console.log('🔍 Current window.location.pathname:', window.location.pathname);
 
+    // Don't handle API routes in frontend router - redirect immediately
+    if (location.startsWith('/api/')) {
+      console.log('🔄 API ROUTE DETECTED:', location, '- redirecting immediately');
+      window.location.href = location;
+      return null;
+    }
+
     // IMPROVED AUTHENTICATION CHECK: Multiple fallbacks to ensure authenticated users stay authenticated
     const hasUserInLocalStorage = !!localStorage.getItem('user');
     const hasAuthToken = !!localStorage.getItem('auth_token');
