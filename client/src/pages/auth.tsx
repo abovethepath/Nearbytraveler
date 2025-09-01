@@ -22,7 +22,7 @@ export default function Auth() {
   const urlParams = new URLSearchParams(window.location.search);
   const mode = urlParams.get('mode');
   const isJoinPage = window.location.pathname === '/join';
-  const [isLogin, setIsLogin] = useState(!isJoinPage && mode !== 'register');
+  const [isLogin, setIsLogin] = useState(mode === 'register' ? false : !isJoinPage);
   
   // Basic form fields
   const [formData, setFormData] = useState({
