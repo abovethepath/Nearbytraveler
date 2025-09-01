@@ -1292,6 +1292,163 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
               </div>
             </div>
 
+            {/* Private Event Visibility Options */}
+            <div className="border-2 border-red-200 rounded-lg p-6 space-y-4 bg-red-50 dark:bg-red-950/20 dark:border-red-800">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-red-100 dark:bg-red-900/50 rounded-full flex items-center justify-center">
+                  <svg className="w-4 h-4 text-red-600 dark:text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-red-800 dark:text-red-300">
+                    ⚠️ RESTRICT EVENT VISIBILITY
+                  </h3>
+                  <p className="text-sm text-red-700 dark:text-red-400 font-medium">
+                    WARNING: These options will HIDE your event from users who don't meet the criteria
+                  </p>
+                </div>
+              </div>
+
+              <div className="bg-white dark:bg-gray-900/50 border border-red-200 dark:border-red-800 rounded-lg p-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  
+                  {/* Gender Restrictions */}
+                  <div className="space-y-3">
+                    <h4 className="font-semibold text-red-800 dark:text-red-300 text-sm">GENDER RESTRICTIONS</h4>
+                    
+                    <div className="flex items-center space-x-3 p-2 bg-pink-50 dark:bg-pink-900/20 rounded border border-pink-200 dark:border-pink-800">
+                      <Checkbox
+                        id="womenOnly"
+                        {...register("womenOnly")}
+                        className="border-pink-500"
+                      />
+                      <div>
+                        <Label htmlFor="womenOnly" className="text-sm font-bold text-pink-800 dark:text-pink-300 cursor-pointer">
+                          🚺 WOMEN ONLY EVENT
+                        </Label>
+                        <p className="text-xs text-pink-700 dark:text-pink-400 mt-1">
+                          Only women can see and join this event
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center space-x-3 p-2 bg-blue-50 dark:bg-blue-900/20 rounded border border-blue-200 dark:border-blue-800">
+                      <Checkbox
+                        id="menOnly"
+                        {...register("menOnly")}
+                        className="border-blue-500"
+                      />
+                      <div>
+                        <Label htmlFor="menOnly" className="text-sm font-bold text-blue-800 dark:text-blue-300 cursor-pointer">
+                          🚹 MEN ONLY EVENT
+                        </Label>
+                        <p className="text-xs text-blue-700 dark:text-blue-400 mt-1">
+                          Only men can see and join this event
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Community Restrictions */}
+                  <div className="space-y-3">
+                    <h4 className="font-semibold text-red-800 dark:text-red-300 text-sm">COMMUNITY RESTRICTIONS</h4>
+                    
+                    <div className="flex items-center space-x-3 p-2 bg-purple-50 dark:bg-purple-900/20 rounded border border-purple-200 dark:border-purple-800">
+                      <Checkbox
+                        id="lgbtqiaOnly"
+                        {...register("lgbtqiaOnly")}
+                        className="border-purple-500"
+                      />
+                      <div>
+                        <Label htmlFor="lgbtqiaOnly" className="text-sm font-bold text-purple-800 dark:text-purple-300 cursor-pointer">
+                          🏳️‍🌈 LGBTQIA+ ONLY EVENT
+                        </Label>
+                        <p className="text-xs text-purple-700 dark:text-purple-400 mt-1">
+                          Only LGBTQIA+ community members can see and join
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center space-x-3 p-2 bg-green-50 dark:bg-green-900/20 rounded border border-green-200 dark:border-green-800">
+                      <Checkbox
+                        id="veteransOnly"
+                        {...register("veteransOnly")}
+                        className="border-green-500"
+                      />
+                      <div>
+                        <Label htmlFor="veteransOnly" className="text-sm font-bold text-green-800 dark:text-green-300 cursor-pointer">
+                          🎖️ VETERANS ONLY EVENT
+                        </Label>
+                        <p className="text-xs text-green-700 dark:text-green-400 mt-1">
+                          Only military veterans can see and join this event
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center space-x-3 p-2 bg-yellow-50 dark:bg-yellow-900/20 rounded border border-yellow-200 dark:border-yellow-800">
+                      <Checkbox
+                        id="singlePeopleOnly"
+                        {...register("singlePeopleOnly")}
+                        className="border-yellow-500"
+                      />
+                      <div>
+                        <Label htmlFor="singlePeopleOnly" className="text-sm font-bold text-yellow-800 dark:text-yellow-300 cursor-pointer">
+                          💔 SINGLES ONLY EVENT
+                        </Label>
+                        <p className="text-xs text-yellow-700 dark:text-yellow-400 mt-1">
+                          Only single people looking to meet others can see this
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Age Restrictions */}
+                <div className="mt-4 pt-4 border-t border-red-200 dark:border-red-800">
+                  <h4 className="font-semibold text-red-800 dark:text-red-300 text-sm mb-3">AGE RESTRICTIONS</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="ageRestrictionMin" className="text-sm font-medium text-red-700 dark:text-red-400">
+                        Minimum Age (21+ events, 18+ events, etc.)
+                      </Label>
+                      <Input
+                        type="number"
+                        id="ageRestrictionMin"
+                        {...register("ageRestrictionMin")}
+                        placeholder="e.g. 21"
+                        min="13"
+                        max="100"
+                        className="mt-1 border-red-300 dark:border-red-700"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="ageRestrictionMax" className="text-sm font-medium text-red-700 dark:text-red-400">
+                        Maximum Age (under 30, under 40, etc.)
+                      </Label>
+                      <Input
+                        type="number"
+                        id="ageRestrictionMax"
+                        {...register("ageRestrictionMax")}
+                        placeholder="e.g. 30"
+                        min="13"
+                        max="100"
+                        className="mt-1 border-red-300 dark:border-red-700"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Warning */}
+                <div className="mt-4 p-3 bg-red-100 dark:bg-red-900/30 border border-red-300 dark:border-red-700 rounded">
+                  <p className="text-sm font-bold text-red-800 dark:text-red-300">
+                    ⚠️ IMPORTANT: If you select ANY of these options, your event will be HIDDEN from users who don't meet the criteria. 
+                    Only use these for events that truly need to be restricted to specific communities.
+                  </p>
+                </div>
+              </div>
+            </div>
+
             {/* Instagram Posting Option - Only show if user has handle */}
             {currentUser.instagramHandle && (
               <div className="border rounded-lg p-4 space-y-4 bg-gradient-to-r from-pink-50 to-gray-50 dark:from-pink-900/20 dark:to-gray-900/20 dark:border-gray-600">
