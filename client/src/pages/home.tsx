@@ -2765,7 +2765,19 @@ export default function Home() {
             <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border shadow-sm">
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <h2 className="text-xl font-bold text-gray-900 dark:text-white">Community Events</h2>
+                  <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+                    Community Events
+                    {effectiveUser?.isCurrentlyTraveling && effectiveUser?.travelDestination && (
+                      <span className="text-blue-600 font-normal text-base ml-2">
+                        • Traveling to {effectiveUser.travelDestination.split(',')[0]}
+                      </span>
+                    )}
+                    {!effectiveUser?.isCurrentlyTraveling && effectiveUser?.hometownCity && (
+                      <span className="text-gray-600 font-normal text-base ml-2">
+                        • {effectiveUser.hometownCity.split(',')[0]}
+                      </span>
+                    )}
+                  </h2>
                   <p className="text-sm text-gray-600 dark:text-gray-400">Events created by fellow travelers and locals</p>
                 </div>
                 <Button
