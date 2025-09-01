@@ -968,11 +968,8 @@ export default function Home() {
       return dateA.getTime() - dateB.getTime();
     });
 
-    // Filter out AI-generated events completely from community events
-    const memberOnlyEvents = sortedEvents.filter(event => !event.isAIGenerated);
-    
-    console.log('Filtered events:', memberOnlyEvents.length, 'community events from ALL locations (AI events excluded, recurring deduplicated)');
-    return memberOnlyEvents;
+    console.log('Filtered events:', sortedEvents.length, 'events from ALL locations (member-created events prioritized, recurring deduplicated)');
+    return sortedEvents;
   }, [allEvents, currentUserId]);
 
   const { data: messages = [], isLoading: messagesLoading } = useQuery<Message[]>({
@@ -2764,11 +2761,11 @@ export default function Home() {
             )}
 
 
-            {/* Nearby Traveler Community Events Section - ONLY COMMUNITY EVENTS */}
+            {/* Community Events Section - ONLY USER-CREATED EVENTS */}
             <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border shadow-sm">
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <h2 className="text-xl font-bold text-gray-900 dark:text-white">Nearby Traveler Community Events</h2>
+                  <h2 className="text-xl font-bold text-gray-900 dark:text-white">Community Events</h2>
                   <p className="text-sm text-gray-600 dark:text-gray-400">Events created by fellow travelers and locals</p>
                 </div>
                 <Button
@@ -2782,7 +2779,7 @@ export default function Home() {
                 </Button>
               </div>
               <EventsGrid
-                events={userPriorityEvents?.filter((event: any) => event.organizerId) || []}
+                events={userPriorityEvents?.filter((event: any) => event.organizerId && !event.isAIGenerated) || []}
                 displayCount={6}
                 onShowMore={() => {}}
                 travelDestination={effectiveUser?.travelDestination}
@@ -2790,6 +2787,113 @@ export default function Home() {
                 showCommunityOnly={true}
               />
             </div>
+
+            {/* External Events Section - AI & API SOURCED EVENTS */}
+            {userPriorityEvents?.filter((event: any) => event.isAIGenerated || event.source)?.length > 0 && (
+              <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-lg p-6 border border-blue-200 dark:border-blue-700 shadow-sm">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                      <Sparkles className="w-5 h-5 text-blue-600" />
+                      Discover Events
+                    </h2>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">AI-recommended and local event listings</p>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setLocation('/discover-events')}
+                    className="text-blue-600 border-blue-200 hover:bg-blue-50 dark:text-blue-400 dark:border-blue-600"
+                  >
+                    <Sparkles className="w-4 h-4 mr-1" />
+                    View All
+                  </Button>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {userPriorityEvents
+                    ?.filter((event: any) => event.isAIGenerated || event.source)
+                    ?.slice(0, 6)
+                    ?.map((event: any) => (
+                      <Card key={event.id} className="hover:shadow-md transition-shadow bg-white dark:bg-gray-800 border-blue-100 dark:border-blue-800">
+                        <CardContent className="p-4">
+                          {/* Source Badge */}
+                          <div className="flex justify-between items-start mb-2">
+                            <h3 className="font-semibold text-gray-900 dark:text-white line-clamp-2">{event.title}</h3>
+                            <Badge 
+                              variant={event.isAIGenerated ? "secondary" : "default"}
+                              className={`ml-2 text-xs ${
+                                event.isAIGenerated 
+                                  ? 'bg-purple-100 text-purple-800 dark:bg-purple-800 dark:text-purple-100' 
+                                  : event.source === 'eventbrite'
+                                    ? 'bg-orange-100 text-orange-800 dark:bg-orange-800 dark:text-orange-100'
+                                    : 'bg-blue-100 text-blue-800 dark:bg-blue-800 dark:text-blue-100'
+                              }`}
+                            >
+                              {event.isAIGenerated ? (
+                                <>
+                                  <Sparkles className="w-3 h-3 mr-1" />
+                                  AI
+                                </>
+                              ) : event.source === 'eventbrite' ? (
+                                'Eventbrite'
+                              ) : event.source === 'local' ? (
+                                'Local Events'
+                              ) : (
+                                event.source || 'External'
+                              )}
+                            </Badge>
+                          </div>
+                          
+                          <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">
+                            {event.description}
+                          </p>
+                          
+                          <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400 mb-3">
+                            <div className="flex items-center gap-1">
+                              <Calendar className="w-3 h-3" />
+                              {new Date(event.date).toLocaleDateString()}
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <MapPin className="w-3 h-3" />
+                              {event.location || event.city}
+                            </div>
+                          </div>
+                          
+                          <div className="flex justify-between items-center">
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              onClick={() => {
+                                if (event.url && !event.isAIGenerated) {
+                                  // Validate URL before opening
+                                  try {
+                                    new URL(event.url);
+                                    window.open(event.url, '_blank', 'noopener,noreferrer');
+                                  } catch {
+                                    console.error('Invalid URL:', event.url);
+                                  }
+                                } else {
+                                  setLocation(`/events/${event.id}`);
+                                }
+                              }}
+                              className="text-blue-600 border-blue-200 hover:bg-blue-50 dark:text-blue-400"
+                            >
+                              {event.url && !event.isAIGenerated ? 'Visit Event' : 'View Details'}
+                            </Button>
+                            
+                            {!event.isAIGenerated && event.url && (
+                              <span className="text-xs text-gray-400">
+                                External Link
+                              </span>
+                            )}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                </div>
+              </div>
+            )}
 
 
             {/* Local Businesses Section - Only show if user is business type OR there are actual deals */}
