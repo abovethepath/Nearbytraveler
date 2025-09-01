@@ -84,13 +84,13 @@ function JoinPageWithSignIn() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4">
-            <Logo className="h-16 w-auto" />
+            <Logo variant="header" />
           </div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
             Join Nearby Traveler
           </h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            Find real connections that last
+          <p className="text-lg text-gray-600 dark:text-gray-400">
+            Connect with travelers and locals worldwide
           </p>
         </div>
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
