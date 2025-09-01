@@ -26,18 +26,6 @@ export default function CouchsurfingLanding() {
   return (
     <div className="bg-white dark:bg-gray-900 font-sans">
       
-      {/* Fixed CTA Button - Mobile Only */}
-      <div className="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 z-50 sm:hidden">
-        <Button 
-          onClick={() => {
-            trackEvent('signup_cta_click', 'couchsurfing_landing', 'floating_join_now');
-            setLocation('/launching-soon');
-          }}
-          className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-3 rounded-lg shadow-lg transition-all duration-200"
-        >
-          JOIN NOW
-        </Button>
-      </div>
 
       <LandingHeader />
       <LandingHeaderSpacer />
