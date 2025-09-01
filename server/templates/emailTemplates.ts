@@ -137,7 +137,7 @@ const emailStyles = `
 `;
 
 export const welcomeEmail = (data: WelcomeEmailData): EmailTemplate => ({
-  subject: `🎉 ${data.name}, welcome to something amazing! Your adventure starts now...`,
+  subject: `Account confirmed: Welcome to Nearby Traveler, ${data.name}`,
   html: `
     <!DOCTYPE html>
     <html>
@@ -155,96 +155,84 @@ export const welcomeEmail = (data: WelcomeEmailData): EmailTemplate => ({
         </div>
         
         <div class="content">
-          <div class="greeting">Hey ${data.name}! 🔥</div>
+          <div class="greeting">Hi ${data.name},</div>
           
-          <p><strong>THANK YOU</strong> for joining Nearby Traveler! Seriously, you just made the smartest move for your ${data.userType === 'business' ? 'business' : 'travel/social life'}.</p>
+          <p>Your Nearby Traveler account has been successfully created. Welcome to our community!</p>
           
-          <p>Most people settle for boring ${data.userType === 'business' ? 'marketing that doesn\'t work' : 'tourist traps and fake experiences'}. Not you. You just joined a platform that's about to change everything.</p>
-          
-          ${data.userType === 'business' ? `
-            <div class="highlight">
-              <strong>🚀 Here's what you can do RIGHT NOW that your competitors can't:</strong><br><br>
-              🎯 <strong>Create flash deals</strong> that expire in hours - watch foot traffic surge<br>
-              📊 <strong>Track REAL analytics</strong> - see who views your offers, when they redeem, and what brings them in<br>
-              🔔 <strong>Get instant notifications</strong> when travelers with interests matching your business arrive in your area<br>
-              🗺️ <strong>Dominate local search</strong> - appear on our interactive map when people look for businesses like yours<br>
-              💬 <strong>Connect directly with customers</strong> - no middleman, just real conversations that convert<br>
-            </div>
-            <p><strong>The clock is ticking.</strong> Every minute you wait is money walking past your door to competitors who are already on here.</p>
-          ` : `
-            <div class="highlight">
-              <strong>🚀 Here's what you can do RIGHT NOW that other travelers can't:</strong><br><br>
-              🏙️ <strong>Skip the tourist traps</strong> - find locals who actually know the best spots<br>
-              🔍 <strong>Find your people</strong> - filter by EVERYTHING (interests, activities, demographics, sexual preferences, family status)<br>
-              💬 <strong>Connect instantly</strong> - real-time messaging with people who share your vibe<br>
-              ⚡ <strong>Join spontaneous hangouts</strong> happening right now in your area<br>
-              🗺️ <strong>Discover hidden gems</strong> on our interactive map that guidebooks don't know about<br>
-              ✈️ <strong>Plan epic trips</strong> with local connections waiting at your destination<br>
-            </div>
-            <p><strong>Stop scrolling social media for travel inspiration.</strong> The real experiences happen when you connect with real people.</p>
-          `}
-          
-          <p><strong>Your username is @${data.username}</strong> - people are going to remember that name! 😎</p>
-          
-          <div style="text-align: center; margin: 30px 0;">
-            <a href="https://www.thenearbytraveler.com/profile" class="button">🔥 Complete Your Profile Now</a>
+          <p>Your account details:</p>
+          <div class="highlight">
+            <strong>Username:</strong> @${data.username}<br>
+            <strong>Account Type:</strong> ${data.userType === 'business' ? 'Business' : data.userType === 'local' ? 'Local' : 'Traveler'}<br>
+            <strong>Status:</strong> Active
           </div>
           
-          <p><strong>Pro tip:</strong> The users who complete their profiles in the first 24 hours get 3x more connections. Don't be the person who waits.</p>
+          <p>Next steps to get started:</p>
           
-          <p>Questions? Just reply to this email. I read every single one personally.</p>
+          ${data.userType === 'business' ? `
+            <ul>
+              <li>Complete your business profile with photos and contact information</li>
+              <li>Set your service areas and specialties</li>
+              <li>Create your first offer or deal to attract customers</li>
+              <li>Enable notifications to connect with travelers in your area</li>
+            </ul>
+          ` : `
+            <ul>
+              <li>Complete your profile with interests and activities</li>
+              <li>Add photos to help others recognize you</li>
+              <li>Explore the discover page to find people near you</li>
+              <li>Join local events or create your own</li>
+            </ul>
+          `}
           
-          <p>Let's make something happen,<br>
-          <strong>Aaron Lefkowitz</strong><br>
-          <em>Founder, Nearby Traveler</em></p>
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="https://nearbytraveler.org/profile" class="button">Complete Your Profile</a>
+          </div>
+          
+          <p>Need help getting started? Reply to this email for assistance.</p>
+          
+          <p>Best regards,<br>
+          The Nearby Traveler Team</p>
         </div>
         
         <div class="footer">
           <p>© 2025 Nearby Traveler. All rights reserved.</p>
           <p>
-            <a href="https://www.thenearbytraveler.com/privacy" style="color: #6b7280;">Privacy Policy</a> | 
-            <a href="https://www.thenearbytraveler.com/terms" style="color: #6b7280;">Terms of Service</a> | 
-            <a href="https://www.thenearbytraveler.com/settings" style="color: #6b7280;">Email Preferences</a>
+            <a href="https://nearbytraveler.org/privacy" style="color: #6b7280;">Privacy Policy</a> | 
+            <a href="https://nearbytraveler.org/terms" style="color: #6b7280;">Terms of Service</a> | 
+            <a href="https://nearbytraveler.org/settings" style="color: #6b7280;">Email Preferences</a>
           </p>
         </div>
       </div>
     </body>
     </html>
   `,
-  text: `🎉 ${data.name}, welcome to something amazing!
+  text: `Account Confirmed: Welcome to Nearby Traveler
 
-THANK YOU for joining Nearby Traveler! You just made the smartest move for your ${data.userType === 'business' ? 'business' : 'travel/social life'}.
+Hi ${data.name},
 
-Most people settle for ${data.userType === 'business' ? 'marketing that doesn\'t work' : 'boring tourist traps'}. Not you.
+Your Nearby Traveler account has been successfully created. Welcome to our community!
 
-${data.userType === 'business' ? `Here's what you can do RIGHT NOW:
-• Create flash deals that expire in hours
-• Track REAL analytics on views and redemptions  
-• Get notified when travelers match your business
-• Dominate local search on our interactive map
-• Connect directly with customers
+Account Details:
+Username: @${data.username}
+Account Type: ${data.userType === 'business' ? 'Business' : data.userType === 'local' ? 'Local' : 'Traveler'}
+Status: Active
 
-The clock is ticking. Every minute you wait is money walking to competitors already on here.` : `Here's what you can do RIGHT NOW:
-• Skip tourist traps - find locals who know the best spots
-• Find your people - filter by interests, activities, demographics
-• Connect instantly with real-time messaging
-• Join spontaneous hangouts happening now
-• Discover hidden gems on our interactive map
-• Plan epic trips with local connections
+${data.userType === 'business' ? `Next steps to get started:
+• Complete your business profile with photos and contact information
+• Set your service areas and specialties
+• Create your first offer or deal to attract customers
+• Enable notifications to connect with travelers in your area` : `Next steps to get started:
+• Complete your profile with interests and activities
+• Add photos to help others recognize you
+• Explore the discover page to find people near you
+• Join local events or create your own`}
 
-Stop scrolling social media. Real experiences happen with real people.`}
+Complete your profile: https://nearbytraveler.org/profile
 
-Your username: @${data.username} (people will remember that!)
+Need help getting started? Reply to this email for assistance.
 
-Complete your profile: https://www.thenearbytraveler.com/profile
-
-Pro tip: Users who complete profiles in 24 hours get 3x more connections.
-
-Questions? Just reply - I read every email personally.
-
-Let's make something happen,
-Aaron Lefkowitz
-Founder, Nearby Traveler`
+Best regards,
+The Nearby Traveler Team`
 });
 
 export const passwordResetEmail = (data: PasswordResetData): EmailTemplate => ({

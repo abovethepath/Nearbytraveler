@@ -74,7 +74,17 @@ export class EmailService {
         to: [{ email: to }],
         subject,
         htmlContent: html,
-        textContent: text
+        textContent: text,
+        // Add headers to improve deliverability and avoid promotions folder
+        headers: {
+          'List-Unsubscribe': '<mailto:aaron_marc2004@yahoo.com?subject=unsubscribe>',
+          'X-Mailer': 'Nearby Traveler Platform',
+          'Reply-To': 'aaron_marc2004@yahoo.com',
+          'X-Entity-Type': 'transactional', // Mark as transactional, not promotional
+          'Message-ID': `<${Date.now()}-${Math.random().toString(36)}@nearbytraveler.org>`
+        },
+        // Mark as transactional (not promotional) to improve inbox placement
+        tags: ['transactional', 'account-notification']
       };
 
       console.log('📧 Sending email via Brevo:', { to, from: emailData.sender.email, subject });
