@@ -803,15 +803,24 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           email: user.email,
           profileImageUrl: user.profileImage
         };
-        console.log("✅ Logged in with real user data:", user.username);
+        
+        // CRITICAL: Save the session
+        (req as any).session.save((err: any) => {
+          if (err) {
+            console.error("Session save error:", err);
+          } else {
+            console.log("✅ Session saved! User logged in:", user.username);
+          }
+          res.redirect("/");
+        });
       } else {
         console.error("User not found in database");
+        res.redirect("/");
       }
     } catch (error) {
       console.error("Login error:", error);
+      res.redirect("/");
     }
-    
-    res.redirect("/");
   });
 
   // Logout route
