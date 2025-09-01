@@ -199,7 +199,11 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
             </h3>
             
             <div className="text-xs text-gray-600 dark:text-gray-300 flex items-center gap-1 truncate">
-              📍 <span className="truncate">{getLocation()}</span>
+              {user.isCurrentlyTraveling && user.travelDestination ? (
+                <>🧳 <span className="truncate">Traveling to {user.travelDestination.split(',')[0]}</span></>
+              ) : (
+                <>🏠 <span className="truncate">Local {user.hometownCity ? user.hometownCity.split(',')[0] : getLocation()}</span></>
+              )}
             </div>
             
             {/* Compact Bio - Hidden on mobile for space */}
@@ -212,7 +216,7 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
             {/* Things in Common Badge - Ultra Compact */}
             {compatibilityData && (compatibilityData.sharedInterests?.length > 0 || compatibilityData.sharedActivities?.length > 0 || compatibilityData.sharedEvents?.length > 0) && (
               <div className="bg-blue-100 text-blue-800 text-xs px-1 py-0.5 rounded-full dark:bg-blue-900/30 dark:text-blue-400 inline-block">
-                {(compatibilityData.sharedInterests?.length || 0) + (compatibilityData.sharedActivities?.length || 0) + (compatibilityData.sharedEvents?.length || 0)} in common
+                {(compatibilityData.sharedInterests?.length || 0) + (compatibilityData.sharedActivities?.length || 0) + (compatibilityData.sharedEvents?.length || 0)} Things in Common
               </div>
             )}
             
