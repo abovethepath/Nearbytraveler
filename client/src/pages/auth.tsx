@@ -208,43 +208,40 @@ export default function Auth() {
           </CardHeader>
           <CardContent className="space-y-6">
             {isLogin ? (
-              <>
-                {/* Login Form */}
+              <div className="space-y-6">
                 <div className="space-y-4">
                   <div>
-                    <Label htmlFor="loginEmail" className="text-base md:text-lg font-medium text-gray-900 dark:text-white">Email or Username ✓</Label>
+                    <Label htmlFor="loginEmail" className="text-base font-medium text-gray-900">Email or Username</Label>
                     <Input
                       id="loginEmail"
                       type="text"
                       value={formData.email}
                       onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
                       placeholder="Enter your email or username"
-                      className="text-base py-3 text-crisp font-medium"
+                      className="text-base py-3"
                     />
                   </div>
                   <div>
-                    <Label htmlFor="loginPassword" className="text-base md:text-lg font-medium text-gray-900 dark:text-white">Password</Label>
+                    <Label htmlFor="loginPassword" className="text-base font-medium text-gray-900">Password</Label>
                     <Input
                       id="loginPassword"
                       type="password"
                       value={formData.password}
                       onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
                       placeholder="Enter your password"
-                      className="text-base py-3 text-crisp font-medium"
+                      className="text-base py-3"
                     />
                   </div>
                 </div>
 
-                <div className="mt-8 pt-4 space-y-3">
-                  <Button
-                    onClick={handleLogin}
-                    disabled={isLoading || !formData.email || !formData.password}
-                    className="join-page-gradient-button w-full py-3 px-4 rounded-md font-bold text-center select-none text-base md:text-lg text-crisp"
-                  >
-                    {isLoading ? "Signing In..." : "Sign In"}
-                  </Button>
-                </div>
-              </>
+                <Button
+                  onClick={handleLogin}
+                  disabled={isLoading || !formData.email || !formData.password}
+                  className="w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-orange-500 text-white font-semibold rounded-md hover:opacity-90 transition-opacity"
+                >
+                  {isLoading ? "Signing In..." : "Sign In"}
+                </Button>
+              </div>
             ) : (
               <>
                 {/* Signup Form */}
