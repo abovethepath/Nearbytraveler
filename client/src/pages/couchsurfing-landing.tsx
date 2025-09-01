@@ -302,20 +302,6 @@ export default function CouchsurfingLanding() {
           </div>
         </section>
 
-        {/* CONNECT WHEN YOU CAN'T HOST SECTION */}
-        <section className="py-8 sm:py-16 mb-8">
-          <div className="text-center mb-12">
-            <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-6">
-              <Users className="w-8 h-8 text-white" />
-            </div>
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900 dark:text-white mb-4">
-              Connect When You Can't Host
-            </h2>
-            <p className="text-lg sm:text-xl text-zinc-600 dark:text-zinc-400 max-w-4xl mx-auto leading-relaxed">
-              No space but still want to meet travelers? Join them for coffee, show them your favorite spots, or attend events together. Share your city without opening your home.
-            </p>
-          </div>
-        </section>
 
         {/* WHAT YOU'VE LOVED ABOUT HOSTING SECTION */}
         <section className="py-8 sm:py-16 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl mb-8">
