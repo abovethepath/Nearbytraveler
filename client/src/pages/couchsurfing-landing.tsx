@@ -567,7 +567,7 @@ export default function CouchsurfingLanding() {
                 Connect with 100% of Travelers
               </h2>
               <p className="text-lg sm:text-xl text-zinc-600 dark:text-zinc-400 max-w-4xl mx-auto leading-relaxed mb-8">
-                Traditional hosting only reaches travelers who need accommodation — a tiny percentage of all travelers. Nearby Traveler reaches ALL travelers: those staying in hotels, hostels, Airbnbs, with friends, or anywhere else. Connect with every traveler in your city, not just the small percentage looking for a couch.
+                Couchsurfing's hangouts feature was brilliant for last-minute connections. We've expanded that concept — now reach ALL travelers: those staying in hotels, hostels, Airbnbs, with friends, or anywhere else. Connect with every traveler in your city, not just the small percentage looking for a couch.
               </p>
               
               <Button 
