@@ -46,7 +46,13 @@ export default function QRCodeCard() {
       setCurrentUser(user);
       
       // Fetch the user's referral code from the backend
-      fetch('/api/user/qr-code')
+      fetch('/api/user/qr-code', {
+        headers: {
+          'Content-Type': 'application/json',
+          'x-user-id': user.id.toString(),
+          'x-user-data': JSON.stringify(user)
+        }
+      })
         .then(response => response.json())
         .then(data => {
           if (data.referralCode) {
