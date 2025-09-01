@@ -23,8 +23,8 @@ export default function FriendReferralWidget() {
   const username = currentUser.username || '';
   const userFirstName = currentUser.name?.split(' ')[0] || username;
 
-  // Use the domain that should work once hosting is fixed
-  const signupUrl = 'https://www.thenearbytraveler.com';
+  // Use current working URL that people can actually access
+  const signupUrl = `${window.location.protocol}//${window.location.host}`;
   
   const generatePersonalMessage = () => {
     return `Hey ${emailForm.friendName || 'there'}!
