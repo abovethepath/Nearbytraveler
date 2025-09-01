@@ -180,6 +180,9 @@ export const users = pgTable("users", {
   referralCount: integer("referral_count").default(0), // How many users they've referred
   qrCodeGeneratedAt: timestamp("qr_code_generated_at"), // When QR code was last generated
   
+  // Email tracking
+  welcomeEmailSent: boolean("welcome_email_sent").default(false), // Track if welcome email was sent to prevent duplicates
+  
   createdAt: timestamp("created_at").defaultNow(),
 });
 

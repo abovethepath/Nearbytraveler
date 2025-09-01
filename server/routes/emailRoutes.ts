@@ -15,11 +15,24 @@ router.post('/send-welcome', async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
+    // Check if welcome email was already sent
+    if (user.welcomeEmailSent) {
+      return res.json({ 
+        success: false, 
+        message: 'Welcome email already sent to this user' 
+      });
+    }
+
     const success = await emailService.sendWelcomeEmail(user.email, {
       name: user.name || user.username,
       username: user.username,
       userType: user.userType as 'local' | 'business' | 'traveler'
     });
+
+    // Mark as sent if successful
+    if (success) {
+      await storage.updateUser(userId, { welcomeEmailSent: true });
+    }
 
     res.json({ success, message: success ? 'Welcome email sent' : 'Email sending failed' });
   } catch (error) {

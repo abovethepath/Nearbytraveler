@@ -2541,14 +2541,25 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         try {
           const { emailService } = await import('./services/emailService');
           
-          // Send welcome email to the new user
-          if (user.email) {
-            await emailService.sendWelcomeEmail(user.email, {
+          // Send welcome email to the new user (only if not already sent)
+          if (user.email && !user.welcomeEmailSent) {
+            const emailSent = await emailService.sendWelcomeEmail(user.email, {
               name: user.name || user.username,
               username: user.username,
               userType: user.userType || 'traveler'
             });
-            console.log(`✅ Welcome email sent to new user ${user.email}`);
+            
+            if (emailSent) {
+              // Mark welcome email as sent to prevent duplicates
+              await db.update(users)
+                .set({ welcomeEmailSent: true })
+                .where(eq(users.id, user.id));
+              console.log(`✅ Welcome email sent to new user ${user.email}`);
+            } else {
+              console.log(`❌ Failed to send welcome email to ${user.email}`);
+            }
+          } else if (user.welcomeEmailSent) {
+            console.log(`⚠️ Welcome email already sent to ${user.email}, skipping duplicate`);
           }
 
           // Track user for 3-day digest instead of instant notifications
@@ -3116,9 +3127,8 @@ Ready to start connecting? Questions? Just reply anytime!
     }
   };
 
-  // Registration endpoints - both for backward compatibility
+  // Registration endpoint
   app.post("/api/register", handleRegistration);
-  app.post("/api/auth/register", handleRegistration);
 
   // MANUAL WELCOME MESSAGE ENDPOINT - for businesses that missed the automatic welcome
   app.post("/api/send-manual-welcome/:userId", async (req, res) => {

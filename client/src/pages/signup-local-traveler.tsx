@@ -320,7 +320,7 @@ export default function SignupLocalTraveler() {
 
       console.log('➡️ Submitting local registration');
 
-      const response = await fetch('/api/auth/register', {
+      const response = await fetch('/api/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(registrationData)
