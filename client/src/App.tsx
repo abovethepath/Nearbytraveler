@@ -90,7 +90,7 @@ function JoinPageWithSignIn() {
             Join Nearby Traveler
           </h1>
           <p className="text-lg text-gray-600 dark:text-gray-400">
-            Connect with travelers and locals worldwide
+            Join the travel community and connect with locals and fellow travelers
           </p>
         </div>
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
