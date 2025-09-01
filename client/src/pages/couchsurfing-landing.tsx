@@ -84,7 +84,7 @@ export default function CouchsurfingLanding() {
         {/* Founder Testimonial */}
         <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 mb-12 shadow-lg border-l-4 border-blue-500">
           <blockquote className="text-lg sm:text-xl text-zinc-700 dark:text-zinc-300 leading-relaxed mb-6 italic">
-            "I've hosted 400+ travelers from 50 countries. The magic isn't the couch — it's the connections. 
+            "I've hosted 400+ travelers from 50 countries. The magic is the connections. 
             I created Nearby Traveler because I realized I couldn't always host, but I always wanted to meet travelers. 
             Now you can keep the spirit alive, whether you have space or not."
           </blockquote>
