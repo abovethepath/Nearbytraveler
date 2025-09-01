@@ -4815,7 +4815,7 @@ Questions? Just reply to this message. Welcome aboard!
     try {
       console.log(`🚀🚀🚀 MY-LOCATIONS ROUTE CALLED - FIRST ROUTE WORKING!!! 🚀🚀🚀`);
       // Get user ID from headers - FIXED USER ID EXTRACTION
-      let userId = 1; // Default to nearbytraveler user if not specified
+      let userId = 39; // Default to current user if not specified (your user ID)
       
       // First try x-user-id header (what frontend sends)
       if (req.headers['x-user-id']) {
