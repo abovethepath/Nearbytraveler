@@ -9208,26 +9208,34 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               userChatrooms.map((chatroom: any) => (
                 <div 
                   key={chatroom.id}
-                  className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer"
+                  className="flex items-start gap-4 p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer transition-colors"
                   onClick={() => {
                     setShowChatroomList(false);
                     setLocation(`/simple-chatroom/${chatroom.id}`);
                   }}
                 >
-                  <div className="flex-1">
-                    <h4 className="font-medium text-gray-900 dark:text-white">
+                  <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                    {chatroom.name.charAt(0).toUpperCase()}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-semibold text-gray-900 dark:text-white text-base leading-tight">
                       {chatroom.name}
                     </h4>
-                    <p className="text-sm text-gray-600 dark:text-gray-300">
+                    <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
                       {chatroom.city}, {chatroom.country}
                     </p>
                     {chatroom.description && (
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 line-clamp-2">
                         {chatroom.description}
                       </p>
                     )}
+                    <div className="flex items-center gap-2 mt-2">
+                      <span className="text-xs bg-blue-100 text-blue-700 dark:bg-blue-800 dark:text-blue-200 rounded-full px-2 py-1">
+                        {chatroom.memberCount || 0} members
+                      </span>
+                    </div>
                   </div>
-                  <ChevronRight className="w-4 h-4 text-gray-400" />
+                  <ChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0 mt-1" />
                 </div>
               ))
             ) : (

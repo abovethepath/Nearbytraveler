@@ -346,55 +346,74 @@ export default function SimpleChatroomPage() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-orange-50 dark:from-gray-900 dark:to-gray-800">
       <div className="max-w-4xl mx-auto px-4 py-6">
         {/* Header */}
-        <Card className="mb-6">
-          <CardHeader>
-            {/* Mobile-First Responsive Header */}
-            <div className="space-y-3">
-              {/* Top row: Back button + Title */}
-              <div className="flex items-start gap-3">
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  onClick={() => navigate('/city-chatrooms')}
-                  className="flex-shrink-0 mt-1"
-                >
-                  <ArrowLeft className="w-4 h-4" />
-                </Button>
-                <div className="flex-1 min-w-0">
-                  <CardTitle className="text-lg sm:text-xl font-semibold leading-tight">
-                    <span className="break-words">{chatroom?.name || "Loading chatroom..."}</span>
-                  </CardTitle>
-                  <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1">
-                    {chatroom?.city && `${chatroom.city}, ${chatroom.state}`} · {memberCount} online
-                  </p>
-                  {!userIsMember && (
-                    <p className="text-xs sm:text-sm text-orange-600 dark:text-orange-400 mt-1">
-                      You are not a member of this chatroom
+        <Card className="mb-6 bg-gradient-to-r from-blue-50 to-orange-50 dark:from-gray-800 dark:to-gray-700 border-0">
+          <CardHeader className="pb-4">
+            {/* Clean Header Layout */}
+            <div className="flex items-start gap-4">
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={() => navigate('/city-chatrooms')}
+                className="flex-shrink-0 hover:bg-white/20 dark:hover:bg-gray-600/20"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                <span className="hidden sm:inline ml-2">Back to Chatrooms</span>
+              </Button>
+              
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
+                    {chatroom?.name?.charAt(0).toUpperCase() || "C"}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <CardTitle className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white leading-tight">
+                      {chatroom?.name || "Loading chatroom..."}
+                    </CardTitle>
+                  </div>
+                </div>
+                
+                <div className="flex flex-wrap items-center gap-3 text-sm text-gray-600 dark:text-gray-300">
+                  <span className="flex items-center gap-1">
+                    <span>Logged in as:</span>
+                    <span className="font-medium text-blue-600 dark:text-blue-400">@{currentUser?.username}</span>
+                  </span>
+                  <span>•</span>
+                  <span>{chatroom?.city}, {chatroom?.country}</span>
+                  <span>•</span>
+                  <span className="flex items-center gap-1">
+                    <Users className="w-3 h-3" />
+                    {memberCount} members
+                  </span>
+                </div>
+                
+                {!userIsMember && (
+                  <div className="mt-3 p-3 bg-orange-100 dark:bg-orange-900/30 rounded-lg border border-orange-200 dark:border-orange-800">
+                    <p className="text-sm text-orange-800 dark:text-orange-200 font-medium">
+                      You are not a member of this chatroom. Join to participate in conversations!
                     </p>
+                  </div>
+                )}
+                
+                {/* Action buttons */}
+                <div className="flex gap-3 mt-4">
+                  <Button 
+                    onClick={joinRoom} 
+                    disabled={isJoining || userIsMember}
+                    className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white border-0"
+                  >
+                    {isJoining ? "Joining..." : userIsMember ? "✓ Joined" : "Join Chatroom"}
+                  </Button>
+                  {userIsMember && (
+                    <Button 
+                      onClick={leaveRoom} 
+                      variant="outline" 
+                      disabled={isLeaving}
+                      className="border-red-200 text-red-600 hover:bg-red-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-900/20"
+                    >
+                      {isLeaving ? "Leaving..." : "Leave"}
+                    </Button>
                   )}
                 </div>
-              </div>
-              
-              {/* Bottom row: Action buttons (mobile-friendly) */}
-              <div className="flex gap-2 flex-wrap">
-                <Button 
-                  onClick={joinRoom} 
-                  variant="secondary" 
-                  size="sm"
-                  disabled={isJoining || userIsMember}
-                  className="flex-1 sm:flex-none min-w-0"
-                >
-                  {isJoining ? "Joining..." : userIsMember ? "Joined" : "Join"}
-                </Button>
-                <Button 
-                  onClick={leaveRoom} 
-                  variant="outline" 
-                  size="sm"
-                  disabled={isLeaving || !userIsMember}
-                  className="flex-1 sm:flex-none min-w-0"
-                >
-                  {isLeaving ? "Leaving..." : "Leave"}
-                </Button>
               </div>
             </div>
             
