@@ -49,11 +49,7 @@ const EVENT_CATEGORIES = [
 const PREDEFINED_TAGS = [
   "Family Friendly",
   "Pet Friendly", 
-  "Beginner Friendly",
-  "Advanced Level",
   "Free Event",
-  "Indoor",
-  "Outdoor",
   "Photography",
   "Networking",
   "Cultural",
@@ -69,7 +65,6 @@ const PREDEFINED_TAGS = [
   "Adventure",
   "Social",
   "Party",
-  "Gaming",
   "Language Exchange",
   "Solo Travelers",
   "Celebration"
