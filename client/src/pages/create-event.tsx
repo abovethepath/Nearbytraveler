@@ -22,24 +22,16 @@ import { Badge } from "@/components/ui/badge";
 import { SmartLocationInput } from "@/components/SmartLocationInput";
 import { authStorage } from "@/lib/auth";
 
-// Predefined categories for events
+// Predefined categories for events - Streamlined for travelers
 const EVENT_CATEGORIES = [
   "Food & Dining",
   "Adventure Sports",
   "Social Networking",
   "Culture & Arts",
   "Music & Entertainment",
-  "Business & Professional",
-  "Educational & Learning",
   "Health & Wellness",
   "Outdoor Activities",
   "Nightlife & Parties",
-  "LGBTQIA+ Events",
-  "Parties",
-  "LGBTQIA+ Event",
-  "Travel & Tourism",
-  "Technology",
-  "Volunteering",
   "Sports & Fitness",
   "Family & Kids",
   "Custom" // This will allow for custom category input
