@@ -141,7 +141,7 @@ export default function CouchsurfingLanding() {
                 />
               </div>
               <p className="mt-2 text-xs md:text-sm italic text-blue-600 text-center">
-                Same Values, Better Connections
+                Same Values, More Connections
               </p>
             </div>
           </div>
