@@ -259,30 +259,45 @@ function Navbar() {
 
 
 
-  // COMPLETELY REBUILT LOGOUT SYSTEM - SIMPLE AND DIRECT
-  const handleLogout = () => {
-    console.log('🚪 STARTING COMPLETE LOGOUT REBUILD');
+  // LOGOUT SYSTEM - Calls server endpoint then clears client
+  const handleLogout = async () => {
+    console.log('🚪 Starting logout process');
 
     try {
-      // Step 1: Clear ALL localStorage
-      console.log('Step 1: Clearing localStorage');
+      // Step 1: Call server logout to destroy session
+      console.log('Step 1: Calling server logout');
+      try {
+        await fetch('/api/auth/logout', {
+          method: 'POST',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        console.log('✅ Server session destroyed');
+      } catch (err) {
+        console.warn('Server logout failed, continuing with client cleanup');
+      }
+
+      // Step 2: Clear ALL localStorage
+      console.log('Step 2: Clearing localStorage');
       localStorage.clear();
 
-      // Step 2: Clear sessionStorage
-      console.log('Step 2: Clearing sessionStorage');
+      // Step 3: Clear sessionStorage
+      console.log('Step 3: Clearing sessionStorage');
       sessionStorage.clear();
 
-      // Step 3: Clear React Query cache
-      console.log('Step 3: Clearing React Query cache');
+      // Step 4: Clear React Query cache
+      console.log('Step 4: Clearing React Query cache');
       queryClient.clear();
 
-      // Step 4: Update local state
-      console.log('Step 4: Clearing local state');
+      // Step 5: Update local state
+      console.log('Step 5: Clearing local state');
       setDirectUser(null);
       setUser(null);
 
-      // Step 5: Force redirect to landing page
-      console.log('Step 5: Redirecting to landing page');
+      // Step 6: Force redirect to landing page
+      console.log('Step 6: Redirecting to landing page');
       window.location.href = '/';
 
     } catch (error) {

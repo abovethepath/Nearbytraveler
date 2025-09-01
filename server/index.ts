@@ -72,6 +72,7 @@ app.use(session({
   cookie: {
     httpOnly: true,
     secure: false, // Set to false for development
+    sameSite: 'lax', // Important for Replit
     maxAge: 7 * 24 * 60 * 60 * 1000, // 1 week
   },
 }));

@@ -823,14 +823,31 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
     }
   });
 
-  // Logout route
+  // Logout route - supports both GET and POST
   app.get("/api/logout", (req, res) => {
-    console.log("🔐 Logout");
+    console.log("🔐 Logout GET");
     (req as any).session.destroy((err: any) => {
       if (err) {
         console.error("Session destroy error:", err);
       }
+      res.clearCookie("connect.sid");
       res.redirect("/");
+    });
+  });
+  
+  // POST logout for client-side calls
+  app.post("/api/auth/logout", (req, res) => {
+    console.log("🔐 Logout POST");
+    if (!(req as any).session) {
+      return res.status(200).json({ ok: true });
+    }
+    
+    (req as any).session.destroy((err: any) => {
+      if (err) {
+        console.error("Session destroy error:", err);
+      }
+      res.clearCookie("connect.sid");
+      return res.status(200).json({ ok: true });
     });
   });
 
