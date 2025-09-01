@@ -67,35 +67,28 @@ ${userFirstName}`;
 
     setIsSending(true);
     
-    // Create mailto link with pre-filled content
-    const subject = encodeURIComponent("Check out Nearby Traveler - Connect with Travelers & Locals!");
-    const body = encodeURIComponent(emailForm.personalMessage || generatePersonalMessage());
-    const mailtoLink = `mailto:${emailForm.friendEmail}?subject=${subject}&body=${body}`;
-    
+    // Copy the email content to clipboard as a better alternative
+    const emailContent = `To: ${emailForm.friendEmail}
+Subject: Check out Nearby Traveler - Connect with Travelers & Locals!
+
+${emailForm.personalMessage || generatePersonalMessage()}`;
+
     try {
-      // Create a temporary anchor element to force native email client
-      const anchor = document.createElement('a');
-      anchor.href = mailtoLink;
-      anchor.style.display = 'none';
-      document.body.appendChild(anchor);
-      anchor.click();
-      document.body.removeChild(anchor);
+      await navigator.clipboard.writeText(emailContent);
       
-      // Reset form and show success
-      setTimeout(() => {
-        setEmailForm({ friendEmail: "", friendName: "", personalMessage: "" });
-        setShowEmailForm(false);
-        setIsSending(false);
-        toast({
-          title: "Email Generated!",
-          description: "Your email client should open with the invitation ready to send.",
-        });
-      }, 1000);
+      setEmailForm({ friendEmail: "", friendName: "", personalMessage: "" });
+      setShowEmailForm(false);
+      setIsSending(false);
+      
+      toast({
+        title: "Email Content Copied!",
+        description: "The email content has been copied to your clipboard. Open your email app and paste it.",
+      });
     } catch (error) {
       setIsSending(false);
       toast({
         title: "Error",
-        description: "Unable to open email client. Please copy the message manually.",
+        description: "Unable to copy email content. Please copy manually.",
         variant: "destructive"
       });
     }
