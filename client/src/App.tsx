@@ -3,39 +3,6 @@ import { useLocation } from "wouter";
 import { initGA } from "@/lib/analytics";
 import { useAnalytics } from "@/hooks/use-analytics";
 
-// PRODUCTION CACHE BUST: Force complete cache clear
-const CACHE_BUST_VERSION = '2025-08-17-FINAL-v' + Date.now();
-console.log('🚨 PRODUCTION CACHE BUST VERSION:', CACHE_BUST_VERSION);
-
-// Clear all possible cached authentication states on app load
-if (typeof window !== 'undefined') {
-  // Force clear service worker cache
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.getRegistrations().then(function(registrations) {
-      for(let registration of registrations) {
-        registration.unregister();
-      }
-    });
-  }
-  
-  // Clear all caches
-  if ('caches' in window) {
-    caches.keys().then(names => {
-      names.forEach(name => {
-        caches.delete(name);
-      });
-    });
-  }
-}
-
-// Debug browser history + Cache clear version: 2025-08-17-v2
-console.log('🚀 CACHE CLEAR: App loading - version 2025-08-17-v2');
-window.addEventListener('popstate', (event) => {
-  console.log('=== BROWSER BACK/FORWARD DETECTED ===');
-  console.log('Event:', event);
-  console.log('Current URL:', window.location.href);
-  console.log('History state:', event.state);
-});
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider, useQueryClient } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
