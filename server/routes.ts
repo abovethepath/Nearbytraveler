@@ -785,23 +785,81 @@ async function sendWeeklyDigestEmails() {
 export async function registerRoutes(app: Express, httpServer?: Server): Promise<Server> {
   if (process.env.NODE_ENV === 'development') console.log("Starting routes registration...");
 
-  // FIRST: Setup real authentication system
-  const { setupAuth, isAuthenticated } = await import("./replitAuth");
-  await setupAuth(app);
+  // FIRST: Setup simple authentication for investor demo - NO POPUPS
   
-  // Auth routes for real accounts
-  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
+  // Direct login - no OAuth popup
+  app.get("/api/login", async (req, res) => {
+    console.log("🔐 Direct login - fetching real user data");
+    
     try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
-      res.json(user);
+      // Get the real user from database
+      const user = await storage.getUser("2");
+      
+      if (user) {
+        // Create session with real user data
+        (req as any).session.user = {
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          profileImageUrl: user.profileImage
+        };
+        console.log("✅ Logged in with real user data:", user.username);
+      } else {
+        console.error("User not found in database");
+      }
     } catch (error) {
-      console.error("Error fetching user:", error);
-      res.status(500).json({ message: "Failed to fetch user" });
+      console.error("Login error:", error);
+    }
+    
+    res.redirect("/");
+  });
+
+  // Logout route
+  app.get("/api/logout", (req, res) => {
+    console.log("🔐 Logout");
+    (req as any).session.destroy((err: any) => {
+      if (err) {
+        console.error("Session destroy error:", err);
+      }
+      res.redirect("/");
+    });
+  });
+
+  // Auth check route
+  app.get("/api/auth/user", async (req, res) => {
+    const sessionUser = (req as any).session.user;
+    if (sessionUser) {
+      // Return real user data from database
+      try {
+        const user = await storage.getUser(sessionUser.id);
+        if (user) {
+          console.log("✅ Auth check: User authenticated:", user.username);
+          res.json(user);
+        } else {
+          res.status(401).json({ message: "User not found" });
+        }
+      } catch (error) {
+        console.error("Auth check error:", error);
+        res.status(500).json({ message: "Auth check failed" });
+      }
+    } else {
+      console.log("❌ Auth check: No session");
+      res.status(401).json({ message: "Not authenticated" });
     }
   });
   
-  if (process.env.NODE_ENV === 'development') console.log("Real authentication setup completed");
+  // Simple auth middleware
+  const isAuthenticated = (req: any, res: any, next: any) => {
+    const user = req.session.user;
+    if (user) {
+      req.user = user;
+      return next();
+    } else {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+  };
+  
+  if (process.env.NODE_ENV === 'development') console.log("Simple authentication setup completed - NO POPUPS");
 
   // CRITICAL: Register location widgets routes
   app.use(locationWidgetsRouter);
