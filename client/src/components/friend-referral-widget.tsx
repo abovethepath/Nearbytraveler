@@ -23,19 +23,8 @@ export default function FriendReferralWidget() {
   const username = currentUser.username || '';
   const userFirstName = currentUser.name?.split(' ')[0] || username;
 
-  // Smart URL selection - try domain first, fallback to current URL
-  const getCurrentUrl = () => {
-    // Try the domain first
-    if (window.location.host.includes('replit.dev')) {
-      // We're on development, use the domain
-      return 'https://thenearbytraveler.com';
-    } else {
-      // We're already on the domain or custom URL, use current
-      return `${window.location.protocol}//${window.location.host}`;
-    }
-  };
-  
-  const signupUrl = getCurrentUrl();
+  // Always use the working domain for sharing - server confirms it's working
+  const signupUrl = 'https://thenearbytraveler.com';
   
   const generatePersonalMessage = () => {
     return `Hey ${emailForm.friendName || 'there'}!
