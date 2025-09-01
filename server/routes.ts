@@ -3854,6 +3854,47 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // CRITICAL: PATCH endpoint for user profile updates (supports partial updates like travel intent)
+  app.patch("/api/users/:id", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.id || '0');
+      const updates = req.body;
+
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`🔧 TRAVEL INTENT UPDATE: User ${userId} saving travel preferences:`, Object.keys(updates).join(', '));
+      }
+
+      // MAP USER FIELDS: Handle travel intent fields specifically
+      const mappedUpdates = { ...updates };
+
+      // Remove password from response
+      const updatedUser = await storage.updateUser(userId, mappedUpdates);
+
+      if (!updatedUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const { password: _, ...userWithoutPassword } = updatedUser;
+
+      if (process.env.NODE_ENV === 'development') console.log(`✓ Travel intent data updated for user ${userId}:`, {
+        travelWhy: updatedUser.travelWhy,
+        travelHow: updatedUser.travelHow,
+        travelBudget: updatedUser.travelBudget,
+        travelGroup: updatedUser.travelGroup
+      });
+      return res.json(userWithoutPassword);
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error("🔴 CRITICAL ERROR updating travel intent:", error);
+        console.error("🔴 Error message:", error.message);
+      }
+      return res.status(500).json({ 
+        message: "Failed to update user travel intent", 
+        error: error.message
+      });
+    }
+  });
+
   // CRITICAL: Profile photo upload endpoint (PUT) - MISSING ENDPOINT
   app.put("/api/users/:id/profile-photo", async (req, res) => {
     try {
@@ -11593,7 +11634,7 @@ Questions? Just reply to this message. Welcome aboard!
   });
 
   // Connection note management
-  app.patch('/api/connections/:connectionId/note', isAuthenticated, async (req: any, res) => {
+  app.patch('/api/connections/:connectionId/note', async (req: any, res) => {
     try {
       const connectionId = parseInt(req.params.connectionId);
       const { connectionNote } = req.body;
