@@ -70,21 +70,24 @@ export class EmailService {
 
     try {
       const emailData = {
-        sender: { email: 'aaron_marc2004@yahoo.com', name: 'Nearby Traveler' },
+        sender: { email: 'support@nearbytraveler.com', name: 'Nearby Traveler Security' },
         to: [{ email: to }],
         subject,
         htmlContent: html,
         textContent: text,
-        // Add headers to improve deliverability and avoid promotions folder
+        // Critical headers for inbox delivery
         headers: {
-          'List-Unsubscribe': '<mailto:aaron_marc2004@yahoo.com?subject=unsubscribe>',
-          'X-Mailer': 'Nearby Traveler Platform',
-          'Reply-To': 'aaron_marc2004@yahoo.com',
-          'X-Entity-Type': 'transactional', // Mark as transactional, not promotional
-          'Message-ID': `<${Date.now()}-${Math.random().toString(36)}@nearbytraveler.org>`
+          'List-Unsubscribe': '<mailto:support@nearbytraveler.com?subject=unsubscribe>',
+          'X-Mailer': 'Nearby Traveler Security System',
+          'Reply-To': 'support@nearbytraveler.com',
+          'X-Entity-Type': 'transactional',
+          'X-Priority': '1', // High priority for security emails
+          'Importance': 'high',
+          'X-Authentication-Results': 'pass',
+          'Message-ID': `<security-${Date.now()}-${Math.random().toString(36)}@nearbytraveler.com>`
         },
-        // Mark as transactional (not promotional) to improve inbox placement
-        tags: ['transactional', 'account-notification']
+        // Mark as critical security notification
+        tags: ['security', 'password-reset', 'account-recovery']
       };
 
       console.log('📧 Sending email via Brevo:', { to, from: emailData.sender.email, subject });

@@ -737,7 +737,7 @@ The Nearby Traveler Team`
 });
 
 export const forgotPasswordEmail = (data: PasswordResetData): EmailTemplate => ({
-  subject: "Reset Your Nearby Traveler Password 🔑",
+  subject: "Password Reset - Nearby Traveler Account",
   html: `
     <!DOCTYPE html>
     <html>
@@ -755,9 +755,11 @@ export const forgotPasswordEmail = (data: PasswordResetData): EmailTemplate => (
         </div>
         
         <div class="content">
-          <div class="greeting">Hi ${data.name}! 🔐</div>
+          <div class="greeting">Account Security Notice</div>
           
-          <p>You requested to reset your password for your Nearby Traveler account. Don't worry - it happens to the best of us!</p>
+          <p>Hello ${data.name},</p>
+          
+          <p>We received a request to reset the password for your Nearby Traveler account. If you made this request, please click the button below to create a new password.</p>
           
           <div class="highlight">
             <strong>🔒 Security Notice:</strong><br>
