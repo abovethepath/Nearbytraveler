@@ -1963,8 +1963,8 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
 
       // Store reset token in user record using correct column names
       await storage.updateUser(user.id, {
-        password_reset_token: resetToken,
-        password_reset_expires: expiresAt
+        passwordResetToken: resetToken,
+        passwordResetExpires: expiresAt
       });
 
       // Send password reset email
@@ -1998,15 +1998,15 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
 
       // Find user with this reset token using correct column name
       const user = await storage.getUserByResetToken(token);
-      if (!user || !user.password_reset_expires || new Date() > user.password_reset_expires) {
+      if (!user || !user.passwordResetExpires || new Date() > user.passwordResetExpires) {
         return res.status(400).json({ message: "Invalid or expired reset token" });
       }
 
       // Update password and clear reset token using correct column names
       await storage.updateUser(user.id, {
         password: newPassword, // Note: In production, this should be hashed
-        password_reset_token: null,
-        password_reset_expires: null
+        passwordResetToken: null,
+        passwordResetExpires: null
       });
 
       console.log(`✅ Password reset successful for user ${user.email}`);
