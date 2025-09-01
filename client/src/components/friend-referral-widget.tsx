@@ -161,9 +161,24 @@ ${emailForm.personalMessage || generatePersonalMessage()}`;
                 Send Email
               </Button>
               <Button
-                onClick={() => {
-                  const message = encodeURIComponent(`Hey! Check out Nearby Traveler - it's amazing for connecting with travelers and locals! ${signupUrl}`);
-                  window.open(`https://wa.me/?text=${message}`, '_blank');
+                onClick={async () => {
+                  const message = `Hey! Check out Nearby Traveler - it's amazing for connecting with travelers and locals! ${signupUrl}`;
+                  
+                  try {
+                    await navigator.clipboard.writeText(message);
+                    toast({
+                      title: "Message Copied!",
+                      description: "WhatsApp message copied to clipboard. Open WhatsApp and paste to any chat.",
+                    });
+                    
+                    // Still try to open WhatsApp for convenience, but with message copied as backup
+                    setTimeout(() => {
+                      window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
+                    }, 500);
+                  } catch (error) {
+                    // Fallback: just open WhatsApp
+                    window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
+                  }
                 }}
                 className="bg-green-500 hover:bg-green-600 text-white text-sm"
               >
