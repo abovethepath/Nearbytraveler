@@ -646,6 +646,20 @@ function Navbar() {
               >
                 <span className="mr-3">⚙️</span>Settings
               </Link>
+              
+              {/* Sign Out button for mobile */}
+              <button
+                type="button"
+                className="w-full text-left block py-3 px-4 rounded-lg text-lg font-medium transition-colors text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setIsMobileMenuOpen(false);
+                  setTimeout(() => handleLogout(), 100); // Defer logout until after menu closes
+                }}
+              >
+                <span className="mr-3">🚪</span>Sign Out
+              </button>
             </div>
           </div>
         </div>,

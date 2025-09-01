@@ -1,0 +1,112 @@
+Got it—your snippet is just the hamburger toggle. The usual reason “Sign out” doesn’t fire from the mobile menu is: the menu closes (unmounts) before your handler runs, or the click is being intercepted by the sheet/overlay. Here’s a drop-in fix that covers both.
+
+Drop-in Sign Out item (mobile menu)
+
+Use this inside your mobile menu list (not the hamburger). It:
+
+stops propagation so the outer menu toggle doesn’t swallow the event,
+
+closes the menu,
+
+then performs logout after the menu unmount (via setTimeout),
+
+calls your API, clears client auth, and navigates.
+
+import { useLocation } from "wouter";
+import { useQueryClient } from "@tanstack/react-query";
+import { useAuth } from "@/App";
+import { authStorage } from "@/lib/auth";
+
+function MobileSignOutItem({ setMobileMenuOpen }: { setMobileMenuOpen: (v: boolean) => void }) {
+  const [, setLocation] = useLocation();
+  const qc = useQueryClient();
+  const { setUser } = useAuth();
+
+  async function doLogout() {
+    try {
+      await fetch("/api/auth/logout", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+      }).catch(() => {});
+    } finally {
+      // clear client state no matter what
+      authStorage?.clear?.();
+      qc.clear();
+      setUser?.(null);
+      setLocation("/signin"); // or "/"
+    }
+  }
+
+  return (
+    <button
+      type="button"
+      className="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();             // don't let parent close first
+        setMobileMenuOpen(false);        // close the menu
+        setTimeout(doLogout, 0);         // defer until after unmount
+      }}
+      data-testid="mobile-signout"
+    >
+      Sign out
+    </button>
+  );
+}
+
+export default MobileSignOutItem;
+
+Common gotchas to check (quick)
+
+No Link nesting: Don’t wrap the sign-out button in a <Link> or place it inside an <a href>. It should be a plain <button type="button">.
+
+Overlay intercepting clicks: If your menu has a backdrop like <div className="fixed inset-0 ...">, make sure it doesn’t sit on top of your items. Add pointer-events-none to the backdrop and pointer-events-auto to the actual panel, or ensure the panel has a higher z-index (e.g., z-50) than the backdrop (z-40).
+
+Sheet/Drawer components: If you’re using shadcn Sheet, prefer item handlers on onSelect for DropdownMenuItem. For custom buttons (like above), onClick is fine—just close then setTimeout.
+
+Form context: If your mobile menu lives inside a <form>, ensure the sign-out button has type="button" to avoid form submit navigation.
+
+Server route exists: Confirm you have POST /api/auth/logout that destroys the session and clears the cookie:
+
+app.post("/api/auth/logout", (req, res) => {
+  req.session?.destroy(() => {
+    res.clearCookie("connect.sid");
+    res.status(200).json({ ok: true });
+  });
+});
+
+
+Auth gate isn’t bouncing you back in: If your app fetches /api/auth/user on load and auto-redirects when unauthenticated, make sure it sends you to /signin, not back to /api/login.
+
+How to wire it with your hamburger
+
+Wherever you render your mobile panel when mobileMenuOpen is true, pass the setter:
+
+{mobileMenuOpen && (
+  <div className="fixed inset-0 z-40">
+    {/* Backdrop */}
+    <div className="fixed inset-0 bg-black/40 pointer-events-none" />
+    {/* Panel */}
+    <div className="absolute right-0 top-16 w-72 bg-white dark:bg-gray-900 rounded-2xl shadow-xl z-50 pointer-events-auto p-2">
+      {/* ...other items... */}
+      <MobileSignOutItem setMobileMenuOpen={setMobileMenuOpen} />
+    </div>
+  </div>
+)}
+
+
+If this still doesn’t fire, add a quick console trace:
+
+onClick={(e) => {
+  console.log("signout click"); // should log
+  e.preventDefault();
+  e.stopPropagation();
+  setMobileMenuOpen(false);
+  setTimeout(() => { console.log("doLogout"); doLogout(); }, 0);
+}}
+
+
+If you don’t see “signout click”, an element is intercepting it—check the overlay z-index/pointer-events. If you see “signout click” but not “doLogout”, the component unmounted before completing; the setTimeout fix above handles that.
+
+Want me to look at your mobile menu JSX? Paste the markup around where you render the sign-out button, and I’ll patch it inline.
