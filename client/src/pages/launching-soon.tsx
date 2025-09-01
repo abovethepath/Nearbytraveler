@@ -33,10 +33,7 @@ export default function LaunchingSoon() {
 
   const waitlistMutation = useMutation({
     mutationFn: async (data: WaitlistForm) => {
-      const response = await apiRequest("/api/waitlist", {
-        method: "POST",
-        body: data,
-      });
+      const response = await apiRequest("POST", "/api/waitlist", data);
       return response;
     },
     onSuccess: () => {
