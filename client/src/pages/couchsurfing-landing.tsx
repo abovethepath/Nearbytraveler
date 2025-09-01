@@ -129,8 +129,8 @@ export default function CouchsurfingLanding() {
               {/* Static powerful quote */}
               <div className="mb-2 text-center w-full">
                 <p className="text-sm md:text-lg lg:text-xl font-bold text-zinc-800 dark:text-zinc-200 italic px-2">
-                  <span className="sm:hidden">Where Cultural Exchange Lives On</span>
-                  <span className="hidden sm:inline">Where the Spirit of Cultural Exchange Lives On</span>
+                  <span className="sm:hidden">Where Authentic Connections Live On</span>
+                  <span className="hidden sm:inline">Where the Spirit of Authentic Connections Lives On</span>
                 </p>
               </div>
               <div className="overflow-hidden relative w-full max-w-sm sm:max-w-md h-[200px] sm:h-[250px] md:h-[350px] rounded-2xl">
@@ -159,7 +159,7 @@ export default function CouchsurfingLanding() {
                 We Know You've Loved Hosting
               </h2>
               <p className="text-lg sm:text-xl text-zinc-600 dark:text-zinc-400 max-w-4xl mx-auto leading-relaxed">
-                If you've hosted before, you know the magic: meeting fascinating people, sharing your city, learning about new cultures. But hosting can sometimes just not be possible with work or family life. That doesn't mean you're less generous — it just means life changes. With Nearby Traveler, you can keep the spirit of cultural exchange alive in a way that works for you today.
+                If you've hosted before, you know the magic: meeting fascinating people, sharing your city, learning about new cultures. But hosting can sometimes just not be possible with work or family life. That doesn't mean you're less generous — it just means life changes. With Nearby Traveler, you can keep the spirit of meaningful connections alive in a way that works for you today.
               </p>
             </div>
           </div>
@@ -195,7 +195,7 @@ export default function CouchsurfingLanding() {
               <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-orange-500">
                 <div className="flex items-start">
                   <Globe className="w-6 h-6 text-orange-600 mt-1 mr-3 flex-shrink-0" />
-                  <p className="text-zinc-700 dark:text-zinc-300">Share local secrets and experience cultural exchange</p>
+                  <p className="text-zinc-700 dark:text-zinc-300">Share local secrets and create meaningful experiences</p>
                 </div>
               </div>
               
@@ -276,7 +276,7 @@ export default function CouchsurfingLanding() {
             </p>
             <div className="mt-8 max-w-4xl mx-auto">
               <p className="text-xl sm:text-2xl font-semibold text-zinc-800 dark:text-zinc-200 leading-relaxed">
-                That's millions more cultural exchanges, friendships, and adventures waiting to happen.
+                That's millions more genuine connections, friendships, and adventures waiting to happen.
               </p>
             </div>
           </div>
@@ -340,7 +340,7 @@ export default function CouchsurfingLanding() {
               <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-purple-500">
                 <div className="flex items-start">
                   <Coffee className="w-6 h-6 text-purple-600 mt-1 mr-3 flex-shrink-0" />
-                  <p className="text-zinc-700 dark:text-zinc-300">Experiencing genuine cultural exchange</p>
+                  <p className="text-zinc-700 dark:text-zinc-300">Building genuine friendships</p>
                 </div>
               </div>
               
@@ -450,7 +450,7 @@ export default function CouchsurfingLanding() {
               <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-purple-500">
                 <div className="flex items-start">
                   <Heart className="w-6 h-6 text-purple-600 mt-1 mr-3 flex-shrink-0" />
-                  <p className="text-zinc-700 dark:text-zinc-300">Experiencing genuine cultural exchange</p>
+                  <p className="text-zinc-700 dark:text-zinc-300">Creating authentic connections</p>
                 </div>
               </div>
               
@@ -519,7 +519,7 @@ export default function CouchsurfingLanding() {
                 Host when your schedule allows. Meet travelers when hosting isn't possible.
               </p>
               <p className="text-xl sm:text-2xl font-semibold">
-                Your generosity and love for cultural exchange never has to stop.
+                Your generosity and love for authentic connections never has to stop.
               </p>
             </div>
           </div>
@@ -536,7 +536,7 @@ export default function CouchsurfingLanding() {
                 We Know You've Loved Surfing
               </h2>
               <p className="text-lg sm:text-xl text-zinc-600 dark:text-zinc-400 max-w-4xl mx-auto leading-relaxed">
-                If you've surfed before, you know the magic: authentic local insights, genuine cultural exchange, and the thrill of discovering a place through someone else's eyes. But finding the right hosts and navigating unpredictable situations can be challenging. With Nearby Traveler, you can keep that authentic travel spirit alive with more options and fewer limitations. Plus you can still surf, we love couchsurfing, but now you can expand who you meet outside the limitations of just couchsurfing. Open your world to ALL TRAVELERS.
+                If you've surfed before, you know the magic: authentic local insights, genuine connections, and the thrill of discovering a place through someone else's eyes. But finding the right hosts and navigating unpredictable situations can be challenging. With Nearby Traveler, you can keep that authentic travel spirit alive with more options and fewer limitations. Plus you can still surf, we love couchsurfing, but now you can expand who you meet outside the limitations of just couchsurfing. Open your world to ALL TRAVELERS.
               </p>
             </div>
           </div>
