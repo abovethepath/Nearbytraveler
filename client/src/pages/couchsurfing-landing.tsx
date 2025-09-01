@@ -606,6 +606,78 @@ export default function CouchsurfingLanding() {
         </div>
       </div>
 
+      {/* FAQ SECTION */}
+      <section className="py-16 sm:py-24 bg-white dark:bg-gray-900">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900 dark:text-white mb-4">
+              FAQ (short & honest)
+            </h2>
+          </div>
+          
+          <div className="space-y-8">
+            <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6">
+              <h3 className="text-lg font-semibold text-zinc-900 dark:text-white mb-2">
+                Is this Couchsurfing?
+              </h3>
+              <p className="text-zinc-600 dark:text-zinc-300">
+                No. Nearby Traveler isn't affiliated with Couchsurfing™. We share the same spirit and aim to complement it.
+              </p>
+            </div>
+            
+            <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6">
+              <h3 className="text-lg font-semibold text-zinc-900 dark:text-white mb-2">
+                Do I have to host?
+              </h3>
+              <p className="text-zinc-600 dark:text-zinc-300">
+                No. Meet in public first. Host only if/when it feels right.
+              </p>
+            </div>
+            
+            <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6">
+              <h3 className="text-lg font-semibold text-zinc-900 dark:text-white mb-2">
+                Is it free?
+              </h3>
+              <p className="text-zinc-600 dark:text-zinc-300">
+                Early beta will be free while we learn.
+              </p>
+            </div>
+            
+            <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6">
+              <h3 className="text-lg font-semibold text-zinc-900 dark:text-white mb-2">
+                How do you keep people safe?
+              </h3>
+              <p className="text-zinc-600 dark:text-zinc-300">
+                Public-first meetups, in-app messaging, block/report, and planned verification during beta. Use common sense; your comfort comes first.
+              </p>
+            </div>
+          </div>
+          
+          {/* CTA Section */}
+          <div className="text-center mt-12">
+            <Button 
+              onClick={() => {
+                trackEvent('signup_cta_click', 'couchsurfing_landing', 'faq_join_waitlist');
+                setLocation('/launching-soon');
+              }}
+              className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-8 py-4 rounded-lg shadow-lg text-lg mb-4"
+              data-testid="button-faq-join-waitlist"
+            >
+              <Heart className="w-5 h-5 mr-2 inline" />
+              Join the waitlist
+            </Button>
+            
+            <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-4">
+              Free during beta • Same spirit • More ways to connect
+            </p>
+            
+            <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-6 max-w-2xl mx-auto">
+              Note: Couchsurfing™ is a trademark of its respective owner. Nearby Traveler is not affiliated with Couchsurfing™—we're fans, and we aim to complement the community you love.
+            </p>
+          </div>
+        </div>
+      </section>
+
       <Footer />
     </div>
   );
