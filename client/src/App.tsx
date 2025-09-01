@@ -99,12 +99,12 @@ function JoinPageWithSignIn() {
         <div className="text-center mt-4">
           <p className="text-gray-600 dark:text-gray-400">
             Already have an account?{" "}
-            <a 
-              href="/api/login"
+            <button 
+              onClick={() => window.location.href = '/api/login'}
               className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium underline"
             >
               Sign In
-            </a>
+            </button>
           </p>
         </div>
       </div>
@@ -501,14 +501,6 @@ function Router() {
       }
     }
 
-    // Don't intercept API routes - let backend handle them
-    if (location.startsWith('/api/')) {
-      console.log('🔄 API ROUTE DETECTED:', location, '- redirecting to backend');
-      window.location.href = location;
-      return <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-      </div>;
-    }
 
     if (!isActuallyAuthenticated) {
       console.log('🏠 STREAMLINED LANDING - User not authenticated, showing streamlined landing page for:', location);
