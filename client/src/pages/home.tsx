@@ -2765,14 +2765,7 @@ export default function Home() {
             <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border shadow-sm">
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-                    {effectiveUser?.isCurrentlyTraveling && effectiveUser?.travelDestination 
-                      ? `Traveling to ${effectiveUser.travelDestination.split(',')[0]} - Community Events`
-                      : effectiveUser?.hometownCity 
-                        ? `${effectiveUser.hometownCity.split(',')[0]} - Community Events`
-                        : 'Community Events'
-                    }
-                  </h2>
+                  <h2 className="text-xl font-bold text-gray-900 dark:text-white">Community Events</h2>
                   <p className="text-sm text-gray-600 dark:text-gray-400">Events created by fellow travelers and locals</p>
                 </div>
                 <Button
@@ -2802,12 +2795,7 @@ export default function Home() {
                   <div>
                     <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
                       <Sparkles className="w-5 h-5 text-blue-600" />
-                      {effectiveUser?.isCurrentlyTraveling && effectiveUser?.travelDestination 
-                        ? `Traveling to ${effectiveUser.travelDestination.split(',')[0]} - Discover Events`
-                        : effectiveUser?.hometownCity 
-                          ? `${effectiveUser.hometownCity.split(',')[0]} - Discover Events`
-                          : 'Discover Events'
-                      }
+                      Discover Events
                     </h2>
                     <p className="text-sm text-gray-600 dark:text-gray-400">AI-recommended and local event listings</p>
                   </div>
