@@ -9189,6 +9189,81 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Chatroom List Modal */}
+      <Dialog open={showChatroomList} onOpenChange={setShowChatroomList}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <MessageCircle className="w-5 h-5 text-blue-600" />
+              Your City Chatrooms ({userChatrooms.length})
+            </DialogTitle>
+            <DialogDescription>
+              Chatrooms you've joined for your hometown and travel destinations
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-3">
+            {userChatrooms.length > 0 ? (
+              userChatrooms.map((chatroom: any) => (
+                <div 
+                  key={chatroom.id}
+                  className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer"
+                  onClick={() => {
+                    setShowChatroomList(false);
+                    setLocation(`/simple-chatroom/${chatroom.id}`);
+                  }}
+                >
+                  <div className="flex-1">
+                    <h4 className="font-medium text-gray-900 dark:text-white">
+                      {chatroom.name}
+                    </h4>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">
+                      {chatroom.city}, {chatroom.country}
+                    </p>
+                    {chatroom.description && (
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        {chatroom.description}
+                      </p>
+                    )}
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-gray-400" />
+                </div>
+              ))
+            ) : (
+              <div className="text-center py-8">
+                <MessageCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No chatrooms yet</h3>
+                <p className="text-gray-600 dark:text-gray-300 mb-4">
+                  You'll automatically join chatrooms for your hometown and travel destinations
+                </p>
+                <Button 
+                  onClick={() => {
+                    setShowChatroomList(false);
+                    setLocation('/city-chatrooms');
+                  }}
+                  className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white"
+                >
+                  Browse All Chatrooms
+                </Button>
+              </div>
+            )}
+          </div>
+          
+          <div className="border-t pt-4 mt-4">
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setShowChatroomList(false);
+                setLocation('/city-chatrooms');
+              }}
+              className="w-full"
+            >
+              Browse All City Chatrooms
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
       
       </div>
     </>
