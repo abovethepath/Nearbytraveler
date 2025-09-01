@@ -1,5 +1,5 @@
 import { db, pool } from "./db";
-import { users, connections, messages, events, eventParticipants, travelPlans, tripItineraries, itineraryItems, sharedItineraries, notifications, blockedUsers, travelMemories, travelMemoryLikes, travelMemoryComments, userPhotos, userReferences, referrals, proximityNotifications, customLocationActivities, cityActivities, userCustomActivities, userCityInterests, cityLandmarks, landmarkRatings, secretLocalExperiences, secretLocalExperienceLikes, secretExperienceLikes, cityPages, citychatrooms, chatroomMembers, chatroomMessages, chatroomAccessRequests, chatroomInvitations, meetupChatrooms, meetupChatroomMessages, businessOffers, businessOfferRedemptions, businessReferrals, businessLocations, businessInterestNotifications, businessCustomerPhotos, cityPhotos, travelBlogPosts, travelBlogLikes, travelBlogComments, instagramPosts, quickMeetups, quickMeetupParticipants, quickMeetupTemplates, quickDeals, userNotificationSettings, businessSubscriptions, photoAlbums, externalEventInterests, vouches, vouchCredits, type User, type InsertUser, type Connection, type InsertConnection, type Message, type InsertMessage, type Event, type InsertEvent, type EventParticipant, type EventParticipantWithUser, type TravelPlan, type InsertTravelPlan, type TripItinerary, type InsertTripItinerary, type ItineraryItem, type InsertItineraryItem, type SharedItinerary, type InsertSharedItinerary, type Notification, type InsertNotification, type UserReference, type Referral, type InsertReferral, type ProximityNotification, type InsertProximityNotification, type CityLandmark, type InsertCityLandmark, type LandmarkRating, type InsertLandmarkRating, type SecretLocalExperience, type InsertSecretLocalExperience, type ChatroomInvitation, type InsertChatroomInvitation, type BusinessOffer, type InsertBusinessOffer, type BusinessOfferRedemption, type InsertBusinessOfferRedemption, type BusinessLocation, type InsertBusinessLocation, type BusinessInterestNotification, type InsertBusinessInterestNotification, type BusinessCustomerPhoto, type InsertBusinessCustomerPhoto, type CityPhoto, type InsertCityPhoto, type TravelBlogPost, type InsertTravelBlogPost, type TravelBlogLike, type InsertTravelBlogLike, type TravelBlogComment, type InsertTravelBlogComment, type InstagramPost, type InsertInstagramPost, type QuickMeetupTemplate, type InsertQuickMeetupTemplate, type UserNotificationSettings, type InsertUserNotificationSettings, type BusinessSubscription, type InsertBusinessSubscription, type PhotoAlbum, type InsertPhotoAlbum, type ExternalEventInterest, type InsertExternalEventInterest, type Vouch, type VouchCredits, type VouchWithUsers } from "@shared/schema";
+import { users, connections, messages, events, eventParticipants, travelPlans, tripItineraries, itineraryItems, sharedItineraries, notifications, blockedUsers, travelMemories, travelMemoryLikes, travelMemoryComments, userPhotos, userReferences, referrals, proximityNotifications, customLocationActivities, cityActivities, userCustomActivities, userCityInterests, cityLandmarks, landmarkRatings, secretLocalExperiences, secretLocalExperienceLikes, secretExperienceLikes, cityPages, citychatrooms, chatroomMembers, chatroomMessages, chatroomAccessRequests, chatroomInvitations, meetupChatrooms, meetupChatroomMessages, businessOffers, businessOfferRedemptions, businessReferrals, businessLocations, businessInterestNotifications, businessCustomerPhotos, cityPhotos, travelBlogPosts, travelBlogLikes, travelBlogComments, instagramPosts, quickMeetups, quickMeetupParticipants, quickMeetupTemplates, quickDeals, userNotificationSettings, businessSubscriptions, photoAlbums, externalEventInterests, vouches, vouchCredits, waitlistLeads, type User, type InsertUser, type Connection, type InsertConnection, type Message, type InsertMessage, type Event, type InsertEvent, type EventParticipant, type EventParticipantWithUser, type TravelPlan, type InsertTravelPlan, type TripItinerary, type InsertTripItinerary, type ItineraryItem, type InsertItineraryItem, type SharedItinerary, type InsertSharedItinerary, type Notification, type InsertNotification, type UserReference, type Referral, type InsertReferral, type ProximityNotification, type InsertProximityNotification, type CityLandmark, type InsertCityLandmark, type LandmarkRating, type InsertLandmarkRating, type SecretLocalExperience, type InsertSecretLocalExperience, type ChatroomInvitation, type InsertChatroomInvitation, type BusinessOffer, type InsertBusinessOffer, type BusinessOfferRedemption, type InsertBusinessOfferRedemption, type BusinessLocation, type InsertBusinessLocation, type BusinessInterestNotification, type InsertBusinessInterestNotification, type WaitlistLead, type InsertWaitlistLead, type BusinessCustomerPhoto, type InsertBusinessCustomerPhoto, type CityPhoto, type InsertCityPhoto, type TravelBlogPost, type InsertTravelBlogPost, type TravelBlogLike, type InsertTravelBlogLike, type TravelBlogComment, type InsertTravelBlogComment, type InstagramPost, type InsertInstagramPost, type QuickMeetupTemplate, type InsertQuickMeetupTemplate, type UserNotificationSettings, type InsertUserNotificationSettings, type BusinessSubscription, type InsertBusinessSubscription, type PhotoAlbum, type InsertPhotoAlbum, type ExternalEventInterest, type InsertExternalEventInterest, type Vouch, type VouchCredits, type VouchWithUsers } from "@shared/schema";
 import { eq, and, or, ilike, gte, desc, avg, count, sql, isNotNull, ne, lte, lt, gt, asc, like, inArray, getTableColumns, isNull } from "drizzle-orm";
 import { promises as fs } from 'fs';
 import path from 'path';
@@ -433,6 +433,10 @@ export interface IStorage {
   getVouchesForUser(userId: number): Promise<any[]>;
   getVouchesGivenByUser(userId: number): Promise<any[]>;
   getVouchCredits(userId: number): Promise<any>;
+  
+  // Waitlist methods
+  createWaitlistLead(lead: InsertWaitlistLead): Promise<WaitlistLead>;
+  getWaitlistLeads(): Promise<WaitlistLead[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -10621,6 +10625,36 @@ export class DatabaseStorage implements IStorage {
       }
     } catch (error) {
       console.error('Error awarding aura points:', error);
+    }
+  }
+
+  // ========================================
+  // WAITLIST METHODS
+  // ========================================
+
+  async createWaitlistLead(leadData: InsertWaitlistLead): Promise<WaitlistLead> {
+    try {
+      const [lead] = await db
+        .insert(waitlistLeads)
+        .values(leadData)
+        .returning();
+      return lead;
+    } catch (error) {
+      console.error('Error creating waitlist lead:', error);
+      throw error;
+    }
+  }
+
+  async getWaitlistLeads(): Promise<WaitlistLead[]> {
+    try {
+      const leads = await db
+        .select()
+        .from(waitlistLeads)
+        .orderBy(desc(waitlistLeads.submittedAt));
+      return leads;
+    } catch (error) {
+      console.error('Error fetching waitlist leads:', error);
+      return [];
     }
   }
 }

@@ -548,6 +548,16 @@ export const blockedUsers = pgTable("blocked_users", {
   unique().on(table.blockerId, table.blockedId), // Prevent duplicate blocks
 ]);
 
+// Waitlist for launch leads
+export const waitlistLeads = pgTable("waitlist_leads", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  email: text("email").notNull().unique(),
+  submittedAt: timestamp("submitted_at").defaultNow(),
+  contacted: boolean("contacted").default(false),
+  notes: text("notes"), // For admin notes about follow-up
+});
+
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
   createdAt: true,
@@ -562,6 +572,16 @@ export const insertUserSchema = createInsertSchema(users).omit({
   hometownCountry: z.string().min(1, "Hometown country is required"),
   interests: z.array(z.string()).min(3, "Please select at least 3 interests"),
 });
+
+export const insertWaitlistLeadSchema = createInsertSchema(waitlistLeads).omit({
+  id: true,
+  submittedAt: true,
+  contacted: true,
+  notes: true,
+});
+
+export type WaitlistLead = typeof waitlistLeads.$inferSelect;
+export type InsertWaitlistLead = z.infer<typeof insertWaitlistLeadSchema>;
 
 export const insertConnectionSchema = createInsertSchema(connections).omit({
   id: true,

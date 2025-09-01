@@ -51,7 +51,8 @@ import {
   references,
   userReferences,
   userEventInterests,
-  vouches
+  vouches,
+  insertWaitlistLeadSchema
 } from "../shared/schema";
 import { sql, eq, or, count, and, ne, desc, gte, lte, lt, isNotNull, inArray, asc, ilike, like, isNull, gt } from "drizzle-orm";
 
@@ -3260,6 +3261,41 @@ Ready to start connecting? Questions? Just reply anytime!
 
   // Registration endpoint
   app.post("/api/register", handleRegistration);
+
+  // WAITLIST ENDPOINT - for collecting launch leads
+  app.post("/api/waitlist", async (req, res) => {
+    try {
+      const result = insertWaitlistLeadSchema.safeParse(req.body);
+      
+      if (!result.success) {
+        return res.status(400).json({ 
+          message: "Invalid data", 
+          errors: result.error.errors 
+        });
+      }
+
+      const lead = await storage.createWaitlistLead(result.data);
+      
+      console.log(`📧 WAITLIST: New lead added - ${result.data.name} (${result.data.email})`);
+      
+      res.status(201).json({ 
+        message: "Successfully joined waitlist",
+        lead: { name: lead.name, email: lead.email } 
+      });
+    } catch (error: any) {
+      console.error('Error creating waitlist lead:', error);
+      
+      if (error.code === '23505') { // Duplicate email
+        return res.status(409).json({ 
+          message: "This email is already on our waitlist" 
+        });
+      }
+      
+      res.status(500).json({ 
+        message: "Failed to join waitlist. Please try again." 
+      });
+    }
+  });
 
   // MANUAL WELCOME MESSAGE ENDPOINT - for businesses that missed the automatic welcome
   app.post("/api/send-manual-welcome/:userId", async (req, res) => {

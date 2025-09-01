@@ -123,7 +123,7 @@ export default function LandingStreamlined() {
         <Button 
           onClick={() => {
             trackEvent('signup_cta_click', 'landing_page', 'floating_join_now');
-            setLocation('/join');
+            setLocation('/launching-soon');
           }}
           className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
         >
@@ -208,7 +208,7 @@ export default function LandingStreamlined() {
                 <Button
                   onClick={() => {
                     trackEvent('signup_cta_click', 'landing_page', 'main_hero_button');
-                    setLocation('/join');
+                    setLocation('/launching-soon');
                   }}
                   size="lg"
                   className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
@@ -293,7 +293,7 @@ export default function LandingStreamlined() {
               <Button 
                 onClick={() => {
                   trackEvent('signup_cta_click', 'landing_page', 'social_proof_join');
-                  setLocation('/join');
+                  setLocation('/launching-soon');
                 }}
                 className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-medium px-8 py-3 rounded-lg shadow-sm transition-all duration-200"
               >
@@ -497,7 +497,7 @@ export default function LandingStreamlined() {
               <button 
                 onClick={() => {
                   trackEvent('signup_cta_click', 'landing_page', 'transformation_join_now');
-                  setLocation('/join');
+                  setLocation('/launching-soon');
                 }}
                 className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
               >
@@ -791,7 +791,7 @@ export default function LandingStreamlined() {
             <button 
               onClick={() => {
                 trackEvent('signup_cta_click', 'landing_page', 'find_your_people');
-                setLocation('/join');
+                setLocation('/launching-soon');
               }}
               className="rounded-xl bg-orange-500 hover:bg-orange-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-medium px-6 py-3 shadow transition-all duration-200"
             >

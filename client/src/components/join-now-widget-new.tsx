@@ -529,11 +529,11 @@ export default function JoinNowWidgetNew() {
             </Button>
             
             <Button
-              onClick={() => setLocation('/')}
+              onClick={() => setLocation('/launching-soon')}
               variant="outline"
               className="w-full bg-gray-200 dark:bg-gray-700 border-gray-400 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600"
             >
-              Back to Landing Page
+              Join Waitlist Instead
             </Button>
           </div>
         </>
