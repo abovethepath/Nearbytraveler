@@ -879,10 +879,18 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
     });
   });
   
-  // POST logout for client-side calls
+  // POST logout for client-side calls - BULLETPROOF VERSION
   app.post("/api/auth/logout", (req, res) => {
     console.log("🔐 Logout POST");
+    const cookieOpts = { 
+      path: "/", 
+      sameSite: "lax" as const, 
+      secure: false, 
+      httpOnly: true 
+    };
+    
     if (!(req as any).session) {
+      res.clearCookie("nt.sid", cookieOpts); // Clear cookie even if no session
       return res.status(200).json({ ok: true });
     }
     
@@ -890,9 +898,14 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       if (err) {
         console.error("Session destroy error:", err);
       }
-      res.clearCookie("connect.sid");
+      res.clearCookie("nt.sid", cookieOpts); // Use correct cookie name
       return res.status(200).json({ ok: true });
     });
+  });
+
+  // QUICK DEBUG - Check who's logged in
+  app.get("/api/auth/whoami", (req: any, res) => {
+    res.json({ user: req.session?.user || null });
   });
 
   // Auth check route
@@ -11908,6 +11921,12 @@ Questions? Just reply to this message. Welcome aboard!
   app.post("/api/logout", (req, res) => {
     try {
       console.log('🚪 Server logout called for session:', req.sessionID);
+      const cookieOpts = { 
+        path: "/", 
+        sameSite: "lax" as const, 
+        secure: false, 
+        httpOnly: true 
+      };
       
       // Destroy the session
       req.session.destroy((err) => {
@@ -11918,7 +11937,8 @@ Questions? Just reply to this message. Welcome aboard!
         
         console.log('✅ Session destroyed successfully');
         
-        // Clear the session cookie
+        // Clear the session cookie with correct name
+        res.clearCookie('nt.sid', cookieOpts); // Use correct cookie name
         res.clearCookie('connect.sid', { 
           path: '/',
           httpOnly: true,

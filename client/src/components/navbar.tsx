@@ -259,9 +259,9 @@ function Navbar() {
 
 
 
-  // LOGOUT SYSTEM - Calls server endpoint then clears client
+  // LOGOUT SYSTEM - Bulletproof version according to guide
   const handleLogout = async () => {
-    console.log('🚪 Starting logout process');
+    console.log('🚪 Starting bulletproof logout process');
 
     try {
       // Step 1: Call server logout to destroy session
@@ -296,14 +296,18 @@ function Navbar() {
       setDirectUser(null);
       setUser(null);
 
-      // Step 6: Force redirect to landing page
-      console.log('Step 6: Redirecting to landing page');
-      window.location.href = '/';
+      // Step 6: Small delay then redirect (ensures cleanup happens)
+      console.log('Step 6: Waiting 100ms then redirecting to landing page');
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 100);
 
     } catch (error) {
       console.error('❌ Logout error:', error);
-      // Force redirect anyway
-      window.location.href = '/';
+      // Force redirect anyway after delay
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 100);
     }
   };
 

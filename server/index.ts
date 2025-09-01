@@ -64,18 +64,7 @@ app.use(cors({
   allowedHeaders: ["Content-Type","Authorization"],
 }));
 
-// Session middleware for authentication
-app.use(session({
-  secret: process.env.SESSION_SECRET || 'fallback-secret-for-demo',
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    httpOnly: true,
-    secure: false, // Set to false for development
-    sameSite: 'lax', // Important for Replit
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 1 week
-  },
-}));
+// REMOVED: Duplicate session middleware - using the one below with Redis support
 
 // ===== CRITICAL API ROUTES - MUST BE FIRST TO BYPASS VITE =====
 // Register these API routes BEFORE any other middleware to prevent Vite interception
