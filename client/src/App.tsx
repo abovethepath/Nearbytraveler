@@ -217,6 +217,12 @@ function Router() {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [location, setLocation] = useLocation();
+  
+  // CRITICAL FIX: Don't render anything for API routes
+  if (location.startsWith('/api/')) {
+    console.log('🔄 ROUTER: API route detected, not rendering React app:', location);
+    return null;
+  }
   const queryClient = useQueryClient();
   
   // Track page views for analytics
