@@ -527,7 +527,7 @@ export function PhotoAlbumWidget({ userId, isOwnProfile = false }: TravelMemoryW
 
       {/* Create Travel Memory Modal */}
       <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700">
           <DialogHeader>
             <DialogTitle>Create Travel Memory</DialogTitle>
             <DialogDescription>
