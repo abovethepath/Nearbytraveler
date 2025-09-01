@@ -258,7 +258,7 @@ export default function CouchsurfingLanding() {
               <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-violet-500">
                 <div className="flex items-start">
                   <Compass className="w-6 h-6 text-violet-600 mt-1 mr-3 flex-shrink-0" />
-                  <p className="text-zinc-700 dark:text-zinc-300">Reconnect with travelers you meet with our "Discover People Nearby" features</p>
+                  <p className="text-zinc-700 dark:text-zinc-300">Reconnect with travelers you meet years later, with our "Discover People Nearby" features</p>
                 </div>
               </div>
             </div>
