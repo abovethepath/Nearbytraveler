@@ -44,7 +44,7 @@ export default function CouchsurfingLanding() {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentWisdom((prev) => (prev + 1) % wisdomSayings.length);
-    }, 3000);
+    }, 5000);
     return () => clearInterval(interval);
   }, []);
 
