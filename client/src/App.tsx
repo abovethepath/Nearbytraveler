@@ -1054,6 +1054,12 @@ function Router() {
     }
   };
 
+  // Don't render React app for API routes - let browser handle them
+  if (location.startsWith('/api/')) {
+    console.log('🔄 API ROUTE DETECTED - letting browser handle:', location);
+    return null;
+  }
+
   return (
     <AuthContext.Provider value={authValue}>
       {!authValue.isAuthenticated ? (
