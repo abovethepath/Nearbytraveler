@@ -11540,13 +11540,9 @@ Questions? Just reply to this message. Welcome aboard!
   // QR CODE & REFERRAL SYSTEM ROUTES
   
   // Generate referral code and QR code for user
-  app.get('/api/user/qr-code', async (req: any, res) => {
-    if (!req.session.user) {
-      return res.status(401).json({ error: 'Authentication required' });
-    }
-
+  app.get('/api/user/qr-code', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.session.user.id;
+      const userId = req.user.claims.sub;
       let user = await storage.getUser(userId);
       
       if (!user) {
@@ -11566,7 +11562,7 @@ Questions? Just reply to this message. Welcome aboard!
         user = await storage.getUser(userId); // Refresh user data
       }
 
-      const signupUrl = `${req.protocol}://${req.get('host')}/signup/qr/${user.referralCode}`;
+      const signupUrl = `${req.protocol}://${req.get('host')}/qr-signup?code=${user.referralCode}`;
       
       // Generate QR code as data URL
       const qrCodeDataUrl = await QRCode.toDataURL(signupUrl, {
