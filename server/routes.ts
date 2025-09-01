@@ -11630,11 +11630,11 @@ Questions? Just reply to this message. Welcome aboard!
   });
 
   // Connection note management
-  app.patch('/api/connections/:connectionId/note', isAuthenticated, async (req: any, res) => {
+  app.patch('/api/connections/:connectionId/note', async (req: any, res) => {
     try {
       const connectionId = parseInt(req.params.connectionId);
       const { connectionNote } = req.body;
-      const userId = req.user.claims.sub;
+      const userId = parseInt(req.headers['x-user-id'] || '0');
 
       // Verify the user is part of this connection
       const [connection] = await db
