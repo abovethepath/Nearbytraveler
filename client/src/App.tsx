@@ -449,6 +449,11 @@ function Router() {
     console.log('🔍 ROUTING DEBUG - isAuthenticated:', authValue.isAuthenticated, 'location:', location, 'user:', user);
     console.log('🔍 Current window.location.pathname:', window.location.pathname);
 
+    // Don't interfere with API routes - let browser handle them naturally
+    if (location.startsWith('/api/')) {
+      console.log('🔄 API ROUTE DETECTED - not interfering with browser navigation');
+      return null;
+    }
 
     // IMPROVED AUTHENTICATION CHECK: Multiple fallbacks to ensure authenticated users stay authenticated
     const hasUserInLocalStorage = !!localStorage.getItem('user');
