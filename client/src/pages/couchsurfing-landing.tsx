@@ -129,8 +129,8 @@ export default function CouchsurfingLanding() {
               {/* Static powerful quote */}
               <div className="mb-2 text-center w-full">
                 <p className="text-sm md:text-lg lg:text-xl font-bold text-zinc-800 dark:text-zinc-200 italic px-2">
-                  <span className="sm:hidden">Where Authentic Connections Live On</span>
-                  <span className="hidden sm:inline">Where the Spirit of Authentic Connections Lives On</span>
+                  <span className="sm:hidden">Where Memorable Memories Live Forever</span>
+                  <span className="hidden sm:inline">Where Memorable Memories Live Forever</span>
                 </p>
               </div>
               <div className="overflow-hidden relative w-full max-w-sm sm:max-w-md h-[200px] sm:h-[250px] md:h-[350px] rounded-2xl">
