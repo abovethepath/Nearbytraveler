@@ -4,7 +4,7 @@ const newLogo = "/new-logo_1753994063802.png";
 
 interface LogoProps {
   className?: string;
-  variant?: "landing" | "navbar" | "default" | "footer" | "black-navbar";
+  variant?: "landing" | "navbar" | "default" | "footer" | "black-navbar" | "header";
 }
 
 export default function Logo({ className, variant = "default" }: LogoProps) {
@@ -18,6 +18,8 @@ export default function Logo({ className, variant = "default" }: LogoProps) {
         return "h-32 w-auto"; // Fixed size for black navbar - 30% bigger than before
       case "footer":
         return "h-48 w-auto"; // Fixed size for footer - 6x bigger
+      case "header":
+        return "h-32 w-auto"; // Fixed size for headers - bigger than default
       default:
         return "h-8 w-auto"; // Default fixed size
     }
