@@ -85,7 +85,7 @@ export default function ForgotPassword() {
               >
                 Try Different Email
               </Button>
-              <Link href="/auth">
+              <Link href="/api/login">
                 <Button variant="ghost" className="w-full">
                   Back
                 </Button>
@@ -138,7 +138,7 @@ export default function ForgotPassword() {
           </Form>
           
           <div className="mt-6 text-center">
-            <Link href="/auth">
+            <Link href="/api/login">
               <Button variant="ghost" className="text-sm">
                 Back
               </Button>

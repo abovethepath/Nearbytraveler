@@ -89,7 +89,7 @@ export default function ResetPassword() {
                   Request New Reset Link
                 </Button>
               </Link>
-              <Link href="/auth">
+              <Link href="/api/login">
                 <Button variant="ghost" className="w-full">
                   Back
                 </Button>
@@ -116,11 +116,11 @@ export default function ResetPassword() {
               <p className="text-sm text-gray-600">
                 You can now sign in with your new password.
               </p>
-              <Link href="/auth">
+              <a href="/api/login">
                 <Button className="w-full">
                   Sign In Now
                 </Button>
-              </Link>
+              </a>
             </div>
           </CardContent>
         </Card>
@@ -187,7 +187,7 @@ export default function ResetPassword() {
           </Form>
           
           <div className="mt-6 text-center">
-            <Link href="/auth">
+            <Link href="/api/login">
               <Button variant="ghost" className="text-sm">
                 Back
               </Button>

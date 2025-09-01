@@ -99,12 +99,12 @@ function JoinPageWithSignIn() {
         <div className="text-center mt-4">
           <p className="text-gray-600 dark:text-gray-400">
             Already have an account?{" "}
-            <button 
-              onClick={() => setLocation('/auth')}
+            <a 
+              href="/api/login"
               className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium underline"
             >
               Sign In
-            </button>
+            </a>
           </p>
         </div>
       </div>
@@ -535,17 +535,12 @@ function Router() {
       // Redirect unauthenticated users trying to access welcome pages
       if (location === '/welcome' || location === '/welcome-business') {
         console.log('🚫 SECURITY: Unauthenticated user trying to access welcome page - redirecting to auth');
-        window.location.href = '/auth';
+        window.location.href = '/api/login';
         return null;
       }
 
 
 
-      // Allow access to auth page
-      if (location === '/auth') {
-        console.log('Showing Auth page');
-        return <Auth />;
-      }
 
       // Allow access to join page - restore original working route
       if (location === '/join') {
@@ -670,10 +665,6 @@ function Router() {
       if (location.startsWith('/reset-password')) {
         return <ResetPassword />;
       }
-      if (location === '/auth') {
-        console.log('Returning Auth component for /auth');
-        return <Auth />;
-      }
       if (location === '/signup') {
         console.log('Showing Signup page');
         return <Auth />;
@@ -703,19 +694,6 @@ function Router() {
         }
       }
 
-      // If user is authenticated but accessing auth page, redirect to appropriate page
-      // EXCEPTION: Allow business users to access /auth if they're completing signup flow
-      if (location === '/auth' && user && (user as any).userType !== 'business') {
-        console.log('🔄 Authenticated non-business user on auth page, redirecting to home');
-        setLocation('/home');
-        return null;
-      }
-      
-      // For business users accessing /auth, allow them to see the auth page for account management
-      if (location === '/auth' && user && (user as any).userType === 'business') {
-        console.log('✅ Business user accessing auth page - allowing access for account management');
-        return <Auth />;
-      }
 
       // CRITICAL: Root path should always show landing page for unauthenticated users
       if (location === '/' || location === '') {
@@ -886,8 +864,6 @@ function Router() {
     }
 
     switch (location) {
-      case '/auth':
-        return <Auth />;
       case '/events':
         return <Events />;
       case '/events-landing':
@@ -919,7 +895,7 @@ function Router() {
           const storageUser = authStorage.getUser();
           if (!storageUser?.id) {
             console.log('🔍 PROFILE ROUTE: No user found anywhere, redirecting to auth');
-            setLocation('/auth');
+            window.location.href = '/api/login';
             return null;
           }
         }

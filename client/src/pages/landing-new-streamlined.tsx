@@ -684,7 +684,7 @@ export default function LandingStreamlined() {
             {/* Call to Action */}
             <div className="text-center mt-16">
               <Button 
-                onClick={() => setLocation('/auth')}
+                onClick={() => window.location.href = '/join'}
                 size="lg"
                 className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
               >
