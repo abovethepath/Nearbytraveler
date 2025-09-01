@@ -45,7 +45,7 @@ const EVENT_CATEGORIES = [
   "Custom" // This will allow for custom category input
 ];
 
-// Predefined tags for events
+// Predefined tags for events - Streamlined for travelers
 const PREDEFINED_TAGS = [
   "Family Friendly",
   "Pet Friendly", 
@@ -56,36 +56,22 @@ const PREDEFINED_TAGS = [
   "Outdoor",
   "Photography",
   "Networking",
-  "Educational",
   "Cultural",
   "Sports",
   "Food & Drink",
   "Music",
   "Art",
   "Tech",
-  "Business",
   "Casual Meetup",
-  "Professional",
   "Creative",
   "Fitness",
   "Wellness",
   "Adventure",
   "Social",
   "Party",
-  "Workshop",
-  "Discussion",
   "Gaming",
-  "Travel Planning",
   "Language Exchange",
-  "Skill Sharing",
-  "Community Service",
-  "Seasonal Event",
-  "Holiday Themed",
-  "Date Night",
   "Solo Travelers",
-  "Group Activity",
-  "Competition",
-  "Demo/Presentation",
   "Celebration"
 ];
 
