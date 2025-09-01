@@ -5955,7 +5955,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       onClick={() => setShowConnectionFilters(!showConnectionFilters)}
                       className="h-8 text-xs bg-gradient-to-r from-blue-500 to-orange-500 text-white border-0 hover:from-blue-600 hover:to-orange-600"
                     >
-                      {showConnectionFilters ? "Hide Filters" : "Filter"}
+                      {showConnectionFilters ? "Hide Options" : "Sort & View"}
                     </Button>
                   )}
                 </CardTitle>
@@ -6057,7 +6057,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         onClick={() => setConnectionFilters({ location: 'all', gender: 'all', sexualPreference: 'all', minAge: '', maxAge: '' })}
                         className="h-8 text-xs bg-gradient-to-r from-blue-500 to-orange-500 text-white border-0 hover:from-blue-600 hover:to-orange-600"
                       >
-                        Clear Filters
+                        Reset
                       </Button>
                     </div>
                   </div>
