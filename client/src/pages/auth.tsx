@@ -212,7 +212,7 @@ export default function Auth() {
                 {/* Login Form */}
                 <div className="space-y-4">
                   <div>
-                    <Label htmlFor="loginEmail" className="text-base md:text-lg font-medium text-gray-900 dark:text-white text-crisp">Email or Username</Label>
+                    <Label htmlFor="loginEmail" className="text-base md:text-lg font-medium text-gray-900 dark:text-white">Email or Username</Label>
                     <Input
                       id="loginEmail"
                       type="text"
@@ -223,7 +223,7 @@ export default function Auth() {
                     />
                   </div>
                   <div>
-                    <Label htmlFor="loginPassword" className="text-base md:text-lg font-medium text-gray-900 dark:text-white text-crisp">Password</Label>
+                    <Label htmlFor="loginPassword" className="text-base md:text-lg font-medium text-gray-900 dark:text-white">Password</Label>
                     <Input
                       id="loginPassword"
                       type="password"
