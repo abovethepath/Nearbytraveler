@@ -86,29 +86,22 @@ export default function CouchsurfingLanding() {
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         
-        {/* HERO SECTION */}
-        <div className="pt-4 pb-6 sm:pt-6 sm:pb-8 bg-white dark:bg-gray-900">
-          <div className="mx-auto max-w-7xl px-2 sm:px-4 md:px-6 py-2 sm:py-4 md:py-6 grid gap-3 sm:gap-4 md:gap-6 md:grid-cols-5 items-center">
-            {/* Left text side - wider */}
-            <div className="md:col-span-3">
-              <div className="mb-3 sm:mb-4 inline-block rounded-full bg-orange-50 dark:bg-orange-900/30 px-3 sm:px-4 py-1 text-xs sm:text-sm font-medium text-orange-700 dark:text-orange-400 animate-in slide-in-from-left-full fade-in duration-700">
-                <span className="inline w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2">❤️</span>
-                From a Fellow Couchsurfer
-              </div>
-
-              <div className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-semibold tracking-tight text-zinc-900 dark:text-white overflow-hidden relative h-[90px] sm:h-[100px] md:h-[120px] lg:h-[140px]">
-                <h1 
-                  key={currentHeadline}
-                  className="absolute top-0 left-0 w-full animate-in slide-in-from-left-full fade-in duration-700"
-                >
-                  {headlines[currentHeadline]}
-                </h1>
-              </div>
-              <div className="mt-3 sm:mt-4 max-w-xl text-sm md:text-base lg:text-lg text-zinc-600 dark:text-zinc-300 overflow-hidden relative h-[80px] sm:h-[100px] md:h-[120px]">
-                <p className="absolute top-0 left-0 w-full animate-in slide-in-from-left-full fade-in duration-700">
-                  Keep the spirit of cultural exchange alive — meet travelers your way, on your terms.
-                </p>
-              </div>
+        {/* HERO SECTION - CLEAN VERSION LIKE IMAGE */}
+        <div className="pt-8 pb-12 sm:pt-12 sm:pb-16 bg-white dark:bg-gray-900">
+          <div className="mx-auto max-w-6xl px-4 sm:px-6 text-center">
+            {/* Clean Badge */}
+            <div className="mb-6 inline-block rounded-full bg-blue-50 dark:bg-blue-900/30 px-4 sm:px-6 py-2 text-sm font-medium text-blue-700 dark:text-blue-400">
+              <span className="inline w-4 h-4 mr-2">❤️</span>
+              Same Spirit, Less Hassle
+            </div>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-zinc-900 dark:text-white mb-6">
+              Love Couchsurfing?
+              <br className="hidden sm:block" />
+              <span className="text-blue-600">You'll Love This.</span>
+            </h1>
+            <p className="text-lg sm:text-xl md:text-2xl text-zinc-600 dark:text-zinc-300 mb-8 max-w-4xl mx-auto leading-relaxed">
+              Meet travelers and locals through shared interests — whether you can host or not.
+            </p>
               
               {/* Desktop CTAs */}
               <div className="hidden sm:flex mt-6 flex-col sm:flex-row gap-4">
@@ -209,76 +202,83 @@ export default function CouchsurfingLanding() {
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         
-        {/* WHY VS HOW SECTION */}
-        <section className="mx-auto max-w-6xl px-4 sm:px-6 py-16 sm:py-24">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
-            {/* The Joy of Hosting */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 sm:p-6 md:p-8 shadow-lg border-l-4 border-orange-500">
-              <h3 className="text-xl sm:text-2xl font-bold text-orange-700 dark:text-orange-400 mb-4 sm:mb-6 flex items-center">
-                <Users className="w-5 h-5 sm:w-6 sm:h-6 mr-2 sm:mr-3" />
-                You Love Hosting Because...
-              </h3>
-              <ul className="space-y-3 sm:space-y-4 text-sm text-gray-700 dark:text-gray-300">
-                <li className="flex items-start">
-                  <Globe className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500 mr-2 sm:mr-3 mt-1 flex-shrink-0" />
-                  <span>Meeting fascinating people from around the world</span>
-                </li>
-                <li className="flex items-start">
-                  <Coffee className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500 mr-2 sm:mr-3 mt-1 flex-shrink-0" />
-                  <span>Sharing your city's hidden gems and local culture</span>
-                </li>
-                <li className="flex items-start">
-                  <RefreshCw className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500 mr-2 sm:mr-3 mt-1 flex-shrink-0" />
-                  <span>Learning about other cultures without traveling</span>
-                </li>
-                <li className="flex items-start">
-                  <Handshake className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500 mr-2 sm:mr-3 mt-1 flex-shrink-0" />
-                  <span>The satisfaction of helping fellow travelers</span>
-                </li>
-              </ul>
-            </div>
+        {/* HERO IMAGE */}
+        <div className="mb-12">
+          <div className="max-w-2xl mx-auto">
+            <img
+              src={couchsurfingHeroImage}
+              alt="Travelers connecting over coffee"
+              className="w-full h-auto rounded-2xl shadow-xl"
+            />
+          </div>
+        </div>
+      </div>
 
-            {/* The Challenges */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 sm:p-6 md:p-8 shadow-lg border-l-4 border-blue-500">
-              <h3 className="text-xl sm:text-2xl font-bold text-blue-700 dark:text-blue-400 mb-4 sm:mb-6 flex items-center">
-                <Home className="w-5 h-5 sm:w-6 sm:h-6 mr-2 sm:mr-3" />
-                But Hosting Can Be Challenging
-              </h3>
-              <ul className="space-y-3 sm:space-y-4 text-sm text-gray-700 dark:text-gray-300">
-                <li className="flex items-start">
-                  <span className="w-4 h-4 sm:w-5 sm:h-5 bg-blue-500 rounded-full mr-2 sm:mr-3 mt-2 flex-shrink-0"></span>
-                  <span>Exhausting when you need your personal space</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="w-4 h-4 sm:w-5 sm:h-5 bg-blue-500 rounded-full mr-2 sm:mr-3 mt-2 flex-shrink-0"></span>
-                  <span>Stressful with work, family, or relationship commitments</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="w-4 h-4 sm:w-5 sm:h-5 bg-blue-500 rounded-full mr-2 sm:mr-3 mt-2 flex-shrink-0"></span>
-                  <span>Unpredictable with last-minute cancellations or no-shows</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="w-4 h-4 sm:w-5 sm:h-5 bg-blue-500 rounded-full mr-2 sm:mr-3 mt-2 flex-shrink-0"></span>
-                  <span>Limiting when your living situation changes</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="w-4 h-4 sm:w-5 sm:h-5 bg-blue-500 rounded-full mr-2 sm:mr-3 mt-2 flex-shrink-0"></span>
-                  <span>Overwhelming when you just want a quiet weekend</span>
-                </li>
-              </ul>
+      {/* WHY COUCHSURFERS LOVE NT - BENEFITS ONLY */}
+      <section className="mx-auto max-w-6xl px-4 sm:px-6 py-16 sm:py-24 bg-gradient-to-br from-blue-50 to-orange-50 dark:from-blue-900/20 dark:to-orange-900/20 rounded-2xl mb-16">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-zinc-900 dark:text-white mb-4">
+            Why Couchsurfers Love Nearby Traveler
+          </h2>
+          <p className="text-lg sm:text-xl text-zinc-600 dark:text-zinc-400 max-w-3xl mx-auto">
+            From a fellow 15-year Couchsurfing veteran who gets it.
+          </p>
+        </div>
+        
+        {/* Founder Testimonial */}
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 mb-12 shadow-lg border-l-4 border-blue-500">
+          <blockquote className="text-lg sm:text-xl text-zinc-700 dark:text-zinc-300 leading-relaxed mb-6 italic">
+            "I've hosted 400+ travelers from 50 countries. The magic isn't the couch — it's the connections. 
+            I created Nearby Traveler because I realized I couldn't always host, but I always wanted to meet travelers. 
+            Now you can keep the spirit alive, whether you have space or not."
+          </blockquote>
+          <div className="flex items-center">
+            <div className="w-12 h-12 bg-blue-100 dark:bg-blue-800 rounded-full flex items-center justify-center mr-4">
+              <Users className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+            </div>
+            <div>
+              <p className="font-semibold text-zinc-900 dark:text-white">Aaron Lefkowitz</p>
+              <p className="text-sm text-zinc-500 dark:text-zinc-400">Founder & 15-Year Couchsurfing Host</p>
             </div>
           </div>
+        </div>
 
-          {/* The Evolution */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 text-center mt-12">
-            <h3 className="text-2xl sm:text-3xl font-bold mb-4 text-black dark:text-white">
-              What If You Could Keep the Magic... <span className="text-blue-600">Without the Hassle?</span>
-            </h3>
-            <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
-              Nearby Traveler lets you meet amazing travelers and share your local knowledge — whether you can host or not.
-            </p>
+        {/* Benefits Grid - All Positive */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md">
+            <Coffee className="w-8 h-8 text-blue-600 mb-4" />
+            <h3 className="font-semibold text-lg mb-2 text-zinc-900 dark:text-white">Same Values</h3>
+            <p className="text-zinc-600 dark:text-zinc-400">Cultural exchange, genuine connections, and sharing local insights</p>
           </div>
-        </section>
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md">
+            <MapPin className="w-8 h-8 text-blue-600 mb-4" />
+            <h3 className="font-semibold text-lg mb-2 text-zinc-900 dark:text-white">More Flexibility</h3>
+            <p className="text-zinc-600 dark:text-zinc-400">Meet at cafes, events, or local spots — host when you want</p>
+          </div>
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md">
+            <Globe className="w-8 h-8 text-blue-600 mb-4" />
+            <h3 className="font-semibold text-lg mb-2 text-zinc-900 dark:text-white">Better Matching</h3>
+            <p className="text-zinc-600 dark:text-zinc-400">Connect based on shared interests, not just accommodation needs</p>
+          </div>
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md">
+            <Heart className="w-8 h-8 text-blue-600 mb-4" />
+            <h3 className="font-semibold text-lg mb-2 text-zinc-900 dark:text-white">Zero Pressure</h3>
+            <p className="text-zinc-600 dark:text-zinc-400">Meet for coffee or city tours — no hosting obligations</p>
+          </div>
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md">
+            <Calendar className="w-8 h-8 text-blue-600 mb-4" />
+            <h3 className="font-semibold text-lg mb-2 text-zinc-900 dark:text-white">Your Schedule</h3>
+            <p className="text-zinc-600 dark:text-zinc-400">Connect when it works for you — total flexibility</p>
+          </div>
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md">
+            <ShieldCheck className="w-8 h-8 text-blue-600 mb-4" />
+            <h3 className="font-semibold text-lg mb-2 text-zinc-900 dark:text-white">Safe & Smart</h3>
+            <p className="text-zinc-600 dark:text-zinc-400">Meet in public first, connect with verified community members</p>
+          </div>
+        </div>
+      </section>
+
+      <div className="max-w-6xl mx-auto px-4 sm:px-6">
 
         {/* BENEFITS FOR COUCHSURFERS SECTION */}
         <section className="mx-auto max-w-6xl px-4 sm:px-6 py-16 sm:py-24 bg-gradient-to-br from-blue-50 to-orange-50 dark:from-blue-900/20 dark:to-orange-900/20 rounded-2xl mb-16">
