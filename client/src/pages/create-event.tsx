@@ -548,7 +548,11 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
         ageRestrictionMin: data.ageRestrictionMin || null,
         ageRestrictionMax: data.ageRestrictionMax || null,
         privateNotes: data.privateNotes || null,
-        customRestriction: data.customRestriction || null,
+        customRestriction: data.customRestriction ? 
+          data.customRestriction.trim().toLowerCase().endsWith(' only') ? 
+            data.customRestriction.trim() : 
+            `${data.customRestriction.trim()} only` 
+          : null,
       };
 
       await createEventMutation.mutateAsync(eventData);
@@ -1445,19 +1449,39 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
                   <h4 className="font-semibold text-red-800 dark:text-red-300 text-sm mb-3">CUSTOM RESTRICTION</h4>
                   <div className="p-3 bg-orange-50 dark:bg-orange-900/20 rounded border border-orange-200 dark:border-orange-800">
                     <Label htmlFor="customRestriction" className="text-sm font-bold text-orange-800 dark:text-orange-300">
-                      🏷️ CREATE YOUR OWN RESTRICTION TAG
+                      🏷️ CREATE CUSTOM "XX ONLY" TAG
                     </Label>
                     <p className="text-xs text-orange-700 dark:text-orange-400 mt-1 mb-2">
-                      Create a custom restriction like "Taylor Swift fans only", "Dog lovers only", "Photographers only", etc.
+                      Use consistent "XX only" format for clear restrictions: "Taylor Swift fans only", "Dog lovers only", "Photographers only"
                     </p>
-                    <Input
-                      id="customRestriction"
-                      {...register("customRestriction")}
-                      placeholder="e.g. Taylor Swift fans only, Dog lovers only, Photographers only..."
-                      className="mt-1 border-orange-300 dark:border-orange-700 bg-white dark:bg-gray-900"
-                    />
+                    <div className="flex items-center gap-2">
+                      <Input
+                        id="customRestriction"
+                        {...register("customRestriction")}
+                        placeholder="Taylor Swift fans, Dog lovers, Photographers..."
+                        className="flex-1 border-orange-300 dark:border-orange-700 bg-white dark:bg-gray-900"
+                        onChange={(e) => {
+                          // Update the form value
+                          setValue("customRestriction", e.target.value);
+                        }}
+                      />
+                      <span className="text-orange-800 dark:text-orange-300 font-semibold text-sm">only</span>
+                    </div>
+                    
+                    {/* Live Preview */}
+                    {watch("customRestriction") && watch("customRestriction").trim() && (
+                      <div className="mt-2 p-2 bg-orange-100 dark:bg-orange-900/40 rounded border border-orange-300 dark:border-orange-700">
+                        <p className="text-xs text-orange-700 dark:text-orange-400 font-medium">Preview restriction tag:</p>
+                        <div className="mt-1">
+                          <span className="inline-block px-2 py-1 bg-orange-200 dark:bg-orange-800 text-orange-800 dark:text-orange-200 text-xs font-semibold rounded">
+                            🏷️ {watch("customRestriction").trim()} only
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                    
                     <p className="text-xs text-orange-600 dark:text-orange-400 mt-1">
-                      This will be displayed as a visible tag on your event and ONLY users who feel they match this description will join
+                      The word "only" will be automatically added. This creates consistent, clear restrictions that users can easily understand.
                     </p>
                   </div>
                 </div>
