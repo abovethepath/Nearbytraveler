@@ -281,12 +281,6 @@ export default function CouchsurfingLanding() {
             </div>
           </div>
           
-          {/* Powerful Quote */}
-          <div className="max-w-4xl mx-auto bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-8 border border-blue-200 dark:border-blue-800">
-            <blockquote className="text-center text-xl sm:text-2xl font-medium text-zinc-800 dark:text-zinc-200 italic leading-relaxed">
-              "The couchsurfing spirit was never really about the couch — it was about the connection. Now everyone can experience that magic."
-            </blockquote>
-          </div>
         </section>
 
         {/* SOMETIMES WE JUST GROW OUT OF IT SECTION */}
