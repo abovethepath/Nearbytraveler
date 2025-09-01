@@ -161,6 +161,13 @@ export default function SignupBusinessSimple() {
 
   const signupMutation = useMutation({
     mutationFn: async (data: BusinessSignupData) => {
+      // Show initial loading message
+      toast({
+        title: "Creating your business account...",
+        description: "Setting up your business profile and generating personalized content. This may take a few moments.",
+        variant: "default",
+      });
+
       // Check for referral information
       const referralCode = sessionStorage.getItem('referralCode');
       const connectionNote = sessionStorage.getItem('connectionNote');
@@ -654,7 +661,7 @@ export default function SignupBusinessSimple() {
                     className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 sm:py-4 px-4 sm:px-6 rounded-lg transition-colors text-sm sm:text-base md:text-lg h-12 sm:h-14 md:h-16 break-words overflow-hidden"
                   >
                     <span className="break-words overflow-hidden">
-                      {signupMutation.isPending || isLoading ? "Creating Account..." : "Complete Business Registration"}
+                      {signupMutation.isPending || isLoading ? "Creating Account... (This may take a few moments)" : "Complete Business Registration"}
                     </span>
                   </Button>
                 </div>

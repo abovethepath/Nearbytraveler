@@ -338,6 +338,13 @@ export default function SignupTraveling() {
 
       console.log('➡️ Submitting traveler registration');
 
+      // Show initial loading message
+      toast({
+        title: "Creating your account...",
+        description: "Setting up your profile and generating personalized content. This may take a few moments.",
+        variant: "default",
+      });
+
       const response = await fetch('/api/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -598,7 +605,7 @@ export default function SignupTraveling() {
                   disabled={isLoading || formData.interests.length < 3}
                   className="w-full py-4 text-lg font-semibold bg-blue-600 hover:bg-blue-700 text-white disabled:bg-gray-400"
                 >
-                  {isLoading ? 'Creating Account...' : `Complete Registration (${formData.interests.length}/3)`}
+                  {isLoading ? 'Creating Account... (This may take a few moments)' : `Complete Registration (${formData.interests.length}/3)`}
                 </Button>
                 {formData.interests.length < 3 && (
                   <p className="text-red-600 text-sm mt-2 text-center">
