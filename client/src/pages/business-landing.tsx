@@ -88,7 +88,7 @@ export default function BusinessLanding() {
           }}
           className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold px-6 py-3 rounded-full shadow-lg transform hover:scale-105 transition-all duration-200"
         >
-          Join Now →
+          JOIN NOW
         </Button>
       </div>
 
@@ -144,7 +144,7 @@ export default function BusinessLanding() {
                     data-testid="button-claim-beta"
                   >
                     <Zap className="w-5 h-5 mr-2 inline" />
-                    Claim Free Beta Access
+                    JOIN NOW
                   </button>
                   <button 
                     onClick={() => {
@@ -700,7 +700,7 @@ export default function BusinessLanding() {
               size="lg"
               className="bg-white hover:bg-gray-100 text-orange-600 font-bold text-xl px-12 py-4 rounded-lg shadow-lg transform hover:scale-105 transition-all duration-200"
             >
-              Join Now
+              JOIN NOW
               <ArrowRight className="w-6 h-6 ml-2" />
             </Button>
             <span className="text-sm opacity-75">FREE during beta • No setup fees • Cancel anytime</span>
@@ -721,7 +721,7 @@ export default function BusinessLanding() {
             <div>
               <h4 className="font-bold mb-4">For Businesses</h4>
               <ul className="space-y-2 text-gray-400">
-                <li><a href="/join" className="hover:text-white transition-colors">Join Beta</a></li>
+                <li><a href="/launching-soon" className="hover:text-white transition-colors">JOIN NOW</a></li>
                 <li><a href="/business-success" className="hover:text-white transition-colors">Success Stories</a></li>
                 <li><a href="/business-analytics" className="hover:text-white transition-colors">Analytics</a></li>
               </ul>

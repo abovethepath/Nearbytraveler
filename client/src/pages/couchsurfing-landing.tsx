@@ -31,11 +31,11 @@ export default function CouchsurfingLanding() {
         <Button 
           onClick={() => {
             trackEvent('signup_cta_click', 'couchsurfing_landing', 'floating_join_now');
-            setLocation('/join');
+            setLocation('/launching-soon');
           }}
           className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-3 rounded-lg shadow-lg transition-all duration-200"
         >
-          Join Now
+          JOIN NOW
         </Button>
       </div>
 
@@ -66,7 +66,7 @@ export default function CouchsurfingLanding() {
               <Button 
                 onClick={() => {
                   trackEvent('signup_cta_click', 'couchsurfing_landing', 'hero_join_now');
-                  setLocation('/join');
+                  setLocation('/launching-soon');
                 }}
                 className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-8 py-4 text-lg rounded-lg shadow-lg transition-all duration-200 transform hover:scale-105"
               >
@@ -197,11 +197,11 @@ export default function CouchsurfingLanding() {
             <Button 
               onClick={() => {
                 trackEvent('signup_cta_click', 'couchsurfing_landing', 'bottom_join_now');
-                setLocation('/join');
+                setLocation('/launching-soon');
               }}
               className="bg-white hover:bg-gray-100 text-blue-600 font-bold px-8 py-4 rounded-lg shadow-lg transition-all duration-200 text-lg transform hover:scale-105"
             >
-              Join Nearby Traveler Today
+              JOIN NOW
             </Button>
             <p className="text-sm opacity-75 mt-4">
               Free to join • Same values • Better connections

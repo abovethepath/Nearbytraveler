@@ -64,11 +64,11 @@ export default function LocalsLanding() {
         <Button 
           onClick={() => {
             trackEvent('signup_cta_click', 'locals_landing', 'floating_join_now');
-            setLocation('/join');
+            setLocation('/launching-soon');
           }}
           className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
         >
-          Join Now
+          JOIN NOW
         </Button>
       </div>
 
@@ -139,11 +139,11 @@ export default function LocalsLanding() {
               </p>
               
               <Button
-                onClick={() => setLocation('/join')}
+                onClick={() => setLocation('/launching-soon')}
                 size="lg"
                 className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
               >
-                Join the Journey
+                JOIN NOW
               </Button>
             </div>
           )}
@@ -334,7 +334,7 @@ export default function LocalsLanding() {
           {/* Another CTA */}
           <div className="text-center mt-16">
             <Button
-              onClick={() => setLocation('/join')}
+              onClick={() => setLocation('/launching-soon')}
               size="lg"
               className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
               style={{
@@ -361,7 +361,7 @@ BECOME A NEARBY LOCAL NOW
           
           <div className="flex flex-col sm:flex-row gap-6 justify-center mb-8">
             <Button
-              onClick={() => setLocation('/join')}
+              onClick={() => setLocation('/launching-soon')}
               size="lg"
               className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
               style={{

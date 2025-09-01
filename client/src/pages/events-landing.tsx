@@ -69,11 +69,11 @@ export default function EventsLanding() {
         <Button 
           onClick={() => {
             trackEvent('signup_cta_click', 'events_landing', 'floating_join_now');
-            setLocation('/join');
+            setLocation('/launching-soon');
           }}
           className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
         >
-          Join Now
+          JOIN NOW
         </Button>
       </div>
 
@@ -99,12 +99,12 @@ export default function EventsLanding() {
                   <button 
                     onClick={() => {
                       trackEvent('signup_cta_click', 'events_landing', 'join_journey');
-                      setLocation('/join');
+                      setLocation('/launching-soon');
                     }}
                     className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200 w-full sm:w-auto"
                     data-testid="button-join-journey"
                   >
-                    Join the Journey
+                    JOIN NOW
                   </button>
                   <button 
                     onClick={() => {
@@ -161,11 +161,11 @@ export default function EventsLanding() {
               </p>
               
               <Button
-                onClick={() => setLocation('/join')}
+                onClick={() => setLocation('/launching-soon')}
                 size="lg"
                 className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
               >
-                Join Nearby Traveler
+                JOIN NOW
               </Button>
             </div>
           )}
@@ -406,7 +406,7 @@ export default function EventsLanding() {
             <p className="text-lg mb-10 text-gray-600 dark:text-white dark:opacity-90 font-light">Join others already creating unforgettable experiences together.</p>
             
             <Button
-              onClick={() => setLocation('/join')}
+              onClick={() => setLocation('/launching-soon')}
               size="lg"
               className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-medium text-lg px-10 py-3 rounded-lg transition-all duration-200"
             >
