@@ -567,6 +567,54 @@ export default function CouchsurfingLanding() {
             </div>
           </div>
         </section>
+
+        {/* LET'S MEET NOW WIDGET SECTION */}
+        <section className="py-16 sm:py-24 bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 rounded-2xl mb-16">
+          <div className="px-6 sm:px-8">
+            <div className="text-center mb-12">
+              <div className="inline-block bg-orange-100 dark:bg-orange-900/50 px-4 py-2 rounded-full text-sm font-medium text-orange-700 dark:text-orange-400 mb-4">
+                INSTANT CONNECTIONS
+              </div>
+              <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900 dark:text-white mb-4">
+                Let's Meet Now
+              </h2>
+              <p className="text-lg sm:text-xl text-zinc-600 dark:text-zinc-400 max-w-4xl mx-auto leading-relaxed mb-8">
+                Create spontaneous meetups when you want to connect right now. Perfect for when you're free and want to meet someone interesting in your area.
+              </p>
+              
+              <Button 
+                onClick={() => {
+                  trackEvent('meetup_cta_click', 'couchsurfing_landing', 'lets_meet_now');
+                  setLocation('/meetups');
+                }}
+                className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold px-8 py-4 rounded-lg shadow-lg text-lg"
+                data-testid="button-lets-meet-now"
+              >
+                <Zap className="w-5 h-5 mr-2" />
+                Try Let's Meet Now
+              </Button>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md text-center">
+                <Coffee className="w-8 h-8 text-orange-600 mx-auto mb-3" />
+                <h3 className="font-semibold text-zinc-900 dark:text-white mb-2">Quick Coffee</h3>
+                <p className="text-sm text-zinc-600 dark:text-zinc-400">Grab coffee with someone in the next hour</p>
+              </div>
+              
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md text-center">
+                <MapPin className="w-8 h-8 text-orange-600 mx-auto mb-3" />
+                <p className="text-sm text-zinc-600 dark:text-zinc-400">Explore your neighborhood with a local guide</p>
+              </div>
+              
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md text-center">
+                <Users className="w-8 h-8 text-orange-600 mx-auto mb-3" />
+                <h3 className="font-semibold text-zinc-900 dark:text-white mb-2">Group Hangout</h3>
+                <p className="text-sm text-zinc-600 dark:text-zinc-400">Join others for impromptu group activities</p>
+              </div>
+            </div>
+          </div>
+        </section>
       </div>
       
       {/* FOUNDER STORY SECTION */}
