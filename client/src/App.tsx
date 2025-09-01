@@ -501,6 +501,12 @@ function Router() {
       }
     }
 
+    // Don't intercept API routes - let backend handle them
+    if (location.startsWith('/api/')) {
+      console.log('🔄 API ROUTE DETECTED:', location, '- letting backend handle');
+      return null;
+    }
+
     if (!isActuallyAuthenticated) {
       console.log('🏠 STREAMLINED LANDING - User not authenticated, showing streamlined landing page for:', location);
 
