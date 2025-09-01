@@ -257,13 +257,13 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
       {/* Modal Content */}
       <div className="relative w-full max-w-4xl max-h-[90vh] mx-4 bg-white dark:bg-gray-900 rounded-lg shadow-2xl overflow-y-auto">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
-          <div>
+        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700">
+          <div className="flex-1 min-w-0">
             <h2 className="text-lg font-semibold text-black dark:text-white flex items-center gap-2">
               <Search className="h-5 w-5" />
               Advanced Search
             </h2>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 hidden sm:block">
               Find people using detailed filters and preferences
             </p>
           </div>
@@ -271,9 +271,11 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
             onClick={() => onOpenChange(false)}
             variant="ghost"
             size="sm"
-            className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+            className="flex-shrink-0 ml-4 p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full"
+            data-testid="button-close-search"
           >
-            <X className="h-5 w-5" />
+            <X className="h-6 w-6" />
+            <span className="sr-only">Close search</span>
           </Button>
         </div>
 
