@@ -12,7 +12,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { useMutation } from "@tanstack/react-query";
 
 const forgotPasswordSchema = z.object({
-  email: z.string().email("Please enter a valid email address"),
+  emailOrUsername: z.string().min(1, "Please enter your email or username"),
 });
 
 type ForgotPasswordForm = z.infer<typeof forgotPasswordSchema>;
@@ -24,7 +24,7 @@ export default function ForgotPassword() {
   const form = useForm<ForgotPasswordForm>({
     resolver: zodResolver(forgotPasswordSchema),
     defaultValues: {
-      email: "",
+      emailOrUsername: "",
     },
   });
 
@@ -70,7 +70,7 @@ export default function ForgotPassword() {
           <CardHeader className="text-center">
             <CardTitle className="text-2xl">Check Your Email</CardTitle>
             <CardDescription>
-              We've sent a password reset link to your email address if an account exists.
+              We've sent a password reset link to your email address if an account with that email or username exists.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -83,7 +83,7 @@ export default function ForgotPassword() {
                 onClick={() => setIsSubmitted(false)}
                 className="w-full"
               >
-                Try Different Email
+                Try Again
               </Button>
               <Link href="/signin">
                 <Button variant="ghost" className="w-full">
@@ -103,7 +103,7 @@ export default function ForgotPassword() {
         <CardHeader className="text-center">
           <CardTitle className="text-2xl">Forgot Password</CardTitle>
           <CardDescription>
-            Enter your email address and we'll send you a link to reset your password.
+            Enter your email or username and we'll send you a link to reset your password.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -111,14 +111,14 @@ export default function ForgotPassword() {
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <FormField
                 control={form.control}
-                name="email"
+                name="emailOrUsername"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email Address</FormLabel>
+                    <FormLabel>Email or Username</FormLabel>
                     <FormControl>
                       <Input
-                        type="email"
-                        placeholder="Enter your email"
+                        type="text"
+                        placeholder="Enter your email or username"
                         {...field}
                       />
                     </FormControl>

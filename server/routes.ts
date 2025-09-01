@@ -1939,26 +1939,31 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
   // Forgot Password endpoint
   app.post("/api/auth/forgot-password", async (req, res) => {
     try {
-      const { email } = req.body;
+      const { emailOrUsername } = req.body;
 
-      if (!email) {
-        return res.status(400).json({ message: "Email is required" });
+      if (!emailOrUsername) {
+        return res.status(400).json({ message: "Email or username is required" });
       }
 
-      const user = await storage.getUserByEmail(email);
+      // Try to find user by email first, then by username
+      let user = await storage.getUserByEmail(emailOrUsername);
       if (!user) {
+        user = await storage.getUserByUsername(emailOrUsername);
+      }
+      
+      if (!user || !user.email) {
         // For security, return success even if user doesn't exist
-        return res.json({ message: "If an account with this email exists, a password reset link has been sent." });
+        return res.json({ message: "If an account with this email or username exists, a password reset link has been sent." });
       }
 
       // Generate reset token (simple approach for now)
       const resetToken = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
       const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour from now
 
-      // Store reset token in user record
+      // Store reset token in user record using correct column names
       await storage.updateUser(user.id, {
-        resetToken: resetToken,
-        resetTokenExpires: expiresAt
+        password_reset_token: resetToken,
+        password_reset_expires: expiresAt
       });
 
       // Send password reset email
@@ -1970,7 +1975,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       });
 
       console.log(`✅ Password reset email sent to ${user.email}`);
-      return res.json({ message: "If an account with this email exists, a password reset link has been sent." });
+      return res.json({ message: "If an account with this email or username exists, a password reset link has been sent." });
     } catch (error: any) {
       console.error("Forgot password error:", error);
       res.status(500).json({ message: "Failed to process password reset request" });
@@ -1990,17 +1995,17 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         return res.status(400).json({ message: "Password must be at least 8 characters long" });
       }
 
-      // Find user with this reset token
+      // Find user with this reset token using correct column name
       const user = await storage.getUserByResetToken(token);
-      if (!user || !user.resetTokenExpires || new Date() > user.resetTokenExpires) {
+      if (!user || !user.password_reset_expires || new Date() > user.password_reset_expires) {
         return res.status(400).json({ message: "Invalid or expired reset token" });
       }
 
-      // Update password and clear reset token
+      // Update password and clear reset token using correct column names
       await storage.updateUser(user.id, {
         password: newPassword, // Note: In production, this should be hashed
-        resetToken: null,
-        resetTokenExpires: null
+        password_reset_token: null,
+        password_reset_expires: null
       });
 
       console.log(`✅ Password reset successful for user ${user.email}`);
