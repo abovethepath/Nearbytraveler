@@ -1992,7 +1992,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       }
 
       if (newPassword.length < 8) {
-        return res.status(400).json({ message: "Password must be at least 8 characters long" });
+        return res.status(400).json({ message: "Password must be 8 characters or more" });
       }
 
       // Find user with this reset token using correct column name

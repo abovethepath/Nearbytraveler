@@ -142,7 +142,7 @@ export default function JoinNowWidgetNew() {
 
     // Password length validation
     if (formData.password.length < 8) {
-      const errorMsg = "Password must be at least 8 characters long.";
+      const errorMsg = "Password must be 8 characters or more.";
       setCurrentError(errorMsg);
       toast({
         title: "Password too short",
@@ -477,7 +477,7 @@ export default function JoinNowWidgetNew() {
                 </div>
               </div>
               {formData.password && formData.password.length < 8 && (
-                <p className="text-yellow-500 text-xs mt-1">Password must be at least 8 characters</p>
+                <p className="text-yellow-500 text-xs mt-1">Password must be 8 characters or more</p>
               )}
               {formData.password && formData.password.length >= 8 && (
                 <p className="text-green-500 text-xs mt-1">Password meets requirements</p>

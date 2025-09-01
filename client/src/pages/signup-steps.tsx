@@ -178,7 +178,7 @@ export default function SignupSteps() {
       if (formData.password.length < 8) {
         toast({
           title: "Password too short",
-          description: "Password must be at least 8 characters long.",
+          description: "Password must be 8 characters or more.",
           variant: "destructive",
         });
         return;

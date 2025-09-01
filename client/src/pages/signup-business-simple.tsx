@@ -24,7 +24,7 @@ const businessSignupSchema = z.object({
     // Allow email variants for multiple businesses (e.g., owner+restaurant@example.com)
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
   }, "Please enter a valid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
+  password: z.string().min(8, "Password must be 8 characters or more"),
   ownerName: z.string().min(1, "Business name is required for contact database"),
   contactName: z.string().min(1, "Contact person name is required"),
   ownerPhone: z.string().min(1, "Contact phone is required").refine((val) => {

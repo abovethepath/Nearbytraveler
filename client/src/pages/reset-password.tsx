@@ -12,8 +12,8 @@ import { apiRequest } from "@/lib/queryClient";
 import { useMutation } from "@tanstack/react-query";
 
 const resetPasswordSchema = z.object({
-  newPassword: z.string().min(8, "Password must be at least 8 characters"),
-  confirmPassword: z.string().min(8, "Password must be at least 8 characters"),
+  newPassword: z.string().min(8, "Password must be 8 characters or more"),
+  confirmPassword: z.string().min(8, "Password must be 8 characters or more"),
 }).refine((data) => data.newPassword === data.confirmPassword, {
   message: "Passwords don't match",
   path: ["confirmPassword"],
