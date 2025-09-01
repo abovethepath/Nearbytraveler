@@ -49,6 +49,14 @@ const app = express();
 // Trust reverse proxy (Replit/Render/Railway) so secure cookies & IPs work
 app.set("trust proxy", 1);
 
+// Force HTTPS redirect for production domain
+app.use((req, res, next) => {
+  if (req.header('x-forwarded-proto') !== 'https' && req.hostname === 'nearbytraveler.org') {
+    return res.redirect(301, `https://${req.hostname}${req.url}`);
+  }
+  next();
+});
+
 // CORS: simplified for development and production
 app.use((req, _res, next) => {
   if (process.env.NODE_ENV !== "production") {
