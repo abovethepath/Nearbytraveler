@@ -39,15 +39,30 @@ export default function QRCodeCard() {
     }
   }, []);
 
-  // Initialize user data once
+  // Initialize user data and fetch referral code
   useEffect(() => {
     const user = getUserData();
     if (user) {
       setCurrentUser(user);
-      const baseUrl = window.location.origin;
-      // Create a referral signup link with auto-connect
-      const url = `${baseUrl}/?ref=${user.username}&signup=true&connect=${user.id}`;
-      setShareUrl(url);
+      
+      // Fetch the user's referral code from the backend
+      fetch('/api/user/qr-code')
+        .then(response => response.json())
+        .then(data => {
+          if (data.referralCode) {
+            const baseUrl = window.location.origin;
+            // Create proper referral signup URL that goes to qr-signup page
+            const url = `${baseUrl}/qr-signup?code=${data.referralCode}`;
+            setShareUrl(url);
+          }
+        })
+        .catch(error => {
+          console.error('Error fetching referral code:', error);
+          // Fallback to old format if API fails
+          const baseUrl = window.location.origin;
+          const url = `${baseUrl}/?ref=${user.username}&signup=true&connect=${user.id}`;
+          setShareUrl(url);
+        });
     }
   }, [getUserData]);
 
