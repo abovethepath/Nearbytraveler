@@ -202,7 +202,7 @@ export default function CouchsurfingLanding() {
               <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-purple-500">
                 <div className="flex items-start">
                   <Heart className="w-6 h-6 text-purple-600 mt-1 mr-3 flex-shrink-0" />
-                  <p className="text-zinc-700 dark:text-zinc-300">Connect when you want, how you want — no obligations</p>
+                  <p className="text-zinc-700 dark:text-zinc-300">Connect when you want, how you want</p>
                 </div>
               </div>
               
