@@ -147,22 +147,6 @@ export default function CouchsurfingLanding() {
           </div>
         </div>
 
-        {/* WHAT'S COUCHSURFING SECTION - FOR NEWCOMERS */}
-        <section className="py-16 sm:py-24 bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 rounded-2xl mb-16">
-          <div className="px-6 sm:px-8">
-            <div className="text-center mb-12">
-              <div className="w-16 h-16 bg-orange-500 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Globe className="w-8 h-8 text-white" />
-              </div>
-              <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900 dark:text-white mb-4">
-                "What's Couchsurfing?"
-              </h2>
-              <p className="text-lg sm:text-xl text-zinc-600 dark:text-zinc-400 max-w-4xl mx-auto leading-relaxed">
-                Millions of travelers have never heard of couchsurfing but would love to meet locals and other travelers. They've been missing out on our amazing community all along.
-              </p>
-            </div>
-          </div>
-        </section>
 
         {/* NOW WE CAN ALL CONNECT SECTION */}
         <section className="py-16 sm:py-24 mb-16">
