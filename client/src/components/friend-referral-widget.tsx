@@ -23,13 +23,8 @@ export default function FriendReferralWidget() {
   const username = currentUser.username || '';
   const userFirstName = currentUser.name?.split(' ')[0] || username;
 
-  // Fetch QR code data to get the proper referral URL
-  const { data: qrData } = useQuery({
-    queryKey: ['/api/user/qr-code'],
-    enabled: !!currentUser.id,
-  });
-
-  const signupUrl = qrData?.signupUrl || `${window.location.protocol}//${window.location.host}/qr-signup?code=LOADING`;
+  // Use clean domain for sharing - take them to landing page, not suspicious URLs
+  const signupUrl = `https://www.thenearbytraveler.com`;
   
   const generatePersonalMessage = () => {
     return `Hey ${emailForm.friendName || 'there'}!
@@ -139,7 +134,7 @@ ${emailForm.personalMessage || generatePersonalMessage()}`;
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Users className="h-5 w-5 text-gray-600 dark:text-gray-400" />
-          Refer a Friend
+          Share with Friends
         </CardTitle>
         <CardDescription>
           <span className="text-gray-700 dark:text-gray-300">Share Nearby Traveler with friends and help them discover amazing travel experiences!</span>
