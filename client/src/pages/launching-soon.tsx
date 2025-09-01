@@ -9,8 +9,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { Rocket, Mail, User } from "lucide-react";
+import { Rocket, Mail, User, ArrowLeft } from "lucide-react";
 import Logo from "@/components/logo";
+import { useLocation } from "wouter";
 
 const waitlistSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -22,6 +23,7 @@ type WaitlistForm = z.infer<typeof waitlistSchema>;
 export default function LaunchingSoon() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
 
   const form = useForm<WaitlistForm>({
     resolver: zodResolver(waitlistSchema),
@@ -63,8 +65,21 @@ export default function LaunchingSoon() {
         <div className="max-w-md w-full">
           <Card className="border-2 border-green-200 shadow-xl">
             <CardHeader className="text-center pb-4">
-              <div className="flex justify-center mb-4">
-                <Logo className="h-40 sm:h-48 md:h-56 w-auto" />
+              <div className="flex justify-between items-start mb-4">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setLocation("/")}
+                  className="text-gray-600 hover:text-gray-800"
+                  data-testid="button-back-home"
+                >
+                  <ArrowLeft className="w-4 h-4 mr-1" />
+                  Back
+                </Button>
+                <div className="flex-1 flex justify-center">
+                  <Logo className="h-40 sm:h-48 md:h-56 w-auto" />
+                </div>
+                <div className="w-20"></div>
               </div>
               <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Mail className="w-8 h-8 text-green-600" />
@@ -97,8 +112,21 @@ export default function LaunchingSoon() {
       <div className="max-w-md w-full">
         <Card className="border-2 border-orange-200 shadow-xl">
           <CardHeader className="text-center pb-4">
-            <div className="flex justify-center mb-4">
-              <Logo className="h-40 sm:h-48 md:h-56 w-auto" />
+            <div className="flex justify-between items-start mb-4">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setLocation("/")}
+                className="text-gray-600 hover:text-gray-800"
+                data-testid="button-back-home-form"
+              >
+                <ArrowLeft className="w-4 h-4 mr-1" />
+                Back
+              </Button>
+              <div className="flex-1 flex justify-center">
+                <Logo className="h-40 sm:h-48 md:h-56 w-auto" />
+              </div>
+              <div className="w-20"></div>
             </div>
             <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <Rocket className="w-8 h-8 text-orange-600" />
