@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Copy, Users, Mail, Send, Loader2, Heart } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 
 export default function FriendReferralWidget() {
   const { toast } = useToast();
@@ -22,7 +23,13 @@ export default function FriendReferralWidget() {
   const username = currentUser.username || '';
   const userFirstName = currentUser.name?.split(' ')[0] || username;
 
-  const signupUrl = `https://www.thenearbytraveler.com/auth`;
+  // Fetch QR code data to get the proper referral URL
+  const { data: qrData } = useQuery({
+    queryKey: ['/api/user/qr-code'],
+    enabled: !!currentUser.id,
+  });
+
+  const signupUrl = qrData?.signupUrl || `${window.location.protocol}//${window.location.host}/qr-signup?code=LOADING`;
   
   const generatePersonalMessage = () => {
     return `Hey ${emailForm.friendName || 'there'}!
