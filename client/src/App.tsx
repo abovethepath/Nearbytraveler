@@ -573,7 +573,7 @@ function Router() {
       // Redirect unauthenticated users trying to access welcome pages
       if (location === '/welcome' || location === '/welcome-business') {
         console.log('🚫 SECURITY: Unauthenticated user trying to access welcome page - redirecting to auth');
-        window.location.href = '/signup';
+        window.location.href = '/signin';
         return null;
       }
 
@@ -705,6 +705,10 @@ function Router() {
       }
       if (location === '/signup') {
         console.log('Showing Signup page');
+        return <Auth />;
+      }
+      if (location === '/signin') {
+        console.log('Showing Sign In page');
         return <Auth />;
       }
       if (location === '/business-card') {
@@ -933,7 +937,7 @@ function Router() {
           const storageUser = authStorage.getUser();
           if (!storageUser?.id) {
             console.log('🔍 PROFILE ROUTE: No user found anywhere, redirecting to auth');
-            window.location.href = '/signup';
+            window.location.href = '/signin';
             return null;
           }
         }
