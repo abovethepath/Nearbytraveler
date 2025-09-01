@@ -568,49 +568,72 @@ export default function CouchsurfingLanding() {
           </div>
         </section>
 
-        {/* LET'S MEET NOW WIDGET SECTION */}
+        {/* REACH ALL TRAVELERS SECTION */}
         <section className="py-16 sm:py-24 bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 rounded-2xl mb-16">
           <div className="px-6 sm:px-8">
             <div className="text-center mb-12">
               <div className="inline-block bg-orange-100 dark:bg-orange-900/50 px-4 py-2 rounded-full text-sm font-medium text-orange-700 dark:text-orange-400 mb-4">
-                INSTANT CONNECTIONS
+                REACH ALL TRAVELERS
               </div>
               <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900 dark:text-white mb-4">
-                Let's Meet Now
+                Connect with 100% of Travelers
               </h2>
               <p className="text-lg sm:text-xl text-zinc-600 dark:text-zinc-400 max-w-4xl mx-auto leading-relaxed mb-8">
-                Create spontaneous meetups when you want to connect right now. Perfect for when you're free and want to meet someone interesting in your area.
+                Traditional hosting only reaches travelers who need accommodation. Our "Let's Meet Now" function reaches ALL travelers — those staying in hotels, hostels, Airbnbs, with friends, or anywhere else. Connect with every traveler in your city, not just the small percentage looking for a couch.
               </p>
               
               <Button 
                 onClick={() => {
-                  trackEvent('meetup_cta_click', 'couchsurfing_landing', 'lets_meet_now');
+                  trackEvent('meetup_cta_click', 'couchsurfing_landing', 'reach_all_travelers');
                   setLocation('/meetups');
                 }}
                 className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold px-8 py-4 rounded-lg shadow-lg text-lg"
-                data-testid="button-lets-meet-now"
+                data-testid="button-reach-all-travelers"
               >
-                <Zap className="w-5 h-5 mr-2" />
-                Try Let's Meet Now
+                <Globe className="w-5 h-5 mr-2" />
+                See How It Works
               </Button>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md text-center">
-                <Coffee className="w-8 h-8 text-orange-600 mx-auto mb-3" />
-                <h3 className="font-semibold text-zinc-900 dark:text-white mb-2">Quick Coffee</h3>
-                <p className="text-sm text-zinc-600 dark:text-zinc-400">Grab coffee with someone in the next hour</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-orange-500">
+                <div className="flex items-start">
+                  <Building2 className="w-6 h-6 text-orange-600 mt-1 mr-3 flex-shrink-0" />
+                  <div>
+                    <h3 className="font-semibold text-zinc-900 dark:text-white mb-2">Hotel & Airbnb Travelers</h3>
+                    <p className="text-zinc-700 dark:text-zinc-300">Connect with travelers who have accommodation but want authentic local experiences and cultural exchange</p>
+                  </div>
+                </div>
               </div>
               
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md text-center">
-                <MapPin className="w-8 h-8 text-orange-600 mx-auto mb-3" />
-                <p className="text-sm text-zinc-600 dark:text-zinc-400">Explore your neighborhood with a local guide</p>
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-red-500">
+                <div className="flex items-start">
+                  <Users className="w-6 h-6 text-red-600 mt-1 mr-3 flex-shrink-0" />
+                  <div>
+                    <h3 className="font-semibold text-zinc-900 dark:text-white mb-2">Visiting Friends & Family</h3>
+                    <p className="text-zinc-700 dark:text-zinc-300">Meet travelers staying with locals who want to expand their social circle and meet new people in the city</p>
+                  </div>
+                </div>
               </div>
               
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md text-center">
-                <Users className="w-8 h-8 text-orange-600 mx-auto mb-3" />
-                <h3 className="font-semibold text-zinc-900 dark:text-white mb-2">Group Hangout</h3>
-                <p className="text-sm text-zinc-600 dark:text-zinc-400">Join others for impromptu group activities</p>
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-yellow-500">
+                <div className="flex items-start">
+                  <Coffee className="w-6 h-6 text-yellow-600 mt-1 mr-3 flex-shrink-0" />
+                  <div>
+                    <h3 className="font-semibold text-zinc-900 dark:text-white mb-2">Business Travelers</h3>
+                    <p className="text-zinc-700 dark:text-zinc-300">Connect with professionals traveling for work who want meaningful local connections during their stay</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-purple-500">
+                <div className="flex items-start">
+                  <Compass className="w-6 h-6 text-purple-600 mt-1 mr-3 flex-shrink-0" />
+                  <div>
+                    <h3 className="font-semibold text-zinc-900 dark:text-white mb-2">Digital Nomads</h3>
+                    <p className="text-zinc-700 dark:text-zinc-300">Meet remote workers and long-term travelers who want community connections wherever they work</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
