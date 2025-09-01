@@ -195,7 +195,7 @@ export default function Auth() {
         <Card className="bg-white/95 backdrop-blur-sm shadow-2xl border-0">
           <CardHeader className="text-center pb-8">
             <div className="flex justify-center mb-6">
-              <Logo width="120" height="120" />
+              <Logo width="60" height="60" />
             </div>
             <CardTitle className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">
               {isLogin ? 'Welcome Back' : 'Join Nearby Traveler'}
