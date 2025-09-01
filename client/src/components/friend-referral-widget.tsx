@@ -169,7 +169,21 @@ ${emailForm.personalMessage || generatePersonalMessage()}`;
               </Button>
               <Button
                 onClick={async () => {
-                  const message = `Hey! Check out Nearby Traveler - it's amazing for connecting with travelers and locals! ${signupUrl}`;
+                  const message = `Hey! 🌍 I've been using this amazing travel app called Nearby Traveler and I think you'd absolutely love it!
+
+It's perfect for:
+✈️ Meeting local friends when you travel who know the best hidden spots
+🏠 Connecting with fellow travelers in your own city
+🎉 Discovering authentic experiences beyond tourist traps
+📅 Joining exclusive local events and creating your own
+📸 Sharing travel memories and getting inspired for your next adventure
+🎯 Finding people with your exact interests and travel style
+
+The community is incredible - I've already made some amazing connections! Want to check it out?
+
+${signupUrl}
+
+Hope to see you there! 😊`;
                   
                   try {
                     await navigator.clipboard.writeText(message);
@@ -196,8 +210,20 @@ ${emailForm.personalMessage || generatePersonalMessage()}`;
               </Button>
               <Button
                 onClick={() => {
-                  const message = encodeURIComponent(`Hey! Check out Nearby Traveler - it's amazing for connecting with travelers and locals! ${signupUrl}`);
-                  window.open(`https://t.me/share/url?url=${encodeURIComponent(signupUrl)}&text=${message}`, '_blank');
+                  const message = `Hey! 🌍 I've been using this amazing travel app called Nearby Traveler and I think you'd absolutely love it!
+
+It's perfect for:
+✈️ Meeting local friends when you travel who know the best hidden spots
+🏠 Connecting with fellow travelers in your own city
+🎉 Discovering authentic experiences beyond tourist traps
+📅 Joining exclusive local events and creating your own
+📸 Sharing travel memories and getting inspired for your next adventure
+🎯 Finding people with your exact interests and travel style
+
+The community is incredible - I've already made some amazing connections! Want to check it out?
+
+Hope to see you there! 😊`;
+                  window.open(`https://t.me/share/url?url=${encodeURIComponent(signupUrl)}&text=${encodeURIComponent(message)}`, '_blank');
                 }}
                 className="bg-blue-500 hover:bg-blue-600 text-white text-sm"
               >
