@@ -216,7 +216,7 @@ export default function CouchsurfingLanding() {
               <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-rose-500">
                 <div className="flex items-start">
                   <ShieldCheck className="w-6 h-6 text-rose-600 mt-1 mr-3 flex-shrink-0" />
-                  <p className="text-zinc-700 dark:text-zinc-300">Feel safer with references and a vouching system</p>
+                  <p className="text-zinc-700 dark:text-zinc-300">References and a vouching system</p>
                 </div>
               </div>
               
