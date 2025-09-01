@@ -573,7 +573,7 @@ function Router() {
       // Redirect unauthenticated users trying to access welcome pages
       if (location === '/welcome' || location === '/welcome-business') {
         console.log('🚫 SECURITY: Unauthenticated user trying to access welcome page - redirecting to auth');
-        window.location.href = '/api/login';
+        window.location.href = '/signup';
         return null;
       }
 
@@ -933,7 +933,7 @@ function Router() {
           const storageUser = authStorage.getUser();
           if (!storageUser?.id) {
             console.log('🔍 PROFILE ROUTE: No user found anywhere, redirecting to auth');
-            window.location.href = '/api/login';
+            window.location.href = '/signup';
             return null;
           }
         }

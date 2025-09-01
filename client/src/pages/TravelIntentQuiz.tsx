@@ -105,7 +105,7 @@ export default function TravelIntentQuiz() {
         variant: "destructive",
       });
       // Redirect to proper login endpoint
-      window.location.href = '/api/login';
+      window.location.href = '/signup';
       return;
     }
 
