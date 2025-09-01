@@ -173,7 +173,7 @@ export default function CouchsurfingLanding() {
                 Beyond Just Needing a Couch
               </h2>
               <p className="text-lg sm:text-xl text-zinc-600 dark:text-zinc-400 max-w-4xl mx-auto leading-relaxed">
-                Connect based on shared interests, activities, demographics, planned events, and genuine compatibility.
+                Connect based on shared commonalities, activities, demographics, planned events, and genuine compatibility.
               </p>
             </div>
             
