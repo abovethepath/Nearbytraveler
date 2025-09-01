@@ -50,9 +50,12 @@ export default function LandingNavbar() {
           {/* CTA Buttons - Fixed Width, Always Right */}
           <div className="hidden lg:flex items-center space-x-3 flex-shrink-0">
             <ThemeToggle position="relative" className="mr-2" />
-            <a href="/api/login" className="bg-gray-100 dark:bg-blue-600 hover:bg-gray-200 dark:hover:bg-blue-700 text-black dark:text-white border-2 border-gray-300 dark:border-transparent px-4 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out whitespace-nowrap">
+            <button 
+              onClick={() => window.location.href = '/api/login'}
+              className="bg-gray-100 dark:bg-blue-600 hover:bg-gray-200 dark:hover:bg-blue-700 text-black dark:text-white border-2 border-gray-300 dark:border-transparent px-4 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out whitespace-nowrap"
+            >
               Sign In
-            </a>
+            </button>
             <Link href="/join" className="bg-orange-500 dark:bg-orange-500 hover:bg-orange-600 dark:hover:bg-orange-600 text-white dark:text-white border-2 border-orange-500 dark:border-orange-500 px-4 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out whitespace-nowrap">
               Join Now
             </Link>
@@ -152,12 +155,15 @@ export default function LandingNavbar() {
               >
                 Join Now
               </Link>
-              <a href="/api/login" 
+              <button 
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  window.location.href = '/api/login';
+                }}
                 className="bg-gray-100 dark:bg-blue-600 hover:bg-gray-200 dark:hover:bg-blue-700 text-black dark:text-white border-2 border-gray-300 dark:border-transparent text-center px-4 py-3 rounded-lg text-base font-medium transition-all duration-200 active:scale-95 shadow-lg touch-manipulation"
-                onClick={() => setMobileMenuOpen(false)}
               >
                 Sign In
-              </a>
+              </button>
             </div>
           </div>
         </div>
