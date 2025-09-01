@@ -55,25 +55,9 @@ export default function CouchsurfingLanding() {
             <br className="hidden sm:block" />
             <span className="text-blue-600">You'll Love This.</span>
           </h1>
-          <p className="text-lg sm:text-xl md:text-2xl text-zinc-600 dark:text-zinc-300 mb-8 max-w-4xl mx-auto leading-relaxed">
+          <p className="text-lg sm:text-xl md:text-2xl text-zinc-600 dark:text-zinc-300 mb-12 max-w-4xl mx-auto leading-relaxed">
             Meet travelers and locals through shared interests, activities, events and demographics — whether you can host or not.
           </p>
-          
-          {/* Clear CTA Button */}
-          <div className="mb-12">
-            <Button 
-              onClick={() => {
-                trackEvent('signup_cta_click', 'couchsurfing_landing', 'hero_join_now');
-                setLocation('/launching-soon');
-              }}
-              className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-8 py-4 text-lg rounded-lg shadow-lg transition-all duration-200 transform hover:scale-105"
-            >
-              JOIN NOW
-            </Button>
-            <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-3">
-              No strings attached. Same values you love.
-            </p>
-          </div>
           
           {/* Hero Image */}
           <div className="max-w-2xl mx-auto">
