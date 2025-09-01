@@ -3082,7 +3082,7 @@ Your business is now visible to travelers searching for experiences in ${user.ho
 
 Questions? Just reply to this message. Welcome aboard!
 
-- The Nearby Traveler Team`
+- Aaron (your fellow nearby traveler)`
               : `Welcome to Nearby Traveler! ✈️
 
 Hi ${user.name || user.username}! We're thrilled you've joined our community of travelers and locals in ${user.hometownCity}.
@@ -3098,7 +3098,7 @@ Your hometown is ${user.hometownCity} - we've automatically added you to the loc
 
 Ready to start connecting? Questions? Just reply anytime!
 
-- The Nearby Traveler Team`
+- Aaron (your fellow nearby traveler)`
           });
 
           if (process.env.NODE_ENV === 'development') console.log(`✓ Auto-connected new user ${user.username} (ID: ${user.id}) to nearbytraveler with welcome message`);
@@ -3194,7 +3194,7 @@ Your business is now visible to travelers searching for experiences in ${user.ho
 
 Questions? Just reply to this message. Welcome aboard!
 
-- The Nearby Traveler Team`
+- Aaron (your fellow nearby traveler)`
       });
 
       console.log(`✓ Manual welcome message sent to business user ${user.username} (ID: ${user.id})`);
@@ -3830,7 +3830,7 @@ Your business is now visible to travelers searching for experiences in ${updated
 
 Questions? Just reply to this message. Welcome aboard!
 
-- The Nearby Traveler Team`
+- Aaron (your fellow nearby traveler)`
                 });
 
                 if (process.env.NODE_ENV === 'development') console.log(`✓ PROFILE COMPLETION: Sent welcome message to business user ${updatedUser.username} (ID: ${userId})`);
