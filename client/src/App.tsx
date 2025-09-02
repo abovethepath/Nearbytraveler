@@ -757,16 +757,9 @@ function Router() {
         return <QRSimplePage />;
       }
       
-      // Check if this is a valid landing page route (including our public pages)
-      if (landingPageRoutes.includes(location)) {
-        // This handles all the routes we explicitly want to be public
-        console.log('✅ PUBLIC PAGE ACCESS - Valid landing page route:', location);
-        // Let it continue to the specific route handlers below (they're already in the landing page section)
-      } else {
-        // Force unknown routes to landing page for unauthenticated users
-        console.log('❌ STREAMLINED FALLBACK - Unknown route for unauthenticated user, showing streamlined landing page:', location);
-        return <LandingStreamlined />;
-      }
+      // FINAL FALLBACK: Force unknown routes to landing page for unauthenticated users
+      console.log('❌ STREAMLINED FALLBACK - Unknown route for unauthenticated user, showing streamlined landing page:', location);
+      return <LandingStreamlined />;
     }
 
     console.log('✅ USER AUTHENTICATED - routing to:', location, 'user:', user?.username || 'unknown user');
