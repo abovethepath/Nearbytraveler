@@ -2449,7 +2449,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         });
       }
 
-      // Map traveler signup fields - CRITICAL for travel data processing
+      // Map traveler signup fields - CRITICAL for travel data processing  
       if (processedData.userType === 'traveler' || processedData.userType === 'currently_traveling') {
         if (process.env.NODE_ENV === 'development') console.log("✈️ PROCESSING TRAVELER USER - Travel mapping:");
         if (process.env.NODE_ENV === 'development') console.log("  Input travel data:", {

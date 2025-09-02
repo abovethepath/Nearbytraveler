@@ -209,8 +209,8 @@ export default function SignupTraveling() {
 
       // Prepare registration data with clean field mapping
       const registrationData = {
-        // server looks for 'currently_traveling' to set flags, then normalizes to 'traveler'
-        userType: "currently_traveling",
+        // SIMPLE: Just set as traveler 
+        userType: "traveler",
         isCurrentlyTraveling: true,
 
         // account data
