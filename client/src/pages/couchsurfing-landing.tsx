@@ -6,7 +6,7 @@ import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
 import { Users, MapPin, Globe, RefreshCw, Home, ShieldCheck, Plane, Building2, Handshake, Coffee, Heart, Calendar, Star, CheckCircle, X, Award, MessageCircle, Camera, Compass, Gift } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
 import { useTheme } from "@/components/theme-provider";
-import couchsurfingHeroImage from "@assets/couchsurfing_1756775453952.webp";
+import couchsurfingHeroImage from "@assets/couch_1756775792515.png";
 
 export default function CouchsurfingLanding() {
   const [, setLocation] = useLocation();
