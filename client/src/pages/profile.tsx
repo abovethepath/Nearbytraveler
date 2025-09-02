@@ -3490,7 +3490,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               ) : (
                 <div className="space-y-2 text-black w-full mt-2">
                   {(() => {
-                    const currentDestination = getCurrentTravelDestination(travelPlans || []);
                     const hometown = user.hometownCity ? 
                       `${user.hometownCity}${user.hometownState ? `, ${user.hometownState}` : ''}` :
                       'Unknown';
@@ -3498,14 +3497,17 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     return (
                       <>
                         <h1 className="text-lg xs:text-xl sm:text-2xl md:text-3xl font-bold text-black break-all">@{user.username}</h1>
-                        <div className="flex items-center gap-2 text-lg font-medium text-black">
-                          <MapPin className="w-5 h-5 text-blue-600" />
-                          <span>NEARBY LOCAL {hometown}</span>
-                        </div>
-                        {currentDestination && (
+                        
+                        {/* Show travel status first if currently traveling, using database fields */}
+                        {user.isCurrentlyTraveling && user.travelDestination ? (
                           <div className="flex items-center gap-2 text-lg font-medium text-black">
                             <Plane className="w-5 h-5 text-orange-600" />
-                            <span>NEARBY TRAVELER {currentDestination}</span>
+                            <span>NEARBY TRAVELER ({user.travelDestination})</span>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2 text-lg font-medium text-black">
+                            <MapPin className="w-5 h-5 text-blue-600" />
+                            <span>NEARBY LOCAL {hometown}</span>
                           </div>
                         )}
                       </>
