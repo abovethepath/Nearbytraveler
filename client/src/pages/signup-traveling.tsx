@@ -234,6 +234,7 @@ export default function SignupTraveling() {
         currentTripDestinationState: formData.currentTripDestinationState?.trim() || "",
         currentTripDestinationCountry: formData.currentTripDestinationCountry?.trim() || "",
         currentTripReturnDate: toDateOnlyISO(formData.currentTripReturnDate),
+        travelEndDate: toDateOnlyISO(formData.currentTripReturnDate), // Map to backend field
 
         // top choices (require at least 3)
         interests: formData.interests,
