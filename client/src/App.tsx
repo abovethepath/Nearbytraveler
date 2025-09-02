@@ -918,18 +918,9 @@ function Router() {
         return <CouchsurfingLanding />;
       case '/b':
         return <BusinessCustomLanding />;
-      case '/signup/account':
-        return <SignupAccount />;
-      case '/signup/local':
-        return <SignupLocalTraveler />;
-      case '/signup/traveling':
-        return <SignupTraveling />;
-      case '/join':
-        return <JoinPageWithSignIn />;
+      // SIGNUP ROUTES MOVED TO UNAUTHENTICATED SECTION - removed duplicates
       case '/signup':
         return <ComingSoon />;
-      case '/signup/business':
-        return <SignupBusinessSimple />;
       case '/business-registration':
         return <BusinessRegistration />;
       case '/profile':
