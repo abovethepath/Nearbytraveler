@@ -160,19 +160,6 @@ export default function TravelersLanding() {
       </div>
 
 
-      {/* Quote Section */}
-      <div className="py-12 bg-white dark:bg-gray-800">
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <p className="text-xl text-gray-800 dark:text-gray-300 leading-relaxed font-light">
-            "Connect with real locals who'll show you the hidden gems, secret bars, and authentic experiences that make travel unforgettable."
-          </p>
-          <div className="mt-6 text-center">
-            <p className="text-gray-600 dark:text-white text-base">— Real Travelers, Real Experiences</p>
-          </div>
-        </div>
-      </div>
-
-
       <main className="flex-1 px-4 py-6 sm:py-12">
         {/* Why Travelers Love Nearby Traveler */}
         <div className="max-w-6xl mx-auto text-center mb-8 sm:mb-12">
