@@ -2602,36 +2602,8 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         travelEndDate: processedData.travelEndDate
       });
       
-      // EMERGENCY DIAGNOSTIC: Track email changes
-      console.log("🚨 EMERGENCY EMAIL DIAGNOSTIC - Original req.body.email:", req.body.email);
-      console.log("🚨 EMERGENCY EMAIL DIAGNOSTIC - processedData.email before schema:", processedData.email);
-      console.log("🚨 EMERGENCY EMAIL DIAGNOSTIC - processedData.username:", processedData.username);
-      
-      // 🚨 EMERGENCY FIX: Prevent ANY email transformation in production
-      // CRITICAL BUG: Testing logic was overriding external emails to @thenearbytraveler.com format
-      // This emergency fix ensures external emails are NEVER modified
-      if (req.body.email && req.body.email !== processedData.email) {
-        console.log("🚨 EMERGENCY PROTECTION: Email was modified from", req.body.email, "to", processedData.email);
-        console.log("🚨 EMERGENCY PROTECTION: Restoring original email address");
-        processedData.email = req.body.email; // Force restore original email
-      }
-      
-      // Additional protection: Never allow conversion to @thenearbytraveler.com unless explicitly internal
-      if (processedData.email && processedData.email.includes('@thenearbytraveler.com')) {
-        const originalEmail = req.body.email;
-        if (originalEmail && !originalEmail.includes('@thenearbytraveler.com')) {
-          console.log("🚨 EMERGENCY PROTECTION: Detected conversion to internal domain");
-          console.log("🚨 EMERGENCY PROTECTION: Original:", originalEmail, "→ Converted:", processedData.email);
-          console.log("🚨 EMERGENCY PROTECTION: Restoring external email address");
-          processedData.email = originalEmail; // Force restore external email
-        }
-      }
 
       const userData = insertUserSchema.parse(processedData);
-      
-      // EMERGENCY DIAGNOSTIC: Track email changes after schema parsing
-      console.log("🚨 EMERGENCY EMAIL DIAGNOSTIC - userData.email after schema:", userData.email);
-      console.log("🚨 EMERGENCY EMAIL DIAGNOSTIC - userData.username after schema:", userData.username);
 
       if (process.env.NODE_ENV === 'development') console.log("⚡ AFTER SCHEMA PARSING - userData location fields:", {
         hometownCity: userData.hometownCity,
@@ -2726,16 +2698,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       });
 
       if (process.env.NODE_ENV === 'development') console.log("Creating new user:", userData.email);
-      
-      // EMERGENCY DIAGNOSTIC: Final email check before database
-      console.log("🚨 EMERGENCY EMAIL DIAGNOSTIC - Final userData.email going to database:", userData.email);
-      console.log("🚨 EMERGENCY EMAIL DIAGNOSTIC - Final userData.username going to database:", userData.username);
-      
       const user = await storage.createUser(userData);
-      
-      // EMERGENCY DIAGNOSTIC: Check what was actually saved
-      console.log("🚨 EMERGENCY EMAIL DIAGNOSTIC - user.email from database:", user.email);
-      console.log("🚨 EMERGENCY EMAIL DIAGNOSTIC - user.username from database:", user.username);
       const { password, ...userWithoutPassword } = user;
 
       // Send welcome email to new user and location notifications to existing users
