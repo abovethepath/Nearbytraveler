@@ -1942,7 +1942,23 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         return res.status(404).json({ message: "User not found" });
       }
 
-      return res.json(user);
+      // Create session for the user
+      (req as any).session.user = {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        profileImageUrl: user.profileImage
+      };
+
+      // Save session
+      (req as any).session.save((err: any) => {
+        if (err) {
+          console.error("Session save error:", err);
+          return res.status(500).json({ message: "Session error" });
+        }
+        console.log("✅ Quick login successful for user:", user.username);
+        return res.json({ ok: true, user: { id: user.id, username: user.username } });
+      });
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Quick login error:", error);
       res.status(500).json({ message: "Login failed" });
@@ -1981,13 +1997,15 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
 
       // Send password reset email
       const { emailService } = await import('./services/emailService');
-      await emailService.sendForgotPasswordEmail(user.email!, {
+      console.log(`🔍 Attempting to send forgot password email to: ${user.email}`);
+      const emailResult = await emailService.sendForgotPasswordEmail(user.email!, {
         name: user.displayName || user.username || 'User',
         resetUrl: `${req.protocol}://${req.get('host')}/reset-password?token=${resetToken}`,
         expiryHours: 1
       });
 
-      console.log(`✅ Password reset email sent to ${user.email}`);
+      console.log(`📧 Email send result:`, emailResult);
+      console.log(`✅ Password reset email ${emailResult ? 'sent' : 'FAILED'} to ${user.email}`);
       
       // For development - return the reset link so you can test (NODE_ENV is undefined in Replit dev)
       if (!process.env.NODE_ENV || process.env.NODE_ENV !== 'production') {
