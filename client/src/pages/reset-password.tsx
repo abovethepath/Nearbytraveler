@@ -29,9 +29,32 @@ export default function ResetPassword() {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Extract token from URL parameters
+    // Extract token from URL parameters - try multiple methods to ensure we get it
+    let tokenParam: string | null = null;
+    
+    // Method 1: Direct window.location.search
     const urlParams = new URLSearchParams(window.location.search);
-    const tokenParam = urlParams.get('token');
+    tokenParam = urlParams.get('token');
+    console.log('🔐 RESET: Method 1 - window.location.search:', window.location.search);
+    console.log('🔐 RESET: Method 1 - token found:', tokenParam);
+    
+    // Method 2: Parse from full URL if method 1 fails
+    if (!tokenParam) {
+      const fullUrl = window.location.href;
+      console.log('🔐 RESET: Method 2 - full URL:', fullUrl);
+      const url = new URL(fullUrl);
+      tokenParam = url.searchParams.get('token');
+      console.log('🔐 RESET: Method 2 - token found:', tokenParam);
+    }
+    
+    // Method 3: Manual parsing if both fail
+    if (!tokenParam) {
+      const href = window.location.href;
+      const tokenMatch = href.match(/[?&]token=([^&]+)/);
+      tokenParam = tokenMatch ? tokenMatch[1] : null;
+      console.log('🔐 RESET: Method 3 - manual parse, token found:', tokenParam);
+    }
+    
     setToken(tokenParam);
     
     // Verify token if it exists
