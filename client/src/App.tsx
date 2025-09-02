@@ -727,13 +727,7 @@ function Router() {
         return <LandingStreamlined />;
       }
       
-      // QR Code page - PUBLIC ACCESS for printing business cards
-      if (location === '/qr-code') {
-        console.log('🎯 QR CODE PAGE ACCESS - Cache Bust v4 - Showing SIMPLE QR generator');
-        return <QRSimplePage />;
-      }
-      
-      // SIGNUP ROUTES - MUST BE ACCESSIBLE TO UNAUTHENTICATED USERS
+      // SIGNUP ROUTES - MUST BE FIRST TO AVOID FALLBACKS
       if (location === '/signup/account') {
         console.log('✅ SIGNUP ACCOUNT - Unauthenticated access allowed');
         return <SignupAccount />;
@@ -753,6 +747,12 @@ function Router() {
       if (location === '/join') {
         console.log('✅ JOIN PAGE - Unauthenticated access allowed');
         return <JoinPageWithSignIn />;
+      }
+
+      // QR Code page - PUBLIC ACCESS for printing business cards
+      if (location === '/qr-code') {
+        console.log('🎯 QR CODE PAGE ACCESS - Cache Bust v4 - Showing SIMPLE QR generator');
+        return <QRSimplePage />;
       }
 
       // Check if this is a valid landing page route (including our public pages)
