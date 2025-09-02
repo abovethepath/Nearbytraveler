@@ -12067,6 +12067,94 @@ Questions? Just reply to this message. Welcome aboard!
   });
 
   // ========================================
+  // VOUCH SYSTEM ROUTES
+  // ========================================
+
+  // Get vouches received by a user
+  app.get("/api/users/:userId/vouches", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const vouches = await storage.getVouchesForUser(userId);
+      res.json(vouches);
+    } catch (error: any) {
+      console.error('Error fetching vouches:', error);
+      res.status(500).json({ message: "Failed to fetch vouches" });
+    }
+  });
+
+  // Get vouches given by a user
+  app.get("/api/users/:userId/vouches-given", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const vouches = await storage.getVouchesGivenByUser(userId);
+      res.json(vouches);
+    } catch (error: any) {
+      console.error('Error fetching vouches given:', error);
+      res.status(500).json({ message: "Failed to fetch vouches given" });
+    }
+  });
+
+  // Check if a user can vouch for another user
+  app.get("/api/users/:userId/can-vouch", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const targetUserId = req.query.targetUserId ? parseInt(req.query.targetUserId as string) : undefined;
+      
+      const canVouchData = await storage.canUserVouch(userId, targetUserId);
+      res.json(canVouchData);
+    } catch (error: any) {
+      console.error('Error checking vouch eligibility:', error);
+      res.status(500).json({ 
+        canVouch: false, 
+        reason: 'Error checking vouch eligibility' 
+      });
+    }
+  });
+
+  // Get vouch network statistics for a user
+  app.get("/api/users/:userId/vouch-network", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const networkStats = await storage.getVouchNetworkStats(userId);
+      res.json(networkStats);
+    } catch (error: any) {
+      console.error('Error fetching vouch network stats:', error);
+      res.status(500).json({ message: "Failed to fetch vouch network stats" });
+    }
+  });
+
+  // Create a new vouch
+  app.post("/api/vouches", async (req, res) => {
+    try {
+      const { voucherUserId, vouchedUserId, vouchMessage, vouchCategory } = req.body;
+      
+      // Validate input
+      if (!voucherUserId || !vouchedUserId) {
+        return res.status(400).json({ message: "Voucher and vouched user IDs are required" });
+      }
+
+      // Check if user can vouch
+      const canVouchData = await storage.canUserVouch(voucherUserId, vouchedUserId);
+      if (!canVouchData.canVouch) {
+        return res.status(403).json({ message: canVouchData.reason || "Cannot vouch for this user" });
+      }
+
+      // Create the vouch
+      const newVouch = await storage.createVouchFromData({
+        voucherUserId,
+        vouchedUserId,
+        vouchMessage: vouchMessage || '',
+        vouchCategory: vouchCategory || 'general'
+      });
+
+      res.status(201).json(newVouch);
+    } catch (error: any) {
+      console.error('Error creating vouch:', error);
+      res.status(500).json({ message: error.message || "Failed to create vouch" });
+    }
+  });
+
+  // ========================================
   // AUTHENTICATION ROUTES
   // ========================================
 
