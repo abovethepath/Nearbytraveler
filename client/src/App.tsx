@@ -733,6 +733,28 @@ function Router() {
         return <QRSimplePage />;
       }
       
+      // SIGNUP ROUTES - MUST BE ACCESSIBLE TO UNAUTHENTICATED USERS
+      if (location === '/signup/account') {
+        console.log('✅ SIGNUP ACCOUNT - Unauthenticated access allowed');
+        return <SignupAccount />;
+      }
+      if (location === '/signup/local') {
+        console.log('✅ SIGNUP LOCAL - Unauthenticated access allowed');
+        return <SignupLocalTraveler />;
+      }
+      if (location === '/signup/traveling') {
+        console.log('✅ SIGNUP TRAVELING - Unauthenticated access allowed');
+        return <SignupTraveling />;
+      }
+      if (location === '/signup/business') {
+        console.log('✅ SIGNUP BUSINESS - Unauthenticated access allowed');
+        return <SignupBusinessSimple />;
+      }
+      if (location === '/join') {
+        console.log('✅ JOIN PAGE - Unauthenticated access allowed');
+        return <JoinPageWithSignIn />;
+      }
+
       // Check if this is a valid landing page route (including our public pages)
       if (landingPageRoutes.includes(location)) {
         // This handles all the routes we explicitly want to be public
@@ -894,18 +916,8 @@ function Router() {
         return <CouchsurfingLanding />;
       case '/b':
         return <BusinessCustomLanding />;
-      case '/signup/account':
-        return <SignupAccount />;
-      case '/signup/local':
-        return <SignupLocalTraveler />;
-      case '/signup/traveling':
-        return <SignupTraveling />;
-      case '/join':
-        return <JoinPageWithSignIn />;
       case '/signup':
         return <ComingSoon />;
-      case '/signup/business':
-        return <SignupBusinessSimple />;
       case '/business-registration':
         return <BusinessRegistration />;
       case '/profile':
