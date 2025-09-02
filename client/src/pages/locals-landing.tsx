@@ -148,33 +148,10 @@ export default function LocalsLanding() {
             </div>
           )}
         </div>
-
-        {/* Quick Value Props Section - Compact */}
-        <div className="py-4 bg-white dark:bg-gray-900">
-          <div className="max-w-4xl mx-auto px-4 text-center">
-            <div className="grid grid-cols-3 gap-4">
-              <div className="flex flex-col items-center p-2">
-                <div className="text-2xl mb-1">🌟</div>
-                <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-1">Share Your Expertise</h3>
-                <p className="text-gray-600 dark:text-gray-300 text-xs">Show travelers the real side</p>
-              </div>
-              <div className="flex flex-col items-center p-2">
-                <div className="text-2xl mb-1">🤝</div>
-                <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-1">Build Friendships</h3>
-                <p className="text-gray-600 dark:text-gray-300 text-xs">Meet amazing people worldwide</p>
-              </div>
-              <div className="flex flex-col items-center p-2">
-                <div className="text-2xl mb-1">🎯</div>
-                <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-1">Create Experiences</h3>
-                <p className="text-gray-600 dark:text-gray-300 text-xs">Host meetups and tours</p>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
 
         {/* FOUNDER STORY SECTION - Consistent with main page */}
-        <div className="relative z-10 py-12 overflow-hidden mb-8">
+        <div className="relative z-10 py-6 overflow-hidden mb-4">
           {/* Clean background for light mode */}
           <div className="absolute inset-0 bg-gray-50 dark:bg-gradient-to-r dark:from-blue-600 dark:via-blue-500 dark:to-orange-500"></div>
           
