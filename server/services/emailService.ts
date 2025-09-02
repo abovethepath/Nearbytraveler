@@ -71,24 +71,17 @@ export class EmailService {
 
     try {
       const emailData = {
-        sender: { email: 'aaron@thenearbytraveler.com', name: 'Aaron, Founder Nearby Traveler, Inc' },
+        sender: { email: 'aaron_marc2004@yahoo.com', name: 'Aaron, Nearby Traveler' },
         to: [{ email: to }],
         subject,
         htmlContent: html,
         textContent: text,
-        // Critical headers for inbox delivery
+        // Simplified headers for better deliverability
         headers: {
-          'List-Unsubscribe': '<mailto:aaron@thenearbytraveler.com?subject=unsubscribe>',
-          'X-Mailer': 'Nearby Traveler Security System',
-          'Reply-To': 'aaron@thenearbytraveler.com',
-          'X-Entity-Type': 'transactional',
-          'X-Priority': '1', // High priority for security emails
-          'Importance': 'high',
-          'X-Authentication-Results': 'pass',
-          'Message-ID': `<security-${Date.now()}-${Math.random().toString(36)}@thenearbytraveler.com>`
+          'Reply-To': 'aaron@thenearbytraveler.com'
         },
-        // Mark as critical security notification
-        tags: ['security', 'password-reset', 'account-recovery']
+        // Remove complex tags that might trigger spam filters
+        tags: ['password-reset']
       };
 
       console.log('📧 Sending email via Brevo:', { to, from: emailData.sender.email, subject });
