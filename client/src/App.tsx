@@ -517,6 +517,24 @@ function Router() {
         return <JoinPageWithSignIn />;
       }
 
+      // CRITICAL FIX: Handle signup pages for unauthenticated users
+      if (location === '/signup/account') {
+        console.log('🎯 SIGNUP ACCOUNT: Showing account creation page');
+        return <SignupAccount />;
+      }
+      if (location === '/signup/local') {
+        console.log('🎯 SIGNUP LOCAL: Showing local/traveler profile page');
+        return <SignupLocalTraveler />;
+      }
+      if (location === '/signup/traveling') {
+        console.log('🎯 SIGNUP TRAVELING: Showing traveling profile page');
+        return <SignupTraveling />;
+      }
+      if (location === '/signup/business') {
+        console.log('🎯 SIGNUP BUSINESS: Showing business profile page');
+        return <SignupBusinessSimple />;
+      }
+
       // CRITICAL: Handle password reset before other checks
       if (location.startsWith('/reset-password')) {
         console.log('🔐 RESET PASSWORD: Allowing access to reset password page');
