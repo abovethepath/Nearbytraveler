@@ -1,6 +1,7 @@
 // Email Service for Nearby Traveler Platform
 import { 
-  welcomeEmail, 
+  welcomeEmail,
+  welcomeEmailBusiness, 
   passwordResetEmail, 
   referralEmail, 
   connectionRequestEmail, 
@@ -121,7 +122,9 @@ export class EmailService {
   }
 
   async sendWelcomeEmail(to: string, data: WelcomeEmailData) {
-    const template = welcomeEmail(data);
+    const template = data.userType === 'business' 
+      ? welcomeEmailBusiness(data) 
+      : welcomeEmail(data);
     return this.sendEmail(to, template.subject, template.html, template.text);
   }
 
