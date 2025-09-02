@@ -71,7 +71,7 @@ export class EmailService {
 
     try {
       const emailData = {
-        sender: { email: 'aaron_marc2004@yahoo.com', name: 'Aaron, Nearby Traveler' },
+        sender: { email: 'noreply@nearbytraveler.org', name: 'Nearby Traveler' },
         to: [{ email: to }],
         subject,
         htmlContent: html,
