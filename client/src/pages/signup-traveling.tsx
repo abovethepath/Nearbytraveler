@@ -61,6 +61,7 @@ export default function SignupTraveling() {
     username: "",
     email: "",
     password: "",
+    confirmPassword: "",
     phoneNumber: "",
 
     // page 2
@@ -153,6 +154,7 @@ export default function SignupTraveling() {
           username: accountData.username || '',
           name: accountData.name || '',
           password: accountData.password || '',
+          confirmPassword: accountData.password || '', // Auto-match on load
           phoneNumber: accountData.phoneNumber || ''
         }));
       } catch (error) {
@@ -186,6 +188,7 @@ export default function SignupTraveling() {
         ...formData,
         email: accountData.email || formData.email,
         password: accountData.password || formData.password,
+        confirmPassword: accountData.password || formData.confirmPassword, // Auto-fill confirm password
         username: accountData.username || formData.username,
         name: accountData.name || formData.name,
         phoneNumber: accountData.phoneNumber || ''
@@ -237,6 +240,12 @@ export default function SignupTraveling() {
         currentTripDestinationCountry: formData.currentTripDestinationCountry?.trim() || "",
         currentTripReturnDate: formData.currentTripReturnDate,
         travelEndDate: formData.currentTripReturnDate, // Map to backend field
+        
+        // CRITICAL: Map to backend expected field names for travel plan creation
+        currentCity: formData.currentTripDestinationCity?.trim() || "",
+        currentState: formData.currentTripDestinationState?.trim() || "", 
+        currentCountry: formData.currentTripDestinationCountry?.trim() || "",
+        travelStartDate: new Date().toISOString().split('T')[0], // Today for current travelers
 
         // top choices (require at least 3)
         interests: formData.interests,
@@ -252,6 +261,7 @@ export default function SignupTraveling() {
       if (!registrationData.username) errors.push("Username is required.");
       if (!registrationData.email) errors.push("Email is required.");
       if (!registrationData.password) errors.push("Password is required.");
+      if (finalFormData.password !== finalFormData.confirmPassword) errors.push("Passwords do not match.");
       if (!registrationData.dateOfBirth) errors.push("Date of birth is required.");
       if (!registrationData.hometownCity || !registrationData.hometownCountry) {
         errors.push("Hometown city and country are required.");
