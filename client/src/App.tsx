@@ -511,6 +511,12 @@ function Router() {
     if (!isActuallyAuthenticated) {
       console.log('🏠 STREAMLINED LANDING - User not authenticated, showing streamlined landing page for:', location);
 
+      // CRITICAL FIX: Handle /join FIRST before any other checks to prevent redirect
+      if (location === '/join') {
+        console.log('🎯 JOIN PAGE: Showing join page with signup form');
+        return <JoinPageWithSignIn />;
+      }
+
       // CRITICAL: Handle password reset before other checks
       if (location.startsWith('/reset-password')) {
         console.log('🔐 RESET PASSWORD: Allowing access to reset password page');
@@ -561,11 +567,7 @@ function Router() {
 
 
 
-      // Allow access to join page - restore original working route
-      if (location === '/join') {
-        console.log('Showing Join page with signup form');
-        return <JoinPageWithSignIn />;
-      }
+      // JOIN PAGE NOW HANDLED AT TOP OF FUNCTION - removed duplicate check
 
       // Show landing page
       if (location === '/landing-new') {
