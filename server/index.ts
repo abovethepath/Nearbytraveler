@@ -516,6 +516,36 @@ app.use((req, res, next) => {
   app.get("/api/test", (req, res) => {
     res.json({ message: "Server is running", timestamp: new Date().toISOString() });
   });
+
+  // EMERGENCY: Email test endpoint to debug email delivery
+  app.post("/api/debug-email", async (req, res) => {
+    try {
+      console.log('🔍 EMAIL DEBUG: Testing email delivery...');
+      const { emailService } = await import('./services/emailService.js');
+      
+      // Test with a simple reset email
+      const testResult = await emailService.sendForgotPasswordEmail("test@example.com", {
+        name: "Test User",
+        resetUrl: "https://example.com/reset?token=test123",
+        expiryHours: 1
+      });
+      
+      console.log('📧 Email test result:', testResult);
+      
+      res.json({ 
+        success: testResult,
+        message: testResult ? "Test email sent successfully" : "Email failed to send",
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: any) {
+      console.error('🔥 Email test error:', error);
+      res.status(500).json({ 
+        success: false, 
+        error: error.message,
+        stack: error.stack 
+      });
+    }
+  });
   
   // Add quick login fix (temporarily disabled during deployment debugging)
   console.log("Quick login fix temporarily disabled for deployment stability");
