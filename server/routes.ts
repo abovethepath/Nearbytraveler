@@ -2396,7 +2396,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       }
 
       // Map traveler signup fields - CRITICAL for travel data processing
-      if (processedData.userType === 'traveler') {
+      if (processedData.userType === 'traveler' || processedData.userType === 'currently_traveling') {
         if (process.env.NODE_ENV === 'development') console.log("✈️ PROCESSING TRAVELER USER - Travel mapping:");
         if (process.env.NODE_ENV === 'development') console.log("  Input travel data:", {
           currentCity: processedData.currentCity,
@@ -2570,6 +2570,9 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       if (processedData.userType === 'currently_traveling') {
         // CRITICAL: Set traveling status flag for users who signed up as travelers
         processedData.isCurrentlyTraveling = true;
+        
+        // CRITICAL: Normalize userType to 'traveler' for database storage
+        processedData.userType = 'traveler';
         
         // Map localActivities and localEvents to main fields
         if (processedData.localActivities) {
