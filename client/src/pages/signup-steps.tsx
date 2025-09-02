@@ -519,7 +519,7 @@ export default function SignupSteps() {
                         }
                       }}
                       min="1925-01-01"
-                      max={new Date().toISOString().split('T')[0]}
+                      max="9999-12-31"
                       placeholder="YYYY-MM-DD"
                       className="[&::-webkit-calendar-picker-indicator]:dark:invert"
                     />

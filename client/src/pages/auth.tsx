@@ -326,6 +326,7 @@ export default function Auth() {
                       type="date"
                       value={formData.dateOfBirth}
                       onChange={(e) => setFormData(prev => ({ ...prev, dateOfBirth: e.target.value }))}
+                      max="9999-12-31"
                       className="text-base py-3"
                     />
                   </div>

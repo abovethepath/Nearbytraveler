@@ -444,6 +444,7 @@ export default function ItineraryPage({ travelPlanId: propTravelPlanId }: Itiner
                               type="date"
                               value={newItem.date}
                               onChange={(e) => setNewItem(prev => ({ ...prev, date: e.target.value }))}
+                              max="9999-12-31"
                             />
                           </div>
                           <div>
@@ -675,6 +676,7 @@ export default function ItineraryPage({ travelPlanId: propTravelPlanId }: Itiner
                     type="date"
                     value={editingItem.date}
                     onChange={(e) => setEditingItem(prev => prev ? { ...prev, date: e.target.value } : null)}
+                    max="9999-12-31"
                   />
                 </div>
                 <div>

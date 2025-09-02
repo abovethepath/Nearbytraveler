@@ -384,7 +384,7 @@ export default function UnifiedSignup() {
                       value={formData.dateOfBirth}
                       onChange={(e) => setFormData({ ...formData, dateOfBirth: e.target.value })}
                       min="1900-01-01"
-                      max={new Date().toISOString().split('T')[0]}
+                      max="9999-12-31"
                       required
                     />
                     {formData.dateOfBirth && !validateAge(formData.dateOfBirth) && (
@@ -576,6 +576,7 @@ export default function UnifiedSignup() {
                           type="date"
                           value={formData.travelStartDate}
                           onChange={(e) => setFormData({ ...formData, travelStartDate: e.target.value })}
+                          max="9999-12-31"
                           required
                         />
                       </div>
@@ -587,6 +588,7 @@ export default function UnifiedSignup() {
                           value={formData.travelEndDate}
                           onChange={(e) => setFormData({ ...formData, travelEndDate: e.target.value })}
                           min={formData.travelStartDate}
+                          max="9999-12-31"
                           required
                         />
                       </div>

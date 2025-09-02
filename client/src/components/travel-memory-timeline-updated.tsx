@@ -519,6 +519,7 @@ export function TravelMemoryTimeline({ userId, isOwnProfile = false }: TravelMem
                 type="date"
                 value={newMemory.date}
                 onChange={(e) => setNewMemory(prev => ({ ...prev, date: e.target.value }))}
+                max="9999-12-31"
                 className="border-gray-300 dark:border-gray-600"
               />
             </div>

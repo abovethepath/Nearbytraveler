@@ -234,6 +234,7 @@ export default function DestinationModal({ isOpen, onComplete, onClose, user }: 
                     value={startDate}
                     onChange={(e) => setStartDate(e.target.value)}
                     min={getTodayForInput()}
+                    max="9999-12-31"
                     placeholder="20__-__-__"
                     className="[&::-webkit-calendar-picker-indicator]:dark:invert"
                   />
@@ -246,6 +247,7 @@ export default function DestinationModal({ isOpen, onComplete, onClose, user }: 
                     value={endDate}
                     onChange={(e) => setEndDate(e.target.value)}
                     min={startDate || getTodayForInput()}
+                    max="9999-12-31"
                     placeholder="20__-__-__"
                     className="[&::-webkit-calendar-picker-indicator]:dark:invert"
                   />

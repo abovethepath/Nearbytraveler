@@ -482,6 +482,7 @@ export default function SignupTraveling() {
                     value={formData.currentTripReturnDate}
                     onChange={(e) => setFormData(prev => ({ ...prev, currentTripReturnDate: e.target.value }))}
                     min={today}
+                    max="9999-12-31"
                     required
                     className="bg-white dark:bg-gray-700"
                   />

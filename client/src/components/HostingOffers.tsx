@@ -222,6 +222,7 @@ export function HostingOffers({ isOwnProfile = false, userId }: { isOwnProfile?:
                   type="date"
                   value={newOffer.availableFrom}
                   onChange={(e) => setNewOffer(prev => ({ ...prev, availableFrom: e.target.value }))}
+                  max="9999-12-31"
                   className="w-full p-2 border rounded-md"
                 />
               </div>
@@ -232,6 +233,7 @@ export function HostingOffers({ isOwnProfile = false, userId }: { isOwnProfile?:
                   type="date"
                   value={newOffer.availableTo}
                   onChange={(e) => setNewOffer(prev => ({ ...prev, availableTo: e.target.value }))}
+                  max="9999-12-31"
                   className="w-full p-2 border rounded-md"
                 />
               </div>

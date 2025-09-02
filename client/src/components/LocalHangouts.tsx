@@ -318,6 +318,7 @@ export function LocalHangouts({ city, isOwnProfile = false }: { city?: string; i
                   onChange={(e) => setNewHangout(prev => ({ ...prev, datetime: e.target.value }))}
                   className="w-full p-2 border rounded-md"
                   min={new Date().toISOString().slice(0, 16)}
+                  max="9999-12-31T23:59"
                 />
               </div>
               

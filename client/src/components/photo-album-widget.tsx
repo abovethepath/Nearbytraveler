@@ -569,9 +569,9 @@ export function PhotoAlbumWidget({ userId, isOwnProfile = false }: TravelMemoryW
                 type="date"
                 value={newMemory.startDate}
                 onChange={(e) => setNewMemory(prev => ({ ...prev, startDate: e.target.value }))}
-                className="border-gray-300 dark:border-gray-600 w-full"
                 min="1900-01-01"
-                max="2099-12-31"
+                max="9999-12-31"
+                className="border-gray-300 dark:border-gray-600 w-full"
               />
             </div>
             <div>
@@ -582,9 +582,9 @@ export function PhotoAlbumWidget({ userId, isOwnProfile = false }: TravelMemoryW
                 type="date"
                 value={newMemory.endDate}
                 onChange={(e) => setNewMemory(prev => ({ ...prev, endDate: e.target.value }))}
-                className="border-gray-300 dark:border-gray-600 w-full"
                 min="1900-01-01"
-                max="2099-12-31"
+                max="9999-12-31"
+                className="border-gray-300 dark:border-gray-600 w-full"
               />
             </div>
           </div>
@@ -1292,7 +1292,7 @@ export function PhotoAlbumWidget({ userId, isOwnProfile = false }: TravelMemoryW
                     value={editingAlbum.startDate || ''}
                     onChange={(e) => setEditingAlbum({...editingAlbum, startDate: e.target.value})}
                     min="1900-01-01"
-                    max="2099-12-31"
+                    max="9999-12-31"
                   />
                 </div>
                 <div>
@@ -1302,7 +1302,7 @@ export function PhotoAlbumWidget({ userId, isOwnProfile = false }: TravelMemoryW
                     value={editingAlbum.endDate || ''}
                     onChange={(e) => setEditingAlbum({...editingAlbum, endDate: e.target.value})}
                     min="1900-01-01"
-                    max="2099-12-31"
+                    max="9999-12-31"
                   />
                 </div>
               </div>
