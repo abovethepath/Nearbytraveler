@@ -1318,6 +1318,53 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
 
       let localUsersResult, businessUsersResult, travelPlansResult, currentTravelersResult, eventsResult;
 
+      // 🌍 SPECIAL HANDLING FOR GLOBAL - Show site-wide statistics
+      if (city === 'Global') {
+        if (process.env.NODE_ENV === 'development') console.log(`🌍 GLOBAL STATS: Calculating site-wide statistics for all users`);
+        
+        // Count ALL locals across the entire platform
+        localUsersResult = await db
+          .select({ count: count() })
+          .from(users)
+          .where(eq(users.userType, 'local'));
+
+        // Count ALL business users across the entire platform
+        businessUsersResult = await db
+          .select({ count: count() })
+          .from(users)
+          .where(eq(users.userType, 'business'));
+
+        // Count ALL travelers across the entire platform
+        const allTravelersResult = await db
+          .select({ count: count() })
+          .from(users)
+          .where(eq(users.userType, 'traveler'));
+
+        // Count ALL events across the entire platform
+        eventsResult = await db
+          .select({ count: count() })
+          .from(events);
+
+        const localCount = localUsersResult[0]?.count || 0;
+        const businessCount = businessUsersResult[0]?.count || 0;
+        const travelerCount = allTravelersResult[0]?.count || 0;
+        const eventCount = eventsResult[0]?.count || 0;
+
+        const globalStats = {
+          city: 'Global',
+          state: '',
+          country: 'Global',
+          localCount,
+          travelerCount,
+          businessCount,
+          eventCount
+        };
+
+        if (process.env.NODE_ENV === 'development') console.log(`🌍 GLOBAL STATS: Site-wide totals:`, globalStats);
+        res.json(globalStats);
+        return;
+      }
+
       // Apply metropolitan area consolidation
       const consolidatedCity = consolidateToMetropolitanArea(city, state as string, country as string);
       
