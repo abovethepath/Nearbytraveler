@@ -10,7 +10,10 @@ export default function JoinNowWidgetNew() {
   const [userType, setUserType] = useState("");
 
   const handleUserTypeSelection = () => {
+    console.log('🔥 JOIN WIDGET: Button clicked, userType:', userType);
+    
     if (!userType) {
+      console.log('❌ JOIN WIDGET: No user type selected');
       toast({
         title: "Please select your type",
         description: "Choose whether you're a local/traveler or business.",
@@ -19,8 +22,11 @@ export default function JoinNowWidgetNew() {
       return;
     }
     
+    console.log('✅ JOIN WIDGET: Storing userType in sessionStorage:', userType);
     // Store user type and redirect to account creation
     sessionStorage.setItem('selectedUserType', userType);
+    
+    console.log('🚀 JOIN WIDGET: Navigating to /signup/account');
     setLocation('/signup/account');
   };
 
