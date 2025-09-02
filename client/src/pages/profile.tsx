@@ -5882,6 +5882,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 )}
               </CardContent>
             </Card>
+
+            {/* Event Organizer Hub - for ALL users who want to organize events */}
+            {isOwnProfile && (
+              <EventOrganizerHubSection userId={effectiveUserId || 0} />
+            )}
           </div>
 
           {/* Right Sidebar - Mobile Responsive */}
@@ -9086,12 +9091,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           </div>
         </DialogContent>
       </Dialog>
-      
-            {/* Event Organizer Hub - for ALL users who want to organize events - Moved to bottom */}
-            {isOwnProfile && (
-              <EventOrganizerHubSection userId={effectiveUserId || 0} />
-            )}
-
       </div>
     </>
   );
