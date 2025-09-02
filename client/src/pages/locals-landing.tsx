@@ -149,36 +149,25 @@ export default function LocalsLanding() {
           )}
         </div>
 
-        {/* Quick Value Props Section - Fill the dead space */}
-        <div className="py-8 bg-white dark:bg-gray-900">
+        {/* Quick Value Props Section - Compact */}
+        <div className="py-4 bg-white dark:bg-gray-900">
           <div className="max-w-4xl mx-auto px-4 text-center">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="flex flex-col items-center p-4">
-                <div className="text-3xl mb-3">🌟</div>
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Share Your Expertise</h3>
-                <p className="text-gray-600 dark:text-gray-300 text-sm">Show travelers the real side of your city</p>
+            <div className="grid grid-cols-3 gap-4">
+              <div className="flex flex-col items-center p-2">
+                <div className="text-2xl mb-1">🌟</div>
+                <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-1">Share Your Expertise</h3>
+                <p className="text-gray-600 dark:text-gray-300 text-xs">Show travelers the real side</p>
               </div>
-              <div className="flex flex-col items-center p-4">
-                <div className="text-3xl mb-3">🤝</div>
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Build Global Friendships</h3>
-                <p className="text-gray-600 dark:text-gray-300 text-sm">Meet amazing people from around the world</p>
+              <div className="flex flex-col items-center p-2">
+                <div className="text-2xl mb-1">🤝</div>
+                <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-1">Build Friendships</h3>
+                <p className="text-gray-600 dark:text-gray-300 text-xs">Meet amazing people worldwide</p>
               </div>
-              <div className="flex flex-col items-center p-4">
-                <div className="text-3xl mb-3">🎯</div>
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Create Experiences</h3>
-                <p className="text-gray-600 dark:text-gray-300 text-sm">Host meetups and share your favorite spots</p>
+              <div className="flex flex-col items-center p-2">
+                <div className="text-2xl mb-1">🎯</div>
+                <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-1">Create Experiences</h3>
+                <p className="text-gray-600 dark:text-gray-300 text-xs">Host meetups and tours</p>
               </div>
-            </div>
-            
-            {/* Call to action in this section */}
-            <div className="mt-8">
-              <Button
-                onClick={() => setLocation('/launching-soon')}
-                className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-medium px-8 py-3 rounded-lg shadow-sm transition-all duration-200"
-              >
-                Start Connecting Today
-              </Button>
-              <p className="text-gray-500 dark:text-gray-400 mt-2 text-sm">Join thousands of locals worldwide</p>
             </div>
           </div>
         </div>
