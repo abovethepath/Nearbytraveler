@@ -36,15 +36,20 @@ export default function ResetPassword() {
     
     // Verify token if it exists
     if (tokenParam) {
+      console.log('🔐 RESET: Verifying token:', tokenParam);
       fetch(`/api/auth/verify-reset-token?token=${tokenParam}`)
         .then(async (response) => {
+          console.log('🔐 RESET: Verification response status:', response.status);
           const data = await response.json();
+          console.log('🔐 RESET: Verification data:', data);
           setIsValidToken(data.valid || false);
         })
-        .catch(() => {
+        .catch((error) => {
+          console.log('🔐 RESET: Verification error:', error);
           setIsValidToken(false);
         });
     } else {
+      console.log('🔐 RESET: No token in URL');
       setIsValidToken(false);
     }
   }, [location]);
