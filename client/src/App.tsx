@@ -510,6 +510,12 @@ function Router() {
     if (!isActuallyAuthenticated) {
       console.log('🏠 STREAMLINED LANDING - User not authenticated, showing streamlined landing page for:', location);
 
+      // CRITICAL: Handle password reset before other checks
+      if (location.startsWith('/reset-password')) {
+        console.log('🔐 RESET PASSWORD: Allowing access to reset password page');
+        return <ResetPassword />;
+      }
+
       // Allow access to events landing page without authentication for marketing
       if (location === '/events-landing') {
         return <EventsLanding />;
@@ -667,9 +673,6 @@ function Router() {
       }
       if (location === '/forgot-password') {
         return <ForgotPassword />;
-      }
-      if (location.startsWith('/reset-password')) {
-        return <ResetPassword />;
       }
       if (location === '/signup') {
         console.log('Showing Signup page');
