@@ -65,7 +65,7 @@ interface FormData {
   bio: string;
   
   // User Type
-  userType: "local" | "current_traveler" | "business";
+  userType: "local" | "traveler" | "business";
   
   // Location
   hometownCity: string;
@@ -115,7 +115,7 @@ export default function UnifiedSignup() {
           email: parsedData.email || "",
           confirmEmail: parsedData.confirmEmail || "",
           password: parsedData.password || "",
-          userType: parsedData.userType === 'local_traveler' ? 'local' : parsedData.userType || 'local'
+          userType: parsedData.userType === 'local_traveler' ? 'traveler' : parsedData.userType || 'local'
         }));
       } catch (error) {
         console.error('Error parsing stored signup data:', error);
@@ -198,7 +198,7 @@ export default function UnifiedSignup() {
       formData.languages.length >= 1
     );
     
-    if (formData.userType === "current_traveler") {
+    if (formData.userType === "traveler") {
       return baseValid && !!(
         formData.currentCity && 
         formData.currentCountry &&
@@ -329,7 +329,7 @@ export default function UnifiedSignup() {
                           </div>
                         </div>
                       </SelectItem>
-                      <SelectItem value="current_traveler">
+                      <SelectItem value="traveler">
                         <div className="flex items-center space-x-2">
                           <Plane className="w-4 h-4" />
                           <div>
@@ -512,7 +512,7 @@ export default function UnifiedSignup() {
                 </div>
                 
                 {/* Travel Destination (for travelers) */}
-                {formData.userType === "current_traveler" && (
+                {formData.userType === "traveler" && (
                   <div className="space-y-4">
                     <h3 className="text-lg font-semibold">Current Travel Destination</h3>
                     
@@ -677,7 +677,7 @@ export default function UnifiedSignup() {
                   </div>
                   
                   {/* Traveler Types (for travelers) */}
-                  {formData.userType === "current_traveler" && (
+                  {formData.userType === "traveler" && (
                     <div>
                       <Label>Traveler Type * (minimum 1)</Label>
                       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-1 mt-2">
