@@ -32,10 +32,10 @@ export default function ResetPassword() {
     // EMERGENCY FIX: Multiple methods to get the reset token
     let tokenParam: string | null = null;
     
-    // Method 1: Check if token was stored from initial page load
+    // Method 1: PRIORITY - Check if token was stored from server-side redirect
     const storedToken = localStorage.getItem('reset_token');
     if (storedToken) {
-      console.log('🔐 RESET: Found stored token:', storedToken);
+      console.log('🔐 EMERGENCY SUCCESS: Found stored token from server redirect:', storedToken);
       tokenParam = storedToken;
       // Clear it after use for security
       localStorage.removeItem('reset_token');
