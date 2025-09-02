@@ -2621,7 +2621,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       }
 
       // Map traveler signup fields
-      if (processedData.userType === 'currently_traveling') {
+      if (processedData.userType === 'currently_traveling' || processedData.userType === 'traveler') {
         // CRITICAL: Set traveling status flag for users who signed up as travelers
         processedData.isCurrentlyTraveling = true;
         
