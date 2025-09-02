@@ -70,16 +70,16 @@ export class EmailService {
 
     try {
       const emailData = {
-        sender: { email: 'support@thenearbytraveler.com', name: 'Aaron, Founder Nearby Traveler, Inc' },
+        sender: { email: 'aaron@thenearbytraveler.com', name: 'Aaron, Founder Nearby Traveler, Inc' },
         to: [{ email: to }],
         subject,
         htmlContent: html,
         textContent: text,
         // Critical headers for inbox delivery
         headers: {
-          'List-Unsubscribe': '<mailto:support@thenearbytraveler.com?subject=unsubscribe>',
+          'List-Unsubscribe': '<mailto:aaron@thenearbytraveler.com?subject=unsubscribe>',
           'X-Mailer': 'Nearby Traveler Security System',
-          'Reply-To': 'support@thenearbytraveler.com',
+          'Reply-To': 'aaron@thenearbytraveler.com',
           'X-Entity-Type': 'transactional',
           'X-Priority': '1', // High priority for security emails
           'Importance': 'high',
