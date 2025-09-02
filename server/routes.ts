@@ -10549,17 +10549,6 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
-  // GET /api/auth/user - Emergency auth recovery endpoint
-  app.get("/api/auth/user", async (req, res) => {
-    try {
-      // This endpoint is used by the frontend for emergency auth recovery
-      // For now, return empty response since we don't have session-based auth
-      res.status(401).json({ message: "No authenticated session found" });
-    } catch (error: any) {
-      if (process.env.NODE_ENV === 'development') console.error("Auth user endpoint error:", error);
-      res.status(500).json({ message: "Internal server error" });
-    }
-  });
 
   // TEMPORARY: Fix event coordinates using geocoding
   app.post("/api/fix-event-coordinates", async (req, res) => {
@@ -12050,17 +12039,6 @@ Questions? Just reply to this message. Welcome aboard!
   // AUTHENTICATION ROUTES
   // ========================================
 
-  // Auth user route
-  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
-    try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
-      res.json(user);
-    } catch (error) {
-      console.error("Error fetching user:", error);
-      res.status(500).json({ message: "Failed to fetch user" });
-    }
-  });
 
   // Logout route - properly destroy server session
   app.post("/api/logout", (req, res) => {
