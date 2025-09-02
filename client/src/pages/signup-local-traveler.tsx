@@ -107,8 +107,6 @@ export default function SignupLocalTraveler() {
   const [hometownScope, setHometownScope] = useState<"city" | "metro">("city");
   const [hometownMetro, setHometownMetro] = useState<{ metroCode?: string; metroName?: string }>({});
 
-  // Date helper
-  const toDateOnly = (d: string) => (d ? d.trim() : "");
 
   // Select All function for Top Choices sections
   const selectAllTopChoices = () => {
@@ -287,7 +285,7 @@ export default function SignupLocalTraveler() {
         phoneNumber: finalFormData.phoneNumber,
         
         // Optional profile fields
-        dateOfBirth: toDateOnly(formData.dateOfBirth),
+        dateOfBirth: formData.dateOfBirth,
         bio: formData.bio || '',
         gender: formData.gender || '',
         sexualPreference: formData.sexualPreference || [],

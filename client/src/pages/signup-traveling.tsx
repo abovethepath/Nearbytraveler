@@ -195,7 +195,6 @@ export default function SignupTraveling() {
       const parseCustomCSV = (input: string) =>
         input ? input.split(",").map(s => s.trim()).filter(Boolean) : [];
 
-      const toDateOnlyISO = (value: string) => value ? value.trim() : "";
 
       // Merge custom languages into languagesSpoken
       const customLangs = parseCustomCSV(formData.customLanguages);
@@ -219,7 +218,7 @@ export default function SignupTraveling() {
         phoneNumber: (finalFormData.phoneNumber || "").trim(),
 
         // profile
-        dateOfBirth: toDateOnlyISO(formData.dateOfBirth),
+        dateOfBirth: formData.dateOfBirth,
         bio: "", // no bio in simplified signup
         
         // hometown/location (preserves LA Metro mapping)
@@ -233,8 +232,8 @@ export default function SignupTraveling() {
         currentTripDestinationCity: formData.currentTripDestinationCity?.trim() || "",
         currentTripDestinationState: formData.currentTripDestinationState?.trim() || "",
         currentTripDestinationCountry: formData.currentTripDestinationCountry?.trim() || "",
-        currentTripReturnDate: toDateOnlyISO(formData.currentTripReturnDate),
-        travelEndDate: toDateOnlyISO(formData.currentTripReturnDate), // Map to backend field
+        currentTripReturnDate: formData.currentTripReturnDate,
+        travelEndDate: formData.currentTripReturnDate, // Map to backend field
 
         // top choices (require at least 3)
         interests: formData.interests,
