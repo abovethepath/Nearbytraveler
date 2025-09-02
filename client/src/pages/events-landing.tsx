@@ -81,7 +81,7 @@ export default function EventsLanding() {
       <LandingHeaderSpacer />
       
       {/* HERO SECTION */}
-      <div className="pt-4 pb-6 sm:pt-6 sm:pb-8 bg-white dark:bg-gray-900">
+      <div className="pt-4 pb-2 sm:pt-6 sm:pb-4 bg-white dark:bg-gray-900">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           {isAirbnbStyle ? (
             // Clean, professional hero section
@@ -172,8 +172,17 @@ export default function EventsLanding() {
         </div>
       </div>
 
+      {/* Quick Value Prop */}
+      <div className="py-3 bg-white dark:bg-gray-900">
+        <div className="max-w-4xl mx-auto px-4 text-center">
+          <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">
+            🎯 We aggregate events from Ticketmaster, Meetup & StubHub • Match you with people going to the same events
+          </p>
+        </div>
+      </div>
+
       {/* Event Features Section - Fill the dead space */}
-      <div className="py-8 bg-gray-50 dark:bg-gray-800">
+      <div className="py-4 bg-gray-50 dark:bg-gray-800">
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-8">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">Beyond Event Discovery - We Connect You</h2>
