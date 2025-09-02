@@ -509,32 +509,25 @@ function Router() {
 
 
     if (!isActuallyAuthenticated) {
-      console.log('🏠 STREAMLINED LANDING - User not authenticated, showing streamlined landing page for:', location);
+      console.log('🏠 UNAUTHENTICATED ROUTING for:', location);
 
-      // CRITICAL FIX: Handle /join FIRST before any other checks to prevent redirect
-      if (location === '/join') {
-        console.log('🎯 JOIN PAGE: Showing join page with signup form');
-        return <JoinPageWithSignIn />;
-      }
-
-      // CRITICAL FIX: Handle signup pages for unauthenticated users
-      if (location === '/signup/account') {
-        console.log('🎯 SIGNUP ACCOUNT: About to return SignupAccount component');
-        const accountComponent = <SignupAccount />;
-        console.log('🎯 SIGNUP ACCOUNT: Component created successfully, returning now');
-        return accountComponent;
-      }
-      if (location === '/signup/local') {
-        console.log('🎯 SIGNUP LOCAL: Showing local/traveler profile page');
-        return <SignupLocalTraveler />;
-      }
-      if (location === '/signup/traveling') {
-        console.log('🎯 SIGNUP TRAVELING: Showing traveling profile page');
-        return <SignupTraveling />;
-      }
-      if (location === '/signup/business') {
-        console.log('🎯 SIGNUP BUSINESS: Showing business profile page');
-        return <SignupBusinessSimple />;
+      // EMERGENCY FIX: Simple direct routing for signup flow
+      switch (location) {
+        case '/join':
+          console.log('🎯 EMERGENCY JOIN PAGE');
+          return <JoinPageWithSignIn />;
+        case '/signup/account':
+          console.log('🎯 EMERGENCY SIGNUP ACCOUNT');
+          return <SignupAccount />;
+        case '/signup/local':
+          console.log('🎯 EMERGENCY SIGNUP LOCAL');
+          return <SignupLocalTraveler />;
+        case '/signup/traveling':
+          console.log('🎯 EMERGENCY SIGNUP TRAVELING');
+          return <SignupTraveling />;
+        case '/signup/business':
+          console.log('🎯 EMERGENCY SIGNUP BUSINESS');
+          return <SignupBusinessSimple />;
       }
 
       // CRITICAL: Handle password reset before other checks
