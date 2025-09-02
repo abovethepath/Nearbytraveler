@@ -205,7 +205,7 @@ export const welcomeEmailBusiness = (data: WelcomeEmailData): EmailTemplate => (
             <a href="https://nearbytraveler.org/business-dashboard" class="button">Set Up Your Business Profile</a>
           </div>
           
-          <p>Pro tip: Complete your business profile first - it takes 3 minutes and businesses with complete profiles get 5x more inquiries!</p>
+          <p>Pro tip: Complete your business profile first - it takes 3 minutes and businesses with complete profiles get 5x more inquiries! Don't forget to share your QR code with customers for instant connections.</p>
           
           <p>Questions about getting started? Just reply to this email.</p>
           
@@ -238,7 +238,7 @@ Start getting customers today:
 
 Set up your business profile: https://nearbytraveler.org/business-dashboard
 
-Pro tip: Complete your business profile first - businesses with complete profiles get 5x more inquiries!
+Pro tip: Complete your business profile first - businesses with complete profiles get 5x more inquiries! Don't forget to share your QR code with customers for instant connections.
 
 Questions? Just reply to this email.
 
@@ -317,7 +317,7 @@ export const welcomeEmail = (data: WelcomeEmailData): EmailTemplate => ({
             <a href="https://nearbytraveler.org/profile" class="button">Complete Your Profile</a>
           </div>
           
-          <p>Complete your profile to start connecting - add your interests, travel plans, and a photo. People with complete profiles get 10x more connections!</p>
+          <p>Complete your profile to start connecting - add your interests, travel plans, and a photo. People with complete profiles get 10x more connections! Share your QR code to make connecting even easier.</p>
           
           <p>Questions? Just reply to this email.</p>
           
@@ -350,7 +350,7 @@ Here's what makes this exciting:
 
 Complete your profile to start connecting: https://nearbytraveler.org/profile
 
-People with complete profiles get 10x more connections!
+People with complete profiles get 10x more connections! Share your QR code to make connecting even easier.
 
 Questions? Just reply to this email.
 
