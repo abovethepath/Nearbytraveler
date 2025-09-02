@@ -5,7 +5,7 @@ import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
 import ThemeToggle from "@/components/ThemeToggle";
 import Footer from "@/components/footer";
 import { trackEvent } from "@/lib/analytics";
-import localsHeaderImage from "@assets/locals_1756777112458.png";
+import localsHeaderImage from "../../assets/locals_1756777112458.png";
 
 export default function LocalsLanding() {
   const [, setLocation] = useLocation();
