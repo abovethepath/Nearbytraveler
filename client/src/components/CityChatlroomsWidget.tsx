@@ -95,7 +95,15 @@ export function CityChatlroomsWidget({ city, state, country }: CityChatlroomsWid
   };
 
   return (
-    <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 cursor-pointer hover:shadow-lg transition-shadow" onClick={viewAllChatrooms}>
+    <Card 
+      className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 cursor-pointer hover:shadow-lg transition-shadow opacity-100" 
+      style={{ 
+        backgroundColor: document.documentElement.classList.contains('dark') ? 'rgb(31, 41, 55)' : 'rgb(255, 255, 255)', 
+        opacity: '1',
+        '--tw-bg-opacity': '1'
+      }} 
+      onClick={viewAllChatrooms}
+    >
       <CardHeader>
         <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">
           {chatrooms.length} chatrooms available
