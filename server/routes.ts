@@ -12036,6 +12036,30 @@ Questions? Just reply to this message. Welcome aboard!
   });
 
   // ========================================
+  // EMAIL TEST ROUTES
+  // ========================================
+  
+  // Test welcome email endpoint
+  app.post("/api/test-welcome-email", async (req, res) => {
+    try {
+      const { email, name, username } = req.body;
+      console.log('🧪 TESTING WELCOME EMAIL for:', email);
+      
+      const { sendWelcomeEmail } = await import('./emails/sendWelcomeEmail');
+      const result = await sendWelcomeEmail({
+        email: email || 'test@example.com',
+        name: name || 'Test User',
+        username: username || 'testuser'
+      });
+      
+      res.json({ success: result, message: result ? 'Welcome email sent!' : 'Failed to send welcome email' });
+    } catch (error: any) {
+      console.error('🧪 Welcome email test failed:', error);
+      res.status(500).json({ success: false, message: error.message });
+    }
+  });
+
+  // ========================================
   // AUTHENTICATION ROUTES
   // ========================================
 
