@@ -76,8 +76,11 @@ export default function SignupTraveling() {
     currentTripDestinationCountry: "",
     currentTripReturnDate: "", // 'YYYY-MM-DD'
 
-    // top choices (min 3)
+    // top choices (min 3) - travelers only need interests
     interests: [] as string[],
+    activities: [] as string[], // kept for compatibility
+    events: [] as string[], // kept for compatibility  
+    languagesSpoken: [] as string[], // kept for compatibility
     customLanguages: ""
   });
 
