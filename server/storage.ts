@@ -10205,12 +10205,8 @@ export class DatabaseStorage implements IStorage {
     try {
       console.log(`📋 VOUCH: ${voucherUserId} vouching for ${vouchedUserId}`);
       
-      // Check if voucher can vouch
-      const canVouchResult = await this.canUserVouch(voucherUserId);
-      if (!canVouchResult.canVouch) {
-        throw new Error(canVouchResult.reason || 'User cannot vouch');
-      }
-
+      // NO LIMITS: Skip all validation - anyone can vouch for anyone
+      
       // Create the vouch
       const [newVouch] = await db.insert(vouches).values({
         voucherUserId,
@@ -10219,31 +10215,6 @@ export class DatabaseStorage implements IStorage {
         vouchCategory,
         isActive: true
       }).returning();
-
-      // Give the vouched user credits (1 credit for being vouched)
-      await db.insert(vouchCredits).values({
-        userId: vouchedUserId,
-        totalCredits: 1,
-        usedCredits: 0,
-        availableCredits: 1,
-        seedMember: false
-      }).onConflictDoUpdate({
-        target: vouchCredits.userId,
-        set: {
-          totalCredits: sql`${vouchCredits.totalCredits} + 1`,
-          availableCredits: sql`${vouchCredits.availableCredits} + 1`,
-          updatedAt: new Date()
-        }
-      });
-
-      // Deduct credit from voucher
-      await db.update(vouchCredits)
-        .set({
-          usedCredits: sql`${vouchCredits.usedCredits} + 1`,
-          availableCredits: sql`${vouchCredits.availableCredits} - 1`,
-          updatedAt: new Date()
-        })
-        .where(eq(vouchCredits.userId, voucherUserId));
 
       console.log(`✅ VOUCH: Created vouch ${newVouch.id}`);
       return newVouch;
@@ -10341,21 +10312,31 @@ export class DatabaseStorage implements IStorage {
 
   async canUserVouch(userId: number): Promise<{ canVouch: boolean; availableCredits: number; reason?: string }> {
     try {
+      // Check if user has received at least 1 vouch OR is seed member
+      const [vouchReceived] = await db
+        .select({ count: count() })
+        .from(vouches)
+        .where(and(
+          eq(vouches.vouchedUserId, userId),
+          eq(vouches.isActive, true)
+        ));
+
       const credits = await this.getUserVouchCredits(userId);
-      
-      if (credits.availableCredits > 0) {
+      const isSeedMember = credits.seedMember;
+      const hasReceivedVouch = (vouchReceived?.count || 0) > 0;
+
+      if (isSeedMember || hasReceivedVouch) {
         return {
           canVouch: true,
-          availableCredits: credits.availableCredits
+          availableCredits: 999, // Unlimited once you have 1 vouch
+          reason: 'Can vouch unlimited times'
         };
       }
 
       return {
         canVouch: false,
         availableCredits: 0,
-        reason: credits.totalCredits === 0 
-          ? 'You must be vouched by someone to vouch for others'
-          : 'You have used all your vouch credits'
+        reason: 'You must receive at least 1 vouch before you can vouch for others'
       };
     } catch (error) {
       console.error('Error checking if user can vouch:', error);
