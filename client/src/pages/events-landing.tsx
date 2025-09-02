@@ -172,8 +172,38 @@ export default function EventsLanding() {
         </div>
       </div>
 
+      {/* Event Features Section - Fill the dead space */}
+      <div className="py-8 bg-gray-50 dark:bg-gray-800">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">Why Nearby Traveler Events Are Different</h2>
+            <p className="text-gray-600 dark:text-gray-300">Real connections, not just event listings</p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="text-center p-4">
+              <div className="text-3xl mb-3">⚡</div>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Last-Minute Magic</h3>
+              <p className="text-gray-600 dark:text-gray-300 text-sm">Create "meet now" events when you're free. Perfect for spontaneous coffee meetups, quick walks, or impromptu adventures.</p>
+            </div>
+            
+            <div className="text-center p-4">
+              <div className="text-3xl mb-3">🔄</div>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Recurring Experiences</h3>
+              <p className="text-gray-600 dark:text-gray-300 text-sm">Join weekly hiking groups, monthly food tours, or regular photography walks. Build lasting friendships through consistent connections.</p>
+            </div>
+            
+            <div className="text-center p-4">
+              <div className="text-3xl mb-3">🎯</div>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Pre-Trip Networking</h3>
+              <p className="text-gray-600 dark:text-gray-300 text-sm">Meet fellow conference attendees before you travel. Turn business events into reunions, not rooms full of strangers.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Quote Section */}
-      <div className="py-20 bg-white dark:bg-gray-800">
+      <div className="py-12 bg-white dark:bg-gray-900">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <p className="text-xl text-gray-800 dark:text-gray-300 leading-relaxed font-light">
             "Thanks to Nearby Traveler, You can meet half your conference before even landing. An event can feel like a reunion, not a room full of strangers."
