@@ -1359,11 +1359,17 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           )
         );
 
-      travelPlansResult = await db
+      // FIXED: Only count actual travelers (user_type = 'traveler') visiting this city
+      // Don't count locals who have travel plans - they're still locals in their hometown
+      const travelerUsersWithPlansResult = await db
         .select({ count: count() })
         .from(travelPlans)
+        .innerJoin(users, eq(travelPlans.userId, users.id))
         .where(
-          or(...searchCities.map(searchCity => ilike(travelPlans.destination, `%${searchCity}%`)))
+          and(
+            or(...searchCities.map(searchCity => ilike(travelPlans.destination, `%${searchCity}%`))),
+            eq(users.userType, 'traveler') // Only count actual traveler users
+          )
         );
 
       currentTravelersResult = await db
@@ -1372,7 +1378,8 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         .where(
           and(
             or(...searchCities.map(searchCity => ilike(users.travelDestination, `%${searchCity}%`))),
-            eq(users.isCurrentlyTraveling, true)
+            eq(users.isCurrentlyTraveling, true),
+            eq(users.userType, 'traveler') // Only count actual traveler users
           )
         );
 
@@ -1385,7 +1392,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
 
       const localCount = localUsersResult[0]?.count || 0;
       const businessCount = businessUsersResult[0]?.count || 0;
-      const travelerCount = (travelPlansResult[0]?.count || 0) + (currentTravelersResult[0]?.count || 0);
+      const travelerCount = (travelerUsersWithPlansResult[0]?.count || 0) + (currentTravelersResult[0]?.count || 0);
       const eventCount = eventsResult[0]?.count || 0;
 
       const cityStats = {
