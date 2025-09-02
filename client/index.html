@@ -50,6 +50,19 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700;800&display=swap" rel="stylesheet">
+    <!-- EMERGENCY FIX: Capture reset token before React app loads -->
+    <script>
+      (function() {
+        if (window.location.pathname === '/reset-password' && window.location.search) {
+          const params = new URLSearchParams(window.location.search);
+          const token = params.get('token');
+          if (token) {
+            console.log('🔐 EMERGENCY: Storing reset token before React loads:', token);
+            localStorage.setItem('reset_token', token);
+          }
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
