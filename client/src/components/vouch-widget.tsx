@@ -147,24 +147,26 @@ export function VouchWidget({ userId, isOwnProfile, currentUserId }: VouchWidget
         {currentUserId && (
           <>
             {canVouchData?.canVouch ? (
-              <Dialog open={showVouchDialog} onOpenChange={setShowVouchDialog}>
-                <DialogTrigger asChild>
-                  <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white" size="sm">
-                    <CheckCircle className="h-4 w-4 mr-2" />
-                    Vouch for This Person
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-lg">
-                  <DialogHeader>
-                    <DialogTitle className="text-gray-900 dark:text-white">Important: Only vouch for people you truly know</DialogTitle>
-                    <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-lg p-3 mt-2">
-                      <p className="text-sm text-amber-800 dark:text-amber-200">
-                        <strong>WARNING:</strong> You should only vouch for people you have actually met and know personally. 
-                        Vouching helps build trust in our community, so please use this responsibly.
-                      </p>
-                    </div>
-                  </DialogHeader>
-                  <div className="space-y-4">
+              <div className="space-y-3">
+                <Button 
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white" 
+                  size="sm"
+                  onClick={() => setShowVouchDialog(true)}
+                >
+                  <CheckCircle className="h-4 w-4 mr-2" />
+                  Vouch for This Person
+                </Button>
+                
+                {/* Warning text placed directly in the widget */}
+                <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-lg p-3">
+                  <p className="text-sm text-amber-800 dark:text-amber-200">
+                    <strong>WARNING:</strong> You should only vouch for people you have actually met and know personally. 
+                    Vouching helps build trust in our community, so please use this responsibly.
+                  </p>
+                </div>
+                
+                {showVouchDialog && (
+                  <div className="space-y-4 border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-gray-50 dark:bg-gray-800">
                     <div>
                       <label className="text-sm font-medium mb-2 block text-gray-900 dark:text-white">Why are you vouching for this person?</label>
                       <Textarea
@@ -191,8 +193,8 @@ export function VouchWidget({ userId, isOwnProfile, currentUserId }: VouchWidget
                       </Button>
                     </div>
                   </div>
-                </DialogContent>
-              </Dialog>
+                )}
+              </div>
             ) : (
               <Card className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-600">
                 <CardContent className="p-4 space-y-3">
