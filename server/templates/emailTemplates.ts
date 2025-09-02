@@ -280,36 +280,36 @@ export const welcomeEmail = (data: WelcomeEmailData): EmailTemplate => ({
         </div>
         
         <div class="content">
-          <div class="greeting">Hey ${data.name}! 👋</div>
+          <div class="greeting">Hi ${data.name}!</div>
           
-          <p>You just joined something special. Whether you're exploring new places or showing others around your city, you're now connected to people who get it.</p>
+          <p>Your account is ready and you're all set to start connecting with people in your area.</p>
           
           <div class="highlight">
-            <strong>🎯 You're all set as a ${data.userType === 'local' ? 'Local' : 'Traveler'}!</strong><br>
+            <strong>Account Details:</strong><br>
             Username: <strong>@${data.username}</strong>
           </div>
           
-          <p><strong>Here's what makes this exciting:</strong></p>
+          <p><strong>What you can do now:</strong></p>
           
           <div class="benefit">
-            <span class="benefit-icon">🤝</span>
+            <span class="benefit-icon">👥</span>
             <div>
-              <strong>Find your people</strong><br>
-              Connect with others who share your interests and travel style
+              <strong>Connect with locals and travelers</strong><br>
+              Find people who share your interests nearby
             </div>
           </div>
           <div class="benefit">
-            <span class="benefit-icon">📍</span>
+            <span class="benefit-icon">💬</span>
             <div>
-              <strong>Discover hidden gems</strong><br>
-              Get recommendations from locals who actually live there
+              <strong>Join community chats</strong><br>
+              You've been automatically added to your local chat rooms
             </div>
           </div>
           <div class="benefit">
-            <span class="benefit-icon">🎉</span>
+            <span class="benefit-icon">📅</span>
             <div>
-              <strong>Join real meetups</strong><br>
-              From coffee chats to weekend adventures - find your next experience
+              <strong>Find or create meetups</strong><br>
+              Discover local events and activities happening around you
             </div>
           </div>
           
@@ -317,13 +317,13 @@ export const welcomeEmail = (data: WelcomeEmailData): EmailTemplate => ({
             <a href="https://nearbytraveler.org/profile" class="button">Complete Your Profile</a>
           </div>
           
-          <p>Complete your profile to start connecting - add your interests, travel plans, and a photo. People with complete profiles get 10x more connections! Share your QR code to make connecting even easier.</p>
+          <p>Complete your profile to help others find you - add a photo and fill in your interests.</p>
           
           <p>Questions? Just reply to this email.</p>
           
-          <p>Can't wait to see the connections you'll make,</p>
+          <p>Welcome to the community,</p>
           <p><strong>Aaron</strong><br>
-          <em>Founder, Nearby Traveler, Inc</em></p>
+          <em>Nearby Traveler</em></p>
         </div>
         
         <div class="footer">
@@ -334,30 +334,28 @@ export const welcomeEmail = (data: WelcomeEmailData): EmailTemplate => ({
     </body>
     </html>
   `,
-  text: `Welcome to Nearby Traveler! 🌍
+  text: `Hi ${data.name}!
 
-Hey ${data.name}!
+Your Nearby Traveler account is ready and you're all set to start connecting with people in your area.
 
-You just joined something special. Whether you're exploring new places or showing others around your city, you're now connected to people who get it.
-
-You're all set as a ${data.userType === 'local' ? 'Local' : 'Traveler'}!
+Account Details:
 Username: @${data.username}
 
-Here's what makes this exciting:
-• Find your people - Connect with others who share your interests and travel style
-• Discover hidden gems - Get recommendations from locals who actually live there
-• Join real meetups - From coffee chats to weekend adventures
+What you can do now:
+• Connect with locals and travelers - Find people who share your interests nearby
+• Join community chats - You've been automatically added to your local chat rooms  
+• Find or create meetups - Discover local events and activities happening around you
 
-Complete your profile to start connecting: https://nearbytraveler.org/profile
+Complete your profile: https://nearbytraveler.org/profile
 
-People with complete profiles get 10x more connections! Share your QR code to make connecting even easier.
+Complete your profile to help others find you - add a photo and fill in your interests.
 
 Questions? Just reply to this email.
 
-Can't wait to see the connections you'll make,
+Welcome to the community,
 
 Aaron
-Founder, Nearby Traveler, Inc`
+Nearby Traveler`
 });
 
 export const passwordResetEmail = (data: PasswordResetData): EmailTemplate => ({
