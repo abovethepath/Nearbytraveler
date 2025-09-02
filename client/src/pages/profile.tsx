@@ -5789,10 +5789,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               </Card>
             )}
 
-            {/* Event Organizer Hub - for ALL users who want to organize events */}
-            {isOwnProfile && (
-              <EventOrganizerHubSection userId={effectiveUserId || 0} />
-            )}
 
             {/* Photo Albums Widget - Separate from Travel Memories */}
             {user?.userType !== 'business' && (
@@ -6934,103 +6930,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               <LocationSharingSection user={user} queryClient={queryClient} toast={toast} />
             )}
 
-            {/* Business Referral Program Widget */}
-            {isOwnProfile && user && user.userType !== 'business' && (
-              <Card 
-                className="cursor-pointer hover:shadow-lg transition-shadow duration-200"
-                onClick={() => setLocation('/referrals')}
-              >
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Share2 className="w-5 h-5" />
-                    Business Referral Program
-                    <Button
-                      size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setLocation('/referrals');
-                      }}
-                      className="ml-auto bg-green-600 hover:bg-green-700 text-white border-0"
-                    >
-                      <Edit className="w-3 h-3 mr-1" />
-                      Manage
-                    </Button>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="bg-green-50 dark:bg-green-900 border-2 border-green-600 dark:border-green-500 rounded-lg p-4">
-                    <p className="text-green-800 dark:text-green-200 text-lg font-bold text-center">
-                      💰 Earn $100 for Referring Businesses to Nearby Traveler!!*
-                    </p>
-                    <p className="text-green-600 dark:text-green-400 text-sm mt-2 text-center">
-                      Help fund your trips • Get deals from local hotspots • Earn extra income
-                    </p>
-                    <p className="text-green-600 dark:text-green-400 text-sm mt-1 text-center">
-                      Share your Favorite Businesses with others and help them market to Nearby Travelers and Nearby Locals
-                    </p>
-                    <p className="text-green-500 dark:text-green-500 text-xs mt-2 text-center italic">
-                      (* When a Business Becomes a Paying Client)
-                    </p>
-                  </div>
-                  <div className="text-center py-4">
-                    <p className="text-gray-600 dark:text-gray-300 mb-2">Invite businesses to join Nearby Traveler and earn rewards when they subscribe!</p>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-            {isOwnProfile && user && user.userType !== 'business' && (
-              <Card 
-                className="cursor-pointer hover:shadow-lg transition-shadow duration-200"
-                onClick={() => setLocation('/referrals')}
-              >
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Share2 className="w-5 h-5" />
-                    Business Referral Program
-                    <Button
-                      size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setLocation('/referrals');
-                      }}
-                      className="ml-auto bg-green-600 hover:bg-green-700 text-white border-0"
-                    >
-                      <Edit className="w-3 h-3 mr-1" />
-                      Manage
-                    </Button>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="bg-green-50 dark:bg-green-900 border-2 border-green-600 dark:border-green-500 rounded-lg p-4">
-                    <p className="text-green-800 dark:text-green-200 text-lg font-bold text-center">
-                      💰 Earn $100 for Referring Businesses to Nearby Traveler!!*
-                    </p>
-                    <p className="text-green-600 dark:text-green-400 text-sm mt-2 text-center">
-                      Help fund your trips • Get deals from local hotspots • Earn extra income
-                    </p>
-                    <p className="text-green-600 dark:text-green-400 text-sm mt-1 text-center">
-                      Share your Favorite Businesses with others and help them market to Nearby Travelers and Nearby Locals
-                    </p>
-                    <p className="text-green-500 dark:text-green-500 text-xs mt-2 text-center italic">
-                      (* When a Business Becomes a Paying Client)
-                    </p>
-                  </div>
-                  <div className="text-center py-4">
-                    <p className="text-gray-600 dark:text-gray-300 mb-2">Invite businesses to join Nearby Traveler and earn rewards when they subscribe!</p>
-                    <Button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setLocation('/referrals');
-                      }}
-                      className="bg-gradient-to-r from-blue-500 via-orange-500 to-violet-500 hover:from-blue-600 hover:via-orange-600 hover:to-violet-600 text-white"
-                    >
-                      <Share2 className="w-4 h-4 mr-2" />
-                      Manage Referrals
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
 
 
             {/* Owner/Admin Contact Information - Only visible to business owner */}
@@ -9187,6 +9086,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         </DialogContent>
       </Dialog>
       
+            {/* Event Organizer Hub - for ALL users who want to organize events - Moved to bottom */}
+            {isOwnProfile && (
+              <EventOrganizerHubSection userId={effectiveUserId || 0} />
+            )}
+
       </div>
     </>
   );
