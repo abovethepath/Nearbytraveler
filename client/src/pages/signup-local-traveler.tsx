@@ -11,6 +11,7 @@ import { AuthContext } from "@/App";
 import { SmartLocationInput } from "@/components/SmartLocationInput";
 import { authStorage } from "@/lib/auth";
 import { ArrowLeft } from "lucide-react";
+import { getDateInputConstraints } from "@/lib/ageUtils";
 
 // Age validation utility
 const validateAge = (dateOfBirth: string): { isValid: boolean; message?: string } => {
@@ -443,19 +444,14 @@ export default function SignupLocalTraveler() {
                     city={formData.hometownCity}
                     state={formData.hometownState}
                     onLocationChange={(location) => {
-                      // Handle LA Metro vs city logic
-                      const isMetro = location?.type === "metro";
-                      setHometownScope(isMetro ? "metro" : "city");
-                      setHometownMetro(
-                        isMetro && location.metroCode && location.metroName
-                          ? { metroCode: location.metroCode, metroName: location.metroName }
-                          : {}
-                      );
+                      // Handle LA Metro vs city logic - just use basic location data
+                      setHometownScope("city");
+                      setHometownMetro({});
                       
                       setFormData(prev => ({
                         ...prev,
                         hometownCountry: location.country,
-                        hometownCity: isMetro ? "" : location.city, // Empty city for metro
+                        hometownCity: location.city,
                         hometownState: location.state
                       }));
                     }}

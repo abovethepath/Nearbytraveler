@@ -156,7 +156,7 @@ export function SmartLocationInput({
         ...baseCities.filter(city => {
           const topCities = ["Los Angeles", "Las Vegas", "Miami", "Nashville", "New Orleans", "Austin", "Chicago", "New York City"];
           const isTopCity = topCities.includes(city);
-          const isLAMetro = METRO_AREAS['Los Angeles'].cities.includes(city);
+          const isLAMetro = METRO_AREAS['Los Angeles'].cities.includes(city as any);
           return !isTopCity && !isLAMetro;
         })
       ];

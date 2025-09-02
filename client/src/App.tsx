@@ -898,15 +898,15 @@ function Router() {
       case '/b':
         return <BusinessCustomLanding />;
       case '/signup/local':
-        return <ComingSoon />;
-      case '/signup/traveler':
-        return <ComingSoon />;
+        return <SignupLocalTraveler />;
+      case '/signup/traveling':
+        return <SignupTraveling />;
       case '/join':
-        return <Auth />;
+        return <JoinPageWithSignIn />;
       case '/signup':
         return <ComingSoon />;
       case '/signup/business':
-        return <ComingSoon />;
+        return <SignupBusinessSimple />;
       case '/business-registration':
         return <BusinessRegistration />;
       case '/profile':
