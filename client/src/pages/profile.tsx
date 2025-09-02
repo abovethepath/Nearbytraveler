@@ -28,6 +28,7 @@ import { UniversalBackButton } from "@/components/UniversalBackButton";
 import FriendReferralWidget from "@/components/friend-referral-widget";
 
 import ReferencesWidgetNew from "@/components/references-widget-new";
+import { VouchWidget } from "@/components/vouch-widget";
 // Removed framer-motion import for static interface
 import { useToast } from "@/hooks/use-toast";
 import { AuthContext } from "@/App";
@@ -6530,6 +6531,15 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   <ReferencesWidgetNew userId={user.id} />
                 </CardContent>
               </Card>
+            )}
+
+            {/* Vouch Widget */}
+            {user?.id && (
+              <VouchWidget 
+                userId={user.id} 
+                isOwnProfile={isOwnProfile}
+                currentUserId={currentUser?.id}
+              />
             )}
 
 
