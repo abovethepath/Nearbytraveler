@@ -13,6 +13,15 @@ export default function LandingStreamlined() {
   const [isMobile, setIsMobile] = useState(false);
   const { setTheme } = useTheme();
   
+  // Admin testing mode - only accessible with special URL parameter
+  const [showAdminPanel, setShowAdminPanel] = useState(false);
+  
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const isAdmin = urlParams.get('admin') === 'test123';
+    setShowAdminPanel(isAdmin);
+  }, []);
+  
   // Rotating headlines for different audience pain points
   const [currentHeadline, setCurrentHeadline] = useState(0);
   
@@ -422,6 +431,101 @@ export default function LandingStreamlined() {
             </section>
           </div>
         </div>
+
+        {/* Hidden Admin Testing Panel - Only visible with ?admin=test123 */}
+        {showAdminPanel && (
+          <div className="py-8 bg-red-50 border-t-4 border-red-500">
+            <div className="max-w-4xl mx-auto px-4">
+              <div className="text-center mb-6">
+                <h2 className="text-2xl font-bold text-red-800 mb-2">🔧 Admin Testing Panel</h2>
+                <p className="text-sm text-red-600">Full functionality testing - Admin access only</p>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* Authentication Testing */}
+                <div className="bg-white rounded-lg p-4 border-2 border-red-200">
+                  <h3 className="font-bold text-red-800 mb-3">🔐 Authentication</h3>
+                  <div className="space-y-2">
+                    <Button 
+                      onClick={() => window.location.href = '/api/login'}
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm"
+                    >
+                      Test Login Flow
+                    </Button>
+                    <Button 
+                      onClick={() => setLocation('/forgot-password')}
+                      className="w-full bg-orange-600 hover:bg-orange-700 text-white text-sm"
+                    >
+                      Test Forgot Password
+                    </Button>
+                    <Button 
+                      onClick={() => setLocation('/reset-password')}
+                      className="w-full bg-purple-600 hover:bg-purple-700 text-white text-sm"
+                    >
+                      Test Reset Password
+                    </Button>
+                  </div>
+                </div>
+
+                {/* User Flows Testing */}
+                <div className="bg-white rounded-lg p-4 border-2 border-red-200">
+                  <h3 className="font-bold text-red-800 mb-3">👥 User Flows</h3>
+                  <div className="space-y-2">
+                    <Button 
+                      onClick={() => setLocation('/signup-traveling')}
+                      className="w-full bg-green-600 hover:bg-green-700 text-white text-sm"
+                    >
+                      Traveler Signup
+                    </Button>
+                    <Button 
+                      onClick={() => setLocation('/signup-local-traveler')}
+                      className="w-full bg-teal-600 hover:bg-teal-700 text-white text-sm"
+                    >
+                      Local Signup
+                    </Button>
+                    <Button 
+                      onClick={() => setLocation('/signup-business-simple')}
+                      className="w-full bg-indigo-600 hover:bg-indigo-700 text-white text-sm"
+                    >
+                      Business Signup
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Full Platform Testing */}
+                <div className="bg-white rounded-lg p-4 border-2 border-red-200">
+                  <h3 className="font-bold text-red-800 mb-3">🚀 Platform Access</h3>
+                  <div className="space-y-2">
+                    <Button 
+                      onClick={() => setLocation('/home')}
+                      className="w-full bg-gray-700 hover:bg-gray-800 text-white text-sm"
+                    >
+                      Test Main App
+                    </Button>
+                    <Button 
+                      onClick={() => setLocation('/discover')}
+                      className="w-full bg-yellow-600 hover:bg-yellow-700 text-white text-sm"
+                    >
+                      Test Discovery
+                    </Button>
+                    <Button 
+                      onClick={() => window.location.href = '/api/logout'}
+                      className="w-full bg-red-600 hover:bg-red-700 text-white text-sm"
+                    >
+                      Test Logout
+                    </Button>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="text-center mt-4">
+                <p className="text-xs text-red-500">
+                  🔒 Access URL: {window.location.origin}/?admin=test123
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* What's Possible Section */}
         <div className="py-16 bg-gradient-to-br from-orange-50 to-blue-50 dark:from-gray-800 dark:to-gray-900">
