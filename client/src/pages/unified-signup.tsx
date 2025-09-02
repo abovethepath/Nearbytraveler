@@ -72,10 +72,10 @@ interface FormData {
   hometownState: string;
   hometownCountry: string;
   
-  // Travel destination (for travelers)
-  currentCity: string;
-  currentState: string;
-  currentCountry: string;
+  // NEARBY TRAVELER DESTINATION (for travelers)
+  destinationCity: string;
+  destinationState: string;
+  destinationCountry: string;
   travelStartDate: string;
   travelEndDate: string;
   
@@ -139,9 +139,9 @@ export default function UnifiedSignup() {
     hometownCity: "",
     hometownState: "",
     hometownCountry: "United States",
-    currentCity: "",
-    currentState: "",
-    currentCountry: "",
+    destinationCity: "",
+    destinationState: "",
+    destinationCountry: "",
     travelStartDate: "",
     travelEndDate: "",
     interests: [],
@@ -200,8 +200,8 @@ export default function UnifiedSignup() {
     
     if (formData.userType === "traveler") {
       return baseValid && !!(
-        formData.currentCity && 
-        formData.currentCountry &&
+        formData.destinationCity && 
+        formData.destinationCountry &&
         formData.travelStartDate &&
         formData.travelEndDate &&
         formData.travelerTypes.length >= 1
@@ -280,9 +280,20 @@ export default function UnifiedSignup() {
       dateOfBirth: new Date(formData.dateOfBirth),
       gender: formData.gender,
       bio: formData.bio,
+      // NEARBY LOCAL HOMETOWN (always required)
       hometownCity: formData.hometownCity,
       hometownState: formData.hometownState || "",
       hometownCountry: formData.hometownCountry,
+      // NEARBY TRAVELER DESTINATION (only for travelers)
+      ...(formData.userType === "traveler" && {
+        destinationCity: formData.destinationCity,
+        destinationState: formData.destinationState || "",
+        destinationCountry: formData.destinationCountry,
+        travelStartDate: new Date(formData.travelStartDate),
+        travelEndDate: new Date(formData.travelEndDate),
+        isCurrentlyTraveling: true,
+        travelStyle: formData.travelerTypes
+      }),
       location: formData.hometownState ? 
         `${formData.hometownCity}, ${formData.hometownState}, ${formData.hometownCountry}` : 
         `${formData.hometownCity}, ${formData.hometownCountry}`,
@@ -518,8 +529,8 @@ export default function UnifiedSignup() {
                     
                     <div className="grid grid-cols-3 gap-2">
                       <div>
-                        <Label htmlFor="currentCity">City *</Label>
-                        <Select value={formData.currentCity} onValueChange={(value) => setFormData({ ...formData, currentCity: value })}>
+                        <Label htmlFor="destinationCity">Travel Destination City *</Label>
+                        <Select value={formData.destinationCity} onValueChange={(value) => setFormData({ ...formData, destinationCity: value })}>
                           <SelectTrigger>
                             <SelectValue placeholder="Travel city" />
                           </SelectTrigger>
@@ -533,18 +544,18 @@ export default function UnifiedSignup() {
                       </div>
                       
                       <div>
-                        <Label htmlFor="currentState">State/Region</Label>
+                        <Label htmlFor="destinationState">State/Region</Label>
                         <Input
-                          id="currentState"
+                          id="destinationState"
                           placeholder="e.g., California"
-                          value={formData.currentState}
-                          onChange={(e) => setFormData({ ...formData, currentState: e.target.value })}
+                          value={formData.destinationState}
+                          onChange={(e) => setFormData({ ...formData, destinationState: e.target.value })}
                         />
                       </div>
                       
                       <div>
-                        <Label htmlFor="currentCountry">Country *</Label>
-                        <Select value={formData.currentCountry} onValueChange={(value) => setFormData({ ...formData, currentCountry: value })}>
+                        <Label htmlFor="destinationCountry">Country *</Label>
+                        <Select value={formData.destinationCountry} onValueChange={(value) => setFormData({ ...formData, destinationCountry: value })}>
                           <SelectTrigger>
                             <SelectValue placeholder="Country" />
                           </SelectTrigger>

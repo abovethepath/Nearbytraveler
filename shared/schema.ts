@@ -11,9 +11,15 @@ export const users = pgTable("users", {
   userType: text("user_type").notNull(), // 'traveler', 'local', 'business', 'travel_agent'
   bio: text("bio"),
   location: text("location"),
+  // NEARBY LOCAL HOMETOWN (never changes unless they move)
   hometownCity: text("hometown_city"),
   hometownState: text("hometown_state"),
   hometownCountry: text("hometown_country"),
+  
+  // NEARBY TRAVELER DESTINATION (changes per trip)
+  destinationCity: text("destination_city"),
+  destinationState: text("destination_state"), 
+  destinationCountry: text("destination_country"),
   // METRO AREA CONSOLIDATION FIELDS
   metroArea: text("metro_area"), // The metro area they belong to (e.g., "Los Angeles Metro")
   isMetroUser: boolean("is_metro_user").default(false), // Whether they confirmed metro area recognition
