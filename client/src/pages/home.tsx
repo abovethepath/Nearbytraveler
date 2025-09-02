@@ -115,8 +115,8 @@ export default function Home() {
     const currentTravelPlan = getCurrentTravelDestination(travelPlans || []);
     const isCurrentlyTraveling = userData.isCurrentlyTraveling ?? !!currentTravelPlan;
     
-    // Use the destination from API first, fallback to travel plan
-    const travelDestination = userData.travelDestination || currentTravelPlan?.destination || null;
+    // Use the active travel plan destination first, fallback to API data
+    const travelDestination = currentTravelPlan?.destination || userData.travelDestination || null;
 
     // Return enriched user data with travel context
     const enrichedUser = {
