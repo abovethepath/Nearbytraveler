@@ -6,15 +6,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
 import { apiRequest } from "@/lib/queryClient";
-import { getAllInterests, getAllActivities, getAllEvents, getAllLanguages, validateSelections, MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS } from "../../../shared/base-options";
-import { BASE_TRAVELER_TYPES } from "@/lib/travelOptions";
-import { validateCustomInput, filterCustomEntries } from "@/lib/contentFilter";
+import { MOST_POPULAR_INTERESTS } from "../../../shared/base-options";
 import { AuthContext } from "@/App";
 import { SmartLocationInput } from "@/components/SmartLocationInput";
 import { authStorage } from "@/lib/auth";
 import { ArrowLeft } from "lucide-react";
-import { GENDER_OPTIONS, SEXUAL_PREFERENCE_OPTIONS, PRIVACY_NOTES } from "@/lib/formConstants";
-import { calculateAge, formatDateOfBirthForInput, validateDateInput, getDateInputConstraints } from "@/lib/ageUtils";
 
 // Age validation utility
 const validateAge = (dateOfBirth: string): { isValid: boolean; message?: string } => {
@@ -107,10 +103,12 @@ export default function SignupLocalTraveler() {
   const [isLoading, setIsLoading] = useState(false);
   const [customEvent, setCustomEvent] = useState("");
 
-  // Helper functions to match travelers signup exactly
-  const getTotalSelections = () => {
-    return formData.interests.length + formData.activities.length + formData.events.length;
-  };
+  // Add LA Metro scope tracking
+  const [hometownScope, setHometownScope] = useState<"city" | "metro">("city");
+  const [hometownMetro, setHometownMetro] = useState<{ metroCode?: string; metroName?: string }>({});
+
+  // Date helper
+  const toDateOnly = (d: string) => (d ? d.trim() : "");
 
   // Select All function for Top Choices sections
   const selectAllTopChoices = () => {
@@ -266,12 +264,11 @@ export default function SignupLocalTraveler() {
         return;
       }
 
-      // Check minimum selections requirement - reduced for locals
-      const totalSelections = formData.interests.length + formData.activities.length + formData.events.length + formData.languagesSpoken.length;
-      if (totalSelections < 3) {
+      // Check minimum interests requirement - only interests for locals
+      if (formData.interests.length < 3) {
         toast({
           title: "More selections needed",
-          description: "Please choose at least 3 total items to help us match you with others.",
+          description: "Please choose at least 3 interests.",
           variant: "destructive",
         });
         return;
@@ -290,32 +287,29 @@ export default function SignupLocalTraveler() {
         phoneNumber: finalFormData.phoneNumber,
         
         // Optional profile fields
-        dateOfBirth: formData.dateOfBirth ? new Date(formData.dateOfBirth) : undefined,
+        dateOfBirth: toDateOnly(formData.dateOfBirth),
         bio: formData.bio || '',
         gender: formData.gender || '',
         sexualPreference: formData.sexualPreference || [],
         
-        // Location data
+        // Location data with metro support
         hometownCity: formData.hometownCity,
         hometownState: formData.hometownState,
         hometownCountry: formData.hometownCountry,
-        location: formData.hometownState 
-          ? `${formData.hometownCity}, ${formData.hometownState}, ${formData.hometownCountry}`
-          : `${formData.hometownCity}, ${formData.hometownCountry}`,
-        hometown: formData.hometownState 
-          ? `${formData.hometownCity}, ${formData.hometownState}, ${formData.hometownCountry}`
-          : `${formData.hometownCity}, ${formData.hometownCountry}`,
+        location: hometownScope === "metro" && hometownMetro.metroName 
+          ? hometownMetro.metroName 
+          : [formData.hometownCity, formData.hometownState, formData.hometownCountry].filter(Boolean).join(", "),
+        hometown: hometownScope === "metro" && hometownMetro.metroName 
+          ? hometownMetro.metroName 
+          : [formData.hometownCity, formData.hometownState, formData.hometownCountry].filter(Boolean).join(", "),
         
-        // Preferences
+        // Only send interests for locals (simplify payload)
         interests: formData.interests,
-        activities: formData.activities,
-        events: formData.events,
-        languagesSpoken: formData.languagesSpoken,
         
         // Additional flags
-        isVeteran: formData.isVeteran,
-        isActiveDuty: formData.isActiveDuty,
-        travelingWithChildren: formData.travelingWithChildren
+        isVeteran: !!formData.isVeteran,
+        isActiveDuty: !!formData.isActiveDuty,
+        travelingWithChildren: !!formData.travelingWithChildren
       };
 
       console.log('➡️ Submitting local registration');
@@ -340,7 +334,6 @@ export default function SignupLocalTraveler() {
         
         // Store authentication data
         if (data.token) {
-          localStorage.setItem('authToken', data.token);
           localStorage.setItem('auth_token', data.token);
         }
         localStorage.setItem('userData', JSON.stringify(data.user));
@@ -452,16 +445,30 @@ export default function SignupLocalTraveler() {
                     city={formData.hometownCity}
                     state={formData.hometownState}
                     onLocationChange={(location) => {
+                      // Handle LA Metro vs city logic
+                      const isMetro = location?.type === "metro";
+                      setHometownScope(isMetro ? "metro" : "city");
+                      setHometownMetro(
+                        isMetro && location.metroCode && location.metroName
+                          ? { metroCode: location.metroCode, metroName: location.metroName }
+                          : {}
+                      );
+                      
                       setFormData(prev => ({
                         ...prev,
                         hometownCountry: location.country,
-                        hometownCity: location.city,
+                        hometownCity: isMetro ? "" : location.city, // Empty city for metro
                         hometownState: location.state
                       }));
                     }}
                     placeholder={{ country: "Select your hometown country", city: "Select hometown city", state: "Select state/region" }}
                     required
                   />
+                  {hometownScope === 'metro' && hometownMetro.metroName && (
+                    <div className="mt-2 text-xs text-muted-foreground">
+                      Area: {hometownMetro.metroName} (Metro)
+                    </div>
+                  )}
                   {formData.hometownCity && (
                     <div className="mt-2 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
                       <p className="text-sm text-green-800 dark:text-green-200">
