@@ -56,55 +56,29 @@ export default function SignupTraveling() {
   const { setUser, login } = useContext(AuthContext);
 
   const [formData, setFormData] = useState({
-    userType: "currently_traveling",
-
-    // Account fields (for direct testing)
+    // page 1
+    name: "",
+    username: "",
     email: "",
     password: "",
-    username: "",
-    name: "",
+    phoneNumber: "",
 
-    // Profile fields
-    dateOfBirth: "",
-    bio: "",
-    gender: "",
-    sexualPreference: [] as string[],
-    languagesSpoken: [] as string[],
-    customLanguages: "",
-
-    // Location fields (hometown)
-    hometownCountry: "",
+    // page 2
+    dateOfBirth: "", // 'YYYY-MM-DD'
     hometownCity: "",
     hometownState: "",
+    hometownCountry: "",
 
-    // TRAVELING SECTION - Current Trip
-    currentTripDestinationCountry: "",
+    // travel (this is the traveling signup flow)
+    isCurrentlyTraveling: true,
     currentTripDestinationCity: "",
     currentTripDestinationState: "",
-    currentTripReturnDate: "",
+    currentTripDestinationCountry: "",
+    currentTripReturnDate: "", // 'YYYY-MM-DD'
 
-    // Interests/Activities/Events
+    // top choices (min 3)
     interests: [] as string[],
-    customInterests: [] as string[],
-    customInterestInput: "",
-
-    activities: [] as string[],
-    customActivities: [] as string[],
-    customActivityInput: "",
-
-    events: [] as string[],
-    customEvents: [] as string[],
-    customEventInput: "",
-
-    // Military status
-    isVeteran: false,
-    isActiveDuty: false,
-
-    // Family travel
-    travelingWithChildren: false,
-    
-    // Current travel status - travelers are currently traveling
-    isCurrentlyTraveling: true
+    customLanguages: ""
   });
 
   const [isLoading, setIsLoading] = useState(false);
@@ -214,129 +188,96 @@ export default function SignupTraveling() {
         phoneNumber: accountData.phoneNumber || ''
       };
 
-      // Validation
-      if (!finalFormData.name || !finalFormData.username || !finalFormData.email || !finalFormData.password) {
-        window.alert(`SIGNUP ERROR: Missing required fields - Name: ${finalFormData.name ? 'OK' : 'MISSING'}, Username: ${finalFormData.username ? 'OK' : 'MISSING'}, Email: ${finalFormData.email ? 'OK' : 'MISSING'}, Password: ${finalFormData.password ? 'OK' : 'MISSING'}`);
+      // Helper functions for clean data
+      const safeJoin = (parts: (string | undefined | null)[]) =>
+        parts.filter(Boolean).map(s => String(s).trim()).filter(s => s.length).join(", ");
+
+      const parseCustomCSV = (input: string) =>
+        input ? input.split(",").map(s => s.trim()).filter(Boolean) : [];
+
+      const toDateOnlyISO = (value: string) => value ? value.trim() : "";
+
+      // Merge custom languages into languagesSpoken
+      const customLangs = parseCustomCSV(formData.customLanguages);
+      const languagesSpoken = Array.from(new Set([...customLangs]));
+
+      // Build normalized location strings (preserves LA Metro logic)
+      const hometown = safeJoin([formData.hometownCity, formData.hometownState, formData.hometownCountry]);
+      const location = hometown;
+
+      // Prepare registration data with clean field mapping
+      const registrationData = {
+        // server looks for 'currently_traveling' to set flags, then normalizes to 'traveler'
+        userType: "currently_traveling",
+        isCurrentlyTraveling: true,
+
+        // account data
+        email: (finalFormData.email || "").toLowerCase().trim(),
+        password: (finalFormData.password || "").trim(),
+        username: (finalFormData.username || "").toLowerCase().trim(),
+        name: (finalFormData.name || "").trim(),
+        phoneNumber: (finalFormData.phoneNumber || "").trim(),
+
+        // profile
+        dateOfBirth: toDateOnlyISO(formData.dateOfBirth),
+        bio: "", // no bio in simplified signup
         
-        toast({
-          title: "Missing required fields",
-          description: "Please fill in all required fields.",
-          variant: "destructive",
-        });
-        return;
+        // hometown/location (preserves LA Metro mapping)
+        hometownCity: formData.hometownCity.trim(),
+        hometownState: formData.hometownState?.trim() || "",
+        hometownCountry: formData.hometownCountry.trim(),
+        hometown,
+        location,
+
+        // current trip (backend will derive travelDestination from these fields)
+        currentTripDestinationCity: formData.currentTripDestinationCity?.trim() || "",
+        currentTripDestinationState: formData.currentTripDestinationState?.trim() || "",
+        currentTripDestinationCountry: formData.currentTripDestinationCountry?.trim() || "",
+        currentTripReturnDate: toDateOnlyISO(formData.currentTripReturnDate),
+
+        // top choices (require at least 3)
+        interests: formData.interests,
+        
+        // languages
+        languagesSpoken
+      };
+
+      // Simple validation for required fields (after data is built)
+      const errors: string[] = [];
+
+      if (!registrationData.name) errors.push("Name is required.");
+      if (!registrationData.username) errors.push("Username is required.");
+      if (!registrationData.email) errors.push("Email is required.");
+      if (!registrationData.password) errors.push("Password is required.");
+      if (!registrationData.dateOfBirth) errors.push("Date of birth is required.");
+      if (!registrationData.hometownCity || !registrationData.hometownCountry) {
+        errors.push("Hometown city and country are required.");
       }
 
-      // Age validation - required
-      if (!formData.dateOfBirth) {
-        toast({
-          title: "Date of birth required",
-          description: "Please enter your date of birth.",
-          variant: "destructive",
-        });
-        return;
-      }
-      
-      const ageResult = validateAge(formData.dateOfBirth);
-      if (!ageResult.isValid) {
-        toast({
-          title: "Age Validation",
-          description: ageResult.message,
-          variant: "destructive",
-        });
-        return;
+      if ((registrationData.interests?.length ?? 0) < 3) {
+        errors.push("Please choose at least 3 interests.");
       }
 
-      // Hometown location validation
-      if (!formData.hometownCity || !formData.hometownCountry) {
-        toast({
-          title: "Hometown location required",
-          description: "Please select your hometown location.",
-          variant: "destructive",
-        });
-        return;
+      if (registrationData.isCurrentlyTraveling) {
+        if (!registrationData.currentTripDestinationCity || !registrationData.currentTripDestinationCountry) {
+          errors.push("Please add your current trip destination city and country.");
+        }
+        if (!registrationData.currentTripReturnDate) {
+          errors.push("Please add your trip end date.");
+        }
       }
 
-      // TRAVELING VALIDATION - Current trip destination and return date
-      if (!formData.currentTripDestinationCity || !formData.currentTripDestinationCountry) {
+      if (errors.length) {
         toast({
-          title: "Current trip destination required",
-          description: "Please select where you are currently traveling to.",
+          title: "Check the form",
+          description: errors.join(" "),
           variant: "destructive",
         });
-        return;
-      }
-
-      if (!formData.currentTripReturnDate) {
-        toast({
-          title: "Return date required",
-          description: "Please enter when you plan to return from your trip.",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      // Check minimum selections requirement
-      const totalSelections = formData.interests.length + formData.activities.length + formData.events.length + formData.languagesSpoken.length;
-      if (totalSelections < 3) {
-        toast({
-          title: "More selections needed",
-          description: "Please choose at least 3 total items to help us match you with others.",
-          variant: "destructive",
-        });
+        setIsLoading(false);
         return;
       }
 
       console.log('✅ VALIDATION PASSED - Proceeding with traveler registration');
-
-      // Prepare registration data
-      const registrationData = {
-        userType: 'currently_traveling',
-        isCurrentlyTraveling: true,
-        email: finalFormData.email.toLowerCase().trim(),
-        password: finalFormData.password,
-        username: finalFormData.username.toLowerCase().trim(),
-        name: finalFormData.name.trim(),
-        phoneNumber: finalFormData.phoneNumber,
-        
-        // Profile fields
-        dateOfBirth: new Date(formData.dateOfBirth),
-        bio: formData.bio || '',
-        gender: formData.gender || '',
-        sexualPreference: formData.sexualPreference || [],
-        
-        // Hometown location data
-        hometownCity: formData.hometownCity,
-        hometownState: formData.hometownState,
-        hometownCountry: formData.hometownCountry,
-        location: formData.hometownState 
-          ? `${formData.hometownCity}, ${formData.hometownState}, ${formData.hometownCountry}`
-          : `${formData.hometownCity}, ${formData.hometownCountry}`,
-        hometown: formData.hometownState 
-          ? `${formData.hometownCity}, ${formData.hometownState}, ${formData.hometownCountry}`
-          : `${formData.hometownCity}, ${formData.hometownCountry}`,
-        
-        // CURRENT TRIP DATA - This goes to their profile as current trip
-        currentTripDestinationCity: formData.currentTripDestinationCity,
-        currentTripDestinationState: formData.currentTripDestinationState,
-        currentTripDestinationCountry: formData.currentTripDestinationCountry,
-        currentTripDestination: formData.currentTripDestinationState 
-          ? `${formData.currentTripDestinationCity}, ${formData.currentTripDestinationState}, ${formData.currentTripDestinationCountry}`
-          : `${formData.currentTripDestinationCity}, ${formData.currentTripDestinationCountry}`,
-        currentTripReturnDate: new Date(formData.currentTripReturnDate),
-        
-        // Preferences
-        interests: formData.interests,
-        activities: formData.activities,
-        events: formData.events,
-        languagesSpoken: formData.languagesSpoken,
-        
-        // Additional flags
-        isVeteran: formData.isVeteran,
-        isActiveDuty: formData.isActiveDuty,
-        travelingWithChildren: formData.travelingWithChildren
-      };
-
-      console.log('➡️ Submitting traveler registration');
 
       // Show initial loading message
       toast({
@@ -356,12 +297,10 @@ export default function SignupTraveling() {
       if (response.ok && data.user) {
         console.log('✅ Registration successful:', data.user.username);
         
-        // Store authentication data
+        // Store authentication data (consistent single keys)
         if (data.token) {
-          localStorage.setItem('authToken', data.token);
           localStorage.setItem('auth_token', data.token);
         }
-        localStorage.setItem('userData', JSON.stringify(data.user));
         localStorage.setItem('user', JSON.stringify(data.user));
         
         // Set user in auth context
