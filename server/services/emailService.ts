@@ -135,7 +135,62 @@ export class EmailService {
 
   async sendForgotPasswordEmail(to: string, data: PasswordResetData) {
     const template = forgotPasswordEmail(data);
-    return this.sendEmail(to, template.subject, template.html, template.text);
+    
+    // Try multiple delivery methods for critical password reset emails
+    console.log('🔐 CRITICAL: Attempting password reset email delivery with multiple fallbacks');
+    
+    // Method 1: Standard Brevo delivery
+    const brevoResult = await this.sendEmail(to, template.subject, template.html, template.text);
+    
+    // Method 2: Direct SMTP-style delivery with different headers
+    if (brevoResult) {
+      console.log('🔐 BACKUP: Sending duplicate via alternate Brevo method for reliability');
+      await this.sendPasswordResetViaBackupMethod(to, template);
+    }
+    
+    return brevoResult;
+  }
+
+  private async sendPasswordResetViaBackupMethod(to: string, template: any) {
+    try {
+      const emailData = {
+        sender: { 
+          email: 'aaron@thenearbytraveler.com', 
+          name: 'Nearby Traveler Security' 
+        },
+        to: [{ email: to }],
+        subject: `🔐 URGENT: ${template.subject}`,
+        htmlContent: template.html,
+        textContent: template.text,
+        headers: {
+          'X-Priority': '1',
+          'X-MSMail-Priority': 'High',
+          'Importance': 'high',
+          'Message-ID': `<urgent-security-${Date.now()}-${Math.random().toString(36)}@thenearbytraveler.com>`,
+          'X-Mailer': 'Nearby Traveler Security System v2',
+          'Reply-To': 'aaron@thenearbytraveler.com'
+        },
+        tags: ['URGENT', 'SECURITY', 'PASSWORD-RESET']
+      };
+
+      const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+        method: 'POST',
+        headers: {
+          'api-key': this.apiKey!,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(emailData)
+      });
+
+      if (response.ok) {
+        console.log('🔐 BACKUP: Password reset backup email sent successfully');
+      }
+      
+      return response.ok;
+    } catch (error) {
+      console.error('🔐 BACKUP: Backup email method failed:', error);
+      return false;
+    }
   }
 
   async sendLocationMatchEmail(to: string, data: LocationMatchData) {
