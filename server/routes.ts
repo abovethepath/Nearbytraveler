@@ -3103,10 +3103,10 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       });
 
       // Check ALL possible field variations from different signup forms
-      const hasCurrentTravel = originalData.currentTravelCity && originalData.currentTravelCountry;
-      const hasTravelDestination = originalData.travelDestination || (originalData.travelDestinationCity && originalData.travelDestinationCountry);
+      const hasCurrentTravel = (originalData.currentTravelCity || originalData.currentCity) && (originalData.currentTravelCountry || originalData.currentCountry);
+      const hasTravelDestination = originalData.travelDestination || (originalData.travelDestinationCity && originalData.travelDestinationCountry) || (originalData.currentTripDestinationCity && originalData.currentTripDestinationCountry);
       const hasTravelDates = originalData.travelStartDate && originalData.travelEndDate;
-      const hasReturnDateOnly = originalData.travelReturnDate; // For simplified signup
+      const hasReturnDateOnly = originalData.travelReturnDate || originalData.currentTripReturnDate; // For simplified signup
       const isTraveingUser = originalData.userType === 'traveler' || originalData.userType === 'currently_traveling' || originalData.isCurrentlyTraveling;
 
       // Support both full travel dates and simplified return-date-only signup
@@ -3122,10 +3122,10 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           // Full travel dates provided
           startDate = new Date(originalData.travelStartDate);
           endDate = new Date(originalData.travelEndDate);
-        } else if (originalData.travelReturnDate) {
+        } else if (originalData.travelReturnDate || originalData.currentTripReturnDate) {
           // Simplified signup - assume they're currently traveling, started recently
           startDate = new Date(); // Today
-          endDate = new Date(originalData.travelReturnDate);
+          endDate = new Date(originalData.travelReturnDate || originalData.currentTripReturnDate);
         } else {
           // Fallback - shouldn't reach here due to validation above
           startDate = new Date();
@@ -3154,9 +3154,9 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         try {
           // Build destination from all possible field variations
           const tripLocation = originalData.travelDestination || [
-            originalData.currentTravelCity || originalData.travelDestinationCity,
-            originalData.currentTravelState || originalData.travelDestinationState,
-            originalData.currentTravelCountry || originalData.travelDestinationCountry
+            originalData.currentTravelCity || originalData.travelDestinationCity || originalData.currentCity || originalData.currentTripDestinationCity,
+            originalData.currentTravelState || originalData.travelDestinationState || originalData.currentState || originalData.currentTripDestinationState,
+            originalData.currentTravelCountry || originalData.travelDestinationCountry || originalData.currentCountry || originalData.currentTripDestinationCountry
           ].filter(Boolean).join(", ");
 
           if (process.env.NODE_ENV === 'development') console.log("CREATING TRAVEL PLAN:", { tripLocation, userId: user.id });
