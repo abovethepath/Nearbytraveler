@@ -71,15 +71,23 @@ export class TravelStatusService {
         // User should be traveling - update to currently traveling
         const currentPlan = activePlans[0]; // Use the first active plan
 
-        if (!user.isCurrentlyTraveling || user.travelDestination !== currentPlan.destination) {
+        const destinationParts = currentPlan.destination.split(', ');
+        const [destinationCity, destinationState = null, destinationCountry] = destinationParts;
+        
+        if (!user.isCurrentlyTraveling || user.destinationCity !== destinationCity) {
           await db
             .update(users)
             .set({
               userType: user.userType === 'business' ? 'business' : 'traveler', // Keep business users as business
               isCurrentlyTraveling: true,
-              travelDestination: currentPlan.destination,
+              // NEARBY TRAVELER DESTINATION (only active during trip dates)
+              destinationCity: destinationCity,
+              destinationState: destinationState,
+              destinationCountry: destinationCountry || destinationParts[destinationParts.length - 1],
               travelStartDate: currentPlan.startDate ? new Date(currentPlan.startDate) : null,
               travelEndDate: currentPlan.endDate ? new Date(currentPlan.endDate) : null,
+              // Legacy field for backwards compatibility
+              travelDestination: currentPlan.destination,
             })
             .where(eq(users.id, userId));
 
@@ -93,9 +101,14 @@ export class TravelStatusService {
             .set({
               userType: user.userType === 'business' ? 'business' : 'local', // Keep business users as business
               isCurrentlyTraveling: false,
-              travelDestination: null,
+              // CLEAR DESTINATION FIELDS - User is now NEARBY LOCAL only
+              destinationCity: null,
+              destinationState: null,
+              destinationCountry: null,
               travelStartDate: null,
               travelEndDate: null,
+              // Legacy field for backwards compatibility
+              travelDestination: null,
             })
             .where(eq(users.id, userId));
 

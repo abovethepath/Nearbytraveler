@@ -116,7 +116,9 @@ export default function Home() {
     const isCurrentlyTraveling = userData.isCurrentlyTraveling ?? !!currentTravelPlan;
     
     // Use the active travel plan destination first, fallback to API data
-    const travelDestination = currentTravelPlan?.destination || userData.travelDestination || null;
+    const travelDestination = currentTravelPlan ? 
+      `${currentTravelPlan.destinationCity}${currentTravelPlan.destinationState ? `, ${currentTravelPlan.destinationState}` : ''}, ${currentTravelPlan.destinationCountry}` :
+      userData.travelDestination || null;
 
     // Return enriched user data with travel context
     const enrichedUser = {
@@ -139,7 +141,9 @@ export default function Home() {
     if (!effectiveUser) return null;
     
     const currentTravelPlan = getCurrentTravelDestination(travelPlans || []);
-    const actualCurrentLocation = currentTravelPlan?.destination || effectiveUser.location;
+    const actualCurrentLocation = currentTravelPlan ? 
+      `${currentTravelPlan.destinationCity}${currentTravelPlan.destinationState ? `, ${currentTravelPlan.destinationState}` : ''}, ${currentTravelPlan.destinationCountry}` :
+      effectiveUser.location;
     
     console.log('🔍 FIXED enrichedEffectiveUser:', {
       id: effectiveUser.id,
@@ -195,8 +199,8 @@ export default function Home() {
   const getCurrentUserLocation = () => {
     // Use exact same logic as weather widget
     const currentTravelPlan = getCurrentTravelDestination(travelPlans || []);
-    if (currentTravelPlan?.destination) {
-      return currentTravelPlan.destination; // This should be "Rome"
+    if (currentTravelPlan) {
+      return `${currentTravelPlan.destinationCity}${currentTravelPlan.destinationState ? `, ${currentTravelPlan.destinationState}` : ''}, ${currentTravelPlan.destinationCountry}`; // This should be "Rome"
     }
 
     if (enrichedEffectiveUser?.isCurrentlyTraveling && enrichedEffectiveUser?.travelDestination) {
@@ -220,7 +224,9 @@ export default function Home() {
       
       return {
         ...user,
-        travelDestination: currentTravelDestination?.destination || user.travelDestination,
+        travelDestination: currentTravelDestination ? 
+          `${currentTravelDestination.destinationCity}${currentTravelDestination.destinationState ? `, ${currentTravelDestination.destinationState}` : ''}, ${currentTravelDestination.destinationCountry}` :
+          user.travelDestination,
         isCurrentlyTraveling,
         displayLocation: currentLocation, // This will show "Rome" instead of "Traveling"
         locationContext: isCurrentlyTraveling ? 'traveling' : 'hometown'
@@ -1264,7 +1270,9 @@ export default function Home() {
         // For users with new travel plans system, check their current travel destination
         const userTravelPlans = otherUser.id === effectiveUser?.id ? travelPlans : [];
         const userCurrentTravelDestination = getCurrentTravelDestination(userTravelPlans || []);
-        const isCurrentlyTravelingToKeyword = userCurrentTravelDestination?.toLowerCase().includes(keyword);
+        const currentDestinationString = userCurrentTravelDestination ? 
+          `${userCurrentTravelDestination.destinationCity}${userCurrentTravelDestination.destinationState ? `, ${userCurrentTravelDestination.destinationState}` : ''}, ${userCurrentTravelDestination.destinationCountry}` : '';
+        const isCurrentlyTravelingToKeyword = currentDestinationString.toLowerCase().includes(keyword);
 
         // Special debugging for location filtering
         const isCurrentUserTravelingHere = otherUser.id === effectiveUser?.id && userCurrentTravelDestination?.toLowerCase().includes(keyword);

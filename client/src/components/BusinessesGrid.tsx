@@ -40,11 +40,10 @@ export default function BusinessesGrid({ currentLocation, travelPlans = [] }: Bu
     // Add current travel destination if traveling
     const currentDestination = getCurrentTravelDestination(travelPlans);
     if (currentDestination) {
-      const [city, state, country] = currentDestination.split(', ');
       locations.push({
-        city: city || '',
-        state: state || '',
-        country: country || 'United States',
+        city: currentDestination.destinationCity,
+        state: currentDestination.destinationState || '',
+        country: currentDestination.destinationCountry,
         type: 'current_travel'
       });
     }

@@ -194,15 +194,22 @@ export function parseInputDate(dateString: string): Date {
 
 /**
  * Check if a user is currently traveling based on their travel plans
- * Returns the destination if currently traveling, null otherwise
+ * CRITICAL: Users only become NEARBY TRAVELERS when trip dates are active
+ * Returns destination object with consistent field naming, null if not traveling
  */
-export function getCurrentTravelDestination(travelPlans: any[]): string | null {
+export function getCurrentTravelDestination(travelPlans: any[]): {
+  destinationCity: string;
+  destinationState?: string;
+  destinationCountry: string;
+  startDate: string;
+  endDate: string;
+} | null {
   if (!travelPlans || !Array.isArray(travelPlans) || travelPlans.length === 0) return null;
   
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   
-  // Check travel plans array for active trips
+  // Check travel plans array for active trips - ONLY active trips make someone a NEARBY TRAVELER
   for (const plan of travelPlans) {
     if (plan.startDate && plan.endDate && plan.destination) {
       // Use timezone-safe date parsing for travel plan dates
@@ -231,11 +238,23 @@ export function getCurrentTravelDestination(travelPlans: any[]): string | null {
       startDate.setHours(0, 0, 0, 0);
       endDate.setHours(23, 59, 59, 999);
       
+      // TEMPORAL LOGIC: Only active trips count - future trips don't make someone a traveler yet
       if (today >= startDate && today <= endDate) {
-        return plan.destination;
+        // Parse destination into consistent field naming
+        const destinationParts = plan.destination.split(', ');
+        const [destinationCity, destinationState = null, destinationCountry] = destinationParts;
+        
+        return {
+          destinationCity: destinationCity,
+          destinationState: destinationState,
+          destinationCountry: destinationCountry || destinationParts[destinationParts.length - 1],
+          startDate: plan.startDate,
+          endDate: plan.endDate
+        };
       }
     }
   }
   
+  // No active trips = User is NEARBY LOCAL only (future trips don't count)
   return null;
 }
