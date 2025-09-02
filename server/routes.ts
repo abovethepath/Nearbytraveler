@@ -1993,6 +1993,28 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
     }
   });
 
+  // Verify Reset Token endpoint
+  app.get("/api/auth/verify-reset-token", async (req, res) => {
+    try {
+      const { token } = req.query;
+
+      if (!token) {
+        return res.status(400).json({ message: "Token is required", valid: false });
+      }
+
+      // Find user with this reset token
+      const user = await storage.getUserByResetToken(token as string);
+      if (!user || !user.passwordResetExpires || new Date() > user.passwordResetExpires) {
+        return res.status(400).json({ message: "Invalid or expired reset token", valid: false });
+      }
+
+      return res.json({ message: "Token is valid", valid: true });
+    } catch (error: any) {
+      console.error("Verify reset token error:", error);
+      res.status(500).json({ message: "Failed to verify token", valid: false });
+    }
+  });
+
   // Reset Password endpoint
   app.post("/api/auth/reset-password", async (req, res) => {
     try {

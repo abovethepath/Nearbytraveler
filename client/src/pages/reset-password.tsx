@@ -25,6 +25,7 @@ export default function ResetPassword() {
   const [location] = useLocation();
   const [token, setToken] = useState<string | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [isValidToken, setIsValidToken] = useState<boolean | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -32,6 +33,20 @@ export default function ResetPassword() {
     const urlParams = new URLSearchParams(window.location.search);
     const tokenParam = urlParams.get('token');
     setToken(tokenParam);
+    
+    // Verify token if it exists
+    if (tokenParam) {
+      fetch(`/api/auth/verify-reset-token?token=${tokenParam}`)
+        .then(async (response) => {
+          const data = await response.json();
+          setIsValidToken(data.valid || false);
+        })
+        .catch(() => {
+          setIsValidToken(false);
+        });
+    } else {
+      setIsValidToken(false);
+    }
   }, [location]);
 
   const form = useForm<ResetPasswordForm>({
@@ -72,7 +87,23 @@ export default function ResetPassword() {
     resetPasswordMutation.mutate(data);
   };
 
-  if (!token) {
+  // Show loading while verifying token
+  if (isValidToken === null) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-orange-50 px-4">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl">Verifying Reset Link...</CardTitle>
+            <CardDescription>
+              Please wait while we verify your password reset link.
+            </CardDescription>
+          </CardHeader>
+        </Card>
+      </div>
+    );
+  }
+
+  if (!token || isValidToken === false) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-orange-50 px-4">
         <Card className="w-full max-w-md">

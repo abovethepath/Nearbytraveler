@@ -84,6 +84,46 @@ console.log('🚀 REGISTERING CRITICAL API ROUTES FIRST TO BYPASS VITE INTERCEPT
 // REMOVED: This conflicted with the proper filtering endpoint in routes.ts
 // The business-deals endpoint is now handled in routes.ts with proper city filtering
 
+// CRITICAL: Password reset token verification - must bypass Vite
+app.get('/api/auth/verify-reset-token', async (req, res) => {
+  try {
+    const { token } = req.query;
+
+    if (!token) {
+      return res.status(400).json({ message: "Token is required", valid: false });
+    }
+
+    // Import storage dynamically to avoid dependency issues
+    const { storage } = await import('./storage.js');
+    
+    // Find user with this reset token
+    console.log("🔍 Verifying token:", token);
+    const user = await storage.getUserByResetToken(token as string);
+    console.log("🔍 Found user:", user ? `User ${user.id}` : "null");
+    
+    if (!user) {
+      console.log("❌ No user found with token:", token);
+      return res.status(400).json({ message: "Invalid or expired reset token", valid: false });
+    }
+    
+    if (!user.passwordResetExpires) {
+      console.log("❌ User has no reset expiry:", user.id);
+      return res.status(400).json({ message: "Invalid or expired reset token", valid: false });
+    }
+    
+    if (new Date() > user.passwordResetExpires) {
+      console.log("❌ Token expired for user:", user.id, "expires:", user.passwordResetExpires);
+      return res.status(400).json({ message: "Invalid or expired reset token", valid: false });
+    }
+
+    return res.json({ message: "Token is valid", valid: true });
+  } catch (error: any) {
+    console.error("Verify reset token error:", error);
+    console.error("Error details:", error.message, error.stack);
+    res.status(500).json({ message: "Failed to verify token", valid: false });
+  }
+});
+
 app.get('/api/quick-meetups', async (req, res) => {
   try {
     console.log('⚡ DIRECT API: Fetching quick meetups');
