@@ -3787,11 +3787,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           <span className="font-medium text-gray-600 dark:text-gray-400 w-24 flex-shrink-0">Destination:</span>
                           <span className="text-gray-900 dark:text-gray-100 flex-1 break-words font-semibold">{user.travelDestination}</span>
                         </div>
-                        {user.currentTripReturnDate && (
+                        {user.travelEndDate && (
                           <div className="flex items-start">
                             <span className="font-medium text-gray-600 dark:text-gray-400 w-24 flex-shrink-0">Return:</span>
                             <span className="text-gray-900 dark:text-gray-100 flex-1 break-words">
-                              {formatDateForDisplay(user.currentTripReturnDate)}
+                              {formatDateForDisplay(user.travelEndDate)}
                             </span>
                           </div>
                         )}
