@@ -5,7 +5,7 @@ import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
 import ThemeToggle from "@/components/ThemeToggle";
 import Footer from "@/components/footer";
 import { trackEvent } from "@/lib/analytics";
-const localsHeaderImage = "/ChatGPT Image Jul 23, 2025, 01_18_34 PM_1753301968074.png";
+import localsHeaderImage from "@assets/locals_1756777112458.png";
 
 export default function LocalsLanding() {
   const [, setLocation] = useLocation();
