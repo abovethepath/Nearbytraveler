@@ -30,7 +30,7 @@ export default function JoinNowWidgetNew() {
       <div className="space-y-2">
         <Label className="text-base md:text-lg font-medium text-gray-900 dark:text-white text-crisp">I am a...</Label>
         <div className="space-y-2">
-          {/* User - Local */}
+          {/* Nearby Local */}
           <div
             onClick={() => setUserType("local")}
             className={`cursor-pointer border-2 rounded-lg p-3 text-center transition-all ${
@@ -40,14 +40,14 @@ export default function JoinNowWidgetNew() {
             }`}
           >
             <div className="text-sm font-medium text-gray-900 dark:text-white">
-              User
+              Nearby Local
             </div>
             <div className="text-xs text-gray-600 dark:text-gray-400">
               Not Traveling Now
             </div>
           </div>
 
-          {/* User - Traveling */}
+          {/* Nearby Traveler */}
           <div
             onClick={() => setUserType("currently_traveling")}
             className={`cursor-pointer border-2 rounded-lg p-3 text-center transition-all ${
@@ -57,14 +57,14 @@ export default function JoinNowWidgetNew() {
             }`}
           >
             <div className="text-sm font-medium text-gray-900 dark:text-white">
-              User
+              Nearby Traveler
             </div>
             <div className="text-xs text-gray-600 dark:text-gray-400">
               Currently Traveling
             </div>
           </div>
 
-          {/* Business */}
+          {/* Nearby Business */}
           <div
             onClick={() => setUserType("business")}
             className={`cursor-pointer border-2 rounded-lg p-3 text-center transition-all ${
@@ -74,7 +74,7 @@ export default function JoinNowWidgetNew() {
             }`}
           >
             <div className="text-sm font-medium text-gray-900 dark:text-white">
-              Business
+              Nearby Business
             </div>
             <div className="text-xs text-gray-600 dark:text-gray-400">
               Local Business
