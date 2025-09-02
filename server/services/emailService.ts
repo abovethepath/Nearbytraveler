@@ -70,21 +70,21 @@ export class EmailService {
 
     try {
       const emailData = {
-        sender: { email: 'support@nearbytraveler.org', name: 'Nearby Traveler Security' },
+        sender: { email: 'support@thenearbytraveler.com', name: 'Aaron, Founder Nearby Traveler, Inc' },
         to: [{ email: to }],
         subject,
         htmlContent: html,
         textContent: text,
         // Critical headers for inbox delivery
         headers: {
-          'List-Unsubscribe': '<mailto:support@nearbytraveler.org?subject=unsubscribe>',
+          'List-Unsubscribe': '<mailto:support@thenearbytraveler.com?subject=unsubscribe>',
           'X-Mailer': 'Nearby Traveler Security System',
-          'Reply-To': 'support@nearbytraveler.org',
+          'Reply-To': 'support@thenearbytraveler.com',
           'X-Entity-Type': 'transactional',
           'X-Priority': '1', // High priority for security emails
           'Importance': 'high',
           'X-Authentication-Results': 'pass',
-          'Message-ID': `<security-${Date.now()}-${Math.random().toString(36)}@nearbytraveler.org>`
+          'Message-ID': `<security-${Date.now()}-${Math.random().toString(36)}@thenearbytraveler.com>`
         },
         // Mark as critical security notification
         tags: ['security', 'password-reset', 'account-recovery']

@@ -137,7 +137,7 @@ const emailStyles = `
 `;
 
 export const welcomeEmail = (data: WelcomeEmailData): EmailTemplate => ({
-  subject: `Welcome to Nearby Traveler, ${data.name}`,
+  subject: `Welcome to the community, ${data.name}! 🌍`,
   html: `
     <!DOCTYPE html>
     <html>
@@ -146,85 +146,130 @@ export const welcomeEmail = (data: WelcomeEmailData): EmailTemplate => ({
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Welcome to Nearby Traveler</title>
       <style>
-        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 20px; }
-        .container { max-width: 500px; margin: 0 auto; }
-        .header { text-align: center; margin-bottom: 30px; }
-        .content { background: #ffffff; padding: 30px; border-radius: 8px; }
-        .button { display: inline-block; background: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 20px 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 20px; background-color: #f8fafc; }
+        .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
+        .header { background: linear-gradient(135deg, #3b82f6 0%, #f97316 100%); padding: 30px 20px; text-align: center; color: white; }
+        .logo { font-size: 28px; font-weight: bold; margin-bottom: 8px; }
+        .content { padding: 40px 30px; }
+        .greeting { font-size: 22px; font-weight: 600; margin-bottom: 20px; color: #1f2937; }
+        .highlight { background-color: #dbeafe; padding: 20px; border-radius: 8px; border-left: 4px solid #3b82f6; margin: 20px 0; }
+        .button { display: inline-block; background: linear-gradient(135deg, #3b82f6 0%, #f97316 100%); color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: 600; margin: 20px 0; }
+        .footer { background-color: #f8fafc; padding: 25px 30px; text-align: center; font-size: 14px; color: #6b7280; border-top: 1px solid #e5e7eb; }
+        .benefit { margin: 15px 0; display: flex; align-items: flex-start; }
+        .benefit-icon { margin-right: 12px; font-size: 20px; }
       </style>
     </head>
     <body>
       <div class="container">
+        <div class="header">
+          <div class="logo">Nearby Traveler</div>
+          <div style="font-size: 16px; opacity: 0.9;">Welcome to the community!</div>
+        </div>
+        
         <div class="content">
-          <div class="header">
-            <h1 style="color: #3b82f6; margin: 0;">Nearby Traveler</h1>
+          <div class="greeting">Hey ${data.name}! 👋</div>
+          
+          <p>You just joined something special. Nearby Traveler connects amazing people like you with others who share your interests and travel spirit.</p>
+          
+          <div class="highlight">
+            <strong>🎯 You're all set as a ${data.userType === 'business' ? 'Business' : data.userType === 'local' ? 'Local' : 'Traveler'}!</strong><br>
+            Username: <strong>@${data.username}</strong>
           </div>
           
-          <p>Hello ${data.name},</p>
+          <p><strong>Here's what you can do right now:</strong></p>
           
-          <p>Your account has been created successfully. You're now part of the Nearby Traveler community.</p>
-          
-          <p><strong>Your account:</strong><br>
-          Username: @${data.username}<br>
-          Type: ${data.userType === 'business' ? 'Business' : data.userType === 'local' ? 'Local' : 'Traveler'}</p>
-          
-          <p><strong>What's available:</strong></p>
           ${data.userType === 'business' ? `
-            <p>• Business profile management<br>
-            • Create deals and offers<br>
-            • Connect with travelers and locals<br>
-            • Access to business analytics</p>
+            <div class="benefit">
+              <span class="benefit-icon">💼</span>
+              <div>
+                <strong>Create your first deal</strong><br>
+                Attract travelers and locals with special offers that get results
+              </div>
+            </div>
+            <div class="benefit">
+              <span class="benefit-icon">📈</span>
+              <div>
+                <strong>Connect with your audience</strong><br>
+                Find customers who are actively looking for what you offer
+              </div>
+            </div>
+            <div class="benefit">
+              <span class="benefit-icon">🌟</span>
+              <div>
+                <strong>Build your reputation</strong><br>
+                Get reviews and recommendations from happy customers
+              </div>
+            </div>
           ` : `
-            <p>• Discover people with shared interests<br>
-            • Find and create local events<br>
-            • Connect with travelers and locals<br>
-            • Join location-based chat rooms</p>
+            <div class="benefit">
+              <span class="benefit-icon">🤝</span>
+              <div>
+                <strong>Find your people</strong><br>
+                Connect with others who share your interests and travel plans
+              </div>
+            </div>
+            <div class="benefit">
+              <span class="benefit-icon">📍</span>
+              <div>
+                <strong>Discover local gems</strong><br>
+                Get insider tips from locals and fellow travelers
+              </div>
+            </div>
+            <div class="benefit">
+              <span class="benefit-icon">🎉</span>
+              <div>
+                <strong>Join amazing events</strong><br>
+                From coffee meetups to adventure trips - find your next experience
+              </div>
+            </div>
           `}
           
-          <p><strong>Next step:</strong></p>
-          <p>Complete your profile to start connecting with others in your area.</p>
-          
-          <div style="text-align: center;">
-            <a href="https://nearbytraveler.org/profile" class="button">Complete Profile</a>
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="https://nearbytraveler.org/profile" class="button">Complete Your Profile</a>
           </div>
           
-          <p>Questions? Reply to this email.</p>
+          <p>Complete your profile to unlock the full experience - it takes just 2 minutes and makes all the difference in finding great connections!</p>
           
-          <p>Best,<br>
-          Nearby Traveler Team</p>
+          <p>Questions? Just reply to this email.</p>
+          
+          <p>Excited to see what connections you'll make,</p>
+          <p><strong>Aaron</strong><br>
+          <em>Founder, Nearby Traveler, Inc</em></p>
+        </div>
+        
+        <div class="footer">
+          <p>You're now part of a growing community of travelers and locals worldwide.</p>
+          <p>© 2025 Nearby Traveler, Inc. All rights reserved.</p>
         </div>
       </div>
     </body>
     </html>
   `,
-  text: `Welcome to Nearby Traveler
+  text: `Welcome to Nearby Traveler! 🌍
 
-Hello ${data.name},
+Hey ${data.name}!
 
-Your account has been created successfully. You're now part of the Nearby Traveler community.
+You just joined something special. Nearby Traveler connects amazing people like you with others who share your interests and travel spirit.
 
-Your account:
+You're all set as a ${data.userType === 'business' ? 'Business' : data.userType === 'local' ? 'Local' : 'Traveler'}!
 Username: @${data.username}
-Type: ${data.userType === 'business' ? 'Business' : data.userType === 'local' ? 'Local' : 'Traveler'}
 
-What's available:
-${data.userType === 'business' ? `• Business profile management
-• Create deals and offers
-• Connect with travelers and locals
-• Access to business analytics` : `• Discover people with shared interests
-• Find and create local events
-• Connect with travelers and locals
-• Join location-based chat rooms`}
+Here's what you can do right now:
 
-Next step:
-Complete your profile to start connecting with others in your area.
+${data.userType === 'business' ? `• Create your first deal - Attract travelers and locals with special offers
+• Connect with your audience - Find customers actively looking for what you offer  
+• Build your reputation - Get reviews and recommendations from happy customers` : `• Find your people - Connect with others who share your interests and travel plans
+• Discover local gems - Get insider tips from locals and fellow travelers
+• Join amazing events - From coffee meetups to adventure trips`}
 
-Complete profile: https://nearbytraveler.org/profile
+Complete your profile to unlock the full experience: https://nearbytraveler.org/profile
 
-Questions? Reply to this email.
+Questions? Just reply to this email.
 
-Best,
-Nearby Traveler Team`
+Excited to see what connections you'll make,
+
+Aaron
+Founder, Nearby Traveler, Inc`
 });
 
 export const passwordResetEmail = (data: PasswordResetData): EmailTemplate => ({
