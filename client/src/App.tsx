@@ -509,26 +509,7 @@ function Router() {
 
 
     if (!isActuallyAuthenticated) {
-      console.log('🏠 UNAUTHENTICATED ROUTING for:', location);
-
-      // EMERGENCY FIX: Simple direct routing for signup flow
-      switch (location) {
-        case '/join':
-          console.log('🎯 EMERGENCY JOIN PAGE');
-          return <JoinPageWithSignIn />;
-        case '/signup/account':
-          console.log('🎯 EMERGENCY SIGNUP ACCOUNT');
-          return <SignupAccount />;
-        case '/signup/local':
-          console.log('🎯 EMERGENCY SIGNUP LOCAL');
-          return <SignupLocalTraveler />;
-        case '/signup/traveling':
-          console.log('🎯 EMERGENCY SIGNUP TRAVELING');
-          return <SignupTraveling />;
-        case '/signup/business':
-          console.log('🎯 EMERGENCY SIGNUP BUSINESS');
-          return <SignupBusinessSimple />;
-      }
+      console.log('🏠 STREAMLINED LANDING - User not authenticated, showing streamlined landing page for:', location);
 
       // CRITICAL: Handle password reset before other checks
       if (location.startsWith('/reset-password')) {
@@ -752,9 +733,16 @@ function Router() {
         return <QRSimplePage />;
       }
       
-      // FINAL FALLBACK: Force unknown routes to landing page for unauthenticated users
-      console.log('❌ STREAMLINED FALLBACK - Unknown route for unauthenticated user, showing streamlined landing page:', location);
-      return <LandingStreamlined />;
+      // Check if this is a valid landing page route (including our public pages)
+      if (landingPageRoutes.includes(location)) {
+        // This handles all the routes we explicitly want to be public
+        console.log('✅ PUBLIC PAGE ACCESS - Valid landing page route:', location);
+        // Let it continue to the specific route handlers below (they're already in the landing page section)
+      } else {
+        // Force unknown routes to landing page for unauthenticated users
+        console.log('❌ STREAMLINED FALLBACK - Unknown route for unauthenticated user, showing streamlined landing page:', location);
+        return <LandingStreamlined />;
+      }
     }
 
     console.log('✅ USER AUTHENTICATED - routing to:', location, 'user:', user?.username || 'unknown user');
@@ -906,9 +894,18 @@ function Router() {
         return <CouchsurfingLanding />;
       case '/b':
         return <BusinessCustomLanding />;
-      // SIGNUP ROUTES MOVED TO UNAUTHENTICATED SECTION - removed duplicates
+      case '/signup/account':
+        return <SignupAccount />;
+      case '/signup/local':
+        return <SignupLocalTraveler />;
+      case '/signup/traveling':
+        return <SignupTraveling />;
+      case '/join':
+        return <JoinPageWithSignIn />;
       case '/signup':
         return <ComingSoon />;
+      case '/signup/business':
+        return <SignupBusinessSimple />;
       case '/business-registration':
         return <BusinessRegistration />;
       case '/profile':
