@@ -138,7 +138,7 @@ const emailStyles = `
 
 // Business Welcome Email
 export const welcomeEmailBusiness = (data: WelcomeEmailData): EmailTemplate => ({
-  subject: `Welcome to Nearby Traveler, ${data.name}! Let's grow your business 🚀`,
+  subject: `Hi ${data.name}, your business account is ready`,
   html: `
     <!DOCTYPE html>
     <html>
@@ -250,7 +250,7 @@ Founder, Nearby Traveler, Inc`
 
 // Regular User Welcome Email
 export const welcomeEmail = (data: WelcomeEmailData): EmailTemplate => ({
-  subject: `Welcome to the community, ${data.name}! 🌍`,
+  subject: `Hi ${data.name}, your Nearby Traveler account is ready`,
   html: `
     <!DOCTYPE html>
     <html>

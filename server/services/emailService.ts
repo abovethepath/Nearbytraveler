@@ -71,17 +71,19 @@ export class EmailService {
 
     try {
       const emailData = {
-        sender: { email: 'support@nearbytraveler.org', name: 'Nearby Traveler' },
+        sender: { email: 'aaron@thenearbytraveler.com', name: 'Aaron from Nearby Traveler' },
         to: [{ email: to }],
         subject,
         htmlContent: html,
         textContent: text,
-        // Simplified headers for better deliverability
+        // Optimized headers for deliverability
         headers: {
-          'Reply-To': 'aaron@thenearbytraveler.com'
+          'Reply-To': 'aaron@thenearbytraveler.com',
+          'X-Entity-Ref-ID': `NT-${Date.now()}`,
+          'List-Unsubscribe': '<mailto:aaron@thenearbytraveler.com?subject=Unsubscribe>'
         },
-        // Remove complex tags that might trigger spam filters
-        tags: ['password-reset']
+        // Simple tags to avoid spam triggers
+        tags: ['transactional']
       };
 
       console.log('📧 Sending email via Brevo:', { to, from: emailData.sender.email, subject });
