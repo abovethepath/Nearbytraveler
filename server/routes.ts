@@ -833,7 +833,13 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       }
 
       console.log("🔐 Login attempt for:", email);
-      const user = await storage.getUserByEmail(email);
+      
+      // Try to find user by email first, then by username
+      let user = await storage.getUserByEmail(email);
+      if (!user) {
+        user = await storage.getUserByUsername(email); // email field might contain username
+      }
+      
       if (!user) {
         return res.status(401).json({ message: "Invalid credentials" });
       }
