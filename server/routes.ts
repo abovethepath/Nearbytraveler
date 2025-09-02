@@ -2574,6 +2574,27 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         // CRITICAL: Normalize userType to 'traveler' for database storage
         processedData.userType = 'traveler';
         
+        // CRITICAL: Map destination fields from travel signup form
+        if (processedData.currentTripDestinationCity) {
+          let destination = processedData.currentTripDestinationCity;
+          if (processedData.currentTripDestinationState) {
+            destination += `, ${processedData.currentTripDestinationState}`;
+          }
+          if (processedData.currentTripDestinationCountry) {
+            destination += `, ${processedData.currentTripDestinationCountry}`;
+          }
+          processedData.travelDestination = destination;
+          
+          if (process.env.NODE_ENV === 'development') {
+            console.log('🧳 TRAVEL DESTINATION MAPPING:', {
+              city: processedData.currentTripDestinationCity,
+              state: processedData.currentTripDestinationState,
+              country: processedData.currentTripDestinationCountry,
+              finalDestination: destination
+            });
+          }
+        }
+        
         // Map localActivities and localEvents to main fields
         if (processedData.localActivities) {
           processedData.activities = processedData.localActivities;
