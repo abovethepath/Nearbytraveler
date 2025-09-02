@@ -745,7 +745,9 @@ export class DatabaseStorage implements IStorage {
         ownerPhone: 'owner_phone',
         profileImage: 'profile_image',
         latitude: 'latitude',
-        longitude: 'longitude'
+        longitude: 'longitude',
+        passwordResetToken: 'password_reset_token',
+        passwordResetExpires: 'password_reset_expires'
       };
 
       // Convert field names to snake_case for database
