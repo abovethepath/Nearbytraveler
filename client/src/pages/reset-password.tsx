@@ -29,32 +29,46 @@ export default function ResetPassword() {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Extract token from URL parameters - try multiple methods to ensure we get it
-    let tokenParam: string | null = null;
+    // CRITICAL: Extract token IMMEDIATELY when component mounts, before any routing changes
+    const extractTokenFromCurrentURL = () => {
+      // Get the current complete URL
+      const currentURL = window.location.href;
+      console.log('🔐 RESET: Full current URL:', currentURL);
+      console.log('🔐 RESET: window.location.search:', window.location.search);
+      console.log('🔐 RESET: window.location.pathname:', window.location.pathname);
+      
+      // Try to extract token from different parts of the URL
+      let tokenParam: string | null = null;
+      
+      // Method 1: URLSearchParams from search
+      if (window.location.search) {
+        const params = new URLSearchParams(window.location.search);
+        tokenParam = params.get('token');
+        console.log('🔐 RESET: Method 1 (search) - token:', tokenParam);
+      }
+      
+      // Method 2: URLSearchParams from full URL
+      if (!tokenParam) {
+        try {
+          const url = new URL(currentURL);
+          tokenParam = url.searchParams.get('token');
+          console.log('🔐 RESET: Method 2 (URL object) - token:', tokenParam);
+        } catch (e) {
+          console.log('🔐 RESET: Method 2 failed:', e);
+        }
+      }
+      
+      // Method 3: Manual regex extraction
+      if (!tokenParam) {
+        const tokenMatch = currentURL.match(/[?&]token=([^&]+)/);
+        tokenParam = tokenMatch ? tokenMatch[1] : null;
+        console.log('🔐 RESET: Method 3 (regex) - token:', tokenParam);
+      }
+      
+      return tokenParam;
+    };
     
-    // Method 1: Direct window.location.search
-    const urlParams = new URLSearchParams(window.location.search);
-    tokenParam = urlParams.get('token');
-    console.log('🔐 RESET: Method 1 - window.location.search:', window.location.search);
-    console.log('🔐 RESET: Method 1 - token found:', tokenParam);
-    
-    // Method 2: Parse from full URL if method 1 fails
-    if (!tokenParam) {
-      const fullUrl = window.location.href;
-      console.log('🔐 RESET: Method 2 - full URL:', fullUrl);
-      const url = new URL(fullUrl);
-      tokenParam = url.searchParams.get('token');
-      console.log('🔐 RESET: Method 2 - token found:', tokenParam);
-    }
-    
-    // Method 3: Manual parsing if both fail
-    if (!tokenParam) {
-      const href = window.location.href;
-      const tokenMatch = href.match(/[?&]token=([^&]+)/);
-      tokenParam = tokenMatch ? tokenMatch[1] : null;
-      console.log('🔐 RESET: Method 3 - manual parse, token found:', tokenParam);
-    }
-    
+    const tokenParam = extractTokenFromCurrentURL();
     setToken(tokenParam);
     
     // Verify token if it exists
