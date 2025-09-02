@@ -176,8 +176,8 @@ export default function EventsLanding() {
       <div className="py-8 bg-gray-50 dark:bg-gray-800">
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">Why Nearby Traveler Events Are Different</h2>
-            <p className="text-gray-600 dark:text-gray-300">Real connections, not just event listings</p>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">Beyond Event Discovery - We Connect You</h2>
+            <p className="text-gray-600 dark:text-gray-300">Find events from major sources and meet people going to the same ones</p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -195,8 +195,8 @@ export default function EventsLanding() {
             
             <div className="text-center p-4">
               <div className="text-3xl mb-3">🎯</div>
-              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Pre-Trip Networking</h3>
-              <p className="text-gray-600 dark:text-gray-300 text-sm">Meet fellow conference attendees before you travel. Turn business events into reunions, not rooms full of strangers.</p>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Smart Event Matching</h3>
+              <p className="text-gray-600 dark:text-gray-300 text-sm">We pull events from major sources and match you with others attending the same concerts, conferences, or experiences.</p>
             </div>
           </div>
         </div>
