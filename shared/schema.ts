@@ -570,7 +570,7 @@ export const insertUserSchema = createInsertSchema(users).omit({
   hometownCity: z.string().min(1, "Hometown city is required"),
   hometownState: z.string().optional(),
   hometownCountry: z.string().min(1, "Hometown country is required"),
-  interests: z.array(z.string()).min(3, "Please select at least 3 interests"),
+  interests: z.array(z.string()).optional().default([]),
 });
 
 export const insertWaitlistLeadSchema = createInsertSchema(waitlistLeads).omit({
