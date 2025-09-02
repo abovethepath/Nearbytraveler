@@ -432,15 +432,28 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   };
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(-1);
 
-  // Defensive: Reset ALL modal states when component mounts/unmounts to prevent stuck overlays
+  // AGGRESSIVE: Reset ALL modal states when component mounts/unmounts to prevent stuck overlays
   useEffect(() => {
+    // Force reset all modal states immediately and aggressively
     setSelectedPhotoIndex(-1);
     setShowEditModal(false);
     setShowWriteReferenceModal(false);
     setShowPhotoUpload(false);
     setShowCoverPhotoSelector(false);
     setShowCropModal(false);
+    
+    // Additional defensive check after a brief delay
+    const timeoutId = setTimeout(() => {
+      setSelectedPhotoIndex(-1);
+      setShowEditModal(false);
+      setShowWriteReferenceModal(false);
+      setShowPhotoUpload(false);
+      setShowCoverPhotoSelector(false);
+      setShowCropModal(false);
+    }, 100);
+    
     return () => {
+      clearTimeout(timeoutId);
       setSelectedPhotoIndex(-1);
       setShowEditModal(false);
       setShowWriteReferenceModal(false);
@@ -5123,9 +5136,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       </div>
 
 
-      {/* Photo Lightbox */}
+      {/* Photo Lightbox - FIXED TRANSPARENCY ISSUE */}
       {photos.length > 0 && selectedPhotoIndex >= 0 && selectedPhotoIndex < photos.length && photos[selectedPhotoIndex] && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
+        <div className="fixed inset-0 z-[100000] flex items-center justify-center">
           <div 
             className="fixed inset-0 bg-black/80" 
             onClick={() => setSelectedPhotoIndex(-1)}
