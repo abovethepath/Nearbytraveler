@@ -154,9 +154,9 @@ export function VouchWidget({ userId, isOwnProfile, currentUserId }: VouchWidget
                     Vouch for This Person
                   </Button>
                 </DialogTrigger>
-                <DialogContent>
+                <DialogContent className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-lg">
                   <DialogHeader>
-                    <DialogTitle>Important: Only vouch for people you truly know</DialogTitle>
+                    <DialogTitle className="text-gray-900 dark:text-white">Important: Only vouch for people you truly know</DialogTitle>
                     <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-lg p-3 mt-2">
                       <p className="text-sm text-amber-800 dark:text-amber-200">
                         <strong>WARNING:</strong> You should only vouch for people you have actually met and know personally. 
