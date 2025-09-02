@@ -85,7 +85,7 @@ export default function CouchsurfingLanding() {
                 <span className="text-blue-600">You'll Love This.</span>
               </h1>
               <p className="text-lg sm:text-xl md:text-2xl text-zinc-600 dark:text-zinc-300 mb-4 max-w-4xl mx-auto leading-relaxed">
-                Meet ALL TRAVELERS and locals through shared interests, activities, events and demographics — whether you can host or not.
+                MEET ALL TRAVELERS and locals. We connect travelers with locals through shared interests, activities, events and demographics — whether you can host or not.
               </p>
               
               {/* Desktop CTAs */}
