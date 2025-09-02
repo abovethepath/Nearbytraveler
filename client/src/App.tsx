@@ -519,8 +519,10 @@ function Router() {
 
       // CRITICAL FIX: Handle signup pages for unauthenticated users
       if (location === '/signup/account') {
-        console.log('🎯 SIGNUP ACCOUNT: Showing account creation page');
-        return <SignupAccount />;
+        console.log('🎯 SIGNUP ACCOUNT: About to return SignupAccount component');
+        const accountComponent = <SignupAccount />;
+        console.log('🎯 SIGNUP ACCOUNT: Component created successfully, returning now');
+        return accountComponent;
       }
       if (location === '/signup/local') {
         console.log('🎯 SIGNUP LOCAL: Showing local/traveler profile page');
