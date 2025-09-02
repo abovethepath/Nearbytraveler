@@ -5242,8 +5242,29 @@ Questions? Just reply to this message. Welcome aboard!
 
       const userChatrooms = result.rows || [];
 
-      if (process.env.NODE_ENV === 'development') console.log(`🏠 CHATROOM PARTICIPATION: Found ${userChatrooms.length} chatrooms for user ${userId}`);
-      return res.json(userChatrooms);
+      // Add member counts to each chatroom
+      const memberCountQuery = await db
+        .select({
+          chatroomId: chatroomMembers.chatroomId,
+          count: sql<string>`COUNT(*)::text`.as('count')
+        })
+        .from(chatroomMembers)
+        .where(eq(chatroomMembers.isActive, true))
+        .groupBy(chatroomMembers.chatroomId);
+      
+      const memberCountMap = new Map();
+      memberCountQuery.forEach(mc => {
+        memberCountMap.set(mc.chatroomId, parseInt(mc.count || '0') || 1);
+      });
+      
+      // Apply member counts to each chatroom
+      const chatroomsWithMemberCount = userChatrooms.map(chatroom => ({
+        ...chatroom,
+        memberCount: memberCountMap.get(chatroom.id) || 1
+      }));
+
+      if (process.env.NODE_ENV === 'development') console.log(`🏠 CHATROOM PARTICIPATION: Found ${chatroomsWithMemberCount.length} chatrooms for user ${userId} with member counts`);
+      return res.json(chatroomsWithMemberCount);
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error fetching user chatroom participation:", error);
       return res.status(500).json({ message: "Failed to fetch chatroom participation" });
