@@ -836,13 +836,19 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       
       // Try to find user by email first, then by username
       let user = await storage.getUserByEmail(email);
+      console.log("🔍 User found by email:", !!user);
+      
       if (!user) {
         user = await storage.getUserByUsername(email); // email field might contain username
+        console.log("🔍 User found by username:", !!user);
       }
       
       if (!user) {
+        console.log("❌ No user found for:", email);
         return res.status(401).json({ message: "Invalid credentials" });
       }
+      
+      console.log("🔍 Found user:", user.username, "with password set:", !!user.password);
 
       // Simple password check (in production, use bcrypt)
       const isValidPassword = password === user.password;
