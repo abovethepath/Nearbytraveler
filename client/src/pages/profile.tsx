@@ -29,6 +29,7 @@ import FriendReferralWidget from "@/components/friend-referral-widget";
 
 import ReferencesWidgetNew from "@/components/references-widget-new";
 import { VouchWidget } from "@/components/vouch-widget";
+import { LocationSharingSection } from "@/components/LocationSharingSection";
 // Removed framer-motion import for static interface
 import { useToast } from "@/hooks/use-toast";
 import { AuthContext } from "@/App";
