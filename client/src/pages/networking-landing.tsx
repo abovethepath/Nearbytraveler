@@ -35,8 +35,17 @@ export default function NetworkingLanding() {
       {/* HERO SECTION */}
       <NetworkingHero isAirbnbStyle={isAirbnbStyle} />
 
+      {/* Quick Value Prop - Fill dead space */}
+      <div className="py-2 bg-white dark:bg-gray-900">
+        <div className="max-w-4xl mx-auto px-4 text-center">
+          <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">
+            🎯 Connect before, during & after events • No more awkward small talk • Build lasting professional relationships
+          </p>
+        </div>
+      </div>
+
       {/* Quote Section */}
-      <div className="py-6 sm:py-12 bg-white dark:bg-gray-800">
+      <div className="py-4 sm:py-6 bg-white dark:bg-gray-800">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <div className="p-8">
             <p className="text-xl text-gray-800 dark:text-gray-300 leading-relaxed text-center font-light">
@@ -49,10 +58,10 @@ export default function NetworkingLanding() {
         </div>
       </div>
 
-      <main className="flex-1 px-4 py-6 sm:py-12">
+      <main className="flex-1 px-4 py-4 sm:py-6">
         
         {/* HOW IT WORKS - TIMELINE */}
-        <div className="max-w-6xl mx-auto mb-16">
+        <div className="max-w-6xl mx-auto mb-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
               How It Works
@@ -97,7 +106,7 @@ export default function NetworkingLanding() {
         </div>
 
         {/* WHY NETWORKING IS BROKEN */}
-        <div className="max-w-6xl mx-auto mb-20">
+        <div className="max-w-6xl mx-auto mb-10">
           <div className="text-center mb-16">
             <h2 className="text-2xl font-light text-gray-900 dark:text-white mb-12">
               Why Traditional Networking Falls Short
