@@ -135,8 +135,8 @@ export default function SignupAccount() {
       return;
     }
 
-    if (formData.password.length < 6) {
-      const errorMsg = "Password must be at least 6 characters.";
+    if (formData.password.length < 8) {
+      const errorMsg = "Password must be at least 8 characters.";
       setCurrentError(errorMsg);
       toast({
         title: "Password too short",
@@ -244,14 +244,14 @@ export default function SignupAccount() {
 
               <div>
                 <Label htmlFor="username" className="text-base font-medium text-gray-900 dark:text-white">
-                  Username *
+                  Username * (6-12 characters)
                 </Label>
                 <Input
                   id="username"
                   type="text"
                   value={formData.username}
                   onChange={(e) => handleUsernameChange(e.target.value)}
-                  placeholder="Choose a unique username"
+                  placeholder="Choose a unique username (6-12 chars)"
                   className="text-base py-3"
                   required
                 />
@@ -313,14 +313,14 @@ export default function SignupAccount() {
 
               <div>
                 <Label htmlFor="password" className="text-base font-medium text-gray-900 dark:text-white">
-                  Password *
+                  Password * (min 8 characters)
                 </Label>
                 <Input
                   id="password"
                   type="password"
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  placeholder="Create a secure password"
+                  placeholder="Create a secure password (min 8 chars)"
                   className="text-base py-3"
                   required
                 />
