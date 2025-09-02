@@ -19,7 +19,6 @@ type ForgotPasswordForm = z.infer<typeof forgotPasswordSchema>;
 
 export default function ForgotPassword() {
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [resetLink, setResetLink] = useState<string | null>(null);
   const { toast } = useToast();
 
   const form = useForm<ForgotPasswordForm>({
@@ -42,21 +41,10 @@ export default function ForgotPassword() {
     },
     onSuccess: (data) => {
       setIsSubmitted(true);
-      
-      // Store reset link for development display
-      if (data.resetLink) {
-        setResetLink(data.resetLink);
-        toast({
-          title: "Password Reset Link Generated",
-          description: "Reset link displayed below since email delivery may be delayed",
-          duration: 5000,
-        });
-      } else {
-        toast({
-          title: "Reset Link Sent",
-          description: data.message,
-        });
-      }
+      toast({
+        title: "Reset Link Sent",
+        description: data.message,
+      });
     },
     onError: (error: any) => {
       toast({
@@ -82,43 +70,13 @@ export default function ForgotPassword() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            {resetLink ? (
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 space-y-3">
-                <p className="text-sm font-medium text-yellow-800">
-                  🔐 Emergency Password Reset (Email Delivery Issue)
-                </p>
-                <p className="text-xs text-yellow-700">
-                  Since emails aren't being delivered reliably, use this direct link:
-                </p>
-                <div className="bg-white border rounded p-2">
-                  <a 
-                    href={resetLink}
-                    className="text-blue-600 hover:text-blue-800 text-sm break-all underline"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {resetLink}
-                  </a>
-                </div>
-                <Button
-                  onClick={() => window.open(resetLink, '_blank')}
-                  className="w-full bg-orange-600 hover:bg-orange-700"
-                >
-                  Reset Password Now
-                </Button>
-              </div>
-            ) : (
-              <p className="text-sm text-gray-600 text-center">
-                Didn't receive an email? Check your spam folder or try again.
-              </p>
-            )}
+            <p className="text-sm text-gray-600 text-center">
+              Didn't receive an email? Check your spam folder or try again.
+            </p>
             <div className="flex flex-col space-y-2">
               <Button
                 variant="outline"
-                onClick={() => {
-                  setIsSubmitted(false);
-                  setResetLink(null);
-                }}
+                onClick={() => setIsSubmitted(false)}
                 className="w-full"
               >
                 Try Again
