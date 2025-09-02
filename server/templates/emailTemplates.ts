@@ -250,7 +250,7 @@ Founder, Nearby Traveler, Inc`
 
 // Regular User Welcome Email
 export const welcomeEmail = (data: WelcomeEmailData): EmailTemplate => ({
-  subject: `Hi ${data.name}, your Nearby Traveler account is ready`,
+  subject: `Welcome to Nearby Traveler`,
   html: `
     <!DOCTYPE html>
     <html>
@@ -258,104 +258,45 @@ export const welcomeEmail = (data: WelcomeEmailData): EmailTemplate => ({
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Welcome to Nearby Traveler</title>
-      <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 20px; background-color: #f8fafc; }
-        .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
-        .header { background: linear-gradient(135deg, #3b82f6 0%, #f97316 100%); padding: 30px 20px; text-align: center; color: white; }
-        .logo { font-size: 28px; font-weight: bold; margin-bottom: 8px; }
-        .content { padding: 40px 30px; }
-        .greeting { font-size: 22px; font-weight: 600; margin-bottom: 20px; color: #1f2937; }
-        .highlight { background-color: #dbeafe; padding: 20px; border-radius: 8px; border-left: 4px solid #3b82f6; margin: 20px 0; }
-        .button { display: inline-block; background: linear-gradient(135deg, #3b82f6 0%, #f97316 100%); color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: 600; margin: 20px 0; }
-        .footer { background-color: #f8fafc; padding: 25px 30px; text-align: center; font-size: 14px; color: #6b7280; border-top: 1px solid #e5e7eb; }
-        .benefit { margin: 15px 0; display: flex; align-items: flex-start; }
-        .benefit-icon { margin-right: 12px; font-size: 20px; }
-      </style>
     </head>
-    <body>
-      <div class="container">
-        <div class="header">
-          <div class="logo">Nearby Traveler</div>
-          <div style="font-size: 16px; opacity: 0.9;">Welcome to the community!</div>
-        </div>
+    <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 20px; background-color: #f9f9f9;">
+      <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 40px; border-radius: 8px;">
+        <p>Hey,</p>
         
-        <div class="content">
-          <div class="greeting">Hi ${data.name}!</div>
-          
-          <p>Your account is ready and you're all set to start connecting with people in your area.</p>
-          
-          <div class="highlight">
-            <strong>Account Details:</strong><br>
-            Username: <strong>@${data.username}</strong>
-          </div>
-          
-          <p><strong>What you can do now:</strong></p>
-          
-          <div class="benefit">
-            <span class="benefit-icon">👥</span>
-            <div>
-              <strong>Connect with locals and travelers</strong><br>
-              Find people who share your interests nearby
-            </div>
-          </div>
-          <div class="benefit">
-            <span class="benefit-icon">💬</span>
-            <div>
-              <strong>Join community chats</strong><br>
-              You've been automatically added to your local chat rooms
-            </div>
-          </div>
-          <div class="benefit">
-            <span class="benefit-icon">📅</span>
-            <div>
-              <strong>Find or create meetups</strong><br>
-              Discover local events and activities happening around you
-            </div>
-          </div>
-          
-          <div style="text-align: center; margin: 30px 0;">
-            <a href="https://nearbytraveler.org/profile" class="button">Complete Your Profile</a>
-          </div>
-          
-          <p>Complete your profile to help others find you - add a photo and fill in your interests.</p>
-          
-          <p>Questions? Just reply to this email.</p>
-          
-          <p>Welcome to the community,</p>
-          <p><strong>Aaron</strong><br>
-          <em>Nearby Traveler</em></p>
-        </div>
+        <p>Thank you for joining Nearby Traveler,</p>
         
-        <div class="footer">
-          <p>You're now part of a growing community of travelers and locals worldwide.</p>
-          <p>© 2025 Nearby Traveler, Inc. All rights reserved.</p>
-        </div>
+        <p>As a traveler myself, and a couchsurfing host as a local, I always loved meeting new people and travelers. We are a great community of open minds.</p>
+        
+        <p>Inside Nearby Traveler, we have chatrooms, we have a city match page where you can add events and activities that you want to do in that particular city, and we have a great discover people section.</p>
+        
+        <p>Finish filling out your bio, create trip plans, upload photos, share memories, and meet and connect forever with new friends.</p>
+        
+        <p>We connect the world on common interests.</p>
+        
+        <p>Any questions or suggestions, just reach out directly to me, I will respond,</p>
+        
+        <p>Best regards,<br>
+        Aaron- Nearby Traveler, Inc</p>
       </div>
     </body>
     </html>
   `,
-  text: `Hi ${data.name}!
+  text: `Hey,
 
-Your Nearby Traveler account is ready and you're all set to start connecting with people in your area.
+Thank you for joining Nearby Traveler,
 
-Account Details:
-Username: @${data.username}
+As a traveler myself, and a couchsurfing host as a local, I always loved meeting new people and travelers. We are a great community of open minds.
 
-What you can do now:
-• Connect with locals and travelers - Find people who share your interests nearby
-• Join community chats - You've been automatically added to your local chat rooms  
-• Find or create meetups - Discover local events and activities happening around you
+Inside Nearby Traveler, we have chatrooms, we have a city match page where you can add events and activities that you want to do in that particular city, and we have a great discover people section.
 
-Complete your profile: https://nearbytraveler.org/profile
+Finish filling out your bio, create trip plans, upload photos, share memories, and meet and connect forever with new friends.
 
-Complete your profile to help others find you - add a photo and fill in your interests.
+We connect the world on common interests.
 
-Questions? Just reply to this email.
+Any questions or suggestions, just reach out directly to me, I will respond,
 
-Welcome to the community,
-
-Aaron
-Nearby Traveler`
+Best regards,
+Aaron- Nearby Traveler, Inc`
 });
 
 export const passwordResetEmail = (data: PasswordResetData): EmailTemplate => ({
