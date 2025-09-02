@@ -83,6 +83,7 @@ import SignupLocalTraveler from "@/pages/signup-local-traveler";
 import SignupTraveling from "@/pages/signup-traveling";
 import SignupBusinessSimple from "@/pages/signup-business-simple";
 import SignupSteps from "@/pages/signup-steps";
+import SignupAccount from "@/pages/signup-account";
 import UnifiedSignup from "@/pages/unified-signup";
 import BusinessRegistration from "@/pages/business-registration";
 import LandingNew from "@/pages/landing-new";
@@ -897,6 +898,8 @@ function Router() {
         return <CouchsurfingLanding />;
       case '/b':
         return <BusinessCustomLanding />;
+      case '/signup/account':
+        return <SignupAccount />;
       case '/signup/local':
         return <SignupLocalTraveler />;
       case '/signup/traveling':
