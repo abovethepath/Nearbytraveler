@@ -216,9 +216,9 @@ export default function SignupSteps() {
       if (formData.userType === 'local') {
         console.log('Redirecting to local signup');
         setLocation('/signup/local');
-      } else if (formData.userType === 'current_traveler') {
-        console.log('Redirecting to local signup (travelers are locals with travel plans)');
-        setLocation('/signup/local');
+      } else if (formData.userType === 'traveler') {
+        console.log('Processing traveler signup - staying in main flow');
+        // Stay in the main signup flow to capture traveler data
       } else if (formData.userType === 'business') {
         console.log('Redirecting to business signup');
         setLocation('/signup/business');
@@ -280,9 +280,9 @@ export default function SignupSteps() {
       if (formData.userType === 'local') {
         console.log('Redirecting to local signup');
         setLocation('/signup/local');
-      } else if (formData.userType === 'current_traveler') {
-        console.log('Redirecting to local signup (travelers are locals with travel plans)');
-        setLocation('/signup/local');
+      } else if (formData.userType === 'traveler') {
+        console.log('Processing traveler signup - staying in main flow');
+        // Stay in the main signup flow to capture traveler data
       } else if (formData.userType === 'business') {
         console.log('Redirecting to business signup');
         setLocation('/signup/business');
@@ -337,7 +337,9 @@ export default function SignupSteps() {
       travelDestinationState: formData.currentState,
       travelDestinationCountry: formData.currentCountry,
       secretActivities: formData.secretActivities,
-      secretLocalQuestion: formData.secretActivities
+      secretLocalQuestion: formData.secretActivities,
+      // CRITICAL FIX: Set traveler status when user type is traveler
+      isCurrentlyTraveling: formData.userType === 'traveler' ? true : formData.isCurrentlyTraveling
     };
 
     registerMutation.mutate(userData);
@@ -417,9 +419,10 @@ export default function SignupSteps() {
             {/* Step 1: Account Information */}
             {currentStep === 1 && (
               <>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                   {[
-                    { type: "local", icon: User, title: "Nearby Local or Currently Traveling", desc: "I'm a local who may have travel plans" },
+                    { type: "local", icon: User, title: "Nearby Local", desc: "I live here and want to meet travelers" },
+                    { type: "traveler", icon: Plane, title: "Traveling Now", desc: "I'm currently traveling and want to meet locals" },
                     { type: "business", icon: Building, title: "Nearby Business", desc: "I offer travel services" }
                   ].map(({ type, icon: Icon, title, desc }) => (
                     <div
@@ -579,7 +582,7 @@ export default function SignupSteps() {
                   />
                 </div>
 
-                {formData.userType === 'current_traveler' && (
+                {formData.userType === 'traveler' && (
                   <>
                     <div>
                       <h3 className="text-lg font-medium mb-4 text-teal-700">Current Travel Destination</h3>
@@ -822,7 +825,7 @@ export default function SignupSteps() {
                   </div>
                 </div>
 
-                {(formData.userType === 'current_traveler' || formData.userType === 'local') && (
+                {(formData.userType === 'traveler' || formData.userType === 'local') && (
                   <div>
                     <h3 className="text-lg font-medium mb-4 text-teal-700">Currently Traveling?</h3>
                     <div className="mb-4">
