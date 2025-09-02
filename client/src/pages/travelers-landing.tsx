@@ -159,34 +159,6 @@ export default function TravelersLanding() {
         </div>
       </div>
 
-      {/* Travel Benefits - Fill more space */}
-      <div className="py-4 bg-gray-50 dark:bg-gray-800">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="text-center mb-4">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">What Makes Travel Amazing</h2>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="text-center p-3 bg-white dark:bg-gray-700 rounded-lg">
-              <div className="text-2xl mb-2">🗺️</div>
-              <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-1">Hidden Local Spots</h3>
-              <p className="text-xs text-gray-600 dark:text-gray-300">Find secret bars, local hangouts & authentic eats</p>
-            </div>
-            
-            <div className="text-center p-3 bg-white dark:bg-gray-700 rounded-lg">
-              <div className="text-2xl mb-2">🤝</div>
-              <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-1">Real Connections</h3>
-              <p className="text-xs text-gray-600 dark:text-gray-300">Meet locals & travelers who share your interests</p>
-            </div>
-            
-            <div className="text-center p-3 bg-white dark:bg-gray-700 rounded-lg">
-              <div className="text-2xl mb-2">⚡</div>
-              <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-1">Instant Adventures</h3>
-              <p className="text-xs text-gray-600 dark:text-gray-300">Create "meet now" events for spontaneous fun</p>
-            </div>
-          </div>
-        </div>
-      </div>
 
       {/* Quote Section */}
       <div className="py-12 bg-white dark:bg-gray-800">
