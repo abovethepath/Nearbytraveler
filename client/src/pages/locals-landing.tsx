@@ -150,6 +150,32 @@ export default function LocalsLanding() {
         </div>
       </div>
 
+      {/* Quick Value Proposition - Fill the dead space */}
+      <div className="py-3 bg-white dark:bg-gray-900">
+        <div className="max-w-6xl mx-auto px-4 text-center">
+          <p className="text-sm text-gray-600 dark:text-gray-400 font-medium mb-4">
+            🏠 Share your city's hidden gems • Meet amazing travelers & locals • Create lasting friendships
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="text-center p-3">
+              <div className="text-2xl mb-2">🗺️</div>
+              <h3 className="text-base font-bold text-gray-900 dark:text-white mb-1">Show Your Secret Spots</h3>
+              <p className="text-xs text-gray-600 dark:text-gray-300">Share hidden gems only locals know</p>
+            </div>
+            <div className="text-center p-3">
+              <div className="text-2xl mb-2">🤝</div>
+              <h3 className="text-base font-bold text-gray-900 dark:text-white mb-1">Meet Amazing People</h3>
+              <p className="text-xs text-gray-600 dark:text-gray-300">Connect with curious travelers & neighbors</p>
+            </div>
+            <div className="text-center p-3">
+              <div className="text-2xl mb-2">⚡</div>
+              <h3 className="text-base font-bold text-gray-900 dark:text-white mb-1">Instant Social Life</h3>
+              <p className="text-xs text-gray-600 dark:text-gray-300">Create "meet now" events anytime</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
         {/* FOUNDER STORY SECTION - Consistent with main page */}
         <div className="relative z-10 py-6 overflow-hidden mb-4">
           {/* Clean background for light mode */}
