@@ -115,7 +115,7 @@ export default function UnifiedSignup() {
           email: parsedData.email || "",
           confirmEmail: parsedData.confirmEmail || "",
           password: parsedData.password || "",
-          userType: parsedData.userType === 'local_traveler' ? 'traveler' : parsedData.userType || 'local'
+          userType: parsedData.userType || 'local'
         }));
       } catch (error) {
         console.error('Error parsing stored signup data:', error);
