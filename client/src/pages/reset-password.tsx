@@ -149,32 +149,10 @@ export default function ResetPassword() {
   }
 
   if (!token || isValidToken === false) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-orange-50 px-4">
-        <Card className="w-full max-w-md">
-          <CardHeader className="text-center">
-            <CardTitle className="text-2xl text-red-600">Invalid Reset Link</CardTitle>
-            <CardDescription>
-              This password reset link is invalid or has expired.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-col space-y-2">
-              <Link href="/forgot-password">
-                <Button className="w-full">
-                  Request New Reset Link
-                </Button>
-              </Link>
-              <Link href="/signin">
-                <Button variant="ghost" className="w-full">
-                  Back to Sign In
-                </Button>
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    );
+    // Auto-redirect to home page instead of showing error
+    console.log('🔄 AUTO-REDIRECT: No valid reset token, redirecting to home page');
+    window.location.href = '/';
+    return null;
   }
 
   if (isSuccess) {
@@ -192,7 +170,7 @@ export default function ResetPassword() {
               <p className="text-sm text-gray-600">
                 You can now sign in with your new password.
               </p>
-              <Link href="/signin">
+              <Link href="/">
                 <Button className="w-full">
                   Sign In Now
                 </Button>
@@ -263,7 +241,7 @@ export default function ResetPassword() {
           </Form>
           
           <div className="mt-6 text-center">
-            <Link href="/signin">
+            <Link href="/">
               <Button variant="ghost" className="text-sm">
                 Back to Sign In
               </Button>
