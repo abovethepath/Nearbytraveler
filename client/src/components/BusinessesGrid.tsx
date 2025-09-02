@@ -25,94 +25,65 @@ export default function BusinessesGrid({ currentLocation, travelPlans = [] }: Bu
   const [, setLocation] = useLocation();
   const [displayLimit, setDisplayLimit] = useState(6);
 
-  // Determine ALL locations for business discovery (hometown + all travel destinations)
-  const locationsForDiscovery = useMemo(() => {
-    const locations: Array<{city: string; state: string; country: string; type: string}> = [];
-    
-    // Add hometown
-    if (currentLocation?.city) {
-      locations.push({ 
-        ...currentLocation, 
-        type: 'hometown'
-      });
-    }
-
-    // Add current travel destination if traveling
+  // Determine current location for business discovery - just where user is RIGHT NOW
+  const currentLocationForBusinesses = useMemo(() => {
+    // Check if user is currently traveling
     const currentDestination = getCurrentTravelDestination(travelPlans);
     if (currentDestination) {
-      locations.push({
+      // User is traveling - show businesses from travel destination
+      return {
         city: currentDestination.destinationCity,
         state: currentDestination.destinationState || '',
         country: currentDestination.destinationCountry,
         type: 'current_travel'
-      });
-    }
-
-    // Add ALL planned travel destinations from travel plans
-    if (travelPlans && travelPlans.length > 0) {
-      travelPlans.forEach(plan => {
-        if (plan.destination && !locations.some(loc => loc.city === plan.destination.split(',')[0].trim())) {
-          const [city, state, country] = (plan.destination || '').split(', ');
-          locations.push({
-            city: city || '',
-            state: state || '',
-            country: country || 'United States',
-            type: 'planned_travel'
-          });
-        }
-      });
+      };
     }
     
-    console.log('BusinessesGrid - All locations for discovery:', locations);
-    return locations;
+    // User is at home - show businesses from hometown
+    if (currentLocation?.city) {
+      return { 
+        ...currentLocation, 
+        type: 'hometown'
+      };
+    }
+    
+    return null;
   }, [currentLocation, travelPlans]);
 
-  // Fetch businesses from ALL locations (hometown + all travel destinations)
+  // Fetch businesses from current location only
   const { data: businesses = [], isLoading: businessesLoading } = useQuery({
-    queryKey: ['/api/businesses/all-locations', locationsForDiscovery.map(loc => `${loc.city}-${loc.state}-${loc.country}`)],
+    queryKey: ['/api/businesses/current-location', currentLocationForBusinesses ? `${currentLocationForBusinesses.city}-${currentLocationForBusinesses.state}-${currentLocationForBusinesses.country}` : 'none'],
     queryFn: async () => {
-      if (!locationsForDiscovery.length) return [];
+      if (!currentLocationForBusinesses) return [];
       
-      console.log('BusinessesGrid - Fetching businesses from ALL locations:', locationsForDiscovery);
+      console.log('BusinessesGrid - Fetching businesses from current location:', currentLocationForBusinesses);
 
-      // Fetch businesses from all cities in parallel
-      const businessPromises = locationsForDiscovery.map(async (location) => {
-        const cityName = location.city;
-        console.log(`BusinessesGrid - Fetching businesses for ${location.type}:`, cityName);
+      // Fetch businesses from current city only
+      const location = currentLocationForBusinesses;
+      const cityName = location.city;
+      console.log(`BusinessesGrid - Fetching businesses for ${location.type}:`, cityName);
 
-        try {
-          const params = new URLSearchParams({
-            city: location.city,
-            state: location.state || '',
-            country: location.country || ''
-          });
-          
-          const response = await fetch(`/api/businesses?${params}`);
-          if (!response.ok) throw new Error(`Failed to fetch businesses for ${cityName}`);
-          const data = await response.json();
-          console.log(`BusinessesGrid - ${location.type} businesses API response:`, data.length, 'businesses for', cityName);
-          return data.map((business: any) => ({ ...business, sourceLocation: location }));
-        } catch (error) {
-          console.error(`BusinessesGrid - Error fetching businesses for ${cityName}:`, error);
-          return [];
-        }
-      });
-
-      const allBusinessArrays = await Promise.all(businessPromises);
-      const combined = allBusinessArrays.flat();
-
-      // Remove duplicates by business ID
-      const unique = combined.filter((business, index, self) => 
-        index === self.findIndex((b) => b.id === business.id)
-      );
-
-      console.log('BusinessesGrid - Combined businesses from ALL locations:', unique.length, 'businesses from', locationsForDiscovery.length, 'locations');
-      return unique;
+      try {
+        const params = new URLSearchParams({
+          city: location.city,
+          state: location.state || '',
+          country: location.country || ''
+        });
+        
+        const response = await fetch(`/api/businesses?${params}`);
+        if (!response.ok) throw new Error(`Failed to fetch businesses for ${cityName}`);
+        const data = await response.json();
+        console.log(`BusinessesGrid - ${location.type} businesses API response:`, data.length, 'businesses for', cityName);
+        return data.map((business: any) => ({ ...business, sourceLocation: location }));
+      } catch (error) {
+        console.error(`BusinessesGrid - Error fetching businesses for ${cityName}:`, error);
+        return [];
+      }
     },
-    enabled: locationsForDiscovery.length > 0
+    enabled: !!currentLocationForBusinesses
   });
 
-  if (!locationsForDiscovery.length) {
+  if (!currentLocationForBusinesses) {
     return (
       <div className="text-center py-8">
         <p className="text-gray-500">Loading location data...</p>
@@ -133,7 +104,7 @@ export default function BusinessesGrid({ currentLocation, travelPlans = [] }: Bu
   if (businesses.length === 0) {
     return (
       <div className="text-center py-8">
-        <p className="text-gray-500">No businesses found in your areas</p>
+        <p className="text-gray-500">No businesses found in your current area</p>
       </div>
     );
   }
