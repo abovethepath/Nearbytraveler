@@ -1976,6 +1976,16 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       });
 
       console.log(`✅ Password reset email sent to ${user.email}`);
+      
+      // For development - return the reset link so you can test
+      if (process.env.NODE_ENV !== 'production') {
+        return res.json({ 
+          message: "If an account with this email or username exists, a password reset link has been sent.",
+          resetLink: `${req.protocol}://${req.get('host')}/reset-password?token=${resetToken}`,
+          devNote: "Reset link provided for development testing"
+        });
+      }
+      
       return res.json({ message: "If an account with this email or username exists, a password reset link has been sent." });
     } catch (error: any) {
       console.error("Forgot password error:", error);
