@@ -96,11 +96,13 @@ export function CityChatlroomsWidget({ city, state, country }: CityChatlroomsWid
 
   return (
     <Card 
-      className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 cursor-pointer hover:shadow-lg transition-shadow opacity-100" 
+      className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 cursor-pointer hover:shadow-lg transition-shadow opacity-100 relative z-50" 
       style={{ 
-        backgroundColor: document.documentElement.classList.contains('dark') ? 'rgb(31, 41, 55)' : 'rgb(255, 255, 255)', 
-        opacity: '1',
-        '--tw-bg-opacity': '1'
+        backgroundColor: document.documentElement.classList.contains('dark') ? 'rgb(31, 41, 55) !important' : 'rgb(255, 255, 255) !important', 
+        opacity: '1 !important',
+        '--tw-bg-opacity': '1 !important',
+        zIndex: '9999',
+        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
       }} 
       onClick={viewAllChatrooms}
     >
