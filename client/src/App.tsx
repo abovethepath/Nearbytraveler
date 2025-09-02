@@ -515,6 +515,12 @@ function Router() {
         console.log('🔐 RESET PASSWORD: Allowing access to reset password page');
         return <ResetPassword />;
       }
+      
+      // EMERGENCY: Handle reset password form with preserved token
+      if (location === '/reset-password-form') {
+        console.log('🔐 EMERGENCY: Loading reset password form with preserved token');
+        return <ResetPassword />;
+      }
 
       // Allow access to events landing page without authentication for marketing
       if (location === '/events-landing') {

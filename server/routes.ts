@@ -1993,6 +1993,49 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
     }
   });
 
+  // EMERGENCY FIX: Direct reset password page that preserves token
+  app.get('/reset-password', (req, res) => {
+    const { token } = req.query;
+    console.log('🔐 EMERGENCY REDIRECT: Reset password page access with token:', token);
+    
+    if (!token) {
+      console.log('❌ EMERGENCY REDIRECT: No token in URL, redirecting to forgot password');
+      return res.redirect('/forgot-password');
+    }
+    
+    // Send HTML that preserves token and loads React app
+    const html = `
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reset Password - Nearby Traveler</title>
+    <style>
+      body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
+      .container { max-width: 400px; margin: 0 auto; }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Redirecting to Password Reset...</h2>
+      <p>Please wait while we prepare your password reset form.</p>
+    </div>
+    <script>
+      // EMERGENCY: Store token and redirect to React app
+      localStorage.setItem('reset_token', '${token}');
+      console.log('🔐 EMERGENCY: Token stored, redirecting to React app');
+      // Navigate to the React app route for reset password
+      setTimeout(() => {
+        window.location.href = '/reset-password-form';
+      }, 500);
+    </script>
+  </body>
+</html>`;
+    
+    res.send(html);
+  });
+
   // Verify Reset Token endpoint
   app.get("/api/auth/verify-reset-token", async (req, res) => {
     try {
