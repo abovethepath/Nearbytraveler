@@ -164,9 +164,9 @@ export default function LocalsLanding() {
                 <p className="text-gray-600 dark:text-gray-300 text-sm">Meet amazing people from around the world</p>
               </div>
               <div className="flex flex-col items-center p-4">
-                <div className="text-3xl mb-3">💰</div>
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Earn & Connect</h3>
-                <p className="text-gray-600 dark:text-gray-300 text-sm">Get paid for tours or just make friends</p>
+                <div className="text-3xl mb-3">🎯</div>
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Create Experiences</h3>
+                <p className="text-gray-600 dark:text-gray-300 text-sm">Host meetups and share your favorite spots</p>
               </div>
             </div>
             
